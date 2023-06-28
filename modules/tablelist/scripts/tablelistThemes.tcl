@@ -136,18 +136,20 @@ proc tablelist::awTheme theme {
     incr r -15; incr g -15; incr b -15
     set stripeBg [format "#%2x%2x%2x" $r $g $b]
 
+    variable svgSupported
     variable scalingpct
+    set pct [expr {$svgSupported ? "" : $scalingpct}]
     switch $theme {
-	awarc - arc			{ set treeStyle classic$scalingpct }
-	awblack - black			{ set treeStyle bicolor$scalingpct }
-	awbreeze - breeze		{ set treeStyle bicolor$scalingpct }
-	awbreezedark			{ set treeStyle white$scalingpct }
-	awclearlooks - clearlooks	{ set treeStyle plain$scalingpct }
-	awdark				{ set treeStyle white$scalingpct }
-	awlight				{ set treeStyle bicolor$scalingpct }
-	awtemplate			{ set treeStyle white$scalingpct }
-	awwinxpblue - winxpblue		{ set treeStyle bicolor$scalingpct }
-	default				{ set treeStyle bicolor$scalingpct }
+	awarc - arc			{ set treeStyle classic$pct }
+	awblack - black			{ set treeStyle bicolor$pct }
+	awbreeze - breeze		{ set treeStyle bicolor$pct }
+	awbreezedark			{ set treeStyle white$pct }
+	awclearlooks - clearlooks	{ set treeStyle plain$pct }
+	awdark				{ set treeStyle white$pct }
+	awlight				{ set treeStyle bicolor$pct }
+	awtemplate			{ set treeStyle white$pct }
+	awwinxpblue - winxpblue		{ set treeStyle bicolor$pct }
+	default				{ set treeStyle bicolor$pct }
     }
 
     variable themeDefaults
@@ -489,7 +491,9 @@ proc tablelist::aquativoTheme {} {
 #------------------------------------------------------------------------------
 proc tablelist::ArcTheme {} {
     variable themeDefaults
+    variable svgSupported
     variable scalingpct
+    set pct [expr {$svgSupported ? "" : $scalingpct}]
     array set themeDefaults [list \
 	-foreground		#5c616c \
 	-disabledforeground	#a9acb2 \
@@ -510,7 +514,7 @@ proc tablelist::ArcTheme {} {
 	-labelpady		0 \
 	-arrowcolor		#5c616c \
 	-arrowstyle		flatAngle10x6 \
-	-treestyle		classic$scalingpct \
+	-treestyle		classic$pct \
     ]
 }
 
@@ -1565,7 +1569,7 @@ proc tablelist::tileqtTheme {} {
 	"gtk+" -
 	"oxygen"	{ set arrowColor $labelFg; set arrowStyle flatAngle9x6 }
 
-	"phase"		{ set arrowColor $labelFg; set arrowStyle flat6x4 }
+	"phase"		{ set arrowColor $labelFg; set arrowStyle flat7x4 }
 
 	"qtcurve"	{ set arrowColor $labelFg; set arrowStyle flatAngle7x5 }
 

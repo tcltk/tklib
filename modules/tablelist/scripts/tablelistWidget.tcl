@@ -30,8 +30,8 @@ namespace eval tablelist {
     #
     # Make the variable scalingpct read-only
     #
-    trace variable scalingpct wu \
-	  [list tablelist::restoreScalingpct $scalingpct]
+    addVarTrace scalingpct {write unset} \
+	[list tablelist::restoreScalingpct $scalingpct]
 
     #
     # The following trace procedure is executed whenever the
@@ -40,13 +40,13 @@ namespace eval tablelist {
     #
     proc restoreScalingpct {origVal varName index op} {
 	variable scalingpct $origVal
-	switch $op {
-	    w {
+	switch -glob $op {
+	    w* {
 		return -code error "the variable is read-only"
 	    }
-	    u {
-		trace variable scalingpct wu \
-		      [list tablelist::restoreScalingpct $origVal]
+	    u* {
+		addVarTrace scalingpct {write unset} \
+		    [list tablelist::restoreScalingpct $origVal]
 	    }
 	}
     }
@@ -122,11 +122,16 @@ namespace eval tablelist {
 	 [package vcompare $::tk_patchLevel "8.6b2"] >= 0) ||
 	($::tk_version >= 8.5 && [catch {package require img::png}] == 0)}]
 
+    variable svgSupported [expr {
+	$::tk_version >= 8.7 || [catch {package require tksvg}] == 0}]
+
     variable newAquaSupport [expr {
 	($::tk_version == 8.6 &&
 	 [package vcompare $::tk_patchLevel "8.6.10"] >= 0) ||
 	($::tk_version >= 8.7 &&
 	 [package vcompare $::tk_patchLevel "8.7a3"] >= 0)}]
+
+    variable scaled4 [::scaleutil::scale 4 $::scaleutil::scalingPct]
 
     #
     # The array configSpecs is used to handle configuration options.  The
@@ -565,13 +570,12 @@ namespace eval tablelist {
     #
     variable activeStyles  [list frame none underline]
     variable alignments    [list left right center]
-    variable arrowStyles   [list flat6x4 flat7x4 flat7x5 flat7x7 flat8x4 \
-				 flat8x5 flat9x5 flat9x6 flat11x6 flat13x7 \
-				 flat15x8 flatAngle7x4 flatAngle7x5 \
-				 flatAngle9x5 flatAngle9x6 flatAngle9x7 \
-				 flatAngle10x6 flatAngle10x7 flatAngle11x6 \
-				 flatAngle13x7 flatAngle15x8 photo7x4 \
-				 photo7x7 photo9x5 photo11x6 photo13x7 \
+    variable arrowStyles   [list flat7x4 flat7x7 flat8x4 flat8x5 flat9x5 \
+				 flat10x5 flat11x6 flat12x6 flat13x7 flat14x7 \
+				 flat15x8 flat16x8 flatAngle7x4 flatAngle7x5 \
+				 flatAngle9x5 flatAngle9x6 flatAngle10x6 \
+				 flatAngle11x6 flatAngle13x7 flatAngle15x8 \
+				 photo7x4 photo9x5 photo11x6 photo13x7 \
 				 photo15x8 sunken8x7 sunken10x9 sunken12x11]
     variable arrowTypes    [list up down]
     variable colWidthOpts  [list -requested -stretched -total]
@@ -622,15 +626,21 @@ namespace eval tablelist {
 				 winxpOlive winxpSilver yuyo]
     variable valignments   [list center top bottom]
 
-    proc restrictArrowStyles {} {
-	variable pngSupported
-	if {!$pngSupported} {
-	    variable arrowStyles
-	    set idx [lsearch -exact $arrowStyles "photo7x7"]
-	    set arrowStyles [lreplace $arrowStyles $idx $idx]
-	}
+    if {$pngSupported} {
+	lappend arrowStyles photo7x7
+	set arrowStyles [lsort -dictionary $arrowStyles]
     }
-    restrictArrowStyles
+
+    if {$svgSupported} {
+	lappend arrowStyles photo0x0
+	set arrowStyles [lsort -dictionary $arrowStyles]
+
+	lappend treeStyles bicolor classic plain white
+	set treeStyles [lsort $treeStyles]
+
+	variable svgfmt \
+	    [list svg -scale [expr {$::scaleutil::scalingPct / 100.0}]]
+    }
 
     #
     # Whether to support strictly Tk core listbox compatible bindings only
@@ -1275,11 +1285,11 @@ proc tablelist::tablelist args {
     # data(avtiveCol), and data(-selecttype)
     #
     foreach name {activeRow activeCol -selecttype} {
-	trace variable data($name) w [list tablelist::activeTrace $win]
+	addVarTrace data($name) write [list tablelist::activeTrace $win]
     }
 
-    trace variable ::tablelist::ns${win}::checkStates w \
-	  [list tablelist::checkStatesTrace $win]
+    addVarTrace ::tablelist::ns${win}::checkStates write \
+	[list tablelist::checkStatesTrace $win]
 
     after 1000 [list tablelist::purgeWidgets $win]
 
@@ -7540,9 +7550,9 @@ proc tablelist::deleteRows {win first last updateListVar} {
     if {$updateListVar &&
 	[uplevel #0 [list info exists $data(-listvariable)]]} {
 	upvar #0 $data(-listvariable) var
-	trace vdelete var wu $data(listVarTraceCmd)
+	removeVarTrace var {write unset} $data(listVarTraceCmd)
 	set var [lreplace $var $first $last]
-	trace variable var wu $data(listVarTraceCmd)
+	addVarTrace var {write unset} $data(listVarTraceCmd)
     }
 
     #
@@ -7866,7 +7876,7 @@ proc tablelist::insertRows {win index argList updateListVar parentKey \
 	[uplevel #0 [list info exists $data(-listvariable)]]}]
     if {$updateListVar} {
 	upvar #0 $data(-listvariable) var
-	trace vdelete var wu $data(listVarTraceCmd)
+	removeVarTrace var {write unset} $data(listVarTraceCmd)
     }
 
     #
@@ -7942,7 +7952,7 @@ proc tablelist::insertRows {win index argList updateListVar parentKey \
     set data(lastRow) [expr {$data(itemCount) - 1}]
 
     if {$updateListVar} {
-	trace variable var wu $data(listVarTraceCmd)
+	addVarTrace var {write unset} $data(listVarTraceCmd)
     }
 
     #
@@ -9420,8 +9430,8 @@ proc tablelist::activeTrace {win varName arrIndex op} {
 #------------------------------------------------------------------------------
 proc tablelist::listVarTrace {win varName arrIndex op} {
     upvar ::tablelist::ns${win}::data data
-    switch $op {
-	w {
+    switch -glob $op {
+	w* {
 	    if {![info exists data(syncId)]} {
 		#
 		# Arrange for the content of the widget to be synchronized
@@ -9431,7 +9441,7 @@ proc tablelist::listVarTrace {win varName arrIndex op} {
 	    }
 	}
 
-	u {
+	u* {
 	    #
 	    # Recreate the variable $varName by setting it according to
 	    # the value of data(itemList), and set the trace on it again
@@ -9444,7 +9454,7 @@ proc tablelist::listVarTrace {win varName arrIndex op} {
 	    foreach item $data(itemList) {
 		lappend var [lrange $item 0 $data(lastCol)]
 	    }
-	    trace variable var wu $data(listVarTraceCmd)
+	    addVarTrace var {write unset} $data(listVarTraceCmd)
 	}
     }
 }

@@ -665,8 +665,11 @@ proc tablelist::doConfig {win opt val} {
 			[mwutil::fullOpt "arrow style" $val $arrowStyles]
 		    regexp {^(flat|flatAngle|sunken|photo)([0-9]+)x([0-9]+)$} \
 			   $data($opt) dummy relief width height
-		    set data(arrowWidth) $width
-		    set data(arrowHeight) $height
+		    set pct $::scaleutil::scalingPct
+		    set data(arrowWidth) [expr {
+			$width > 0 ? $width : int(8 * $pct / 100.0)}]
+		    set data(arrowHeight) [expr {
+			$height > 0 ? $height : int(4 * $pct / 100.0)}]
 		    foreach w [info commands $data(hdrTxtFrmCanv)*] {
 			createArrows $w $width $height $relief
 			if {$data(isDisabled)} {
@@ -2869,9 +2872,9 @@ proc tablelist::doRowConfig {row win opt val} {
 	    if {$inBody && $data(hasListVar) &&
 		[uplevel #0 [list info exists $data(-listvariable)]]} {
 		upvar #0 $data(-listvariable) var
-		trace vdelete var wu $data(listVarTraceCmd)
+		removeVarTrace var {write unset} $data(listVarTraceCmd)
 		set var [lreplace $var $row $row $newItem]
-		trace variable var wu $data(listVarTraceCmd)
+		addVarTrace var {write unset} $data(listVarTraceCmd)
 	    }
 
 	    #
@@ -3713,10 +3716,10 @@ proc tablelist::doCellConfig {row col win opt val {skipParts 0}} {
 	    if {$inBody && $data(hasListVar) &&
 		[uplevel #0 [list info exists $data(-listvariable)]]} {
 		upvar #0 $data(-listvariable) var
-		trace vdelete var wu $data(listVarTraceCmd)
+		removeVarTrace var {write unset} $data(listVarTraceCmd)
 		set var [lreplace $var $row $row \
 			 [lrange $newItem 0 $data(lastCol)]]
-		trace variable var wu $data(listVarTraceCmd)
+		addVarTrace var {write unset} $data(listVarTraceCmd)
 	    }
 
 	    #
@@ -4060,9 +4063,14 @@ proc tablelist::doCellCget {row col win opt} {
 # scaling level.
 #------------------------------------------------------------------------------
 proc tablelist::defaultX11ArrowStyle {} {
-    variable scalingpct
-    array set arr {100 8x4  125 9x5  150 11x6  175 13x7  200 15x8}
-    return flat$arr($scalingpct)
+    variable svgSupported
+    if {$svgSupported} {
+	return photo0x0
+    } else {
+	variable scalingpct
+	array set arr {100 8x4  125 10x5  150 12x6  175 14x7  200 16x8}
+	return flat$arr($scalingpct)
+    }
 }
 
 #------------------------------------------------------------------------------
@@ -4094,7 +4102,7 @@ proc tablelist::makeListVar {win varName} {
 	    [uplevel #0 [list info exists $data(-listvariable)]]} {
 	    synchronize $win
 	    upvar #0 $data(-listvariable) oldVar
-	    trace vdelete oldVar wu $data(listVarTraceCmd)
+	    removeVarTrace oldVar {write unset} $data(listVarTraceCmd)
 	}
 	return ""
     }
@@ -4130,14 +4138,14 @@ proc tablelist::makeListVar {win varName} {
 	[uplevel #0 [list info exists $data(-listvariable)]]} {
 	synchronize $win
 	upvar #0 $data(-listvariable) oldVar
-	trace vdelete oldVar wu $data(listVarTraceCmd)
+	removeVarTrace oldVar {write unset} $data(listVarTraceCmd)
     }
 
     if {[info exists var]} {
 	#
 	# Invoke the trace procedure associated with the new list variable
 	#
-	listVarTrace $win $name1 $name2 w
+	listVarTrace $win $name2 $name2 write
     } else {
 	#
 	# Set $varName according to the value of data(itemList)
@@ -4151,7 +4159,7 @@ proc tablelist::makeListVar {win varName} {
     #
     # Set a trace on the new list variable
     #
-    trace variable var wu $data(listVarTraceCmd)
+    addVarTrace var {write unset} $data(listVarTraceCmd)
 }
 
 #------------------------------------------------------------------------------

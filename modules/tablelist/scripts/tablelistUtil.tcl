@@ -1058,12 +1058,12 @@ proc tablelist::condUpdateListVar win {
     if {$data(hasListVar) &&
 	[uplevel #0 [list info exists $data(-listvariable)]]} {
 	upvar #0 $data(-listvariable) var
-	trace vdelete var wu $data(listVarTraceCmd)
+	removeVarTrace var {write unset} $data(listVarTraceCmd)
 	set var {}
 	foreach item $data(itemList) {
 	    lappend var [lrange $item 0 $data(lastCol)]
 	}
-	trace variable var wu $data(listVarTraceCmd)
+	addVarTrace var {write unset} $data(listVarTraceCmd)
     }
 }
 
@@ -1501,7 +1501,8 @@ proc tablelist::getMaxTextWidth {pixels auxWidth indentWidth} {
     if {$auxWidth == 0} {
 	return $pixels
     } else {
-	set lessPixels [expr {$pixels - $auxWidth - 5}]
+	variable scaled4
+	set lessPixels [expr {$pixels - $auxWidth - $scaled4 - 1}]
 	if {$lessPixels > 0} {
 	    return $lessPixels
 	} else {
@@ -1523,7 +1524,8 @@ proc tablelist::adjustElem {win textName auxWidthName indentWidthName font
 
     if {$pixels == 0} {				;# convention: dynamic width
 	if {$auxWidth != 0 && [string length $text] != 0} {
-	    incr auxWidth 3
+	    variable scaled4
+	    incr auxWidth [expr {$scaled4 - 1}]
 	}
     } elseif {$indentWidth >= $pixels} {
 	set indentWidth $pixels
@@ -1538,9 +1540,11 @@ proc tablelist::adjustElem {win textName auxWidthName indentWidthName font
 		set auxWidth $pixels
 	    }
 	} else {				;# both aux. object and text
-	    if {$auxWidth + 5 <= $pixels} {
-		incr auxWidth 3
-		incr pixels -[expr {$auxWidth + 2}]
+	    variable scaled4
+	    set neededPixels [expr {$auxWidth + $scaled4 + 1}]
+	    if {$neededPixels <= $pixels} {
+		incr pixels -$neededPixels
+		incr auxWidth [expr {$scaled4 - 1}]
 		set text [strRange $win $text $font $pixels $snipSide $snipStr]
 	    } elseif {$auxWidth <= $pixels} {
 		set text ""			;# can't display the text
@@ -1566,7 +1570,8 @@ proc tablelist::adjustMlElem {win listName auxWidthName indentWidthName font
     set list2 {}
     if {$pixels == 0} {				;# convention: dynamic width
 	if {$auxWidth != 0 && [hasChars $list]} {
-	    incr auxWidth 3
+	    variable scaled4
+	    incr auxWidth [expr {$scaled4 - 1}]
 	}
     } elseif {$indentWidth >= $pixels} {
 	set indentWidth $pixels
@@ -1588,9 +1593,11 @@ proc tablelist::adjustMlElem {win listName auxWidthName indentWidthName font
 		set auxWidth $pixels
 	    }
 	} else {				;# both aux. object and text
-	    if {$auxWidth + 5 <= $pixels} {
-		incr auxWidth 3
-		incr pixels -[expr {$auxWidth + 2}]
+	    variable scaled4
+	    set neededPixels [expr {$auxWidth + $scaled4 + 1}]
+	    if {$neededPixels <= $pixels} {
+		incr pixels -$neededPixels
+		incr auxWidth [expr {$scaled4 - 1}]
 		foreach str $list {
 		    lappend list2 \
 			[strRange $win $str $font $pixels $snipSide $snipStr]
@@ -1623,13 +1630,15 @@ proc tablelist::getElemWidth {win text auxWidth indentWidth cellFont} {
     if {[string match "*\n*" $text]} {
 	set list [split $text "\n"]
 	if {$auxWidth != 0 && [hasChars $list]} {
-	    incr auxWidth 5
+	    variable scaled4
+	    incr auxWidth [expr {$scaled4 + 1}]
 	}
 	return [expr {[getListWidth $win $list $cellFont] +
 		      $auxWidth + $indentWidth}]
     } else {
 	if {$auxWidth != 0 && [string length $text] != 0} {
-	    incr auxWidth 5
+	    variable scaled4
+	    incr auxWidth [expr {$scaled4 + 1}]
 	}
 	return [expr {[font measure $cellFont -displayof $win $text] +
 		      $auxWidth + $indentWidth}]
@@ -6149,22 +6158,24 @@ proc tablelist::configLabel {w args} {
 # Creates two arrows in the canvas w.
 #------------------------------------------------------------------------------
 proc tablelist::createArrows {w width height relief} {
-    variable scalingpct
+    set pct $::scaleutil::scalingPct
+    set wWidth  [expr {$width  > 0 ? $width  : int(8 * $pct / 100.0)}]
+    set wHeight [expr {$height > 0 ? $height : int(4 * $pct / 100.0)}]
+
     variable centerArrows
-    if {$scalingpct > 150} {
+    if {$pct > 150} {
 	set minHeight [expr {$centerArrows ? 8 : 10}]
     } else {
 	set minHeight 6
     }
-    if {$height < $minHeight} {
+    if {$wHeight < $minHeight} {
 	set wHeight $minHeight
 	set y [expr {$centerArrows ? 0 : 1}]
     } else {
-	set wHeight $height
 	set y 0
     }
 
-    $w configure -width $width -height $wHeight
+    $w configure -width $wWidth -height $wHeight
 
     #
     # Delete any existing arrow image items from
@@ -6196,7 +6207,7 @@ proc tablelist::createArrows {w width height relief} {
     # Create the sort rank image item
     #
     $w delete sortRank
-    set x [expr {$width + 2}]
+    set x [expr {$wWidth + 2}]
     if {!$centerArrows} {
 	set y [expr {$wHeight - $minHeight}]
     }
@@ -6298,6 +6309,8 @@ proc tablelist::fillArrows {w color arrowStyle} {
 	if {[string compare [image type triangle${dir}Img$w] "bitmap"] == 0} {
 	    triangle${dir}Img$w configure \
 		-foreground $color -background $bgColor
+	} elseif {[string match "photo*0x0" $arrowStyle]} {
+	    setSvgImgForeground triangle${dir}Img$w $color
 	}
 
 	if {[string match "sunken*" $arrowStyle]} {
@@ -6768,8 +6781,7 @@ proc tablelist::hdr_createCkbtn {cmd win row col w} {
 # parent, which is supposed to be a frame widget.
 #------------------------------------------------------------------------------
 proc tablelist::makeCkbtn w {
-    checkbutton $w -activebackground white -background white \
-	-highlightthickness 0 -padx 0 -pady 0 -selectcolor white -takefocus 0
+    checkbutton $w -highlightthickness 0 -padx 0 -pady 0 -takefocus 0
 
     set frm [winfo parent $w]
     variable winSys
@@ -6782,7 +6794,7 @@ proc tablelist::makeCkbtn w {
 		createCheckbuttonImgs
 	    }
 
-	    $w configure -borderwidth 1 -indicatoron 0 \
+	    $w configure -borderwidth 0 -indicatoron 0 \
 		-image $uncheckedImg -selectimage $checkedImg \
 		-tristateimage $tristateImg
 	    if {$::tk_version >= 8.4} {
@@ -6800,11 +6812,11 @@ proc tablelist::makeCkbtn w {
 		createCheckbuttonImgs
 	    }
 
-	    $w configure -borderwidth 2 -indicatoron 0 \
+	    $w configure -borderwidth 0 -indicatoron 0 \
 		-image $uncheckedImg -selectimage $checkedImg \
 		-tristateimage $tristateImg
 	    if {$::tk_version >= 8.4} {
-		$w configure -offrelief sunken ;# -offrelief added in Tk8.4
+		$w configure -offrelief sunken	;# -offrelief added in Tk8.4
 	    }
 	    pack $w
 	    return [list [winfo reqwidth $w] [winfo reqheight $w]]
@@ -6924,7 +6936,9 @@ proc tablelist::makeTtkCkbtn w {
 	clam {
 	    if {[string first "Checkbutton.indicator" $ckbtnLayout] >= 0} {
 		style layout Tablelist.TCheckbutton { Checkbutton.indicator }
-		styleConfig Tablelist.TCheckbutton -indicatormargin {0 0 1 1}
+		set margin [expr {[info exists ::tk::scalingPct] ?
+				  0 : {0 0 1 1}}]
+		styleConfig Tablelist.TCheckbutton -indicatormargin $margin
 	    } else {		;# see procedure themepatch::patch_clam
 		style layout Tablelist.TCheckbutton { Checkbutton.image_ind }
 	    }

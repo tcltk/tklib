@@ -2,13 +2,17 @@
 
 #==============================================================================
 # Demonstrates how to use a tablelist widget for displaying the content of a
-# directory.
+# directory.  Uses images based on the following icons:
+#
+#   https://icons8.com/icon/JXYalxb9XWWd/folder
+#   https://icons8.com/icon/RdCT0UIsKOIp/opened-folder
+#   https://icons8.com/icon/mEF_vyjYlnE3/file
 #
 # Copyright (c) 2010-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tk 8.3
-package require tablelist 6.21
+package require tablelist 6.22
 
 #
 # Add some entries to the Tk option database
@@ -19,10 +23,15 @@ source [file join $dir option.tcl]
 #
 # Create three images corresponding to the display's DPI scaling level
 #
-set pct $tablelist::scalingpct
-image create photo clsdFolderImg -file [file join $dir clsdFolder$pct.gif]
-image create photo openFolderImg -file [file join $dir openFolder$pct.gif]
-image create photo fileImg       -file [file join $dir       file$pct.gif]
+if {$tk_version >= 8.7 || [catch {package require tksvg}] == 0} {
+    set pct ""; set sfx "svg"; set fmt $tablelist::svgfmt
+} else {
+    set pct $tablelist::scalingpct; set sfx "gif"; set fmt "gif"
+}
+foreach name {clsdFolder openFolder file} {
+    set imgFile $name$pct.$sfx		;# e.g., "file.svg" or "file150.gif"
+    image create photo ${name}Img -file [file join $dir $imgFile] -format $fmt
+}
 
 #------------------------------------------------------------------------------
 # displayContents
@@ -61,7 +70,8 @@ proc displayContents dir {
     #
     global winSys					;# see option.tcl
     if {[string compare $winSys "x11"] == 0} {
-	$tbl configure -treestyle bicolor$tablelist::scalingpct
+	global pct					;# ""|100|125|...|200
+	$tbl configure -treestyle bicolor$pct
     }
 
     #

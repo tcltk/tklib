@@ -11,10 +11,10 @@
 </head>
 
 <body>
-  <div align="center">
+  <div>
     <h1>Tablelist Programmer's Guide</h1>
 
-    <h2>For Tablelist Version 6.21</h2>
+    <h2>For Tablelist Version 6.22</h2>
 
     <h3>by</h3>
 
@@ -40,8 +40,10 @@
 
     <li><a href="#ov_use">How to Use It?</a></li>
 
-    <li><a href="#ov_scaling">More on
+    <li><a href="#ov_scalingpct">More on
     <code>tablelist::scalingpct</code></a></li>
+
+    <li><a href="#ov_svgfmt">More on <code>tablelist::svgfmt</code></a></li>
 
     <li><a href="#ov_tile">More on Tablelist_tile</a></li>
   </ul>
@@ -70,7 +72,7 @@
     <li><a href="#ex_tile">Tile-Based Demo Scripts</a></li>
   </ul>
 
-  <div align="center">
+  <div>
     <p><a href="index.html">Start page</a></p>
   </div>
 
@@ -177,8 +179,8 @@
   <h3 id="ov_get">How to Get It?</h3>
 
   <p>Tablelist is available for free download from the same URL as Wcb.&nbsp;
-  The distribution file is <code>tablelist6.21.tar.gz</code> for UNIX and
-  <code>tablelist6_21.zip</code> for Windows.&nbsp; These files contain the
+  The distribution file is <code>tablelist6.22.tar.gz</code> for UNIX and
+  <code>tablelist6_22.zip</code> for Windows.&nbsp; These files contain the
   same information, except for the additional carriage return character
   preceding the linefeed at the end of each line in the text files for
   Windows.</p>
@@ -202,11 +204,11 @@
 
   <p>To install Tablelist <i>on UNIX</i>, <code>cd</code> to the desired
   directory and unpack the distribution file
-  <code>tablelist6.21.tar.gz</code>:</p>
+  <code>tablelist6.22.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c tablelist6.21.tar.gz | tar -xf -
+gunzip -c tablelist6.22.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
@@ -214,17 +216,17 @@ gunzip -c tablelist6.21.tar.gz | tar -xf -
 
   <blockquote>
     <pre>
-tar -zxf tablelist6.21.tar.gz
+tar -zxf tablelist6.22.tar.gz
 </pre>
   </blockquote>
 
-  <p>Both commands will create a directory named <code>tablelist6.21</code>,
+  <p>Both commands will create a directory named <code>tablelist6.22</code>,
   with the subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>tablelist6_21.zip</code> into the directory
-  <code>tablelist6.21</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>tablelist6_22.zip</code> into the directory
+  <code>tablelist6.22</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>The file <code>tablelistEdit.tcl</code> in the <code>scripts</code>
@@ -321,14 +323,14 @@ package provide Tablelist_tile ...
   <code>tablelist</code> and <code>tablelist_tile</code></b>.</p>
 
   <p><b>REMARK:</b>&nbsp; If you have an earlier Tablelist version as part of
-  ActiveTcl 8.5 or above and the new Tablelist release 6.21, then it is highly
-  recommended to specify the version number <code>6.21</code> in the&nbsp;
+  ActiveTcl 8.5 or above and the new Tablelist release 6.22, then it is highly
+  recommended to specify the version number <code>6.22</code> in the&nbsp;
   <code>package require</code>&nbsp; command, because otherwise the interpreter
   will load the old Tablelist version included in ActiveTcl as Tcl
   Module.&nbsp; The <a href="#examples">examples</a> below use the
-  statement&nbsp; <code>package require tablelist 6.21</code>,&nbsp; and their
+  statement&nbsp; <code>package require tablelist 6.22</code>,&nbsp; and their
   tile-based counterparts invoke the command&nbsp; <code>package require
-  tablelist_tile 6.21</code>.</p>
+  tablelist_tile 6.22</code>.</p>
 
   <p>Since the packages Tablelist and Tablelist_tile are implemented in the
   <code>tablelist</code> namespace, you must either invoke the</p>
@@ -344,7 +346,7 @@ namespace import tablelist::<i>pattern</i> ?tablelist::<i>pattern ...</i>?
   chosen the latter approach.</p>
 
   <p>To access Tablelist <i>variables</i>, you <i>must</i> use qualified
-  names.&nbsp; There are only 5 Tablelist variables (and one more when using
+  names.&nbsp; There are only 6 Tablelist variables (and one more when using
   Tablelist_tile) that are designed to be accessed outside the namespace
   <code>tablelist</code>:</p>
 
@@ -371,6 +373,13 @@ namespace import tablelist::<i>pattern</i> ?tablelist::<i>pattern ...</i>?
     the value <code>150</code>, then the image size for this display should be
     24 x 24.</li>
 
+    <li>If the Tk version is either at least 8.7 (with built-in SVG support),
+    or 8.6 and the tksvg extension can be loaded into the interpreter, then the
+    variable <code>tablelist::svgfmt</code> is set to a Tcl list that you can
+    pass to the commands that create or manipulate SVG images as the value of
+    their <code>-format</code> option to make sure that your images will be
+    properly scaled.</li>
+
     <li>The boolean variable <code>tablelist::strictTk</code> (having the
     default value <code>0</code>) controls the strict listbox-compatibility of
     the default bindings.</li>
@@ -384,7 +393,7 @@ namespace import tablelist::<i>pattern</i> ?tablelist::<i>pattern ...</i>?
     options.</li>
   </ul>
 
-  <h3 id="ov_scaling">More on <code>tablelist::scalingpct</code></h3>
+  <h3 id="ov_scalingpct">More on <code>tablelist::scalingpct</code></h3>
 
   <p>The Tablelist code sets the variable <code>tablelist::scalingpct</code> to
   the value returned by the public procedure
@@ -510,13 +519,14 @@ namespace import tablelist::<i>pattern</i> ?tablelist::<i>pattern ...</i>?
   <p>The additional steps described in the rest of this section are only
   performed if the scaling percentage is greater than <code>100</code>.</p>
 
-  <p>The procedure sets the scaling factor used by Tk to convert between
-  physical units and pixels, by passing the value derived from the scaling
-  percentage to the&nbsp; <code>tk scaling</code>&nbsp; command.&nbsp; While in
-  the vast majority of applications this is the desired and recommended
-  behavior, there might be cases where you want to suppress this step because
-  your application might have its own logic for determining the value of Tk's
-  scaling factor.&nbsp; You can achieve this by inserting the line</p>
+  <p>On X11, the procedure synchronizes the scaling factor used by Tk to
+  convert between physical units and pixels with the scaling percentage, by
+  passing a value derived from the latter to the&nbsp; <code>tk
+  scaling</code>&nbsp; command.&nbsp; While in the vast majority of
+  applications this is the desired and recommended behavior, there might be
+  cases where you want to suppress this step because your application might
+  have its own logic for determining the value of Tk's scaling factor.&nbsp;
+  You can achieve this by inserting the line</p>
 
   <blockquote>
     <pre>
@@ -600,12 +610,43 @@ namespace eval ::scaleutil { set keepTkScaling 1 }
   but the procedure provides an automatic workaround for the Tk versions that
   are still affected by this bug.)</p>
 
-  <p>Note that the Tk core checkbutton and radiobutton widgets, as well as the
-  indicators of the ttk::checkbutton and ttk::radiobutton widgets of the
-  <code>alt</code> and <code>winnative</code> themes are currently (as of
-  February 2023) not scalable (they will scale automatically in Tk 8.7b1 and
-  later).&nbsp; Moreover, the ttk::sizegrip widget is currently not scalable in
-  any of the built-in themes.</p>
+  <p>Note that in Tk versions earlier than 8.7b1, the Tk core checkbutton and
+  radiobutton widgets, as well as the indicators of the ttk::checkbutton and
+  ttk::radiobutton widgets of the <code>alt</code> and <code>winnative</code>
+  themes are not scalable (they scale automatically in Tk 8.7b1 and
+  later).&nbsp; The same holds true for the ttk::sizegrip widget in the
+  built-in themes.</p>
+
+  <h3 id="ov_svgfmt">More on <code>tablelist::svgfmt</code></h3>
+
+  <p>Before returning one of the scaling percentage values <code>100</code>,
+  <code>125</code>, <code>150</code>, <code>175</code>, and <code>200</code>,
+  the procedure <code>scaleutil::scalingPercentage</code> saves the display's
+  <i>real</i> scaling percentage in the variable
+  <code>::scaleutil::scalingPct</code>.&nbsp; This value, which is restricted 
+  to multiples of <code>25</code>, can be greater than <code>200</code>, 
+  especially when running Androwish on a tablet or smartphone.</p>
+
+  <p>If the Tk version is either at least 8.7 (with built-in SVG support), or
+  8.6 and the tksvg package can be loaded into the interpreter, then Tablelist
+  additionally sets the variable <code>tablelist::svgfmt</code> to</p>
+
+  <blockquote>
+    <pre>
+[list svg -scale [expr {$::scaleutil::scalingPct / 100.0}]]
+</pre>
+  </blockquote>
+
+  <p>Typical values are&nbsp; <code>{svg -scale 1.0}</code>,&nbsp; <code>{svg
+  -scale 1.25}</code>,&nbsp; <code>{svg -scale 2.0}</code>,&nbsp; etc.</p>
+
+  <p>It is recommended to pass the value of the variable
+  <code>tablelist::svgfmt</code> to the commands&nbsp; <code>image create
+  photo</code>,&nbsp; <code><i>imageName</i> configure</code>,&nbsp;
+  <code><i>imageName</i> put</code>,&nbsp; and <code><i>imageName</i>
+  read</code>&nbsp; as the value of their <code>-format</code> option when
+  creating or manipulating SVG images, to make sure that their sizes will
+  correspond to the display's <i>real</i> scaling percentage.</p>
 
   <h3 id="ov_tile">More on Tablelist_tile</h3>
 
@@ -704,7 +745,7 @@ if {$::tk_version &lt; 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
   higher, and <code>tileqt</code> itself won't work with tile versions earlier
   than 0.7.</p>
 
-  <div align="center">
+  <div>
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>
@@ -745,7 +786,7 @@ source config.tcl
 
       <blockquote>
         <pre>
-package require tablelist 6.21
+package require tablelist 6.22
 source [file join $tablelist::library demos config.tcl]
 </pre>
       </blockquote>
@@ -787,7 +828,7 @@ demo::displayConfig .configTop.tf.tbl
   the following figure:</p>
 
   <blockquote>
-    <img src="config.png" alt="Configuration Options" width="835" height="400">
+    <img src="config.png" alt="Configuration Options" width="843" height="411">
   </blockquote>
 
   <p>It is assumed that the Tcl command associated with the widget specified by
@@ -801,7 +842,7 @@ demo::displayConfig .configTop.tf.tbl
 
   <blockquote>
     <pre>
-package require tablelist 6.21
+package require tablelist 6.22
 
 namespace eval demo {
     <span class="cmt">#
@@ -1251,14 +1292,14 @@ demo::displayChildren .
   in the file <code>browse.tcl</code> is a multi-column listbox:</p>
 
   <blockquote>
-    <img src="browse.png" alt="Widget Browser" width="607" height="297">
+    <img src="browse.png" alt="Widget Browser" width="615" height="308">
   </blockquote>
 
   <p>The tablelist created by the procedure of the same name in the file
   <code>browseTree.tcl</code> is a multi-column tree widget:</p>
 
   <blockquote>
-    <img src="browseTree.png" alt="Widget Browser" width="615" height="297">
+    <img src="browseTree.png" alt="Widget Browser" width="631" height="308">
   </blockquote>
 
   <p>The <code>demo::displayChildren</code> command inserts some data of the
@@ -1282,7 +1323,7 @@ demo::displayChildren .
   <blockquote>
     <pre>
 package require Tk 8.3
-package require tablelist 6.21
+package require tablelist 6.22
 
 namespace eval demo {
     variable dir [file dirname [info script]]
@@ -1290,24 +1331,44 @@ namespace eval demo {
     <span class="cmt">#
     # Create two images corresponding to the display's DPI scaling level
     #</span>
-    set pct $::tablelist::scalingpct
-    variable compImg [image create bitmap -file [file join $dir comp$pct.xbm] \
-                      -background yellow -foreground gray50]
-    variable leafImg [image create bitmap -file [file join $dir leaf$pct.xbm] \
-                      -background coral -foreground gray50]
+    variable leafImg [image create photo]
+    variable compImg [image create photo]
+    variable pct ""
+    if {$tk_version >= 8.7 || [catch {package require tksvg}] == 0} {
+        set fmt $::tablelist::svgfmt
+        $leafImg read [file join $dir leaf.svg] -format $fmt
+        $compImg read [file join $dir comp.svg] -format $fmt
+    } else {
+        set pct $::tablelist::scalingpct
+        $leafImg read [file join $dir leaf$pct.gif]
+        $compImg read [file join $dir comp$pct.gif]
+    } 
 }
 
 source [file join $demo::dir config.tcl]
 </pre>
   </blockquote>
 
-  <p>The two images representing a "compound" widget (with children) and a
-  "leaf" widget (without children), respectively, are created from files whose
-  names contain the display's DPI scaling level, given by the public variable
-  <code>tablelist::scalingpct</code>.&nbsp; The X bitmap files
-  <code>comp100.xbm</code> and <code>leaf100.xbm</code> contain images of size
-  16 x 13, the files <code>*125.xbm</code> contain images of size 20 x 16, the
-  files <code>*150.xbm</code> contain images of size 24 x 19, and so on.</p>
+  <p>If the Tk version is at least 8.7 or the tksvg package can be loaded into
+  the interpreter, then the two images representing a "compound" widget (with
+  children) and a "leaf" widget (without children), respectively, are created
+  from the files <code>comp.svg</code> and <code>leaf.svg</code>, respectively,
+  using the public variable <code>::tablelist::svgfmt</code>.&nbsp; Otherwise
+  they are created from files whose names contain the display's DPI scaling
+  percentage, given by the public variable
+  <code>::tablelist::scalingpct</code>.&nbsp; The files
+  <code>comp100.gif</code> and <code>leaf100.gif</code> contain images of size
+  16 x 14, the files <code>*125.gif</code> contain images of size 20 x 18, the
+  files <code>*150.gif</code> contain images of size 24 x 21, and so on.&nbsp;
+  In the first case only two <code>*.svg</code> files are needed and the images
+  will be scaled automatically, according to the display's real scaling
+  percentage, which can be greater than the maximum value <code>200</code> of
+  the variable <code>::tablelist::scalingpct</code>.&nbsp; This benefit comes
+  in handy especially when running Androwish on a tablet or smartphone.&nbsp;
+  In the second case a total number of 10 <code>*.gif</code> (or
+  <code>*.png</code>, or <code>*.xbm</code>) files are needed to make sure that
+  the sizes of the images will correspond to the value of the variable
+  <code>::tablelist::scalingpct</code>.</p>
 
   <blockquote>
     <pre>
@@ -1372,7 +1433,8 @@ proc demo::displayChildren w {
     #</span>
     variable winSys                                     ;<span class="cmt"># see config.tcl</span>
     if {[string compare $winSys "x11"] == 0} {
-        $tbl configure -treestyle bicolor$::tablelist::scalingpct
+        variable pct                                    ;<span class="cmt"># ""|100|125|...|200</span>
+        $tbl configure -treestyle bicolor$pct
     }
 
     <span class="cmt">#
@@ -1479,9 +1541,10 @@ proc demo::displayChildren w {
   should reflect the display's DPI scaling level.&nbsp; On Windows Vista, 7, 8,
   and 10+ the default value of this option already fulfills this requirement,
   and on Mac OS X/11+ the desktop engine automatically scales everything as
-  needed.&nbsp; On X11 we set the <code>-treestyle</code> option to one of
-  <code>bicolor100</code>, ..., <code>bicolor200</code>, depending on the value
-  of the public variable <code>::tablelist::scalingpct</code>.</p>
+  needed.&nbsp; On X11 we set the <code>-treestyle</code> option to
+  <code>bicolor</code> in the presence of SVG support and to one of
+  <code>bicolor100</code>, ..., <code>bicolor200</code> otherwise (depending on
+  the value of the variable <code>::tablelist::scalingpct</code>).</p>
 
   <p>After configuring the <code>-treestyle</code> option on X11, we iterate
   over the elements of the list containing the path names of all header labels
@@ -1896,7 +1959,7 @@ proc demo::restoreExpandedStates {tbl nodeIdx expandedWidgetsName} {
   as multi-column tree widget:</p>
 
   <blockquote>
-    <img src="dirViewer.png" alt="Directory Viewer" width="675" height="454">
+    <img src="dirViewer.png" alt="Directory Viewer" width="683" height="465">
   </blockquote>
 
   <p>By double-clicking an item or invoking the single entry of a pop-up menu
@@ -1912,7 +1975,7 @@ proc demo::restoreExpandedStates {tbl nodeIdx expandedWidgetsName} {
   <blockquote>
     <pre>
 package require Tk 8.3
-package require tablelist 6.21
+package require tablelist 6.22
 
 <span class="cmt">#
 # Add some entries to the Tk option database
@@ -1923,21 +1986,39 @@ source [file join $dir option.tcl]
 <span class="cmt">#
 # Create three images corresponding to the display's DPI scaling level
 #</span>
-set pct $tablelist::scalingpct
-image create photo clsdFolderImg -file [file join $dir clsdFolder$pct.gif]
-image create photo openFolderImg -file [file join $dir openFolder$pct.gif]
-image create photo fileImg       -file [file join $dir       file$pct.gif]
+if {$tk_version >= 8.7 || [catch {package require tksvg}] == 0} {
+    set pct ""; set sfx "svg"; set fmt $tablelist::svgfmt
+} else {
+    set pct $tablelist::scalingpct; set sfx "gif"; set fmt "gif"
+}
+foreach name {clsdFolder openFolder file} {
+    set imgFile $name$pct.$sfx          ;<span class="cmt"># e.g., "file.svg" or "file150.gif"</span>
+    image create photo ${name}Img -file [file join $dir $imgFile] -format $fmt
+}
 </pre>
   </blockquote>
 
-  <p>The three images representing a closed folder, an open folder, and a file,
-  respectively, are created from files whose names contain the display's DPI
-  scaling level, given by the public variable
-  <code>tablelist::scalingpct</code>.&nbsp; The files
+  <p>If the Tk version is at least 8.7 or the tksvg package can be loaded into
+  the interpreter, then the three images representing a closed folder, an open
+  folder, and a file, respectively, are created from the files
+  <code>clsdFolder.svg</code>, <code>openFolder.svg</code>, and
+  <code>file.svg</code>, respectively, using the public variable
+  <code>tablelist::svgfmt</code>.&nbsp; Otherwise they are created from files
+  whose names contain the display's DPI scaling percentage, given by the public
+  variable <code>tablelist::scalingpct</code>.&nbsp; The files
   <code>clsdFolder100.gif</code>, <code>openFolder100.gif</code>, and
   <code>file100.gif</code> contain images of size 16 x 16, the files
   <code>*125.gif</code> contain images of size 20 x 20, the files
-  <code>*150.gif</code> contain images of size 24 x 24, and so on.</p>
+  <code>*150.gif</code> contain images of size 24 x 24, and so on.&nbsp; In
+  the first case only three <code>*.svg</code> files are needed and the images
+  will be scaled automatically, according to the display's real scaling
+  percentage, which can be greater than the maximum value <code>200</code> of
+  the variable <code>tablelist::scalingpct</code>.&nbsp; This benefit comes in
+  handy especially when running Androwish on a tablet or smartphone.&nbsp; In
+  the second case a total number of 15 <code>*.gif</code> (or
+  <code>*.png</code>) files are needed to make sure that the sizes of the
+  images will correspond to the value of the variable
+  <code>tablelist::scalingpct</code>.</p>
 
   <blockquote>
     <pre>
@@ -1978,7 +2059,8 @@ proc displayContents dir {
     #</span>
     global winSys                                       ;<span class="cmt"># see option.tcl</span>
     if {[string compare $winSys "x11"] == 0} {
-        $tbl configure -treestyle bicolor$tablelist::scalingpct
+        global pct                                      ;<span class="cmt"># ""|100|125|...|200</span>
+        $tbl configure -treestyle bicolor$pct
     }
 
     . . .
@@ -2020,9 +2102,10 @@ option add *ScrollArea.Tablelist.highlightThickness     0
   should reflect the display's DPI scaling level.&nbsp; On Windows Vista, 7, 8,
   and 10+ the default value of this option already fulfills this requirement,
   and on Mac OS X/11+ the desktop engine automatically scales everything as
-  needed.&nbsp; On X11 we set the <code>-treestyle</code> option to one of
-  <code>bicolor100</code>, ..., <code>bicolor200</code>, depending on the value
-  of the public variable <code>tablelist::scalingpct</code>.</p>
+  needed.&nbsp; On X11 we set the <code>-treestyle</code> option to
+  <code>bicolor</code> in the presence of SVG support and to one of
+  <code>bicolor100</code>, ..., <code>bicolor200</code> otherwise (depending on
+  the value of the variable <code>tablelist::scalingpct</code>).</p>
 
   <p>Let's see how the script populates the tablelist with the content of the
   given directory:</p>
@@ -2238,7 +2321,7 @@ displayContents ""
   the following figure:</p>
 
   <blockquote>
-    <img src="styles.png" alt="Styles" width="695" height="512">
+    <img src="styles.png" alt="Styles" width="703" height="523">
   </blockquote>
 
   <p>Here is the relevant code segment:</p>
@@ -2324,8 +2407,8 @@ for {set n 0} { $n &lt; 8} {incr n} {
   a BWidget ComboBox used to edit the content of one of its cells:</p>
 
   <blockquote>
-    <img src="bwidget.png" alt="Serial Line Configuration" width="858" height=
-    "407">
+    <img src="bwidget.png" alt="Serial Line Configuration" width="869" height=
+    "418">
   </blockquote>
 
   <p>Here is the relevant code segment from the script <code>bwidget.tcl</code>
@@ -2337,7 +2420,7 @@ for {set n 0} { $n &lt; 8} {incr n} {
   <blockquote>
     <pre>
 package require Tk 8.4                          ;<span class="cmt"># because of "-compound"</span>
-package require tablelist 6.21
+package require tablelist 6.22
 package require BWidget
 
 wm title . "Serial Line Configuration"
@@ -2417,14 +2500,21 @@ source [file join $dir serialParams.tcl]
 
   <p>The sizes of the images created in the file <code>images.tcl</code>, which
   is <code>source</code>d into the main script, depend on the display's scaling
-  level, given by the public variable <code>tablelist::scalingpct</code>.&nbsp;
-  For example:</p>
+  level.&nbsp; For example:</p>
 
   <blockquote>
     <pre>
-set pct $tablelist::scalingpct
-image create photo checkedImg   -file [file join $dir checked$pct.gif]
-image create photo uncheckedImg -file [file join $dir unchecked$pct.gif]
+if {$tk_version >= 8.7 || [catch {package require tksvg}] == 0} {
+    set fmt $tablelist::svgfmt
+    image create photo checkedImg   -file [file join $dir checked.svg] \
+        -format $fmt
+    image create photo uncheckedImg -file [file join $dir unchecked.svg] \
+        -format $fmt
+} else {
+    set pct $tablelist::scalingpct
+    image create photo checkedImg   -file [file join $dir checked$pct.gif]
+    image create photo uncheckedImg -file [file join $dir unchecked$pct.gif]
+}
 </pre>
   </blockquote>
 
@@ -2785,15 +2875,15 @@ $tbl embedcheckbuttons 1 updateCkbtn
   <code>active</code> state:</p>
 
   <blockquote>
-    <img src="embeddedWindows.png" alt="Embedded Windows" width="426" height=
-    "308">
+    <img src="embeddedWindows.png" alt="Embedded Windows" width="436" height=
+    "333">
   </blockquote>
 
   <p>First, we create and populate the tablelist widget:</p>
 
   <blockquote>
     <pre>
-package require tablelist 6.21
+package require tablelist 6.22
 
 wm title . "Tk Library Scripts"
 
@@ -2812,7 +2902,13 @@ catch {font create TkFixedFont -family Courier -size 9}
 # Create an image corresponding to the display's DPI scaling
 # level, to be displayed in buttons embedded in a tablelist widget
 #</span>
-image create photo openImg -file [file join $dir openAction$pct.gif]
+if {$tk_version >= 8.7 || [catch {package require tksvg}] == 0} {
+    set fmt $tablelist::svgfmt
+    image create photo viewImg -file [file join $dir view.svg] -format $fmt
+} else {
+    set pct $tablelist::scalingpct
+    image create photo viewImg -file [file join $dir view$pct.gif]
+}
 
 <span class="cmt">#
 # Create a vertically scrolled tablelist widget with 5
@@ -2873,8 +2969,9 @@ if {$tk_version &gt;= 8.5} {
 </pre>
   </blockquote>
 
-  <p>The image representing an "open" action is created from a file whose name
-  contains the display's DPI scaling level, given by the public variable
+  <p>The image representing a "view" action is created either from the file
+  <code>view.svg</code> or from a GIF image file whose name contains the
+  display's DPI scaling percentage, given by the public variable
   <code>tablelist::scalingpct</code>.</p>
 
   <p>We insert the size of each file not only into the column with the
@@ -2911,7 +3008,7 @@ proc createFrame {tbl row col w} {
     # Create the frame and replace the binding tag "Frame"
     # with "TablelistBody" in the list of its binding tags
     #</span>
-    set height [expr {[font metrics $::tblFont -linespace] * 4 / 5}]
+    set height [expr {[font metrics $::tblFont -linespace] * 9 / 10}]
     frame $w -width 72p -height $height -background ivory -borderwidth 1 \
              -relief solid
     bindtags $w [lreplace [bindtags $w] 1 1 TablelistBody]
@@ -2963,7 +3060,7 @@ proc createFrame {tbl row col w} {
 #------------------------------------------------------------------------------</span>
 proc createButton {tbl row col w} {
     set key [$tbl getkeys $row]
-    button $w -image openImg -highlightthickness 0 -takefocus 0 \
+    button $w -image viewImg -highlightthickness 0 -takefocus 0 \
               -command [list viewFile $tbl $key]
 }
 
@@ -3077,7 +3174,7 @@ $tbl fillcolumn 3 -window createButton
   <blockquote>
     <pre>
 package require Tk 8.3                          ;<span class="cmt"># because of entry validation</span>
-package require tablelist 6.21
+package require tablelist 6.22
 </pre>
   </blockquote>
 
@@ -3085,7 +3182,7 @@ package require tablelist 6.21
 
   <blockquote>
     <pre>
-package require tablelist<span class="red">_tile</span> 6.21
+package require tablelist<span class="red">_tile</span> 6.22
 </pre>
   </blockquote>
 
@@ -3192,8 +3289,8 @@ option add *selectBorderWidth     $tablelist::themeDefaults(-selectborderwidth)
   resulting window has a nice theme-specific appearance:</p>
 
   <blockquote>
-    <img src="tileWidgets.png" alt="Serial Line Configuration" width="859"
-    height="402">
+    <img src="tileWidgets.png" alt="Serial Line Configuration" width="867"
+    height="413">
   </blockquote>
 
   <p>The <code>tileWidgets.tcl</code> script starts by patching the
@@ -3226,8 +3323,8 @@ if {[tk windowingsystem] eq "x11"} {
   the details.&nbsp; Here is a screenshot of the resulting window:</p>
 
   <blockquote>
-    <img src="embeddedWindows_tile.png" alt="Embedded Windows" width="426"
-    height="314">
+    <img src="embeddedWindows_tile.png" alt="Embedded Windows" width="436"
+    height="334">
   </blockquote>
 
   <p>Finally, notice that the following tile-based demo-scripts provide
@@ -3244,7 +3341,7 @@ if {[tk windowingsystem] eq "x11"} {
   Mac it is recommended to run these scripts with Tk 8.6.11 or later, due to a
   few appearance-related improvements made in Tk 8.6.11.</p>
 
-  <div align="center">
+  <div>
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>

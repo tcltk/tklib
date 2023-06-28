@@ -9,7 +9,7 @@
 # Copyright (c) 2020-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require scaleutil 1.6
+package require scaleutil 1.10
 
 #
 # Namespace initialization
@@ -20,7 +20,7 @@ namespace eval scaleutilmisc {
     #
     # Public variables:
     #
-    variable version	1.3
+    variable version	1.4
     variable library
     if {$::tcl_version >= 8.4} {
 	set library	[file dirname [file normalize [info script]]]
@@ -42,6 +42,9 @@ namespace eval scaleutilmisc {
 	set onX11 \
 	    [expr {[string compare $::tcl_platform(platform) "unix"] == 0}]
     }
+
+    variable svgSupported \
+	[expr {$::tk_version >= 8.7 || [catch {package require tksvg}] == 0}]
 }
 
 package provide scaleutilmisc $scaleutilmisc::version
@@ -56,10 +59,11 @@ package provide scaleutilmisc $scaleutilmisc::version
 #
 # Scales a BWidget SpinBox widget of the given path name.
 #------------------------------------------------------------------------------
-proc scaleutilmisc::scaleBWidgetSpinBox {w pct} {
+proc scaleutilmisc::scaleBWidgetSpinBox w {
     #
     # Scale the width of the two arrows, which is set to 11
     #
+    set pct $::scaleutil::scalingPct				;# can be > 200
     set arrWidth [::scaleutil::scale 11 $pct]
     $w.arrup configure -width $arrWidth
     $w.arrdn configure -width $arrWidth
@@ -70,12 +74,13 @@ proc scaleutilmisc::scaleBWidgetSpinBox {w pct} {
 #
 # Scales a BWidget ComboBox widget of the given path name.
 #------------------------------------------------------------------------------
-proc scaleutilmisc::scaleBWidgetComboBox {w pct} {
+proc scaleutilmisc::scaleBWidgetComboBox w {
     #
     # Scale the width of the arrow, which is set to 11 or 15
     #
     variable onX11
     set defaultWidth [expr {$onX11 ? 11 : 15}]
+    set pct $::scaleutil::scalingPct				;# can be > 200
     set width [::scaleutil::scale $defaultWidth $pct]
     $w.a configure -width $width
 
@@ -170,16 +175,14 @@ proc scaleutilmisc::scaleOakleyComboboxArrow pct {
 #define down_width 9
 #define down_height 5
 static unsigned char down_bits[] = {
-   0xff, 0x01, 0xfe, 0x00, 0x7c, 0x00, 0x38, 0x00, 0x10, 0x00};
-"
+   0xff, 0x01, 0xfe, 0x00, 0x7c, 0x00, 0x38, 0x00, 0x10, 0x00};"
 	}
 	125 {
 	    set data "
 #define down_width 11
 #define down_height 6
 static unsigned char down_bits[] = {
-   0xff, 0x07, 0xfe, 0x03, 0xfc, 0x01, 0xf8, 0x00, 0x70, 0x00, 0x20, 0x00};
-"
+   0xff, 0x07, 0xfe, 0x03, 0xfc, 0x01, 0xf8, 0x00, 0x70, 0x00, 0x20, 0x00};"
 	}
 	150 {
 	    set data "
@@ -187,8 +190,7 @@ static unsigned char down_bits[] = {
 #define down_height 7
 static unsigned char down_bits[] = {
    0xff, 0x1f, 0xfe, 0x0f, 0xfc, 0x07, 0xf8, 0x03, 0xf0, 0x01, 0xe0, 0x00,
-   0x40, 0x00};
-"
+   0x40, 0x00};"
 	}
 	175 {
 	    set data "
@@ -196,8 +198,7 @@ static unsigned char down_bits[] = {
 #define down_height 8
 static unsigned char down_bits[] = {
    0xff, 0x7f, 0xfe, 0x3f, 0xfc, 0x1f, 0xf8, 0x0f, 0xf0, 0x07, 0xe0, 0x03,
-   0xc0, 0x01, 0x80, 0x00};
-"
+   0xc0, 0x01, 0x80, 0x00};"
 	}
 	200 {
 	    set data "
@@ -206,8 +207,7 @@ static unsigned char down_bits[] = {
 static unsigned char down_bits[] = {
    0xff, 0xff, 0x01, 0xfe, 0xff, 0x00, 0xfc, 0x7f, 0x00, 0xf8, 0x3f, 0x00,
    0xf0, 0x1f, 0x00, 0xe0, 0x0f, 0x00, 0xc0, 0x07, 0x00, 0x80, 0x03, 0x00,
-   0x00, 0x01, 0x00};
-"
+   0x00, 0x01, 0x00};"
 	}
     }
 
@@ -224,76 +224,68 @@ static unsigned char down_bits[] = {
 #------------------------------------------------------------------------------
 proc scaleutilmisc::calendarImg pct {
     variable calendarImg
-    if {![info exists calendarImg]} {
-	set calendarImg [image create photo scaleutilmisc_calendarImg]
+    if {[info exists calendarImg]} {
+	return $calendarImg
+    }
 
+    set calendarImg [image create photo scaleutilmisc_calendarImg]
+
+    variable svgSupported
+    if {$svgSupported} {
+	set pct $::scaleutil::scalingPct			;# can be > 200
+	scaleutilmisc_calendarImg put {
+<svg width="16" height="16" version="1.1" xmlns="http://www.w3.org/2000/svg">
+ <rect width="16" height="16" rx="1" fill="#8b0000"/>
+ <rect x="1" y="5" width="14" height="10" fill="#fff"/>
+ <rect x="6" y="6" width="2" height="2"/>
+ <rect x="9" y="6" width="2" height="2"/>
+ <rect x="12" y="6" width="2" height="2"/>
+ <rect x="3" y="6" width="2" height="2"/>
+ <rect x="3" y="9" width="2" height="2"/>
+ <rect x="6" y="9" width="2" height="2"/>
+ <rect x="9" y="9" width="2" height="2"/>
+ <rect x="12" y="9" width="2" height="2"/>
+ <rect x="3" y="12" width="2" height="2"/>
+ <rect x="6" y="12" width="2" height="2"/>
+ <rect x="9" y="12" width="2" height="2"/>
+ <rect x="12" y="12" width="2" height="2"/>
+</svg>
+	} -format [list svg -scale [expr {$pct / 100.0}]]
+
+    } else {
 	switch $pct {
 	    100 {
 		set data "
-R0lGODlhFAAUAKUjAAAAAPVLPvVMP9p4cfFSRvVaT/VdUeR1bet3bra2ttGYlNOloeeinNfBv8PD
-w8bGxszMzM3Nzc/Pz9HR0dPT09XV1dfX19jY2NnZ2dvb29zc3N3d3d/f3+Xe3eDg4OHh4eLi4uPj
-4+Tk5P//////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////yH5BAEKAD8ALAAAAAAUABQAAAagwJ9w
-SCwaj8iiIcBsOp+F4XM6lVKvASu2KlR4v+CwdyjKOBwVyflzhlzOFxHZkkhIHnVP3UGpU+RCInR2
-eAl6CXx+gD8iIR4eIB+PIiIdIiCPIIuCdXd5CAIMfQl/c52FHgQBB6OlgRoPDxYTsR8LAw0YsRib
-HBISGRa/IBIRFRu/G5uDnoZ7rcunec+KQ5IWFhwa2CHYGR7YHiFJ5OXmQQA7
-"
+R0lGODlhEAAQAKECAAAAAIsAAP///////yH5BAEKAAMALAAAAAAQABAAAAIojI+py+0Pj5i0VjMB
+EJrvjnliBwbWSYXkxwpqu7omer5ja8clXUdHAQA7"
 	    }
 	    125 {
 		set data "
-R0lGODlhGQAZAKUtAAAAAPVLPvRLP/VMP9tfVvFTR/FgVel4b/drYfdrYvdsYfBzaba2tri4uLm5
-uby8vL+/v9iYk8Kwr8O7uuerp+jAvcPDw8bGxsfHx8rKys3Nzc/Pz9jCwdDQ0NHR0dLS0tPT09TU
-1NjY2NnZ2dvb29zc3N7e3uTb2uDg4OHh4eLi4uPj4+Tk5P//////////////////////////////
-/////////////////////////////////////////////yH5BAEKAD8ALAAAAAAZABkAAAbowJ9w
-SCwaj8ikcrlMKJ7QqDSKIA4C2Kx2qx0QueDwN0zOjstkImHNbrvfxE+nQfdg6JAPhI7x0BsdH0Qs
-KAyGKh6GFiwWhh4qhgwoLIOFh4kMi40Mj5GTgyoaoiskoiEsIaIkK6IaKpRDLLKztLW2lQ65KyC5
-FywVBgsnK7kOn7GWDIiKLAdYFJCGx0KEkcuZLBECBRzRkrDUpCQkhOMmLCMSEyks46vgPywrIvSE
-9CUsJfST9CIr8NUuMdvUSRrAZNc0OfI2LR6KBxBXhICIgQUGiCFWQHzQMMOGjyBDigyZgYnJkyaD
-AAA7
-"
+R0lGODlhFAAUAOMMAAAAAIoAAIsAAD8/P29vb39/f82QkJ+fn7+/v+LAwM/Pz9/f3///////////
+/////yH5BAEKAA8ALAAAAAAUABQAAAR5UMhJKw026827/2BnJGRpnokhJcxSFAvyMkdxMC+SrAwC
+ALIfYwAYMH6FnYDlAxaERCNSyWJYr9gslaEYDBQHL4MwIAwHh20zCBgWj4Akr/sNG8lmb5qX7WPV
+P2xuUnGATlBvUzwuMDIFNDY4BToSIyiXJCoYIRIBEQA7"
 	    }
 	    150 {
 		set data "
-R0lGODlhHgAeAKUsAAAAAPVLPvVMP9l7dOxcUfROQfRYTPZjWPVpXuuBeba2tre3t8iIhNGHgtyN
-h8Wvre2YkcHBwcXFxcfHx8nJyc3Nzc7OztHOztDQ0NPT09TU1NXV1dbW1tfX19jY2Nra2tvb29zc
-3N3d3d/f3+fGw+Xb2+Dg4OHh4eLi4uPj4+Xh4eTk5P//////////////////////////////////
-/////////////////////////////////////////////yH5BAEKAD8ALAAAAAAeAB4AAAb+wJ9w
-SCwaj8ikcslsOp9CxGFKrVqvVASxEOh6v+Cwt0AUm8/dMnr9VbPZ7jeayKjb7/g8ntjpVBaAFB0R
-gAsbG4URHRSFFX1EKyscCpQYKxKUCicnmRIrGJkckZCSmZaYlJudn6GjQ5GTlZeZqpSeoJSiK6SR
-vb6/wL6kKCPFJysmxSO9JSqRJ8oorkKwprOpKxACBiSsudM/1bKomipcAQneCrqksQqntCkEXQ7q
-7K8rIBP7HZ/7E9IeDGhwYUWHfyDABQtmwkKGhbvwiahA8cMKDRQroECRUcOKDxlFKCw1jhYnW/ZG
-uoOX6qSCW60iUiP57pomlzC/yfwRApkZh5/LQvz0kCLF0J4jhppYIQKK06dQowoJAgA7
-"
+R0lGODlhGAAYAOMHAAAAAIoAAIsAAKhAQH9/f8WAgL+/v///////////////////////////////
+/////yH5BAEKAAgALAAAAAAYABgAAAR4UMhJq5Xh6s27/2Aojt9QnGiqqoNUHHAsz3PhwgQAEIcO
+HLldT3ewCV5AHc+XFDKNyOCSKB3+oLRsFnswEAgG4Lf7DX953Cpg3Zxeb21rfP0+wrxgMQ9vHnO1
+gEVwamyEdVFrbnNsaYlyhoJ2gYBGJiuXKy0ZJBQRADs="
 	    }
 	    175 {
 		set data "
-R0lGODlhIwAjAKUuAAAAAPVIPuFXS/JORPBURPVQQPVaT/dbUPBsX+VwaO55cOx+d/ltY+GIfrW3
-tLi6t7q8uby+u7/CvsmXl8iyr8i8vNKmpNS+u+ecksXHxMfJxsrMycvOys3QzNHT0NPV0tTW09XX
-1NbZ1dfa1tjb19vd2tze293f3N7g3eTe3enT0ODj3+Hk4OLl4f//////////////////////////
-/////////////////////////////////////////////yH5BAEKAD8ALAAAAAAjACMAAAb+wJ9w
-SCwaj8ikcslsOp9QJGNKrVqv16OhwO16v2DwwRgom8/otDpAXrvf7CJ8nm7T7/b73Cjo+/+AgYIC
-Rh6Gh4iJioseRi2PHhCSES0bkhAZLRmXGy0Rlx6PLY6PHQ6nDy0apw4SLRKsGi0PrB2ipC2mqKqs
-rrCnsrSnto+4ug6pq6e+sbO1t0WiJBzUtiHUHKEe2CG52CTQRKIsK+UrLeTm46LmKyzhQ6LHyb0t
-KggBCinOw/BC8qzoLWuxwAwGfg6IjYpWKiCvgQnMNECo0JhDZa1aWBgQgMAFiv5+iDrxoSSIFiRK
-fhDRAgWFCRXOgVB5IqQoFCRygsOZ00RZCxMkRpBAgVIn0WIMc12s98tBsGdIxTXchZEZMJBR401F
-9jBj06f9sv7bKtBrM2EJQ55rWaKtTxRtS9Q8EZeoibqPVhzJoKGv37+AA//NEKWw4cOIEysmEgQA
-Ow==
-"
+R0lGODlhHAAcAOMLAAAAAIsAAJIQED8/P6hAQH9/f5+fn7+/v8/Pz9/f3+/v7///////////////
+/////yH5BAEKAA8ALAAAAAAcABwAAAS48IVJq71W4s27/2AojmRpnphArGzrvqwwEUtt33huE7Nt
+FAXD4gAsLBLFxKJ4WPACtNoAABgsqYAhtok1PqOLafVK1VK5VG9PSrUWsGYAGqCG6u74rw1xOCCO
+fU0KgQpDfUp6bGNvZQdbC11Oa2FtZFmOZ5BpknaKbnCYcpp0nGB8foB9C4N9hYGIk3iyNYmUi6CP
+kbVin425m7uVjJe/pLU/QUNFR0lLQE21s7JPKjDW1jIaKBQPEQA7"
 	    }
 	    200 {
 		set data "
-R0lGODlhKAAoAKUsAAAAAOZGOuZIO/VLPvVMP911be9aT/VMQPROQfNXS/BcUORoX+hoXvdoXet2
-bvdrYNODfba2tr6+vseFgMeMiMuWkdaVkOufmem6tsbGxsvEw8vLy83Nzc/Pz9XV1dfX19vb29zc
-3N3d3d7e3t/f3+fIxefOzOLR0OXa2eXd3OHh4eTk5P//////////////////////////////////
-/////////////////////////////////////////////yH5BAEKAD8ALAAAAAAoACgAAAb+wJ9w
-SCwaj8ikcslsOp/QqHTqfDSu2Kx2y70+jgbCYEwum8/oMUFhFKTfcLPAGIjb3wH6fW/OF+t8gX5E
-gIF7g0OFhnaIQhQTkJGSk5SVkhRGIJqbnJ2en55GK6MrHBGnERwrEqgRISGtEqWtqqSipKaoqqyo
-r7GzuqQrt6O5p7utvqiyxqnCxMDHq8mwy9HOtkXCzci91afMtM/awuXm5+jZRMIiHu4eIisf7x4q
-oyYYKKPt7/HqQ9vE8ToVYsWFAwMSlLhWaxQ0btN6pUBAxgHDcetwCUx2ogyDi/+EBAw20JWKBWQs
-gHRIbpSHDDAzeFixIWYGEis0QChQ4cNgipcxZ4b8ka7ohw4Fiw5r+dPmzJoxSZCwuaFpUIwANZKk
-9gvi0JHSSioDt3JpxmIbvXUV91VrWK7WvLIkYm8fvXjz3qlQQc8nP3f+Vqg4ElipYWEjqChezLix
-48eQoQQBADs=
-"
+R0lGODlhIAAgAKECAAAAAIsAAP///////yH5BAEKAAMALAAAAAAgACAAAAJvXI6py2cNo5y02ouz
+3rz7jwniSJbmmZzqSqYjAANiLAv0HIsuDvP1bcsJdsFe8ScEEoHMpJDIio6g0ujSaWwar1kscosg
+ab9kXfjl9amH52qV6lZxy8f1fD02H8Tpuv/ul8e2FycFV1gCAvGg6FAAADs="
 	    }
 	}
 	scaleutilmisc_calendarImg put $data
@@ -318,8 +310,7 @@ proc scaleutilmisc::backwardImg {pct fg} {
 static unsigned char backward_bits[] = {
    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xc0, 0x30, 0xe0, 0x38, 0xf0, 0x3c,
    0xf8, 0x3e, 0xfc, 0x3f, 0xfc, 0x3f, 0xf8, 0x3e, 0xf0, 0x3c, 0xe0, 0x38,
-   0xc0, 0x30, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-"
+   0xc0, 0x30, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};"
 	    }
 	    125 {
 		set data "
@@ -330,8 +321,7 @@ static unsigned char backward_bits[] = {
    0x80, 0x83, 0x03, 0xc0, 0xc3, 0x03, 0xe0, 0xe3, 0x03, 0xf0, 0xf3, 0x03,
    0xf8, 0xfb, 0x03, 0xfc, 0xff, 0x03, 0xfc, 0xff, 0x03, 0xf8, 0xfb, 0x03,
    0xf0, 0xf3, 0x03, 0xe0, 0xe3, 0x03, 0xc0, 0xc3, 0x03, 0x80, 0x83, 0x03,
-   0x00, 0x03, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-"
+   0x00, 0x03, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};"
 	    }
 	    150 {
 		set data "
@@ -343,8 +333,7 @@ static unsigned char backward_bits[] = {
    0xc0, 0x8f, 0x1f, 0xe0, 0xcf, 0x1f, 0xf0, 0xef, 0x1f, 0xf8, 0xff, 0x1f,
    0xf8, 0xff, 0x1f, 0xf0, 0xef, 0x1f, 0xe0, 0xcf, 0x1f, 0xc0, 0x8f, 0x1f,
    0x80, 0x0f, 0x1f, 0x00, 0x0f, 0x1e, 0x00, 0x0e, 0x1c, 0x00, 0x0c, 0x18,
-   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-"
+   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};"
 	    }
 	    175 {
 		set data "
@@ -360,8 +349,7 @@ static unsigned char backward_bits[] = {
    0x80, 0x3f, 0xfc, 0x01, 0x00, 0x3f, 0xf8, 0x01, 0x00, 0x3e, 0xf0, 0x01,
    0x00, 0x3c, 0xe0, 0x01, 0x00, 0x38, 0xc0, 0x01, 0x00, 0x30, 0x80, 0x01,
    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-   0x00, 0x00, 0x00, 0x00};
-"
+   0x00, 0x00, 0x00, 0x00};"
 	    }
 	    200 {
 		set data "
@@ -378,8 +366,7 @@ static unsigned char backward_bits[] = {
    0x00, 0xff, 0xf0, 0x0f, 0x00, 0xfe, 0xe0, 0x0f, 0x00, 0xfc, 0xc0, 0x0f,
    0x00, 0xf8, 0x80, 0x0f, 0x00, 0xf0, 0x00, 0x0f, 0x00, 0xe0, 0x00, 0x0e,
    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-"
+   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};"
 	    }
 	}
 	scaleutilmisc_backwardImg configure -data $data -foreground $fg
@@ -404,8 +391,7 @@ proc scaleutilmisc::forwardImg {pct fg} {
 static unsigned char forward_bits[] = {
    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0c, 0x03, 0x1c, 0x07, 0x3c, 0x0f,
    0x7c, 0x1f, 0xfc, 0x3f, 0xfc, 0x3f, 0x7c, 0x1f, 0x3c, 0x0f, 0x1c, 0x07,
-   0x0c, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-"
+   0x0c, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};"
 	    }
 	    125 {
 		set data "
@@ -416,8 +402,7 @@ static unsigned char forward_bits[] = {
    0x1c, 0x1c, 0x00, 0x3c, 0x3c, 0x00, 0x7c, 0x7c, 0x00, 0xfc, 0xfc, 0x00,
    0xfc, 0xfd, 0x01, 0xfc, 0xff, 0x03, 0xfc, 0xff, 0x03, 0xfc, 0xfd, 0x01,
    0xfc, 0xfc, 0x00, 0x7c, 0x7c, 0x00, 0x3c, 0x3c, 0x00, 0x1c, 0x1c, 0x00,
-   0x0c, 0x0c, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-"
+   0x0c, 0x0c, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};"
 	    }
 	    150 {
 		set data "
@@ -429,8 +414,7 @@ static unsigned char forward_bits[] = {
    0xf8, 0xf1, 0x03, 0xf8, 0xf3, 0x07, 0xf8, 0xf7, 0x0f, 0xf8, 0xff, 0x1f,
    0xf8, 0xff, 0x1f, 0xf8, 0xf7, 0x0f, 0xf8, 0xf3, 0x07, 0xf8, 0xf1, 0x03,
    0xf8, 0xf0, 0x01, 0x78, 0xf0, 0x00, 0x38, 0x70, 0x00, 0x18, 0x30, 0x00,
-   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-"
+   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};"
 	    }
 	    175 {
 		set data "
@@ -446,8 +430,7 @@ static unsigned char forward_bits[] = {
    0xf8, 0xc3, 0x1f, 0x00, 0xf8, 0xc1, 0x0f, 0x00, 0xf8, 0xc0, 0x07, 0x00,
    0x78, 0xc0, 0x03, 0x00, 0x38, 0xc0, 0x01, 0x00, 0x18, 0xc0, 0x00, 0x00,
    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-   0x00, 0x00, 0x00, 0x00};
-"
+   0x00, 0x00, 0x00, 0x00};"
 	    }
 	    200 {
 		set data "
@@ -464,8 +447,7 @@ static unsigned char forward_bits[] = {
    0xf0, 0x0f, 0xff, 0x00, 0xf0, 0x07, 0x7f, 0x00, 0xf0, 0x03, 0x3f, 0x00,
    0xf0, 0x01, 0x1f, 0x00, 0xf0, 0x00, 0x0f, 0x00, 0x70, 0x00, 0x07, 0x00,
    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-"
+   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};"
 	    }
 	}
 	scaleutilmisc_forwardImg configure -data $data -foreground $fg
@@ -479,113 +461,79 @@ static unsigned char forward_bits[] = {
 #------------------------------------------------------------------------------
 proc scaleutilmisc::watchImg pct {
     variable watchImg
-    if {![info exists watchImg]} {
-	set watchImg [image create photo scaleutilmisc_watchImg]
+    if {[info exists watchImg]} {
+	return $watchImg
+    }
 
+    set watchImg [image create photo scaleutilmisc_watchImg]
+
+    variable svgSupported
+    if {$svgSupported} {
+	set pct $::scaleutil::scalingPct			;# can be > 200
+	scaleutilmisc_watchImg put {
+<svg width="16" height="16" version="1.1" xmlns="http://www.w3.org/2000/svg">
+ <circle cx="8" cy="8" r="7.5" fill="#fff" stroke="#8b0000"/>
+ <path d="m8 3v5h4" fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+	} -format [list svg -scale [expr {$pct / 100.0}]]
+
+    } else {
 	switch $pct {
 	    100 {
 		set data "
-R0lGODlhFAAUAMZAADU2NDc7PTs9OkA9QTs/QT9BPkBERkVDRkRISkdJRklNT05MUExOS1BOUVBU
-VlVZW1lbWFpeYF5hXmBkZmNlYmlmamNoamtpbWhsbmptampucG1xc29xbnN1cnZ6fHh8f4KEgYKG
-icR2dYmLiIuPko6QjZSQjpeZlt6cm/yVlrS2s7q8ufmvsL7BvsPFwsfKxsvNys7QzdHT0NPV0trc
-2fbZ1+Hj4OTn4+fq5urs6e7w7fHz8PP28vb59fn7+Pv9+v//////////////////////////////
-////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////yH5
-BAEKAEAALAAAAAAUABQAAAf+gECCg4SFhocSGRkSh4YOGhsaGBiQGg6NQBIbGCAqLi4qIRgbEYcQ
-Gh4uNDYtNjY0Lh4aEIUNFx4xNjc4Mji+Ni8fGAyEEhovuzg5y8sjMy8apYMTIzbKKjrZOiUyOTYj
-E4MKFis42S8nOzvcOzU4LRULggoYMObqMCcmKCkpLDoyMigQhKBeixk7ePA4IaJGjx6wAiYQZGBC
-ixwJH/rY6OPhDhcUDgx6QOJGxh4+fqjsiKPEA0IJOMTQwUNjyo07ZmxAQGjAAxA0aPaYsbHHDhog
-HhQoNEACiBjmVqjjBWICgUMCHnQo4ULGDBclOjwIgAmAgQcWOHCg8MAAAEwLhAIIEEAWrl1DgQAA
-Ow==
-"
+R0lGODlhEAAQAKUlAI0FBY0GBo4GBpAMDJEMDJENDZEODpIODpEPD5IPD5IQEJMQEERERK1KSq1L
+S65MTK5NTXd3d39/f4iIiMR+fsWAgMWBgcaCgsaDg9DQ0OjNzenOzunPz+rQ0Pjw8Pnx8fny8vrz
+8/r09P79/f/+/v//////////////////////////////////////////////////////////////
+/////////////////////////////////////////////yH5BAEKAD8ALAAAAAAQABAAAAaGwJ9Q
+OFAAAIrBcPk7JC4ckWhzSSCYBwioVMpkuJ+HYZglcUsSyXnkuP4U23P6XPokfgMMHa2mVwYLHXtz
+dBxGIYMME4tfIQIAcWcZEZQRXx8BCoJ7nBsLAxacnBRKCR+iZx5jPwgPI6gjDXdCBg6nex4Nq0MF
+CBYaISEaFQizTD8EC0dJTEEAOw=="
 	    }
 	    125 {
 		set data "
-R0lGODlhGQAZAMZAADI0Mjk2OjY4NjU5Ozw+PDxAQkRHSkdJRktITGdDQUlNT0tNS1BOUVBUVlZT
-V1xZXVlbWFhdX1xgYl5gXWRhZWFlZ2NmY29tcWtvcW1vbG9zdnp4fHd6d3Z6fIB+gn2AfXyAguFn
-aIOFiIaJhY2QjY6SlZOVkvp+faGcm/iKiKeppq2vrLS2s/mko7q8ub/Cv8THw8jKx8zOy9HU0PfJ
-x9rd2d/h3uTm4+jq5/bp6ezu6+/y7vL08fb49fn7+Pv++///////////////////////////////
-////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////yH5
-BAEKAEAALAAAAAAZABkAAAf+gECCg4SFhoeIiYqDCxAZHR8dGRALi4wVIh4YFRIVGCAiEpWKCxsd
-DiIqLqsqIg8bG6OHCB0VHS4xNTW5uy61HbKEBxoVJDA1Nzg3LjjKNTAlngeGEBccMTbNzTPaOCQx
-HxoNhQeTLtk4OurrOtc2LhAY04wWI9w6NiY7+/vXOzgzRsgj1IDCChvqdrAgwc/fvhsrKowb1ADC
-ixs6+LkgwWNEDBopTrTAESPCREEVY8hYEWMHDx4uEoQQmWMGCxkxJpwEogACjBv7ePTocQPFDh8+
-hvbQEQOCAkIGJqwA+nIo0qtIibKQME9QgQj2XFpF+qMs0h01RkQoQIhAxYtxO8b6MJtUBwwIDggU
-KjDhgwwccYfOuNpjx4wPE9gWGqBAgom/LnesSPpvhgkJCgYcCsCAwocXM5LJ0HFjxgvEDQQkEhB1
-wogVMGLAWDFiggQEmhUBGMAggoUJwC2YHADAkiAAAQgYWE5AQHHj0KNHDwQAOw==
-"
+R0lGODlhFAAUAKUtAIsCAowCAowDA4wEBI0EBIwFBY0FBY0GBo4HB44ICCYmJo8ICI8JCY8KCpAK
+CpALC5EMDGBgYGZmZrFSUrFTU7FUVLJVVbJWVrNXV8Bzc8B0dMF2dsJ3d8J5eYyMjM+WltCXl9CY
+mLS0tNyxsdyystyzs920tOC6uuG8vOG+vvfu7vjv7/jw8P//////////////////////////////
+/////////////////////////////////////////////yH5BAEKAD8ALAAAAAAUABQAAAatwJ9w
++Cs4CARHgcgcJhiXUIkUsjAQTSFB0GG1vuAVRwBgEiApcMvjUaMe5aEgrY5E1C2UYIjo4Ft2fxsJ
+QgxeeIF4Kww/Bhh/gHd/FQcNIZCJeB8OAyaYChKhEiJfJAMDJJAioqGkLSMEDCCQtC2bBha1kBMG
+PwwrumoqjD8IHMFgGQtyKMgnAUQAD821Jw7Q0QEbwHgqGgHYTQgMFCAkJB8UDMtZRAUNpw29TUEA
+Ow=="
 	    }
 	    150 {
 		set data "
-R0lGODlhHgAeAMZAADM1MzI2ODY4NTk7OTs8Pz5APT9DRUNFQ0VISklLSElNT05MUE1PTFBST09T
-VVRSVrA6PFNXWVVXVFhcX1pcWV5cX15iZGRiZmNlYmhrbmttanF2eHV2c3t5fXd8foGEh/xpaYmN
-j4uNipSSlvp2c5GWmJeZlsSSkpqeoZyem/iEhaCin6mrqK6wrfqeoLO1srm7uL2/vPazscTHxMjK
-x87QzdPV0tzf2+Dj3/ji4uXo5Onr6O3w7fL18fb49fn8+P//////////////////////////////
-////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////yH5
-BAEKAEAALAAAAAAeAB4AAAf+gECCg4SFhoeIiYqLhQyOEREMCgyMiAwYHSMlISElIx4WCZWDCRYh
-HRkIDxYWDwoZHx8ToowJG7IWJS8wMTEwLyYXFh8ZtIm2GwomMDQ2NzQ3NzY0MCkOHRvGhgkZHBEs
-0Dg6Oi3jOjjPLREdF9qEEhwLLTU35jstO/k7OjcxLQ8eIhxK4A0FDXH6EubTgYEZigkbDhiKkAFD
-jHoKeWjksUMDjB04YmDI0KDQgQsVTNTQkS+GiI0bPWrUYSMFK4mDDmRYAOPGjo0mRPQY2kPDC6I8
-bsBYkAGnoJMSZuDYODToUKM9crgAIUPHDIpOgRxgRUOHRqI9gnY4oQIECRn3O3rsoIHhggFCYzHQ
-qMGChY6hPnwwgOAiR+AeLVjUoFshbIEJEWaYJRrYx7gfmH8cnjthQgFCBSI0gDEVcODMqDX30BGj
-QYXPgwgooJDCRtwep1Nn9tHDxgoKCmAPMkABg2TTujPLpTvhbqEBDiakWIn7dI/UPnj4nuBgwKEC
-FSS8sF3dRwrUPbS/kDCBAKIBCCZQmDc57eHVNl5QmIDAOyIBC1QQAQoz2CBODfngMM0KEUywgACL
-CIBABcUtQ8OF1KSAAQUVIAAhIwIM8AAFFkhQ3IYmckfAh6OEqEoFME7wAAIrjmIIAAIIEECOAgBg
-449ABllIIAA7
-"
+R0lGODlhGAAYAKUyABEREYoAAIsAAIwAAIsBAYwBAYsCAowCAowDA40DA40FBY4FBY4GBpwlJUBA
+QJ0mJp0nJ54oKJ4pKURERElJSaM0NKM1NaM2NqQ3N6Q4OLFTU7FUVLJVVbNXV7NYWLNZWbRbW75x
+cb9ycr9zc8B0dMB1dZKSku7Z2e7a2u/b2+/c3PDe3vDf3/Hg4PHh4erq6vv39/z4+P//////////
+/////////////////////////////////////////////yH5BAEKAD8ALAAAAAAYABgAAAbbwJ9w
+OCwoDgcFgchsDgiCCCgUAkEE0CbTwCCpZOCwasQ4aIWFjCsse73YrUtBW+DE2DIKBQ/bzIkGGHd4
+Dg54MjAWZkIDDGuHhYcyLAoCQgQlkjKRkiJLPwIompyHKZYEEpqbhpoPRiCqpIceCgYksQATurom
+YSMGCSOqJru7vWAiCAofqs0yHQsEEc6qD0sCJ9Sllj8Et9psIX8CDC3gYCsKAUMHFzDgMBWLRRvv
+zjAaf0wFFizNKxX0NUkiQhQeFCGOnBmCRcCDD1Q+NBBQYN3CfQsMGFggkEkQADs="
 	    }
 	    175 {
 		set data "
-R0lGODlhIwAjAMZAADM1MjM1Nzc7PTk7OD0/Qj9BPlRAPkRGQ0RGSUhMTk5MUExOS09SVFFTUFJW
-WFlWWldZVlZaXF9cYFpeYV1fXF5iZGFjYMxERmViZmJmaWlraGlsb3FzdvpOTnV3dHl+gH99gf1e
-YIKFh42QjZaZlfp9fZebnqGjoairqc6joK2wrfigoLW3tPimpLy/u8TGw8jKx/bBwc3PzNPV0vLO
-z9ja19zf2+Di3+Tn5PXl5ujq5+zu6+/y7vL08fX49Pn8+P//////////////////////////////
-////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////yH5
-BAEKAEAALAAAAAAjACMAAAf+gECCg4SFhoeIiYqLjIYLjwyPC42MCxAcICKamiAbEZOUhQsRHyAc
-ExASERIQE5gfE6ChCx4fFhGkJCcoJyQfuBmmDaENH54VJy4vMjPNMi8uJ6obHw6NxRkOJC4yNTY2
-Mi433zXhJg8ZHwyLCRwZECgw3jc4OjMuOvk3NzUwKBAVOMgydGADBgcoZNi4kS9fDXwNdeAAhwLd
-hgOIGHCAYALGwoggI3qwAYNEBA7DCGKokOFFjXoNd8icOdPCCR02XlSogAGjqA0TUMxgqIOmUZkW
-SMjEMQPFhA0DBUHAMOGFjXwyR4yQyaMrjx0aSHzdgfNFhGyFDlSY8AHGDaP+HkZ47Rp27g4cMj5Q
-kOBTkNoJJmbgmOk1bmG5PHrEKEFDRw0SEyr0BVIAgwQUNYrOTRy3R9wcK0J0KBGjxw4bKCxgKEDo
-gIQKLGawYOHCa48ePjwYuNAhRIscPnrAcKGiBosKEhAQKjDhcrkaNxLf9uFDhYEU1LP7sFEDeuoJ
-rAcVcDDhRGbbuLP/WL9eu2kbJyg8CC+oAIMJImTo6DpdPfv/1Jk2gwgUMECfIAhIYIFbO0jn338A
-8qCDDBRUoFwhBChY3H7pUQchhD7wYIMKFURAgCEDJFCBBgwm9uCHIU6oQQUGHlJABMgItkOHPnz4
-Q4wznGCBBAcSkmIFFKiSoKOL27nQ448xGldhAgMkMgADSMb2lnQzqJDdV/awYEEFClSpyAAO7NTR
-S0U1NRZOMpywkwMCNCIAlhZooAIMMyzk5wwyqKDBmArUSckACKxigQUinKACCyqcIMKiyCFgZigA
-pPgaBRRkYEEGFZZYaAChFAJAAAQo4EAED0TggAIEAABAqYnIeqqttOaq666KBAIAOw==
-"
+R0lGODlhHAAcAKUlAAQEBIoAAIsAAIwAAIsBAYwBASAgIIwCAowDAyIiIo4FBY4GBpUWFpYYGJcZ
+GZcaGqIyMqIzM6M0NGpqarNXV7NYWLNZWbVdXbZeXqGhodOentOfn9msrNqtrdqurtuvr+K/v/Dd
+3fDe3vr09Pr19f//////////////////////////////////////////////////////////////
+/////////////////////////////////////////////yH5BAEKAD8ALAAAAAAcABwAAAb3wJ9w
+SAwMBASC4EhsOocFgQDhiEQcCGnh+ZQqMB5SaVwieTAKQYA7VFpE5Dg5VEGyC4uNvJTJ7DcLW04E
+CyB7JQkJhyALB01SeocGBoclG2pEAhaVJZOcdVAKIZyelSEKBEICGJydlJwXAj8BAh+tpZUeUgMI
+YqSvlSNZAg+trsYNSBLGBgCJzwkTcREEBRHGE9DP0mQQSg3G4SUMSwgj4pzCRwIe6JUcsj+r7oex
+QgWi9HGnqaoV+mQoxBNCKxI9DVKaEDLkjpEjJ3gMGtMQiI2SCqM40bHDZpaALx3OkRnRAU3CjlCk
+HGhgpcEBLSi7HEkiZeCTIAA7"
 	    }
 	    200 {
 		set data "
-R0lGODlhKAAoAMZAAC4wLTQ2Mzg6ODg7PageGz5APj1AQkVHREVJS0xKTkpOUUxOS09TVlFTUFZU
-WFpXW1dZVlZaXFxeXFtfYv4xMWJfY2FjYWFlZ2hman5kZGhsbf1CQG5scG1xdHByb3Z4df5SUHV5
-e316fnt/gn1/fICEh4KEgfxhYIqLio+SkPp2c5udmvmVlLG0svijorq9usHEwfe4uMfKx9DTz9ja
-197g3fPd2fvd3OPm4ufp5vHs6uvu6u/x7vH08PX39Pn7+P//////////////////////////////
-////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////yH5
-BAEKAEAALAAAAAAoACgAAAf+gECCg4SFhoeIiYqLjI2ICwuOkoQLDRYdISIiIR4XDQmTigsYIygj
-IhwaGhwhpSMXkaGECRclIhoREQwKvAoMERIaIiawskALrRcPChopLS/QLy0pGgoRF6exkg0kHBEJ
-JS0wMjPl5jIwLSUJEB0jDdsiF9fiMzQ0NTUr+TX3M+kVHmggAY+Rgg8YHoR4YS8fDhw5VuTI8RBH
-vxkvQkTAEEIbIgSrIixsCHFixJImLWLUuOqAoggdJlhgWAOlSRomc+Ig9+LChA4REh3ocIFBixk1
-Te5YyrTpjhwQ9s1oweBCB5eHGGiAUEIGDYhOwzKVgGKHRRklImhgcOjAhaL+NHMwrSGWqQUSTHHQ
-eMGgQgWshA5gkNDBK46mElIs5cGY8Y67jp/WkNEhGOBBCuatQCq3KYQUPUKLviu6Bw+zM1ZIKFao
-L4QWX5ky7rHjc2kPJErbcKEjx95rbFtXYAAD5+LSPGz38PDBh44YKjZsYKFjx2QIwwsdcDAPRg25
-PEqL/vwhg4sTFE7E0OEjtHUZEYYbCEyL+AwUKVLgEO2jfw8ABIDAwg399ZcDfinQAF8FHgmCQAUR
-eJdDePwVuIMJJPygoYYFtvdefAgY8qAEsMlVYYEbprihf9a9IMEElwliQAQTbHZYaB36oOKOP3hI
-wwoTRDBfIQU8MIEHMtD6hSOKPKrYHg4zeBBkAYYYoECQL+C0ZH9NOmkdDPEpQGWVwKCQ5A49dNjl
-ij3kcJ8EQiJSQFURZGmimmvSVsMLNDIw5iEzTqCBhGiqWcOOHk6mgQVxJiJAAhVMYEKSdxaY4YqJ
-ymDCBBMgIMAiAvQlwaSxUegDCQW655sMJEgw3KeMDNBXBRrQBNaFTan0ggYTvCpJqJGSNQ5S/ORD
-wz8oSGDBBAwMEMqjNE4gwQcrvCDDtTK8sMIHygaZAKyhBCArjRaUK8G5yi4LYbMBGDOIuAg8EF+k
-vQb5AAIDtOtuIQEEIIABCCSQAAIF5KvvvooAAADCDDfscCGBAAA7
-"
+R0lGODlhIAAgAKUyAAAAAIoAAIsAAIwAAIsBAZogIDw8PJoiIpskJKAvL6EwMKExMaIyMqIzM6M0
+NKY8PKg/P6hAQKlBQalCQrBSUrFUVLJVVbJWVsV/f8WAgMaBgcaCguLAwOPBweTDw+XFxebHx+bI
+yOfKyuzW1u3X1+3Y2O7Z2fTm5vTn5/Xo6PXp6fXq6vbr6/bs7Pft7fz4+Pz5+f36+v//////////
+/////////////////////////////////////////////yH5BAEKAD8ALAAAAAAgACAAAAb+wJ9w
+SBQGBMikoMhsDo/KKDLgdCYJjY0nFYulPBqGskocCAgXk2zNbpcsBAGVjESI2nh86ICsIh8reTIG
+BoIuE31MZhIxgjIAAI4wEXJFdS2Oj5GOLHxzQmd3mZCZMiBxQ0gXpZqsFYlnaqWkpSSoPwIOrK2s
+C0tHG7u0pRlKHsKbpR1KKci7J0owyJDUkIVsL9G7BtXV12vZSc275NACZsfku8tQGuq7GOe4DO+s
+CUu4BCX1jiOwAhb4CaKQKF8IgW0+3AIl4AALhDJYFMBH5EiERvxgQChI5I+Kei0QUWSC5AAIdR8m
+jmxyhECFfZlIUIiz0gkUAQsydEDx4gUTCg4YFCQh00SK0QFEyZiJgpRoEAA7"
 	    }
 	}
 	scaleutilmisc_watchImg put $data
@@ -606,16 +554,15 @@ proc scaleutilmisc::scaleIncrComboboxArrows pct {
 static unsigned char down_bits[] = {
    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
    0xfc, 0x7f, 0xf8, 0x3f, 0xf0, 0x1f, 0xe0, 0x0f, 0xc0, 0x07, 0x80, 0x03,
-   0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-"
+   0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};"
+
 	    uparrow configure -data "
 #define up_width 16
 #define up_height 16
 static unsigned char up_bits[] = {
    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x00, 0xc0, 0x01, 0xe0, 0x03,
    0xf0, 0x07, 0xf8, 0x0f, 0xfc, 0x1f, 0xfe, 0x3f, 0x00, 0x00, 0x00, 0x00,
-   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-"
+   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};"
 	}
 
 	125 {
@@ -627,8 +574,8 @@ static unsigned char down_bits[] = {
    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xfc, 0xff, 0x07,
    0xf8, 0xff, 0x03, 0xf0, 0xff, 0x01, 0xe0, 0xff, 0x00, 0xc0, 0x7f, 0x00,
    0x80, 0x3f, 0x00, 0x00, 0x1f, 0x00, 0x00, 0x0e, 0x00, 0x00, 0x04, 0x00,
-   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-"
+   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};"
+
 	    uparrow configure -data "
 #define up_width 20
 #define up_height 20
@@ -637,8 +584,7 @@ static unsigned char up_bits[] = {
    0x00, 0x02, 0x00, 0x00, 0x07, 0x00, 0x80, 0x0f, 0x00, 0xc0, 0x1f, 0x00,
    0xe0, 0x3f, 0x00, 0xf0, 0x7f, 0x00, 0xf8, 0xff, 0x00, 0xfc, 0xff, 0x01,
    0xfe, 0xff, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-"
+   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};"
 	}
 
 	150 {
@@ -651,8 +597,8 @@ static unsigned char down_bits[] = {
    0x00, 0x00, 0x00, 0xf8, 0xff, 0x3f, 0xf0, 0xff, 0x1f, 0xe0, 0xff, 0x0f,
    0xc0, 0xff, 0x07, 0x80, 0xff, 0x03, 0x00, 0xff, 0x01, 0x00, 0xfe, 0x00,
    0x00, 0x7c, 0x00, 0x00, 0x38, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x00,
-   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-"
+   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};"
+
 	    uparrow configure -data "
 #define up_width 24
 #define up_height 24
@@ -662,8 +608,7 @@ static unsigned char up_bits[] = {
    0x00, 0x7f, 0x00, 0x80, 0xff, 0x00, 0xc0, 0xff, 0x01, 0xe0, 0xff, 0x03,
    0xf0, 0xff, 0x07, 0xf8, 0xff, 0x0f, 0xfc, 0xff, 0x1f, 0x00, 0x00, 0x00,
    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-"
+   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};"
 	}
 
 	175 {
@@ -680,8 +625,8 @@ static unsigned char down_bits[] = {
    0x00, 0xfc, 0x07, 0x00, 0x00, 0xf8, 0x03, 0x00, 0x00, 0xf0, 0x01, 0x00,
    0x00, 0xe0, 0x00, 0x00, 0x00, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-   0x00, 0x00, 0x00, 0x00};
-"
+   0x00, 0x00, 0x00, 0x00};"
+
 	    uparrow configure -data "
 #define up_width 28
 #define up_height 28
@@ -695,8 +640,7 @@ static unsigned char up_bits[] = {
    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-   0x00, 0x00, 0x00, 0x00};
-"
+   0x00, 0x00, 0x00, 0x00};"
 	}
 
 	200 {
@@ -714,8 +658,8 @@ static unsigned char down_bits[] = {
    0x00, 0xf0, 0x1f, 0x00, 0x00, 0xe0, 0x0f, 0x00, 0x00, 0xc0, 0x07, 0x00,
    0x00, 0x80, 0x03, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00,
    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-"
+   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};"
+
 	    uparrow configure -data "
 #define up_width 32
 #define up_height 32
@@ -730,8 +674,7 @@ static unsigned char up_bits[] = {
    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-"
+   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};"
 	}
     }
 }

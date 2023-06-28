@@ -9,7 +9,7 @@
 #==============================================================================
 
 package require Tk 8.4		;# because of "-compound" and the spinbox widget
-package require tablelist 6.21
+package require tablelist 6.22
 package require combobox
 package require mentry
 

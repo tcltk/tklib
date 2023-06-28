@@ -298,7 +298,7 @@ proc tablelist::moveNode {win source targetParentKey targetChildIdx \
     if {$data(hasListVar) &&
 	[uplevel #0 [list info exists $data(-listvariable)]]} {
 	upvar #0 $data(-listvariable) var
-	trace vdelete var wu $data(listVarTraceCmd)
+	removeVarTrace var {write unset} $data(listVarTraceCmd)
 	set var [lreplace $var $source $source]
 	set pureSourceItem [lrange $sourceItem 0 $data(lastCol)]
 	if {$target == $data(itemCount)} {
@@ -306,7 +306,7 @@ proc tablelist::moveNode {win source targetParentKey targetChildIdx \
 	} else {
 	    set var [linsert $var $target1 $pureSourceItem]
 	}
-	trace variable var wu $data(listVarTraceCmd)
+	addVarTrace var {write unset} $data(listVarTraceCmd)
     }
 
     #
@@ -498,7 +498,7 @@ proc tablelist::moveCol {win source target} {
     # Remove the trace from the array element data(activeCol) because otherwise
     # the procedure moveColData won't work if the selection type is cell
     #
-    trace vdelete data(activeCol) w [list tablelist::activeTrace $win]
+    removeVarTrace data(activeCol) write [list tablelist::activeTrace $win]
 
     #
     # Move the elements of data, attribs, and selStates corresponding
@@ -584,7 +584,7 @@ proc tablelist::moveCol {win source target} {
     # Restore the trace set on the array element data(activeCol)
     # and enforce the execution of the activeTrace command
     #
-    trace variable data(activeCol) w [list tablelist::activeTrace $win]
+    addVarTrace data(activeCol) write [list tablelist::activeTrace $win]
     set data(activeCol) $data(activeCol)
 
     return ""

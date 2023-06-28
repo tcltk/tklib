@@ -5,7 +5,7 @@
 # Copyright (c) 2010-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 6.21
+package require tablelist_tile 6.22
 
 namespace eval demo {
     variable dir [file dirname [info script]]
@@ -13,11 +13,18 @@ namespace eval demo {
     #
     # Create two images corresponding to the display's DPI scaling level
     #
-    set pct $::tablelist::scalingpct
-    variable compImg [image create bitmap -file [file join $dir comp$pct.xbm] \
-		      -background yellow -foreground gray50]
-    variable leafImg [image create bitmap -file [file join $dir leaf$pct.xbm] \
-		      -background coral -foreground gray50]
+    variable compImg [image create photo]
+    variable leafImg [image create photo]
+    variable pct ""
+    if {$tk_version >= 8.7 || [catch {package require tksvg}] == 0} {
+	set fmt $::tablelist::svgfmt
+	$compImg read [file join $dir comp.svg] -format $fmt
+	$leafImg read [file join $dir leaf.svg] -format $fmt
+    } else {
+	set pct $::tablelist::scalingpct
+	$compImg read [file join $dir comp$pct.gif]
+	$leafImg read [file join $dir leaf$pct.gif]
+    }
 }
 
 source [file join $demo::dir config_tile.tcl]
@@ -83,7 +90,8 @@ proc demo::displayChildren w {
     #
     variable isAwTheme
     if {[tk windowingsystem] eq "x11" && !$isAwTheme} {
-	$tbl configure -treestyle bicolor$::tablelist::scalingpct
+	variable pct					;# ""|100|125|...|200
+	$tbl configure -treestyle bicolor$pct
     }
 
     #

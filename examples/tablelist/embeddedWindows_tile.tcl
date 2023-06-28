@@ -6,7 +6,7 @@
 # Copyright (c) 2004-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 6.21
+package require tablelist_tile 6.22
 
 wm title . "Tile Library Scripts"
 
@@ -25,8 +25,13 @@ catch {font create TkFixedFont -family Courier -size 9}
 # Create an image corresponding to the display's DPI scaling
 # level, to be displayed in buttons embedded in a tablelist widget
 #
-set pct $tablelist::scalingpct
-image create photo openImg -file [file join $dir openAction$pct.gif]
+if {$tk_version >= 8.7 || [catch {package require tksvg}] == 0} {
+    set fmt $tablelist::svgfmt
+    image create photo viewImg -file [file join $dir view.svg] -format $fmt
+} else {
+    set pct $tablelist::scalingpct
+    image create photo viewImg -file [file join $dir view$pct.gif]
+}
 
 if {$currentTheme ne "aqua"} {
     #
@@ -133,7 +138,7 @@ proc createFrame {tbl row col w} {
     # Create the frame and replace the binding tag "Frame"
     # with "TablelistBody" in the list of its binding tags
     #
-    set height [expr {[font metrics $::tblFont -linespace] * 4 / 5}]
+    set height [expr {[font metrics $::tblFont -linespace] * 9 / 10}]
     frame $w -width 72p -height $height -background ivory -borderwidth 1 \
 	     -relief solid
     bindtags $w [lreplace [bindtags $w] 1 1 TablelistBody]
@@ -160,7 +165,7 @@ proc createFrame {tbl row col w} {
 #------------------------------------------------------------------------------
 proc createButton {tbl row col w} {
     set key [$tbl getkeys $row]
-    ttk::button $w -style Embedded.TButton -image openImg -takefocus 0 \
+    ttk::button $w -style Embedded.TButton -image viewImg -takefocus 0 \
 		   -command [list viewFile $tbl $key]
 }
 

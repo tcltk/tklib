@@ -352,7 +352,7 @@ proc tablelist::cleanup win {
     if {$data(hasListVar) &&
 	[uplevel #0 [list info exists $data(-listvariable)]]} {
 	upvar #0 $data(-listvariable) var
-	trace vdelete var wu $data(listVarTraceCmd)
+	removeVarTrace var {write unset} $data(listVarTraceCmd)
     }
 
     #
@@ -1479,7 +1479,8 @@ proc tablelist::updateExpCollCtrl {win w row col x} {
 		# control):  Check whether it is inside the control
 		#
 		set baseWidth [image width tablelist_${treeStyle}_collapsedImg]
-		if {$x >= [winfo width $w] - $baseWidth - 5} {
+		variable scaled4
+		if {$x >= [winfo width $w] - $baseWidth - $scaled4 - 1} {
 		    set inExpCollCtrl 1
 		}
 	    }
@@ -1675,7 +1676,8 @@ proc tablelist::wasExpCollCtrlClicked {w x y} {
 	    # control):  Check whether it is inside the control
 	    #
 	    set baseWidth [image width tablelist_${treeStyle}_collapsedImg]
-	    if {$x >= [winfo width $w] - $baseWidth - 5} {
+	    variable scaled4
+	    if {$x >= [winfo width $w] - $baseWidth - $scaled4 - 1} {
 		set inExpCollCtrl 1
 	    }
 	}
@@ -1984,11 +1986,11 @@ proc tablelist::minScrollableX win {
 #
 # This procedure is invoked from within the autoscrolltarget subcommand when
 # the mouse leaves the area obtained by trimming the scrollable part of a
-# tablelist widget's body text child on each side by 5 px.  It scrolls the
-# child up, down, left, or right, depending on where the mouse left that area,
-# and reschedules itself as an "after" command so that the child continues to
-# scroll until the mouse moves back into that area or no more scrolling in that
-# direction is possible.
+# tablelist widget's body text child on each side by (scaled) 4 px.  It scrolls
+# the child up, down, left, or right, depending on where the mouse left that
+# area, and reschedules itself as an "after" command so that the child
+# continues to scroll until the mouse moves back into that area or no more
+# scrolling in that direction is possible.
 #------------------------------------------------------------------------------
 proc tablelist::autoScan2 {win seqNum} {
     if {[destroyed $win]} {
@@ -2012,10 +2014,11 @@ proc tablelist::autoScan2 {win seqNum} {
     set x [expr {$data(x) - [winfo x $w]}]		;# relative to the body
     set y [expr {$data(y) - [winfo y $w]}]		;# relative to the body
 
-    set minX [expr {[minScrollableX $win] + 5}]		;# relative to the body
-    set minY 5						;# relative to the body
-    set maxX [expr {[winfo width  $w] - 1 - 5}]		;# relative to the body
-    set maxY [expr {[winfo height $w] - 1 - 5}]		;# relative to the body
+    variable scaled4
+    set minX [expr {[minScrollableX $win] + $scaled4}]	;# relative to the body
+    set minY $scaled4					;# relative to the body
+    set maxX [expr {[winfo width  $w] - 1 - $scaled4}]	;# relative to the body
+    set maxY [expr {[winfo height $w] - 1 - $scaled4}]	;# relative to the body
 
     if {$y > $maxY} {
 	foreach {first last} [::$win yview] {}
@@ -4455,10 +4458,11 @@ proc tablelist::inResizeArea {w x colName} {
     }
 
     upvar $colName col
-    if {$x >= [winfo width $w] - 5} {
+    variable scaled4
+    if {$x >= [winfo width $w] - $scaled4 - 1} {
 	set col $_col
 	return 1
-    } elseif {$x < 5} {
+    } elseif {$x < $scaled4 + 1} {
 	set X [expr {[winfo rootx $w] - 3}]
 	set contW [winfo containing -displayof $w $X [winfo rooty $w]]
 	if {[parseLabelPath $contW win2 _col] &&

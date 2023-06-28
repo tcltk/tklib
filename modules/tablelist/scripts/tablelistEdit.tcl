@@ -1440,8 +1440,7 @@ proc tablelist::createTileMenubutton {w args} {
 proc tablelist::createBWidgetSpinBox {w args} {
     eval [list SpinBox $w -editable 1 -width 0] $args
 
-    variable scalingpct
-    scaleutilmisc::scaleBWidgetSpinBox $w $scalingpct
+    scaleutilmisc::scaleBWidgetSpinBox $w
 }
 
 #------------------------------------------------------------------------------
@@ -1453,8 +1452,7 @@ proc tablelist::createBWidgetSpinBox {w args} {
 proc tablelist::createBWidgetComboBox {w args} {
     eval [list ComboBox $w -editable 1 -width 0] $args
 
-    variable scalingpct
-    scaleutilmisc::scaleBWidgetComboBox $w $scalingpct
+    scaleutilmisc::scaleBWidgetComboBox $w
 
     foreach event {<Map> <Unmap>} {
 	bind $w.shell.listb $event {
@@ -1633,16 +1631,19 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
 	tablelist::invokeMotionHandler $tablelist::W
     }
     bind $f <Destroy> {
-	set tablelist::W [tablelist::getTablelistPath %W]
-	array set tablelist::ns${tablelist::W}::data \
-	      {editKey ""  editRow -1  editCol -1  inEditWin 0  prevCell -1,-1}
 	if {[catch {tk::CancelRepeat}] != 0} {
 	    tkCancelRepeat
 	}
 	if {[catch {ttk::CancelRepeat}] != 0} {
 	    catch {tile::CancelRepeat}
 	}
-	tablelist::invokeMotionHandler $tablelist::W
+	set tablelist::W [tablelist::getTablelistPath %W]
+	if {[string length $tablelist::W] != 0} {
+	    array set tablelist::ns${tablelist::W}::data \
+		  {editKey ""  editRow -1  editCol -1
+		   inEditWin 0  prevCell -1,-1}
+	    tablelist::invokeMotionHandler $tablelist::W
+	}
     }
 
     #

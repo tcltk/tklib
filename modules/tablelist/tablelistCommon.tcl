@@ -8,7 +8,7 @@ namespace eval ::tablelist {
     #
     # Public variables:
     #
-    variable version	6.21
+    variable version	6.22
     variable library
     if {$::tcl_version >= 8.4} {
 	set library	[file dirname [file normalize [info script]]]
@@ -45,31 +45,48 @@ namespace eval ::tablelist {
 
 package provide tablelist::common $::tablelist::version
 
+if {$::tcl_version >= 8.4} {
+    interp alias {} ::tablelist::addVarTrace	{} trace add variable
+    interp alias {} ::tablelist::removeVarTrace	{} trace remove variable
+} else {
+    proc ::tablelist::addVarTrace {name ops cmd} {
+	set ops2 ""
+	foreach op $ops { append ops2 [string index $op 0] }
+	trace variable $name $ops2 $cmd
+    }
+    proc ::tablelist::removeVarTrace {name ops cmd} {
+	set ops2 ""
+	foreach op $ops { append ops2 [string index $op 0] }
+	trace vdelete $name $ops2 $cmd
+    }
+}
+
 #
-# The following procedure, invoked in "tablelist.tcl" and "tablelist_tile.tcl",
-# sets the variable ::tablelist::usingTile to the given value and sets a trace
-# on this variable.
+# The following procedure, invoked in "tablelist.tcl" and
+# "tablelist_tile.tcl", sets the variable ::tablelist::usingTile
+# to the given value and sets a trace on this variable.
 #
 proc ::tablelist::useTile {bool} {
     variable usingTile $bool
-    trace variable usingTile wu [list ::tablelist::restoreUsingTile $bool]
+    addVarTrace usingTile {write unset} \
+	[list ::tablelist::restoreUsingTile $bool]
 }
 
 #
 # The following trace procedure is executed whenever the variable
-# ::tablelist::usingTile is written or unset.  It restores the variable to its
-# original value, given by the first argument.
+# ::tablelist::usingTile is written or unset.  It restores the
+# variable to its original value, given by the first argument.
 #
 proc ::tablelist::restoreUsingTile {origVal varName index op} {
     variable usingTile $origVal
-    switch $op {
-	w {
+    switch -glob $op {
+	w* {
 	    return -code error "it is not supported to use both Tablelist and\
 				Tablelist_tile in the same application"
 	}
-	u {
-	    trace variable usingTile wu \
-		  [list ::tablelist::restoreUsingTile $origVal]
+	u* {
+	    addVarTrace usingTile {write unset} \
+		[list ::tablelist::restoreUsingTile $origVal]
 	}
     }
 }
@@ -102,11 +119,11 @@ proc ::tablelist::loadUtils {} {
     package require mwutil 2.20
 
     if {[catch {package present scaleutil} version] == 0 &&
-	[package vcompare $version 1.10] < 0} {
+	[package vcompare $version 1.11] < 0} {
 	package forget scaleutil
     }
-    package require scaleutil 1.10
+    package require scaleutil 1.11
 
-    package require scaleutilmisc 1.3
+    package require scaleutilmisc 1.4
 }
 ::tablelist::loadUtils

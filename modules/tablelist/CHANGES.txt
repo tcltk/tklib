@@ -1,5 +1,66 @@
-What is new in Tablelist 6.21?
+What is new in Tablelist 6.22?
 ------------------------------
+
+1.  If SVG is supported, i.e., if the Tk version is at least 8.7 or the
+    tksvg package can be loaded into the interpreter, then the new
+    variable "tablelist::svgfmt" is set to a Tcl list that you can pass
+    to the commands that create or manipulate SVG images as the value of
+    their "-format" option to make sure that your images will be
+    properly scaled (see the new section "More on tablelist::svgfmt" in
+    Tablelist Programmer's Guide for details).
+
+2.  In the presence of SVG support, added the arrow style "photo0x0",
+    whose sort arrows are SVG images that will scale automatically
+    according to the display's real scaling percentage (which can be
+    greater than 200, the maximum value of the variable
+    "tablelist::scalingpct").
+
+3.  Removed the very rarely needed arrow styles "flat6x4", "flat7x5",
+    "flat9x6", "flatAngle9x7", and "flatAngle10x7", and added the styles
+    "flat10x5", "flat12x6", "flat14x7", and "flat16x8".
+
+4.  The default value of the "-arrowstyle" option on X11 is now
+    "photo0x0" if SVG is supported, and (depending on the display's
+    scaling level) one of "flat8x4", "flat10x5", "flat12x6", "flat14x7",
+    or "flat16x8" otherwise (POTENTIAL INCOMPATIBILITY!).
+
+5.  In the presence of SVG support, added the tree styles "plain",
+    "bicolor", "white", and "classic", which are quite similar to the
+    styles "plain*", "bicolor*", "white*", and "classic*", except that
+    they use SVG images whose sizes are automatically adapted to the
+    display's real scaling percentage.
+
+6.  The BWidget SpinBox and ComboBox widgets used for interactive cell
+    editing are now scaled according to the display's real scaling
+    percentage rather than to the value of the variable
+    "tablelist::scalingpct".
+
+7.  If SVG is supported then the temporarily or persistently embedded
+    checkbuttons as well as the calendar and watch icons of the Iwidgets
+    dateentry and timeentry widgets used for interactive cell editing
+    now use SVG images that will scale automatically according to the
+    display's real scaling percentage.
+
+8.  For Tcl versions 8.4 and later replaced the deprecated "trace
+    variable" and "trace vdelete" invocations with "trace add variable"
+    and "trace remove variable", respectively.
+
+9.  Improvements in the themepatch package, especially regarding the
+    "default" theme.
+
+10. In the presence of SVG support, the demo scripts now use SVG images
+    created with the aid of the variable "tablelist::svgfmt", and on X11
+    the demo scripts "browseTree(_tile).tcl" and "dirViewer(_tile).tcl"
+    now set the "-treestyle" option to the SVG-based style "bicolor".
+
+11. Guarded against destroying a tablelist widget in which interactive
+    cell editing is in progress (thanks to Alexandru Dadalau for his bug
+    report).
+
+12. Several further improvements and minor bug fixes.
+
+What was new in Tablelist 6.21?
+-------------------------------
 
 1.  For the built-in themes "alt", "clam", "classic", and "default", the
     "-stripebackground" option now has a nonempty theme-specific default
