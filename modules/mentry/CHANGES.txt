@@ -1,5 +1,11 @@
-What is new in Mentry 3.17?
+What is new in Mentry 3.18?
 ---------------------------
+
+1. For Tcl versions 8.4 and later replaced the deprecated "trace
+   variable" invocations with "trace add variable".
+
+What was new in Mentry 3.17?
+----------------------------
 
 1. Extended the description of the "mentry::setThemeDefaults" command by
    the hint that with current Mentry_tile versions there is no need for

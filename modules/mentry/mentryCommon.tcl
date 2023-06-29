@@ -13,7 +13,7 @@ namespace eval ::mentry {
     #
     # Public variables:
     #
-    variable version	3.17
+    variable version	3.18
     variable library
     if {$::tcl_version >= 8.4} {
 	set library	[file dirname [file normalize [info script]]]
@@ -50,14 +50,24 @@ namespace eval ::mentry {
 
 package provide mentry::common $::mentry::version
 
+if {$::tcl_version >= 8.4} {
+    interp alias {} ::mentry::addVarTrace {} trace add variable
+} else {
+    proc ::mentry::addVarTrace {name ops cmd} {
+	set ops2 ""
+	foreach op $ops { append ops2 [string index $op 0] }
+	trace variable $name $ops2 $cmd
+    }
+}
+
 #
-# The following procedure, invoked in "mentry.tcl" and "mentry_tile.tcl", sets
-# the variable ::mentry::usingTile to the given value and sets a trace on this
-# variable.
+# The following procedure, invoked in "mentry.tcl" and
+# "mentry_tile.tcl", sets the variable ::mentry::usingTile
+# to the given value and sets a trace on this variable.
 #
 proc ::mentry::useTile {bool} {
     variable usingTile $bool
-    trace variable usingTile wu [list ::mentry::restoreUsingTile $bool]
+    addVarTrace usingTile {write unset} [list ::mentry::restoreUsingTile $bool]
 }
 
 #
@@ -67,14 +77,14 @@ proc ::mentry::useTile {bool} {
 #
 proc ::mentry::restoreUsingTile {origVal varName index op} {
     variable usingTile $origVal
-    switch $op {
-	w {
+    switch -glob $op {
+	w* {
 	    return -code error "it is not supported to use both Mentry and\
 				Mentry_tile in the same application"
 	}
-	u {
-	    trace variable usingTile wu \
-		  [list ::mentry::restoreUsingTile $origVal]
+	u* {
+	    addVarTrace usingTile {write unset} \
+		[list ::mentry::restoreUsingTile $origVal]
 	}
     }
 }
