@@ -4,7 +4,7 @@
 # Copyright (c) 2019-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require -exact scrollutil::common 1.18
+package require -exact scrollutil::common 1.19
 
 package provide scrollutil $::scrollutil::version
 package provide Scrollutil $::scrollutil::version

@@ -68,12 +68,6 @@ namespace eval scrollutil::snb {
 		      forget hasattrib hastabattrib hide identify index \
 		      insert instate notebookpath see select state style tab \
 		      tabattrib tabs unsetattrib unsettabattrib]
-    if {$::tk_version < 8.7 ||
-	[package vcompare $::tk_patchLevel "8.7a4"] < 0} {
-	set idx [lsearch -exact $cmdOpts "style"]
-	set cmdOpts [lreplace $cmdOpts $idx $idx]
-	unset idx
-    }
 
     #
     # Array variable used in binding scripts for the class TNotebook:
@@ -877,10 +871,15 @@ proc scrollutil::snb::scrollednotebookWidgetCmd {win args} {
 	    return $result
 	}
 
-	style -
-	tabs {
-	    set code [catch {eval [list $nb $cmd] $argList} result]
-	    return -code $code $result
+	style {
+	    if {$argCount != 1} {
+		mwutil::wrongNumArgs "$win $cmd"
+	    }
+
+	    if {[set style [$nb cget -style]] eq ""} {
+		set style TNotebook
+	    }
+	    return $style
 	}
 
 	tab {
@@ -928,6 +927,11 @@ proc scrollutil::snb::scrollednotebookWidgetCmd {win args} {
 	    set widget [lindex [$nb tabs] $tabIdx]
 	    return [::scrollutil::attribSubCmd $win $widget \
 		    [lrange $args 2 end]]
+	}
+
+	tabs {
+	    set code [catch {eval [list $nb $cmd] $argList} result]
+	    return -code $code $result
 	}
     }
 }

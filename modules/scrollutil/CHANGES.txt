@@ -1,5 +1,36 @@
-What is new in Scrollutil 1.18?
+What is new in Scrollutil 1.19?
 -------------------------------
+
+1. If SVG is supported, i.e., if the Tk version is at least 8.7 or the
+   tksvg package can be loaded into the interpreter, then the new
+   variable "scrollutil::svgfmt" is set to a Tcl list that you can pass
+   to the commands that create or manipulate SVG images as the value of
+   their "-format" option to make sure that your images will be properly
+   scaled (see the new section "More on scrollutil::svgfmt" in
+   Scrollutil Programmer's Guide for details).
+
+2. The scrollednotebook widget now provides the "style" subcommand
+   (which for Tk themed widgets was introduced in Tk 8.7a4) for all
+   supported Tk versions (just like the plainnotebook widget).
+
+3. For Tcl versions 8.4 and later replaced the deprecated "trace
+   variable" invocations with "trace add variable".
+
+4. Improvements in the themepatch package, especially regarding the
+   "default" theme.
+
+5. Extended the reference manual for the scrollednotebook widget.
+
+6. In the presence of SVG support the demo scripts "*NotebookDemo.tcl"
+   and "PagesManDemo.tcl" now use SVG images created with the aid of the
+   variable "scrollutil::svgfmt".
+
+7. Worked around a long-standing known issue on macOS related to
+   suspended event processing during a resize operation (thanks to
+   Nicolas Bats for his bug report).
+
+What was new in Scrollutil 1.18?
+--------------------------------
 
 1.  Added the "adjustsize" subcommand to the scrollednotebook,
     plainnotebook, and pagesman widgets (thanks to Harald Oehlmann for

@@ -12,6 +12,9 @@ pre {
 /* background for the <body> tag */
 body {background: #FFFFFF}
 
+/* text-align for the <div> tag */
+div {text-align: center}
+
 /* color for the <span> tag */
 span.red {color: #E00000}
 span.cmt {color: #36648b}

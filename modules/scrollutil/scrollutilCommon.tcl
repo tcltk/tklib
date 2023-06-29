@@ -10,7 +10,7 @@ namespace eval ::scrollutil {
     #
     # Public variables:
     #
-    variable version	1.18
+    variable version	1.19
     variable library
     if {$::tcl_version >= 8.4} {
 	set library	[file dirname [file normalize [info script]]]
@@ -40,31 +40,42 @@ namespace eval ::scrollutil {
 
 package provide scrollutil::common $::scrollutil::version
 
+if {$::tcl_version >= 8.4} {
+    interp alias {} ::scrollutil::addVarTrace {} trace add variable
+} else {
+    proc ::scrollutil::addVarTrace {name ops cmd} {
+	set ops2 ""
+	foreach op $ops { append ops2 [string index $op 0] }
+	trace variable $name $ops2 $cmd
+    }
+}
+
 #
 # The following procedure, invoked in "scrollutil.tcl" and
-# "scrollutil_tile.tcl", sets the variable ::scrollutil::usingTile to the given
-# value and sets a trace on this variable.
+# "scrollutil_tile.tcl", sets the variable ::scrollutil::usingTile
+# to the given value and sets a trace on this variable.
 #
 proc ::scrollutil::useTile {bool} {
     variable usingTile $bool
-    trace variable usingTile wu [list ::scrollutil::restoreUsingTile $bool]
+    addVarTrace usingTile {write unset} \
+	[list ::scrollutil::restoreUsingTile $bool]
 }
 
 #
 # The following trace procedure is executed whenever the variable
-# ::scrollutil::usingTile is written or unset.  It restores the variable to its
-# original value, given by the first argument.
+# ::scrollutil::usingTile is written or unset.  It restores the
+# variable to its original value, given by the first argument.
 #
 proc ::scrollutil::restoreUsingTile {origVal varName index op} {
     variable usingTile $origVal
-    switch $op {
-	w {
+    switch -glob $op {
+	w* {
 	    return -code error "it is not supported to use both Scrollutil and\
 				Scrollutil_tile in the same application"
 	}
-	u {
-	    trace variable usingTile wu \
-		  [list ::scrollutil::restoreUsingTile $origVal]
+	u* {
+	    addVarTrace usingTile {write unset} \
+		[list ::scrollutil::restoreUsingTile $origVal]
 	}
     }
 }
@@ -97,9 +108,9 @@ proc ::scrollutil::loadUtils {} {
     package require mwutil 2.20
 
     if {[catch {package present scaleutil} version] == 0 &&
-	[package vcompare $version 1.10] < 0} {
+	[package vcompare $version 1.11] < 0} {
 	package forget scaleutil
     }
-    package require scaleutil 1.10
+    package require scaleutil 1.11
 }
 ::scrollutil::loadUtils

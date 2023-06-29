@@ -115,7 +115,8 @@ grid $sa -row $row -column 0 -columnspan 3 -sticky w -padx 7p -pady {3p 0}
 # On X11 configure the tablelist according to the display's
 # DPI scaling level (redundant for Tablelist 6.10 and later)
 #
-if {[tk windowingsystem] eq "x11"} {
+if {[tk windowingsystem] eq "x11" &&
+    [package vcompare $tablelist::version "6.22"] < 0} {
     array set arr {100 8x4  125 9x5  150 11x6  175 13x7  200 15x8}
     $tbl configure -arrowstyle flat$arr($scrollutil::scalingpct)
 }
@@ -466,7 +467,7 @@ proc configTablelist {} {
 	    }
 
 	    default {
-		ttk::entry $w -width 20
+		ttk::entry $w -width 25
 		$w insert 0 [$tbl cget $opt]
 		foreach event {<Return> <KP_Enter> <FocusOut>} {
 		    bind $w $event [list applyValue %W $opt]

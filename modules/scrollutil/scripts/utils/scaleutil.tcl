@@ -20,7 +20,7 @@ namespace eval scaleutil {
     #
     # Public variables:
     #
-    variable version	1.10
+    variable version	1.11
     variable library
     if {$::tcl_version >= 8.4} {
 	set library	[file dirname [file normalize [info script]]]
@@ -171,34 +171,14 @@ proc scaleutil::scalingPercentage winSys {
 	}
     }
 
-    if {$pct < 100 + 12.5} {
-	set pct 100
-    } elseif {$pct < 125 + 12.5} {
-	set pct 125
-    } elseif {$pct < 150 + 12.5} {
-	set pct 150
-    } elseif {$pct < 175 + 12.5} {
-	set pct 175
-    } elseif {$pct < 200 + 12.5} {
-	set pct 200
-    } elseif {$pct < 225 + 12.5} {
-	set pct 225
-    } elseif {$pct < 250 + 12.5} {
-	set pct 250
-    } elseif {$pct < 275 + 12.5} {
-	set pct 275
-    } elseif {$pct < 300 + 25} {
-	set pct 300
-    } elseif {$pct < 350 + 25} {
-	set pct 350
-    } elseif {$pct < 400 + 25} {
-	set pct 400
-    } elseif {$pct < 450 + 25} {
-	set pct 450
-    } elseif {$pct < 500 + 25} {
-	set pct 500
-    } else {
-	set pct [expr {int($pct + 0.5)}]
+    #
+    # Set pct to a multiple of 25
+    #
+    for {set pct2 100} {1} {incr pct2 25} {
+	if {$pct < $pct2 + 12.5} {
+	    set pct $pct2
+	    break
+	}
     }
 
     if {$pct == 100} {
@@ -380,20 +360,25 @@ proc scaleutil::scanMonitorsFile {xrandrResult chan pctName} {
 
 	#
 	# If $outputList and $connectorList are identical then set the
-	# variable pct to 100 or 200, depending on the max. scaling
-	# within this configuration, and exit the loop.  (Due to the
-	# way fractional scaling is implemented in GNOME, we have to
-	# set the variable pct to 200 rather than 125, 150, or 175.)
+	# variable pct to 100, 200, 300, 400, or 500, depending on the
+	# max. scaling within this configuration, and exit the loop
 	#
 	if {[string compare $outputList $connectorList] == 0} {
-	    set maxScaling 0.0
+	    set maxScaling 1.0
 	    foreach {dummy scaling} [regexp -all -inline \
 		    {<scale>([^<]+)</scale>} $config] {
 		if {$scaling > $maxScaling} {
 		    set maxScaling $scaling
 		}
 	    }
-	    set pct [expr {$maxScaling > 1.0 ? 200 : 100}]
+
+	    foreach n {4 3 2 1 0} {
+		if {$maxScaling > $n} {
+		    set pct [expr {($n + 1) * 100}]
+		    break
+		}
+	    }
+
 	    break
 	}
     }
@@ -651,11 +636,10 @@ proc scaleutil::scaleStyles_default pct {
 	set indMargin [list 0 $t $r $b]				;# {0 2 4 2}
 	foreach style {TCheckbutton TRadiobutton} {
 	    #
-	    # -indicatordiameter will be renamed to -indicatorsize in Tk 8.7.
+	    # -indicatordiameter will be removed in Tk 8.7b1.
 	    #
 	    ttk::style configure $style -indicatordiameter [scale 10 $pct] \
-		-indicatorsize [scale 10 $pct] -indicatormargin $indMargin \
-		-padding [scale 1 $pct]
+		-indicatormargin $indMargin -padding [scale 1 $pct]
 	}
 
 	ttk::style configure TNotebook.Tab \
@@ -797,8 +781,8 @@ proc scaleutil::patchWinTheme {theme pct} {
 	if {$pct > 350} {
 	    set pct 350
 	}
-	array set arr {125 8   150 10  175 10  200 13}
-	array set arr {225 13  250 16  275 16  300 20  350 20}
+	array set arr {125 8   150 10  175 10  200 13  225 13}
+	array set arr {250 16  275 16  300 20  325 20  350 20}
 	set height $arr($pct)
 	set pad [scale 2 $pct]
 	set width [expr {$height + 2*$pad}]

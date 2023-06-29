@@ -1,7 +1,10 @@
 #!/usr/bin/env wish
 
 #==============================================================================
-# Demonstrates the use of the scrollutil::scrollednotebook widget.
+# Demonstrates the use of the scrollutil::scrollednotebook widget.  Uses an
+# image based on the icon
+#
+#   https://icons8.com/icon/mEF_vyjYlnE3/file
 #
 # Copyright (c) 2021-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
@@ -14,8 +17,16 @@ wm title . "Ttk Library Scripts"
 
 scrollutil::addclosetab My.TNotebook
 
-set pct $scrollutil::scalingpct
-image create photo fileImg -file [file join $dir file$pct.gif]
+#
+# Create an image corresponding to the display's DPI scaling level
+#
+if {$tk_version >= 8.7 || [catch {package require tksvg}] == 0} {
+    set fmt $scrollutil::svgfmt
+    image create photo fileImg -file [file join $dir file.svg] -format $fmt
+} else {
+    set pct $scrollutil::scalingpct
+    image create photo fileImg -file [file join $dir file$pct.gif]
+}
 
 #
 # Create a scrollednotebook widget having closable (and, per default,

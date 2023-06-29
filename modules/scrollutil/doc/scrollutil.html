@@ -11,10 +11,10 @@
 </head>
 
 <body>
-  <div align="center">
+  <div>
     <h1>Scrollutil Programmer's Guide</h1>
 
-    <h2>For Scrollutil Version 1.18</h2>
+    <h2>For Scrollutil Version 1.19</h2>
 
     <h3>by</h3>
 
@@ -40,8 +40,10 @@
 
     <li><a href="#ov_use">How to Use It?</a></li>
 
-    <li><a href="#ov_scaling">More on
+    <li><a href="#ov_scalingpct">More on
     <code>scrollutil::scalingpct</code></a></li>
+
+    <li><a href="#ov_svgfmt">More on <code>scrollutil::svgfmt</code></a></li>
   </ul>
 
   <h4><a href="#examples">Examples</a></h4>
@@ -86,7 +88,7 @@
     <li><a href="#ex_PagesManDemo">A scrollutil::pagesman Demo</a></li>
   </ul>
 
-  <div align="center">
+  <div>
     <p><a href="index.html">Start page</a></p>
   </div>
 
@@ -309,8 +311,8 @@
     </address>
   </blockquote>
 
-  <p>The distribution file is <code>scrollutil1.18.tar.gz</code> for UNIX and
-  <code>scrollutil1_18.zip</code> for Windows.&nbsp; These files contain the
+  <p>The distribution file is <code>scrollutil1.19.tar.gz</code> for UNIX and
+  <code>scrollutil1_19.zip</code> for Windows.&nbsp; These files contain the
   same information, except for the additional carriage return character
   preceding the linefeed at the end of each line in the text files for
   Windows.</p>
@@ -334,11 +336,11 @@
 
   <p>To install Scrollutil <i>on UNIX</i>, <code>cd</code> to the desired
   directory and unpack the distribution file
-  <code>scrollutil1.18.tar.gz</code>:</p>
+  <code>scrollutil1.19.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c scrollutil1.18.tar.gz | tar -xf -
+gunzip -c scrollutil1.19.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
@@ -346,17 +348,17 @@ gunzip -c scrollutil1.18.tar.gz | tar -xf -
 
   <blockquote>
     <pre>
-tar -zxf scrollutil1.18.tar.gz
+tar -zxf scrollutil1.19.tar.gz
 </pre>
   </blockquote>
 
-  <p>Both commands will create a directory named <code>scrollutil1.18</code>,
+  <p>Both commands will create a directory named <code>scrollutil1.19</code>,
   with the subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>scrollutil1_18.zip</code> into the directory
-  <code>scrollutil1.18</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>scrollutil1_19.zip</code> into the directory
+  <code>scrollutil1.19</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>Notice that in tklib the Scrollutil <code>demos</code> directory is
@@ -442,8 +444,8 @@ namespace import scrollutil::<i>pattern</i> ?scrollutil::<i>pattern ...</i>?
   "#examples">examples</a> below we have chosen the latter approach.</p>
 
   <p>To access Scrollutil <i>variables</i>, you <i>must</i> use qualified
-  names.&nbsp; There are only four Scrollutil variables that are designed to
-  be accessed outside the namespace <code>scrollutil</code>:</p>
+  names.&nbsp; There are only 5 Scrollutil variables that are designed to be
+  accessed outside the namespace <code>scrollutil</code>:</p>
 
   <ul>
     <li>The variable <code>scrollutil::version</code> holds the current version
@@ -468,6 +470,13 @@ namespace import scrollutil::<i>pattern</i> ?scrollutil::<i>pattern ...</i>?
     <code>150</code>, then the image size for this display should be
     24 x 24.</li>
 
+    <li>If the Tk version is either at least 8.7 (with built-in SVG support),
+    or 8.6 and the tksvg extension can be loaded into the interpreter, then the
+    variable <code>scrollutil::svgfmt</code> is set to a Tcl list that you can
+    pass to the commands that create or manipulate SVG images as the value of
+    their <code>-format</code> option to make sure that your images will be
+    properly scaled.</li>
+
     <li>The read-only variable <code>scrollutil::usingTile</code> has the value
     <code>0</code> in the package Scrollutil and the value <code>1</code> in
     Scrollutil_tile.</li>
@@ -489,7 +498,7 @@ if {$::tk_version &lt; 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
   tile is integrated into the Tk core and therefore it should only be loaded
   explicitly when using an earlier Tk version.</p>
 
-  <h3 id="ov_scaling">More on <code>scrollutil::scalingpct</code></h3>
+  <h3 id="ov_scalingpct">More on <code>scrollutil::scalingpct</code></h3>
 
   <p>The Scrollutil code sets the variable <code>scrollutil::scalingpct</code>
   to the value returned by the public procedure
@@ -615,13 +624,14 @@ if {$::tk_version &lt; 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
   <p>The additional steps described in the rest of this section are only
   performed if the scaling percentage is greater than <code>100</code>.</p>
 
-  <p>The procedure sets the scaling factor used by Tk to convert between
-  physical units and pixels, by passing the value derived from the scaling
-  percentage to the&nbsp; <code>tk scaling</code>&nbsp; command.&nbsp; While in
-  the vast majority of applications this is the desired and recommended
-  behavior, there might be cases where you want to suppress this step because
-  your application might have its own logic for determining the value of Tk's
-  scaling factor.&nbsp; You can achieve this by inserting the line</p>
+  <p>On X11, the procedure synchronizes the scaling factor used by Tk to
+  convert between physical units and pixels with the scaling percentage, by
+  passing a value derived from the latter to the&nbsp; <code>tk
+  scaling</code>&nbsp; command.&nbsp; While in the vast majority of
+  applications this is the desired and recommended behavior, there might be
+  cases where you want to suppress this step because your application might
+  have its own logic for determining the value of Tk's scaling factor.&nbsp;
+  You can achieve this by inserting the line</p>
 
   <blockquote>
     <pre>
@@ -705,14 +715,45 @@ namespace eval ::scaleutil { set keepTkScaling 1 }
   but the procedure provides an automatic workaround for the Tk versions that
   are still affected by this bug.)</p>
 
-  <p>Note that the Tk core checkbutton and radiobutton widgets, as well as the
-  indicators of the ttk::checkbutton and ttk::radiobutton widgets of the
-  <code>alt</code> and <code>winnative</code> themes are currently (as of
-  February 2023) not scalable (they will scale automatically in Tk 8.7b1 and
-  later).&nbsp; Moreover, the ttk::sizegrip widget is currently not scalable in
-  any of the built-in themes.</p>
+  <p>Note that in Tk versions earlier than 8.7b1, the Tk core checkbutton and
+  radiobutton widgets, as well as the indicators of the ttk::checkbutton and
+  ttk::radiobutton widgets of the <code>alt</code> and <code>winnative</code>
+  themes are not scalable (they scale automatically in Tk 8.7b1 and
+  later).&nbsp; The same holds true for the ttk::sizegrip widget in the
+  built-in themes.</p>
 
-  <div align="center">
+  <h3 id="ov_svgfmt">More on <code>scrollutil::svgfmt</code></h3>
+
+  <p>Before returning one of the scaling percentage values <code>100</code>,
+  <code>125</code>, <code>150</code>, <code>175</code>, and <code>200</code>,
+  the procedure <code>scaleutil::scalingPercentage</code> saves the display's
+  <i>real</i> scaling percentage in the variable
+  <code>::scaleutil::scalingPct</code>.&nbsp; This value, which is restricted
+  to multiples of <code>25</code>, can be greater than <code>200</code>,
+  especially when running Androwish on a tablet or smartphone.</p>
+
+  <p>If the Tk version is either at least 8.7 (with built-in SVG support), or
+  8.6 and the tksvg package can be loaded into the interpreter, then Scrollutil
+  additionally sets the variable <code>scrollutil::svgfmt</code> to</p>
+
+  <blockquote>
+    <pre>
+[list svg -scale [expr {$::scaleutil::scalingPct / 100.0}]]
+</pre>
+  </blockquote>
+
+  <p>Typical values are&nbsp; <code>{svg -scale 1.0}</code>,&nbsp; <code>{svg
+  -scale 1.25}</code>,&nbsp; <code>{svg -scale 2.0}</code>,&nbsp; etc.</p>
+
+  <p>It is recommended to pass the value of the variable
+  <code>scrollutil::svgfmt</code> to the commands&nbsp; <code>image create
+  photo</code>,&nbsp; <code><i>imageName</i> configure</code>,&nbsp; 
+  <code><i>imageName</i> put</code>,&nbsp; and <code><i>imageName</i> 
+  read</code>&nbsp; as the value of their <code>-format</code> option when 
+  creating or manipulating SVG images, to make sure that their sizes will 
+  correspond to the display's <i>real</i> scaling percentage.</p>
+
+  <div>
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>
@@ -817,8 +858,8 @@ themepatch::patch clam
   column area:</p>
 
   <blockquote>
-    <img src="ScrolledTablelist.png" alt="ScrolledTablelist" width="478"
-    height="336">
+    <img src="ScrolledTablelist.png" alt="ScrolledTablelist" width="486"
+    height="345">
   </blockquote>
 
   <p>The script achieves these requirements using traditional scrollbar
@@ -925,7 +966,7 @@ pack $f  -expand yes -fill both
   widgets.</p>
 
   <blockquote>
-    <img src="ScrolledText.png" alt="ScrolledText" width="399" height="337">
+    <img src="ScrolledText.png" alt="ScrolledText" width="407" height="346">
   </blockquote>
 
   <p>Here is the relevant code, in which the lines related to the scrollarea
@@ -1014,7 +1055,7 @@ after 100 [list $txt yview 14.0]
   <a href="scrollarea.html">scrollarea</a>.</p>
 
   <blockquote>
-    <img src="SyncListboxes.png" alt="SyncListboxes" width="318" height="304">
+    <img src="SyncListboxes.png" alt="SyncListboxes" width="326" height="313">
   </blockquote>
 
   <p>Here is the relevant code, in which the lines related to the scrollarea
@@ -1075,8 +1116,8 @@ pack $f  -expand yes -fill both
   <a href="scrollarea.html">scrollarea</a>.</p>
 
   <blockquote>
-    <img src="SyncTablelists.png" alt="SyncTablelists" width="546" height=
-    "325">
+    <img src="SyncTablelists.png" alt="SyncTablelists" width="554" height=
+    "334">
   </blockquote>
 
   <p>The relevant code is similar to the one shown in the <a href=
@@ -1177,8 +1218,8 @@ pack $f  -expand yes -fill both
   users, displaying the text "Resolve".</p>
 
   <blockquote>
-    <img src="ScrollableFrmDemo1.png" alt="ScrollableFrmDemo1" width="401"
-    height="361">
+    <img src="ScrollableFrmDemo1.png" alt="ScrollableFrmDemo1" width="409"
+    height="370">
   </blockquote>
 
   <p>Here is the relevant code:</p>
@@ -1466,8 +1507,8 @@ set cf [$sf childsite]
   these widgets have bult-in mouse wheel event bindings.</p>
 
   <blockquote>
-    <img src="ScrollableFrmDemo2.png" alt="ScrollableFrmDemo2" width="601"
-    height="512">
+    <img src="ScrollableFrmDemo2.png" alt="ScrollableFrmDemo2" width="609"
+    height="521">
   </blockquote>
 
   <p>Here is the relevant code:</p>
@@ -1655,8 +1696,8 @@ grid $_sa ...
   scrollableframe changes as a result of resizing the toplevel window.</p>
 
   <blockquote>
-    <img src="TablelistConfig.png" alt="TablelistConfig" width="377"
-    height="391">
+    <img src="TablelistConfig.png" alt="TablelistConfig" width="425"
+    height="400">
   </blockquote>
 
   <h3 id="ex_BwScrollableFrameDemo2">A Script Using Two BWidget ScrollableFrame
@@ -1856,8 +1897,8 @@ source [file join $dir ScrolledFrmContent.tcl]
   tabs.</p>
 
   <blockquote>
-    <img src="ScrolledNotebookDemo.png" alt="ScrolledNotebookDemo" width="646"
-    height="521">
+    <img src="ScrolledNotebookDemo.png" alt="ScrolledNotebookDemo" width="654"
+    height="530">
   </blockquote>
 
   <p>Here is the relevant code:</p>
@@ -1872,8 +1913,16 @@ wm title . "Ttk Library Scripts"
 
 <span class="red">scrollutil::addclosetab My.TNotebook</span>
 
-set pct $scrollutil::scalingpct
-image create photo fileImg -file [file join $dir file$pct.gif]
+<span class="cmt">#
+# Create an image corresponding to the display's DPI scaling level
+#</span>
+if {$tk_version >= 8.7 || [catch {package require tksvg}] == 0} {
+    set fmt $scrollutil::svgfmt
+    image create photo fileImg -file [file join $dir file.svg] -format $fmt
+} else {
+    set pct $scrollutil::scalingpct
+    image create photo fileImg -file [file join $dir file$pct.gif]
+}
 
 <span class="cmt">#
 # Create a scrollednotebook widget having closable (and, per default,
@@ -1992,6 +2041,25 @@ proc resizeNb nb {
   <code>closetab</code> element in their tabs and notebooks without this
   element.</p>
 
+  <p>If the Tk version is at least 8.7 or the tksvg package can be loaded into
+  the interpreter, then the image <code>fileImg</code> is created from the file
+  <code>file.svg</code>, using the public variable
+  <code>scrollutil::svgfmt</code>.&nbsp; Otherwise it is created from files
+  whose names contain the display's DPI scaling percentage, given by the public
+  variable <code>scrollutil::scalingpct</code>.&nbsp; The file
+  <code>file100.gif</code> contains an image of size 16 x 16, the file
+  <code>file125.gif</code> contains an image of size 20 x 20, the file
+  <code>file150.gif</code> contains an image of size 24 x 24, and so on.&nbsp;
+  In the first case a single <code>file.svg</code> file is needed and the image
+  will be scaled automatically, according to the display's real scaling
+  percentage, which can be greater than the maximum value <code>200</code> of
+  the variable <code>scrollutil::scalingpct</code>.&nbsp; This benefit comes in
+  handy especially when running Androwish on a tablet or smartphone.&nbsp; In
+  the second case a total number of 5 <code>file*.gif</code> (or
+  <code>file*.png</code>) files are needed to make sure that the size of the
+  image will correspond to the value of the variable
+  <code>scrollutil::scalingpct</code>.</p>
+
   <p>Note that the state of the text widgets is set to <code>disabled</code>,
   but the user can select a text range and then copy the selection into the
   clipboard via <code>Control-c</code> (<code>Command-c</code> on Mac OS
@@ -2059,8 +2127,8 @@ proc resizeNb nb {
   closing them.</p>
 
   <blockquote>
-    <img src="PlainNotebookDemo.png" alt="PlainNotebookDemo" width="811"
-    height="581">
+    <img src="PlainNotebookDemo.png" alt="PlainNotebookDemo" width="819"
+    height="590">
   </blockquote>
 
   <p>The relevant code is nearly identical to the one shown in the <a href=
@@ -2078,8 +2146,10 @@ source [file join $dir styleUtil.tcl]
 
 wm title . "Ttk Library Scripts"
 
-set pct $scrollutil::scalingpct
-image create photo fileImg -file [file join $dir file$pct.gif]
+<span class="cmt">#
+# Create an image corresponding to the display's DPI scaling level
+#</span>
+. . .
 
 <span class="cmt">#
 # Create a plainnotebook widget having closable (and, per default,
@@ -2133,7 +2203,7 @@ proc restoreSel nb {
   <code>ttk</code>, respectively.</p>
 
   <blockquote>
-    <img src="PagesManDemo.png" alt="PagesManDemo" width="811" height="581">
+    <img src="PagesManDemo.png" alt="PagesManDemo" width="819" height="590">
   </blockquote>
 
   <p>The user can switch from the first page to the three other ones with the
@@ -2144,8 +2214,8 @@ proc restoreSel nb {
   top-left corner of the respective plainnotebook widget.</p>
 
   <blockquote>
-    <img src="PagesManDemoImages.png" alt="PagesManDemoImages" width="811"
-    height="581">
+    <img src="PagesManDemoImages.png" alt="PagesManDemoImages" width="819"
+    height="590">
   </blockquote>
 
   <p>Here is the relevant code:</p>
@@ -2158,9 +2228,18 @@ source [file join $dir styleUtil.tcl]
 
 wm title . "Tk Library Files"
 
-set pct $scrollutil::scalingpct
-image create photo fileImg   -file [file join $dir file$pct.gif]
-image create photo folderImg -file [file join $dir folder$pct.gif]
+<span class="cmt">#
+# Create two images corresponding to the display's DPI scaling level
+#</span>
+if {$tk_version >= 8.7 || [catch {package require tksvg}] == 0} {
+    set fmt $scrollutil::svgfmt
+    image create photo fileImg   -file [file join $dir file.svg]   -format $fmt
+    image create photo folderImg -file [file join $dir folder.svg] -format $fmt
+} else {
+    set pct $scrollutil::scalingpct
+    image create photo fileImg   -file [file join $dir file$pct.gif]
+    image create photo folderImg -file [file join $dir folder$pct.gif]
+}
 
 <span class="cmt">#
 # Populates a given plainnotebook widget with panes that display the contents
@@ -2312,7 +2391,7 @@ proc restoreSel nb {
   sure that invoking this button will switch back to the first
   plainnotebook.</p>
 
-  <div align="center">
+  <div>
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>

@@ -23,7 +23,9 @@ namespace eval scrollutil {
     #
     # Get the windowing system ("x11", "win32", "classic", or "aqua")
     #
-    variable winSys [mwutil::windowingSystem]
+    variable winSys  [mwutil::windowingSystem]
+    variable onAqua  [expr {[string compare $winSys "aqua"]  == 0}]
+    variable onWin32 [expr {[string compare $winSys "win32"] == 0}]
 
     #
     # Get the display's current scaling percentage (100, 125, 150, 175, or 200)
@@ -33,8 +35,8 @@ namespace eval scrollutil {
     #
     # Make the variable scalingpct read-only
     #
-    trace variable scalingpct wu \
-	  [list scrollutil::restoreScalingpct $scalingpct]
+    addVarTrace scalingpct {write unset} \
+	[list scrollutil::restoreScalingpct $scalingpct]
 
     #
     # The following trace procedure is executed whenever the
@@ -43,13 +45,13 @@ namespace eval scrollutil {
     #
     proc restoreScalingpct {origVal varName index op} {
 	variable scalingpct $origVal
-	switch $op {
-	    w {
+	switch -glob $op {
+	    w* {
 		return -code error "the variable is read-only"
 	    }
-	    u {
-		trace variable scalingpct wu \
-		      [list scrollutil::restoreScalingpct $origVal]
+	    u* {
+		addVarTrace scalingpct {write unset} \
+		    [list scrollutil::restoreScalingpct $origVal]
 	    }
 	}
     }
@@ -59,6 +61,14 @@ namespace eval scrollutil {
 	 [package vcompare $::tk_patchLevel "8.6.10"] >= 0) ||
 	($::tk_version >= 8.7 &&
 	 [package vcompare $::tk_patchLevel "8.7a3"] >= 0)}]
+
+    variable svgSupported \
+	[expr {$::tk_version >= 8.7 || [catch {package require tksvg}] == 0}]
+
+    if {$svgSupported} {
+	variable svgfmt \
+	    [list svg -scale [expr {$::scaleutil::scalingPct / 100.0}]]
+    }
 }
 
 namespace eval scrollutil::sa {
@@ -99,7 +109,7 @@ namespace eval scrollutil::sa {
     #
     proc extendConfigSpecs {} {
 	variable ::scrollutil::usingTile
-	variable ::scrollutil::winSys
+	variable ::scrollutil::onWin32
 	variable configSpecs
 
 	if {$usingTile} {
@@ -126,8 +136,7 @@ namespace eval scrollutil::sa {
 	lappend configSpecs(-cursor)			""
 	lappend configSpecs(-lockinterval)		1
 	lappend configSpecs(-relief)			sunken
-	lappend configSpecs(-respectheader) \
-		[expr {[string compare $winSys "win32"] != 0}]
+	lappend configSpecs(-respectheader)		[expr {!$onWin32}]
 	lappend configSpecs(-respecttitlecolumns)	1
 	lappend configSpecs(-setfocus)			0
 	lappend configSpecs(-takefocus)			0
@@ -217,7 +226,7 @@ proc scrollutil::sa::createBindings {} {
 #------------------------------------------------------------------------------
 proc scrollutil::scrollarea args {
     variable usingTile
-    variable winSys
+    variable onAqua
     variable sa::configSpecs
     variable sa::configOpts
 
@@ -254,6 +263,8 @@ proc scrollutil::scrollarea args {
 	    vsbManaged	 0
 	    hsbLocked	 0
 	    vsbLocked	 0
+	    hsbLockTime	 0
+	    vsbLockTime	 0
 	    sbObscured	 0
 	    widget	 ""
 	    cf-ne	 ""
@@ -290,8 +301,7 @@ proc scrollutil::scrollarea args {
     set hsb $win.hsb
     set vsb $win.vsb
     variable newAquaSupport
-    if {$usingTile && ([string compare $winSys "aqua"] != 0 ||
-	$newAquaSupport)} {
+    if {$usingTile && (!$onAqua || $newAquaSupport)} {
 	ttk::scrollbar $hsb -orient horizontal
 	ttk::scrollbar $vsb -orient vertical
 
@@ -896,17 +906,15 @@ proc scrollutil::sa::onScrollbarClicked sb {
 
     switch [winfo class $widget] {
 	Text {
-	    variable ::scrollutil::winSys
 	    variable newSetFocusPolicy
-	    if {$winSys eq "win32" || $newSetFocusPolicy} {
+	    if {$::scrollutil::onWin32 || $newSetFocusPolicy} {
 		focus $widget
 	    }
 	}
 
 	Ctext {
-	    variable ::scrollutil::winSys
 	    variable newSetFocusPolicy
-	    if {$winSys eq "win32" || $newSetFocusPolicy} {
+	    if {$::scrollutil::onWin32 || $newSetFocusPolicy} {
 		focus $widget.t
 	    }
 	}
@@ -1013,7 +1021,16 @@ proc scrollutil::sa::onTitleColsWidthChanged tbl {
 #------------------------------------------------------------------------------
 proc scrollutil::sa::showHScrollbar {win {redisplay 0}} {
     upvar ::scrollutil::ns${win}::data data
-    if {($data(vsbLocked) &&
+    set vsbLocked $data(vsbLocked)
+
+    if {$::scrollutil::onAqua} {
+	set time [clock milliseconds]
+	if {$vsbLocked && $time - $data(vsbLockTime) >= $data(-lockinterval)} {
+	    set vsbLocked 0
+	}
+    }
+
+    if {($vsbLocked &&
 	 [string compare $data(-xscrollbarmode) "dynamic"] == 0) ||
 	($data(hsbManaged) && !$redisplay)} {
 	return ""
@@ -1031,6 +1048,9 @@ proc scrollutil::sa::showHScrollbar {win {redisplay 0}} {
     set data(hsbManaged) 1
 
     set data(hsbLocked) 1
+    if {$::scrollutil::onAqua} {
+	set data(hsbLockTime) $time
+    }
     after $data(-lockinterval) [list scrollutil::sa::unlockHScrollbar $win]
 }
 
@@ -1089,7 +1109,16 @@ proc scrollutil::sa::unlockHScrollbar win {
 #------------------------------------------------------------------------------
 proc scrollutil::sa::showVScrollbar {win {redisplay 0}} {
     upvar ::scrollutil::ns${win}::data data
-    if {($data(hsbLocked) &&
+    set hsbLocked $data(hsbLocked)
+
+    if {$::scrollutil::onAqua} {
+	set time [clock milliseconds]
+	if {$hsbLocked && $time - $data(hsbLockTime) >= $data(-lockinterval)} {
+	    set hsbLocked 0
+	}
+    }
+
+    if {($hsbLocked &&
 	 [string compare $data(-yscrollbarmode) "dynamic"] == 0) ||
 	($data(vsbManaged) && !$redisplay)} {
 	return ""
@@ -1107,6 +1136,9 @@ proc scrollutil::sa::showVScrollbar {win {redisplay 0}} {
     set data(vsbManaged) 1
 
     set data(vsbLocked) 1
+    if {$::scrollutil::onAqua} {
+	set data(vsbLockTime) $time
+    }
     after $data(-lockinterval) [list scrollutil::sa::unlockVScrollbar $win]
 }
 

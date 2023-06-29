@@ -27,7 +27,7 @@ namespace eval themepatch {
     #
     # Public variables:
     #
-    variable version	1.3
+    variable version	1.4
     variable library	[file dirname [file normalize [info script]]]
 
     #
