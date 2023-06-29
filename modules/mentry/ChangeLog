@@ -1,3 +1,16 @@
+2023-06-29  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* mentryCommon.tcl: For Tcl versions 8.4 and later replaced the
+	  deprecated "trace variable" invocation with "trace add variable";
+	  bumped the version number to 3.18.
+
+	* *.tcl:         Bumped the version number to 3.18.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
 2023-03-20  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Mentry 3.17.
