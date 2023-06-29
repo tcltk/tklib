@@ -1,3 +1,36 @@
+2023-06-29  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* scrollutilCommon.tcl: For Tcl versions 8.4 and later replaced the
+	  deprecated "trace variable" invocation with "trace add variable";
+	  bumped the version number to 1.19.
+
+	* *.tcl:         Bumped the version number to 1.19.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* doc/scrollednotebook.html: Extended the reference manual for the
+	  scrollednotebook widget.
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/*.tcl: In the presence of SVG support, added the variable
+	  scrollutil::svgfmt; the scrollednotebook widget now provides the
+	  "style" subcommand; for Tcl versions 8.4 and later replaced the
+	  deprecated "trace variable" invocation with "trace add variable";
+	  worked around a long-standing known issue on macOS related to
+	  suspended event processing during a resize operation.
+
+	* scripts/utils/*.tcl:               Various updates in the scaleutil
+	* scripts/utils/indicatorImgs/*.tcl: and themepatch packages, e.g.,
+	  related to patching the "default" theme.
+
+	* doc/*.png: Updated the screenshots.
+
+	* ../../examples/scrollutil/*: In the presence of SVG support the demo
+	  scripts "*NotebookDemo.tcl" and "PagesManDemo.tcl" now use SVG
+	  images.
+
 2023-03-20  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Scrollutil 1.18.
