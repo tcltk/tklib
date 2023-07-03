@@ -1,3 +1,7 @@
+2023-07-03  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* Released Scrollutil 1.19.
+
 2023-06-29  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* scrollutilCommon.tcl: For Tcl versions 8.4 and later replaced the
