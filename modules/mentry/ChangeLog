@@ -1,3 +1,7 @@
+2023-07-03  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* Released Mentry 3.18.
+
 2023-06-29  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* mentryCommon.tcl: For Tcl versions 8.4 and later replaced the
