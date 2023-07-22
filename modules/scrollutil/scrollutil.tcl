@@ -15,6 +15,6 @@ package provide Scrollutil $::scrollutil::version
 ::scrollutil::ss::createBindings
 ::scrollutil::sf::createBindings
 ::scrollutil::pm::createBindings
-if {[package vcompare $::tk_version "8.4"] >= 0} {
+if {[package vcompare $::tk_version "8.4-"] >= 0} {
     ::scrollutil::createBindings
 }

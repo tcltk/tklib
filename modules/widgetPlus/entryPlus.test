@@ -7,16 +7,16 @@
 # Copyright (c) 1998-1999 by Scriptics Corporation.
 # All rights reserved.
 
-if {![package vsatisfies [package provide Tcl] 8.5]} {
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
     puts "    Aborting the tests found in \"[file tail [info script]]\"."
-    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    puts "    Requiring Tcl 8.5-, have [package present Tcl]"
     return
 }
 
 # Future: put all tests under constraint tk and set constraint properly
-if {[catch { package require Tk 8.5 } msg]} {
+if {[catch { package require Tk 8.5- } msg]} {
     puts "    Aborting the tests found in \"[file tail [info script]]\"."
-    puts "    Requiring Tk 8.5, $msg"
+    puts "    Requiring Tk 8.5-, $msg"
     return
 }
 
@@ -756,7 +756,7 @@ test entry-3.1 {EntryWidgetCmd procedure} -setup {
 } -cleanup {
     destroy .e
 } -returnCodes error \
-    -result [expr {[package vsatisfies [package present Tcl] 8.6]
+    -result [expr {[package vsatisfies [package present Tcl] 8.6-]
 		   ? "wrong # args: should be \".e subcommand ?arg ...?\""
 		   : "wrong # args: should be \".e subcommand ?argument ...?\""}]
 
@@ -2227,7 +2227,7 @@ test entry-8.1 {DeleteChars procedure} -setup {
 } -cleanup {
     destroy .e
 } -result {abe abe {0.000000 1.000000}}
-test entry-8.2 {DeleteChars procedure} -setup {
+test entry-8.2- {DeleteChars procedure} -setup {
     unset -nocomplain contents
     entryPlus .e -width 10 -font {Courier -12} -highlightthickness 2 -bd 2
     pack .e
@@ -2241,7 +2241,7 @@ test entry-8.2 {DeleteChars procedure} -setup {
 } -cleanup {
     destroy .e
 } -result {cde cde {0.000000 1.000000}}
-test entry-8.3 {DeleteChars procedure} -setup {
+test entry-8.3- {DeleteChars procedure} -setup {
     unset -nocomplain contents
     entryPlus .e -width 10 -font {Courier -12} -highlightthickness 2 -bd 2
     pack .e
@@ -2255,7 +2255,7 @@ test entry-8.3 {DeleteChars procedure} -setup {
 } -cleanup {
     destroy .e
 } -result {abc abc {0.000000 1.000000}}
-test entry-8.4 {DeleteChars procedure} -setup {
+test entry-8.4- {DeleteChars procedure} -setup {
     entryPlus .e -width 10 -font {Courier -12} -highlightthickness 2 -bd 2
     pack .e
     focus .e
@@ -2271,7 +2271,7 @@ test entry-8.4 {DeleteChars procedure} -setup {
 } -cleanup {
     destroy .e
 } -result {1 6 1 5}
-test entry-8.5 {DeleteChars procedure} -setup {
+test entry-8.5- {DeleteChars procedure} -setup {
     entryPlus .e -width 10 -font {Courier -12} -highlightthickness 2 -bd 2
     pack .e
     focus .e
@@ -2287,7 +2287,7 @@ test entry-8.5 {DeleteChars procedure} -setup {
 } -cleanup {
     destroy .e
 } -result {1 5 1 4}
-test entry-8.6 {DeleteChars procedure} -setup {
+test entry-8.6- {DeleteChars procedure} -setup {
     entryPlus .e -width 10 -font {Courier -12} -highlightthickness 2 -bd 2
     pack .e
     focus .e
@@ -3608,7 +3608,7 @@ test entry-21.1 {selection present while disabled, bug 637828} -body {
     set out [.e selection present]
     .e configure -state disabled
 # still return 1 when disabled, because 'selection get' will work,
-# but selection cannot be changed (new behavior since 8.4)
+# but selection cannot be changed (new behavior since 8.4-)
     .e select to 9
     lappend out [.e selection present] [selection get]
 } -cleanup {

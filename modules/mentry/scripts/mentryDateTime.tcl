@@ -552,7 +552,7 @@ proc mentry::getClockValFromDateMentry {win base useGMT} {
     # value; generate an error if this fails (because of the year)
     #
     set cmd [list clock scan $month/$day/$yearStr -base $base -gmt $useGMT]
-    if {$::tcl_version >= 8.5} {
+    if {$::tcl_version >= 8.5-} {
 	lappend cmd -format $format
     }
     if {[catch {eval $cmd} res] == 0} {
@@ -633,7 +633,7 @@ proc mentry::getClockValFromTimeMentry {win base useGMT} {
     # Convert the time string built from the contents
     # of the widget to an integer clock value
     #
-    if {$::tcl_version >= 8.5} {
+    if {$::tcl_version >= 8.5-} {
 	return [clock scan $timeStr -base $base -gmt $useGMT -format $format]
     } else {
 	return [clock scan $timeStr -base $base -gmt $useGMT]
@@ -766,7 +766,7 @@ proc mentry::getClockValFromDateTimeMentry {win base useGMT} {
     # clock value; generate an error if this fails (because of the year)
     #
     set cmd [list clock scan $dateTimeStr -base $base -gmt $useGMT]
-    if {$::tcl_version >= 8.5} {
+    if {$::tcl_version >= 8.5-} {
 	lappend cmd -format $format
     }
     if {[catch {eval $cmd} res] == 0} {

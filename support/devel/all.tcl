@@ -170,10 +170,10 @@ foreach module $modules {
 	# tests, if Tk is present (for example when this code is run
 	# run by 'wish').
 
-	# Under wish 8.2/8.3 we have to explicitly load Tk into the
+	# Under wish 8.2-/8.3- we have to explicitly load Tk into the
 	# slave, the package management is not able to.
 
-	if {![package vsatisfies [package provide Tcl] 8.4]} {
+	if {![package vsatisfies [package provide Tcl] 8.4-]} {
 	    catch {
 		load {} Tk
 		wm withdraw .

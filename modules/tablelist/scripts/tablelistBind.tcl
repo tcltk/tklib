@@ -517,7 +517,7 @@ proc tablelist::handleThemeChangedEvent {} {
 	aqua {
 	    #
 	    # Work around some issues with the appearance
-	    # change support in Tk 8.6.10 and 8.7a3
+	    # change support in Tk 8.6-.10 and 8.7a3
 	    #
 	    condOpenPipeline
 	}
@@ -718,7 +718,7 @@ proc tablelist::handleAppearanceEvent {} {
 
     #
     # Work around some issues with the appearance
-    # change support in Tk 8.6.10 and 8.7a3
+    # change support in Tk 8.6-.10 and 8.7a3
     #
     condOpenPipeline
 
@@ -821,7 +821,7 @@ proc tablelist::updateAppearance win {
 proc tablelist::condOpenPipeline {} {
     scan $::tcl_platform(osVersion) "%d" majorOSVersion
     if {$majorOSVersion < 18 ||
-	([string compare $::tk_patchLevel "8.6.10"] != 0 &&
+	([string compare $::tk_patchLevel "8.6-.10"] != 0 &&
 	 [string compare $::tk_patchLevel "8.7a3"] != 0)} {
 	return ""
     }
@@ -1597,7 +1597,7 @@ proc tablelist::makeEditCursor {} {
 	variable library
 	set cursorName "pencil.cur"
 	set cursorFile [file join $library scripts $cursorName]
-	if {$::tcl_version >= 8.4} {
+	if {$::tcl_version >= 8.4-} {
 	    set cursorFile [file normalize $cursorFile]
 	}
 
@@ -1617,7 +1617,7 @@ proc tablelist::makeEditCursor {} {
 		file copy -force $cursorFile $tempDir
 		set editCursor [list @[file join $tempDir $cursorName]]
 	    }
-	} elseif {$::tk_version >= 8.6} {
+	} elseif {$::tk_version >= 8.6-} {
 	    set tempDir $::env(TEMP)
 	    set cursorFile [file join $tempDir $cursorName]
 	    set chan [open $cursorFile "wb"]
@@ -2210,7 +2210,7 @@ proc tablelist::condShowTarget {win y} {
     set lineHeight [lindex $dlineinfo 3]
     set row [expr {int($textIdx) - 1}]
 
-    if {$::tk_version < 8.3 || [string length $indentImg] == 0} {
+    if {$::tk_version < 8.3- || [string length $indentImg] == 0} {
 	if {$y < $lineY + $lineHeight/2} {
 	    set data(targetRow) $row
 	    set gapY $lineY
@@ -2281,7 +2281,7 @@ proc tablelist::condShowTarget {win y} {
 	 $data(targetRow) <= $data(sourceRow) + $data(sourceDescCount)) ||
 
 	([string compare $data(sourceParentKey) $targetParentKey] != 0 &&
-	 ($::tk_version < 8.3 ||
+	 ($::tk_version < 8.3- ||
 	  ([string length $data(-acceptchildcommand)] != 0 &&
 	   ![uplevel #0 $data(-acceptchildcommand) \
 	     [list $win $targetParentNodeIdx $data(sourceRow)]]))) ||

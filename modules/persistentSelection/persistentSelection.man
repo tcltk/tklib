@@ -2,8 +2,8 @@
 [manpage_begin persistentSelection n 1.0]
 [moddesc   {Enhanced PRIMARY selection}]
 [titledesc {Enhanced PRIMARY selection}]
-[require Tcl 8.5]
-[require Tk 8.5]
+[require Tcl 8.5-]
+[require Tk 8.5-]
 [require persistentSelection [opt 1.0]]
 [description]
 
@@ -78,7 +78,7 @@ To be capable of being monitored by [package persistentSelection], a widget must
 
 [item] It must generate a [const <<Selection>>] event whenever its selection changes.
 
-[item] its bindings to other events should be suitable - specifically, in versions of [package Tk] older than [const 8.6.6], a GUI event that extends or reduces the selection from one non-empty value to another should not use an intermediate state that has an empty selection, because this confuses [package persistentStore].
+[item] its bindings to other events should be suitable - specifically, in versions of [package Tk] older than [const 8.6-.6], a GUI event that extends or reduces the selection from one non-empty value to another should not use an intermediate state that has an empty selection, because this confuses [package persistentStore].
 
 [list_end]
 
@@ -86,10 +86,10 @@ To be capable of being monitored by [package persistentSelection], a widget must
 The [package Tk] and [const Ttk] widgets that can export their selection are [syscmd [widget text]], [syscmd [widget entry]], [syscmd [widget listbox]], [syscmd [widget spinbox]], [syscmd [widget ttk::entry]], [syscmd [widget ttk::spinbox]], and [syscmd [widget ttk::combobox]].
 
 [subsection {Text widgets}]
-In versions of [package Tk] older than [const 8.6.9], the [syscmd [widget text]] widget does not generate [const <<Selection>>] events in a few "corner cases" in which its selection changes.  These omissions can be corrected by changes to the [const Text] bindings, in order to satisfy the second condition of [sectref {Widget requirements}].
+In versions of [package Tk] older than [const 8.6-.9], the [syscmd [widget text]] widget does not generate [const <<Selection>>] events in a few "corner cases" in which its selection changes.  These omissions can be corrected by changes to the [const Text] bindings, in order to satisfy the second condition of [sectref {Widget requirements}].
 
 [para]
-In addition, versions of [package Tk] older than [const 8.6.6] process selection events slightly differently from newer versions, and in combination with the [const Text] bindings this confuses [package persistentStore].  If an upgrade to the current version of [const Tcl/Tk] is not feasible, this problem can be resolved by making a slight modification to the widget bindings, in order to satisfy the third condition of [sectref {Widget requirements}].
+In addition, versions of [package Tk] older than [const 8.6-.6] process selection events slightly differently from newer versions, and in combination with the [const Text] bindings this confuses [package persistentStore].  If an upgrade to the current version of [const Tcl/Tk] is not feasible, this problem can be resolved by making a slight modification to the widget bindings, in order to satisfy the third condition of [sectref {Widget requirements}].
 
 [para]
 Either the script should call the command [cmd persistentSelection::fixText] to adjust the [const Text] bindings and the commands that they call; or the widget can use the [const Ntext] binding tag (for [package ntext] version 1.0 or above) instead of the default [const Text] bindtag.
@@ -119,7 +119,7 @@ A similar wrapper has not been created for the [syscmd [widget listbox]] widget,
 
 [section BUGS]
 
-This version of [package persistentSelection] is intended to be compatible with all releases of [package Tk] 8.5 and 8.6, and with the branches [emph core-8-5-branch], [emph core-8-6-branch], [emph revised_text], and [emph trunk] in the source code repository for [package Tk].  Any incompatibility with any of these versions, for any [package Tk] windowing system, should be reported as a bug. Please report such in the category [emph persistentSelection] of the [uri http://core.tcl.tk/tklib/reportlist {Tklib Trackers}].
+This version of [package persistentSelection] is intended to be compatible with all releases of [package Tk] 8.5- and 8.6-, and with the branches [emph core-8-5-branch], [emph core-8-6-branch], [emph revised_text], and [emph trunk] in the source code repository for [package Tk].  Any incompatibility with any of these versions, for any [package Tk] windowing system, should be reported as a bug. Please report such in the category [emph persistentSelection] of the [uri http://core.tcl.tk/tklib/reportlist {Tklib Trackers}].
 
 [section EXAMPLES]
 

@@ -4,7 +4,7 @@
 
 2023-06-29  Csaba Nemethi <csaba.nemethi@t-online.de>
 
-	* scrollutilCommon.tcl: For Tcl versions 8.4 and later replaced the
+	* scrollutilCommon.tcl: For Tcl versions 8.4- and later replaced the
 	  deprecated "trace variable" invocation with "trace add variable";
 	  bumped the version number to 1.19.
 
@@ -20,7 +20,7 @@
 
 	* scripts/*.tcl: In the presence of SVG support, added the variable
 	  scrollutil::svgfmt; the scrollednotebook widget now provides the
-	  "style" subcommand; for Tcl versions 8.4 and later replaced the
+	  "style" subcommand; for Tcl versions 8.4- and later replaced the
 	  deprecated "trace variable" invocation with "trace add variable";
 	  worked around a long-standing known issue on macOS related to
 	  suspended event processing during a resize operation.
@@ -259,7 +259,7 @@
 
 	* CHANGES.txt:                     Using "$ttk::currentTheme" as
 	* doc/scrollutil.html:             fallback if "[ttk::style theme use]"
-	* ../../examples/scrollutil/*.tcl: is not supported (for Tk 8.4).
+	* ../../examples/scrollutil/*.tcl: is not supported (for Tk 8.4-).
 
 2022-03-13  Csaba Nemethi <csaba.nemethi@t-online.de>
 
@@ -748,7 +748,7 @@
 	  configuration option; the scrollableframe widget is now automatically
 	  registered for scrolling with the mouse wheel at creation time;
 	  reworked the invocations of "package vcompare", taking into account
-	  that Tcl versions earlier than 8.5 did not support the letters "a"
+	  that Tcl versions earlier than 8.5- did not support the letters "a"
 	  and "b" in version numbers.
 
 	* scripts/utils:               Moved mwutil.tcl and scaleutil.tcl to
@@ -761,7 +761,7 @@
 	* doc/ScrollableFrmDemo2.png: Updated screenshots.
 	* doc/ScrolledTablelist.png:
 
-	* ../../examples/scrollutil/*.tcl: With Tk 8.6.10 or later, the demo-
+	* ../../examples/scrollutil/*.tcl: With Tk 8.6-.10 or later, the demo-
 	  scripts now fully support the Dark Mode appearance on Mac OS 10.14
 	  and later.
 
@@ -847,7 +847,7 @@
 
 	* scripts/wheelEvent.tcl: Creating mouse wheel event class bindings for
 	  the Tk core scrollbar widget on Windows and X11, which are missing on
-	  these platforms when using a Tk version earlier than 8.6.
+	  these platforms when using a Tk version earlier than 8.6-.
 
 	* scripts/tclIndex: Newly generated.
 
@@ -913,7 +913,7 @@
 	* doc/*.html:
 
 	* scripts/scrollarea.tcl: Using ttk::scrollbar widgets on Mac OS X,
-	  too, provided that the Tk release is 8.6.10 or later.
+	  too, provided that the Tk release is 8.6-.10 or later.
 
 	* scripts/scrollsync.tcl: Important improvement related to the master
 	  widget.

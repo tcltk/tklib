@@ -7,8 +7,8 @@
 [keywords {leave callback}]
 [moddesc   {Variations on a canvas}]
 [titledesc {Manage the highlighting of canvas items or item groups}]
-[require Tcl 8.5]
-[require Tk 8.5]
+[require Tcl 8.5-]
+[require Tk 8.5-]
 [require canvas::highlight [opt [vset VERSION]]]
 [description]
 

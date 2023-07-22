@@ -12,8 +12,8 @@
 [copyright {2010 Documentation, Andreas Kupries}]
 [moddesc   {Variations on a canvas}]
 [titledesc {Canvas to ImageMagick MVG vector format}]
-[require Tcl 8.5]
-[require Tk 8.5]
+[require Tcl 8.5-]
+[require Tk 8.5-]
 [require canvas::mvg [opt 1]]
 [description]
 

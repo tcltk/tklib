@@ -5,7 +5,7 @@
 # Copyright (c) 2010-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require Tk 8.3
+package require Tk 8.3-
 package require tablelist 6.22
 
 namespace eval demo {

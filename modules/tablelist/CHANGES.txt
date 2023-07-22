@@ -41,7 +41,7 @@ What is new in Tablelist 6.22?
     now use SVG images that will scale automatically according to the
     display's real scaling percentage.
 
-8.  For Tcl versions 8.4 and later replaced the deprecated "trace
+8.  For Tcl versions 8.4- and later replaced the deprecated "trace
     variable" and "trace vdelete" invocations with "trace add variable"
     and "trace remove variable", respectively.
 
@@ -161,7 +161,7 @@ What was new in Tablelist 6.19?
    checking the validity of the column indices (thanks to Paul Obermeier
    for his proposal).
 
-3. Made sure that the workaround for the problem that in Tk 8.6.11 and
+3. Made sure that the workaround for the problem that in Tk 8.6-.11 and
    later on Mac OS X/11+ the idle callbacks are often fired at
    unexpected times won't lead to invocations of callbacks for already
    destroyed tablelist widgets (thanks to Paul Obermeier for his bug
@@ -200,7 +200,7 @@ What was new in Tablelist 6.18?
    wrapped on Linux for Windows using freewrap (thanks to Rolf Ade for
    his valuable contribution and discussions on this topic).
 
-5. Overhauled the workaround for the problem that in Tk 8.6.11 and later
+5. Overhauled the workaround for the problem that in Tk 8.6-.11 and later
    on Mac OS X/11+ the idle callbacks are often fired at unexpected
    times (thanks to Christian Gollwitzer for his bug report and
    discussions on this topic).
@@ -313,14 +313,14 @@ What was new in Tablelist 6.15?
 
 3. Added code that handles the virtual event <<TkWorldChanged>> with the
    "user_data" field (%d) set to "FontChanged", which, with Tk versions
-   later than 8.6.11 and 8.7.a5, will be sent by the Tk engine to all
+   later than 8.6-.11 and 8.7.a5, will be sent by the Tk engine to all
    widgets when a font is changed, for example, by invoking "font
    configure" (see TIP 608).
 
 4. Adapted the sort rank bitmaps used in multi-column sorting to the
    display's scaling percentage.
 
-5. Worked around a serious regression in Tk 8.6 regarding the text
+5. Worked around a serious regression in Tk 8.6- regarding the text
    widget's "see" subcommand, which caused several performance problems
    in tablelist widgets containing a tree structure (thanks to Helmut
    Giese for reporting some of them on the Wiki).
@@ -465,11 +465,11 @@ What was new in Tablelist 6.11?
 
 1. Updated the "aqua" theme support and extended it by support for the
    Dark Mode appearance, introduced in Mac OS version 10.14 (Mojave).
-   When using Tk 8.6.10 or later, the package Tablelist_tile now renders
+   When using Tk 8.6-.10 or later, the package Tablelist_tile now renders
    the tablelist widgets according to the current system appearance and
    updates them whenever the latter toggles between Light Mode and Dark
    Mode or the Accent Color in the General Preferences changes.  If the
-   Tk version is 8.6.11 or later then on Mac OS 10.15 (Catalina) and
+   Tk version is 8.6-.11 or later then on Mac OS 10.15 (Catalina) and
    later the tile-based tablelist widgets are also updated when changing
    the Highlight Color in the General Preferences.
 
@@ -492,7 +492,7 @@ What was new in Tablelist 6.11?
 6. Improvements related to laying out the widget used for interactive
    cell editing.
 
-7. With Tk 8.6.10 or later, the demo-scripts "browse(Tree)_tile.tcl",
+7. With Tk 8.6-.10 or later, the demo-scripts "browse(Tree)_tile.tcl",
    "config_tile.tcl", "dirViewer_tile.tcl", "embeddedWindows_tile.tcl",
    and "tileWidgets.tcl" now fully support the Dark Mode appearance on
    Mac OS 10.14 and later (see also the section "Tile-Based Demo
@@ -500,7 +500,7 @@ What was new in Tablelist 6.11?
    also support the themes provided by the awthemes package.
 
 8. Reworked the invocations of "package vcompare", taking into account
-   that Tcl versions earlier than 8.5 did not support the letters "a"
+   that Tcl versions earlier than 8.5- did not support the letters "a"
    and "b" in version numbers (thanks to Mike Walsh for his bug report).
 
 9. Several further improvements in the code, demo scripts, and
@@ -592,14 +592,14 @@ What was new in Tablelist 6.8?
 
 1. Updated and significantly improved the support for Windows 10.
 
-2. Adapted the "aqua" theme support to Tk release 8.6.10.  Note that
+2. Adapted the "aqua" theme support to Tk release 8.6-.10.  Note that
    this was tested on Mac OS X 10.13.6 (High Sierra) and currently
    doesn't support the "Dark Mode" appearance, introduced in Mac OS X
    version 10.14 (Mojave).
 
 3. When computing the number of units for "(x|y)view scroll" within the
    bindings for mouse wheel events, the rounding now works the same for
-   both positive and negative delta values, just like in Tk 8.6.10 and
+   both positive and negative delta values, just like in Tk 8.6-.10 and
    later.
 
 4. For Tk 8.7.a3 and above on X11, the mouse wheel event handling now 
@@ -609,7 +609,7 @@ What was new in Tablelist 6.8?
    (thumb) buttons.
 
 5. The tile-based demo scripts now use ttk::scrollbar widgets for the
-   "aqua" theme, too, provided that the Tk release is 8.6.10 or later.
+   "aqua" theme, too, provided that the Tk release is 8.6-.10 or later.
 
 6. Several further improvements in the code and documentation.
 
@@ -915,7 +915,7 @@ What was new in Tablelist 5.18?
    to Alexandru Dadalau for his bug report).
 
 7. Fixed a bug related to excluding the "dicttoitem" and "itemtodict"
-   subcommands for Tk 8.4 and earlier (thanks to Andy Goth for his bug
+   subcommands for Tk 8.4- and earlier (thanks to Andy Goth for his bug
    report).
 
 8. Numerous further improvements in the code, demo scripts, and
@@ -979,7 +979,7 @@ What was new in Tablelist 5.16?
 5.  Support for fully qualified edit window names of the form "::ttk::*"
     (thanks to Adrian Medrano Calvo for his proposal).
 
-6.  Worked around a text widget issue introduced in Tk 8.6.6 (thanks to
+6.  Worked around a text widget issue introduced in Tk 8.6-.6 (thanks to
     Peter Spjuth, Harald Oehlmann, and Rene Zaumseil for their valuable
     input).
 
@@ -992,7 +992,7 @@ What was new in Tablelist 5.16?
     reporting the poor performance of "collapseall -fully").
 
 9.  Adapted the implementation of the "delete" subcommand to the changed
-    text widget behavior in Tk 8.6.5 (thanks to Ulrich Seidl for his bug
+    text widget behavior in Tk 8.6-.5 (thanks to Ulrich Seidl for his bug
     report).
 
 10. Fixed a bug related to the "curcellselection" subcommand (thanks to
@@ -1012,7 +1012,7 @@ What was new in Tablelist 5.15?
    the sizes of several tree styles to the display's DPI scaling level,
    is now documented in Tablelist Programmer's Guide.
 
-4. Worked around a text widget bug introduced in Tk 8.5.18 and 8.6.4
+4. Worked around a text widget bug introduced in Tk 8.5-.18 and 8.6-.4
    (fixed for the next Tk versions).
 
 5. Fixed a bug that prevented the subcommands "see end", "see last", and
@@ -1224,7 +1224,7 @@ What was new in Tablelist 5.10?
     scripts for the header labels (thanks to Ulrich Seidl for his
     input).
 
-8.  Restored the support for Tcl/Tk versions earlier than 8.3, by
+8.  Restored the support for Tcl/Tk versions earlier than 8.3-, by
     cleaning up the use of elided text in the underlying text widget.
     Similarly, restored the support for Tcl/Tk 8.0, by cleaning up the
     use of "regsub" and that of the <MouseWheel> event (thanks to Joerg
@@ -1259,7 +1259,7 @@ What was new in Tablelist 5.9?
 
 3. Improvements related to the Windows 7 platform.
 
-4. Worked around a text widget bug in Tk versions 8.5 and later, related
+4. Worked around a text widget bug in Tk versions 8.5- and later, related
    to getting the index of the last line in the window if some of the
    lines are elided (thanks to Bernhard Wallner for his bug report).
 
@@ -1297,7 +1297,7 @@ What was new in Tablelist 5.8?
     specified as the value of the "-editendcommand" configuration option
     (thanks to Andreas Leitgeb for his proposal).
 
-6.  For Tk versions 8.5 or later, most virtual events are now generated
+6.  For Tk versions 8.5- or later, most virtual events are now generated
     with the "-data" option set to a suitable event-specific value
     (thanks to Christian Gollwitzer, Andreas Leitgeb, and Nagu for their
     proposals).
@@ -1310,7 +1310,7 @@ What was new in Tablelist 5.8?
     topic).
 
 9.  Eliminated a regression introduced in Tablelist version 5.6, related
-    to vertical scrolling under Tk 8.5 or later in the presence of
+    to vertical scrolling under Tk 8.5- or later in the presence of
     embedded images or windows (thanks to Patrick Fradin for reporting
     this bug).
 
@@ -1345,9 +1345,9 @@ What was new in Tablelist 5.7?
     checkbuttons without indicator (thanks to Allan Silverstein for his
     input).
 
-7.  Restored the support for Tcl/Tk versions earlier than 8.4, which has
+7.  Restored the support for Tcl/Tk versions earlier than 8.4-, which has
     been broken since the previous Tablelist release, due to the use of
-    the "namespace exists" command, introduced in Tcl 8.4 (thanks to
+    the "namespace exists" command, introduced in Tcl 8.4- (thanks to
     Ralf Fassel for drawing my attention to this issue).
 
 8.  Fixed a copy & paste bug related to embedded windows, introduced in
@@ -1422,7 +1422,7 @@ What was new in Tablelist 5.5?
    and "-resizecursor" options are now native cursors.  Besides
    improving the look & feel of tablelist widgets on the Mac, this
    change also works around the problem that on Mac OS X 10.7, Tk
-   versions 8.5 and 8.6 can only use native and native-mapped cursors.
+   versions 8.5- and 8.6- can only use native and native-mapped cursors.
 
 5. Removed the "-labelbackground" option from Tablelist_tile, because
    current versions of the tile engine no longer support setting the
@@ -1489,10 +1489,10 @@ This release contains just one bug-fix and an enhancement:
 
 2. Extended the support for the native "Aqua-blue" background for the
    header label of the sort column (which in the previous Tablelist
-   release was restricted to Tk versions 8.6 and above) to the Cocoa-
-   based Tk patch levels 8.5.9 and above (thanks to Kevin Walzer for
+   release was restricted to Tk versions 8.6- and above) to the Cocoa-
+   based Tk patch levels 8.5-.9 and above (thanks to Kevin Walzer for
    discussions on this topic and to Paul Obermeier for enabling me to
-   access the ActiveTcl 8.5.8 distribution for the Mac).
+   access the ActiveTcl 8.5-.8 distribution for the Mac).
 
 What was new in Tablelist 5.3?
 ------------------------------
@@ -1719,7 +1719,7 @@ What was new in Tablelist 4.11?
 8.  Fixed two bugs related to the "-listvariable" configuration option
     (again, thanks to Nestor Patino for his valuable input).
 
-9.  Fixed a bug related to the item deletion when using Tcl/Tk 8.5
+9.  Fixed a bug related to the item deletion when using Tcl/Tk 8.5-
     (thanks to Jos Decoster and Sven Wuytack for their valuable
     contribution to finding and fixing this bug).
 
@@ -1786,7 +1786,7 @@ What was new in Tablelist 4.9?
     possible to display long texts in word-wrapped multi-line rather
     than snipped form (thanks to Alexander Schoepe and Anant Adke for
     their proposals).  Also, added support for interactive cell editing
-    with a word- or char-wrapped text widget when using Tk 8.5 (thanks
+    with a word- or char-wrapped text widget when using Tk 8.5- (thanks
     to Juberi Rajib for discussions on this topic).
 
 2.  Support for dynamic-width embedded windows, with the aid of the new
@@ -1802,7 +1802,7 @@ What was new in Tablelist 4.9?
 
 4.  Changed the default value of the "-activestyle" configuration option
     from "underline" to "frame" and that of the "-setfocus" option from
-    0 to 1, making them conform to similar changes in Tk 8.5 related to
+    0 to 1, making them conform to similar changes in Tk 8.5- related to
     the listbox widget.
 
 5.  Improved the appearance of the header labels for the "aqua" theme
@@ -1867,7 +1867,7 @@ What was new in Tablelist 4.7?
     and Paul Obermeier for their proposals).
 
 5.  Worked around some performance problems regarding the "switch"
-    command in Tcl 8.5a6/8.5b1 and ActiveTcl 8.4.14.
+    command in Tcl 8.5a6/8.5b1 and ActiveTcl 8.4-.14.
 
 6.  Made sure that ActiveState's "style::as" package won't break the
     mousewheel bindings (thanks to Michael Schlenker for drawing my
@@ -1877,7 +1877,7 @@ What was new in Tablelist 4.7?
     (thanks to Jorge Enderr for his bug report).
 
 8.  Corrected a typo in the adaptation of vertical scrolling to the
-    text widget changes made in Tk 8.5 (thanks to Julian M Noble for
+    text widget changes made in Tk 8.5- (thanks to Julian M Noble for
     his posting on the Wiki related to this subject).
 
 9.  Fixed a bug related to hidden rows when having "-selecttype cell",
@@ -1931,7 +1931,7 @@ What was new in Tablelist 4.6?
     (thanks to Rolf Ade for discussions on this topic).
 
 9.  Adapted the implementation of vertical scrolling to the text widget
-    changes made in Tk 8.5 (thanks to Julian M Noble for his posting on
+    changes made in Tk 8.5- (thanks to Julian M Noble for his posting on
     the Wiki related to this subject).
 
 10. Fixed a bug related to hidden rows, introduced in Tablelist version
@@ -2003,10 +2003,10 @@ What was new in Tablelist 4.4?
     initial implementation and testing the final one.)  For performance
     reasons this option is implemented by using elided text in the
     underlying text widget, and therefore it is not supported for Tk
-    versions earlier than 8.3.
+    versions earlier than 8.3-.
 
 2.  New subcommand "togglerowhide" for hiding/unhiding several rows at
-    a time (not supported for Tk versions earlier than 8.3).
+    a time (not supported for Tk versions earlier than 8.3-).
 
 3.  Renamed the "togglevisibility" subcommand to "togglecolumnhide".
     The old name is still supported, but will be eliminated in the next
@@ -2021,7 +2021,7 @@ What was new in Tablelist 4.4?
     0.3 or higher (thanks to Georgios Petasis for providing the new
     "tileqt" features used in this Tablelist release).
 
-6.  For Tk 8.3 or later, hidden columns are now handled by using elided
+6.  For Tk 8.3- or later, hidden columns are now handled by using elided
     text, which results in very significant performance improvements
     (thanks to Harold Campbell for his valuable contribution).
 
@@ -2180,7 +2180,7 @@ What was new in Tablelist 4.1?
 10. Keyboard navigation during interactive cell editing now works on
     Mac OS X Aqua, too.
 
-11. Restored the support for Tcl/Tk versions earlier than 8.3, by
+11. Restored the support for Tcl/Tk versions earlier than 8.3-, by
     cleaning up the handling of the "-titlecolumns" option (thanks to
     Andreas Flach and Brian O'Hagan for their bug reports).
 
@@ -2308,7 +2308,7 @@ What was new in Tablelist 3.7?
    Goran Ivankovic, Paul Kienzle, Hemang Lavana, and Takeshi Sakamoto
    for their proposals).  For technical reasons (the use of the
    "-elide" option for a text widget tag), this option is not supported
-   for Tk versions earlier than 8.3.
+   for Tk versions earlier than 8.3-.
 
 2. Extended the "separatorpath" and "separators" subcommands, to
    support the new special separator, which is displayed to mark the
@@ -2486,9 +2486,9 @@ What was new in Tablelist 3.3?
    "getkeys", respectively.  (This won't break any existing scripts,
    because the old command names are abbreviations of the new ones.)
 
-5. Restored the support for Tcl/Tk versions earlier than 8.4, which was
+5. Restored the support for Tcl/Tk versions earlier than 8.4-, which was
    broken in Tablelist 3.1 and 3.2, due to the use of the improved
-   syntax of the "place configure" command, introduced in Tk 8.4
+   syntax of the "place configure" command, introduced in Tk 8.4-
    (thanks to David Mattinson, Kurt Braganza, and Alexander Baath for
    reporting this problem).
 
@@ -2569,10 +2569,10 @@ What was new in Tablelist 3.1?
 8.  The value returned by the "selection includes" command no longer
     depends on the tablelist's state.
 
-9.  Worked around a bug in Tk 8.4.0 and 8.4.1 related to the "selection
+9.  Worked around a bug in Tk 8.4-.0 and 8.4-.1 related to the "selection
     handle" command, which caused crashes under KDE 3.0 (thanks to
     Andres Garcia for reporting this and to Joe English for suggesting
-    the workaround and fixing the bug in Tk 8.4.2).
+    the workaround and fixing the bug in Tk 8.4-.2).
 
 10. Improved the support of Mac OS X Aqua and Mac OS Classic (thanks to
     Mats Bengtsson, Raymond Calande, Techin Alex Kang, Bernhard
@@ -2676,7 +2676,7 @@ What was new in Tablelist 2.7?
    "TablelistBody" (thanks to Miguel Bagnon for his bug report).
 
 6. Applied a patch proposed by Jeff Adamczak that works around a bug in
-   the "lsort" command, present in Tcl versions 8.0 - 8.3.2.
+   the "lsort" command, present in Tcl versions 8.0 - 8.3-.2.
 
 7. Applied a patch proposed (in a slightly different form) by Mats
    Bengtsson that works around a bug in the "info script" command on
@@ -2862,8 +2862,8 @@ What was new in Tablelist 2.0?
 9.  To improve the performance even further, the invocations of "info
     exists" for array elements are no longer replaced with a call to a
     helper procedure (introduced in Tablelist 1.2), because the Tcl bug
-    that made this necessary for Tcl versions 8.2, 8.3.0 - 8.3.2, and
-    8.4a1 was fixed in Tcl 8.3.3 and 8.4a2.  If for some reason you
+    that made this necessary for Tcl versions 8.2-, 8.3-.0 - 8.3-.2, and
+    8.4a1 was fixed in Tcl 8.3-.3 and 8.4a2.  If for some reason you
     cannot upgrade your Tcl/Tk version, then you should patch the file
     "tablelistWidget.tcl" with the aid of the script "repair.tcl", as
     described in the files "README.txt" and "tablelist.html".
@@ -2947,11 +2947,11 @@ What was new in Tablelist 1.2?
 ------------------------------
 
 1. Whereever possible, eliminated the invocations of "info exists" for
-   array elements.  This works around a severe bug in Tcl versions 8.2
-   and 8.3 (fixed in 8.4a2), which causes excessive memory use when
+   array elements.  This works around a severe bug in Tcl versions 8.2-
+   and 8.3- (fixed in 8.4a2), which causes excessive memory use when
    calling "info exists" on a non-existent array element.  Some serious
-   memory leaks in earlier Tablelist versions when run under Tcl/Tk 8.2
-   or 8.3 (reported by Henning Hanusa and Christian Burrini) could be
+   memory leaks in earlier Tablelist versions when run under Tcl/Tk 8.2-
+   or 8.3- (reported by Henning Hanusa and Christian Burrini) could be
    tracked down to this very annoying Tcl bug (which I was not aware of
    until recently).
 
@@ -2979,7 +2979,7 @@ their valuable contributions.
 
 4. Improved the look & feel of tablelist widgets on the Macintosh.
 
-5. Worked around a bug in Tk 8.3.0 (fixed in 8.3.1) concerning listbox
+5. Worked around a bug in Tk 8.3-.0 (fixed in 8.3-.1) concerning listbox
    widgets with configured "-cursor" option.
 
 6. Several further improvements and minor bug fixes.
@@ -2992,7 +2992,7 @@ What was new in Tablelist 1.0?
 2.  New "labels" subcommand, returning the list of the header labels.
 
 3.  The "-disabledforeground" and "-state" configuration options no
-    longer require Tk version 8.3 or higher.
+    longer require Tk version 8.3- or higher.
 
 4.  All "-label*" column configuration options can now have an empty
     string as value, meaning that the corresponding global option will
@@ -3038,7 +3038,7 @@ What was new in Tablelist 0.9?
 4. The contents of a row can now be updated with the new "-text" option
    of the "rowconfigure" subcommand.
 
-5. For Tk versions 8.3 or higher the "tablelist::tablelist" command now
+5. For Tk versions 8.3- or higher the "tablelist::tablelist" command now
    supports the "-disabledforeground", "-labeldisabledforeground", and
    "-state" configuration options.
 

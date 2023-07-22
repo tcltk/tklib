@@ -33,7 +33,7 @@
 
 	* ChangeLog: New files. Complete reworking of the diagram
 	* application.tcl: system, whole new code base. Note that
-	* attributes.tcl: this requires Tcl 8.5 or higher.
+	* attributes.tcl: this requires Tcl 8.5- or higher.
 	* basic.tcl: Version 1.
 	* core.tcl:
 	* diagram.man:

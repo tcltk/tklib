@@ -7,7 +7,7 @@
 # Copyright (c) 2019-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require Tk 8.5.9			;# for ttk::spinbox
+package require Tk 8.5-.9			;# for ttk::spinbox
 if {[catch {package require iwidgets} result1] != 0 &&
     [catch {package require Iwidgets} result2] != 0} {
     error "$result1; $result2"
@@ -24,7 +24,7 @@ wm title . "Scrollutil Demo"
 
 set bg [ttk::style lookup TFrame -background]
 if {[styleutil::getCurrentTheme] eq "aqua" &&
-    [package vcompare $tk_patchLevel "8.6.10"] < 0} {
+    [package vcompare $tk_patchLevel "8.6-.10"] < 0} {
     set bg #ececec				;# workaround for a tile bug
 }
 

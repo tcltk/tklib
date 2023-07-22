@@ -13,7 +13,7 @@ What is new in Scrollutil 1.19?
    (which for Tk themed widgets was introduced in Tk 8.7a4) for all
    supported Tk versions (just like the plainnotebook widget).
 
-3. For Tcl versions 8.4 and later replaced the deprecated "trace
+3. For Tcl versions 8.4- and later replaced the deprecated "trace
    variable" invocations with "trace add variable".
 
 4. Improvements in the themepatch package, especially regarding the
@@ -415,15 +415,15 @@ What was new in Scrollutil 1.7?
 
 5. Added the command "scrollutil::disableScrollingByWheel".
 
-6. With Tk 8.6.10 or later, the demo-scripts now fully support the Dark
+6. With Tk 8.6-.10 or later, the demo-scripts now fully support the Dark
    Mode appearance on Mac OS 10.14 (Mojave) and later.  For the demo
    scripts using tablelist widgets this is true if the Tablelist version
    is 6.11 or later (for an optimal user experience it is recommended to
-   use Tk 8.6.11 or later).  Similarly, the full Dark Mode support for
+   use Tk 8.6-.11 or later).  Similarly, the full Dark Mode support for
    mentry widgets requires Mentry version 3.11 or later.
 
 7. Reworked the invocations of "package vcompare", taking into account
-   that Tcl versions earlier than 8.5 did not support the letters "a"
+   that Tcl versions earlier than 8.5- did not support the letters "a"
    and "b" in version numbers (thanks to Mike Walsh for his bug report).
 
 8. Several further improvements in the code,  demo scripts, and
@@ -468,7 +468,7 @@ What was new in Scrollutil 1.5?
 
 1. On Windows and X11, Scrollutil now automatically creates mouse wheel
    event class bindings for the Tk core scrollbar widget, which are
-   missing on these platforms when using a Tk version earlier than 8.6.
+   missing on these platforms when using a Tk version earlier than 8.6-.
 
 2. Added a demo script showing how the scrollarea widget circumvents the
    potential shimmering effect in connection with text widgets.
@@ -511,7 +511,7 @@ What was new in Scrollutil 1.3?
 
 1. The scrollarea widget of the Scrollutil_tile package now uses
    ttk::scrollbar widgets on Mac OS X, too, provided that the Tk release
-   is 8.6.10 or later.
+   is 8.6-.10 or later.
 
 2. Improvements related to the scrollsync widget.
 
@@ -529,7 +529,7 @@ What was new in Scrollutil 1.3?
    
 6. When computing the number of units for "(x|y)view scroll" within the
    bindings for mouse wheel events, the rounding now works the same for
-   both positive and negative delta values, just like in Tk 8.6.10 and
+   both positive and negative delta values, just like in Tk 8.6-.10 and
    later.
    
 7. For Tk 8.7.a3 and above on X11, the mouse wheel event handling now

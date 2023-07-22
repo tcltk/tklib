@@ -3,8 +3,8 @@
 [manpage_begin widgetPlus n [vset VERSION]]
 [moddesc   {Enhanced Entry, Spinbox, and Combobox Widgets with Undo/Redo and other useful features}]
 [titledesc {Enhanced Entry, Spinbox, and Combobox Widgets with Undo/Redo and other useful features}]
-[require Tcl 8.5]
-[require Tk 8.5]
+[require Tcl 8.5-]
+[require Tk 8.5-]
 [require snit]
 [require widgetPlus [opt [vset VERSION]]]
 [description]
@@ -262,7 +262,7 @@ entryPlus $w.e -undo 1 -maxundo 0
 
 [section BUGS]
 
-This version of [package widgetPlus] is intended to be compatible with all releases of [package Tk] 8.5 and 8.6, and with the branches [emph core-8-5-branch], [emph core-8-6-branch], and [emph trunk] in the source code repository for [package Tk].  Any incompatibility with any of these versions, for any [package Tk] windowing system, should be reported as a bug. Please report such in the category [emph widgetPlus] of the [uri http://core.tcl.tk/tklib/reportlist {Tklib Trackers}].
+This version of [package widgetPlus] is intended to be compatible with all releases of [package Tk] 8.5- and 8.6-, and with the branches [emph core-8-5-branch], [emph core-8-6-branch], and [emph trunk] in the source code repository for [package Tk].  Any incompatibility with any of these versions, for any [package Tk] windowing system, should be reported as a bug. Please report such in the category [emph widgetPlus] of the [uri http://core.tcl.tk/tklib/reportlist {Tklib Trackers}].
 
 [section EXAMPLES]
 

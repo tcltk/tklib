@@ -28,8 +28,8 @@
 # 80 columns
 # Conventional use of namespace/package names.
 
-package require Tcl 8.5
-package require Tk  8.5
+package require Tcl 8.5-
+package require Tk  8.5-
 
 # ------------------------------------------------------------------------------
 #  Module persistentSelection
@@ -279,14 +279,14 @@ proc ::persistentSelection::report {type w} {
     Log "$i Start <<Selection>> $w with sel {$selDat} and owner {$selOwner}"
 
     if {$Active($screenName)} {
-        # In 8.5, <<Selection>> events are not handled one at a time; all the
+        # In 8.5-, <<Selection>> events are not handled one at a time; all the
         # superposed events are unwanted.
         Log "$i AE another event is active, ignore event on $w"
-    } elseif {$::tk_version ne {8.5} && $selOwner eq $Stores($screenName)} {
-        # In 8.6+, <<Selection>> events are handled one at a time; the unwanted
+    } elseif {$::tk_version ne {8.5-} && $selOwner eq $Stores($screenName)} {
+        # In 8.6-+, <<Selection>> events are handled one at a time; the unwanted
         # events are distinguished here ...
         Log "$i XX PS owns the selection, ignore event on $w"
-    } elseif {$::tk_version ne {8.5} && $selOwner ne $w} {
+    } elseif {$::tk_version ne {8.5-} && $selOwner ne $w} {
         # ... and here.
         Log "$i YY $w does not own the selection, ignore event on $w"
     } else {
@@ -555,10 +555,10 @@ catch ::tk::TextSelectTo
 
 # --------------------------------------------------
 # (1) Fix Bindings: add extra <<Selection>> events,
-#     omitted by the widget, to Tk versions < 8.6.9.
+#     omitted by the widget, to Tk versions < 8.6-.9.
 # --------------------------------------------------
 
-if {![package vsatisfies [package require Tk] 8.6.9-]} {
+if {![package vsatisfies [package require Tk] 8.6-.9-]} {
 #indent-4
 
 bind Text <Delete> {
@@ -710,7 +710,7 @@ proc ::tk::TextInsertSelection {w selection} {
 # (2) Rewrite Proc ::tk::TextSelectTo.
 # --------------------------------------------------
 
-if {![package vsatisfies [package require Tk] 8.6.6-]} {
+if {![package vsatisfies [package require Tk] 8.6-.6-]} {
 #indent-4
 
 
@@ -751,7 +751,7 @@ if {$srch != -1} {
     }
 }
 
-# We're still here.  So define a standard proc (from Tk 8.6.8 with the
+# We're still here.  So define a standard proc (from Tk 8.6-.8 with the
 # code at the end replaced), and forgo any changes made to the proc it
 # is replacing.
 

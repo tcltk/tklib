@@ -14,7 +14,7 @@
 
 	* ctext.tcl (ctext::linemapUpdateOffset): [Bug 3285751]: Applied
 	* ctext.man: patch by Wojciech Kocjan <zoro2@users.sourceforge.net>
-	* pkgIndex.tcl: enabling smooth scrolling for Tk 8.5 and
+	* pkgIndex.tcl: enabling smooth scrolling for Tk 8.5- and
 	  higher. Bumped version to 3.3 (new, api-compatible feature).
 
 	* ctext.tcl: Reformatted for standard indentation.
@@ -325,7 +325,7 @@ submitted his 3.0 to me and I decided to create
 	
 	----
 	This release passes all of my tests with
-	Tcl/Tk 8.3 and 8.4.  To make debugging easier
+	Tcl/Tk 8.3- and 8.4-.  To make debugging easier
 	I have added ctext_test_interactive.tcl
 
 2.6.7 - Fri Nov 22 16:39:41 GMT 2002
@@ -337,7 +337,7 @@ submitted his 3.0 to me and I decided to create
 	previous char and next char were not used to
 	decipher the match.
 	
-	This release was tested with Tcl/Tk 8.4
+	This release was tested with Tcl/Tk 8.4-
 			
 2.6.6 - Thu Aug 22 23:46:14 GMT 2002
 
@@ -370,8 +370,8 @@ submitted his 3.0 to me and I decided to create
 	lines it wasn't displaying the line numbers
 	properly.
 
-	I fixed a major flaw with 8.4 handling.  The
-	8.4 text widget has some new features, and
+	I fixed a major flaw with 8.4- handling.  The
+	8.4- text widget has some new features, and
 	the edit instance command wasn't dealing with
 	the requests properly.  Now it should, but
 	I haven't tested it a lot.
@@ -384,7 +384,7 @@ submitted his 3.0 to me and I decided to create
 	bug that occured with the pattern { \}.
 	
 	I added an edit modified instance command.
-	I'm not sure if it works like the Tk 8.4
+	I'm not sure if it works like the Tk 8.4-
 	version, but it should work well enough.
 	
 	I added edit modified tests to ctext_test.tcl

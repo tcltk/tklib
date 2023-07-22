@@ -9,7 +9,7 @@
 # Meta description  
 # Meta category     HTML/Markdown viewer
 # Meta subject      html markdown
-# Meta require      {Tcl 8.5}
+# Meta require      {Tcl 8.5-}
 # Meta require      Tk
 # Meta require      shtmlview
 # Meta author       Stephen Uhler <stephen.uhler@sun.com>
@@ -19,7 +19,7 @@
 # Meta license      BSD
 # @@ Meta End
 
-package require Tcl 8.5
+package require Tcl 8.5-
 package require Tk
 package require shtmlview::shtmlview
 

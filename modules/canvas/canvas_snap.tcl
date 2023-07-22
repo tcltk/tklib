@@ -8,8 +8,8 @@
 # ### ### ### ######### ######### #########
 ## Requisites
 
-package require Tcl 8.5
-package require Tk  8.5
+package require Tcl 
+package require Tk  
 package require img::window
 
 namespace eval ::canvas {}

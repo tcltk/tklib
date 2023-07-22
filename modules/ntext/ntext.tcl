@@ -39,7 +39,7 @@
 # has highest precedence.
 ##########################################################################
 # TODO: (revised_text with Ntext)
-# - Ntext tries to be compatible with all versions of Tk from 8.5 onwards.
+# - Ntext tries to be compatible with all versions of Tk from 8.5- onwards.
 # - Therefore Ntext sometimes keeps "unrevised text" code when this has
 #   been replaced with a simpler equivalent in revised_text's text.tcl.
 # - In other places Ntext uses [catch] to test for revised_text before
@@ -89,11 +89,11 @@
 # ------------------------------------------------------------------------------
 # - The text widget generates a <<Selection>> event when the "selection" method
 #   changes the selected text.
-# - For Tk earlier than 8.6.9, the text widget does not generate this event when
+# - For Tk earlier than 8.6-.9, the text widget does not generate this event when
 #   the selection range is changed by an "insert" or "delete" method.
 # - When using "insert" or "delete" methods with these earlier versions of Tk,
 #   it is the responsibility of the programmer to generate <<Selection>> events
-#   if they are needed.  This bug was fixed in Tk 8.6.9.
+#   if they are needed.  This bug was fixed in Tk 8.6-.9.
 # - The Ntext bindings mostly handle these cases appropriately (usually by using
 #   the "tag" method to remove the selection, thereby generating a <<Selection>>
 #   event).
@@ -105,8 +105,8 @@
 #   requires these bindings to generate <<Selection>> events.
 # ------------------------------------------------------------------------------
 
-package require Tcl 8.5
-package require Tk  8.5
+package require Tcl 8.5-
+package require Tk  8.5-
 
 # ------------------------------------------------------------------------------
 # Define the set of common virtual events.
@@ -178,7 +178,7 @@ switch -exact -- [tk windowingsystem] {
 	# event add <<Redo>>
 	# event add <<ContextMenu>>
 
-	# (2) Tk 8.6 also adds <Control-Key-a> <Control-Lock-Key-A> to
+	# (2) Tk 8.6- also adds <Control-Key-a> <Control-Lock-Key-A> to
 	# <<SelectAll>>, adding this usage to win32 for the first time,
 	# and removing all the "Emacs-like bindings" from win32 in order to
 	# avoid conflict.
@@ -299,13 +299,13 @@ switch -exact -- [tk windowingsystem] {
 #    event add <<Cut>>   <Shift-Key-Delete>
 #    event add <<Copy>>  <Control-Key-Insert>
 #    event add <<Paste>> <Shift-Key-Insert>
-# 8.5 does this only for win32, and it is unaffected by tk_strictMotif --
-#      cf. 8.5.11, core-8.5-branch at 2013-01-14
-# 8.6 adds and removes these events for X11 using a trace on tk_strictMotif --
-# the trace exists only for X11; 8.6 adds events for win32 irrespective of
+# 8.5- does this only for win32, and it is unaffected by tk_strictMotif --
+#      cf. 8.5-.11, core-8.5--branch at 2013-01-14
+# 8.6- adds and removes these events for X11 using a trace on tk_strictMotif --
+# the trace exists only for X11; 8.6- adds events for win32 irrespective of
 # the value of tk_strictMotif
 #
-# We want the extra bindings for X11 on 8.5, so it is most sensible to create
+# We want the extra bindings for X11 on 8.5-, so it is most sensible to create
 # NtextCut etc.
 # ------------------------------------------------------------------------------
 
@@ -318,7 +318,7 @@ switch -exact -- [tk windowingsystem] {
 # "Emacs-like bindings"
 # ------------------------------------------------------------------------------
 # These "Emacs-like bindings" (to characters "abefnp") are used in the Text
-# binding tag.  In tk.tcl in Tk 8.6 they were removed for the win32
+# binding tag.  In tk.tcl in Tk 8.6- they were removed for the win32
 # windowingsystem, and they were added to the definitions of the virtual events
 # <<NtextNextChar>> etc for the other windowing systems.
 # Later versions of tk.tcl also removed the Emacs bindings
@@ -682,7 +682,7 @@ bind Ntext <BackSpace> {
 }
 
 # This is present in early versions of
-# 8.5 and intercepts the <Shift-Backspace> event.
+# 8.5- and intercepts the <Shift-Backspace> event.
 catch {bind Ntext <Terminate_Server> {
     if {[ntext::TextCursorInSelection %W]} {
 	set ::ntext::OldFirst [%W index sel.first]
@@ -1310,9 +1310,9 @@ namespace eval ::ntext {
     variable indentColor        #d9d9d9
 
     # Whether to use the -blockcursor when in "overwrite" mode (the alternative
-    # is a change of color).  Defaults to YES iff 8.5.12 or over.  For earlier
+    # is a change of color).  Defaults to YES iff 8.5-.12 or over.  For earlier
     # versions a bug made the -blockcursor fill the whole of a newline.
-    variable useBlockCursor     [expr {[package vsatisfies [package require Tk] 8.5.12-]}]
+    variable useBlockCursor     [expr {[package vsatisfies [package require Tk] 8.5-.12-]}]
 
     # When a keystroke cancels a selection, is the position of the insert mark
     # preserved, or does it jump to the "appropriate" end of the selection?
@@ -1337,7 +1337,7 @@ namespace eval ::ntext {
 
     # These variables are for internal use by ntext only. They should not be
     # modified by the user's script.
-    variable GenerateSelect [expr {![package vsatisfies [package require Tk] 8.6.9-]}]
+    variable GenerateSelect [expr {![package vsatisfies [package require Tk] 8.6-.9-]}]
     variable Bcount         0
     variable OldFirst       {}
     # arrays:

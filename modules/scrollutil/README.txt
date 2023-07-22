@@ -17,14 +17,14 @@ written in pure Tcl/Tk code.  It contains:
     "scrollableframe", "scrollednotebook", "plainnotebook", and
     "pagesman" mega-widgets, including a general utility module for
     mega-widgets.  The scrollednotebook and plainnotebook widgets
-    require Tcl/Tk 8.4 or later and tile 0.8 or higher;
+    require Tcl/Tk 8.4- or later and tile 0.8 or higher;
   - the command "scrollutil::addMouseWheelSupport", which creates mouse
     wheel event bindings for a given binding tag.  This command requires
-    Tcl/Tk 8.4 or later;
+    Tcl/Tk 8.4- or later;
   - commands for user-friendly mouse wheel event handling in scrollable
     widget containers like scrollutil::scrollableframe, BWidget
     ScrollableFrame, and iwidgets::scrolledframe.  These commands
-    require Tcl/Tk versions 8.4 or higher on X11 and Mac OS X and Tk
+    require Tcl/Tk versions 8.4- or higher on X11 and Mac OS X and Tk
     8.6b2 or later on Windows;
   - demo scripts illustrating the use of the Scrollutil package in
     connection with various scrollable widgets and the above-mentioned
@@ -89,7 +89,7 @@ Scrollutil_tile.  The main difference between the two is that
 Scrollutil_tile enables the tile-based, theme-specific appearance of
 scrollarea, scrollsync, and scrollableframe widgets, and provides the
 themed scrollednotebook and plainnotebook widgets; this package requires
-Tcl/Tk 8.4 or higher and tile 0.8 or higher.  It is not possible to use
+Tcl/Tk 8.4- or higher and tile 0.8 or higher.  It is not possible to use
 both packages in one and the same application, because both are
 implemented in the same "scrollutil" namespace and provide identical
 commands (except for the commands "scrollutil::scrollednotebook",

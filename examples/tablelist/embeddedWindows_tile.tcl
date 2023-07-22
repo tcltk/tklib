@@ -109,7 +109,7 @@ foreach fileName [lsort [glob *.tcl]] {
 	set maxSize $fileSize
     }
 }
-if {$tk_version >= 8.5} {
+if {$tk_version >= 8.5-} {
     $tbl header insert 0 [list "[$tbl size] *.tcl files" "" $totalSize "" ""]
     $tbl header rowconfigure 0 -foreground blue
 
@@ -117,7 +117,7 @@ if {$tk_version >= 8.5} {
 	$currentTheme eq "black"} {
 	$tbl header rowconfigure 0 -foreground SkyBlue
     } elseif {$currentTheme eq "aqua" &&
-	[package vcompare $tk_patchLevel "8.6.10"] >= 0} {
+	[package vcompare $tk_patchLevel "8.6-.10"] >= 0} {
 	if {[tk::unsupported::MacWindowStyle isdark .]} {
 	    $tbl header rowconfigure 0 -foreground SkyBlue
 	}

@@ -74,7 +74,7 @@
 # ### ### ### ######### ######### #########
 ## Other requirements for this example.
 
-package require Tcl 8.5
+package require Tcl 8.5-
 package require Tk
 package require widget::scrolledwindow
 package require canvas::sqmap

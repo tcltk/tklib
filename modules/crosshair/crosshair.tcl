@@ -18,8 +18,8 @@
 # ### ### ### ######### ######### #########
 ## Requisites
 
-package require Tcl 8.4
-package require Tk  8.4
+package require Tcl 
+package require Tk 
 
 namespace eval ::crosshair {}
 
@@ -172,7 +172,7 @@ proc ::crosshair::bbox_add { w bbox } {
     set config($w) [array get opts]
 
     foreach {nllx nlly nurx nury} $bbox break
-    # Tcl 8.4 foreach-as-lassign hack
+    # Tcl 8.4- foreach-as-lassign hack
     set rect [$w create rect \
 		  $nllx $nlly $nurx $nury \
 		  -tags $token -state hidden]

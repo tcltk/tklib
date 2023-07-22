@@ -10,8 +10,8 @@
 [copyright {2010 Arjen Markus <arjenmarkus@users.sourceforge.net>}]
 [moddesc   controlwidget]
 [titledesc {Collection of widgets for displaying and controlling numerical values}]
-[require Tcl [opt 8.5]]
-[require Tk [opt 8.5]]
+[require Tcl [opt 8.5-]]
+[require Tk [opt 8.5-]]
 [require snit [opt 2.0]]
 [require controlwidget [opt 0.1]]
 

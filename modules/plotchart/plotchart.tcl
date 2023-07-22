@@ -6,7 +6,7 @@
 #    The private functions are contained in the files "sourced"
 #    at the end.
 #
-package require Tcl 8.5
+package require Tcl 8.5-
 package require Tk
 
 # Plotchart --

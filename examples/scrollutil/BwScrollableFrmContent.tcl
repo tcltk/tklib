@@ -134,7 +134,7 @@ set tv [ttk::treeview $_sa.tv -columns {release changes comment} \
 	-show headings -height 16 -selectmode browse]
 set currentTheme [styleutil::getCurrentTheme]
 if {$currentTheme eq "aqua" &&
-    [package vcompare $::tk_patchLevel "8.6.10"] >= 0} {
+    [package vcompare $::tk_patchLevel "8.6-.10"] >= 0} {
     $_sa configure -borderwidth 1 ;# because in this case $tv has a flat relief
 }
 $tv heading release -text " Release" -anchor w
@@ -226,7 +226,7 @@ $tbl header insert 0 \
 $tbl header rowconfigure 0 -foreground blue
 
 if {$currentTheme eq "aqua" &&
-    [package vcompare $tk_patchLevel "8.6.10"] >= 0} {
+    [package vcompare $tk_patchLevel "8.6-.10"] >= 0} {
     if {[tk::unsupported::MacWindowStyle isdark .]} {
 	$tbl header rowconfigure 0 -foreground SkyBlue
     }
@@ -328,7 +328,7 @@ proc configTablelist {} {
     # the BWidget procedure ScrollableFrame::create
     #
     if {$::currentTheme eq "aqua" &&
-	[package vcompare $::tk_patchLevel "8.6.10"] < 0} {
+	[package vcompare $::tk_patchLevel "8.6-.10"] < 0} {
 	$sf:cmd configure -background #ececec
     }
 

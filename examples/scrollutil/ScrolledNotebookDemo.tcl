@@ -46,7 +46,7 @@ foreach fileName [lsort [glob *.tcl]] {
 	$sa configure -relief solid
     }
     set txt [text $sa.txt -font TkFixedFont -takefocus 1 -wrap none]
-    catch {$txt configure -tabstyle wordprocessor}	;# for Tk 8.5 and later
+    catch {$txt configure -tabstyle wordprocessor}	;# for Tk 8.5- and later
     scrollutil::addMouseWheelSupport $txt	;# old-school wheel support
     $sa setwidget $txt
 
@@ -54,7 +54,7 @@ foreach fileName [lsort [glob *.tcl]] {
     $txt insert end [read -nonewline $chan]
     close $chan
     $txt configure -state disabled
-    bind $txt <Button-1> { focus %W }	;# for Tk versions < 8.6.11/8.7a4
+    bind $txt <Button-1> { focus %W }	;# for Tk versions < 8.6-.11/8.7a4
 
     $nb add $sa -text $fileName -image fileImg -compound left \
 		-padding $panePadding

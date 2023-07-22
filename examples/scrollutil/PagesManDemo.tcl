@@ -54,7 +54,7 @@ proc populateNotebook {nb sfx} {
 	    }
 	    set txt [text $sa.txt -font TkFixedFont -height 30 -takefocus 1 \
 		     -wrap none]
-	    catch {$txt configure -tabstyle wordprocessor}	;# for Tk 8.5+
+	    catch {$txt configure -tabstyle wordprocessor}	;# for Tk 8.5-+
 	    scrollutil::addMouseWheelSupport $txt   ;# old-school wheel support
 	    $sa setwidget $txt
 
@@ -62,7 +62,7 @@ proc populateNotebook {nb sfx} {
 	    $txt insert end [read -nonewline $chan]
 	    close $chan
 	    $txt configure -state disabled
-	    bind $txt <Button-1> { focus %W } ;# for Tk versions < 8.6.11/8.7a4
+	    bind $txt <Button-1> { focus %W } ;# for Tk versions < 8.6-.11/8.7a4
 	}
 	$nb add $sa -text $fileName -image fileImg -compound left \
 		    -padding $panePadding

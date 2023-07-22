@@ -6,7 +6,7 @@
 # "tablelistSort.tcl", and "tablelistUtil.tcl" by defining the procedure
 # "arrElemExists" and replacing all invocations of "[info exists
 # <array>(<name>)]" with "[arrElemExists <array> <name>]".  This works around a
-# bug in Tcl versions 8.2, 8.3.0 - 8.3.2, and 8.4a1 (fixed in Tcl 8.3.3 and
+# bug in Tcl versions 8.2-, 8.3-.0 - 8.3-.2, and 8.4a1 (fixed in Tcl 8.3-.3 and
 # 8.4a2), which causes excessive memory use when calling "info exists" on
 # non-existent array elements.
 #
@@ -17,8 +17,8 @@ set procDef {
     #
     # The following procedure returns 1 if arrName($name) exists and
     # 0 otherwise.  It is a (partial) replacement for [info exists
-    # arrName($name)], which -- due to a bug in Tcl versions 8.2,
-    # 8.3.0 - 8.3.2, and 8.4a1 (fixed in Tcl 8.3.3 and 8.4a2) --
+    # arrName($name)], which -- due to a bug in Tcl versions 8.2-,
+    # 8.3-.0 - 8.3-.2, and 8.4a1 (fixed in Tcl 8.3-.3 and 8.4a2) --
     # causes excessive memory use if arrName($name) doesn't exist.
     # The first version of the procedure assumes that the second
     # argument doesn't contain glob-style special characters.

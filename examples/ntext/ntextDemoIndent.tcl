@@ -31,7 +31,7 @@ set message {  This demo shows ntext's indentation facilities.  These are switch
 
 	This paragraph is indented by a tab. Again, the display lines are all indented to match the first.
 
-    Colored indents are possible in Tk 8.6.6 and above.  To remove coloring, set the color to the empty string.
+    Colored indents are possible in Tk 8.6-.6 and above.  To remove coloring, set the color to the empty string.
 
  Try any text-widget operation, and test whether ntext's handling of display line indentation is satisfactory.  Ntext is part of Tklib - please report any bugs to:
 

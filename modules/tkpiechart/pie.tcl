@@ -1,6 +1,6 @@
 # $Id: pie.tcl,v 2.25 2006/01/27 19:05:52 andreas_kupries Exp $
 
-package require Tk 8.3
+package require Tk 8.3-
 package require stooop
 
 
@@ -383,7 +383,7 @@ proc pie::buttonRelease {selector label extended} {
     proc minimum {a b} {return [expr {$a < $b? $a: $b}]}
 
     catch ::tk::Darken                                  ;# force package loading
-    if {[llength [info procs ::tk::Darken]] > 0} {                     ;# Tk 8.4
+    if {[llength [info procs ::tk::Darken]] > 0} {                     ;# Tk 8.4-
         proc darken {color percent} {::tk::Darken $color $percent}
     } else {
         proc darken {color percent} {::tkDarken $color $percent}

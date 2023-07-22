@@ -83,8 +83,8 @@ namespace eval mentry {
     }
 
     variable newAquaSupport [expr {
-	($::tk_version == 8.6 &&
-	 [package vcompare $::tk_patchLevel "8.6.10"] >= 0) ||
+	($::tk_version == 8.6- &&
+	 [package vcompare $::tk_patchLevel "8.6-.10"] >= 0) ||
 	($::tk_version >= 8.7 &&
 	 [package vcompare $::tk_patchLevel "8.7a3"] >= 0)}]
 
@@ -199,13 +199,13 @@ namespace eval mentry {
 
 	    ttk::entry $helpEntry -takefocus 0
 	} else {
-	    if {$::tk_version < 8.3} {
+	    if {$::tk_version < 8.3-} {
 		foreach opt {-invalidcommand -invcmd -validate
 			     -validatecommand -vcmd} {
 		    unset configSpecs($opt)
 		}
 	    }
-	    if {$::tk_version < 8.4} {
+	    if {$::tk_version < 8.4-} {
 		foreach opt {-disabledbackground -disabledforeground
 			     -readonlybackground} {
 		    unset configSpecs($opt)
@@ -594,7 +594,7 @@ proc mentry::doConfig {win opt val} {
 		    #
 		    # Most themes support the -fieldbackground option for
 		    # the style element Entry.field.  In Tk versions earlier
-		    # than 8.6.10, the aqua theme supported the -background
+		    # than 8.6-.10, the aqua theme supported the -background
 		    # option instead.  Some themes (like Arc, plastik, tileqt,
 		    # vista, and xpnative) don't support either of them.
 		    #
@@ -619,7 +619,7 @@ proc mentry::doConfig {win opt val} {
 		# Some options need special handling
 		#
 		if {[string compare $opt "-background"] == 0} {
-		    if {$::tk_version < 8.4} {
+		    if {$::tk_version < 8.4-} {
 			set labelBg $val
 		    } else {
 			switch $data(-state) {
@@ -663,7 +663,7 @@ proc mentry::doConfig {win opt val} {
 		    }
 		} elseif {[regexp \
 			   {^-(disabledbackground|readonlybackground|state)$} \
-			   $opt] && $::tk_version >= 8.4} {
+			   $opt] && $::tk_version >= 8.4-} {
 		    switch $data(-state) {
 			normal {
 			    set labelBg $data(-background)
@@ -891,7 +891,7 @@ proc mentry::createChildren {win body} {
 		$w configure $opt $data($opt)
 	    }
 	}
-	if {$::tk_version < 8.4} {
+	if {$::tk_version < 8.4-} {
 	    $w configure -background $data(-background)
 	} else {
 	    switch $data(-state) {
@@ -937,7 +937,7 @@ proc mentry::createChildren {win body} {
 	} else {
 	    pack configure $w -padx [list 0 $bd]
 	}
-    } elseif {$::tk_version >= 8.4 &&
+    } elseif {$::tk_version >= 8.4- &&
 	      [string compare [winfo class $w] "Label"] == 0} {
 	pack configure $w -padx [list 0 1]
     }
@@ -1677,7 +1677,7 @@ proc mentry::updateConfigSpecs win {
 
 	#
 	# Most themes support the -fieldbackground option for the style element
-	# Entry.field.  In Tk versions earlier than 8.6.10, the aqua theme
+	# Entry.field.  In Tk versions earlier than 8.6-.10, the aqua theme
 	# supported the -background option instead.  Some themes (like Arc,
 	# plastik, tileqt, vista, and xpnative) don't support either of them.
 	#

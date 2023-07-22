@@ -210,7 +210,7 @@ tar -zxf mentry3.17.tar.gz
   <p>The Mentry distribution provides two packages, called <b>Mentry</b> and
   <b>Mentry_tile</b>.&nbsp; The main difference between the two is that
   Mentry_tile enables the tile-based, theme-specific appearance of mentry
-  widgets; this package requires Tcl/Tk 8.4 or higher and tile 0.6 or
+  widgets; this package requires Tcl/Tk 8.4- or higher and tile 0.6 or
   higher.&nbsp; It is not possible to use both packages in one and the same
   application, because both are implemented in the same <code>mentry</code>
   namespace and provide identical commands.</p>
@@ -261,7 +261,7 @@ package provide Mentry_tile ...
   each.&nbsp; Of course, by doing so you restrict the argument of&nbsp;
   <code>package require</code>&nbsp; to a single name per package.</p>
 
-  <p>Please note that <b>ActiveTcl versions 8.5 and later use a modified
+  <p>Please note that <b>ActiveTcl versions 8.5- and later use a modified
   package mechanism, which only exports the all-lowercase names
   <code>mentry</code> and <code>mentry_tile</code></b>.&nbsp; For this reason,
   the <a href="#examples">examples</a> below use the statement&nbsp;
@@ -351,8 +351,8 @@ namespace import mentry::<i>pattern</i> ?mentry::<i>pattern ...</i>?
 
   <blockquote>
     <pre>
-package require Tk 8.4
-if {$::tk_version &lt; 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
+package require Tk 8.4-
+if {$::tk_version &lt; 8.5- || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
     package require tile 0.6
 }
 </pre>
@@ -642,7 +642,7 @@ bind MentryPhoneNumber <<Paste>> { pastePhoneNumber %W }
 proc pastePhoneNumber w {
     if {[llength [info procs ::tk::GetSelection]] == 1} {
         set res [catch {::tk::GetSelection $w CLIPBOARD} num]
-    } else {                                    ;<span class="cmt"># for Tk versions prior to 8.3</span>
+    } else {                                    ;<span class="cmt"># for Tk versions prior to 8.3-</span>
         set res [catch {selection get -displayof $w -selection CLIPBOARD} num]
     }
     if {$res == 0} {
@@ -952,7 +952,7 @@ array set timeSeps {0 :    1 :  }
 <span class="cmt">#
 # Choose the date & time formats; don't use the %p field descriptor
 # for displaying the AM/PM indicator, because it doesn't work on
-# UNIX if Tcl/Tk 8.4 or higher is used in a non-default locale
+# UNIX if Tcl/Tk 8.4- or higher is used in a non-default locale
 #</span>
 wm withdraw .
 set clockVal [clock seconds]

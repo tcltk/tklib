@@ -32,7 +32,7 @@
 # Meta subject	   map
 # Meta subject	   {file, geo/point}
 # Meta subject	   {geo/point, file}
-# Meta require     {Tcl 8.6-}
+# Meta require     {Tcl 8.6--}
 # Meta require     debug
 # Meta require     debug::caller
 # Meta require     {map::slippy 0.8}
@@ -50,7 +50,7 @@ package provide map::point::file 0.1
 # # ## ### ##### ######## ############# ######################
 ## Requirements
 
-package require Tcl 8.6
+package require Tcl 8.6-
 #                               ;# Tcllib
 package require debug		;# - Narrative Tracing
 package require debug::caller   ;#

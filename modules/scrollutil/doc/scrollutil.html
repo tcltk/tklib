@@ -110,18 +110,18 @@
     "plainnotebook.html">plainnotebook</a></b>, and <b><a href=
     "pagesman.html">pagesman</a></b> mega-widgets, including a
     general utility module for mega-widgets.&nbsp; The scrollednotebook and
-    plainnotebook widgets require Tcl/Tk 8.4 or later and tile 0.8 or
+    plainnotebook widgets require Tcl/Tk 8.4- or later and tile 0.8 or
     higher;</li>
 
     <li>the command <code><b><a href=
     "wheelEvent.html#add">scrollutil::addMouseWheelSupport</a></b></code>,
     which creates mouse wheel event bindings for a given binding tag.&nbsp;
-    This command requires Tcl/Tk 8.4 or later;</li>
+    This command requires Tcl/Tk 8.4- or later;</li>
 
     <li>commands for <i>user-friendly</i> mouse wheel event handling in
     <b>scrollable widget containers</b> like scrollutil::scrollableframe,
     BWidget ScrollableFrame, and iwidgets::scrolledframe.&nbsp; These commands
-    require Tcl/Tk versions 8.4 or higher on X11 and Mac OS X/11+ and Tk 8.6b2
+    require Tcl/Tk versions 8.4- or higher on X11 and Mac OS X/11+ and Tk 8.6b2
     or later on Windows;</li>
 
     <li>demo scripts illustrating the use of the Scrollutil package in
@@ -155,7 +155,7 @@
   contributed by Johann Oberdorfer are further scrolled window implementations.
   However, <i>full</i> tablelist support is only provided by the scrollarea
   widget, which is free from external dependencies like BWidget, snit, or (for
-  Tcl 8.5) TclOO.&nbsp; It is also free from the <a href=
+  Tcl 8.5-) TclOO.&nbsp; It is also free from the <a href=
   "https://wiki.tcl-lang.org/page/Scroll+bars+that+appear+only+when+needed">shimmering
   problem in connection with text widgets</a>, which the above-mentioned
   scrolled window implementations either share with the autoscroll package
@@ -373,7 +373,7 @@ tar -zxf scrollutil1.19.tar.gz
   between the two is that Scrollutil_tile enables the tile-based,
   theme-specific appearance of scrollarea, scrollsync, and scrollableframe
   widgets, and provides the themed scrollednotebook and plainnotebook widgets;
-  this package requires Tcl/Tk 8.4 or higher and tile 0.8 or higher.&nbsp; It
+  this package requires Tcl/Tk 8.4- or higher and tile 0.8 or higher.&nbsp; It
   is not possible to use both packages in one and the same application, because
   both are implemented in the same <code>scrollutil</code> namespace and
   provide identical commands (except for the commands
@@ -471,7 +471,7 @@ namespace import scrollutil::<i>pattern</i> ?scrollutil::<i>pattern ...</i>?
     24 x 24.</li>
 
     <li>If the Tk version is either at least 8.7 (with built-in SVG support),
-    or 8.6 and the tksvg extension can be loaded into the interpreter, then the
+    or 8.6- and the tksvg extension can be loaded into the interpreter, then the
     variable <code>scrollutil::svgfmt</code> is set to a Tcl list that you can
     pass to the commands that create or manipulate SVG images as the value of
     their <code>-format</code> option to make sure that your images will be
@@ -487,8 +487,8 @@ namespace import scrollutil::<i>pattern</i> ?scrollutil::<i>pattern ...</i>?
 
   <blockquote>
     <pre>
-package require Tk 8.4
-if {$::tk_version &lt; 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
+package require Tk 8.4-
+if {$::tk_version &lt; 8.5- || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
     package require tile 0.8
 }
 </pre>
@@ -616,7 +616,7 @@ if {$::tk_version &lt; 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
   <code>-font</code> option has changed), or the virtual event
   <code>&lt;&lt;TkWorldChanged&gt;&gt;</code> with the <code>user_data</code>
   field (<code>%d</code>) set to <code>FontChanged</code> is received.&nbsp; If
-  the Tk version is later than 8.6.11 or 8.7a5, this virtual event is sent by
+  the Tk version is later than 8.6-.11 or 8.7a5, this virtual event is sent by
   the Tk engine to all widgets when a font is changed, for example, by
   invoking&nbsp; <code>font configure</code>&nbsp; (see <a href=
   "https://core.tcl-lang.org/tips/doc/trunk/tip/608.md">TIP 608</a>).</p>
@@ -711,7 +711,7 @@ namespace eval ::scaleutil { set keepTkScaling 1 }
   indicators of the ttk::checkbutton and ttk::radiobutton widgets will appear
   properly scaled, regardless of the Tk release being used.&nbsp; (A
   long-standing bug in the implementation of these widgets was fixed in May
-  2020 and is now contained in both Tk 8.6.11 and later and 8.7a5 and later,
+  2020 and is now contained in both Tk 8.6-.11 and later and 8.7a5 and later,
   but the procedure provides an automatic workaround for the Tk versions that
   are still affected by this bug.)</p>
 
@@ -733,7 +733,7 @@ namespace eval ::scaleutil { set keepTkScaling 1 }
   especially when running Androwish on a tablet or smartphone.</p>
 
   <p>If the Tk version is either at least 8.7 (with built-in SVG support), or
-  8.6 and the tksvg package can be loaded into the interpreter, then Scrollutil
+  8.6- and the tksvg package can be loaded into the interpreter, then Scrollutil
   additionally sets the variable <code>scrollutil::svgfmt</code> to</p>
 
   <blockquote>
@@ -867,7 +867,7 @@ themepatch::patch clam
 
   <blockquote>
     <pre>
-package require Tk 8.5
+package require Tk 8.5-
 package require tablelist_tile 6.3
 set dir [file dirname [info script]]
 source [file join $dir styleUtil.tcl]
@@ -930,7 +930,7 @@ pack $f   -expand yes -fill both
 
   <blockquote>
     <pre>
-package require Tk 8.5
+package require Tk 8.5-
 package require tablelist_tile 6.5
 <span class="red">package require scrollutil_tile</span>
 set dir [file dirname [info script]]
@@ -1515,7 +1515,7 @@ set cf [$sf childsite]
 
   <blockquote>
     <pre>
-package require Tk 8.5.9                        ;<span class=
+package require Tk 8.5-.9                        ;<span class=
 "cmt"># for ttk::spinbox</span>
 package require mentry_tile 3.2                 ;<span class=
 "cmt"># for mouse wheel support</span>
@@ -1655,7 +1655,7 @@ grid $_sa ...
 
   <p>For our text widget we prefer a mouse wheel event handling that scrolls
   the widget by lines rather than pixels, as done by the <code>Text</code>
-  class bindings in Tk 8.5 and later; we achieve this by passing the path name
+  class bindings in Tk 8.5- and later; we achieve this by passing the path name
   <code>$txt</code> to the <code><a href=
   "wheelEvent.html#add">scrollutil::addMouseWeelSupport</a></code> command.</p>
 
@@ -1715,7 +1715,7 @@ grid $_sa ...
 
   <blockquote>
     <pre>
-package require Tk 8.5.9                        ;<span class=
+package require Tk 8.5-.9                        ;<span class=
 "cmt"># for ttk::spinbox</span>
 package require BWidget
 Widget::theme yes
@@ -1817,7 +1817,7 @@ scrollutil::enableScrollingByWheel $sf</span>
 
   <blockquote>
     <pre>
-package require Tk 8.5.9                        ;<span class=
+package require Tk 8.5-.9                        ;<span class=
 "cmt"># for ttk::spinbox</span>
 if {[catch {package require iwidgets} result1] != 0 &&
     [catch {package require Iwidgets} result2] != 0} {
@@ -1942,7 +1942,7 @@ foreach fileName [lsort [glob *.tcl]] {
         <span class="red">$sa configure -relief solid</span>
     }
     set txt [text $sa.txt -font TkFixedFont -takefocus 1 -wrap none]
-    catch {$txt configure -tabstyle wordprocessor}      ;<span class="cmt"># for Tk 8.5 and later</span>
+    catch {$txt configure -tabstyle wordprocessor}      ;<span class="cmt"># for Tk 8.5- and later</span>
     <span class="red">scrollutil::addMouseWheelSupport $txt</span>       ;<span class="cmt"># old-school wheel support</span>
     <span class="red">$sa setwidget $txt</span>
 
@@ -1950,7 +1950,7 @@ foreach fileName [lsort [glob *.tcl]] {
     $txt insert end [read -nonewline $chan]
     close $chan
     $txt configure -state disabled
-    bind $txt &lt;Button-1&gt; { focus %W }   ;<span class="cmt"># for Tk versions &lt; 8.6.11/8.7a4</span>
+    bind $txt &lt;Button-1&gt; { focus %W }   ;<span class="cmt"># for Tk versions &lt; 8.6-.11/8.7a4</span>
 
     <span class="red">$nb add $sa -text $fileName -image fileImg -compound left \
                 -padding $panePadding</span>

@@ -13,8 +13,8 @@
 [copyright {Origin http://wiki.tcl.tk/37242}]
 [copyright {Origin http://wiki.tcl.tk/9079}]
 [titledesc {Canvas with a gradient background}]
-[require Tcl 8.5]
-[require Tk 8.5]
+[require Tcl 8.5-]
+[require Tk 8.5-]
 [require canvas::gradient [opt 0.2]]
 [description]
 

@@ -1501,7 +1501,7 @@
     element is the text contained in a cell.&nbsp; The header consists of label
     widgets displaying the column titles.&nbsp; They can be used, among others,
     for interactive column resizing and column-based sorting of the body items,
-    as described below.&nbsp; For Tk versions 8.5 and higher, the header
+    as described below.&nbsp; For Tk versions 8.5- and higher, the header
     component can also contain (a typically small number of) items, just like
     the body.&nbsp; The order of the header items is not affected by any
     sorting-related commands or bindings.&nbsp; The end of the header row area
@@ -1509,10 +1509,10 @@
     last header row (if any).</dd>
 
     <dd class="tm">The reason for restricting the support for header items to
-    Tk versions 8.5 and later is that the header's height is set to be just
+    Tk versions 8.5- and later is that the header's height is set to be just
     large enough to hold all its items.&nbsp; This is done with the aid of
     the&nbsp; <code><b>count -ypixels</b></code>&nbsp; text widget command,
-    which was introduced in Tk 8.5.</dd>
+    which was introduced in Tk 8.5-.</dd>
 
     <dd class="tm">Each cell (in both the body and the header) and each header
     label of a tablelist widget can also contain an image or an embedded
@@ -1685,7 +1685,7 @@ proc acceptChildCmd {tbl targetParentNodeIdx sourceRow} {
 
         <p>For technical reasons (the use of the <code><b>-elide</b></code>
         text widget tag option for collapsing a row), this option is not
-        supported for Tk versions earlier than 8.3.</p>
+        supported for Tk versions earlier than 8.3-.</p>
       </blockquote>
     </dd>
 
@@ -1926,7 +1926,7 @@ proc acceptDropCmd {tbl targetRow sourceRow} {
         <code><b>tablelist::scalingpct</b></code>).&nbsp; This comes in handy
         especially when running Androwish on a tablet or smartphone.&nbsp; This
         arrow style is only supported if the Tk version is either at least 8.7
-        (with built-in SVG support), or 8.6 and the tksvg extension can be
+        (with built-in SVG support), or 8.6- and the tksvg extension can be
         loaded into the interpreter.&nbsp; The sort arrows of this arrow style
         are quite similar to those of the styles <code><b>flat8x4</b></code>,
         <code><b>flat10x5</b></code>, <code><b>flat12x6</b></code>,
@@ -1937,8 +1937,8 @@ proc acceptDropCmd {tbl targetRow sourceRow} {
         <p>Finally, the arrow style <code><b>photo7x7</b></code> uses PNG
         images that look and behave very close to the native sort arrows on Mac
         OS X Aqua versions earlier than 10.10 (Yosemite).&nbsp; This arrow
-        style is only supported if the Tk version is either at least 8.6 (with
-        built-in PNG support), or 8.5 and the <code><b>img::png</b></code>
+        style is only supported if the Tk version is either at least 8.6- (with
+        built-in PNG support), or 8.5- and the <code><b>img::png</b></code>
         package can be loaded into the interpreter.&nbsp; When using this arrow
         style, the <code><b><a href="#arrowcolor">-arrowcolor</a></b></code>
         and <code><b><a href=
@@ -2083,7 +2083,7 @@ proc acceptDropCmd {tbl targetRow sourceRow} {
 
         <p>For technical reasons (the use of the <code><b>-elide</b></code>
         text widget tag option for collapsing a row), this option is not
-        supported for Tk versions earlier than 8.3.</p>
+        supported for Tk versions earlier than 8.3-.</p>
       </blockquote>
     </dd>
 
@@ -2568,7 +2568,7 @@ proc myColorizeCmd {tbl textWidget key row col tabIdx1 tabIdx2 inStripe selected
 
         <p>For technical reasons (the use of the <code><b>-elide</b></code>
         text widget tag option for collapsing a row), this option is not
-        supported for Tk versions earlier than 8.3.</p>
+        supported for Tk versions earlier than 8.3-.</p>
 
         <p><b>REMARK:</b>&nbsp; It is common practice to use the command
         specified as the value of this option to insert the children of the row
@@ -2852,7 +2852,7 @@ proc expandCmd {tbl row} {
         defined in the Tablelist package if the Tk version being used supports
         the <code><b>-activebackground</b></code> option for label
         widgets.&nbsp; This is checked by Tablelist at initialization time, and
-        will normally be the case for Tk versions 8.3.2 or higher.&nbsp; On the
+        will normally be the case for Tk versions 8.3-.2 or higher.&nbsp; On the
         other hand, the Tablelist_tile package doesn't support the
         <code><b>-labelactivebackground</b></code> option.</p>
       </blockquote>
@@ -2884,7 +2884,7 @@ proc expandCmd {tbl row} {
         defined in the Tablelist package if the Tk version being used supports
         the <code><b>-activeforeground</b></code> option for label
         widgets.&nbsp; This is checked by Tablelist at initialization time, and
-        will normally be the case for Tk versions 8.3.2 or higher.&nbsp; On the
+        will normally be the case for Tk versions 8.3-.2 or higher.&nbsp; On the
         other hand, the Tablelist_tile package doesn't support the
         <code><b>-labelactiveforeground</b></code> option.</p>
       </blockquote>
@@ -3054,7 +3054,7 @@ proc expandCmd {tbl row} {
         Tablelist package if the Tk version being used supports the
         <code><b>-disabledforeground</b></code> option for label widgets.&nbsp;
         This is checked by Tablelist at initialization time, and will normally
-        be the case for Tk versions 8.3.1 or higher.&nbsp; On the other hand,
+        be the case for Tk versions 8.3-.1 or higher.&nbsp; On the other hand,
         the Tablelist_tile package doesn't support the
         <code><b>-labeldisabledforeground</b></code> option.</p>
       </blockquote>
@@ -3425,7 +3425,7 @@ for {set row 0} {$row &lt; 1000} {incr row} {
 
         <p>For technical reasons (the use of the <code><b>-elide</b></code>
         text widget tag option for collapsing a row), this option is not
-        supported for Tk versions earlier than 8.3.</p>
+        supported for Tk versions earlier than 8.3-.</p>
 
         <p><b>REMARK:</b>&nbsp; There are many similarities between this option
         and <code><b><a href=
@@ -4374,7 +4374,7 @@ option add *Tablelist.showHorizSeparator 0
 
         <p>For technical reasons (the use of the <code><b>-elide</b></code>
         option for a text widget tag), this option is not supported for Tk
-        versions earlier than 8.3.</p>
+        versions earlier than 8.3-.</p>
       </blockquote>
     </dd>
 
@@ -4607,7 +4607,7 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
 
         <p>For technical reasons (the use of the <code><b>-elide</b></code>
         text widget tag option for collapsing a row), this option is not
-        supported for Tk versions earlier than 8.3.</p>
+        supported for Tk versions earlier than 8.3-.</p>
 
         <p><b>REMARK:</b>&nbsp; Please note that the tree structure will only
         be displayed as expected if the column specified by this option is
@@ -4932,8 +4932,8 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
         <code><b>win7Aero</b></code>, <code><b>win10</b></code>,
         <code><b>newWave</b></code>, <code><b>plain*</b></code>,
         <code><b>bicolor*</b></code>, <code><b>white*</b></code>, or
-        <code><b>classic*</b></code>, and the Tk version is either at least 8.6
-        (with built-in PNG support) or 8.5 and the <code><b>img::png</b></code>
+        <code><b>classic*</b></code>, and the Tk version is either at least 8.6-
+        (with built-in PNG support) or 8.5- and the <code><b>img::png</b></code>
         package can be loaded into the interpreter, then the images used for
         displaying the expand/collapse controls are PNG images with alpha
         channel.&nbsp; Otherwise (i.e., for the other tree styles shown in the
@@ -4941,7 +4941,7 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
         for the expand/collapse controls.</p>
 
         <p>If the Tk version is either at least 8.7 (with built-in SVG
-        support), or 8.6 and the tksvg extension can be loaded into the
+        support), or 8.6- and the tksvg extension can be loaded into the
         interpreter, then Tablelist supports the additional tree styles
         <code><b>plain</b></code>, <code><b>bicolor</b></code>,
         <code><b>white</b></code>, and <code><b>classic</b></code>, which are
@@ -5622,7 +5622,7 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
 
         <p>For technical reasons (the use of the <code><b>-elide</b></code>
         text widget tag option for collapsing a row), this option is not
-        supported for Tk versions earlier than 8.3.</p>
+        supported for Tk versions earlier than 8.3-.</p>
       </blockquote>
     </dd>
 
@@ -5720,7 +5720,7 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
           <code><b>&lt;Shift-Button-5&gt;</b></code>, respectively.&nbsp; These
           events are commonly triggered by left/right tilting the scroll wheel
           of a mouse having one or two additional (thumb) buttons.&nbsp; (In Tk
-          versions 8.6.x, with x >= 10, left/right tilting the scroll wheel of
+          versions 8.6-.x, with x >= 10, left/right tilting the scroll wheel of
           such a mouse gives rise to
           <code><b>&lt;Shift-MouseWheel&gt;</b></code> events on Windows and
           Mac OS X/11+, and to <code><b>&lt;Shift-Button-4&gt;</b></code> and
@@ -5942,7 +5942,7 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
         cells.&nbsp; <code><i>name</i></code> may be one of
         <code><b>entry</b></code> (which is the default),
         <code><b>text</b></code>, <code><b>spinbox</b></code> (the latter for
-        Tk versions 8.4 or higher), <code><b>checkbutton</b></code>,
+        Tk versions 8.4- or higher), <code><b>checkbutton</b></code>,
         <code><b>menubutton</b></code>, <code><b>ttk::entry</b></code>,
         <code><b>ttk::spinbox</b></code>, <code><b>ttk::combobox</b></code>,
         <code><b>ttk::checkbutton</b></code>, or
@@ -6115,7 +6115,7 @@ proc formatNumber val { return [expr {$val == -1 ? "" : $val}] }
         <code>0</code>.&nbsp; After toggling the hidden state of a column, the
         <code><b>&lt;&lt;TablelistColHiddenStateChanged&gt;&gt;</b></code>
         virtual event is generated, with its <code><b>-data</b></code> option
-        set to the numerical column index for Tk versions 8.5 and higher.</dd>
+        set to the numerical column index for Tk versions 8.5- and higher.</dd>
 
         <dt class="tm" id="col_labelalign"><code><b>-labelalign</b>
         <i>alignment</i></code></dt>
@@ -6612,7 +6612,7 @@ proc updateWindow {tbl row col w args} {
           </blockquote>
         </dd>
 
-        <dd>With Tcl/Tk 8.5 or above, you can use the more compact form</dd>
+        <dd>With Tcl/Tk 8.5- or above, you can use the more compact form</dd>
 
         <dd>
           <blockquote>
@@ -6705,13 +6705,13 @@ proc updateWindow {tbl row col w args} {
         <code>0</code>.&nbsp; After toggling the hidden state of a row, the
         <code><b>&lt;&lt;TablelistRowHiddenStateChanged&gt;&gt;</b></code>
         virtual event is generated, with its <code><b>-data</b></code> option
-        set to the numerical row index for Tk versions 8.5 and higher.</dd>
+        set to the numerical row index for Tk versions 8.5- and higher.</dd>
 
         <dd class="tm">For technical reasons (the use of the
         <code><b>-elide</b></code> option for a text widget tag), this option
-        is not supported for Tk versions earlier than 8.3.</dd>
+        is not supported for Tk versions earlier than 8.3-.</dd>
 
-        <dd class="tm"><b>CAUTION:</b>&nbsp; Tk versions 8.3 - 8.4.12 had a bug
+        <dd class="tm"><b>CAUTION:</b>&nbsp; Tk versions 8.3- - 8.4-.12 had a bug
         that caused a segmentation fault if the whole content of a text widget
         was elided.&nbsp; This bug was also present in Tk 8.5a1 - 8.5a3.&nbsp;
         When using one of these earlier Tk versions, this bug will produce a
@@ -7318,7 +7318,7 @@ proc updateWindow {tbl row col w args} {
     the temporary embedded widget and cancels the editing of its content.&nbsp;
     The main goal of this script is, however, to enable you to define
     validations for the editing process.&nbsp; This can be done either with the
-    aid of the options for entry validation, supported by Tk versions 8.3 and
+    aid of the options for entry validation, supported by Tk versions 8.3- and
     higher (see the <b>entry</b> reference page), or by using the widget
     callback package <a href="https://www.nemethi.de">Wcb</a>, available for Tk
     versions 8.0 and higher.&nbsp; The Iwidgets package (available for Tk
@@ -7641,13 +7641,13 @@ proc handleTblDrop {tbl data} {
     notification, and makes use of the&nbsp; <code><b>event
     generate</b></code>&nbsp; command to send them to the tablelist widget in
     question (whose path name will be the value of the <code><b>%W</b></code>
-    substitution in event scripts).&nbsp; When using Tk 8.5 or above, most of
+    substitution in event scripts).&nbsp; When using Tk 8.5- or above, most of
     these virtual events are generated with their <code><b>-data</b></code>
     option set to an appropriate event-specific value.&nbsp; Binding scripts
     can access this user data as the value of the <code><b>%d</b></code>
     substitution.&nbsp; Unfortunately, the <code><b>-data</b></code> option
     to&nbsp; <code><b>event generate</b></code>&nbsp; was not supported by Tk
-    versions earlier than 8.5.&nbsp; For these Tk versions, the&nbsp;
+    versions earlier than 8.5-.&nbsp; For these Tk versions, the&nbsp;
     <code><b>event generate</b></code>&nbsp; command will be invoked without
     the <code><b>-data</b></code> option.</dd>
 
@@ -7661,7 +7661,7 @@ proc handleTblDrop {tbl data} {
 
           <th align="left">Description</th>
 
-          <th align="left">User Data (for Tk 8.5 or Later)</th>
+          <th align="left">User Data (for Tk 8.5- or Later)</th>
         </tr>
 
         <tr valign="top">
@@ -8543,7 +8543,7 @@ registerDragSrc [$tbl bodypath]
         the tablelist widget's <code><b>-exportselection</b></code> option and
         generates the virtual event
         <code><b>&lt;&lt;TablelistCellRestored&gt;&gt;</b></code>.&nbsp; For Tk
-        versions 8.5 and higher, this virtual event is generated with its
+        versions 8.5- and higher, this virtual event is generated with its
         <code><b>-data</b></code> option set to a list consisting of the
         numerical row and column indices of the cell whose content is being
         edited.&nbsp; If no cell was being edited when the command was invoked
@@ -8748,7 +8748,7 @@ registerDragSrc [$tbl bodypath]
         <dd class="tm">For technical reasons (the use of the
         <code><b>-elide</b></code> text widget tag option for collapsing a
         row), this subcommand is not supported for Tk versions earlier than
-        8.3.</dd>
+        8.3-.</dd>
 
         <dd class="tm"><b>REMARK:</b>&nbsp; If you want to collapse several
         rows, it is much more efficient to do it by invoking this subcommand
@@ -8782,7 +8782,7 @@ registerDragSrc [$tbl bodypath]
         <dd class="tm">For technical reasons (the use of the
         <code><b>-elide</b></code> text widget tag option for collapsing a
         row), this subcommand is not supported for Tk versions earlier than
-        8.3.</dd>
+        8.3-.</dd>
 
         <dt class="tm" id="columnattrib"><code><i>pathName</i>
         <b>columnattrib</b> <i>columnIndex</i> ?<i>name</i>? ?<i>value</i>
@@ -9107,7 +9107,7 @@ eval [list <i>pathName</i> <a href=
         corner frame) changes, the
         <code><b>&lt;&lt;TablelistHeaderHeightChanged&gt;&gt;</b></code>
         virtual event is generated, with its <code><b>-data</b></code> option
-        set to the (requested) height of the header for Tk versions 8.5 and
+        set to the (requested) height of the header for Tk versions 8.5- and
         higher.</dd>
 
         <dd class="tm">If the corner was specified as <code><b>-sw</b></code>
@@ -9124,7 +9124,7 @@ eval [list <i>pathName</i> <a href=
         <code><b>&lt;&lt;TablelistTitleColsWidthChanged&gt;&gt;</b></code>
         virtual event is generated, with its <code><b>-data</b></code> option
         set to the total width of the non-hidden title columns for Tk versions
-        8.5 and higher.</dd>
+        8.5- and higher.</dd>
 
         <dd class="tm">
           <b>REMARK 1:</b>&nbsp; This subcommand enables you to manage the
@@ -9369,7 +9369,7 @@ pack $sa -expand yes -fill both -padx 10 -pady 10
 
         <dd class="tm">This subcommand is only available in the presence of the
         <code><b>dict</b></code> command, which is the case when using Tcl
-        version 8.5 or later, or one of the alternative, <a href=
+        version 8.5- or later, or one of the alternative, <a href=
         "https://wiki.tcl.tk/10609">Tcl-only <code><b>dict</b></code>
         implementations</a>.</dd>
 
@@ -9589,7 +9589,7 @@ bind [.tbl <span class="red">editwintag</span>] &lt;Return&gt; "[bind <a href=
         <dd class="tm">For technical reasons (the use of the
         <code><b>-elide</b></code> text widget tag option for collapsing a
         row), this subcommand is not supported for Tk versions earlier than
-        8.3.</dd>
+        8.3-.</dd>
 
         <dd class="tm"><b>REMARK:</b>&nbsp; If you want to expand several rows,
         it is much more efficient to do it by invoking this subcommand for the
@@ -9620,7 +9620,7 @@ bind [.tbl <span class="red">editwintag</span>] &lt;Return&gt; "[bind <a href=
         <dd class="tm">For technical reasons (the use of the
         <code><b>-elide</b></code> text widget tag option for collapsing a
         row), this subcommand is not supported for Tk versions earlier than
-        8.3.</dd>
+        8.3-.</dd>
 
         <dt class="tm" id="expandedkeys"><code><i>pathName</i>
         <b>expandedkeys</b></code></dt>
@@ -9691,7 +9691,7 @@ bind [.tbl <span class="red">editwintag</span>] &lt;Return&gt; "[bind <a href=
         <code><b>-exportselection</b></code> option, and generates the virtual
         event <code><b>&lt;&lt;TablelistCellUpdated&gt;&gt;</b></code> if the
         editing session has effectively changed the cell's content.&nbsp; For
-        Tk versions 8.5 and higher, this virtual event is generated with its
+        Tk versions 8.5- and higher, this virtual event is generated with its
         <code><b>-data</b></code> option set to a list consisting of the
         numerical row and column indices of the cell whose content is being
         edited.&nbsp; If no cell was being edited when the command was invoked
@@ -10007,7 +10007,7 @@ proc formatValue {tbl val} {
         <dt class="tm" id="header"><code><i>pathName</i> <b>header</b>
         <i>option</i> ?<i>arg</i> <i>arg</i> ...?</code></dt>
 
-        <dd>This command is only supported for Tk versions 8.5 and later.&nbsp;
+        <dd>This command is only supported for Tk versions 8.5- and later.&nbsp;
         It is used to invoke various operations on the items in the widget's
         header component.&nbsp; The supported subcommnds are described in the
         <a href="#hdr_subcommands">HEADER-RELATED SUBCOMMANDS</a> section.</dd>
@@ -10015,14 +10015,14 @@ proc formatValue {tbl val} {
         <dt class="tm" id="headerpath"><code><i>pathName</i>
         <b>headerpath</b></code></dt>
 
-        <dd>This command is only supported for Tk versions 8.5 and later.&nbsp;
+        <dd>This command is only supported for Tk versions 8.5- and later.&nbsp;
         It returns the path name of the text widget containing the header
         items.</dd>
 
         <dt class="tm" id="headertag"><code><i>pathName</i>
         <b>headertag</b></code></dt>
 
-        <dd>This command is only supported for Tk versions 8.5 and later.&nbsp;
+        <dd>This command is only supported for Tk versions 8.5- and later.&nbsp;
         It returns the name of a binding tag whose name depends on the path
         name of the tablelist widget and which is associated with the text
         widget containing the header items, as well as the message and label
@@ -10161,7 +10161,7 @@ eval [list <i>pathName</i> <a href=
         <dd class="tm">For technical reasons (the use of the
         <code><b>-elide</b></code> text widget tag option for collapsing a
         row), this subcommand is not supported for Tk versions earlier than
-        8.3.</dd>
+        8.3-.</dd>
 
         <dd class="tm"><b>REMARK:</b>&nbsp; You can achieve a quite significant
         speadup by using this subcommand to insert a whole list of items rather
@@ -10192,7 +10192,7 @@ eval [list <i>pathName</i> <a href=
         <dd class="tm">For technical reasons (the use of the
         <code><b>-elide</b></code> text widget tag option for collapsing a
         row), this subcommand is not supported for Tk versions earlier than
-        8.3.</dd>
+        8.3-.</dd>
 
         <dd class="tm"><b>REMARK:</b>&nbsp; It is explicitly allowed to
         abbreviate the name <code><b>insertchildren</b></code> as
@@ -10439,7 +10439,7 @@ upvar #0 [.tbl <span class="red">itemlistvar</span>] itemList
 
         <dd>This subcommand is only available in the presence of the
         <code><b>dict</b></code> command, which is the case when using Tcl
-        version 8.5 or later, or one of the alternative, <a href=
+        version 8.5- or later, or one of the alternative, <a href=
         "https://wiki.tcl.tk/10609">Tcl-only <code><b>dict</b></code>
         implementations</a>.</dd>
 
@@ -10493,7 +10493,7 @@ upvar #0 [.tbl <span class="red">itemlistvar</span>] itemList
 
         <dd class="tm">For technical reasons (the use of some
         <code><b>lsearch</b></code> options), this subcommand is not supported
-        for Tk versions earlier than 8.4.</dd>
+        for Tk versions earlier than 8.4-.</dd>
 
         <dd class="tm">After clearing the widget's current content (if any) and
         applying to it the sorting-related information retrieved from the file,
@@ -10566,7 +10566,7 @@ upvar #0 [.tbl <span class="red">itemlistvar</span>] itemList
 
         <dd class="tm">For technical reasons (the use of some
         <code><b>lsearch</b></code> options), this subcommand is not supported
-        for Tk versions earlier than 8.4.</dd>
+        for Tk versions earlier than 8.4-.</dd>
 
         <dd class="tm">The remaining details are nearly identical to the ones
         regarding the <code><b><a href=
@@ -11368,7 +11368,7 @@ upvar #0 [.tbl <span class="red">itemlistvar</span>] itemList
         columns whose visibility is to be toggled.&nbsp; Returns an empty
         string.&nbsp; After toggling the hidden state of the specified columns,
         the <code><b>&lt;&lt;TablelistColHiddenStateChanged&gt;&gt;</b></code>
-        virtual event is generated.&nbsp; For Tk versions 8.5 and higher, this
+        virtual event is generated.&nbsp; For Tk versions 8.5- and higher, this
         virtual event is generated with its <code><b>-data</b></code> option
         set to a list consisting of the numerical column indices of the columns
         whose <code><b>-hide</b></code> option was toggled.&nbsp; The main
@@ -11391,14 +11391,14 @@ upvar #0 [.tbl <span class="red">itemlistvar</span>] itemList
         visibility is to be toggled.&nbsp; Returns an empty string.&nbsp; After
         toggling the hidden state of the specified rows, the
         <code><b>&lt;&lt;TablelistRowHiddenStateChanged&gt;&gt;</b></code>
-        virtual event is generated.&nbsp; For Tk versions 8.5 and higher, this
+        virtual event is generated.&nbsp; For Tk versions 8.5- and higher, this
         virtual event is generated with its <code><b>-data</b></code> option
         set to a list consisting of the numerical row indices of the rows whose
         <code><b>-hide</b></code> option was toggled.&nbsp; Just like the
         <code><b>-hide</b></code> row configuration option, this subcommand is
-        not supported for Tk versions earlier than 8.3.</dd>
+        not supported for Tk versions earlier than 8.3-.</dd>
 
-        <dd class="tm"><b>CAUTION:</b>&nbsp; Tk versions 8.3 - 8.4.12 had a bug
+        <dd class="tm"><b>CAUTION:</b>&nbsp; Tk versions 8.3- - 8.4-.12 had a bug
         that caused a segmentation fault if the whole content of a text widget
         was elided.&nbsp; This bug was also present in Tk 8.5a1 - 8.5a3.&nbsp;
         When using one of these earlier Tk versions, this bug will produce a
@@ -12321,7 +12321,7 @@ proc printClickedCell {w x y} {
         presence of a valid target, the source item is moved before the target
         row or just before the latter's first child, and the virtual event
         <code><b>&lt;&lt;TablelistRowMoved&gt;&gt;</b></code> is
-        generated.&nbsp; For Tk versions 8.5 and higher, this virtual event is
+        generated.&nbsp; For Tk versions 8.5- and higher, this virtual event is
         generated with its <code><b>-data</b></code> option set to a list of
         length 3, whose elements are derived from the arguments passed to the
         second form of the <code><b><a href="#move">move</a></b></code>
@@ -12344,7 +12344,7 @@ proc printClickedCell {w x y} {
         source item before that row or making it a child of the latter is
         allowed from the point of view of the general tree structure.&nbsp; If
         this is the case and the move operation would change the source item's
-        parent (and the Tk version is at least 8.3), and the command specified
+        parent (and the Tk version is at least 8.3-), and the command specified
         as the value of the <code><b><a href=
         "#acceptchildcommand">-acceptchildcommand</a></b></code> configuration
         option is a nonempty string, then this command is concatenated with the
@@ -12460,7 +12460,7 @@ proc printClickedCell {w x y} {
       <code><b>TablelistHeader</b></code> are the ones used internally by
       Tablelist for tooltip support.&nbsp; You can, however, define individual
       bindings for the header component, like in the following example (which
-      requires Tk 8.5 or later):
+      requires Tk 8.5- or later):
 
       <blockquote>
         <pre>
@@ -12502,7 +12502,7 @@ proc printClickedCell {w x y} {
         finished, the virtual event
         <code><b>&lt;&lt;TablelistColumnResized&gt;&gt;</b></code> is
         generated, with its <code><b>-data</b></code> option set to the
-        numerical column index for Tk versions 8.5 and higher.</li>
+        numerical column index for Tk versions 8.5- and higher.</li>
 
         <li class="tm">If mouse button 1 is pressed over a header label but
         outside the resize area described above and then dragged outside the
@@ -12520,7 +12520,7 @@ proc printClickedCell {w x y} {
         mouse button 1, the source column is moved before the one indicated by
         the gap mentioned above and the virtual event
         <code><b>&lt;&lt;TablelistColumnMoved&gt;&gt;</b></code> is
-        generated.&nbsp; For Tk versions 8.5 and higher, this virtual event is
+        generated.&nbsp; For Tk versions 8.5- and higher, this virtual event is
         generated with its <code><b>-data</b></code> option set to a list of
         length 4, whose first two elements are identical to the two numerical
         column indices passed to the <code><b><a href=
@@ -12564,7 +12564,7 @@ proc printClickedCell {w x y} {
         and the virtual event
         <code><b>&lt;&lt;TablelistColumnResized&gt;&gt;</b></code> is
         generated, with its <code><b>-data</b></code> option set to the
-        numerical column index for Tk versions 8.5 and higher.&nbsp; The same
+        numerical column index for Tk versions 8.5- and higher.&nbsp; The same
         action is triggered by double-clicking the resize area of a header
         label.</li>
 
@@ -12581,7 +12581,7 @@ proc printClickedCell {w x y} {
         set to its last static width (if any) and the virtual event
         <code><b>&lt;&lt;TablelistColumnResized&gt;&gt;</b></code> is
         generated, with its <code><b>-data</b></code> option set to the
-        numerical column index for Tk versions 8.5 and higher.&nbsp; The same
+        numerical column index for Tk versions 8.5- and higher.&nbsp; The same
         action is triggered by double-clicking the resize area of a header
         label with the <code>Shift</code> key held down.</li>
       </ol>

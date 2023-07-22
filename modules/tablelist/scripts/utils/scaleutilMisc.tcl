@@ -22,7 +22,7 @@ namespace eval scaleutilmisc {
     #
     variable version	1.4
     variable library
-    if {$::tcl_version >= 8.4} {
+    if {$::tcl_version >= 8.4-} {
 	set library	[file dirname [file normalize [info script]]]
     } else {
 	set library	[file dirname [info script]] ;# no "file normalize" yet
@@ -112,7 +112,7 @@ proc scaleutilmisc::scaleIncrDateentry {w pct} {
 	-backwardimage [backwardImg $pct $btnFg] \
 	-forwardimage  [forwardImg  $pct $btnFg]
     variable onX11
-    if {$onX11 && $::tk_version >= 8.5} {
+    if {$onX11 && $::tk_version >= 8.5-} {
 	set captionFontSize [font actual TkCaptionFont -size]
 	set defaultFontSize [font actual TkDefaultFont -size]
 	$w configure -titlefont [list Helvetica $captionFontSize bold] \

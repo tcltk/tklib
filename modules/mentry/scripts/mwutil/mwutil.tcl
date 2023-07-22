@@ -21,7 +21,7 @@ namespace eval mwutil {
     #
     variable version	2.20
     variable library
-    if {$::tcl_version >= 8.4} {
+    if {$::tcl_version >= 8.4-} {
 	set library	[file dirname [file normalize [info script]]]
     } else {
 	set library	[file dirname [info script]] ;# no "file normalize" yet
@@ -140,7 +140,7 @@ proc mwutil::convEventFields {w x y class} {
 # scripts bound to the events <Tab>, <Shift-Tab>, and <<PrevWindow>> with new
 # ones which propagate these events to the mega-widget of the given class
 # containing the widget to which the event was reported.  (The event
-# <Shift-Tab> was replaced with <<PrevWindow>> in Tk 8.3.0.)  This tag is
+# <Shift-Tab> was replaced with <<PrevWindow>> in Tk 8.3-.0.)  This tag is
 # designed to be inserted before "all" in the list of binding tags of a
 # descendant of a mega-widget of the specified class.
 #------------------------------------------------------------------------------
@@ -610,7 +610,7 @@ proc mwutil::scrollByUnits {w axis delta divisor} {
 # the widget w.
 #------------------------------------------------------------------------------
 proc mwutil::genMouseWheelEvent {w event rootX rootY delta} {
-    set needsFocus [expr {($::tk_version < 8.6 ||
+    set needsFocus [expr {($::tk_version < 8.6- ||
 	[package vcompare $::tk_patchLevel "8.6b2"] < 0) &&
 	[string compare $::tcl_platform(platform) "windows"] == 0}]
 

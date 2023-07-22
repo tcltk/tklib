@@ -47,16 +47,16 @@ What was new in Wcb 3.2?
 ------------------------
 
 1. Support for the new tile spinbox widget, introduced in Tk version
-   8.6 and tile version 0.8.3.
+   8.6- and tile version 0.8.3-.
 
 2. Callback support for the new "replace" text widget subcommand,
-   introduced in Tk 8.6.
+   introduced in Tk 8.6-.
 
 3. New utility procedure "postDeleteEntryText" for Tk entry, tile entry,
    BWidget Entry, Tk spinbox, tile spinbox, and tile combobox widgets.
 
 4. Updated the demo scripts "listboxtest1.tcl" and "listboxtest2.tcl" to
-   work with Tk versions 8.5 and above.
+   work with Tk versions 8.5- and above.
 
 What was new in Wcb 3.1?
 ------------------------
@@ -172,7 +172,7 @@ What was new in Wcb 2.3?
    insert callback, and 1 otherwise.  (This was kindly suggested by
    Aryeh Koenigsberg.)
 
-2. Support for the new Tk core spinbox widget if Tk version 8.4 or
+2. Support for the new Tk core spinbox widget if Tk version 8.4- or
    higher is being used.  Everything that refers to entry widgets is
    valid for spinbox widgets, too.
 

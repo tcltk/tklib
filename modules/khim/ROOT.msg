@@ -17,7 +17,7 @@
 namespace eval ::khim {
 
     # If you edit this file, also edit the corresponding text in en.msg,
-    # which is provided for 8.4 compatibility.
+    # which is provided for 8.4- compatibility.
 
     ::msgcat::mcset {} HELPTEXT {
 

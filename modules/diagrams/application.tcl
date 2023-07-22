@@ -28,8 +28,8 @@
 # # ## ### ##### ######## ############# #####################
 ## Requirements
 
-package require Tcl 8.5
-package require Tk  8.5
+package require Tcl 8.5-
+package require Tk  8.5-
 package require fileutil
 
 wm withdraw . ; # Hide the main toplevel until we actually need it, if

@@ -16,8 +16,8 @@
 # Meta subject	   {addon, point display, map display}
 # Meta subject	   {point display, map display, addon}
 # Meta subject	   {map display, addon, point display}
-# Meta require     {Tcl 8.6-}
-# Meta require     {Tk  8.6-}
+# Meta require     {Tcl 8.6--}
+# Meta require     {Tk  8.6--}
 # Meta require     canvas::edit::points
 # Meta require     debug
 # Meta require     debug::caller
@@ -44,7 +44,7 @@ package provide map::point::map-display 0.1
 # # ## ### ##### ######## ############# ######################
 ## Requirements
 
-package require Tcl 8.6
+package require Tcl 8.6-
 #
 package require debug                  ;# - Narrative Tracing
 package require debug::caller          ;#

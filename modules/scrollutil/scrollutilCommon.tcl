@@ -12,7 +12,7 @@ namespace eval ::scrollutil {
     #
     variable version	1.19
     variable library
-    if {$::tcl_version >= 8.4} {
+    if {$::tcl_version >= 8.4-} {
 	set library	[file dirname [file normalize [info script]]]
     } else {
 	set library	[file dirname [info script]] ;# no "file normalize" yet
@@ -40,7 +40,7 @@ namespace eval ::scrollutil {
 
 package provide scrollutil::common $::scrollutil::version
 
-if {$::tcl_version >= 8.4} {
+if {$::tcl_version >= 8.4-} {
     interp alias {} ::scrollutil::addVarTrace {} trace add variable
 } else {
     proc ::scrollutil::addVarTrace {name ops cmd} {

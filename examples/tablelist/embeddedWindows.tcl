@@ -85,7 +85,7 @@ foreach fileName [lsort [glob *.tcl]] {
 	set maxSize $fileSize
     }
 }
-if {$tk_version >= 8.5} {
+if {$tk_version >= 8.5-} {
     $tbl header insert 0 [list "[$tbl size] *.tcl files" "" $totalSize "" ""]
     $tbl header rowconfigure 0 -foreground blue
 }

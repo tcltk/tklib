@@ -4,7 +4,7 @@
 
 2023-06-29  Csaba Nemethi <csaba.nemethi@t-online.de>
 
-	* mentryCommon.tcl: For Tcl versions 8.4 and later replaced the
+	* mentryCommon.tcl: For Tcl versions 8.4- and later replaced the
 	  deprecated "trace variable" invocation with "trace add variable";
 	  bumped the version number to 3.18.
 
@@ -228,14 +228,14 @@
 	* CHANGES.txt: Updated to reflect the changes.
 	* doc/*.html:
 
-	* scripts/*.tcl: Adapted the "aqua" theme support to Tk releases 8.6.10
-	  and 8.6.11, including the support for the Dark Mode appearance;
+	* scripts/*.tcl: Adapted the "aqua" theme support to Tk releases 8.6-.10
+	  and 8.6-.11, including the support for the Dark Mode appearance;
 	  handling the virtual events <<LightAqua>> and <<DarkAqua>> by
 	  updating the overall appearance of the mentry widgets; added the
 	  virtual event <<MentryThemeDefaultsChanged>> and sent to the main
 	  window when handling the virtual events <<ThemeChanged>>,
 	  <<LightAqua>>, and <<DarkAqua>>; reworked the invocations of "package
-	  vcompare", taking into account that Tcl versions earlier than 8.5 did
+	  vcompare", taking into account that Tcl versions earlier than 8.5- did
 	  not support the letters "a" and "b" in version numbers; updated the
 	  copyright information.
 
@@ -250,7 +250,7 @@
 	* doc/*.png: Updated the screenshots.
 
 	* ../../examples/mentry/*.tcl: Made the demo-scripts scaling-aware;
-	  with Tk 8.6.10 or later, they now fully support the Dark Mode
+	  with Tk 8.6-.10 or later, they now fully support the Dark Mode
 	  appearance on Mac OS 10.14 and later; updated the copyright
 	  information.
 
@@ -382,7 +382,7 @@
 
 	* CHANGES.txt:                Eliminated the deprecated free-form scan
 	* scripts/mentryDateTime.tcl: from the implementation of the
-	  "mentry::getClockVal" command for Tcl versions 8.5 and above.
+	  "mentry::getClockVal" command for Tcl versions 8.5- and above.
 
 2011-08-19  Csaba Nemethi <csaba.nemethi@t-online.de>
 

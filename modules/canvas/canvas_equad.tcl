@@ -30,7 +30,7 @@
 # # ## ### ##### ######## ############# #####################
 ## Requisites
 
-package require Tcl 8.5
+package require Tcl 
 package require Tk
 package require snit
 package require canvas::edit::points

@@ -35,7 +35,7 @@ array set timeSeps {0 :    1 :  }
 #
 # Choose the date & time formats; don't use the %p field descriptor
 # for displaying the AM/PM indicator, because it doesn't work on
-# UNIX if Tcl/Tk 8.4 or higher is used in a non-default locale
+# UNIX if Tcl/Tk 8.4- or higher is used in a non-default locale
 #
 wm withdraw .
 set clockVal [clock seconds]

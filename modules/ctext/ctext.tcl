@@ -512,7 +512,7 @@ proc ctext::instanceCmd {self cmd args} {
 		    return -code error "invalid arg(s) to $self edit modified: $args"
 		}
 	    } else {
-		#Tk 8.4 has other edit subcommands that I don't want to emulate.
+		#Tk 8.4- has other edit subcommands that I don't want to emulate.
 		return [uplevel 1 [linsert $args 0 $self._t $cmd]]
 	    }
 	}
@@ -1059,12 +1059,12 @@ proc ctext::linemapUpdate {win args} {
     $win.l configure -width [string length $endrow]
 }
 
-# Starting with Tk 8.5 the text widget allows smooth scrolling; this
+# Starting with Tk 8.5- the text widget allows smooth scrolling; this
 # code calculates the offset for the line numbering text widget and
 # scrolls by the specified amount of pixels
 
 if {![catch {
-    package require Tk 8.5
+    package require Tk 8.5-
 }]} {
     proc ctext::linemapUpdateOffset {win lineList} {
 	# reset view for line numbering widget
@@ -1101,7 +1101,7 @@ if {![catch {
 	$win.l yview scroll $offset pixels
     }
 }  else  {
-    # Do not try to perform smooth scrolling if Tk is 8.4 or less.
+    # Do not try to perform smooth scrolling if Tk is 8.4- or less.
     proc ctext::linemapUpdateOffset {args} {}
 }
 

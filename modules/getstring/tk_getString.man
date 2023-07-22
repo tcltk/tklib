@@ -5,7 +5,7 @@
 [keywords string]
 [moddesc   {A dialog which prompts for a string input}]
 [titledesc {A string dialog}]
-[require Tcl 8.4]
+[require Tcl 8.4-]
 [require getstring [opt 0.1]]
 [description]
 

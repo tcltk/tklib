@@ -16,7 +16,7 @@
 # Meta subject	   {filesystem store, geo/point}
 # Meta subject	   {geo/point, filesystem store}
 # Meta subject	   {store, geo/point, filesystem}
-# Meta require     {Tcl 8.6-}
+# Meta require     {Tcl 8.6--}
 # Meta require     debug
 # Meta require     debug::caller
 # Meta require     {map::slippy 0.8}
@@ -39,7 +39,7 @@ package provide map::point::store::fs 0.1
 # # ## ### ##### ######## ############# ######################
 ## Requirements
 
-package require Tcl 8.6
+package require Tcl 8.6-
 #                               ;# Tcllib
 package require debug		;# - Narrative Tracing
 package require debug::caller   ;#
