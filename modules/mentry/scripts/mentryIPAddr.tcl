@@ -232,7 +232,7 @@ proc mentry::incrIPAddrComp {w amount} {
 proc mentry::pasteIPAddr w {
     if {[llength [info procs ::tk::GetSelection]] == 1} {
 	set res [catch {::tk::GetSelection $w CLIPBOARD} addr]
-    } else {					;# for Tk versions prior to 8.3-
+    } else {					;# for Tk versions prior to 8.3
 	set res [catch {selection get -displayof $w -selection CLIPBOARD} addr]
     }
     if {$res == 0} {

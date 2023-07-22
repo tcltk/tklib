@@ -48,7 +48,7 @@ namespace eval tablelist {
 	down,decreasing	Up
     }
 
-    variable specialAquaHandling [expr {$usingTile && ($::tk_version >= 8.6- ||
+    variable specialAquaHandling [expr {$usingTile && ($::tk_version >= 8.6 ||
 	[regexp {^8\.5\.(9|[1-9][0-9])$} $::tk_patchLevel]) &&
 	[lsearch -exact [winfo server .] "AppKit"] >= 0}]
 
@@ -56,7 +56,7 @@ namespace eval tablelist {
 	[expr {[lsearch -exact [image types] "nsimage"] >= 0}]
 
     variable aquaCrash [expr {[string compare $winSys "aqua"] == 0 &&
-	[lsearch -exact {8.6-.11 8.6-.12 8.7a5} $::tk_patchLevel] >= 0}]
+	[lsearch -exact {8.6.11 8.6.12 8.7a5} $::tk_patchLevel] >= 0}]
 }
 
 #
@@ -663,7 +663,7 @@ proc tablelist::keyToRow {win key} {
     } elseif {$data(keyToRowMapValid) && [info exists data($key-row)]} {
 	return $data($key-row)
     } else {
-	if {$::tcl_version >= 8.4-} {
+	if {$::tcl_version >= 8.4} {
 	    #
 	    # Speed up the search by starting at the last found position
 	    #
@@ -724,7 +724,7 @@ proc tablelist::updateKeyToRowMap win {
 proc tablelist::findTabs {win w line firstCol lastCol idx1Name idx2Name} {
     upvar ::tablelist::ns${win}::data data $idx1Name idx1 $idx2Name idx2
 
-    if {$::tk_version >= 8.5-} {
+    if {$::tk_version >= 8.5} {
 	set idxList [$w search -all -elide "\t" $line.0 $line.end]
 	if {[llength $idxList] == 0} {
 	    return 0
@@ -1806,7 +1806,7 @@ proc tablelist::updateCell {w index1 index2 text aux auxType auxWidth
 	    $w window configure $index1 -window ""
 	}
 
-	if {$::tk_version >= 8.5-} {
+	if {$::tk_version >= 8.5} {
 	    $w replace $index1 $index2 $text
 	} else {
 	    $w delete $index1 $index2
@@ -3966,7 +3966,7 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 	}
     }
 
-    set hasExpCollCtrlSelImgs [expr {$::tk_version >= 8.3- &&
+    set hasExpCollCtrlSelImgs [expr {$::tk_version >= 8.3 &&
 	[info exists ::tablelist::$data(-treestyle)_collapsedSelImg]}]
 
     foreach {dummy path textIdx} [$w dump -window $fromTextIdx $toTextIdx] {
@@ -5731,7 +5731,7 @@ proc tablelist::updateView {win {row -1}} {
 
     adjustElidedText $win
     redisplayVisibleItems $win
-    if {$::tk_version >= 8.5- && $row >= 0} {
+    if {$::tk_version >= 8.5 && $row >= 0} {
 	$data(body) yview $row
     }
     updateColors $win
@@ -6271,7 +6271,7 @@ proc tablelist::configCanvas {win col} {
 		variable winSys
 		if {[string compare $winSys "classic"] != 0 &&
 		    [string compare $winSys "aqua"] != 0 &&
-		    $::tk_version > 8.4-} {
+		    $::tk_version > 8.4} {
 		    set labelBg [$w cget -activebackground]
 		    set labelFg [$w cget -activeforeground]
 		}
@@ -6337,7 +6337,7 @@ proc tablelist::getShadows {w color darkColorName lightColorName} {
     #
     # Compute the dark shadow color
     #
-    if {[package vcompare $::tk_patchLevel "8.3-.1"] >= 0 &&
+    if {[package vcompare $::tk_patchLevel "8.3.1"] >= 0 &&
 	$r*0.5*$r + $g*1.0*$g + $b*0.28*$b < $maxIntens*0.05*$maxIntens} {
 	#
 	# The background is already very dark: make the dark
@@ -6361,7 +6361,7 @@ proc tablelist::getShadows {w color darkColorName lightColorName} {
     #
     # Compute the light shadow color
     #
-    if {[package vcompare $::tk_patchLevel "8.3-.1"] >= 0 &&
+    if {[package vcompare $::tk_patchLevel "8.3.1"] >= 0 &&
 	$g > $maxIntens*0.95} {
 	#
 	# The background is already very bright: make the
@@ -6797,7 +6797,7 @@ proc tablelist::makeCkbtn w {
 	    $w configure -borderwidth 0 -indicatoron 0 \
 		-image $uncheckedImg -selectimage $checkedImg \
 		-tristateimage $tristateImg
-	    if {$::tk_version >= 8.4-} {
+	    if {$::tk_version >= 8.4} {
 		$w configure -offrelief sunken	;# -offrelief added in Tk8.4
 	    }
 	    pack $w
@@ -6815,7 +6815,7 @@ proc tablelist::makeCkbtn w {
 	    $w configure -borderwidth 0 -indicatoron 0 \
 		-image $uncheckedImg -selectimage $checkedImg \
 		-tristateimage $tristateImg
-	    if {$::tk_version >= 8.4-} {
+	    if {$::tk_version >= 8.4} {
 		$w configure -offrelief sunken	;# -offrelief added in Tk8.4
 	    }
 	    pack $w
@@ -6831,7 +6831,7 @@ proc tablelist::makeCkbtn w {
 
 	aqua {
 	    $w configure -borderwidth 0 -font "system"
-	    if {$::tk_version > 8.4-} {
+	    if {$::tk_version > 8.4} {
 		$frm configure -width 12 -height 12
 		variable newAquaSupport
 		if {$newAquaSupport} {
@@ -6908,7 +6908,7 @@ proc tablelist::hdr_createTtkCkbtn {cmd win row col w} {
 # its parent, which is supposed to be a frame widget.
 #------------------------------------------------------------------------------
 proc tablelist::makeTtkCkbtn w {
-    if {$::tk_version < 8.5- || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
+    if {$::tk_version < 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
 	package require tile 0.6
     }
     createTileAliases

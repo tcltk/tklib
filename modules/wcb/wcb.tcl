@@ -12,7 +12,7 @@ namespace eval wcb {
     #
     variable version	3.8
     variable library
-    if {$::tcl_version >= 8.4-} {
+    if {$::tcl_version >= 8.4} {
 	set library	[file dirname [file normalize [info script]]]
     } else {
 	set library	[file dirname [info script]] ;# no "file normalize" yet

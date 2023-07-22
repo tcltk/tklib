@@ -97,7 +97,7 @@ How to Use It?
 The Mentry distribution provides two packages, called Mentry and
 Mentry_tile.  The main difference between the two is that Mentry_tile
 enables the tile-based, theme-specific appearance of mentry widgets;
-this package requires Tcl/Tk 8.4- or higher and tile 0.6 or higher.  It
+this package requires Tcl/Tk 8.4 or higher and tile 0.6 or higher.  It
 is not possible to use both packages in one and the same application,
 because both are implemented in the same "mentry" namespace and provide
 identical commands.

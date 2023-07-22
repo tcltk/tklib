@@ -1,7 +1,7 @@
 What is new in Mentry 3.18?
 ---------------------------
 
-1. For Tcl versions 8.4- and later replaced the deprecated "trace
+1. For Tcl versions 8.4 and later replaced the deprecated "trace
    variable" invocations with "trace add variable".
 
 What was new in Mentry 3.17?
@@ -45,7 +45,7 @@ What was new in Mentry 3.14?
 
 2. Added code that handles the virtual event <<TkWorldChanged>> with the
    "user_data" field (%d) set to "FontChanged", which, with Tk versions
-   later than 8.6-.11 and 8.7.a5, will be sent by the Tk engine to all
+   later than 8.6.11 and 8.7.a5, will be sent by the Tk engine to all
    widgets when a font is changed, for example, by invoking "font
    configure" (see TIP 608).
 
@@ -76,9 +76,9 @@ What was new in Mentry 3.12?
 What was new in Mentry 3.11?
 ----------------------------
 
-1. Adapted the "aqua" theme support to Tk releases 8.6-.10 and 8.6-.11,
+1. Adapted the "aqua" theme support to Tk releases 8.6.10 and 8.6.11,
    including the support for the Dark Mode appearance, introduced in
-   Mac OS version 10.14 (Mojave).  When using Tk 8.6-.10 or later, the
+   Mac OS version 10.14 (Mojave).  When using Tk 8.6.10 or later, the
    mentry widgets are now rendered according to the current system
    appearance and are updated whenever the latter toggles between Light
    Mode and Dark Mode or the Accent Color or Highlight Color in the
@@ -100,12 +100,12 @@ What was new in Mentry 3.11?
    theme be done using the "ttk::setTheme" command instead of
    "ttk::style theme use", which was necessary for older tile versions.
 
-6. Made the demo-scripts scaling-aware.  In addition, with Tk 8.6-.10 or
+6. Made the demo-scripts scaling-aware.  In addition, with Tk 8.6.10 or
    later, they now fully support the Dark Mode appearance on Mac OS
    10.14 and later.
 
 7. Reworked the invocations of "package vcompare", taking into account
-   that Tcl versions earlier than 8.5- did not support the letters "a"
+   that Tcl versions earlier than 8.5 did not support the letters "a"
    and "b" in version numbers (thanks to Mike Walsh for his bug report).
 
 8. Several further improvements in the code and documentation.
@@ -192,7 +192,7 @@ What was new in Mentry 3.5?
 
 2. Eliminated the deprecated free-form scan from the implementation of
    the "mentry::getClockVal" command for mentry widgets of types "Date",
-   "Time", and "DateTime" for Tcl versions 8.5- and above.
+   "Time", and "DateTime" for Tcl versions 8.5 and above.
 
 3. Fixed a minor bug related to the handling of <Button-1> events.
 
@@ -312,7 +312,7 @@ What was new in Mentry 2.7?
    release.
 
 3. Worked around a bug in the "clock format ... -format %p" command
-   introduced in Tcl 8.4-, causing an erronous behavior of the
+   introduced in Tcl 8.4, causing an erronous behavior of the
    "putClockVal" command in non-default locales on UNIX for "Time"
    mentries with AM/PM indicator.
 
@@ -436,8 +436,8 @@ What was new in Mentry 2.0?
    configuration options when creating a mentry widget.
 
 5. Whereever possible, eliminated the invocations of "info exists" for
-   array elements.  This works around a bug in Tcl versions 8.2- and
-   8.3-.0 - 8.3-.2 (fixed in 8.3-.3 and 8.4a2), which causes excessive
+   array elements.  This works around a bug in Tcl versions 8.2 and
+   8.3.0 - 8.3.2 (fixed in 8.3.3 and 8.4a2), which causes excessive
    memory use when calling "info exists" on a non-existent array
    element.
 
@@ -468,7 +468,7 @@ What was new in Mentry 1.4?
    gets canceled in any of the entry children by some before-delete or
    before-insert callback, and 1 otherwise.
 
-2. For Tk versions 8.4- or higher the "mentry::mentry" command now
+2. For Tk versions 8.4 or higher the "mentry::mentry" command now
    supports the "-disabledbackground", "-disabledforeground", and
    "-readonlybackground" configuration options, as well as the value
    "readonly" for the "-state" configuration option.
@@ -486,7 +486,7 @@ What was new in Mentry 1.3?
 
 1. Changed the implementation of the "-takefocus" configuration option,
    in order to work around a bug in the Tk library file "focus.tcl",
-   introduced in Tk 8.3-.1.
+   introduced in Tk 8.3.1.
 
 2. The "put" subcommand now restores the original contents of all
    affected entry children of the mentry widget if the change gets
@@ -508,7 +508,7 @@ What was new in Mentry 1.2?
 2. The "mentry::mentry" command now supports the "-takefocus"
    configuration option.
 
-3. For Tk versions 8.3- or higher the "mentry::mentry" command now
+3. For Tk versions 8.3 or higher the "mentry::mentry" command now
    supports the "-invalidcommand", "-validate", and "-validatecommand"
    configuration options.
 

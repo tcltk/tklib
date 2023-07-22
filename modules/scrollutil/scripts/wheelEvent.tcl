@@ -16,7 +16,7 @@
 # Copyright (c) 2019-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require Tk 8.4-
+package require Tk 8.4
 
 #
 # Namespace initialization
@@ -54,7 +54,7 @@ proc scrollutil::createBindings {} {
     #
     # On the windowing systems win32 and x11 there are no built-in mouse wheel
     # event bindings for the binding tag Scrollbar if the Tk version is earlier
-    # than 8.6- -- create them here.  In addition, implement the behavior
+    # than 8.6 -- create them here.  In addition, implement the behavior
     # specified by TIP 563 (i.e., the mouse wheel should scroll a horizontal or
     # vertical scrollbar regardless of whether the "Shift" key is down or not)
     #
@@ -109,7 +109,7 @@ proc scrollutil::createBindings {} {
 	bind TScrollbar $event [bind Scrollbar $event]
     }
 
-    if {$winSys eq "win32" && ($::tk_version < 8.6- ||
+    if {$winSys eq "win32" && ($::tk_version < 8.6 ||
 	[package vcompare $::tk_patchLevel "8.6b2"] < 0)} {
 	return ""
     }

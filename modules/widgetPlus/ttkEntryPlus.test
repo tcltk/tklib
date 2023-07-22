@@ -1,15 +1,15 @@
 # -*- tcl -*-
 
-if {![package vsatisfies [package provide Tcl] 8.5-]} {
+if {![package vsatisfies [package provide Tcl] 8.5]} {
     puts "    Aborting the tests found in \"[file tail [info script]]\"."
-    puts "    Requiring Tcl 8.5-, have [package present Tcl]"
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
     return
 }
 
 # Future: put all tests under constraint tk and set constraint properly
-if {[catch { package require Tk 8.5- } msg]} {
+if {[catch { package require Tk 8.5 } msg]} {
     puts "    Aborting the tests found in \"[file tail [info script]]\"."
-    puts "    Requiring Tk 8.5-, $msg"
+    puts "    Requiring Tk 8.5, $msg"
     return
 }
 
@@ -19,7 +19,7 @@ if {[catch { package require Tk 8.5- } msg]} {
 # Tile package: entry widget tests
 #
 
-package require Tk 8.5-
+package require Tk 8.5
 package require tcltest ; namespace import -force tcltest::*
 loadTestedCommands
 
@@ -277,7 +277,7 @@ test entry-8.1 "Unset linked variable" -body {
     list [.e cget -textvariable] [.e get] [set foo]
 } -result [list foo "baz" "baz"] -cleanup { destroy .e }
 
-test entry-8.2- "Unset linked variable by deleting namespace" -body {
+test entry-8.2 "Unset linked variable by deleting namespace" -body {
     namespace eval ::test  { variable foo "bar" }
     pack [ttkEntryPlus .e -textvariable ::test::foo]
     namespace delete ::test
@@ -287,7 +287,7 @@ test entry-8.2- "Unset linked variable by deleting namespace" -body {
 # '-result [list ::test::foo "baz" "baz"]' would also be sensible,
 # but Tcl namespaces don't work that way.
 
-test entry-8.2a "Followup to test 8.2-" -body {
+test entry-8.2a "Followup to test 8.2" -body {
     .e cget -textvariable
 } -result ::test::foo -cleanup { destroy .e }
 # For 8.2a, -result {} would also be sensible.

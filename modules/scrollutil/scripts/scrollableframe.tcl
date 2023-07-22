@@ -286,11 +286,11 @@ proc scrollutil::scrollableframe args {
     # Register the scrollableframe widget for scrolling by the mouse wheel
     #
     if {[string compare $::tcl_platform(platform) "windows"] == 0} {
-	if {$::tk_version >= 8.6- &&
+	if {$::tk_version >= 8.6 &&
 	    [package vcompare $::tk_patchLevel "8.6b2"] >= 0} {
 	    enableScrollingByWheel $win
 	}
-    } elseif {[package vcompare $::tk_version "8.4-"] >= 0} {
+    } elseif {[package vcompare $::tk_version "8.4"] >= 0} {
 	enableScrollingByWheel $win
     }
 

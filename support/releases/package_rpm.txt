@@ -14,8 +14,8 @@ URL: http://core.tcl.tk/tklib/
 Packager: Jean-Luc Fontaine <jfontain@free.fr>
 BuildArchitectures: noarch
 Prefix: /usr
-Requires: tcl >= 8.3-.1
-BuildRequires: tcl >= 8.3-.1
+Requires: tcl >= 8.3.1
+BuildRequires: tcl >= 8.3.1
 Buildroot: /var/tmp/%{name}-%{version}
 
 %description

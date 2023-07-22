@@ -15,8 +15,8 @@
 # Meta description Extensible with attachable engines providing additional behaviours.
 
 # Meta subject	   {map display} {display, map}
-# Meta require     {Tcl 8.6--}
-# Meta require     {Tk  8.6--}
+# Meta require     {Tcl 8.6-}
+# Meta require     {Tk  8.6-}
 # Meta require     canvas::sqmap
 # Meta require     canvas::zoom
 # Meta require     crosshair
@@ -66,8 +66,8 @@ package provide map::display 0.1
 # # ## ### ##### ######## ############# ######################
 ## Requirements
 
-package require Tcl 8.6-
-package require Tk 8.6-
+package require Tcl 8.6
+package require Tk 8.6
 #                                      ;# Tcllib
 package require debug		       ;# - Narrative Tracing
 package require debug::caller          ;#

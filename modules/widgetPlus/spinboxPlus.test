@@ -7,16 +7,16 @@
 # Copyright (c) 1998-1999 by Scriptics Corporation.
 # All rights reserved.
 
-if {![package vsatisfies [package provide Tcl] 8.5-]} {
+if {![package vsatisfies [package provide Tcl] 8.5]} {
     puts "    Aborting the tests found in \"[file tail [info script]]\"."
-    puts "    Requiring Tcl 8.5-, have [package present Tcl]"
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
     return
 }
 
 # Future: put all tests under constraint tk and set constraint properly
-if {[catch { package require Tk 8.5- } msg]} {
+if {[catch { package require Tk 8.5 } msg]} {
     puts "    Aborting the tests found in \"[file tail [info script]]\"."
-    puts "    Requiring Tk 8.5-, $msg"
+    puts "    Requiring Tk 8.5, $msg"
     return
 }
 
@@ -1110,7 +1110,7 @@ test spinbox-3.1 {SpinboxWidgetCmd procedure} -setup {
 } -cleanup {
     destroy .e
 } -returnCodes error \
-    -result [expr {[package vsatisfies [package present Tcl] 8.6-]
+    -result [expr {[package vsatisfies [package present Tcl] 8.6]
 		   ? "wrong # args: should be \".e subcommand ?arg ...?\""
 		   : "wrong # args: should be \".e subcommand ?argument ...?\""}]
 
@@ -2513,7 +2513,7 @@ test spinbox-8.1 {DeleteChars procedure} -setup {
 } -cleanup {
     destroy .e
 } -result {abe abe {0.000000 1.000000}}
-test spinbox-8.2- {DeleteChars procedure} -setup {
+test spinbox-8.2 {DeleteChars procedure} -setup {
     unset -nocomplain contents
     spinboxPlus .e -width 10 -font {Courier -12} -highlightthickness 2 -bd 2
     pack .e
@@ -2527,7 +2527,7 @@ test spinbox-8.2- {DeleteChars procedure} -setup {
 } -cleanup {
     destroy .e
 } -result {cde cde {0.000000 1.000000}}
-test spinbox-8.3- {DeleteChars procedure} -setup {
+test spinbox-8.3 {DeleteChars procedure} -setup {
     unset -nocomplain contents
     spinboxPlus .e -width 10 -font {Courier -12} -highlightthickness 2 -bd 2
     pack .e
@@ -2541,7 +2541,7 @@ test spinbox-8.3- {DeleteChars procedure} -setup {
 } -cleanup {
     destroy .e
 } -result {abc abc {0.000000 1.000000}}
-test spinbox-8.4- {DeleteChars procedure} -setup {
+test spinbox-8.4 {DeleteChars procedure} -setup {
     spinboxPlus .e -width 10 -font {Courier -12} -highlightthickness 2 -bd 2
     pack .e
     focus .e
@@ -2557,7 +2557,7 @@ test spinbox-8.4- {DeleteChars procedure} -setup {
 } -cleanup {
     destroy .e
 } -result {1 6 1 5}
-test spinbox-8.5- {DeleteChars procedure} -setup {
+test spinbox-8.5 {DeleteChars procedure} -setup {
     spinboxPlus .e -width 10 -font {Courier -12} -highlightthickness 2 -bd 2
     pack .e
     focus .e
@@ -2573,7 +2573,7 @@ test spinbox-8.5- {DeleteChars procedure} -setup {
 } -cleanup {
     destroy .e
 } -result {1 5 1 4}
-test spinbox-8.6- {DeleteChars procedure} -setup {
+test spinbox-8.6 {DeleteChars procedure} -setup {
     spinboxPlus .e -width 10 -font {Courier -12} -highlightthickness 2 -bd 2
     pack .e
     focus .e
@@ -3941,7 +3941,7 @@ test spinbox-23.1 {selection present while disabled, bug 637828} -body {
     set out [.e selection present]
     .e configure -state disabled
 # still return 1 when disabled, because 'selection get' will work,
-# but selection cannot be changed (new behavior since 8.4-)
+# but selection cannot be changed (new behavior since 8.4)
     .e select to 9
     lappend out [.e selection present] [selection get]
 } -cleanup {

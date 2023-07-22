@@ -25,7 +25,7 @@
 # Meta subject	   {pixels, zoom, geo/point}
 # Meta subject	   {store, geo/point, memory}
 # Meta subject	   {zoom, geo/point pixels}
-# Meta require     {Tcl 8.6--}
+# Meta require     {Tcl 8.6-}
 # Meta require     debug
 # Meta require     debug::caller
 # Meta require     {map::slippy 0.8}
@@ -47,7 +47,7 @@ package provide map::point::store::memory 0.1
 # # ## ### ##### ######## ############# ######################
 ## Requirements
 
-package require Tcl 8.6-
+package require Tcl 8.6
 #
 #                               ;# Tcllib
 package require debug		;# - Narrative Tracing

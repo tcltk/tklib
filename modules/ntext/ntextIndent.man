@@ -2,8 +2,8 @@
 [manpage_begin ntextIndent n 1.0]
 [moddesc   {ntext Indentation for the Text Widget}]
 [titledesc {ntext Indentation for the Text Widget}]
-[require Tcl 8.5-]
-[require Tk 8.5-]
+[require Tcl 8.5]
+[require Tk 8.5]
 [require ntext [opt 1.0]]
 [description]
 
@@ -61,7 +61,7 @@ The behavior of [emph Ntext] may be configured application-wide by setting the v
 [item]
    [emph color] - a valid Tk color to use for the indent of wrapped display lines (default value [emph #d9d9d9]).
 [para]
-   Coloring is implemented with the text widget tag option [arg -lmargincolor], which is available from [package Tk] 8.6-.6 onwards.  [emph Ntext] indent coloring has no effect in earlier versions of [package Tk].
+   Coloring is implemented with the text widget tag option [arg -lmargincolor], which is available from [package Tk] 8.6.6 onwards.  [emph Ntext] indent coloring has no effect in earlier versions of [package Tk].
 [para]
    The value of [var ::ntext::indentColor] will often be set at startup.  If the value is changed when text widgets already exist and contain text, those widgets can be updated by calling command [cmd ::ntext::syncIndentColor].
 [list_end]
@@ -132,7 +132,7 @@ In other cases, i.e. if the widget is in [arg -word] [arg char] or [arg -word] [
 
 [section BUGS]
 
-This version of [package ntext] is intended to be compatible with all releases of [package Tk] 8.5- and 8.6-, and with the branches [emph core-8-5-branch], [emph core-8-6-branch], and [emph trunk] in the source code repository for [package Tk].  Any incompatibility with any of these versions, for any [package Tk] windowing system, should be reported as a bug. Please report such in the category [emph ntext] of the [uri http://core.tcl.tk/tklib/reportlist {Tklib Trackers}].
+This version of [package ntext] is intended to be compatible with all releases of [package Tk] 8.5 and 8.6, and with the branches [emph core-8-5-branch], [emph core-8-6-branch], and [emph trunk] in the source code repository for [package Tk].  Any incompatibility with any of these versions, for any [package Tk] windowing system, should be reported as a bug. Please report such in the category [emph ntext] of the [uri http://core.tcl.tk/tklib/reportlist {Tklib Trackers}].
 
 [section EXAMPLES]
 

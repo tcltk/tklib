@@ -39,7 +39,7 @@ namespace eval ::ipentry {
     bind IPEntrybindtag6 <colon>            {::ipentry::dot %W}
     bind IPEntrybindtag6 <period>           {}
 
-    #if {[package vsatisfies [package provide Tk] 8.5-]} {
+    #if {[package vsatisfies [package provide Tk] 8.5]} {
     #     ttk::style layout IPEntryFrame {
     #         Entry.field -sticky news -border 1 -children {
     #             IPEntryFrame.padding -sticky news
@@ -65,7 +65,7 @@ namespace eval ::ipentry {
 #
 proc ::ipentry::ipentry {w args} {
     upvar #0 [namespace current]::widget_$w state
-    #set state(themed) [package vsatisfies [package provide Tk] 8.5-]
+    #set state(themed) [package vsatisfies [package provide Tk] 8.5]
     set state(themed) 0
     foreach {name val} $args {
         if {$name eq "-themed"} {
@@ -126,7 +126,7 @@ proc ::ipentry::ipentry {w args} {
 #
 proc ::ipentry::ipentry6 {w args} {
     upvar #0 [namespace current]::widget_$w state
-    #set state(themed) [package vsatisfies [package provide Tk] 8.5-]
+    #set state(themed) [package vsatisfies [package provide Tk] 8.5]
     set state(themed) 0
     foreach {name val} $args {
         if {$name eq "-themed"} {

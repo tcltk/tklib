@@ -61,7 +61,7 @@
 #    methods get and set
 #
 
-package require Tk 
+package require Tk 8.5
 package require snit
 
 namespace eval controlwidget {

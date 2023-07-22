@@ -118,16 +118,16 @@ namespace eval tablelist {
     }
 
     variable pngSupported [expr {
-	($::tk_version >= 8.6- &&
+	($::tk_version >= 8.6 &&
 	 [package vcompare $::tk_patchLevel "8.6b2"] >= 0) ||
-	($::tk_version >= 8.5- && [catch {package require img::png}] == 0)}]
+	($::tk_version >= 8.5 && [catch {package require img::png}] == 0)}]
 
     variable svgSupported [expr {
 	$::tk_version >= 8.7 || [catch {package require tksvg}] == 0}]
 
     variable newAquaSupport [expr {
-	($::tk_version == 8.6- &&
-	 [package vcompare $::tk_patchLevel "8.6-.10"] >= 0) ||
+	($::tk_version == 8.6 &&
+	 [package vcompare $::tk_patchLevel "8.6.10"] >= 0) ||
 	($::tk_version >= 8.7 &&
 	 [package vcompare $::tk_patchLevel "8.7a3"] >= 0)}]
 
@@ -377,7 +377,7 @@ namespace eval tablelist {
     variable canElide
     variable elide
     variable disp
-    if {$::tk_version >= 8.3-} {
+    if {$::tk_version >= 8.3} {
 	set canElide 1
 	set elide -elide
 	set disp display
@@ -549,14 +549,14 @@ namespace eval tablelist {
 	    }
 	}
 
-	if {$::tk_version < 8.4-} {
+	if {$::tk_version < 8.4} {
 	    foreach opt [list loadfromfile loadfromstring] {
 		set idx [lsearch -exact $cmdOpts $opt]
 		set cmdOpts [lreplace $cmdOpts $idx $idx]
 	    }
 	}
 
-	if {$::tk_version < 8.5-} {
+	if {$::tk_version < 8.5} {
 	    foreach opt [list header headerpath headertag] {
 		set idx [lsearch -exact $cmdOpts $opt]
 		set cmdOpts [lreplace $cmdOpts $idx $idx]
@@ -695,7 +695,7 @@ namespace eval tablelist {
 
     #
     # Define the command genVirtualEvent, needed because the -data option of the
-    # "event generate" command was not available in Tk versions earlier than 8.5-
+    # "event generate" command was not available in Tk versions earlier than 8.5
     #
     if {[catch {event generate . <<__>> -data ""}] == 0} {
 	proc genVirtualEvent {win event userData} {
@@ -712,7 +712,7 @@ namespace eval tablelist {
     # to be used in text widget indices of the form <index>(+|-)<count>$pu
     #
     variable pu
-    if {$::tk_version >= 8.5-} {
+    if {$::tk_version >= 8.5} {
 	set pu indices
     } else {
 	set pu chars
@@ -985,9 +985,9 @@ proc tablelist::tablelist args {
 	variable themeDefaults
 	set data(themeDefaults) [array get themeDefaults]
     }
-    set data(-titlecolumns)	0		;# for Tk versions < 8.3-
-    set data(-treecolumn)	0		;# for Tk versions < 8.3-
-    set data(-treestyle)	""		;# for Tk versions < 8.3-
+    set data(-titlecolumns)	0		;# for Tk versions < 8.3
+    set data(-treecolumn)	0		;# for Tk versions < 8.3
+    set data(-treestyle)	""		;# for Tk versions < 8.3
     set data(colFontList)	[list $data(-font)]
     set data(listVarTraceCmd)	[list tablelist::listVarTrace $win]
     set data(bodyTag)		body$win
@@ -1044,7 +1044,7 @@ proc tablelist::tablelist args {
     set w $data(hdrTxt)		;# text widget within the header frame
     text $w -borderwidth 0 -highlightthickness 0 -insertwidth 0 \
 	    -padx 0 -pady 0 -state normal -takefocus 0 -wrap none
-    catch {$w configure -undo 0};  # because of a text widget issue in Tk 8.6-.6
+    catch {$w configure -undo 0};  # because of a text widget issue in Tk 8.6.6
     place $w -relheight 1.0 -relwidth 1.0
     bindtags $w [list $w $data(headerTag) TablelistHeader [winfo toplevel $w] \
 		 all]
@@ -1168,7 +1168,7 @@ proc tablelist::tablelist args {
 	catch {$w configure -padx 0 -pady 0}
     }
 
-    if {$::tk_version >= 8.5-} {
+    if {$::tk_version >= 8.5} {
 	#
 	# Create the upper horizontal separator
 	# (to be placed just below the header rows)
@@ -1190,7 +1190,7 @@ proc tablelist::tablelist args {
     set w $data(body)
     text $w -borderwidth 0 -exportselection 0 -highlightthickness 0 \
 	    -insertwidth 0 -padx 0 -pady 0 -state normal -takefocus 0 -wrap none
-    catch {$w configure -undo 0};  # because of a text widget issue in Tk 8.6-.6
+    catch {$w configure -undo 0};  # because of a text widget issue in Tk 8.6.6
     bind $w <Configure> { tablelist::bodyConfigure %W %w %h }
     pack $w -expand 1 -fill both
     bindtags $w [list $w $data(bodyTag) TablelistBody [winfo toplevel $w] \
@@ -1216,7 +1216,7 @@ proc tablelist::tablelist args {
 	$w tag configure hiddenCol -elide 1	;# used for hiding a column
 	$w tag configure elidedCol -elide 1	;# used for horizontal scrolling
     }
-    if {$::tk_version >= 8.5-} {
+    if {$::tk_version >= 8.5} {
 	$w tag configure elidedWin -elide 1	;# used for eliding a window
     }
 
@@ -2425,7 +2425,7 @@ proc tablelist::dumptostringSubCmd {win argList} {
     synchronize $win
     displayItems $win
 
-    if {$::tk_version >= 8.3-} {
+    if {$::tk_version >= 8.3} {
 	::$win expandall -fully
     }
 
@@ -5338,7 +5338,7 @@ proc tablelist::loadfromstringSubCmd {win argList} {
 
     set itemList [string range $str [incr idx] end]
 
-    if {$::tk_version >= 8.5-} {
+    if {$::tk_version >= 8.5} {
 	::$win header delete 0 end
     }
     ::$win delete 0 end
@@ -5349,7 +5349,7 @@ proc tablelist::loadfromstringSubCmd {win argList} {
 	return ""
     }
 
-    if {$::tk_version >= 8.5-} {
+    if {$::tk_version >= 8.5} {
 	::$win header insertlist end $hdr_itemList
     }
 
@@ -6839,7 +6839,7 @@ proc tablelist::yviewSubCmd {win argList} {
 	    $w yview $row
 	    adjustElidedText $win
 	    redisplayVisibleItems $win
-	    if {$::tk_version >= 8.5-} {
+	    if {$::tk_version >= 8.5} {
 		$w yview $row
 	    }
 	    updateColors $win
@@ -6907,7 +6907,7 @@ proc tablelist::yviewSubCmd {win argList} {
 
 		    adjustElidedText $win
 		    redisplayVisibleItems $win
-		    if {$::tk_version >= 8.5- && $absNumber != 0} {
+		    if {$::tk_version >= 8.5 && $absNumber != 0} {
 			$w yview $row
 		    }
 		    updateColors $win
@@ -9226,7 +9226,7 @@ proc tablelist::dragTo win {
     hdr_updateColors $win
     adjustElidedText $win
     redisplayVisibleItems $win
-    if {$::tk_version >= 8.5-} {
+    if {$::tk_version >= 8.5} {
 	$w yview $row
     }
     updateColors $win

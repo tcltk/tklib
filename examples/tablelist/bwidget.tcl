@@ -8,7 +8,7 @@
 # Copyright (c) 2004-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require Tk 8.4-				;# because of "-compound"
+package require Tk 8.4				;# because of "-compound"
 package require tablelist 6.22
 package require BWidget
 

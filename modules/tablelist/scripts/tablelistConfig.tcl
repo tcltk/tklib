@@ -159,7 +159,7 @@ proc tablelist::extendConfigSpecs {} {
 	    }
 	}
     } else {
-	if {$::tk_version < 8.3-} {
+	if {$::tk_version < 8.3} {
 	    unset configSpecs(-acceptchildcommand)
 	    unset configSpecs(-collapsecommand)
 	    unset configSpecs(-expandcommand)
@@ -339,7 +339,7 @@ proc tablelist::extendConfigSpecs {} {
 	lappend configSpecs(-arrowcolor)		$arrowColor
 	lappend configSpecs(-arrowdisabledcolor)	$arrowDisabledColor
 	lappend configSpecs(-arrowstyle)		$arrowStyle
-	if {$::tk_version >= 8.3-} {
+	if {$::tk_version >= 8.3} {
 	    lappend configSpecs(-treestyle)		$treeStyle
 	    createTreeImgs $treeStyle
 	}

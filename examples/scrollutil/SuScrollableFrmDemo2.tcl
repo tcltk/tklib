@@ -7,7 +7,7 @@
 # Copyright (c) 2019-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require Tk 8.5-.9			;# for ttk::spinbox
+package require Tk 8.5.9			;# for ttk::spinbox
 package require mentry_tile 3.2			;# for mouse wheel support
 package require tablelist_tile 6.5		;# for -(x|y)mousewheelwindow
 						;# and scrollutil::scrollarea

@@ -12,7 +12,7 @@ source [file join \
 	[file dirname [file dirname [file join [pwd] [info script]]]] \
 	devtools testutilities.tcl]
 
-testsNeedTcl     8.3-
+testsNeedTcl     8.3
 testsNeedTcltest 2.2
 
 support {
@@ -286,7 +286,7 @@ foreach {key prekey structure} {
 	set res
     } 1
 
-    test registry-8.2-.$n {attribute existence, missing} {
+    test registry-8.2.$n {attribute existence, missing} {
 	pregistry myreg
 	myreg set $prekey
 	myreg set $key foo   bar
@@ -295,7 +295,7 @@ foreach {key prekey structure} {
 	set res
     } 0
 
-    test registry-8.3-.$n {attribute existence, wrong#args} {
+    test registry-8.3.$n {attribute existence, wrong#args} {
 	pregistry myreg
 	myreg set $prekey
 	myreg set $key foo bar
@@ -304,7 +304,7 @@ foreach {key prekey structure} {
 	set res
     } {wrong # args: should be "::pregistry::Snit_methodexists type selfns win self key args"}
 
-    test registry-8.4-.$n {attribute existence, wrong#args} {
+    test registry-8.4.$n {attribute existence, wrong#args} {
 	pregistry myreg
 	myreg set $prekey
 	myreg set $key foo bar

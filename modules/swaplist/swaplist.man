@@ -6,8 +6,8 @@
 [moddesc   {A dialog which allows a user to move options between two lists}]
 [titledesc {A dialog which allows a user to move options between two lists}]
 [category Widget]
-[require Tcl 8.4-]
-[require Tk 8.4-]
+[require Tcl 8.4]
+[require Tk 8.4]
 [require swaplist [opt 0.1]]
 [description]
 

@@ -240,9 +240,9 @@ tar -zxf tablelist6.22.tar.gz
   <p>Next, you should check the exact version number of your Tcl/Tk
   distribution, given by the <code>tcl_patchLevel</code> and
   <code>tk_patchLevel</code> variables.&nbsp; If you are using Tcl/Tk version
-  8.2-.X, 8.3-.0 - 8.3-.2, or 8.4a1, then you should upgrade your Tcl/Tk
+  8.2.X, 8.3.0 - 8.3.2, or 8.4a1, then you should upgrade your Tcl/Tk
   distribution to a higher release.&nbsp; This is because a bug in these Tcl
-  versions (fixed in Tcl 8.3-.3 and 8.4a2) causes excessive memory use when
+  versions (fixed in Tcl 8.3.3 and 8.4a2) causes excessive memory use when
   calling&nbsp; <code>info exists</code>&nbsp; on non-existent array elements,
   and Tablelist makes a lot of invocations of this command.</p>
 
@@ -266,7 +266,7 @@ tar -zxf tablelist6.22.tar.gz
   <p>The Tablelist distribution provides two packages, called <b>Tablelist</b>
   and <b>Tablelist_tile</b>.&nbsp; The main difference between the two is that
   Tablelist_tile enables the tile-based, theme-specific appearance of tablelist
-  widgets; this package requires Tcl/Tk 8.4- or higher and tile 0.6 or
+  widgets; this package requires Tcl/Tk 8.4 or higher and tile 0.6 or
   higher.&nbsp; It is not possible to use both packages in one and the same
   application, because both are implemented in the same <code>tablelist</code>
   namespace and provide identical commands.</p>
@@ -318,12 +318,12 @@ package provide Tablelist_tile ...
   restrict the argument of&nbsp; <code>package require</code>&nbsp; to a single
   name per package.</p>
 
-  <p>Please note that <b>ActiveTcl versions 8.5- and later use a modified
+  <p>Please note that <b>ActiveTcl versions 8.5 and later use a modified
   package mechanism, which only exports the all-lowercase names
   <code>tablelist</code> and <code>tablelist_tile</code></b>.</p>
 
   <p><b>REMARK:</b>&nbsp; If you have an earlier Tablelist version as part of
-  ActiveTcl 8.5- or above and the new Tablelist release 6.22, then it is highly
+  ActiveTcl 8.5 or above and the new Tablelist release 6.22, then it is highly
   recommended to specify the version number <code>6.22</code> in the&nbsp;
   <code>package require</code>&nbsp; command, because otherwise the interpreter
   will load the old Tablelist version included in ActiveTcl as Tcl
@@ -374,7 +374,7 @@ namespace import tablelist::<i>pattern</i> ?tablelist::<i>pattern ...</i>?
     24 x 24.</li>
 
     <li>If the Tk version is either at least 8.7 (with built-in SVG support),
-    or 8.6- and the tksvg extension can be loaded into the interpreter, then the
+    or 8.6 and the tksvg extension can be loaded into the interpreter, then the
     variable <code>tablelist::svgfmt</code> is set to a Tcl list that you can
     pass to the commands that create or manipulate SVG images as the value of
     their <code>-format</code> option to make sure that your images will be
@@ -511,7 +511,7 @@ namespace import tablelist::<i>pattern</i> ?tablelist::<i>pattern ...</i>?
   <code>-font</code> option has changed), or the virtual event
   <code>&lt;&lt;TkWorldChanged&gt;&gt;</code> with the <code>user_data</code>
   field (<code>%d</code>) set to <code>FontChanged</code> is received.&nbsp; If
-  the Tk version is later than 8.6-.11 or 8.7a5, this virtual event is sent by
+  the Tk version is later than 8.6.11 or 8.7a5, this virtual event is sent by
   the Tk engine to all widgets when a font is changed, for example, by
   invoking&nbsp; <code>font configure</code>&nbsp; (see <a href=
   "https://core.tcl-lang.org/tips/doc/trunk/tip/608.md">TIP 608</a>).</p>
@@ -606,7 +606,7 @@ namespace eval ::scaleutil { set keepTkScaling 1 }
   indicators of the ttk::checkbutton and ttk::radiobutton widgets will appear
   properly scaled, regardless of the Tk release being used.&nbsp; (A
   long-standing bug in the implementation of these widgets was fixed in May
-  2020 and is now contained in both Tk 8.6-.11 and later and 8.7a5 and later,
+  2020 and is now contained in both Tk 8.6.11 and later and 8.7a5 and later,
   but the procedure provides an automatic workaround for the Tk versions that
   are still affected by this bug.)</p>
 
@@ -628,7 +628,7 @@ namespace eval ::scaleutil { set keepTkScaling 1 }
   especially when running Androwish on a tablet or smartphone.</p>
 
   <p>If the Tk version is either at least 8.7 (with built-in SVG support), or
-  8.6- and the tksvg package can be loaded into the interpreter, then Tablelist
+  8.6 and the tksvg package can be loaded into the interpreter, then Tablelist
   additionally sets the variable <code>tablelist::svgfmt</code> to</p>
 
   <blockquote>
@@ -702,8 +702,8 @@ namespace eval ::scaleutil { set keepTkScaling 1 }
 
   <blockquote>
     <pre>
-package require Tk 8.4-
-if {$::tk_version &lt; 8.5- || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
+package require Tk 8.4
+if {$::tk_version &lt; 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
     package require tile 0.6
 }
 </pre>
@@ -1043,7 +1043,7 @@ proc demo::displayConfig w {
 
   <p>If the default value of the <code>-selectborderwidth</code> option is
   <code>0</code> (this is the case on the Windows and Macintosh platforms, and
-  also in an X11 envronment with Tk 8.5- or above) then we use the
+  also in an X11 envronment with Tk 8.5 or above) then we use the
   <code><a href="tablelistWidget.html#spacing">-spacing</a></code> option to
   provide some additional space above and below the rows.</p>
 
@@ -1317,12 +1317,12 @@ demo::displayChildren .
 
   <p>There is a lot of code common to the scripts <code>browse.tcl</code> and
   <code>browseTree.tcl</code>.&nbsp; We will restrict the description below to
-  the second one, which requires Tk 8.3- or later, due to the use of several
+  the second one, which requires Tk 8.3 or later, due to the use of several
   tree-related tablelist options and subcommands.</p>
 
   <blockquote>
     <pre>
-package require Tk 8.3-
+package require Tk 8.3
 package require tablelist 6.22
 
 namespace eval demo {
@@ -1974,7 +1974,7 @@ proc demo::restoreExpandedStates {tbl nodeIdx expandedWidgetsName} {
 
   <blockquote>
     <pre>
-package require Tk 8.3-
+package require Tk 8.3
 package require tablelist 6.22
 
 <span class="cmt">#
@@ -2419,7 +2419,7 @@ for {set n 0} { $n &lt; 8} {incr n} {
 
   <blockquote>
     <pre>
-package require Tk 8.4-                          ;<span class="cmt"># because of "-compound"</span>
+package require Tk 8.4                          ;<span class="cmt"># because of "-compound"</span>
 package require tablelist 6.22
 package require BWidget
 
@@ -2962,7 +2962,7 @@ foreach fileName [lsort [glob *.tcl]] {
         set maxSize $fileSize
     }
 }
-if {$tk_version &gt;= 8.5-} {
+if {$tk_version &gt;= 8.5} {
     $tbl header insert 0 [list "[$tbl size] *.tcl files" "" $totalSize "" ""]
     $tbl header rowconfigure 0 -foreground blue
 }
@@ -3173,7 +3173,7 @@ $tbl fillcolumn 3 -window createButton
 
   <blockquote>
     <pre>
-package require Tk 8.3-                          ;<span class="cmt"># because of entry validation</span>
+package require Tk 8.3                          ;<span class="cmt"># because of entry validation</span>
 package require tablelist 6.22
 </pre>
   </blockquote>
@@ -3329,7 +3329,7 @@ if {[tk windowingsystem] eq "x11"} {
 
   <p>Finally, notice that the following tile-based demo-scripts provide
   <i>full</i> support for the Dark Mode appearance on Mac OS 10.14 (Mojave) and
-  later with Tk 8.6-.10 or above, as well as for the <code>awdark</code>,
+  later with Tk 8.6.10 or above, as well as for the <code>awdark</code>,
   <code>awlight</code>, and the six other themes provided by the
   multi-platform package <a href=
   "https://sourceforge.net/projects/tcl-awthemes/">awthemes</a> 10.3 or later
@@ -3337,9 +3337,9 @@ if {[tk windowingsystem] eq "x11"} {
   <code>browseTree_tile.tcl</code>, <code>config_tile.tcl</code>,
   <code>dirViewer_tile.tcl</code>, <code>embeddedWindows_tile.tcl</code>, and
   <code>tileWidgets.tcl</code>.&nbsp; While the Aqua Dark Mode support has been
-  present in Tk since its version 8.6-.10, for an optimal user experience on the
-  Mac it is recommended to run these scripts with Tk 8.6-.11 or later, due to a
-  few appearance-related improvements made in Tk 8.6-.11.</p>
+  present in Tk since its version 8.6.10, for an optimal user experience on the
+  Mac it is recommended to run these scripts with Tk 8.6.11 or later, due to a
+  few appearance-related improvements made in Tk 8.6.11.</p>
 
   <div>
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=

@@ -7,7 +7,7 @@
 # Copyright (c) 2019-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require Tk 8.5-
+package require Tk 8.5
 package require tablelist_tile 6.5
 package require scrollutil_tile
 set dir [file dirname [info script]]

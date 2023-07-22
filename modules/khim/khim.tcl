@@ -22,8 +22,8 @@
 #
 #----------------------------------------------------------------------
 
-package require Tcl 8.4-
-package require Tk 8.4-
+package require Tcl 8.4
+package require Tk 8.4
 package require msgcat 1.2
 package require autoscroll 1.0
 

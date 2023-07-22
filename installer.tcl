@@ -7,7 +7,7 @@ exec tclsh "$0" ${1+"$@"}
 # by any module is 8.2. So we enforce that the installer is run with
 # at least that.
 
-package require Tcl
+package require Tcl 8.2
 
 set distribution   [file dirname [info script]]
 lappend auto_path  [file join $distribution modules]
@@ -48,7 +48,7 @@ proc gen_main_index {outdir package version} {
 
     puts $index [string map [list \n\t {} "\n    " \n \t {}] {
 	# All tklib packages need Tcl 8 (use [namespace])
-#	if {![package vsatisfies [package provide Tcl] 8]} {return}
+	if {![package vsatisfies [package provide Tcl] 8]} {return}
 
 	# Extend the auto_path to make tklib packages available
 	if {[lsearch -exact $::auto_path $dir] == -1} {
@@ -56,7 +56,7 @@ proc gen_main_index {outdir package version} {
 	}
 
 	# For Tcl 8.3.1 and later, that's all we need
-	if {[package vsatisfies [package provide Tcl] 8.4-]} {return}
+	if {[package vsatisfies [package provide Tcl] 8.4]} {return}
 	if {(0 == [catch {
 	    package vcompare [info patchlevel] [info patchlevel]
 	}]) && ([package vcompare [info patchlevel] 8.3.1] >= 0)} {return}
@@ -64,7 +64,7 @@ proc gen_main_index {outdir package version} {
 	# For older Tcl releases, here are equivalent contents
 	# of the pkgIndex.tcl files of all the modules
 
-#	if {![package vsatisfies [package provide Tcl] 8.0]} {return}
+	if {![package vsatisfies [package provide Tcl] 8.0]} {return}
     }]
     puts $index ""
     puts $index "set maindir \$dir"

@@ -17,7 +17,7 @@
 #	set icos [::ico::getIconList $file]
 #	set img  [::ico::getIcon $file 1 -format image]
 
-package require Tcl 8.4-
+package require Tcl 8.4
 
 # Instantiate vars we need for this package
 namespace eval ::ico {

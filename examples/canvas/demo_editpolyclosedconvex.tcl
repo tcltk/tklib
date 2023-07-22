@@ -18,7 +18,7 @@
 # # ## ### ##### ######## ############# #####################
 ## Requirements
 
-package require Tcl 8.5-
+package require Tcl 8.5
 
 # Extend the package search path so that this demonstration works with
 # the non-installed tklib packages well. A regular application should

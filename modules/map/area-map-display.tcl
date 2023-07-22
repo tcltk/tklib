@@ -16,8 +16,8 @@
 # Meta subject	   {addon, area display, map display}
 # Meta subject	   {area display, map display, addon}
 # Meta subject	   {map display, addon, area display}
-# Meta require     {Tcl 8.6--}
-# Meta require     {Tk  8.6--}
+# Meta require     {Tcl 8.6-}
+# Meta require     {Tk  8.6-}
 # Meta require     canvas::edit::polyline
 # Meta require     debug
 # Meta require     debug::caller
@@ -51,7 +51,7 @@ package provide map::area::map-display 0.1
 # # ## ### ##### ######## ############# ######################
 ## Requirements
 
-package require Tcl 8.6-
+package require Tcl 8.6
 #
 package require debug                  ;# - Narrative Tracing
 package require debug::caller          ;#

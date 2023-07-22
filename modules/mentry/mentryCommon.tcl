@@ -15,7 +15,7 @@ namespace eval ::mentry {
     #
     variable version	3.18
     variable library
-    if {$::tcl_version >= 8.4-} {
+    if {$::tcl_version >= 8.4} {
 	set library	[file dirname [file normalize [info script]]]
     } else {
 	set library	[file dirname [info script]] ;# no "file normalize" yet
@@ -50,7 +50,7 @@ namespace eval ::mentry {
 
 package provide mentry::common $::mentry::version
 
-if {$::tcl_version >= 8.4-} {
+if {$::tcl_version >= 8.4} {
     interp alias {} ::mentry::addVarTrace {} trace add variable
 } else {
     proc ::mentry::addVarTrace {name ops cmd} {

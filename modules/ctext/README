@@ -142,7 +142,7 @@
 	disabled by default.
 
 
-	I have personally tested it with Tcl/Tk 8.4-.4 in NetBSD.
+	I have personally tested it with Tcl/Tk 8.4.4 in NetBSD.
 	It should work with all Tcl platforms.
 
 	Please send comments and bugs to the tklib project at

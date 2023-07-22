@@ -102,7 +102,7 @@ if {[info exists argv0] && [lindex $argv 0] eq [info script]} {
     lappend auto_path [file join [file dirname [info script]] .. libs]
 }
 
-package require Tcl 8.5-
+package require Tcl 8.5
 package require Tk
 package require snit
 

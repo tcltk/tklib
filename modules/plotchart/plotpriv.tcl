@@ -4063,7 +4063,7 @@ proc ::Plotchart::ConfigBar { w args } {
 #    New data drawn in canvas
 #
 # Note:
-#    This method requires Tcl 8.5-
+#    This method requires Tcl 8.5
 #
 # TODO:
 #    Check for numerical problems!

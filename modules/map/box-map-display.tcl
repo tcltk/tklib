@@ -16,8 +16,8 @@
 # Meta subject	   {addon, box display, map display}
 # Meta subject	   {box display, map display, addon}
 # Meta subject	   {map display, addon, box display}
-# Meta require     {Tcl 8.6--}
-# Meta require     {Tk  8.6--}
+# Meta require     {Tcl 8.6-}
+# Meta require     {Tk  8.6-}
 # Meta require     canvas::edit::rectangle
 # Meta require     debug
 # Meta require     debug::caller
@@ -51,7 +51,7 @@ package provide map::box::map-display 0.1
 # # ## ### ##### ######## ############# ######################
 ## Requirements
 
-package require Tcl 8.6-
+package require Tcl 8.6
 #
 package require debug                   ;# - Narrative Tracing
 package require debug::caller           ;#

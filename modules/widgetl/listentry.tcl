@@ -17,8 +17,8 @@
 ## Requisites
 # -- when testing -- lappend auto_path [file dirname [file dirname [file normalize [info script]]]]
 
-package require Tcl 8.5-                ; # {*}, dict
-package require Tk 8.5-                 ; # includes Ttk
+package require Tcl 8.5                ; # {*}, dict
+package require Tk 8.5                 ; # includes Ttk
 package require snit                   ; # Tcllib, OO core.
 package require widget::scrolledwindow
 package require widget::validator

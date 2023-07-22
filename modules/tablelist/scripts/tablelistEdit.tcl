@@ -106,7 +106,7 @@ namespace eval tablelist {
 	    $name-reservedKeys	{} \
 	]
 
-	if {$::tk_version < 8.4-} {
+	if {$::tk_version < 8.4} {
 	    return ""
 	}
 
@@ -243,7 +243,7 @@ namespace eval tablelist {
 	    set editWin(::$name) $value
 	}
     }
-    if {$::tk_version >= 8.4- && [llength [package versions tile]] > 0} {
+    if {$::tk_version >= 8.4 && [llength [package versions tile]] > 0} {
 	addTileWidgets
     }
 }
@@ -1219,7 +1219,7 @@ proc tablelist::postMenuCmd w {
 # editing in a tablelist widget.
 #------------------------------------------------------------------------------
 proc tablelist::createTileEntry {w args} {
-    if {$::tk_version < 8.5- || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
+    if {$::tk_version < 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
 	package require tile 0.6
     }
     createTileAliases
@@ -1271,8 +1271,8 @@ proc tablelist::createTileEntry {w args} {
 # editing in a tablelist widget.
 #------------------------------------------------------------------------------
 proc tablelist::createTileSpinbox {w args} {
-    if {$::tk_version < 8.5- || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
-	package require tile 0.8.3-
+    if {$::tk_version < 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
+	package require tile 0.8.3
     }
     createTileAliases
 
@@ -1330,7 +1330,7 @@ proc tablelist::createTileSpinbox {w args} {
 # editing in a tablelist widget.
 #------------------------------------------------------------------------------
 proc tablelist::createTileCombobox {w args} {
-    if {$::tk_version < 8.5- || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
+    if {$::tk_version < 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
 	package require tile 0.6
     }
     createTileAliases
@@ -1383,7 +1383,7 @@ proc tablelist::createTileCheckbutton {w args} {
 # editing in a tablelist widget.
 #------------------------------------------------------------------------------
 proc tablelist::createTileMenubutton {w args} {
-    if {$::tk_version < 8.5- || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
+    if {$::tk_version < 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
 	package require tile 0.6
     }
     createTileAliases
@@ -1608,7 +1608,7 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
 	catch {$w configure -relief ridge}
 	catch {$w configure -borderwidth 2}
     }
-    if {$isText && $data($col-wrap) && $::tk_version >= 8.5-} {
+    if {$isText && $data($col-wrap) && $::tk_version >= 8.5} {
 	$w configure -wrap word
     }
     set alignment [lindex $data(colList) [expr {2*$col + 1}]]
@@ -1852,7 +1852,7 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
     #
     if {$isText} {
 	if {[string compare [$w cget -wrap] "none"] == 0 ||
-	    $::tk_version < 8.5-} {
+	    $::tk_version < 8.5} {
 	    set numLines [expr {int([$w index end-1$pu])}]
 	    $w configure -height $numLines
 	    update idletasks				;# needed for ctext
@@ -2076,7 +2076,7 @@ proc tablelist::clearTakefocusOpt w {
 # edit window to the number of lines currently contained in it.
 #------------------------------------------------------------------------------
 proc tablelist::adjustTextHeight {w args} {
-    if {$::tk_version >= 8.5-} {
+    if {$::tk_version >= 8.5} {
 	#
 	# Count the display lines (taking into account the line wraps)
 	#

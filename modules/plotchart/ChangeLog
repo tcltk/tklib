@@ -215,7 +215,7 @@
 
 2012-12-02  Arjen Markus  <arjenmarkus@users,sourceforge.net>
         * plotchart.tcl: Add options -fillcolor and -mediancolor, methods bindlast for histograms and deletedata for xyplots
-        * plotchart.tcl: Changed required version of Tcl to 8.5-
+        * plotchart.tcl: Changed required version of Tcl to 8.5
         * plotchart.man: Describe the deletedata subcommand
         * plotpriv.tcl: New items for histograms (bindlast)
         * plotaxis.tcl: Check if a legend is empty
@@ -393,7 +393,7 @@
 2010-06-08  Andreas Kupries  <andreask@activestate.com>
 
         * pkgIndex.tcl: Added a guard command to xyplot, this package
-          requires Tcl 8.5-+.
+          requires Tcl 8.5+.
 
 2010-06-06  Arjen Markus  <arjenmarkus@users.sourceforge.net>
         * demo.tcl: Added demo program showing code and plot/chart
@@ -401,7 +401,7 @@
         * plotpriv.tcl: Adding option to use darkening gradients
         * plotpriv.tcl: Enable "exploding" segments in a piechart
         * plotbind.tcl: Provide a procedure to explode a segment in a piechart
-        * plotaxis.tcl: Adjusted formatting of axis labels - Tcl 8.5- uses a large precision,
+        * plotaxis.tcl: Adjusted formatting of axis labels - Tcl 8.5 uses a large precision,
                         leading to labels like 0.09999999 instead of 0.1
         * plotaxis.tcl: Draw labels in bar charts centred wrt the bars, not the bars and gap (suggestion by Harald Oehlmann)
         * plotaxis.tcl: Moving the legend interactively via Button-1
@@ -412,7 +412,7 @@
         * plotchart.man: Describe the new option for darkening gradients
         * plotchart.man: Describe the tags that are used (description of the current status)
         * plotchart.test: Added tests for the new scaling procedure
-        * pkgIndex.tcl: Changed version Plotchart to 1.8.3- and xyplot to 1.0.1
+        * pkgIndex.tcl: Changed version Plotchart to 1.8.3 and xyplot to 1.0.1
         * xyplot.tcl: Updates by Jos DeCoster (adjusted version to 1.0.1)
         * plotannot.tcl: Support added for darkening gradients
         * plotdemos13.tcl: Added to inspect the performance for large numbers of data points
@@ -430,7 +430,7 @@
         * plotaxis.tcl: Solved bug 2906751 (formatting labels of right axis did not work)
         * plotcontour.test: Added extra test by Michael Baudin for isoline plots
         * rosenbrock.tcl: Demo by Michael Baudin of plotting isolines for the Rosenbrock function
-        * pkgIndex.tcl: Changed version to 1.8.2-
+        * pkgIndex.tcl: Changed version to 1.8.2
 
 2009-11-24  Arjen Markus  <arjenmarkus@users.sourceforge.net>
         * plotaxis.tcl: Remove left-over debugging code in FormatNumber (reported by Dave Hanks)
@@ -543,13 +543,13 @@
         * plotaxis.tcl: Applied patch regarding ticklines with time axes (Nick Matthews)
 
 2008-02-24 Arjen Markus  <arjenmarkus@users.sourceforge.net>
-        * pkgIndex.tcl: Increased version number to 1.5.1, require Tcl/Tk 8.4-
+        * pkgIndex.tcl: Increased version number to 1.5.1, require Tcl/Tk 8.4
         * plotchart.man: Added plotpack command
         * plotchart.tcl: Added plotpack command
         * plotpack.tcl: Added plotpack command
 
 2008-02-22 Arjen Markus  <arjenmarkus@users.sourceforge.net>
-        * pkgIndex.tcl: Increased version number to 1.5, require Tcl/Tk 8.4-
+        * pkgIndex.tcl: Increased version number to 1.5, require Tcl/Tk 8.4
         * plotconfig.tcl: Added this file for configuring the plots
         * plotchart.tcl: Support for configuration command, also incorporated patch by Michael Baudin
         * plotaxis.tcl: Support for configuration command
@@ -708,7 +708,7 @@
 
 2005-10-24  Andreas Kupries <andreask@activestate.com>
 
-        * plotchart.test: Added check for Tcl 8.3-, minimum version of Tcl
+        * plotchart.test: Added check for Tcl 8.3, minimum version of Tcl
           required by the charts.
 
         * pkgIndex.tcl: Sync'd the package version with implementation and
@@ -758,7 +758,7 @@
         * Fixed bug 1035281 - wrong scaling for -1.7 -- 26.8
           (new test case)
         * Fixed dependency on -nocomplain flag for unset (plotpriv.tcl)
-          Plotchart should work with Tcl 8.3- now
+          Plotchart should work with Tcl 8.3 now
 
 2004-08-19  Arjen Markus  <arjenmarkus@users.sourceforge.net>
 

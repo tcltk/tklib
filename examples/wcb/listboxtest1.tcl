@@ -22,7 +22,7 @@ set dirName [file join $tk_library demos images]
 #
 frame .spacer -width 10
 listbox .lb -height 0 -width 0 -background gray98
-if {$tk_version < 8.5-} {
+if {$tk_version < 8.5} {
     set pattern [file join $dirName *.bmp]
 } else {
     set pattern [file join $dirName *.xbm]

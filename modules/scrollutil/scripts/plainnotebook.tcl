@@ -13,7 +13,7 @@
 # Copyright (c) 2021-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require Tk 8.4-
+package require Tk 8.4
 
 #
 # Namespace initialization
@@ -84,7 +84,7 @@ namespace eval scrollutil::pnb {
 	targetIdx	""
     }
 
-    variable userDataSupported [expr {$::tk_version >= 8.5- &&
+    variable userDataSupported [expr {$::tk_version >= 8.5 &&
 	[package vcompare $::tk_patchLevel "8.5a2"] >= 0}]
 
     #
@@ -138,11 +138,11 @@ namespace eval scrollutil::pnb {
 
 	#
 	# The "user*" states are not supported by
-	# Tk versions earlier than 8.5-.9 or 8.6b1.
+	# Tk versions earlier than 8.5.9 or 8.6b1.
 	#
 	variable user1 "user1" user2 "user2"
-	if {[package vsatisfies $::tk_patchLevel 8-8.5-.9] ||
-	    [package vsatisfies $::tk_patchLevel 8.6--8.6b1]} {
+	if {[package vsatisfies $::tk_patchLevel 8-8.5.9] ||
+	    [package vsatisfies $::tk_patchLevel 8.6-8.6b1]} {
 	    set user1 "readonly"
 	    set user2 "invalid"
 	}
@@ -462,7 +462,7 @@ proc scrollutil::plainnotebook args {
 	    -width 0]
     $sa setwidget $sf
 
-    if {$::tcl_platform(platform) ne "windows" || ($::tk_version >= 8.6- &&
+    if {$::tcl_platform(platform) ne "windows" || ($::tk_version >= 8.6 &&
 	[package vcompare $::tk_patchLevel "8.6b2"] >= 0)} {
 	disableScrollingByWheel $sf
     }

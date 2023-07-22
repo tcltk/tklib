@@ -12,8 +12,8 @@
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
 
-package require Tcl 
-package require Tk 
+package require Tcl 8.5
+package require Tk 8.5
 
 namespace eval chatwidget {
     variable version 1.1.4

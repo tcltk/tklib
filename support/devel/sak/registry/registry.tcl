@@ -3,7 +3,7 @@
 ##
 # ###
 
-package require Tcl 8.3-
+package require Tcl 8.3
 package require snit
 package require tie
 
@@ -222,7 +222,7 @@ snit::type pregistry {
     method TIE {option value} {
 	if {[string equal $options(-tie) $value]} return
 	tie::untie [myvar data]
-	# 8.5- - tie::tie [myvar data] {expand}$value
+	# 8.5 - tie::tie [myvar data] {expand}$value
 	eval [linsert $value 0 tie::tie [myvar data]]
 	set options(-tie) $value
 	return

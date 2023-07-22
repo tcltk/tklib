@@ -113,9 +113,9 @@
 
   <p>The Tk core addresses just a few of the above problems:&nbsp; In Tk 8.1
   the <code>&lt;&lt;ListboxSelect&gt;&gt;</code> virtual event for listbox
-  widgets was introduced, Tk versions 8.3- and higher support widget options for
-  entry validation, and the spinbox widget (introduced in Tk 8.4-) provides the
-  same validation facility.&nbsp; Finally, Tk versions 8.4- and higher support
+  widgets was introduced, Tk versions 8.3 and higher support widget options for
+  entry validation, and the spinbox widget (introduced in Tk 8.4) provides the
+  same validation facility.&nbsp; Finally, Tk versions 8.4 and higher support
   the <code>disabled</code> state for listbox widgets, as well as the
   <code>modified</code> flag, the <code>&lt;&lt;Modified&gt;&gt;</code> and
   <code>&lt;&lt;Selection&gt;&gt;</code> virtual events, and an undo/redo
@@ -244,7 +244,7 @@ package provide Wcb ...
   names.&nbsp; Of course, by doing so you restrict the argument of&nbsp;
   <code>package require</code>&nbsp; to a single name.</p>
 
-  <p>Please note that <b>ActiveTcl versions 8.5- and later use a modified
+  <p>Please note that <b>ActiveTcl versions 8.5 and later use a modified
   package mechanism, which only exports the all-lowercase name
   <code>wcb</code></b>.&nbsp; For this reason, the <a href=
   "#examples">examples</a> below use the statement&nbsp; <code>package require
@@ -410,7 +410,7 @@ set dirName [file join $tk_library demos images]
 #</span>
 frame .spacer -width 10
 listbox .lb -height 0 -width 0 -background gray98
-if {$tk_version &lt; 8.5-} {
+if {$tk_version &lt; 8.5} {
     set pattern [file join $dirName *.bmp] 
 } else { 
     set pattern [file join $dirName *.xbm]
@@ -709,7 +709,7 @@ set index [$w index insert]
 
   <p>Notice that we could also have defined before-<code>replace</code> and
   after-<code>replace</code> callbacks for the <code>replace</code> text widget
-  subcommand, introduced in Tk version 8.6-.&nbsp; There is, however, no need
+  subcommand, introduced in Tk version 8.6.&nbsp; There is, however, no need
   for it, because the default text widget bindings currently don't make use of
   this subcommand.</p>
 
@@ -718,7 +718,7 @@ set index [$w index insert]
   user from entering lines that are longer than allowed.&nbsp; The script
   <code>texttest2.tcl</code> in the <code>demos</code> directory shows how this
   can be achieved by combining widget callbacks with the undo mechanism for
-  text widgets, introduced in Tk 8.4-.&nbsp; This script creates the text widget
+  text widgets, introduced in Tk 8.4.&nbsp; This script creates the text widget
   shown in the following figure:</p>
 
   <blockquote>
@@ -774,7 +774,7 @@ proc checkLines {maxCharsPerLine w args} {
   of the undo mechanism for text widgets, by saving the last accepted contents
   of the widget, along with the cursor position, and restoring them in case any
   line gets longer than allowed.&nbsp; The resulting script would then run with
-  Tk versions earlier than 8.4-, too.</p>
+  Tk versions earlier than 8.4, too.</p>
 
   <div align="center">
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=

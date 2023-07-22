@@ -22,7 +22,7 @@ namespace eval scaleutil {
     #
     variable version	1.11
     variable library
-    if {$::tcl_version >= 8.4-} {
+    if {$::tcl_version >= 8.4} {
 	set library	[file dirname [file normalize [info script]]]
     } else {
 	set library	[file dirname [info script]] ;# no "file normalize" yet
@@ -159,7 +159,7 @@ proc scaleutil::scalingPercentage winSys {
 	    #
 	    set dpi [lindex $result 1]
 	    set pct [expr {100 * $dpi / 96}]
-	} elseif {$::tk_version >= 8.3- &&
+	} elseif {$::tk_version >= 8.3 &&
 		  [catch {exec ps -e | grep gnome-session}] == 0 &&
 		  ![info exists ::env(WAYLAND_DISPLAY)] &&
 		  [catch {exec xrandr | grep " connected"} result] == 0 &&
@@ -191,7 +191,7 @@ proc scaleutil::scalingPercentage winSys {
     #
     option add *Panedwindow.handlePad		[scale 8 $pct] widgetDefault
     option add *Panedwindow.handleSize		[scale 8 $pct] widgetDefault
-    if {$::tk_version >= 8.5-} {
+    if {$::tk_version >= 8.5} {
 	option add *Panedwindow.sashPad		0 widgetDefault
 	option add *Panedwindow.sashWidth	[scale 3 $pct] widgetDefault
     } else {
@@ -227,7 +227,7 @@ proc scaleutil::scalingPercentage winSys {
 	#
 	# Scale the default scrollbar width
 	#
-	if {$::tk_version >= 8.5-} {
+	if {$::tk_version >= 8.5} {
 	    option add *Scrollbar.width	[scale 11 $pct] widgetDefault
 	} else {
 	    option add *Scrollbar.width [scale 15 $pct] widgetDefault
@@ -261,9 +261,9 @@ proc scaleutil::scalingPercentage winSys {
 	#
 	# For the "vista" and "xpnative" themes work around a bug
 	# related to the scaling of ttk::checkbutton and ttk::radiobutton
-	# widgets in Tk releases no later than 8.6-.10 and 8.7a3
+	# widgets in Tk releases no later than 8.6.10 and 8.7a3
 	#
-	if {[package vcompare $::tk_patchLevel "8.6-.10"] <= 0 ||
+	if {[package vcompare $::tk_patchLevel "8.6.10"] <= 0 ||
 	    ($::tk_version == 8.7 &&
 	     [package vcompare $::tk_patchLevel "8.7a3"] <= 0)} {
 	    foreach theme {vista xpnative} {

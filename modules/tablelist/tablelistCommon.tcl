@@ -10,7 +10,7 @@ namespace eval ::tablelist {
     #
     variable version	6.22
     variable library
-    if {$::tcl_version >= 8.4-} {
+    if {$::tcl_version >= 8.4} {
 	set library	[file dirname [file normalize [info script]]]
     } else {
 	set library	[file dirname [info script]] ;# no "file normalize" yet
@@ -45,7 +45,7 @@ namespace eval ::tablelist {
 
 package provide tablelist::common $::tablelist::version
 
-if {$::tcl_version >= 8.4-} {
+if {$::tcl_version >= 8.4} {
     interp alias {} ::tablelist::addVarTrace	{} trace add variable
     interp alias {} ::tablelist::removeVarTrace	{} trace remove variable
 } else {

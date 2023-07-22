@@ -4,8 +4,8 @@
 # Copyright (c) 2019-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require Tk 8.4-
-if {$::tk_version < 8.5- || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
+package require Tk 8.4
+if {$::tk_version < 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
     package require tile 0.8
 }
 package require -exact scrollutil::common 1.19
