@@ -38,8 +38,8 @@ package provide map::track::table-display 0.1
 # # ## ### ##### ######## ############# ######################
 ## Requirements
 
-package require Tcl 8.6
-package require Tk  8.6
+package require Tcl 8.6-
+package require Tk
 #                                       ;# Tcllib
 package require debug                   ;# - Narrative Tracing
 package require debug::caller           ;#

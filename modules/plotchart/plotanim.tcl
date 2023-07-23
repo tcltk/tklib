@@ -1,4 +1,4 @@
-package require Tk 8.5
+package require Tk
 package require Plotchart
 package provide plotanim 0.2
 

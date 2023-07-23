@@ -102,7 +102,7 @@ if {[info exists argv0] && [lindex $argv 0] eq [info script]} {
     lappend auto_path [file join [file dirname [info script]] .. libs]
 }
 
-package require Tcl 8.5
+package require Tcl 8.5-
 package require Tk
 package require snit
 
@@ -385,7 +385,7 @@ namespace eval ::shtmlview {
             tk::TextSetCursor %W [tk::TextUpDownLine %W -1]
         }
     }
-    if {$tcl_platform(platform) != "windows"} {
+    if {$::tcl_platform(platform) ne "windows"} {
 	bind HelpText <Control-v> {
 	    if {!$tk_strictMotif} {
 		tk::TextScrollPages %W 1
@@ -415,7 +415,7 @@ namespace eval ::shtmlview {
     # Macintosh only bindings:
 
     # if text black & highlight black -> text white, other text the same
-    if {$tcl_platform(platform) == "macintosh"} {
+    if {$::tcl_platform(platform) eq "macintosh"} {
 	bind HelpText <FocusIn> {
 	    %W tag configure sel -borderwidth 0
 	    %W configure -selectbackground systemHighlight -selectforeground systemHighlightText
@@ -887,7 +887,7 @@ namespace eval ::shtmlview {
                 }
             }
             set filename [file tempfile].$ext
-            set out [open $filename w 0600]
+            set out [open $filename w 0o0600]
             puts $out $text
             close $out
             render $selfns $helptext [file normalize $filename ] no
@@ -1093,7 +1093,7 @@ namespace eval ::shtmlview {
 
             }
             set file [TrimAnchor $Url]
-            set out [open $file w 0600]
+            set out [open $file w 0o0600]
             puts -nonewline $out [$edittext get 1.0 end]
             close $out
             set editstatus "File [file tail [shtmlview::TrimAnchor $Url]] saved! Use Ctrl-Shift-e to switch back to browser!"
@@ -3405,7 +3405,7 @@ namespace eval ::svgconvert {
             return $img
         } elseif {$type eq "-data"} {
             set svgfile [file tempfile].svg
-            set out [open $svgfile w 0600]
+            set out [open $svgfile w 0o0600]
             puts $out [binary decode base64 $src]
             close $out
             set img [svgimg -file $svgfile]
@@ -3426,7 +3426,7 @@ namespace eval ::svgconvert {
     }
     proc base642svg {base64 filename} {
         set svgfile $filename
-        set out [open $svgfile w 0600]
+        set out [open $svgfile w 0o0600]
         puts $out [binary decode base64 $base64]
         close $out
     }

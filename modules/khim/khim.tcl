@@ -2017,10 +2017,10 @@ if {[info exists ::argv0] && ![string compare $::argv0 [info script]]} {
 	-padx 5 -pady 5
 
     proc testLoadConfig {} {
-	source ~/.khimrc
+	source [file join $::env(HOME) .khimrc]
     }
     proc testSaveConfig {} {
-	set f [open ~/.khimrc w]
+	set f [open [file join $::env(HOME) .khimrc] w]
 	puts $f [khim::getConfig]
 	close $f
     }

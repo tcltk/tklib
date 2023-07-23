@@ -43,7 +43,7 @@ package provide map::box::file 0.1
 # # ## ### ##### ######## ############# ######################
 ## Requirements
 
-package require Tcl 8.6
+package require Tcl 8.6-
 #                               ;# Tcllib
 package require debug		;# - Narrative Tracing
 package require debug::caller   ;#

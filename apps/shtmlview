@@ -19,7 +19,7 @@
 # Meta license      BSD
 # @@ Meta End
 
-package require Tcl 8.5
+package require Tcl 8.5-
 package require Tk
 package require shtmlview::shtmlview
 

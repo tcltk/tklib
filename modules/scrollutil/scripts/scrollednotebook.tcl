@@ -14,7 +14,7 @@
 # Copyright (c) 2021-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require Tk 8.4
+package require Tk
 
 #
 # Namespace initialization
@@ -93,8 +93,8 @@ namespace eval scrollutil::snb {
 	# Tk versions earlier than 8.5.9 or 8.6b1.
 	#
 	variable hover "hover"
-	if {[package vsatisfies $::tk_patchLevel 8-8.5.9] ||
-	    [package vsatisfies $::tk_patchLevel 8.6-8.6b1]} {
+	if {[package vsatisfies $::tk_patchLevel 8.5.9 9] ||
+	    [package vsatisfies $::tk_patchLevel 8.6b1 9]} {
 	    set hover "alternate"
 	}
 

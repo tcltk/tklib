@@ -13,7 +13,6 @@ if {![llength [info commands ::tcl::pkgindex]]} {
 	return
     }
 }
-if {![package vsatisfies [package provide Tcl] 8.4]} {return}
 ::tcl::pkgindex $dir widget::all 1.2.4 {
     widget			3.1	widget.tcl
     widget::arrowbutton	        1.0	arrowb.tcl

@@ -962,7 +962,7 @@ proc ::Plotchart::DrawVtext { w text } {
     variable scaling
     variable config
 
-    if { [package vsatisfies [package present Tk] 8.6] } {
+    if { [package vsatisfies [package present Tk] 8.6 9] } {
 
         set yt [expr {($scaling($w,pymin) + $scaling($w,pymax)) / 2}]
 
@@ -1007,7 +1007,7 @@ proc ::Plotchart::DrawVsubtext { w text } {
     variable scaling
     variable config
 
-    if { [package vsatisfies [package present Tk] 8.6] } {
+    if { [package vsatisfies [package present Tk] 8.6 9] } {
         set yt [expr {($scaling($w,pymin) + $scaling($w,pymax)) / 2}]
 
         if { [string match "r*" $w] } {
@@ -1170,7 +1170,7 @@ proc ::Plotchart::DrawXlabels { w xlabels noseries arguments} {
             }
         }
     }
-    if { ! [package vsatisfies [package present Tk] 8.6] } {
+    if { ! [package vsatisfies [package present Tk] 8.6 9] } {
         set angle {}
     }
 

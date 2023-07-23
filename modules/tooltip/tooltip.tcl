@@ -12,7 +12,7 @@
 # Initiated: 28 October 1996
 
 
-package require Tk 8.5
+package require Tk
 package require msgcat
 
 #------------------------------------------------------------------------

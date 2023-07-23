@@ -7,14 +7,14 @@
 # Copyright (c) 1998-1999 by Scriptics Corporation.
 # All rights reserved.
 
-if {![package vsatisfies [package provide Tcl] 8.5]} {
+if {![package vsatisfies [package provide Tcl] 8.5 9]} {
     puts "    Aborting the tests found in \"[file tail [info script]]\"."
     puts "    Requiring Tcl 8.5, have [package present Tcl]"
     return
 }
 
 # Future: put all tests under constraint tk and set constraint properly
-if {[catch { package require Tk 8.5 } msg]} {
+if {[catch { package require Tk } msg]} {
     puts "    Aborting the tests found in \"[file tail [info script]]\"."
     puts "    Requiring Tk 8.5, $msg"
     return
@@ -1110,7 +1110,7 @@ test spinbox-3.1 {SpinboxWidgetCmd procedure} -setup {
 } -cleanup {
     destroy .e
 } -returnCodes error \
-    -result [expr {[package vsatisfies [package present Tcl] 8.6]
+    -result [expr {[package vsatisfies [package present Tk] 8.6-]
 		   ? "wrong # args: should be \".e subcommand ?arg ...?\""
 		   : "wrong # args: should be \".e subcommand ?argument ...?\""}]
 
@@ -1263,7 +1263,7 @@ test spinbox-3.15 {SpinboxWidgetCmd procedure, "configure" widget command} -setu
     llength [.e configure]
 } -cleanup {
     destroy .e
-} -result {52}
+} -result [expr {[package vsatisfies [package provide Tk] 8.7] ? 54 : 52}]
 test spinbox-3.16 {SpinboxWidgetCmd procedure, "configure" widget command} -setup {
     spinboxPlus .e
 } -body {
@@ -1548,7 +1548,10 @@ test spinbox-3.44 {SpinboxWidgetCmd procedure, "scan" widget command} -setup {
     .e scan foobar 20
 } -cleanup {
     destroy .e
-} -returnCodes error -result {bad scan option "foobar": must be mark or dragto}
+} -returnCodes error \
+    -result [expr {[package vsatisfies [package present Tk] 8.7-]
+		   ? {bad scan option "foobar": must be dragto or mark}
+		   : {bad scan option "foobar": must be mark or dragto}}]
 test spinbox-3.45 {SpinboxWidgetCmd procedure, "scan" widget command} -setup {
     spinboxPlus .e
     pack .e
@@ -1931,7 +1934,10 @@ test spinbox-3.71 {SpinboxWidgetCmd procedure, "xview" widget command} -setup {
     .e xview scroll 24
 } -cleanup {
     destroy .e
-} -returnCodes error -result {wrong # args: should be ".e xview scroll number units|pages"}
+} -returnCodes error \
+    -result [expr {[package vsatisfies [package present Tk] 8.7-]
+		   ? {wrong # args: should be ".e xview scroll number pages|units"}
+		   : {wrong # args: should be ".e xview scroll number units|pages"}}]
 test spinbox-3.72 {SpinboxWidgetCmd procedure, "xview" widget command} -setup {
     spinboxPlus .e -font {Courier -12} -borderwidth 2 -highlightthickness 2
     pack .e
@@ -1942,7 +1948,10 @@ test spinbox-3.72 {SpinboxWidgetCmd procedure, "xview" widget command} -setup {
     .e xview scroll gorp units
 } -cleanup {
     destroy .e
-} -returnCodes error -result {expected integer but got "gorp"}
+} -returnCodes error \
+    -result [expr {[package vsatisfies [package present Tk] 8.7-]
+		   ? {expected floating-point number but got "gorp"}
+		   : {expected integer but got "gorp"}}]
 test spinbox-3.73 {SpinboxWidgetCmd procedure, "xview" widget command} -setup {
     spinboxPlus .e -font {Courier -12} -borderwidth 2 -highlightthickness 2
     pack .e
@@ -2008,7 +2017,10 @@ test spinbox-3.77 {SpinboxWidgetCmd procedure, "xview" widget command} -setup {
     .e xview scroll 23 foobars
 } -cleanup {
     destroy .e
-} -returnCodes error -result {bad argument "foobars": must be units or pages}
+} -returnCodes error \
+    -result [expr {[package vsatisfies [package present Tk] 8.7-]
+		   ? {bad argument "foobars": must be pages or units}
+		   : {bad argument "foobars": must be units or pages}}]
 test spinbox-3.78 {SpinboxWidgetCmd procedure, "xview" widget command} -setup {
     spinboxPlus .e -font {Courier -12} -borderwidth 2 -highlightthickness 2
     pack .e

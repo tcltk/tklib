@@ -7,7 +7,7 @@
 # ### ### ### ######### ######### #########
 ## Requisites
 
-package require Tcl 8.4        ; # No {*}-expansion :(
+package require Tcl 8.5-
 package require Tk
 package require snit           ; #
 package require uevent::onidle ; # Some defered actions.

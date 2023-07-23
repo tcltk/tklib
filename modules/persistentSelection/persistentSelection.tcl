@@ -28,8 +28,8 @@
 # 80 columns
 # Conventional use of namespace/package names.
 
-package require Tcl 8.5
-package require Tk  8.5
+package require Tcl 8.5-
+package require Tk
 
 # ------------------------------------------------------------------------------
 #  Module persistentSelection
