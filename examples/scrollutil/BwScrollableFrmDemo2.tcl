@@ -7,7 +7,7 @@
 # Copyright (c) 2019-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require Tk 8.5-.9			;# for ttk::spinbox
+package require Tk 8.5.9-			;# for ttk::spinbox
 package require BWidget
 Widget::theme yes
 package require mentry_tile 3.2			;# for mouse wheel support
@@ -32,7 +32,7 @@ $sa setwidget $sf
 # the BWidget procedure ScrollableFrame::create
 #
 if {[styleutil::getCurrentTheme] eq "aqua" &&
-    [package vcompare $tk_patchLevel "8.6-.10"] < 0} {
+    [package vcompare $tk_patchLevel "8.6.10"] < 0} {
     $sf:cmd configure -background #ececec
 }
 

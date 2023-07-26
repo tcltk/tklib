@@ -14,7 +14,7 @@
 # Meta description Enables user to mark locations. Marked locations are reported
 # Meta description via callback.
 # Meta subject	   map {location marking} {mark location}
-# Meta require     {Tcl 8.6--}
+# Meta require     {Tcl 8.6-}
 # Meta require     debug
 # Meta require     debug::caller
 # Meta require     snit

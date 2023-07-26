@@ -132,7 +132,7 @@ the package Tablelist_tile (see next section).
 
 Next, you should check the exact version number of your Tcl/Tk
 distribution, given by the "tcl_patchLevel" and "tk_patchLevel"
-variables.  If you are using Tcl/Tk version 8.2-.X, 8.3-.0 - 8.3-.2, or
+variables.  If you are using Tcl/Tk version 8.2.X, 8.3.0 - 8.3.2, or
 8.4a1, then you should proceed as described in the "How to Install It?"
 section of the file "tablelist.html", located in the "doc" directory.
 
@@ -142,7 +142,7 @@ How to Use It?
 The Tablelist distribution provides two packages, called Tablelist and
 Tablelist_tile.  The main difference between the two is that
 Tablelist_tile enables the tile-based, theme-specific appearance of
-tablelist widgets; this package requires Tcl/Tk 8.4- or higher and tile
+tablelist widgets; this package requires Tcl/Tk 8.4 or higher and tile
 0.6 or higher.  It is not possible to use both packages in one and the
 same application, because both are implemented in the same "tablelist"
 namespace and provide identical commands.

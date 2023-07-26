@@ -7,8 +7,8 @@
 [keywords tracking]
 [moddesc   {Variations on a canvas}]
 [titledesc {Manage a group of rubber band lines}]
-[require Tcl 8.5-]
-[require Tk 8.5-]
+[require Tcl 8.5]
+[require Tk 8.5]
 [require canvas::tag [opt [vset VERSION]]]
 [description]
 

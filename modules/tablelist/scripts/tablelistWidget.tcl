@@ -127,7 +127,7 @@ namespace eval tablelist {
 
     variable newAquaSupport [expr {
 	($::tk_version == 8.6- &&
-	 [package vcompare $::tk_patchLevel "8.6-.10"] >= 0) ||
+	 [package vcompare $::tk_patchLevel "8.6.10"] >= 0) ||
 	($::tk_version >= 8.7 &&
 	 [package vcompare $::tk_patchLevel "8.7a3"] >= 0)}]
 
@@ -1044,7 +1044,7 @@ proc tablelist::tablelist args {
     set w $data(hdrTxt)		;# text widget within the header frame
     text $w -borderwidth 0 -highlightthickness 0 -insertwidth 0 \
 	    -padx 0 -pady 0 -state normal -takefocus 0 -wrap none
-    catch {$w configure -undo 0};  # because of a text widget issue in Tk 8.6-.6
+    catch {$w configure -undo 0};  # because of a text widget issue in Tk 8.6.6
     place $w -relheight 1.0 -relwidth 1.0
     bindtags $w [list $w $data(headerTag) TablelistHeader [winfo toplevel $w] \
 		 all]
@@ -1190,7 +1190,7 @@ proc tablelist::tablelist args {
     set w $data(body)
     text $w -borderwidth 0 -exportselection 0 -highlightthickness 0 \
 	    -insertwidth 0 -padx 0 -pady 0 -state normal -takefocus 0 -wrap none
-    catch {$w configure -undo 0};  # because of a text widget issue in Tk 8.6-.6
+    catch {$w configure -undo 0};  # because of a text widget issue in Tk 8.6.6
     bind $w <Configure> { tablelist::bodyConfigure %W %w %h }
     pack $w -expand 1 -fill both
     bindtags $w [list $w $data(bodyTag) TablelistBody [winfo toplevel $w] \

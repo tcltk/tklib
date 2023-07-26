@@ -46,7 +46,7 @@ foreach fileName [lsort [glob *.tcl]] {
 	$sa configure -relief solid
     }
     set txt [text $sa.txt -font TkFixedFont -takefocus 1 -wrap none]
-    catch {$txt configure -tabstyle wordprocessor}	;# for Tk 8.5- and later
+    catch {$txt configure -tabstyle wordprocessor}	;# for Tk 8.5 and later
     scrollutil::addMouseWheelSupport $txt	;# old-school wheel support
     $sa setwidget $txt
 

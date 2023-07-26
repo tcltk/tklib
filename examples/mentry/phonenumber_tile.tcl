@@ -133,7 +133,7 @@ bind MentryPhoneNumber <<Paste>> { pastePhoneNumber %W }
 proc pastePhoneNumber w {
     if {[llength [info procs ::tk::GetSelection]] == 1} {
 	set res [catch {::tk::GetSelection $w CLIPBOARD} num]
-    } else {					;# for Tk versions prior to 8.3-
+    } else {					;# for Tk versions prior to 8.3
 	set res [catch {selection get -displayof $w -selection CLIPBOARD} num]
     }
     if {$res == 0} {

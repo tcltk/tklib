@@ -3,8 +3,8 @@
 [copyright {2022 Arjen Markus <arjenmarkus@users.sourceforge.net>}]
 [moddesc   Plotchart]
 [titledesc {Simple plotting and charting package}]
-[require Tcl [opt 8.5-]]
-[require Tk [opt 8.5-]]
+[require Tcl [opt 8.5]]
+[require Tk [opt 8.5]]
 [require Plotchart [opt 2.5.2]]
 
 [description]
@@ -991,7 +991,7 @@ The text of the y-axis label to be drawn.
 [list_end]
 
 [call [cmd \$anyplot] vtext [arg text]]
-Draw a [emph vertical] label to the y-axis. Note: this requires Tk 8.6-
+Draw a [emph vertical] label to the y-axis. Note: this requires Tk 8.6
 or later, for older versions it does nothing.
 
 [list_begin arguments]

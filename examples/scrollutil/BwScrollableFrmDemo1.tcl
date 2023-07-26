@@ -29,7 +29,7 @@ $sa setwidget $sf
 #
 set currentTheme [styleutil::getCurrentTheme]
 if {$currentTheme eq "aqua" &&
-    [package vcompare $tk_patchLevel "8.6-.10"] < 0} {
+    [package vcompare $tk_patchLevel "8.6.10"] < 0} {
     $sf:cmd configure -background #ececec
 }
 

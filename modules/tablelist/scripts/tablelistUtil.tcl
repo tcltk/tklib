@@ -56,7 +56,7 @@ namespace eval tablelist {
 	[expr {[lsearch -exact [image types] "nsimage"] >= 0}]
 
     variable aquaCrash [expr {[string compare $winSys "aqua"] == 0 &&
-	[lsearch -exact {8.6-.11 8.6-.12 8.7a5} $::tk_patchLevel] >= 0}]
+	[lsearch -exact {8.6.11 8.6.12 8.7a5} $::tk_patchLevel] >= 0}]
 }
 
 #
@@ -6337,7 +6337,7 @@ proc tablelist::getShadows {w color darkColorName lightColorName} {
     #
     # Compute the dark shadow color
     #
-    if {[package vcompare $::tk_patchLevel "8.3-.1"] >= 0 &&
+    if {[package vcompare $::tk_patchLevel "8.3.1"] >= 0 &&
 	$r*0.5*$r + $g*1.0*$g + $b*0.28*$b < $maxIntens*0.05*$maxIntens} {
 	#
 	# The background is already very dark: make the dark
@@ -6361,7 +6361,7 @@ proc tablelist::getShadows {w color darkColorName lightColorName} {
     #
     # Compute the light shadow color
     #
-    if {[package vcompare $::tk_patchLevel "8.3-.1"] >= 0 &&
+    if {[package vcompare $::tk_patchLevel "8.3.1"] >= 0 &&
 	$g > $maxIntens*0.95} {
 	#
 	# The background is already very bright: make the

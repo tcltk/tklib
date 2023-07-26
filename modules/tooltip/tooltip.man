@@ -7,7 +7,7 @@
 [copyright {1996-2008, Jeffrey Hobbs}]
 [moddesc   {Tooltip management}]
 [titledesc {Tooltip management}]
-[require Tcl 8.5-]
+[require Tcl 8.5]
 [require msgcat 1.3]
 [require tooltip [opt 1.6]]
 [description]

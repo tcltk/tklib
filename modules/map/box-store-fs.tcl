@@ -18,7 +18,7 @@
 # Meta subject	   {filesystem store, geobox}
 # Meta subject	   {geobox, filesystem store}
 # Meta subject	   {store, geobox, filesystem}
-# Meta require     {Tcl 8.6--}
+# Meta require     {Tcl 8.6-}
 # Meta require     debug
 # Meta require     debug::caller
 # Meta require     {map::slippy 0.8}

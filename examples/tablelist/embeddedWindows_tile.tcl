@@ -117,7 +117,7 @@ if {$tk_version >= 8.5-} {
 	$currentTheme eq "black"} {
 	$tbl header rowconfigure 0 -foreground SkyBlue
     } elseif {$currentTheme eq "aqua" &&
-	[package vcompare $tk_patchLevel "8.6-.10"] >= 0} {
+	[package vcompare $tk_patchLevel "8.6.10"] >= 0} {
 	if {[tk::unsupported::MacWindowStyle isdark .]} {
 	    $tbl header rowconfigure 0 -foreground SkyBlue
 	}

@@ -47,7 +47,7 @@ if {$currentTheme eq "aqua"} {
 	}
     }
 
-    if {[package vcompare $::tk_patchLevel "8.6-.10"] < 0} {
+    if {[package vcompare $::tk_patchLevel "8.6.10"] < 0} {
 	interp alias {} ttk::scrollbar {} ::scrollbar
     }
 }

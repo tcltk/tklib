@@ -54,7 +54,7 @@ proc scrollutil::createBindings {} {
     #
     # On the windowing systems win32 and x11 there are no built-in mouse wheel
     # event bindings for the binding tag Scrollbar if the Tk version is earlier
-    # than 8.6- -- create them here.  In addition, implement the behavior
+    # than 8.6 -- create them here.  In addition, implement the behavior
     # specified by TIP 563 (i.e., the mouse wheel should scroll a horizontal or
     # vertical scrollbar regardless of whether the "Shift" key is down or not)
     #

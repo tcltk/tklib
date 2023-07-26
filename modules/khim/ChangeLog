@@ -83,7 +83,7 @@
 	English help text appears when KHIM is not localized.
 	* khim.tcl: Corrected a problem where the spinbox did not get
 	initialized correctly and so would not spin until the user typed
-	in it.  Added fallback in 8.4- for the lack of a root locale.
+	in it.  Added fallback in 8.4 for the lack of a root locale.
 	Changed the character map to display incrementally at 1-second
 	intervals if it's taking too long to look up characters in the
 	font substitution (because of performance bugs in that logic on

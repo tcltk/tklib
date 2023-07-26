@@ -8,8 +8,8 @@
 [keywords tags]
 [moddesc   {Variations on a canvas}]
 [titledesc {Easier management of the tags on canvas items or item groups}]
-[require Tcl 8.5-]
-[require Tk 8.5-]
+[require Tcl 8.5]
+[require Tk 8.5]
 [require canvas::tag [opt [vset VERSION]]]
 [description]
 

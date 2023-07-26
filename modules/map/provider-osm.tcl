@@ -13,7 +13,7 @@
 # Meta description Tile provider using OpenStreetMap Mapnik as origin and
 # Meta description caching tiles in the local filesystem.
 # Meta subject	   map {tile provider} {provider, tiles} openstreetmap mapnik
-# Meta require     {Tcl 8.6--}
+# Meta require     {Tcl 8.6-}
 # Meta require     debug
 # Meta require     debug::caller
 # Meta require     {map::slippy 0.8}

@@ -2,14 +2,14 @@
 
 if {![package vsatisfies [package provide Tcl] 8.5-]} {
     puts "    Aborting the tests found in \"[file tail [info script]]\"."
-    puts "    Requiring Tcl 8.5-, have [package present Tcl]"
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
     return
 }
 
 # Future: put all tests under constraint tk and set constraint properly
 if {[catch { package require Tk 8.5- } msg]} {
     puts "    Aborting the tests found in \"[file tail [info script]]\"."
-    puts "    Requiring Tk 8.5-, $msg"
+    puts "    Requiring Tk 8.5, $msg"
     return
 }
 
@@ -146,7 +146,7 @@ test spinbox-1.8.1 "option -validate" -setup {
     destroy .sb
 } -result {all}
 
-test spinbox-1.8.2- "option -validate" -setup {
+test spinbox-1.8.2 "option -validate" -setup {
     ttkSpinboxPlus .sb -from 0 -to 100
 } -body {
     .sb configure -validate key
@@ -159,7 +159,7 @@ test spinbox-1.8.2- "option -validate" -setup {
     destroy .sb
 } -result {none}
 
-test spinbox-1.8.3- "option -validate" -setup {
+test spinbox-1.8.3 "option -validate" -setup {
     ttkSpinboxPlus .sb -from 0 -to 100
 } -body {
     .sb configure -validate bogus
@@ -167,7 +167,7 @@ test spinbox-1.8.3- "option -validate" -setup {
     destroy .sb
 } -returnCodes error -result {bad validate "bogus": must be all, key, focus, focusin, focusout, or none}
 
-test spinbox-1.8.4- "-validate option: " -setup {
+test spinbox-1.8.4 "-validate option: " -setup {
     set ::spinbox_test {}
     ttkSpinboxPlus .sb -from 0 -to 100
 } -body {

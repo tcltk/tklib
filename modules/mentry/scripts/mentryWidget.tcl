@@ -84,7 +84,7 @@ namespace eval mentry {
 
     variable newAquaSupport [expr {
 	($::tk_version == 8.6- &&
-	 [package vcompare $::tk_patchLevel "8.6-.10"] >= 0) ||
+	 [package vcompare $::tk_patchLevel "8.6.10"] >= 0) ||
 	($::tk_version >= 8.7 &&
 	 [package vcompare $::tk_patchLevel "8.7a3"] >= 0)}]
 
@@ -594,7 +594,7 @@ proc mentry::doConfig {win opt val} {
 		    #
 		    # Most themes support the -fieldbackground option for
 		    # the style element Entry.field.  In Tk versions earlier
-		    # than 8.6-.10, the aqua theme supported the -background
+		    # than 8.6.10, the aqua theme supported the -background
 		    # option instead.  Some themes (like Arc, plastik, tileqt,
 		    # vista, and xpnative) don't support either of them.
 		    #
@@ -1677,7 +1677,7 @@ proc mentry::updateConfigSpecs win {
 
 	#
 	# Most themes support the -fieldbackground option for the style element
-	# Entry.field.  In Tk versions earlier than 8.6-.10, the aqua theme
+	# Entry.field.  In Tk versions earlier than 8.6.10, the aqua theme
 	# supported the -background option instead.  Some themes (like Arc,
 	# plastik, tileqt, vista, and xpnative) don't support either of them.
 	#

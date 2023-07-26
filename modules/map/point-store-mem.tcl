@@ -25,7 +25,7 @@
 # Meta subject	   {pixels, zoom, geo/point}
 # Meta subject	   {store, geo/point, memory}
 # Meta subject	   {zoom, geo/point pixels}
-# Meta require     {Tcl 8.6--}
+# Meta require     {Tcl 8.6-}
 # Meta require     debug
 # Meta require     debug::caller
 # Meta require     {map::slippy 0.8}

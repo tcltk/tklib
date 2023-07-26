@@ -190,7 +190,7 @@ proc ::Plotchart::DrawYaxis { w ymin ymax ydelt args} {
 
             #
             # Use the default format %.12g - this is equivalent to setting
-            # tcl_precision to 12 - to solve overly precise labels in Tcl 8.5-
+            # tcl_precision to 12 - to solve overly precise labels in Tcl 8.5
             #
             if { [string is double $yt] } {
                 set ylabel [format "%.12g" $yt]
@@ -333,7 +333,7 @@ proc ::Plotchart::DrawRightaxis { w ymin ymax ydelt args } {
 
             #
             # Use the default format %.12g - this is equivalent to setting
-            # tcl_precision to 12 - to solve overly precise labels in Tcl 8.5-
+            # tcl_precision to 12 - to solve overly precise labels in Tcl 8.5
             #
             if { [string is double $yt] } {
                 set ylabel [format "%.12g" $yt]
@@ -424,7 +424,7 @@ proc ::Plotchart::DrawLogYaxis { w ymin ymax ydelt } {
 
             #
             # Use the default format %.12g - this is equivalent to setting
-            # tcl_precision to 12 - to solve overly precise labels in Tcl 8.5-
+            # tcl_precision to 12 - to solve overly precise labels in Tcl 8.5
             #
             set ylabel [format "%.12g" $y]
             if { $format != "" } {
@@ -571,7 +571,7 @@ proc ::Plotchart::DrawXaxis { w xmin xmax xdelt args } {
 
             #
             # Use the default format %.12g - this is equivalent to setting
-            # tcl_precision to 12 - to solve overly precise labels in Tcl 8.5-
+            # tcl_precision to 12 - to solve overly precise labels in Tcl 8.5
             #
             if { [string is double $xt] } {
                 if { $numeric == 1 } {
@@ -666,7 +666,7 @@ proc ::Plotchart::DrawLogXaxis { w xmin xmax xdelt args } {
 
                 #
                 # Use the default format %.12g - this is equivalent to setting
-                # tcl_precision to 12 - to solve overly precise labels in Tcl 8.5-
+                # tcl_precision to 12 - to solve overly precise labels in Tcl 8.5
                 #
                 set xlabel [format "%.12g" $xt]
                 if { $format != "" } {
@@ -771,7 +771,7 @@ proc ::Plotchart::DrawTernaryAxes { w xmin xmax xdelt } {
 
             #
             # Use the default format %.12g - this is equivalent to setting
-            # tcl_precision to 12 - to solve overly precise labels in Tcl 8.5-
+            # tcl_precision to 12 - to solve overly precise labels in Tcl 8.5
             #
             set ylabell [format "%.12g" $xt]
             set ylabelr [format "%.12g" [expr {$scaling($w,ternarymax)-$xt}]]
@@ -956,7 +956,7 @@ proc ::Plotchart::DrawYsubtext { w text } {
 # Side effects:
 #    Text drawn in canvas
 # Note:
-#    This requires Tk 8.6- or later
+#    This requires Tk 8.6 or later
 #
 proc ::Plotchart::DrawVtext { w text } {
     variable scaling
@@ -1001,7 +1001,7 @@ proc ::Plotchart::DrawVtext { w text } {
 # Side effects:
 #    Text drawn in canvas
 # Note:
-#    This requires Tk 8.6- or later
+#    This requires Tk 8.6 or later
 #
 proc ::Plotchart::DrawVsubtext { w text } {
     variable scaling

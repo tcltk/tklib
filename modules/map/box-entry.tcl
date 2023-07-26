@@ -15,7 +15,7 @@
 # Meta subject     {addon, box entry, map display}
 # Meta subject     {box entry, map display, addon}
 # Meta subject     {map display, addon, box entry}
-# Meta require     {Tcl 8.6--}
+# Meta require     {Tcl 8.6-}
 # Meta require     canvas::edit::rectangle
 # Meta require     debug
 # Meta require     debug::caller

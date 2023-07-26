@@ -10,7 +10,7 @@
 [keywords widget]
 [moddesc   {Composite widget for chat applications}]
 [titledesc {Provides a multi-paned view suitable for display of chat room or irc channel information}]
-[require Tk 8.5-]
+[require Tk 8.5]
 [require chatwidget [opt [vset VERSION]]]
 [description]
 

@@ -15,7 +15,7 @@
 # Meta subject     {area display, tabular}
 # Meta subject     {tabular, area display}
 # Meta require     {Tcl 8.6--}
-# Meta require     {Tk  8.6--}
+# Meta require     {Tk  8.6-}
 # Meta require     debug
 # Meta require     debug::caller
 # Meta require     {map::slippy 0.8}

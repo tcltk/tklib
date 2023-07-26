@@ -8,8 +8,8 @@
 [keywords {widget validation}]
 [moddesc   {widget::validator behaviour}]
 [titledesc {widget::validator behaviour}]
-[require Tcl 8.5-]
-[require Tk 8.5-]
+[require Tcl 8.5]
+[require Tk 8.5]
 [require widget::validator [opt 0.1]]
 [description]
 

@@ -4,7 +4,7 @@
 
 if {![package vsatisfies [package provide Tcl] 8.5-]} {
     puts "    Aborting the tests found in \"[file tail [info script]]\"."
-    puts "    Requiring Tcl 8.5-, have [package present Tcl]"
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
     return
 }
 

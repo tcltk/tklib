@@ -11,8 +11,8 @@
 # Meta description Widget to display the information of a single track definition
 # Meta subject     {track display, tabular}
 # Meta subject     {tabular, track display}
-# Meta require     {Tcl 8.6--}
-# Meta require     {Tk  8.6--}
+# Meta require     {Tcl 8.6-}
+# Meta require     {Tk  8.6-}
 # Meta require     debug
 # Meta require     debug::caller
 # Meta require     {map::slippy 0.8}

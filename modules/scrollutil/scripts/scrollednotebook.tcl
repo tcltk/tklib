@@ -93,8 +93,8 @@ namespace eval scrollutil::snb {
 	# Tk versions earlier than 8.5-.9 or 8.6b1.
 	#
 	variable hover "hover"
-	if {[package vsatisfies $::tk_patchLevel 8-8.5-.9] ||
-	    [package vsatisfies $::tk_patchLevel 8.6--8.6b1]} {
+	if {[package vsatisfies $::tk_patchLevel 8-8.5.9] ||
+	    [package vsatisfies $::tk_patchLevel 8.6-8.6b1]} {
 	    set hover "alternate"
 	}
 

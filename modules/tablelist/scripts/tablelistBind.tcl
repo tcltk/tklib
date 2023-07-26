@@ -517,7 +517,7 @@ proc tablelist::handleThemeChangedEvent {} {
 	aqua {
 	    #
 	    # Work around some issues with the appearance
-	    # change support in Tk 8.6-.10 and 8.7a3
+	    # change support in Tk 8.6.10 and 8.7a3
 	    #
 	    condOpenPipeline
 	}
@@ -718,7 +718,7 @@ proc tablelist::handleAppearanceEvent {} {
 
     #
     # Work around some issues with the appearance
-    # change support in Tk 8.6-.10 and 8.7a3
+    # change support in Tk 8.6.10 and 8.7a3
     #
     condOpenPipeline
 
@@ -821,7 +821,7 @@ proc tablelist::updateAppearance win {
 proc tablelist::condOpenPipeline {} {
     scan $::tcl_platform(osVersion) "%d" majorOSVersion
     if {$majorOSVersion < 18 ||
-	([string compare $::tk_patchLevel "8.6-.10"] != 0 &&
+	([string compare $::tk_patchLevel "8.6.10"] != 0 &&
 	 [string compare $::tk_patchLevel "8.7a3"] != 0)} {
 	return ""
     }

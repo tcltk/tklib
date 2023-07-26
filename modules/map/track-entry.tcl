@@ -17,7 +17,7 @@
 # Meta subject     {track entry, map display, addon}
 # Meta subject     {map display, addon, track entry}
 # Meta subject
-# Meta require     {Tcl 8.6--}
+# Meta require     {Tcl 8.6-}
 # Meta require     canvas::edit::polyline
 # Meta require     debug
 # Meta require     debug::caller

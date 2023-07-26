@@ -54,7 +54,7 @@ proc populateNotebook {nb sfx} {
 	    }
 	    set txt [text $sa.txt -font TkFixedFont -height 30 -takefocus 1 \
 		     -wrap none]
-	    catch {$txt configure -tabstyle wordprocessor}	;# for Tk 8.5-+
+	    catch {$txt configure -tabstyle wordprocessor}	;# for Tk 8.5+
 	    scrollutil::addMouseWheelSupport $txt   ;# old-school wheel support
 	    $sa setwidget $txt
 

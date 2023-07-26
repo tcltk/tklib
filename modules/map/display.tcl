@@ -15,8 +15,8 @@
 # Meta description Extensible with attachable engines providing additional behaviours.
 
 # Meta subject	   {map display} {display, map}
-# Meta require     {Tcl 8.6--}
-# Meta require     {Tk  8.6--}
+# Meta require     {Tcl 8.6-}
+# Meta require     {Tk  8.6-}
 # Meta require     canvas::sqmap
 # Meta require     canvas::zoom
 # Meta require     crosshair

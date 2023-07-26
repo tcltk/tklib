@@ -7,7 +7,7 @@
 [keywords icon]
 [moddesc   {Windows ICO handling}]
 [titledesc {Reading and writing windows icons}]
-[require Tcl 8.4-]
+[require Tcl 8.4]
 [require ico [opt 1.0.5]]
 [description]
 

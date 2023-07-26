@@ -214,7 +214,7 @@ snit::widgetadaptor widget::calendar {
 	set tmp [set $value]
 	if {$tmp eq ""} { return }
 	if {$::tcl_version < 8.5-} {
-	    # Prior to 8.4-, users must use [clock]-recognized dateformat
+	    # Prior to 8.4, users must use [clock]-recognized dateformat
 	    set date [clock scan $tmp]
 	} else {
 	    set date [clock scan $tmp -format $options(-dateformat)]
@@ -307,7 +307,7 @@ snit::widgetadaptor widget::calendar {
                 # keyboard navigation
 
                 # favor foreach approach over lassign to be
-                # compatible with Tcl 8.4-
+                # compatible with Tcl 8.4
                 foreach {dday dmonth dyear} $args {break}
                 incr data(year)  $dyear
                 incr data(month) $dmonth
