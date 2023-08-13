@@ -2777,6 +2777,7 @@ proc ::Plotchart::createWindRose { c radius_data {sectors 16} args} {
 
     set newchart "windrose_$w"
     interp alias {} $newchart {} ::Plotchart::PlotHandler windrose $w
+
     CopyConfig windrose $w
 
     set rad_max   [lindex $radius_data 0]
@@ -2809,9 +2810,8 @@ proc ::Plotchart::createWindRose { c radius_data {sectors 16} args} {
     set data_series($w,count_data)      0
 
     #
-    # TODO: Take care of the compatibility for coordsToPixel and friends
+    # Take care of the compatibility for coordsToPixel and friends
     #
-    set scaling($w,xfactor) 1.0
     CopyScalingData $w $c
 
     return $newchart
@@ -3478,4 +3478,4 @@ source [file join [file dirname [info script]] "plotdendrogram.tcl"]
 
 # Announce our presence
 #
-package provide Plotchart 2.6.0
+package provide Plotchart 2.6.1

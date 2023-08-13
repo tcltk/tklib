@@ -3881,8 +3881,11 @@ proc ::Plotchart::DrawWindRoseData { w data colour } {
     foreach value $data cumulative_radius $data_series($w,cumulative_radius) {
         set radius [expr {$value + $cumulative_radius}]
 
-        foreach {xright ytop}    [polarToPixel $w [expr {$radius*sqrt(2.0)}]  45.0] {break}
-        foreach {xleft  ybottom} [polarToPixel $w [expr {$radius*sqrt(2.0)}] 225.0] {break}
+        foreach {xright ytop}    [PolarToPixelPriv $w [expr {$radius*sqrt(2.0)}]  45.0] {break}
+        foreach {xleft  ybottom} [PolarToPixelPriv $w [expr {$radius*sqrt(2.0)}] 225.0] {break}
+
+        puts "$value -- $xright -- $ytop -- $xleft -- $ybottom - $colour"
+
 
         $w create arc $xleft $ytop $xright $ybottom -style pie -fill $colour \
             -tag [list $w data_$data_series($w,count_data)] -start $start_angle -extent $width_sector

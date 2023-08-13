@@ -1,3 +1,7 @@
+2023-08-13  Arjen Markus  <arjenmarkus@users,sourceforge.net>
+        * plotchart.tcl:   Correct the scaling for windrose plots (ticket 8df371ba8e)
+        * pkgIndex.tcl:    Increase the version number to 2.6.1
+
 2023-05-29  Arjen Markus  <arjenmarkus@users,sourceforge.net>
         * plotchart.man:   Describe the violin subcommand and dendrogram plots
         * plotchart.tcl:   Add the violin subcommand and the createDendrogram command
