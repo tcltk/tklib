@@ -119,7 +119,7 @@ A similar wrapper has not been created for the [syscmd [widget listbox]] widget,
 
 [section BUGS]
 
-This version of [package persistentSelection] is intended to be compatible with all releases of [package Tk] 8.5 and 8.6, and with the branches [emph core-8-5-branch], [emph core-8-6-branch], [emph revised_text], and [emph trunk] in the source code repository for [package Tk].  Any incompatibility with any of these versions, for any [package Tk] windowing system, should be reported as a bug. Please report such in the category [emph persistentSelection] of the [uri http://core.tcl.tk/tklib/reportlist {Tklib Trackers}].
+This version of [package persistentSelection] is intended to be compatible with all releases of [package Tk] 8.5- and 8.6, and with the branches [emph core-8-5-branch], [emph core-8-6-branch], [emph revised_text], and [emph trunk] in the source code repository for [package Tk].  Any incompatibility with any of these versions, for any [package Tk] windowing system, should be reported as a bug. Please report such in the category [emph persistentSelection] of the [uri http://core.tcl.tk/tklib/reportlist {Tklib Trackers}].
 
 [section EXAMPLES]
 

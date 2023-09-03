@@ -1310,7 +1310,7 @@ namespace eval ::ntext {
     variable indentColor        #d9d9d9
 
     # Whether to use the -blockcursor when in "overwrite" mode (the alternative
-    # is a change of color).  Defaults to YES iff 8.5.12 or over.  For earlier
+    # is a change of color).  Defaults to YES if 8.5.12 or over.  For earlier
     # versions a bug made the -blockcursor fill the whole of a newline.
     variable useBlockCursor     [expr {[package vsatisfies [package require Tk] 8.5.12-]}]
 

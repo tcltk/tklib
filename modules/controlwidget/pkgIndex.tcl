@@ -8,6 +8,10 @@ if {![package vsatisfies [package provide Tcl] 8.5]} {
     # PRAGMA: returnok
     return
 }
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    # PRAGMA: returnok
+    return
+}
 
 package ifneeded controlwidget 0.1 [list source [file join $dir controlwidget.tcl]]
 package ifneeded meter         1.0 [list source [file join $dir vertical_meter.tcl]]

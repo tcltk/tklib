@@ -126,7 +126,7 @@ namespace eval tablelist {
 	$::tk_version >= 8.7 || [catch {package require tksvg}] == 0}]
 
     variable newAquaSupport [expr {
-	($::tk_version == 8.6 &&
+	($::tk_version == 8.6- &&
 	 [package vcompare $::tk_patchLevel "8.6.10"] >= 0) ||
 	($::tk_version >= 8.7 &&
 	 [package vcompare $::tk_patchLevel "8.7a3"] >= 0)}]

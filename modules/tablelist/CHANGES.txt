@@ -1489,7 +1489,7 @@ This release contains just one bug-fix and an enhancement:
 
 2. Extended the support for the native "Aqua-blue" background for the
    header label of the sort column (which in the previous Tablelist
-   release was restricted to Tk versions 8.6 and above) to the Cocoa-
+   release was restricted to Tk versions 8.5 and above) to the Cocoa-
    based Tk patch levels 8.5.9 and above (thanks to Kevin Walzer for
    discussions on this topic and to Paul Obermeier for enabling me to
    access the ActiveTcl 8.5.8 distribution for the Mac).

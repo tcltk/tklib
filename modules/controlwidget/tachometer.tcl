@@ -44,7 +44,7 @@
 # $Id: tachometer.tcl,v 1.4 2010/09/10 17:16:29 andreas_kupries Exp $
 #
 
-package require Tk  8.5
+package require Tk 8.5- 
 package require snit
 package provide tachometer 0.1
 

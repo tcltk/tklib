@@ -57,7 +57,7 @@ namespace eval scrollutil {
     }
 
     variable newAquaSupport [expr {
-	($::tk_version == 8.6 &&
+	($::tk_version == 8.6- &&
 	 [package vcompare $::tk_patchLevel "8.6.10"] >= 0) ||
 	($::tk_version >= 8.7 &&
 	 [package vcompare $::tk_patchLevel "8.7a3"] >= 0)}]
@@ -156,7 +156,7 @@ namespace eval scrollutil::sa {
     variable scrollbarModes [list static dynamic none]
 
     variable newSetFocusPolicy [expr {
-	($::tk_version == 8.6 &&
+	($::tk_version == 8.6- &&
 	 [package vcompare $::tk_patchLevel "8.6.11"] >= 0) ||
 	($::tk_version >= 8.7 &&
 	 [package vcompare $::tk_patchLevel "8.7a4"] >= 0)}]
