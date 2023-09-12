@@ -17,7 +17,7 @@ namespace import ::widgetPlus::entryPlus
 # entryPlus.test which is copied with mods from Tk entry.test.
 # ------------------------------------------------------------
 
-package require tk
+package require Tk
 package require tcltest 2.2
 namespace import -force tcltest::*
 catch { tcltest::configure {*}$::argv }

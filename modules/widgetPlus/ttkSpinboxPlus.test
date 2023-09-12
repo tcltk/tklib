@@ -2,29 +2,35 @@
 # ttk::spinbox widget tests
 #
 
-package require tk
+package require Tk
 package require tcltest 2.2
 namespace import -force tcltest::*
 loadTestedCommands
 
 package require widgetPlus
 namespace import ::widgetPlus::ttkSpinboxPlus
+testConstraint TkAbove8.6 [expr {[package vsatisfies [package provide Tk] 8.7-]}]
 
 # ------------------------------------------------------------------------------
-# This file is copied from Tk trunk checkin 127ff912ed, file ttk/spinbox.test,
-# with addition of the two lines
+# This file is copied from Tk trunk (8.7) checkin 127ff912ed,
+# file ttk/spinbox.test, with addition of the three lines
 # above, application of "s/ttk::spinbox/ttkSpinboxPlus/g" to the code (but not
-# to comments, results, test names or other metadata).
+# to comments, results, test names or other metadata), and further editing of
+# failing tests as described below.
 #
 # The purpose is to check that "ttkSpinboxPlus" does not break any features of
 # "ttk::spinbox", including important matters such as validation.
 #
-# 2 further tests require the widgets to be mapped for the tests to pass with
+# 2 tests require the widgets to be mapped for the tests to pass with
 # Tcl/Tk 8.7 (mapping is not required for Tcl 9.0 with Tk 8.7).  The
 # corresponding tests in Tk have the same requirement.  The -setup and
 # -cleanup sections for these tests have been modified accordingly.
 #
-# All tests pass.
+# With these revisions, all tests pass.
+#
+# Adapting the tests for use with Tcl/Tk 8.6.
+# 2 tests test new features of Tk 8.7 - these are given the constraint
+# TkAbove8.6 which is computed above.
 # ------------------------------------------------------------------------------
 
 test spinbox-1.0 "Spinbox tests -- setup" -body {
@@ -159,7 +165,7 @@ test spinbox-1.8.3 "option -validate" -setup {
 
 test spinbox-1.8.4 "-validate option: " -setup {
     # FIXME Also revise upstream Tk test.
-    if {[string index [package provide tcl] 0] eq {8}} {
+    if {[string index [package provide Tcl] 0] eq {8}} {
         # Tcl 8.7 needs the window drawn
         set st [wm state .]
         wm deiconify .
@@ -238,7 +244,7 @@ test spinbox-2.4 "current command -- value not in list" -constraints nyi -setup 
 
 test spinbox-3.0 "textarea should expand to fill widget" -setup {
     # FIXME Also revise upstream Tk test.
-    if {[string index [package provide tcl] 0] eq {8}} {
+    if {[string index [package provide Tcl] 0] eq {8}} {
         # Tcl 8.7 needs the window drawn
         set st [wm state .]
         wm deiconify .
@@ -406,13 +412,13 @@ test spinbox-dieoctaldie-2 "Cope with general bad input" -body {
     destroy .sb
 }
 
-test spinbox-5.1 "style command" -body {
+test spinbox-5.1 "style command" -constraints {TkAbove8.6} -body {
     ttkSpinboxPlus .w
     list [.w cget -style] [.w style] [winfo class .w]
 } -cleanup {
     destroy .w
 } -result {{} TSpinbox TSpinbox}
-test spinbox-5.2 "style command" -body {
+test spinbox-5.2 "style command" -constraints {TkAbove8.6} -body {
     ttk::style configure customStyle.TSpinbox
     ttkSpinboxPlus .w -style customStyle.TSpinbox
     list [.w cget -style] [.w style] [winfo class .w]

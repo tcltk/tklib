@@ -2,7 +2,7 @@
 # Tile package: entry widget tests
 #
 
-package require tk
+package require Tk
 package require tcltest 2.2
 namespace import -force tcltest::*
 loadTestedCommands
@@ -28,12 +28,14 @@ proc bgerror {error} {
 
 package require widgetPlus
 namespace import ::widgetPlus::ttkEntryPlus
+testConstraint TkAbove8.6 [expr {[package vsatisfies [package provide Tk] 8.7-]}]
 
 # ------------------------------------------------------------------------------
-# This file is copied from Tk trunk checkin 127ff912ed, file ttk/entry.test,
-# with addition of the two lines above,
+# This file is copied from Tk trunk (8.7) checkin 127ff912ed,
+# file ttk/entry.test, with addition of the three lines above,
 # application of "s/ttk::entry/ttkEntryPlus/g" to the code (but not to comments,
-# results, test names or other metadata).
+# results, test names or other metadata), and further editing of failing tests
+# as described below.
 #
 # The purpose is to check that "ttkEntryPlus" does not break any features of
 # "ttk::entry", including important matters such as validation.
@@ -43,11 +45,14 @@ namespace import ::widgetPlus::ttkEntryPlus
 # corresponding tests in Tk have the same requirement.  The -setup and
 # -cleanup sections for these tests have been modified accordingly.
 #
-# All tests pass, except one where the original Tk test fails.  This test is
-# tagged with the constraint "TkTestFail"
+# With these revisions, all tests pass, except one where the original Tk test
+# fails.  This test is tagged with the constraint "TkTestFail".
+#
+# Adapting the tests for use with Tcl/Tk 8.6.
+# 4 tests test new features of Tk 8.7 - these are given the constraint
+# TkAbove8.6 which is computed above.
 # ------------------------------------------------------------------------------
 
-#
 test entry-1.1 "Create entry widget" -body {
     ttkEntryPlus .e
 } -result .e
@@ -109,7 +114,7 @@ test entry-2.1.1 "Create entry before scrollbar - scrollbar catches up" -constra
   failsOnUbuntu failsOnXQuarz
 } -setup {
     # FIXME Also revise upstream Tk test.
-    if {[string index [package provide tcl] 0] eq {8}} {
+    if {[string index [package provide Tcl] 0] eq {8}} {
         # Tcl 8.7 needs the window drawn
         set st [wm state .]
         wm deiconify .
@@ -136,7 +141,7 @@ test entry-2.1.1 "Create entry before scrollbar - scrollbar catches up" -constra
 
 test entry-2.2 "Initial scroll position" -setup {
     # FIXME Also revise upstream Tk test.
-    if {[string index [package provide tcl] 0] eq {8}} {
+    if {[string index [package provide Tcl] 0] eq {8}} {
         # Tcl 8.7 needs the window drawn
         set st [wm state .]
         wm deiconify .
@@ -278,7 +283,7 @@ test entry-4.7 {sel.first and sel.last gravity} -body {
 
 test entry-5.1 {widget deletion while active} -setup {
     # FIXME Also revise upstream Tk test.
-    if {[string index [package provide tcl] 0] eq {8}} {
+    if {[string index [package provide Tcl] 0] eq {8}} {
         # Tcl 8.7 needs the window drawn
         set st [wm state .]
         wm deiconify .
@@ -400,7 +405,7 @@ test entry-9.1 "Index range invariants" -setup {
     destroy .e
 }
 
-test entry-10.1 {configuration option: "-placeholder"} -setup {
+test entry-10.1 {configuration option: "-placeholder"} -constraints TkAbove8.6 -setup {
     pack [ttkEntryPlus .e]
 } -body {
     .e configure -placeholder {Some text}
@@ -409,7 +414,7 @@ test entry-10.1 {configuration option: "-placeholder"} -setup {
     destroy .e
 } -result {Some text}
 
-test entry-10.2 {configuration option: "-placeholderforeground"} -setup {
+test entry-10.2 {configuration option: "-placeholderforeground"} -constraints TkAbove8.6 -setup {
     pack [ttkEntryPlus .e]
 } -body {
     .e configure -placeholder {Some text} -placeholderforeground red
@@ -443,7 +448,7 @@ test entry-11.1 {Bug [2830360fff] - Don't loose invalid at focus events} -setup 
 }
 test entry-11.2 {Bug [2a32225cd1] - Navigation in a password made of several words} -setup {
     destroy .e
-    pack [ttkEntryPlus .e -show *]
+    pack [ttk::entry .e -show *]
     update
     set res {}
 } -body {
@@ -461,13 +466,13 @@ test entry-11.2 {Bug [2a32225cd1] - Navigation in a password made of several wor
     destroy .e
 } -result {{} {}}
 
-test entry-12.1 "style command" -body {
+test entry-12.1 "style command" -constraints TkAbove8.6 -body {
     ttkEntryPlus .w
     list [.w cget -style] [.w style] [winfo class .w]
 } -cleanup {
     destroy .w
 } -result {{} TEntry TEntry}
-test entry-12.2 "style command" -body {
+test entry-12.2 "style command" -constraints TkAbove8.6 -body {
     ttk::style configure customStyle.TEntry
     ttkEntryPlus .w -style customStyle.TEntry
     list [.w cget -style] [.w style] [winfo class .w]

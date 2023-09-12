@@ -2,7 +2,7 @@
 # ttk::combobox widget tests
 #
 
-package require tk
+package require Tk
 package require tcltest 2.2
 namespace import -force tcltest::*
 loadTestedCommands
@@ -10,13 +10,15 @@ loadTestedCommands
 package require widgetPlus
 namespace import ::widgetPlus::ttkComboboxPlus
 testConstraint notAqua [expr {[tk windowingsystem] ne "aqua" }]
+testConstraint TkAbove8.6 [expr {[package vsatisfies [package provide Tk] 8.7-]}]
 
 # ------------------------------------------------------------------------------
-# This file is copied from Tk trunk checkin 127ff912ed, file ttk/combobox.test,
-# with addition of the three lines
+# This file is copied from Tk trunk (8.7) checkin 127ff912ed,
+# file ttk/combobox.test, with addition of the four lines
 # above, application of "s/ttk::combobox/ttkComboboxPlus/g" to widget
 # constructors in the code, but not to commands ttk::combobox::* (and not to
-# comments, results, test names or other metadata).
+# comments, results, test names or other metadata), and further editing of
+# failing tests as described below.
 #
 # The purpose is to check that "ttkComboboxPlus" does not break any features of
 # "ttk::combobox", including important matters such as validation.
@@ -26,7 +28,13 @@ testConstraint notAqua [expr {[tk windowingsystem] ne "aqua" }]
 # corresponding tests in Tk have the same requirement.  The -setup and
 # -cleanup sections for these tests have been modified accordingly.
 #
-# All tests pass.
+# With these revisions, all tests pass.
+#
+# Adapting the tests for use with Tcl/Tk 8.6.
+# 2 tests are for new features of Tk 8.7 - these are given the constraint
+# TkAbove8.6 which is computed above.  In some other tests, the error message
+# differs between Tk 8.6 and 8.7.  In these cases, the expected test result is
+# computed using the Tk version.
 # ------------------------------------------------------------------------------
 
 test combobox-1.0 "Combobox tests -- setup" -body {
@@ -75,12 +83,16 @@ test combobox-2.5 "current -- set to end index" -body {
 test combobox-2.6 "current -- set to unknown index" -body {
     .cb configure -values [list a b c d e]
     .cb current notanindex
-} -returnCodes error -result {bad index "notanindex"}
+} -returnCodes error -result [expr {[package vsatisfies [package present Tk] 8.7-]
+    ? {bad index "notanindex"}
+    : {Incorrect index notanindex} }]
 
 test combobox-2.7 {current -- set to 0 index when empty [bug 924835c36d]} -body {
     .cb configure -values {}
     .cb current 0
-} -returnCodes error -result {index "0" out of range}
+} -returnCodes error -result [expr {[package vsatisfies [package present Tk] 8.7-]
+    ? {index "0" out of range}
+    : {Index 0 out of range} }]
 
 test combobox-2.8 "current -- set to end index in an empty combobox" -body {
     .cb configure -values {}
@@ -91,7 +103,7 @@ test combobox-2.end "Cleanup" -body { destroy .cb }
 
 test combobox-3 "Read postoffset value dynamically from current style" -setup {
     # FIXME Also revise upstream Tk test.
-    if {[string index [package provide tcl] 0] eq {8}} {
+    if {[string index [package provide Tcl] 0] eq {8}} {
         # Tcl 8.7 needs the window drawn
         set st [wm state .]
         wm deiconify .
@@ -139,13 +151,13 @@ test combobox-1890211 "ComboboxSelected event after listbox unposted" \
     destroy .cb
 }
 
-test combobox-4.1 "style command" -body {
+test combobox-4.1 "style command" -constraints TkAbove8.6 -body {
     ttkComboboxPlus .w
     list [.w cget -style] [.w style] [winfo class .w]
 } -cleanup {
     destroy .w
 } -result {{} TCombobox TCombobox}
-test combobox-4.2 "style command" -body {
+test combobox-4.2 "style command" -constraints TkAbove8.6 -body {
     ttk::style configure customStyle.TCombobox
     ttkComboboxPlus .w -style customStyle.TCombobox
     list [.w cget -style] [.w style] [winfo class .w]
