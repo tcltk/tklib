@@ -9,16 +9,22 @@ loadTestedCommands
 
 package require widgetPlus
 namespace import ::widgetPlus::ttkComboboxPlus
+testConstraint notAqua [expr {[tk windowingsystem] ne "aqua" }]
 
 # ------------------------------------------------------------------------------
 # This file is copied from Tk trunk checkin 127ff912ed, file ttk/combobox.test,
-# with addition of the two lines
+# with addition of the three lines
 # above, application of "s/ttk::combobox/ttkComboboxPlus/g" to widget
 # constructors in the code, but not to commands ttk::combobox::* (and not to
 # comments, results, test names or other metadata).
 #
 # The purpose is to check that "ttkComboboxPlus" does not break any features of
 # "ttk::combobox", including important matters such as validation.
+#
+# 1 test requires the widgets to be mapped for the test to pass with
+# Tcl/Tk 8.7 (mapping is not required for Tcl 9.0 with Tk 8.7).  The
+# corresponding tests in Tk have the same requirement.  The -setup and
+# -cleanup sections for these tests have been modified accordingly.
 #
 # All tests pass.
 # ------------------------------------------------------------------------------
@@ -83,7 +89,16 @@ test combobox-2.8 "current -- set to end index in an empty combobox" -body {
 
 test combobox-2.end "Cleanup" -body { destroy .cb }
 
-test combobox-3 "Read postoffset value dynamically from current style" -body {
+test combobox-3 "Read postoffset value dynamically from current style" -setup {
+    # FIXME Also revise upstream Tk test.
+    if {[string index [package provide tcl] 0] eq {8}} {
+        # Tcl 8.7 needs the window drawn
+        set st [wm state .]
+        wm deiconify .
+    } else {
+        set st {}
+    }
+} -body {
     ttkComboboxPlus .cb -values [list a b c] -style "DerivedStyle.TCombobox"
     pack .cb -expand true -fill both
     update idletasks
@@ -95,9 +110,13 @@ test combobox-3 "Read postoffset value dynamically from current style" -body {
     }
     ttk::combobox::Post .cb
     expr {[winfo rootx .cb.popdown] - [winfo rootx .cb]}
-} -result 25 -cleanup {
+} -cleanup {
     destroy .cb
-}
+    if {$st ne {}} {
+        wm state . $st
+    }
+    unset st
+} -result 25
 
 test combobox-1890211 "ComboboxSelected event after listbox unposted" \
     -constraints {notAqua} -body {

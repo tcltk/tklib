@@ -19,6 +19,11 @@ namespace import ::widgetPlus::ttkSpinboxPlus
 # The purpose is to check that "ttkSpinboxPlus" does not break any features of
 # "ttk::spinbox", including important matters such as validation.
 #
+# 2 further tests require the widgets to be mapped for the tests to pass with
+# Tcl/Tk 8.7 (mapping is not required for Tcl 9.0 with Tk 8.7).  The
+# corresponding tests in Tk have the same requirement.  The -setup and
+# -cleanup sections for these tests have been modified accordingly.
+#
 # All tests pass.
 # ------------------------------------------------------------------------------
 
@@ -153,6 +158,14 @@ test spinbox-1.8.3 "option -validate" -setup {
 } -returnCodes error -result {bad validate "bogus": must be all, key, focus, focusin, focusout, or none}
 
 test spinbox-1.8.4 "-validate option: " -setup {
+    # FIXME Also revise upstream Tk test.
+    if {[string index [package provide tcl] 0] eq {8}} {
+        # Tcl 8.7 needs the window drawn
+        set st [wm state .]
+        wm deiconify .
+    } else {
+        set st {}
+    }
     ttkSpinboxPlus .sb -from 0 -to 100
     set ::spinbox_test {}
 } -body {
@@ -168,6 +181,10 @@ test spinbox-1.8.4 "-validate option: " -setup {
     set ::spinbox_test
 } -cleanup {
     destroy .sb
+    if {$st ne {}} {
+        wm state . $st
+    }
+    unset st
 } -result 50
 
 
@@ -220,6 +237,14 @@ test spinbox-2.4 "current command -- value not in list" -constraints nyi -setup 
 } -result -1
 
 test spinbox-3.0 "textarea should expand to fill widget" -setup {
+    # FIXME Also revise upstream Tk test.
+    if {[string index [package provide tcl] 0] eq {8}} {
+        # Tcl 8.7 needs the window drawn
+        set st [wm state .]
+        wm deiconify .
+    } else {
+        set st {}
+    }
     set SBV 5
     set ::spinbox_test {}
     ttkSpinboxPlus .sb -from 0 -to 10 -textvariable SBV
@@ -241,6 +266,10 @@ test spinbox-3.0 "textarea should expand to fill widget" -setup {
 } -cleanup {
     destroy .sb
     unset -nocomplain ::spinbox_test SBV
+    if {$st ne {}} {
+        wm state . $st
+    }
+    unset st
 } -result {textarea}
 
 test spinbox-4.0 "Increment with duplicates in -values, wrap" -setup {

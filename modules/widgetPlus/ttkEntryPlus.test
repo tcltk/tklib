@@ -38,7 +38,12 @@ namespace import ::widgetPlus::ttkEntryPlus
 # The purpose is to check that "ttkEntryPlus" does not break any features of
 # "ttk::entry", including important matters such as validation.
 #
-# All tests pass, except those where the original Tk test fails.  These are
+# 3 tests require the widgets to be mapped for the tests to pass with
+# Tcl/Tk 8.7 (mapping is not required for Tcl 9.0 with Tk 8.7).  The
+# corresponding tests in Tk have the same requirement.  The -setup and
+# -cleanup sections for these tests have been modified accordingly.
+#
+# All tests pass, except one where the original Tk test fails.  This test is
 # tagged with the constraint "TkTestFail"
 # ------------------------------------------------------------------------------
 
@@ -100,7 +105,18 @@ test entry-2.1 "Create entry before scrollbar" -body {
 	-expand false -fill x
 }  -cleanup {destroy .te .tsb}
 
-test entry-2.1.1 "Create entry before scrollbar - scrollbar catches up" -constraints {failsOnUbuntu failsOnXQuarz} -body {
+test entry-2.1.1 "Create entry before scrollbar - scrollbar catches up" -constraints {
+  failsOnUbuntu failsOnXQuarz
+} -setup {
+    # FIXME Also revise upstream Tk test.
+    if {[string index [package provide tcl] 0] eq {8}} {
+        # Tcl 8.7 needs the window drawn
+        set st [wm state .]
+        wm deiconify .
+    } else {
+        set st {}
+    }
+} -body {
     pack [ttkEntryPlus .te -xscrollcommand [list .tsb set]] \
 	-expand true -fill both
     .te insert end [string repeat "abc" 50]
@@ -110,18 +126,37 @@ test entry-2.1.1 "Create entry before scrollbar - scrollbar catches up" -constra
 	-expand false -fill x
     update ; # no error
     set res [expr [lindex [.tsb get] 1] < 1] ; # scrollbar did update
-} -result 1 -cleanup {destroy .te .tsb}
+} -result 1 -cleanup {
+    destroy .te .tsb
+    if {$st ne {}} {
+        wm state . $st
+    }
+    unset st
+}
 
-test entry-2.2 "Initial scroll position" -body {
+test entry-2.2 "Initial scroll position" -setup {
+    # FIXME Also revise upstream Tk test.
+    if {[string index [package provide tcl] 0] eq {8}} {
+        # Tcl 8.7 needs the window drawn
+        set st [wm state .]
+        wm deiconify .
+    } else {
+        set st {}
+    }
+} -body {
     ttkEntryPlus .e -font fixed -width 5 -xscrollcommand scroll
     .e insert end "0123456789"
     pack .e;
-    set timeout [after 500 {set $scrollInfo "timeout"}]
+    set timeout [after 500 {set scrollInfo "timeout"}]
     vwait scrollInfo
     set scrollInfo
 } -cleanup {
     destroy .e
     after cancel $timeout
+    if {$st ne {}} {
+        wm state . $st
+    }
+    unset st
 } -result {0.0 0.5}
 # NOTE: result can vary depending on font.
 
@@ -241,14 +276,29 @@ test entry-4.7 {sel.first and sel.last gravity} -body {
 
 # Self-destruct tests.
 
-test entry-5.1 {widget deletion while active} -body {
+test entry-5.1 {widget deletion while active} -setup {
+    # FIXME Also revise upstream Tk test.
+    if {[string index [package provide tcl] 0] eq {8}} {
+        # Tcl 8.7 needs the window drawn
+        set st [wm state .]
+        wm deiconify .
+    } else {
+        set st {}
+    }
     destroy .e
+} -body {
     pack [ttkEntryPlus .e]
     update
     .e config -xscrollcommand { destroy .e }
     update idletasks
     winfo exists .e
-} -result 0
+} -result 0 -cleanup {
+    destroy .e
+    if {$st ne {}} {
+        wm state . $st
+    }
+    unset st
+}
 
 # TODO: test killing .e in -validatecommand, -invalidcommand, variable trace;
 
