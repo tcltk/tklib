@@ -1,4 +1,6 @@
-#!/usr/bin/env wish
+#! /usr/bin/env tclsh
+  
+package require Tk
 
 #==============================================================================
 # Demonstrates how to implement a multi-entry widget for Ethernet addresses.

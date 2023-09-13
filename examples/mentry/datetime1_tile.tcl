@@ -1,4 +1,6 @@
-#!/usr/bin/env wish
+#! /usr/bin/env tclsh
+  
+package require Tk
 
 #==============================================================================
 # Demo:	mentry::dateMentry, mentry::timeMentry, mentry::putClockVal,

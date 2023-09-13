@@ -105,8 +105,8 @@
 #   requires these bindings to generate <<Selection>> events.
 # ------------------------------------------------------------------------------
 
-package require Tcl 8.5
-package require Tk  8.5
+package require Tcl 8.5-
+package require Tk  8.5-
 
 # ------------------------------------------------------------------------------
 # Define the set of common virtual events.

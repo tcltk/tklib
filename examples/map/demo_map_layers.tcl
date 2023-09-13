@@ -1,4 +1,4 @@
-#!/bin/env tclsh8.6
+#! /usr/bin/env tclsh
 # -*- tcl -*-
 # # ## ### ##### ######## ############# #####################
 ## (c) 2022-2023 Andreas Kupries
@@ -12,7 +12,7 @@
 # # ## ### ##### ######## ############# #####################
 ## Requirements
 
-package require Tcl 8.6
+package require Tcl 8.6-
 
 # Extend the package search path so that this demonstration works with
 # the non-installed tklib packages well. A regular application should
@@ -25,7 +25,7 @@ apply {{selfdir} {
     lappend ::auto_path [file normalize $selfdir/../../modules]
 }} [file dirname [file normalize [info script]]]
 
-package require Tk 8.6
+package require Tk 8.6-
 package require map::display
 package require map::provider::osm
 #

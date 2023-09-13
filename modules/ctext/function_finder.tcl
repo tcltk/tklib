@@ -1,4 +1,4 @@
-#!/bin/tclsh8.3
+#! /usr/bin/env tclsh
 
 proc main {argc argv} {
 

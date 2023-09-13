@@ -16,7 +16,7 @@
 # Copyright (c) 2019-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require Tk 8.4
+package require Tk 8.4-
 
 #
 # Namespace initialization
@@ -277,7 +277,7 @@ proc scrollutil::addMouseWheelSupport {tag {axes "xy"}} {
 proc scrollutil::createWheelEventBindings args {
     variable winSys
     if {$winSys eq "win32"} {
-	package require Tk 8.6b2
+	package require Tk 8.6b2-
     }
     variable uniformWheelSupport
 
@@ -368,7 +368,7 @@ proc scrollutil::createWheelEventBindings args {
 proc scrollutil::enableScrollingByWheel args {
     variable winSys
     if {$winSys eq "win32"} {
-	package require Tk 8.6b2
+	package require Tk 8.6b2-
     }
 
     variable scrlWidgetContList
@@ -414,7 +414,7 @@ proc scrollutil::enableScrollingByWheel args {
 proc scrollutil::disableScrollingByWheel args {
     variable winSys
     if {$winSys eq "win32"} {
-	package require Tk 8.6b2
+	package require Tk 8.6b2-
     }
 
     variable scrlWidgetContList
@@ -485,7 +485,7 @@ proc scrollutil::disableScrollingByWheel args {
 proc scrollutil::adaptWheelEventHandling args {
     variable winSys
     if {$winSys eq "win32"} {
-	package require Tk 8.6b2
+	package require Tk 8.6b2-
     }
     variable uniformWheelSupport
 
@@ -572,7 +572,7 @@ proc scrollutil::adaptWheelEventHandling args {
 proc scrollutil::setFocusCheckWindow args {
     variable winSys
     if {$winSys eq "win32"} {
-	package require Tk 8.6b2
+	package require Tk 8.6b2-
     }
 
     set argCount [llength $args]
@@ -625,7 +625,7 @@ proc scrollutil::setFocusCheckWindow args {
 proc scrollutil::focusCheckWindow w {
     variable winSys
     if {$winSys eq "win32"} {
-	package require Tk 8.6b2
+	package require Tk 8.6b2-
     }
 
     if {![winfo exists $w]} {

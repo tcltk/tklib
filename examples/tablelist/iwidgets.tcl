@@ -1,4 +1,4 @@
-#!/usr/bin/env wish
+#! /usr/bin/env tclsh
 
 #==============================================================================
 # Demonstrates the interactive tablelist cell editing with the aid of some
@@ -8,7 +8,7 @@
 # Copyright (c) 2004-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require Tk 8.4				;# because of "-compound"
+package require Tk 8.4-				;# because of "-compound"
 package require tablelist 6.22
 if {[catch {package require iwidgets} result1] != 0 &&
     [catch {package require Iwidgets} result2] != 0} {
