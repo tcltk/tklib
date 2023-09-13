@@ -13,7 +13,7 @@ package require Tk 8.4-
 package require snit
 
 # As most widgets need tile, do the right conditional require here
-if {![package vsatisfies [package provide Tk] 8.5]} { package require tile }
+if {![package vsatisfies [package provide Tk] 8.5-]} { package require tile }
 
 #package provide Widget 3.1 ; # at end
 

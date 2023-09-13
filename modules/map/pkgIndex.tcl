@@ -1,4 +1,4 @@
-if {![package vsatisfies [package provide Tcl] 8.6]} { return }
+if {![package vsatisfies [package provide Tcl] 8.6-]} { return }
 #
 package ifneeded map::area::display        0.1   [list source [file join $dir area-display.tcl]]
 package ifneeded map::area::file           0.1   [list source [file join $dir area-file.tcl]]
