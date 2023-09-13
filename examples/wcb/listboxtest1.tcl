@@ -1,4 +1,6 @@
-#!/usr/bin/env wish
+#! /usr/bin/env tclsh
+  
+package require Tk
 
 #==============================================================================
 # Demo:	wcb::callback <listbox> before selset <callback>

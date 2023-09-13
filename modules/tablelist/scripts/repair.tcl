@@ -1,4 +1,6 @@
-#!/usr/bin/env wish
+#! /usr/bin/env tclsh
+
+package require Tk
 
 #==============================================================================
 # Creates new versions of the files "tablelistWidget.tcl", "tablelistBind.tcl",

@@ -1,9 +1,9 @@
-#!/bin/sh
-# the next line restarts using wish \
-exec wish "$0" ${1+"$@"}
+#! /usr/bin/env tclsh
 
 #use :: so I don't forget it's global
 #set ::tcl_traceExec 1
+
+package require Tk
 
 proc highlight:addClasses {win} {
 	ctext::addHighlightClassForSpecialChars $win brackets green {[]}

@@ -1,4 +1,6 @@
-#!/usr/bin/env wish
+#! /usr/bin/env tclsh
+  
+package require Tk
 
 #==============================================================================
 # Demonstrates the use of the scrollutil::pagesman widget having

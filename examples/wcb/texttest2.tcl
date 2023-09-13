@@ -1,4 +1,4 @@
-#!/usr/bin/env wish
+#! /usr/bin/env tclsh
 
 #==============================================================================
 # Demo:	wcb::callback <text> before insert <callback> ...

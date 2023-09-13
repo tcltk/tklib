@@ -1,4 +1,4 @@
-#!/usr/bin/env wish
+#! /usr/bin/env tclsh
 
 #==============================================================================
 # Demonstrates the traditional scrollbar management in connection with a

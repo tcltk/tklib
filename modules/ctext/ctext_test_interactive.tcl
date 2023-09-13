@@ -1,6 +1,6 @@
-#!/bin/sh
-# the next line restarts using wish \
-exec wish "$0" ${1+"$@"}
+#! /usr/bin/env tclsh
+
+package require Tk
 
 #set tcl_traceExec 1
 proc linemap_mark_cmd {win type line} {

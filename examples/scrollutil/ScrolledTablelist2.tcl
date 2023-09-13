@@ -1,4 +1,4 @@
-#!/usr/bin/env wish
+#! /usr/bin/env tclsh
 
 #==============================================================================
 # Demonstrates the use of the scrollutil::scrollarea widget in connection with

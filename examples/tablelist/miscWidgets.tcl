@@ -1,4 +1,4 @@
-#!/usr/bin/env wish
+#! /usr/bin/env tclsh
 
 #==============================================================================
 # Demonstrates the interactive tablelist cell editing with the aid of Bryan

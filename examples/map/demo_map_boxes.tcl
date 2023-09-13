@@ -1,4 +1,4 @@
-#!/bin/env tclsh8.6
+#! /usr/bin/env tclsh
 # -*- tcl -*-
 # # ## ### ##### ######## ############# #####################
 # demo_map_boxes.tcl --

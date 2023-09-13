@@ -1,4 +1,6 @@
-#!/usr/bin/env wish
+#! /usr/bin/env tclsh
+  
+package require Tk
 
 #==============================================================================
 # Demonstrates how to use a tablelist widget for displaying the content of a

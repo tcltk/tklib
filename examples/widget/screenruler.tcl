@@ -1,4 +1,4 @@
-#!/usr/bin/env tclsh
+#! /usr/bin/env tclsh
 
 package require Tk 8.4-
 set noimg [catch {package require img::png}] ; # for saving images

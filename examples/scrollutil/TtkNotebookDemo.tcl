@@ -1,4 +1,6 @@
-#!/usr/bin/env wish
+#! /usr/bin/env tclsh
+  
+package require Tk
 
 #==============================================================================
 # Demonstrates the use of the ttk::notebook widget.  Uses an image based on the

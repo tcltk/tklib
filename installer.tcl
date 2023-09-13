@@ -1,6 +1,5 @@
-#!/bin/sh
-# -*- tcl -*- \
-exec tclsh "$0" ${1+"$@"}
+#! /usr/bin/env tclsh
+# -*- tcl -*-
 
 # --------------------------------------------------------------
 # Installer for Tklib. The lowest version of the tcl core supported
