@@ -47,7 +47,7 @@ package provide map::area::store::memory 0.1
 # # ## ### ##### ######## ############# ######################
 ## Requirements
 
-package require Tcl 8.6
+package require Tcl 8.6-
 #
 #                               ;# Tcllib
 package require debug		;# - Narrative Tracing

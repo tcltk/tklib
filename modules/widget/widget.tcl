@@ -9,7 +9,7 @@
 # RCS: @(#) $Id: widget.tcl,v 1.6 2010/06/01 18:06:52 hobbs Exp $
 #
 
-package require Tk 8.4
+package require Tk 8.4-
 package require snit
 
 # As most widgets need tile, do the right conditional require here

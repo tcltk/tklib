@@ -4,7 +4,7 @@
 # plotdemos7.tcl --
 #     This test/demo script focuses on customising the plots
 #
-package require Tcl 8.5
+package require Tcl 8.5-
 package require Tk
 package require Plotchart
 
