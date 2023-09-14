@@ -7,9 +7,12 @@ package require tcltest 2.2
 namespace import -force tcltest::*
 loadTestedCommands
 
-# x11 and win32 need deiconify only for a few tests and . is deiconified in these tests.
-# "x11" (SDL) untested.
-# aqua untested.
+# x11 and win32 need "wm deiconify ." only for a few tests and this is done in
+# the individual tests.
+# The original tests are from Tk which does not "wm withdraw .", but for some
+# reason the tklib test setup does.
+# FIXME "x11" (SDL) is untested.
+# FIXME aqua is untested.
 
 package require widgetPlus
 namespace import ::widgetPlus::ttkSpinboxPlus
@@ -168,7 +171,6 @@ test spinbox-1.8.3 "option -validate" -setup {
 } -returnCodes error -result {bad validate "bogus": must be all, key, focus, focusin, focusout, or none}
 
 test spinbox-1.8.4 "-validate option: " -setup {
-    # FIXME Also revise upstream Tk test.
     set st [wm state .]
     wm deiconify .
     ttkSpinboxPlus .sb -from 0 -to 100
@@ -240,7 +242,6 @@ test spinbox-2.4 "current command -- value not in list" -constraints nyi -setup 
 } -result -1
 
 test spinbox-3.0 "textarea should expand to fill widget" -setup {
-    # FIXME Also revise upstream Tk test.
     set st [wm state .]
     wm deiconify .
     set SBV 5

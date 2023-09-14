@@ -17,9 +17,12 @@ loadTestedCommands
 ###eval tcltest::configure $argv
 ###tcltest::loadTestedCommands
 
-# x11 and win32 need deiconify only for a few tests and . is deiconified in these tests.
-# "x11" (SDL) untested.
-# aqua untested.
+# x11 and win32 need "wm deiconify ." only for a few tests and this is done in
+# the individual tests.
+# The original tests are from Tk which does not "wm withdraw .", but for some
+# reason the tklib test setup does.
+# FIXME "x11" (SDL) is untested.
+# FIXME aqua is untested.
 
 package require widgetPlus
 namespace import ::widgetPlus::entryPlus
@@ -59,10 +62,12 @@ testConstraint TkAbove8.6 [expr {[package vsatisfies [package provide Tk] 8.7-]}
 # With these revisions, all tests pass.
 #
 # Adapting the tests for use with Tcl/Tk 8.6.
-# 5 tests are for new features of Tk 8.7 - these are given the constraint
+# 8 tests are for new features of Tk 8.7 - these are given the constraint
 # TkAbove8.6 which is computed above.  In three cases the new feature is an
 # alternative value {} for index -1, and a corresponding test
-# from Tk 8.6 is available and is added with the suffix "--8.6".
+# from Tk 8.6 is available and is added with the suffix "--8.6".  In three
+# cases the test is valid if this file is sourced with -encoding utf-8,
+# but the 8.6 tcltest facility on Windows does not do this.
 # In 5 other tests, the error message differs between Tk 8.6 and 8.7.  In
 # these cases, the expected test result is computed using the Tk version.
 # ------------------------------------------------------------------------------
@@ -812,7 +817,6 @@ test entry-3.4 {EntryWidgetCmd procedure, "bbox" widget command} -setup {
     destroy .e
 } -returnCodes error -result {bad entry index "bogus"}
 test entry-3.5 {EntryWidgetCmd procedure, "bbox" widget command} -setup {
-    # FIXME Also revise upstream Tk test.
     set st [wm state .]
     wm deiconify .
     entryPlus .e -font {Courier -12} -borderwidth 2 -highlightthickness 2
@@ -869,7 +873,6 @@ test entry-3.8 {EntryWidgetCmd procedure, "bbox" widget command} -constraints {
     destroy .e
 } -result {31 5 7 13}
 test entry-3.9 {EntryWidgetCmd procedure, "bbox" widget command} -setup {
-    # FIXME Also revise upstream Tk test.
     set st [wm state .]
     wm deiconify .
     entryPlus .e -font {Courier -12} -borderwidth 2 -highlightthickness 2
@@ -1010,7 +1013,8 @@ test entry-3.23 {EntryWidgetCmd procedure, "delete" widget command} -setup {
 } -cleanup {
     destroy .e
 } -result 0123457890
-test entry-3.24 {EntryWidgetCmd procedure, "delete" widget command} -setup {
+test entry-3.24 {EntryWidgetCmd procedure, "delete" widget command} -constraints TkAbove8.6 -setup {
+    # A valid test if this file is sourced with -encoding utf-8.  Tcl 8.6 on Windows does not.
     entryPlus .e
     pack .e ; update idletasks
     update
@@ -1031,6 +1035,27 @@ test entry-3.24 {EntryWidgetCmd procedure, "delete" widget command} -setup {
 } -cleanup {
     destroy .e
 } -result [list "01234乎7890" "0123457890" "012345乎890"]
+test entry-3.24--8.6 {EntryWidgetCmd procedure, "delete" widget command} -setup {
+    entryPlus .e
+    pack .e ; update idletasks
+    update
+    set x {}
+} -body {
+# UTF
+    .e insert end "01234\u4e4e67890"
+    .e delete 6
+    lappend x [.e get]
+    .e delete 0 end
+    .e insert end "012345\u4e4e7890"
+    .e delete 6
+    lappend x [.e get]
+    .e delete 0 end
+    .e insert end "0123456\u4e4e890"
+    .e delete 6
+    lappend x [.e get]
+} -cleanup {
+    destroy .e
+} -result [list "01234\u4e4e7890" "0123457890" "012345\u4e4e890"]
 test entry-3.25 {EntryWidgetCmd procedure, "delete" widget command} -setup {
     entryPlus .e
     pack .e ; update idletasks
@@ -1128,13 +1153,25 @@ test entry-3.34 {EntryWidgetCmd procedure, "index" widget command} -setup {
 } -cleanup {
     destroy .e
 } -returnCodes {ok} -match glob -result {*}
-test entry-3.35 {EntryWidgetCmd procedure, "index" widget command} -setup {
+test entry-3.35 {EntryWidgetCmd procedure, "index" widget command} -constraints TkAbove8.6 -setup {
+    # A valid test if this file is sourced with -encoding utf-8.  Tcl 8.6 on Windows does not.
     entryPlus .e
     pack .e ; update idletasks
     update
 } -body {
 # UTF
     .e insert 0 abc乎œdef
+    list [.e index 3] [.e index 4] [.e index end]
+} -cleanup {
+    destroy .e
+} -result {3 4 8}
+test entry-3.35--8.6 {EntryWidgetCmd procedure, "index" widget command} -setup {
+    entryPlus .e
+    pack .e ; update idletasks
+    update
+} -body {
+# UTF
+    .e insert 0 abc\u4e4e\u0153def
     list [.e index 3] [.e index 4] [.e index end]
 } -cleanup {
     destroy .e
@@ -1751,13 +1788,35 @@ test entry-3.80 {EntryWidgetCmd procedure, "xview" widget command} -setup {
 } -cleanup {
     destroy .e
 } -result 73
-test entry-3.86 {EntryWidgetCmd procedure, "xview" widget command} -setup {
+test entry-3.86 {EntryWidgetCmd procedure, "xview" widget command} -constraints TkAbove8.6 -setup {
+    # A valid test if this file is sourced with -encoding utf-8.  Tcl 8.6 on Windows does not.
     entryPlus .e -font {Courier -12} -borderwidth 2 -highlightthickness 2
     pack .e ; update idletasks
 } -body {
     .e insert end "This is quite a long text string, so long that it "
     .e insert end "runs off the end of the window quite a bit."
     .e insert 10 乎
+    update
+# UTF
+# If Tcl_NumUtfChars wasn't used, wrong answer would be:
+# 0.106383 0.117021 0.117021
+    set x {}
+    .e xview moveto .1
+    lappend x [format {%.6f} [lindex [.e xview] 0]]
+    .e xview moveto .11
+    lappend x [format {%.6f} [lindex [.e xview] 0]]
+    .e xview moveto .12
+    lappend x [format {%.6f} [lindex [.e xview] 0]]
+} -cleanup {
+    destroy .e
+} -result {0.095745 0.106383 0.117021}
+test entry-3.86--8.6 {EntryWidgetCmd procedure, "xview" widget command} -setup {
+    entryPlus .e -font {Courier -12} -borderwidth 2 -highlightthickness 2
+    pack .e ; update idletasks
+} -body {
+    .e insert end "This is quite a long text string, so long that it "
+    .e insert end "runs off the end of the window quite a bit."
+    .e insert 10 \u4e4e
     update
 # UTF
 # If Tcl_NumUtfChars wasn't used, wrong answer would be:
@@ -1884,7 +1943,6 @@ test entry-5.6.1 {ConfigureEntry procedure} -setup {
 } -result {1 5}
 
 test entry-5.7 {ConfigureEntry procedure} -setup {
-    # FIXME Also revise upstream Tk test.
     set st [wm state .]
     wm deiconify .
     entryPlus .e -font {Helvetica -12} -borderwidth 2 -highlightthickness 2
@@ -2133,7 +2191,6 @@ test entry-6.12 {EntryComputeGeometry procedure} -constraints {
 
 
 test entry-7.1 {InsertChars procedure} -setup {
-    # FIXME Also revise upstream Tk test.
     set st [wm state .]
     wm deiconify .
     unset -nocomplain contents
@@ -2155,7 +2212,6 @@ test entry-7.1 {InsertChars procedure} -setup {
 } -result {abXXXcde abXXXcde {0.000000 1.000000}}
 
 test entry-7.2 {InsertChars procedure} -setup {
-    # FIXME Also revise upstream Tk test.
     set st [wm state .]
     wm deiconify .
     unset -nocomplain contents
@@ -2294,7 +2350,6 @@ test entry-7.11 {InsertChars procedure} -constraints {
 } -result 59
 
 test entry-8.1 {DeleteChars procedure} -setup {
-    # FIXME Also revise upstream Tk test.
     set st [wm state .]
     wm deiconify .
     unset -nocomplain contents
@@ -2315,7 +2370,6 @@ test entry-8.1 {DeleteChars procedure} -setup {
     unset st
 } -result {abe abe {0.000000 1.000000}}
 test entry-8.2 {DeleteChars procedure} -constraints TkAbove8.6 -setup {
-    # FIXME Also revise upstream Tk test.
     set st [wm state .]
     wm deiconify .
     unset -nocomplain contents
@@ -2336,7 +2390,6 @@ test entry-8.2 {DeleteChars procedure} -constraints TkAbove8.6 -setup {
     unset st
 } -result {cde cde {0.000000 1.000000}}
 test entry-8.2--8.6 {DeleteChars procedure} -setup {
-    # FIXME Also revise upstream Tk test.
     set st [wm state .]
     wm deiconify .
     unset -nocomplain contents
@@ -2357,7 +2410,6 @@ test entry-8.2--8.6 {DeleteChars procedure} -setup {
     unset st
 } -result {cde cde {0.000000 1.000000}}
 test entry-8.3 {DeleteChars procedure} -setup {
-    # FIXME Also revise upstream Tk test.
     set st [wm state .]
     wm deiconify .
     unset -nocomplain contents
@@ -3225,7 +3277,6 @@ test entry-16.4 {EntryVisibleRange procedure} -body {
 
 
 test entry-17.1 {EntryUpdateScrollbar procedure} -setup {
-    # FIXME Also revise upstream Tk test.
     set st [wm state .]
     wm deiconify .
 } -body {
@@ -3243,7 +3294,6 @@ test entry-17.1 {EntryUpdateScrollbar procedure} -setup {
     unset st
 } -result {0.000000 1.000000}
 test entry-17.2 {EntryUpdateScrollbar procedure} -setup {
-    # FIXME Also revise upstream Tk test.
     set st [wm state .]
     wm deiconify .
 } -body {
@@ -3261,7 +3311,6 @@ test entry-17.2 {EntryUpdateScrollbar procedure} -setup {
     unset st
 } -result {0.187500 0.812500}
 test entry-17.3 {EntryUpdateScrollbar procedure} -setup {
-    # FIXME Also revise upstream Tk test.
     set st [wm state .]
     wm deiconify .
 } -body {
@@ -3279,7 +3328,6 @@ test entry-17.3 {EntryUpdateScrollbar procedure} -setup {
     unset st
 } -result {0.315789 0.842105}
 test entry-17.4 {EntryUpdateScrollbar procedure} -setup {
-    # FIXME Also revise upstream Tk test.
     set st [wm state .]
     wm deiconify .
     proc bgerror msg {
@@ -3440,7 +3488,6 @@ test entry-19.7 {entry widget validation} -setup {
 } -result {}
 
 test entry-19.8 {entry widget validation} -setup {
-    # FIXME Also revise upstream Tk test.
     set st [wm state .]
     wm deiconify .
     unset -nocomplain ::e ::vVals
@@ -3464,7 +3511,6 @@ test entry-19.8 {entry widget validation} -setup {
 } -result {.e -1 -1 abcd abcd {} focus focusin}
 
 test entry-19.9 {entry widget validation} -setup {
-    # FIXME Also revise upstream Tk test.
     set st [wm state .]
     wm deiconify .
     unset -nocomplain ::e ::vVals
@@ -3490,7 +3536,6 @@ test entry-19.9 {entry widget validation} -setup {
 } -result {.e -1 -1 abcd abcd {} focus focusout}
 
 test entry-19.10 {entry widget validation} -setup {
-    # FIXME Also revise upstream Tk test.
     set st [wm state .]
     wm deiconify .
     unset -nocomplain ::e ::vVals
@@ -3513,7 +3558,6 @@ test entry-19.10 {entry widget validation} -setup {
 } -result {.e -1 -1 abcd abcd {} all focusin}
 
 test entry-19.11 {entry widget validation} -setup {
-    # FIXME Also revise upstream Tk test.
     set st [wm state .]
     wm deiconify .
     unset -nocomplain ::e ::vVals
@@ -3539,7 +3583,6 @@ test entry-19.11 {entry widget validation} -setup {
 } -result {.e -1 -1 abcd abcd {} all focusout}
 
 test entry-19.12 {entry widget validation} -setup {
-    # FIXME Also revise upstream Tk test.
     set st [wm state .]
     wm deiconify .
     unset -nocomplain ::e ::vVals
@@ -3600,7 +3643,6 @@ test entry-19.14 {entry widget validation} -setup {
 } -result {}
 
 test entry-19.15 {entry widget validation} -setup {
-    # FIXME Also revise upstream Tk test.
     set st [wm state .]
     wm deiconify .
     unset -nocomplain ::e ::vVals
@@ -3803,7 +3845,6 @@ test entry-20.5 {widget deletion while active} -body {
 } -result 0
 
 test entry-20.6 {widget deletion while active} -setup {
-    # FIXME Also revise upstream Tk test.
     set st [wm state .]
     wm deiconify .
 } -body {
@@ -3916,7 +3957,6 @@ test entry-25.1 {Bug [5d991b822e]} {
     info exists {}
 } 0
 test entry-25.2 {Bug [5d991b822e]} -setup {
-    # FIXME Also revise upstream Tk test.
     set st [wm state .]
     wm deiconify .
 } -body {
@@ -3936,7 +3976,6 @@ test entry-25.2 {Bug [5d991b822e]} -setup {
     unset st
 } -result {}
 test entry-25.3 {Bug [2a32225cd1] - Navigation in a password made of several words} -setup {
-    # FIXME Also revise upstream Tk test.
     set st [wm state .]
     wm deiconify .
     destroy .e

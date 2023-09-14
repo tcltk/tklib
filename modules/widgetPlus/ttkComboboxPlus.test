@@ -7,6 +7,13 @@ package require tcltest 2.2
 namespace import -force tcltest::*
 loadTestedCommands
 
+# x11 and win32 need "wm deiconify ." only for a few tests and this is done in
+# the individual tests.
+# The original tests are from Tk which does not "wm withdraw .", but for some
+# reason the tklib test setup does.
+# FIXME "x11" (SDL) is untested.
+# FIXME aqua is untested.
+
 package require widgetPlus
 namespace import ::widgetPlus::ttkComboboxPlus
 testConstraint notAqua [expr {[tk windowingsystem] ne "aqua" }]
@@ -102,7 +109,6 @@ test combobox-2.8 "current -- set to end index in an empty combobox" -body {
 test combobox-2.end "Cleanup" -body { destroy .cb }
 
 test combobox-3 "Read postoffset value dynamically from current style" -setup {
-    # FIXME Also revise upstream Tk test.
     set st [wm state .]
     wm deiconify .
 } -body {

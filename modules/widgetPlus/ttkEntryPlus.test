@@ -26,9 +26,12 @@ proc bgerror {error} {
     variable bgerrorCode $::errorCode
 }
 
-# x11 and win32 need deiconify only for a few tests and . is deiconified in these tests.
-# "x11" (SDL) untested.
-# aqua untested.
+# x11 and win32 need "wm deiconify ." only for a few tests and this is done in
+# the individual tests.
+# The original tests are from Tk which does not "wm withdraw .", but for some
+# reason the tklib test setup does.
+# FIXME "x11" (SDL) is untested.
+# FIXME aqua is untested.
 
 package require widgetPlus
 namespace import ::widgetPlus::ttkEntryPlus
@@ -117,7 +120,6 @@ test entry-2.1 "Create entry before scrollbar" -body {
 test entry-2.1.1 "Create entry before scrollbar - scrollbar catches up" -constraints {
   failsOnUbuntu failsOnXQuarz
 } -setup {
-    # FIXME Also revise upstream Tk test.
     set st [wm state .]
     wm deiconify .
 } -body {
@@ -137,7 +139,6 @@ test entry-2.1.1 "Create entry before scrollbar - scrollbar catches up" -constra
 }
 
 test entry-2.2 "Initial scroll position" -setup {
-    # FIXME Also revise upstream Tk test.
     set st [wm state .]
     wm deiconify .
 } -body {
@@ -304,7 +305,6 @@ test entry-4.7 {sel.first and sel.last gravity} -body {
 # Self-destruct tests.
 
 test entry-5.1 {widget deletion while active} -setup {
-    # FIXME Also revise upstream Tk test.
     set st [wm state .]
     wm deiconify .
     destroy .e
@@ -463,7 +463,7 @@ test entry-11.1 {Bug [2830360fff] - Don't loose invalid at focus events} -setup 
 }
 test entry-11.2 {Bug [2a32225cd1] - Navigation in a password made of several words} -setup {
     destroy .e
-    pack [ttk::entry .e -show *]
+    pack [ttkEntryPlus .e -show *]
     update
     set res {}
 } -body {
