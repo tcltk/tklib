@@ -1550,9 +1550,14 @@ proc ::ntext::TextButton1 {w x y} {
 	}
     }
 
-    # Allow focus in any case on Windows, because that will let the
-    # selection be displayed even for state disabled text widgets.
-    if {[tk windowingsystem] eq "win32" || [$w cget -state] eq "normal"} {
+    # - Allow focus in any case on Windows, because that will let the
+    #   selection be displayed even for state disabled text widgets.
+    # - Use -force for Windows, because without it, an embedded window
+    #   from another process will not relinquish focus.
+
+    if {[tk windowingsystem] eq "win32"} {
+	focus -force $w
+    } elseif {[$w cget -state] eq "normal"} {
 	focus $w
     }
     return
@@ -3689,4 +3694,4 @@ proc ::ntext::syncIndentColor {w} {
 
 ::ntext::initializeMatchPatterns
 
-package provide ntext 1.0b4
+package provide ntext 1.0b5
