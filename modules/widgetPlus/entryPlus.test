@@ -17,18 +17,23 @@ loadTestedCommands
 ###eval tcltest::configure $argv
 ###tcltest::loadTestedCommands
 
+# x11 and win32 need deiconify only for a few tests and . is deiconified in these tests.
+# "x11" (SDL) untested.
+# aqua untested.
+
 package require widgetPlus
 namespace import ::widgetPlus::entryPlus
 testConstraint x11 [expr {[tk windowingsystem] eq "x11" }]
+testConstraint aquaOrWin32 [expr {[tk windowingsystem] in {win32 aqua}}]
 testConstraint TkAbove8.6 [expr {[package vsatisfies [package provide Tk] 8.7-]}]
 
 # ------------------------------------------------------------------------------
 # This file is copied from Tk trunk (8.7) checkin 127ff912ed,
-# file entry.test, with addition of the four lines above,
+# file entry.test, with addition of the five lines above,
 # replacement of the four lines of initialization code above that,
 # application of "s/entry/entryPlus/g" to the code (but not to comments,
 # results, test names or other metadata), and further editing of failing tests
-# as described below.
+# as described below.  Plus comments at the end.
 #
 # The purpose is to check that "entryPlus" does not break any features
 # of "entry", including important matters such as validation.
@@ -808,13 +813,8 @@ test entry-3.4 {EntryWidgetCmd procedure, "bbox" widget command} -setup {
 } -returnCodes error -result {bad entry index "bogus"}
 test entry-3.5 {EntryWidgetCmd procedure, "bbox" widget command} -setup {
     # FIXME Also revise upstream Tk test.
-    if {[string index [package provide Tcl] 0] eq {8}} {
-        # Tcl 8.7 needs the window drawn
-        set st [wm state .]
-        wm deiconify .
-    } else {
-        set st {}
-    }
+    set st [wm state .]
+    wm deiconify .
     entryPlus .e -font {Courier -12} -borderwidth 2 -highlightthickness 2
     pack .e ; update idletasks
     update
@@ -822,9 +822,7 @@ test entry-3.5 {EntryWidgetCmd procedure, "bbox" widget command} -setup {
    .e bbox 0
 } -cleanup {
     destroy .e
-    if {$st ne {}} {
-        wm state . $st
-    }
+    wm state . $st
     unset st
 } -result [list 5 5 0 $cy]
 
@@ -872,13 +870,8 @@ test entry-3.8 {EntryWidgetCmd procedure, "bbox" widget command} -constraints {
 } -result {31 5 7 13}
 test entry-3.9 {EntryWidgetCmd procedure, "bbox" widget command} -setup {
     # FIXME Also revise upstream Tk test.
-    if {[string index [package provide Tcl] 0] eq {8}} {
-        # Tcl 8.7 needs the window drawn
-        set st [wm state .]
-        wm deiconify .
-    } else {
-        set st {}
-    }
+    set st [wm state .]
+    wm deiconify .
     entryPlus .e -font {Courier -12} -borderwidth 2 -highlightthickness 2
     pack .e ; update idletasks
     update
@@ -887,9 +880,7 @@ test entry-3.9 {EntryWidgetCmd procedure, "bbox" widget command} -setup {
     .e bbox end
 } -cleanup {
     destroy .e
-    if {$st ne {}} {
-        wm state . $st
-    }
+    wm state . $st
     unset st
 } -result "5 5 0 $cy"
 test entry-3.10 {EntryWidgetCmd procedure, "bbox" widget command} -constraints {
@@ -1894,13 +1885,8 @@ test entry-5.6.1 {ConfigureEntry procedure} -setup {
 
 test entry-5.7 {ConfigureEntry procedure} -setup {
     # FIXME Also revise upstream Tk test.
-    if {[string index [package provide Tcl] 0] eq {8}} {
-        # Tcl 8.7 needs the window drawn
-        set st [wm state .]
-        wm deiconify .
-    } else {
-        set st {}
-    }
+    set st [wm state .]
+    wm deiconify .
     entryPlus .e -font {Helvetica -12} -borderwidth 2 -highlightthickness 2
     pack .e ; update idletasks
 } -body {
@@ -1913,9 +1899,7 @@ test entry-5.7 {ConfigureEntry procedure} -setup {
     format {%.6f %.6f} {*}$scrollInfo
 } -cleanup {
     destroy .e
-    if {$st ne {}} {
-        wm state . $st
-    }
+    wm state . $st
     unset st
 } -result {0.000000 0.454545}
 
@@ -2150,13 +2134,8 @@ test entry-6.12 {EntryComputeGeometry procedure} -constraints {
 
 test entry-7.1 {InsertChars procedure} -setup {
     # FIXME Also revise upstream Tk test.
-    if {[string index [package provide Tcl] 0] eq {8}} {
-        # Tcl 8.7 needs the window drawn
-        set st [wm state .]
-        wm deiconify .
-    } else {
-        set st {}
-    }
+    set st [wm state .]
+    wm deiconify .
     unset -nocomplain contents
     entryPlus .e -width 10 -font {Courier -12} -highlightthickness 2 -bd 2
     pack .e ; update idletasks
@@ -2171,21 +2150,14 @@ test entry-7.1 {InsertChars procedure} -setup {
     list [.e get] $contents [format {%.6f %.6f} {*}$scrollInfo]
 } -cleanup {
     destroy .e
-    if {$st ne {}} {
-        wm state . $st
-    }
+    wm state . $st
     unset st
 } -result {abXXXcde abXXXcde {0.000000 1.000000}}
 
 test entry-7.2 {InsertChars procedure} -setup {
     # FIXME Also revise upstream Tk test.
-    if {[string index [package provide Tcl] 0] eq {8}} {
-        # Tcl 8.7 needs the window drawn
-        set st [wm state .]
-        wm deiconify .
-    } else {
-        set st {}
-    }
+    set st [wm state .]
+    wm deiconify .
     unset -nocomplain contents
     entryPlus .e -width 10 -font {Courier -12} -highlightthickness 2 -bd 2
     pack .e ; update idletasks
@@ -2200,9 +2172,7 @@ test entry-7.2 {InsertChars procedure} -setup {
     list [.e get] $contents [format {%.6f %.6f} {*}$scrollInfo]
 } -cleanup {
     destroy .e
-    if {$st ne {}} {
-        wm state . $st
-    }
+    wm state . $st
     unset st
 } -result {abcdeXXX abcdeXXX {0.000000 1.000000}}
 test entry-7.3 {InsertChars procedure} -setup {
@@ -2325,13 +2295,8 @@ test entry-7.11 {InsertChars procedure} -constraints {
 
 test entry-8.1 {DeleteChars procedure} -setup {
     # FIXME Also revise upstream Tk test.
-    if {[string index [package provide Tcl] 0] eq {8}} {
-        # Tcl 8.7 needs the window drawn
-        set st [wm state .]
-        wm deiconify .
-    } else {
-        set st {}
-    }
+    set st [wm state .]
+    wm deiconify .
     unset -nocomplain contents
     entryPlus .e -width 10 -font {Courier -12} -highlightthickness 2 -bd 2
     pack .e ; update idletasks
@@ -2346,20 +2311,13 @@ test entry-8.1 {DeleteChars procedure} -setup {
     list [.e get] $contents [format {%.6f %.6f} {*}$scrollInfo]
 } -cleanup {
     destroy .e
-    if {$st ne {}} {
-        wm state . $st
-    }
+    wm state . $st
     unset st
 } -result {abe abe {0.000000 1.000000}}
 test entry-8.2 {DeleteChars procedure} -constraints TkAbove8.6 -setup {
     # FIXME Also revise upstream Tk test.
-    if {[string index [package provide Tcl] 0] eq {8}} {
-        # Tcl 8.7 needs the window drawn
-        set st [wm state .]
-        wm deiconify .
-    } else {
-        set st {}
-    }
+    set st [wm state .]
+    wm deiconify .
     unset -nocomplain contents
     entryPlus .e -width 10 -font {Courier -12} -highlightthickness 2 -bd 2
     pack .e ; update idletasks
@@ -2374,20 +2332,13 @@ test entry-8.2 {DeleteChars procedure} -constraints TkAbove8.6 -setup {
     list [.e get] $contents [format {%.6f %.6f} {*}$scrollInfo]
 } -cleanup {
     destroy .e
-    if {$st ne {}} {
-        wm state . $st
-    }
+    wm state . $st
     unset st
 } -result {cde cde {0.000000 1.000000}}
 test entry-8.2--8.6 {DeleteChars procedure} -setup {
     # FIXME Also revise upstream Tk test.
-    if {[string index [package provide Tcl] 0] eq {8}} {
-        # Tcl 8.7 needs the window drawn
-        set st [wm state .]
-        wm deiconify .
-    } else {
-        set st {}
-    }
+    set st [wm state .]
+    wm deiconify .
     unset -nocomplain contents
     entryPlus .e -width 10 -font {Courier -12} -highlightthickness 2 -bd 2
     pack .e ; update idletasks
@@ -2402,20 +2353,13 @@ test entry-8.2--8.6 {DeleteChars procedure} -setup {
     list [.e get] $contents [format {%.6f %.6f} {*}$scrollInfo]
 } -cleanup {
     destroy .e
-    if {$st ne {}} {
-        wm state . $st
-    }
+    wm state . $st
     unset st
 } -result {cde cde {0.000000 1.000000}}
 test entry-8.3 {DeleteChars procedure} -setup {
     # FIXME Also revise upstream Tk test.
-    if {[string index [package provide Tcl] 0] eq {8}} {
-        # Tcl 8.7 needs the window drawn
-        set st [wm state .]
-        wm deiconify .
-    } else {
-        set st {}
-    }
+    set st [wm state .]
+    wm deiconify .
     unset -nocomplain contents
     entryPlus .e -width 10 -font {Courier -12} -highlightthickness 2 -bd 2
     pack .e ; update idletasks
@@ -2430,9 +2374,7 @@ test entry-8.3 {DeleteChars procedure} -setup {
     list [.e get] $contents [format {%.6f %.6f} {*}$scrollInfo]
 } -cleanup {
     destroy .e
-    if {$st ne {}} {
-        wm state . $st
-    }
+    wm state . $st
     unset st
 } -result {abc abc {0.000000 1.000000}}
 test entry-8.4 {DeleteChars procedure} -setup {
@@ -3284,13 +3226,8 @@ test entry-16.4 {EntryVisibleRange procedure} -body {
 
 test entry-17.1 {EntryUpdateScrollbar procedure} -setup {
     # FIXME Also revise upstream Tk test.
-    if {[string index [package provide Tcl] 0] eq {8}} {
-        # Tcl 8.7 needs the window drawn
-        set st [wm state .]
-        wm deiconify .
-    } else {
-        set st {}
-    }
+    set st [wm state .]
+    wm deiconify .
 } -body {
     entryPlus .e -width 10 -xscrollcommand scroll -font {Courier -12}
     pack .e
@@ -3302,20 +3239,13 @@ test entry-17.1 {EntryUpdateScrollbar procedure} -setup {
     format {%.6f %.6f} {*}$scrollInfo
 } -cleanup {
     destroy .e
-    if {$st ne {}} {
-        wm state . $st
-    }
+    wm state . $st
     unset st
 } -result {0.000000 1.000000}
 test entry-17.2 {EntryUpdateScrollbar procedure} -setup {
     # FIXME Also revise upstream Tk test.
-    if {[string index [package provide Tcl] 0] eq {8}} {
-        # Tcl 8.7 needs the window drawn
-        set st [wm state .]
-        wm deiconify .
-    } else {
-        set st {}
-    }
+    set st [wm state .]
+    wm deiconify .
 } -body {
     entryPlus .e -width 10 -xscrollcommand scroll -font {Courier -12}
     pack .e
@@ -3327,20 +3257,13 @@ test entry-17.2 {EntryUpdateScrollbar procedure} -setup {
     format {%.6f %.6f} {*}$scrollInfo
 } -cleanup {
     destroy .e
-    if {$st ne {}} {
-        wm state . $st
-    }
+    wm state . $st
     unset st
 } -result {0.187500 0.812500}
 test entry-17.3 {EntryUpdateScrollbar procedure} -setup {
     # FIXME Also revise upstream Tk test.
-    if {[string index [package provide Tcl] 0] eq {8}} {
-        # Tcl 8.7 needs the window drawn
-        set st [wm state .]
-        wm deiconify .
-    } else {
-        set st {}
-    }
+    set st [wm state .]
+    wm deiconify .
 } -body {
     entryPlus .e -width 10 -xscrollcommand scroll -font {Courier -12}
     pack .e
@@ -3352,20 +3275,13 @@ test entry-17.3 {EntryUpdateScrollbar procedure} -setup {
     format {%.6f %.6f} {*}$scrollInfo
 } -cleanup {
     destroy .e
-    if {$st ne {}} {
-        wm state . $st
-    }
+    wm state . $st
     unset st
 } -result {0.315789 0.842105}
 test entry-17.4 {EntryUpdateScrollbar procedure} -setup {
     # FIXME Also revise upstream Tk test.
-    if {[string index [package provide Tcl] 0] eq {8}} {
-        # Tcl 8.7 needs the window drawn
-        set st [wm state .]
-        wm deiconify .
-    } else {
-        set st {}
-    }
+    set st [wm state .]
+    wm deiconify .
     proc bgerror msg {
 	global x
 	set x $msg
@@ -3381,9 +3297,7 @@ test entry-17.4 {EntryUpdateScrollbar procedure} -setup {
 } -cleanup {
     destroy .e
     rename bgerror {}
-    if {$st ne {}} {
-        wm state . $st
-    }
+    wm state . $st
     unset st
 } -result {{invalid command name "thisisnotacommand"} {invalid command name "thisisnotacommand"
     while executing
@@ -3527,13 +3441,8 @@ test entry-19.7 {entry widget validation} -setup {
 
 test entry-19.8 {entry widget validation} -setup {
     # FIXME Also revise upstream Tk test.
-    if {[string index [package provide Tcl] 0] eq {8}} {
-        # Tcl 8.7 needs the window drawn
-        set st [wm state .]
-        wm deiconify .
-    } else {
-        set st {}
-    }
+    set st [wm state .]
+    wm deiconify .
     unset -nocomplain ::e ::vVals
 } -body {
     entryPlus .e -validate all \
@@ -3550,21 +3459,14 @@ test entry-19.8 {entry widget validation} -setup {
     set ::vVals
 } -cleanup {
     destroy .e
-    if {$st ne {}} {
-        wm state . $st
-    }
+    wm state . $st
     unset st
 } -result {.e -1 -1 abcd abcd {} focus focusin}
 
 test entry-19.9 {entry widget validation} -setup {
     # FIXME Also revise upstream Tk test.
-    if {[string index [package provide Tcl] 0] eq {8}} {
-        # Tcl 8.7 needs the window drawn
-        set st [wm state .]
-        wm deiconify .
-    } else {
-        set st {}
-    }
+    set st [wm state .]
+    wm deiconify .
     unset -nocomplain ::e ::vVals
 } -body {
     entryPlus .e -validate focus \
@@ -3583,21 +3485,14 @@ test entry-19.9 {entry widget validation} -setup {
     set ::vVals
 } -cleanup {
     destroy .e
-    if {$st ne {}} {
-        wm state . $st
-    }
+    wm state . $st
     unset st
 } -result {.e -1 -1 abcd abcd {} focus focusout}
 
 test entry-19.10 {entry widget validation} -setup {
     # FIXME Also revise upstream Tk test.
-    if {[string index [package provide Tcl] 0] eq {8}} {
-        # Tcl 8.7 needs the window drawn
-        set st [wm state .]
-        wm deiconify .
-    } else {
-        set st {}
-    }
+    set st [wm state .]
+    wm deiconify .
     unset -nocomplain ::e ::vVals
 } -body {
     entryPlus .e -validate all \
@@ -3613,21 +3508,14 @@ test entry-19.10 {entry widget validation} -setup {
     set ::vVals
 } -cleanup {
     destroy .e
-    if {$st ne {}} {
-        wm state . $st
-    }
+    wm state . $st
     unset st
 } -result {.e -1 -1 abcd abcd {} all focusin}
 
 test entry-19.11 {entry widget validation} -setup {
     # FIXME Also revise upstream Tk test.
-    if {[string index [package provide Tcl] 0] eq {8}} {
-        # Tcl 8.7 needs the window drawn
-        set st [wm state .]
-        wm deiconify .
-    } else {
-        set st {}
-    }
+    set st [wm state .]
+    wm deiconify .
     unset -nocomplain ::e ::vVals
 } -body {
     entryPlus .e -validate all \
@@ -3646,21 +3534,14 @@ test entry-19.11 {entry widget validation} -setup {
     set ::vVals
 } -cleanup {
     destroy .e
-    if {$st ne {}} {
-        wm state . $st
-    }
+    wm state . $st
     unset st
 } -result {.e -1 -1 abcd abcd {} all focusout}
 
 test entry-19.12 {entry widget validation} -setup {
     # FIXME Also revise upstream Tk test.
-    if {[string index [package provide Tcl] 0] eq {8}} {
-        # Tcl 8.7 needs the window drawn
-        set st [wm state .]
-        wm deiconify .
-    } else {
-        set st {}
-    }
+    set st [wm state .]
+    wm deiconify .
     unset -nocomplain ::e ::vVals
 } -body {
     entryPlus .e -validate focusin \
@@ -3676,9 +3557,7 @@ test entry-19.12 {entry widget validation} -setup {
     set ::vVals
 } -cleanup {
     destroy .e
-    if {$st ne {}} {
-        wm state . $st
-    }
+    wm state . $st
     unset st
 } -result {.e -1 -1 abcd abcd {} focusin focusin}
 
@@ -3722,13 +3601,8 @@ test entry-19.14 {entry widget validation} -setup {
 
 test entry-19.15 {entry widget validation} -setup {
     # FIXME Also revise upstream Tk test.
-    if {[string index [package provide Tcl] 0] eq {8}} {
-        # Tcl 8.7 needs the window drawn
-        set st [wm state .]
-        wm deiconify .
-    } else {
-        set st {}
-    }
+    set st [wm state .]
+    wm deiconify .
     unset -nocomplain ::e ::vVals
 } -body {
     entryPlus .e -validate focuso \
@@ -3748,9 +3622,7 @@ test entry-19.15 {entry widget validation} -setup {
     set ::vVals
 } -cleanup {
     destroy .e
-    if {$st ne {}} {
-        wm state . $st
-    }
+    wm state . $st
     unset st
 } -result {.e -1 -1 abcd abcd {} focusout focusout}
 
@@ -3932,13 +3804,8 @@ test entry-20.5 {widget deletion while active} -body {
 
 test entry-20.6 {widget deletion while active} -setup {
     # FIXME Also revise upstream Tk test.
-    if {[string index [package provide Tcl] 0] eq {8}} {
-        # Tcl 8.7 needs the window drawn
-        set st [wm state .]
-        wm deiconify .
-    } else {
-        set st {}
-    }
+    set st [wm state .]
+    wm deiconify .
 } -body {
     pack [entryPlus .e]
     update
@@ -3947,9 +3814,7 @@ test entry-20.6 {widget deletion while active} -setup {
     winfo exists .e
 } -cleanup {
     destroy .e
-    if {$st ne {}} {
-        wm state . $st
-    }
+    wm state . $st
     unset st
 } -result 0
 
@@ -4052,13 +3917,8 @@ test entry-25.1 {Bug [5d991b822e]} {
 } 0
 test entry-25.2 {Bug [5d991b822e]} -setup {
     # FIXME Also revise upstream Tk test.
-    if {[string index [package provide Tcl] 0] eq {8}} {
-        # Tcl 8.7 needs the window drawn
-        set st [wm state .]
-        wm deiconify .
-    } else {
-        set st {}
-    }
+    set st [wm state .]
+    wm deiconify .
 } -body {
     # Want this not to leak traces
     set var INIT
@@ -4072,20 +3932,13 @@ test entry-25.2 {Bug [5d991b822e]} -setup {
     destroy .b
     unset new
 } -cleanup {
-    if {$st ne {}} {
-        wm state . $st
-    }
+    wm state . $st
     unset st
 } -result {}
 test entry-25.3 {Bug [2a32225cd1] - Navigation in a password made of several words} -setup {
     # FIXME Also revise upstream Tk test.
-    if {[string index [package provide Tcl] 0] eq {8}} {
-        # Tcl 8.7 needs the window drawn
-        set st [wm state .]
-        wm deiconify .
-    } else {
-        set st {}
-    }
+    set st [wm state .]
+    wm deiconify .
     destroy .e
     pack [entryPlus .e -show *]
     update
@@ -4103,9 +3956,7 @@ test entry-25.3 {Bug [2a32225cd1] - Navigation in a password made of several wor
     lappend res [.e get]
 } -cleanup {
     destroy .e
-    if {$st ne {}} {
-        wm state . $st
-    }
+    wm state . $st
     unset st
 } -result {{} {}}
 

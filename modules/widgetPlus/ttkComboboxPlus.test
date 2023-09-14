@@ -103,13 +103,8 @@ test combobox-2.end "Cleanup" -body { destroy .cb }
 
 test combobox-3 "Read postoffset value dynamically from current style" -setup {
     # FIXME Also revise upstream Tk test.
-    if {[string index [package provide Tcl] 0] eq {8}} {
-        # Tcl 8.7 needs the window drawn
-        set st [wm state .]
-        wm deiconify .
-    } else {
-        set st {}
-    }
+    set st [wm state .]
+    wm deiconify .
 } -body {
     ttkComboboxPlus .cb -values [list a b c] -style "DerivedStyle.TCombobox"
     pack .cb -expand true -fill both
@@ -124,9 +119,7 @@ test combobox-3 "Read postoffset value dynamically from current style" -setup {
     expr {[winfo rootx .cb.popdown] - [winfo rootx .cb]}
 } -cleanup {
     destroy .cb
-    if {$st ne {}} {
-        wm state . $st
-    }
+    wm state . $st
     unset st
 } -result 25
 

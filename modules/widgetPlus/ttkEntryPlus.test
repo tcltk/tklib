@@ -26,6 +26,10 @@ proc bgerror {error} {
     variable bgerrorCode $::errorCode
 }
 
+# x11 and win32 need deiconify only for a few tests and . is deiconified in these tests.
+# "x11" (SDL) untested.
+# aqua untested.
+
 package require widgetPlus
 namespace import ::widgetPlus::ttkEntryPlus
 testConstraint TkAbove8.6 [expr {[package vsatisfies [package provide Tk] 8.7-]}]
@@ -114,13 +118,8 @@ test entry-2.1.1 "Create entry before scrollbar - scrollbar catches up" -constra
   failsOnUbuntu failsOnXQuarz
 } -setup {
     # FIXME Also revise upstream Tk test.
-    if {[string index [package provide Tcl] 0] eq {8}} {
-        # Tcl 8.7 needs the window drawn
-        set st [wm state .]
-        wm deiconify .
-    } else {
-        set st {}
-    }
+    set st [wm state .]
+    wm deiconify .
 } -body {
     pack [ttkEntryPlus .te -xscrollcommand [list .tsb set]] \
 	-expand true -fill both
@@ -133,21 +132,14 @@ test entry-2.1.1 "Create entry before scrollbar - scrollbar catches up" -constra
     set res [expr [lindex [.tsb get] 1] < 1] ; # scrollbar did update
 } -result 1 -cleanup {
     destroy .te .tsb
-    if {$st ne {}} {
-        wm state . $st
-    }
+    wm state . $st
     unset st
 }
 
 test entry-2.2 "Initial scroll position" -setup {
     # FIXME Also revise upstream Tk test.
-    if {[string index [package provide Tcl] 0] eq {8}} {
-        # Tcl 8.7 needs the window drawn
-        set st [wm state .]
-        wm deiconify .
-    } else {
-        set st {}
-    }
+    set st [wm state .]
+    wm deiconify .
 } -body {
     ttkEntryPlus .e -font fixed -width 5 -xscrollcommand scroll
     .e insert end "0123456789"
@@ -158,9 +150,7 @@ test entry-2.2 "Initial scroll position" -setup {
 } -cleanup {
     destroy .e
     after cancel $timeout
-    if {$st ne {}} {
-        wm state . $st
-    }
+    wm state . $st
     unset st
 } -result {0.0 0.5}
 # NOTE: result can vary depending on font.
@@ -183,24 +173,48 @@ test entry-3.1 "bbox widget command" -constraints {TkTestFail} -body {
     .e bbox 0
 } -result [list $bd $bd 0 $ch]
 
-test entry-3.2 "xview" -body {
+test entry-3.2 "xview" -setup {
+    # Win32 needs this.
+    set st [wm state .]
+    wm deiconify .
+    update
+} -body {
     .e delete 0 end;
     .e insert end [string repeat "0" 40]
     set result [.e xview]
+} -cleanup {
+    wm state . $st
+    unset st
 } -result {0.0 0.5}
 
-test entry-3.3 "xview" -body {
+test entry-3.3 "xview" -setup {
+    # Win32 needs this.
+    set st [wm state .]
+    wm deiconify .
+    update
+} -body {
     .e delete 0 end;
     .e insert end abcdefghijklmnopqrstuvwxyz
     .e xview end
     set result [.e index @0]
+} -cleanup {
+    wm state . $st
+    unset st
 } -result 7
 
-test entry-3.4 "xview" -body {
+test entry-3.4 "xview" -setup {
+    # Win32 needs this.
+    set st [wm state .]
+    wm deiconify .
+    update
+} -body {
     .e delete 0 end;
     .e insert end abcdefghijklmnopqrstuvwxyz
     .e xview moveto 1.0
     set result [.e index @0]
+} -cleanup {
+    wm state . $st
+    unset st
 } -result 7
 
 test entry-3.5 "xview" -body {
@@ -210,11 +224,19 @@ test entry-3.5 "xview" -body {
     set result [.e index @0]
 } -result 5
 
-test entry-3.6 "xview" -body {
+test entry-3.6 "xview" -setup {
+    # Win32 needs this.
+    set st [wm state .]
+    wm deiconify .
+    update
+} -body {
     .e delete 0 end;
     .e insert end [string repeat abcdefghijklmnopqrstuvwxyz 5]
     .e xview scroll 2 pages
     set result [.e index @0]
+} -cleanup {
+    wm state . $st
+    unset st
 } -result 40
 
 test entry-3.last "Series 3 cleanup" -body {
@@ -283,13 +305,8 @@ test entry-4.7 {sel.first and sel.last gravity} -body {
 
 test entry-5.1 {widget deletion while active} -setup {
     # FIXME Also revise upstream Tk test.
-    if {[string index [package provide Tcl] 0] eq {8}} {
-        # Tcl 8.7 needs the window drawn
-        set st [wm state .]
-        wm deiconify .
-    } else {
-        set st {}
-    }
+    set st [wm state .]
+    wm deiconify .
     destroy .e
 } -body {
     pack [ttkEntryPlus .e]
@@ -299,9 +316,7 @@ test entry-5.1 {widget deletion while active} -setup {
     winfo exists .e
 } -result 0 -cleanup {
     destroy .e
-    if {$st ne {}} {
-        wm state . $st
-    }
+    wm state . $st
     unset st
 }
 
