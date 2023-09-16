@@ -8,7 +8,7 @@
 # Copyright (c) 1994-1997 Sun Microsystems, Inc.
 # Copyright (c) 1998 by Scriptics Corporation.
 # Copyright (c) 2015-2017 Gregor Cramer
-# Copyright (c) 2005-2018 additions by Keith Nash.
+# Copyright (c) 2005-2023 additions by Keith Nash.
 #
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
@@ -1286,7 +1286,7 @@ namespace eval ::ntext {
     namespace export createMatchPatterns initializeMatchPatterns
     namespace export new_endOfWord new_textCopy new_textCut new_textPaste
     namespace export new_startOfNextWord new_startOfPreviousWord
-    namespace export new_wordBreakAfter new_wordBreakBefore wrapIndent colorTabs
+    namespace export new_wordBreakAfter new_wordBreakBefore wrapIndent syncTabColor
 
     # Variables that control the behaviour of certain bindings and may be
     # changed by the user's script
@@ -3312,21 +3312,18 @@ proc ::ntext::new_startOfPreviousWord {str start} {
 
 ##### START OF CODE FOR (OPTIONAL) TAB COLORING
 
-# ::ntext::colorTabs --
+# ::ntext::syncTabColor --
 #
 # Procedure to color tabs.
-# Set tabColor {} for no coloring.
+# Set tabColor and tabSelColor to {} for no coloring.
 #
 # Arguments:
 # w      -		text widget to be colored
-# index1 -		(optional) index in the first logical line to be
-#         		processed
-# index2 -		(optional) index in the last logical line to be processed
 
-proc ::ntext::colorTabs {w args} {
+proc ::ntext::syncTabColor {w} {
     variable tabColor
     variable tabSelColor
-    ColorTabs $w $tabColor $tabSelColor {*}$args
+    ColorTabs $w $tabColor $tabSelColor
     return
 }
 
@@ -3694,4 +3691,4 @@ proc ::ntext::syncIndentColor {w} {
 
 ::ntext::initializeMatchPatterns
 
-package provide ntext 1.0b5
+package provide ntext 1.0b6

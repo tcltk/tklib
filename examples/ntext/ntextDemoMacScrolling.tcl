@@ -2,7 +2,7 @@
 
 package require Tk
 
-# Copyright (c) 2005-2018 Keith Nash.
+# Copyright (c) 2005-2023 Keith Nash.
 #
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
@@ -168,7 +168,7 @@ pack [text  .rhf.f.new ] -padx 2 -side right -anchor nw
 bindtags .rhf.f.new {.rhf.f.new Ntext . all}
 
 .rhf.f.new configure -wrap word -undo 1 -yscrollcommand {.rhf.f.scroll set}
-.rhf.f.new configure -width 61 -height 29 -font {{Courier} -15} -bg white
+.rhf.f.new configure -width 61 -height 29 -font {Courier 8} -bg white
 .rhf.f.new insert end "  I use the Ntext bindings.\n\n$message"
 .rhf.f.new edit separator
 .rhf.f.scroll configure -command {.rhf.f.new yview}
@@ -177,13 +177,19 @@ pack [frame .lhf   -bg $col] -side left -anchor ne
 pack [frame .lhf.f -bg $col]
 pack [scrollbar .lhf.f.scroll -bg $col] -side left -anchor nw -expand 1 -fill y
 pack [text .lhf.f.classic ] -padx 2 -side left -anchor nw
-.lhf.f.classic configure -width 61 -height 29 -wrap word -undo 1 -font {{Courier} -15} -bg #FFFFCC -yscrollcommand {.lhf.f.scroll set}
+.lhf.f.classic configure -width 61 -height 29 -wrap word -undo 1 -font {Courier 8} -bg #FFFFCC -yscrollcommand {.lhf.f.scroll set}
 .lhf.f.classic insert end "  I use the (default) Text bindings.\n\n$message"
 .lhf.f.classic edit separator
 .lhf.f.scroll configure -command {.lhf.f.classic yview}
 
-
 pack [label  .lhf.m   -bg $col -text "(The radiobutton controls do not\napply to the left-hand text widget)"]
+
+.lhf.f.classic tag add red  1.0 2.0
+.rhf.f.new     tag add blue 1.0 2.0
+.lhf.f.classic tag configure red  -foreground #A00000 -font {Courier 8 bold}
+.rhf.f.new     tag configure red  -foreground #A00000 -font {Courier 8 bold}
+.rhf.f.new     tag configure blue -foreground #0000A0 -font {Courier 8 bold}
+
 
 pack [frame .rhf.h -bg $col] -fill x
 pack [radiobutton .rhf.h.on  -bg $col -text "On " -variable ::ntext::classicMouseSelect -value 1] -side right
@@ -303,8 +309,3 @@ foreach term {
         set first 0
     }
 }
-
-.lhf.f.classic tag configure red -foreground #A00000 -font {{Courier} -15 bold}
-
-.rhf.f.new     tag configure red -foreground #A00000 -font {{Courier} -15 bold}
-

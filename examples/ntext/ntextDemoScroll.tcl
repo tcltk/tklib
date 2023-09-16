@@ -2,7 +2,7 @@
 
 package require Tk
 
-# Copyright (c) 2005-2018 Keith Nash.
+# Copyright (c) 2005-2023 Keith Nash.
 #
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
@@ -22,18 +22,24 @@ A4GgUPhZAYfDEQuZ9ByZAVqPF6paLxEAOw==
 }
 
 # This string defines the text that will be displayed in each widget:
-set message1 {    This demo tests scrolling with the scrollbars, keyboard or mousewheel.
+set message1 {    Try scrolling with the scrollbars, keyboard or mousewheel.
 
-    To allow lines to be partially visible, this line will use a different font size.
+    A different font size.
 
     Now show an embedded image.
 
     1. Now some extra words to lengthen the text.
 
-    2. Now some extra words to lengthen the text.}
+    2. Now some extra words to lengthen the text.
+
+    3. Now some extra words to lengthen the text.
+
+    4. Now some extra words to lengthen the text.
+
+    5. Now some extra words to lengthen the text.}
 # End of string for widget text.
 
-set message2 {    This demo has some very tall lines, and tests scrolling with the scrollbars, keyboard or mousewheel.
+set message2 {    This demo has some very tall lines; try scrolling with the scrollbars, keyboard or mousewheel.
 
     To test scrolling with very tall lines, this line will use a huge font size.
 
@@ -49,7 +55,7 @@ set message2 {    This demo has some very tall lines, and tests scrolling with t
 
     Try any text-widget operation, and test whether ntext is satisfactory.  Ntext is part of Tklib - please report any bugs to:
 
-    http://core.tcl.tk/tklib/reportlist}
+    https://core.tcl-lang.org/tklib/reportlist}
 # End of string for widget text.
 
 package require ntext 1.0
@@ -78,7 +84,7 @@ proc textAndScroll {w col ht ft message bt {img {}}} {
     }
 
     $w.txt configure -wrap word -undo 1
-    $w.txt configure -width 42 -height $ht -font {{Courier} -15} -bg $bg
+    $w.txt configure -width 44 -height $ht -font {Courier 8} -bg $bg
     $w.txt insert end "    I use the $bt bindings.\n\n$message"
     $w.txt edit separator
 
@@ -95,13 +101,21 @@ proc textAndScroll {w col ht ft message bt {img {}}} {
     return $w
 }
 
-textAndScroll .topright $col 16 {{Courier} -17}  $message1 Ntext 7.21
-textAndScroll .topleft  $col 16 {{Courier} -17}  $message1 Text  7.21
-textAndScroll .botright $col 10 {{Courier} -170} $message2 Ntext
-textAndScroll .botleft  $col 10 {{Courier} -170} $message2 Text
+textAndScroll .topright $col 13 {Courier  12} $message1 Ntext 7.21
+textAndScroll .topleft  $col 13 {Courier  12} $message1 Text  7.21
+textAndScroll .botright $col 10 {Courier 100} $message2 Ntext
+textAndScroll .botleft  $col 10 {Courier 100} $message2 Text
 grid .topleft .topright -sticky nsew
-grid .botleft .botright -sticky nsew -pady {10 0}
+grid .botleft .botright -sticky nsew -pady {10p 0}
 grid columnconfigure . all -weight 1
 grid columnconfigure . all -weight 1
 grid rowconfigure    . 0   -weight 1
 
+.topleft.txt  tag add red  1.0 2.0
+.topright.txt tag add blue 1.0 2.0
+.botleft.txt  tag add red  1.0 2.0
+.botright.txt tag add blue 1.0 2.0
+.topleft.txt  tag configure red  -foreground #A00000 -font {Courier 8 bold}
+.topright.txt tag configure blue -foreground #0000A0 -font {Courier 8 bold}
+.botleft.txt  tag configure red  -foreground #A00000 -font {Courier 8 bold}
+.botright.txt tag configure blue -foreground #0000A0 -font {Courier 8 bold}
