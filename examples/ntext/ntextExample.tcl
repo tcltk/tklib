@@ -71,7 +71,8 @@ pack [text .right] -side left -padx 2 -pady 2
 
 # Highlight the first line, using different colors for each widget:
 set fam [font actual TkFixedFont -family]
-set TitleFont [list $fam 8 bold]
+set siz [font configure TkFixedFont -size]
+set TitleFont [list $fam $siz bold]
 
 .left  tag add red  1.0 2.0
 .right tag add blue 1.0 2.0

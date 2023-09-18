@@ -1,6 +1,6 @@
 #! /usr/bin/env tclsh
 
-package require Tk
+package require Tk 8.5-
 
 # Copyright (c) 2005-2023 Keith Nash.
 #
@@ -52,10 +52,9 @@ set ::ntext::classicExtras      1
 
 set col #e0dfde
 . configure -bg $col
-font configure TkFixedFont -size 8
 
-pack [frame .f] -side right -anchor e
-pack [frame .cp -bd 2p -relief ridge] -anchor ne -in .f
+pack [frame .f -bg $col] -side right -anchor e
+pack [frame .cp -bg $col -bd 2p -relief ridge] -anchor ne -in .f
 pack [label .cp2 -bg $col -text "(These options are applied only\n to the right-hand text widget)"] -anchor n -pady 4p -in .f
 
 pack [frame .rhf -bg $col] -side right -anchor nw
@@ -83,13 +82,21 @@ pack [text .lhf.classic ] -padx 2
 .lhf.classic insert end "  I use the (default) Text bindings.\n\n$message"
 .lhf.classic edit separator
 
+# What is the largest font such that the demo will fit on the screen?
+# Allow 100 pixels or 1 inch for desktop panels that are not counted in wm maxsize.
+# Reduce the font if necessary.
+set siz    [font actual TkFixedFont -size]
+set maxPts [expr { ([lindex [wm maxsize .] 1] - 6 - max (100., 72. * [tk scaling])) * $siz / ([winfo reqheight .lhf.classic] - 6) }]
+set siz    [expr { int(min($siz, $maxPts)) }]
+font configure TkFixedFont -size $siz
+
 set fam [font actual TkFixedFont -family]
-set TitleFont [list $fam 8 bold]
+set TitleFixedFont [list $fam $siz bold]
 
 .lhf.classic tag add red  1.0 2.0
 .rhf.new     tag add blue 1.0 2.0
-.lhf.classic tag configure red  -foreground #A00000 -font $TitleFont
-.rhf.new     tag configure blue -foreground #0000A0 -font $TitleFont
+.lhf.classic tag configure red  -foreground #A00000 -font $TitleFixedFont
+.rhf.new     tag configure blue -foreground #0000A0 -font $TitleFixedFont
 
 ::ntext::syncTabColor .rhf.new
 
@@ -98,9 +105,11 @@ set TitleFont [list $fam 8 bold]
 # control panel for selecting ntext configuration options.
 # ------------------------------------------------------------------------------
 
-font configure TkDefaultFont -size 8
+font configure TkDefaultFont -size $siz
+set fam [font actual TkDefaultFont -family]
+set TitleVariableFont [list $fam $siz bold]
 
-label .cp.ttl -text "Options for ntext indentation" -font TkHeadingFont -bg #f0f0f0
+label .cp.ttl -text "Options for ntext indentation" -font $TitleVariableFont -bg #f0f0f0
 frame .cp.tog -bg $col
 frame .cp.grd -bg $col
 pack .cp.ttl -fill x -anchor n -ipadx 4p -ipady 4p
