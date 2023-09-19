@@ -7,6 +7,13 @@ package require tcltest 2.2
 namespace import -force tcltest::*
 loadTestedCommands
 
+# x11 and win32 need "wm deiconify ." only for a few tests and this is done in
+# the individual tests.
+# The original tests are from Tk which does not "wm withdraw .", but for some
+# reason the tklib test setup does.
+# FIXME "x11" (SDL) is untested.
+# FIXME aqua is untested.
+
 package require widgetPlus
 namespace import ::widgetPlus::ttkSpinboxPlus
 testConstraint TkAbove8.6 [expr {[package vsatisfies [package provide Tk] 8.7-]}]
@@ -164,14 +171,8 @@ test spinbox-1.8.3 "option -validate" -setup {
 } -returnCodes error -result {bad validate "bogus": must be all, key, focus, focusin, focusout, or none}
 
 test spinbox-1.8.4 "-validate option: " -setup {
-    # FIXME Also revise upstream Tk test.
-    if {[string index [package provide Tcl] 0] eq {8}} {
-        # Tcl 8.7 needs the window drawn
-        set st [wm state .]
-        wm deiconify .
-    } else {
-        set st {}
-    }
+    set st [wm state .]
+    wm deiconify .
     ttkSpinboxPlus .sb -from 0 -to 100
     set ::spinbox_test {}
 } -body {
@@ -187,9 +188,7 @@ test spinbox-1.8.4 "-validate option: " -setup {
     set ::spinbox_test
 } -cleanup {
     destroy .sb
-    if {$st ne {}} {
-        wm state . $st
-    }
+    wm state . $st
     unset st
 } -result 50
 
@@ -243,14 +242,8 @@ test spinbox-2.4 "current command -- value not in list" -constraints nyi -setup 
 } -result -1
 
 test spinbox-3.0 "textarea should expand to fill widget" -setup {
-    # FIXME Also revise upstream Tk test.
-    if {[string index [package provide Tcl] 0] eq {8}} {
-        # Tcl 8.7 needs the window drawn
-        set st [wm state .]
-        wm deiconify .
-    } else {
-        set st {}
-    }
+    set st [wm state .]
+    wm deiconify .
     set SBV 5
     set ::spinbox_test {}
     ttkSpinboxPlus .sb -from 0 -to 10 -textvariable SBV
@@ -272,9 +265,7 @@ test spinbox-3.0 "textarea should expand to fill widget" -setup {
 } -cleanup {
     destroy .sb
     unset -nocomplain ::spinbox_test SBV
-    if {$st ne {}} {
-        wm state . $st
-    }
+    wm state . $st
     unset st
 } -result {textarea}
 

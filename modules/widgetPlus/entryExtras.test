@@ -123,7 +123,5 @@ test entry-35.4 {entryPlus replace textvar unset} -setup {
     unset ::foo ::bar
 } -result {Some Text}
 
-
-
 cleanupTests
 return

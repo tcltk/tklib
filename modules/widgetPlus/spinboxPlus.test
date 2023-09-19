@@ -17,6 +17,13 @@ loadTestedCommands
 ###eval tcltest::configure $argv
 ###tcltest::loadTestedCommands
 
+# x11 and win32 need "wm deiconify ." only for a few tests and this is done in
+# the individual tests.
+# The original tests are from Tk which does not "wm withdraw .", but for some
+# reason the tklib test setup does.
+# FIXME "x11" (SDL) is untested.
+# FIXME aqua is untested.
+
 package require widgetPlus
 namespace import ::widgetPlus::spinboxPlus
 testConstraint x11 [expr {[tk windowingsystem] eq "x11" }]
@@ -28,7 +35,7 @@ testConstraint TkAbove8.6 [expr {[package vsatisfies [package provide Tk] 8.7-]}
 # replacement of the four lines of initialization code above that,
 # application of "s/spinbox/spinboxPlus/g" to the code (but not to comments,
 # results, test names or other metadata), and further editing of failing tests
-# as described below.
+# as described below.  Plus comments at the end.
 #
 # The purpose is to check that "spinboxPlus" does not break any features
 # of "spinbox", including important matters such as validation.
@@ -62,7 +69,9 @@ testConstraint TkAbove8.6 [expr {[package vsatisfies [package provide Tk] 8.7-]}
 # 3 tests are for new features of Tk 8.7 - these are given the constraint
 # TkAbove8.6 which is computed above.  The new feature is an
 # alternative value {} for index -1, and a corresponding test
-# from Tk 8.6 is available and is added with the suffix "--8.6".
+# from Tk 8.6 is available and is added with the suffix "--8.6".  In three
+# cases the test is valid if this file is sourced with -encoding utf-8,
+# but the 8.6 tcltest facility on Windows does not do this.
 # In 5 other tests, the error message differs between Tk 8.6 and 8.7.  In
 # these cases, the expected test result is computed using the Tk version.
 # ------------------------------------------------------------------------------
@@ -1150,14 +1159,8 @@ test spinbox-3.4 {SpinboxWidgetCmd procedure, "bbox" widget command} -setup {
     destroy .e
 } -returnCodes error -result {bad spinbox index "bogus"}
 test spinbox-3.5 {SpinboxWidgetCmd procedure, "bbox" widget command} -setup {
-    # FIXME Also revise upstream Tk test.
-    if {[string index [package provide Tcl] 0] eq {8}} {
-        # Tcl 8.7 needs the window drawn
-        set st [wm state .]
-        wm deiconify .
-    } else {
-        set st {}
-    }
+    set st [wm state .]
+    wm deiconify .
     spinboxPlus .e -font {Courier -12} -borderwidth 2 -highlightthickness 2
     pack .e
     update
@@ -1165,9 +1168,7 @@ test spinbox-3.5 {SpinboxWidgetCmd procedure, "bbox" widget command} -setup {
    .e bbox 0
 } -cleanup {
     destroy .e
-    if {$st ne {}} {
-        wm state . $st
-    }
+    wm state . $st
     unset st
 } -result [list 5 5 0 $cy]
 
@@ -1214,14 +1215,8 @@ test spinbox-3.8 {SpinboxWidgetCmd procedure, "bbox" widget command} -constraint
     destroy .e
 } -result {31 5 7 13}
 test spinbox-3.9 {SpinboxWidgetCmd procedure, "bbox" widget command} -setup {
-    # FIXME Also revise upstream Tk test.
-    if {[string index [package provide Tcl] 0] eq {8}} {
-        # Tcl 8.7 needs the window drawn
-        set st [wm state .]
-        wm deiconify .
-    } else {
-        set st {}
-    }
+    set st [wm state .]
+    wm deiconify .
     spinboxPlus .e -font {Courier -12} -borderwidth 2 -highlightthickness 2
     pack .e
     update
@@ -1230,9 +1225,7 @@ test spinbox-3.9 {SpinboxWidgetCmd procedure, "bbox" widget command} -setup {
     .e bbox end
 } -cleanup {
     destroy .e
-    if {$st ne {}} {
-        wm state . $st
-    }
+    wm state . $st
     unset st
 } -result "5 5 0 $cy"
 test spinbox-3.10 {SpinboxWidgetCmd procedure, "bbox" widget command} -constraints {
@@ -1362,7 +1355,8 @@ test spinbox-3.23 {SpinboxWidgetCmd procedure, "delete" widget command} -setup {
 } -cleanup {
     destroy .e
 } -result 0123457890
-test spinbox-3.24 {SpinboxWidgetCmd procedure, "delete" widget command} -setup {
+test spinbox-3.24 {SpinboxWidgetCmd procedure, "delete" widget command} -constraints TkAbove8.6 -setup {
+    # A valid test if this file is sourced with -encoding utf-8.  Tcl 8.6 on Windows does not.
     spinboxPlus .e
     pack .e
     update
@@ -1383,6 +1377,27 @@ test spinbox-3.24 {SpinboxWidgetCmd procedure, "delete" widget command} -setup {
 } -cleanup {
     destroy .e
 } -result [list "01234乎7890" "0123457890" "012345乎890"]
+test spinbox-3.24--8.6 {SpinboxWidgetCmd procedure, "delete" widget command} -setup {
+    spinboxPlus .e
+    pack .e
+    update
+    set x {}
+} -body {
+# UTF
+    .e insert end "01234\u4e4e67890"
+    .e delete 6
+    lappend x [.e get]
+    .e delete 0 end
+    .e insert end "012345\u4e4e7890"
+    .e delete 6
+    lappend x [.e get]
+    .e delete 0 end
+    .e insert end "0123456\u4e4e890"
+    .e delete 6
+    lappend x [.e get]
+} -cleanup {
+    destroy .e
+} -result [list "01234\u4e4e7890" "0123457890" "012345\u4e4e890"]
 test spinbox-3.25 {SpinboxWidgetCmd procedure, "delete" widget command} -setup {
     spinboxPlus .e
     pack .e
@@ -1480,13 +1495,25 @@ test spinbox-3.34 {SpinboxWidgetCmd procedure, "index" widget command} -setup {
 } -cleanup {
     destroy .e
 } -returnCodes {ok} -match glob -result {*}
-test spinbox-3.35 {SpinboxWidgetCmd procedure, "index" widget command} -setup {
+test spinbox-3.35 {SpinboxWidgetCmd procedure, "index" widget command} -constraints TkAbove8.6 -setup {
+    # A valid test if this file is sourced with -encoding utf-8.  Tcl 8.6 on Windows does not.
     spinboxPlus .e
     pack .e
     update
 } -body {
 # UTF
     .e insert 0 abc乎œdef
+    list [.e index 3] [.e index 4] [.e index end]
+} -cleanup {
+    destroy .e
+} -result {3 4 8}
+test spinbox-3.35--8.6 {SpinboxWidgetCmd procedure, "index" widget command} -setup {
+    spinboxPlus .e
+    pack .e
+    update
+} -body {
+# UTF
+    .e insert 0 abc\u4e4e\u0153def
     list [.e index 3] [.e index 4] [.e index end]
 } -cleanup {
     destroy .e
@@ -2102,13 +2129,35 @@ test spinbox-3.80 {SpinboxWidgetCmd procedure, "xview" widget command} -setup {
 } -cleanup {
     destroy .e
 } -result 73
-test spinbox-3.81 {SpinboxWidgetCmd procedure, "xview" widget command} -setup {
+test spinbox-3.81 {SpinboxWidgetCmd procedure, "xview" widget command} -constraints TkAbove8.6 -setup {
+    # A valid test if this file is sourced with -encoding utf-8.  Tcl 8.6 on Windows does not.
     spinboxPlus .e -font {Courier -12} -borderwidth 2 -highlightthickness 2
     pack .e
 } -body {
     .e insert end "This is quite a long text string, so long that it "
     .e insert end "runs off the end of the window quite a bit."
     .e insert 10 乎
+    update
+# UTF
+# If Tcl_NumUtfChars wasn't used, wrong answer would be:
+# 0.106383 0.117021 0.117021
+    set x {}
+    .e xview moveto .1
+    lappend x [format {%.6f} [lindex [.e xview] 0]]
+    .e xview moveto .11
+    lappend x [format {%.6f} [lindex [.e xview] 0]]
+    .e xview moveto .12
+    lappend x [format {%.6f} [lindex [.e xview] 0]]
+} -cleanup {
+    destroy .e
+} -result {0.095745 0.106383 0.117021}
+test spinbox-3.81--8.6 {SpinboxWidgetCmd procedure, "xview" widget command} -setup {
+    spinboxPlus .e -font {Courier -12} -borderwidth 2 -highlightthickness 2
+    pack .e
+} -body {
+    .e insert end "This is quite a long text string, so long that it "
+    .e insert end "runs off the end of the window quite a bit."
+    .e insert 10 \u4e4e
     update
 # UTF
 # If Tcl_NumUtfChars wasn't used, wrong answer would be:
@@ -2222,14 +2271,8 @@ test spinbox-5.6.1 {ConfigureSpinbox procedure} -setup {
 } -result {1 5}
 
 test spinbox-5.7 {ConfigureSpinbox procedure} -setup {
-    # FIXME Also revise upstream Tk test.
-    if {[string index [package provide Tcl] 0] eq {8}} {
-        # Tcl 8.7 needs the window drawn
-        set st [wm state .]
-        wm deiconify .
-    } else {
-        set st {}
-    }
+    set st [wm state .]
+    wm deiconify .
     spinboxPlus .e -font {Helvetica -12} -borderwidth 2 -highlightthickness 2
     pack .e
 } -body {
@@ -2242,9 +2285,7 @@ test spinbox-5.7 {ConfigureSpinbox procedure} -setup {
     format {%.6f %.6f} {*}$scrollInfo
 } -cleanup {
     destroy .e
-    if {$st ne {}} {
-        wm state . $st
-    }
+    wm state . $st
     unset st
 } -result {0.000000 0.454545}
 
@@ -2438,14 +2479,8 @@ test spinbox-6.9 {SpinboxComputeGeometry procedure} -constraints {
 
 
 test spinbox-7.1 {InsertChars procedure} -setup {
-    # FIXME Also revise upstream Tk test.
-    if {[string index [package provide Tcl] 0] eq {8}} {
-        # Tcl 8.7 needs the window drawn
-        set st [wm state .]
-        wm deiconify .
-    } else {
-        set st {}
-    }
+    set st [wm state .]
+    wm deiconify .
     unset -nocomplain contents
     spinboxPlus .e -width 10 -font {Courier -12} -highlightthickness 2 -bd 2
     pack .e
@@ -2460,21 +2495,13 @@ test spinbox-7.1 {InsertChars procedure} -setup {
     list [.e get] $contents [format {%.6f %.6f} {*}$scrollInfo]
 } -cleanup {
     destroy .e
-    if {$st ne {}} {
-        wm state . $st
-    }
+    wm state . $st
     unset st
 } -result {abXXXcde abXXXcde {0.000000 1.000000}}
 
 test spinbox-7.2 {InsertChars procedure} -setup {
-    # FIXME Also revise upstream Tk test.
-    if {[string index [package provide Tcl] 0] eq {8}} {
-        # Tcl 8.7 needs the window drawn
-        set st [wm state .]
-        wm deiconify .
-    } else {
-        set st {}
-    }
+    set st [wm state .]
+    wm deiconify .
     unset -nocomplain contents
     spinboxPlus .e -width 10 -font {Courier -12} -highlightthickness 2 -bd 2
     pack .e
@@ -2489,9 +2516,7 @@ test spinbox-7.2 {InsertChars procedure} -setup {
     list [.e get] $contents [format {%.6f %.6f} {*}$scrollInfo]
 } -cleanup {
     destroy .e
-    if {$st ne {}} {
-        wm state . $st
-    }
+    wm state . $st
     unset st
 } -result {abcdeXXX abcdeXXX {0.000000 1.000000}}
 test spinbox-7.3 {InsertChars procedure} -setup {
@@ -2613,14 +2638,8 @@ test spinbox-7.11 {InsertChars procedure} -constraints {
 } -result 70
 
 test spinbox-8.1 {DeleteChars procedure} -setup {
-    # FIXME Also revise upstream Tk test.
-    if {[string index [package provide Tcl] 0] eq {8}} {
-        # Tcl 8.7 needs the window drawn
-        set st [wm state .]
-        wm deiconify .
-    } else {
-        set st {}
-    }
+    set st [wm state .]
+    wm deiconify .
     unset -nocomplain contents
     spinboxPlus .e -width 10 -font {Courier -12} -highlightthickness 2 -bd 2
     pack .e
@@ -2635,20 +2654,12 @@ test spinbox-8.1 {DeleteChars procedure} -setup {
     list [.e get] $contents [format {%.6f %.6f} {*}$scrollInfo]
 } -cleanup {
     destroy .e
-    if {$st ne {}} {
-        wm state . $st
-    }
+    wm state . $st
     unset st
 } -result {abe abe {0.000000 1.000000}}
 test spinbox-8.2 {DeleteChars procedure} -constraints TkAbove8.6 -setup {
-    # FIXME Also revise upstream Tk test.
-    if {[string index [package provide Tcl] 0] eq {8}} {
-        # Tcl 8.7 needs the window drawn
-        set st [wm state .]
-        wm deiconify .
-    } else {
-        set st {}
-    }
+    set st [wm state .]
+    wm deiconify .
     unset -nocomplain contents
     spinboxPlus .e -width 10 -font {Courier -12} -highlightthickness 2 -bd 2
     pack .e
@@ -2663,20 +2674,12 @@ test spinbox-8.2 {DeleteChars procedure} -constraints TkAbove8.6 -setup {
     list [.e get] $contents [format {%.6f %.6f} {*}$scrollInfo]
 } -cleanup {
     destroy .e
-    if {$st ne {}} {
-        wm state . $st
-    }
+    wm state . $st
     unset st
 } -result {cde cde {0.000000 1.000000}}
 test spinbox-8.2--8.6 {DeleteChars procedure} -setup {
-    # FIXME Also revise upstream Tk test.
-    if {[string index [package provide Tcl] 0] eq {8}} {
-        # Tcl 8.7 needs the window drawn
-        set st [wm state .]
-        wm deiconify .
-    } else {
-        set st {}
-    }
+    set st [wm state .]
+    wm deiconify .
     unset -nocomplain contents
     spinboxPlus .e -width 10 -font {Courier -12} -highlightthickness 2 -bd 2
     pack .e
@@ -2691,20 +2694,12 @@ test spinbox-8.2--8.6 {DeleteChars procedure} -setup {
     list [.e get] $contents [format {%.6f %.6f} {*}$scrollInfo]
 } -cleanup {
     destroy .e
-    if {$st ne {}} {
-        wm state . $st
-    }
+    wm state . $st
     unset st
 } -result {cde cde {0.000000 1.000000}}
 test spinbox-8.3 {DeleteChars procedure} -setup {
-    # FIXME Also revise upstream Tk test.
-    if {[string index [package provide Tcl] 0] eq {8}} {
-        # Tcl 8.7 needs the window drawn
-        set st [wm state .]
-        wm deiconify .
-    } else {
-        set st {}
-    }
+    set st [wm state .]
+    wm deiconify .
     unset -nocomplain contents
     spinboxPlus .e -width 10 -font {Courier -12} -highlightthickness 2 -bd 2
     pack .e
@@ -2719,9 +2714,7 @@ test spinbox-8.3 {DeleteChars procedure} -setup {
     list [.e get] $contents [format {%.6f %.6f} {*}$scrollInfo]
 } -cleanup {
     destroy .e
-    if {$st ne {}} {
-        wm state . $st
-    }
+    wm state . $st
     unset st
 } -result {abc abc {0.000000 1.000000}}
 test spinbox-8.4 {DeleteChars procedure} -setup {
@@ -3526,14 +3519,8 @@ test spinbox-16.2 {SpinboxVisibleRange procedure} -body {
 
 
 test spinbox-17.1 {SpinboxUpdateScrollbar procedure} -setup {
-    # FIXME Also revise upstream Tk test.
-    if {[string index [package provide Tcl] 0] eq {8}} {
-        # Tcl 8.7 needs the window drawn
-        set st [wm state .]
-        wm deiconify .
-    } else {
-        set st {}
-    }
+    set st [wm state .]
+    wm deiconify .
 } -body {
     spinboxPlus .e -width 10 -xscrollcommand scroll -font {Courier -12}
     pack .e
@@ -3545,20 +3532,12 @@ test spinbox-17.1 {SpinboxUpdateScrollbar procedure} -setup {
     format {%.6f %.6f} {*}$scrollInfo
 } -cleanup {
     destroy .e
-    if {$st ne {}} {
-        wm state . $st
-    }
+    wm state . $st
     unset st
 } -result {0.000000 1.000000}
 test spinbox-17.2 {SpinboxUpdateScrollbar procedure} -setup {
-    # FIXME Also revise upstream Tk test.
-    if {[string index [package provide Tcl] 0] eq {8}} {
-        # Tcl 8.7 needs the window drawn
-        set st [wm state .]
-        wm deiconify .
-    } else {
-        set st {}
-    }
+    set st [wm state .]
+    wm deiconify .
 } -body {
     spinboxPlus .e -width 10 -xscrollcommand scroll -font {Courier -12}
     pack .e
@@ -3570,20 +3549,12 @@ test spinbox-17.2 {SpinboxUpdateScrollbar procedure} -setup {
     format {%.6f %.6f} {*}$scrollInfo
 } -cleanup {
     destroy .e
-    if {$st ne {}} {
-        wm state . $st
-    }
+    wm state . $st
     unset st
 } -result {0.187500 0.812500}
 test spinbox-17.3 {SpinboxUpdateScrollbar procedure} -setup {
-    # FIXME Also revise upstream Tk test.
-    if {[string index [package provide Tcl] 0] eq {8}} {
-        # Tcl 8.7 needs the window drawn
-        set st [wm state .]
-        wm deiconify .
-    } else {
-        set st {}
-    }
+    set st [wm state .]
+    wm deiconify .
 } -body {
     spinboxPlus .e -width 10 -xscrollcommand scroll -font {Courier -12}
     pack .e
@@ -3595,20 +3566,12 @@ test spinbox-17.3 {SpinboxUpdateScrollbar procedure} -setup {
     format {%.6f %.6f} {*}$scrollInfo
 } -cleanup {
     destroy .e
-    if {$st ne {}} {
-        wm state . $st
-    }
+    wm state . $st
     unset st
 } -result {0.000000 0.526316}
 test spinbox-17.4 {SpinboxUpdateScrollbar procedure} -setup {
-    # FIXME Also revise upstream Tk test.
-    if {[string index [package provide Tcl] 0] eq {8}} {
-        # Tcl 8.7 needs the window drawn
-        set st [wm state .]
-        wm deiconify .
-    } else {
-        set st {}
-    }
+    set st [wm state .]
+    wm deiconify .
     proc bgerror msg {
 	global x
 	set x $msg
@@ -3624,9 +3587,7 @@ test spinbox-17.4 {SpinboxUpdateScrollbar procedure} -setup {
 } -cleanup {
     destroy .e
     rename bgerror {}
-    if {$st ne {}} {
-        wm state . $st
-    }
+    wm state . $st
     unset st
 } -result {{invalid command name "thisisnotacommand"} {invalid command name "thisisnotacommand"
     while executing
@@ -3768,14 +3729,8 @@ test spinbox-19.7 {spinbox widget validation} -setup {
 } -result {}
 
 test spinbox-19.8 {spinbox widget validation} -setup {
-    # FIXME Also revise upstream Tk test.
-    if {[string index [package provide Tcl] 0] eq {8}} {
-        # Tcl 8.7 needs the window drawn
-        set st [wm state .]
-        wm deiconify .
-    } else {
-        set st {}
-    }
+    set st [wm state .]
+    wm deiconify .
     unset -nocomplain ::e ::vVals
 } -body {
     spinboxPlus .e -validate all \
@@ -3792,21 +3747,13 @@ test spinbox-19.8 {spinbox widget validation} -setup {
     set ::vVals
 } -cleanup {
     destroy .e
-    if {$st ne {}} {
-        wm state . $st
-    }
+    wm state . $st
     unset st
 } -result {.e -1 -1 abcd abcd {} focus focusin}
 
 test spinbox-19.9 {spinbox widget validation} -setup {
-    # FIXME Also revise upstream Tk test.
-    if {[string index [package provide Tcl] 0] eq {8}} {
-        # Tcl 8.7 needs the window drawn
-        set st [wm state .]
-        wm deiconify .
-    } else {
-        set st {}
-    }
+    set st [wm state .]
+    wm deiconify .
     unset -nocomplain ::e ::vVals
 } -body {
     spinboxPlus .e -validate focus \
@@ -3825,21 +3772,13 @@ test spinbox-19.9 {spinbox widget validation} -setup {
     set ::vVals
 } -cleanup {
     destroy .e
-    if {$st ne {}} {
-        wm state . $st
-    }
+    wm state . $st
     unset st
 } -result {.e -1 -1 abcd abcd {} focus focusout}
 
 test spinbox-19.10 {spinbox widget validation} -setup {
-    # FIXME Also revise upstream Tk test.
-    if {[string index [package provide Tcl] 0] eq {8}} {
-        # Tcl 8.7 needs the window drawn
-        set st [wm state .]
-        wm deiconify .
-    } else {
-        set st {}
-    }
+    set st [wm state .]
+    wm deiconify .
     unset -nocomplain ::e ::vVals
 } -body {
     spinboxPlus .e -validate all \
@@ -3855,21 +3794,13 @@ test spinbox-19.10 {spinbox widget validation} -setup {
     set ::vVals
 } -cleanup {
     destroy .e
-    if {$st ne {}} {
-        wm state . $st
-    }
+    wm state . $st
     unset st
 } -result {.e -1 -1 abcd abcd {} all focusin}
 
 test spinbox-19.11 {spinbox widget validation} -setup {
-    # FIXME Also revise upstream Tk test.
-    if {[string index [package provide Tcl] 0] eq {8}} {
-        # Tcl 8.7 needs the window drawn
-        set st [wm state .]
-        wm deiconify .
-    } else {
-        set st {}
-    }
+    set st [wm state .]
+    wm deiconify .
     unset -nocomplain ::e ::vVals
 } -body {
     spinboxPlus .e -validate all \
@@ -3888,21 +3819,13 @@ test spinbox-19.11 {spinbox widget validation} -setup {
     set ::vVals
 } -cleanup {
     destroy .e
-    if {$st ne {}} {
-        wm state . $st
-    }
+    wm state . $st
     unset st
 } -result {.e -1 -1 abcd abcd {} all focusout}
 
 test spinbox-19.12 {spinbox widget validation} -setup {
-    # FIXME Also revise upstream Tk test.
-    if {[string index [package provide Tcl] 0] eq {8}} {
-        # Tcl 8.7 needs the window drawn
-        set st [wm state .]
-        wm deiconify .
-    } else {
-        set st {}
-    }
+    set st [wm state .]
+    wm deiconify .
     unset -nocomplain ::e ::vVals
 } -body {
     spinboxPlus .e -validate focusin \
@@ -3918,9 +3841,7 @@ test spinbox-19.12 {spinbox widget validation} -setup {
     set ::vVals
 } -cleanup {
     destroy .e
-    if {$st ne {}} {
-        wm state . $st
-    }
+    wm state . $st
     unset st
 } -result {.e -1 -1 abcd abcd {} focusin focusin}
 
@@ -3963,14 +3884,8 @@ test spinbox-19.14 {spinbox widget validation} -setup {
 } -result {}
 
 test spinbox-19.15 {spinbox widget validation} -setup {
-    # FIXME Also revise upstream Tk test.
-    if {[string index [package provide Tcl] 0] eq {8}} {
-        # Tcl 8.7 needs the window drawn
-        set st [wm state .]
-        wm deiconify .
-    } else {
-        set st {}
-    }
+    set st [wm state .]
+    wm deiconify .
     unset -nocomplain ::e ::vVals
 } -body {
     spinboxPlus .e -validate focuso \
@@ -3990,9 +3905,7 @@ test spinbox-19.15 {spinbox widget validation} -setup {
     set ::vVals
 } -cleanup {
     destroy .e
-    if {$st ne {}} {
-        wm state . $st
-    }
+    wm state . $st
     unset st
 } -result {.e -1 -1 abcd abcd {} focusout focusout}
 
