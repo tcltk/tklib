@@ -20,7 +20,7 @@ set message {Ntext tries to offer a user experience that is as close as possible
 
 This example demonstrates the Mac bindings for keyboard navigation, and in particular the use of the keyboard for vertical scrolling.  The description below will not agree with the behavior of the application unless you are running it on a Mac.
 
-If you are using a Mac, one of the sets of radiobuttons at the bottom of the window will not be disabled (this set of buttons is not present on non-Mac platforms).  These radiobuttons allow you to set the value of ::ntext::classicParagraphs, which controls the response to the keyboard events described in (5) below.
+If you are using a Mac, one of the sets of radiobuttons in the control panel (right) will not be disabled (this set of buttons is not present on non-Mac platforms).  These radiobuttons allow you to set the value of ::ntext::classicParagraphs, which controls the response to the keyboard events described in (5) below.
 
 The key names are those used in Tk bindings (see the Tk manual page for the bind command).
 
@@ -97,7 +97,7 @@ There are five sets of bindings that use the keyboard for vertical scrolling.
 
 (4) Up and Down keys, with Control modifier
 
-    On recent versions of OS X, these keystrokes are intercepted by the windowing system.  To avoid confusion, Ntext defines these keystrokes to have no effect on any version of OS X.
+    On recent versions of macOS, these keystrokes are intercepted by the windowing system.  To avoid confusion, Ntext defines these keystrokes to have no effect on any version of macOS.
 
 (5) Up and Down keys, with Option modifier
 
@@ -125,7 +125,7 @@ if {::ntext::classicParagraphs == 1}
 
     The start of a paragraph is the first non-blank character after a blank line.
 
-    On non-Mac platforms, these actions are bound in Ntext and Text to the events <Control-Up>, <Control-Down>, <Shift-Control-Up>, <Shift-Control-Down>.  The Control- bindings are also defined in the Text binding tag on the Mac, although on recent versions of OS X these keystrokes are intercepted by the windowing system).
+    On non-Mac platforms, these actions are bound in Ntext and Text to the events <Control-Up>, <Control-Down>, <Shift-Control-Up>, <Shift-Control-Down>.  The Control- bindings are also defined in the Text binding tag on the Mac, although on recent versions of macOS these keystrokes are intercepted by the windowing system).
 
 }
 # End of string for widget text.
