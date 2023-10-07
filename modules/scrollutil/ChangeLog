@@ -1,3 +1,22 @@
+2023-10-07  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 2.0; dropped the support
+	* COPYRIGHT.txt: for Tk versions earlier than 8.4.
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/*.tcl: Dropped the support for Tk versions earlier than 8.4;
+	  extended the handling of the virtual event <<ThemeChanged>>, and
+	  added bindings for the virtual events <<LightAqua>> and <<DarkAqua>>.
+
+	* scripts/utils/*.tcl:             Dropped the support for Tk versions
+	* ../../examples/scrollutil/*.tcl: earlier than 8.4; improved the
+	  compatibility with Tcl 9.0 and Tk 8.7.
+
+	* doc/ScrollableFrmDemo2.png: Updated screenshot.
+
 2023-07-03  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Scrollutil 1.19.
