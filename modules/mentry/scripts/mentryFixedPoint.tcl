@@ -33,7 +33,7 @@ proc mentry::fixedPointMentry {win cnt1 cnt2 args} {
     # Change the default separator if the first optional argument is -comma
     #
     set sep .
-    if {[string compare [lindex $args 0] "-comma"] == 0} {
+    if {[lindex $args 0] eq "-comma"} {
 	set sep ,
 	set args [lrange $args 1 end]
     }
@@ -134,8 +134,8 @@ proc mentry::checkIfFixedPointMentry win {
 	return -code error "bad window path name \"$win\""
     }
 
-    if {[string compare [winfo class $win] "Mentry"] != 0 ||
-	[string compare [::$win attrib type] "FixedPoint"] != 0} {
+    if {[winfo class $win] ne "Mentry" ||
+	[::$win attrib type] ne "FixedPoint"} {
 	return -code error \
 	       "window \"$win\" is not a mentry widget for fixed-point numbers"
     }

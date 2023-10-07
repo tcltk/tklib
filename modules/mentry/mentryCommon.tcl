@@ -4,8 +4,8 @@
 # Copyright (c) 1999-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-if {[catch {package require Wcb 3.1} result1] != 0 &&
-    [catch {package require wcb 3.1} result2] != 0} {
+if {[catch {package require Wcb 3.1-} result1] != 0 &&
+    [catch {package require wcb 3.1-} result2] != 0} {
     error "$result1; $result2"
 }
 
@@ -13,13 +13,8 @@ namespace eval ::mentry {
     #
     # Public variables:
     #
-    variable version	3.18
-    variable library
-    if {$::tcl_version >= 8.4} {
-	set library	[file dirname [file normalize [info script]]]
-    } else {
-	set library	[file dirname [info script]] ;# no "file normalize" yet
-    }
+    variable version	4.0
+    variable library	[file dirname [file normalize [info script]]]
 
     #
     # Creates a new multi-entry widget:
@@ -50,16 +45,6 @@ namespace eval ::mentry {
 
 package provide mentry::common $::mentry::version
 
-if {$::tcl_version >= 8.4} {
-    interp alias {} ::mentry::addVarTrace {} trace add variable
-} else {
-    proc ::mentry::addVarTrace {name ops cmd} {
-	set ops2 ""
-	foreach op $ops { append ops2 [string index $op 0] }
-	trace variable $name $ops2 $cmd
-    }
-}
-
 #
 # The following procedure, invoked in "mentry.tcl" and
 # "mentry_tile.tcl", sets the variable ::mentry::usingTile
@@ -67,23 +52,24 @@ if {$::tcl_version >= 8.4} {
 #
 proc ::mentry::useTile {bool} {
     variable usingTile $bool
-    addVarTrace usingTile {write unset} [list ::mentry::restoreUsingTile $bool]
+    trace add variable usingTile {write unset} \
+	[list ::mentry::restoreUsingTile $bool]
 }
 
 #
 # The following trace procedure is executed whenever the variable
-# ::mentry::usingTile is written or unset.  It restores the variable to its
-# original value, given by the first argument.
+# ::mentry::usingTile is written or unset.  It restores the
+# variable to its original value, given by the first argument.
 #
 proc ::mentry::restoreUsingTile {origVal varName index op} {
     variable usingTile $origVal
-    switch -glob $op {
-	w* {
+    switch $op {
+	write {
 	    return -code error "it is not supported to use both Mentry and\
 				Mentry_tile in the same application"
 	}
-	u* {
-	    addVarTrace usingTile {write unset} \
+	unset {
+	    trace add variable usingTile {write unset} \
 		[list ::mentry::restoreUsingTile $origVal]
 	}
     }
@@ -109,7 +95,7 @@ lappend auto_path [file join $::mentry::library scripts]
 # into account that it is also included in Scrollutil and Tablelist.
 #
 if {[catch {package present mwutil} version] == 0 &&
-    [package vcompare $version 2.20] < 0} {
+    [package vcompare $version 2.21] < 0} {
     package forget mwutil
 }
-package require mwutil 2.20
+package require mwutil 2.21-

@@ -1,6 +1,4 @@
 #! /usr/bin/env tclsh
-  
-package require Tk
 
 #==============================================================================
 # Demonstrates how to implement a multi-entry widget for 10-digit phone numbers.
@@ -8,6 +6,7 @@ package require Tk
 # Copyright (c) 1999-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
+package require Tk
 package require mentry_tile
 
 set title "Phone Number"
@@ -116,8 +115,8 @@ proc checkIfPhoneNumberMentry win {
 	return -code error "bad window path name \"$win\""
     }
 
-    if {[string compare [winfo class $win] "Mentry"] != 0 ||
-	[string compare [$win attrib type] "PhoneNumber"] != 0} {
+    if {[winfo class $win] ne "Mentry" ||
+	[$win attrib type] ne "PhoneNumber"} {
 	return -code error \
 	       "window \"$win\" is not a mentry widget for phone numbers"
     }
@@ -133,11 +132,7 @@ bind MentryPhoneNumber <<Paste>> { pastePhoneNumber %W }
 # the mentry if it is a valid 10-digit phone number.
 #------------------------------------------------------------------------------
 proc pastePhoneNumber w {
-    if {[llength [info procs ::tk::GetSelection]] == 1} {
-	set res [catch {::tk::GetSelection $w CLIPBOARD} num]
-    } else {					;# for Tk versions prior to 8.3
-	set res [catch {selection get -displayof $w -selection CLIPBOARD} num]
-    }
+    set res [catch {::tk::GetSelection $w CLIPBOARD} num]
     if {$res == 0} {
 	set win [winfo parent [winfo parent $w]]
 	catch { putPhoneNumber $num $win }

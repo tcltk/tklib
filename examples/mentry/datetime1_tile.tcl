@@ -1,6 +1,4 @@
 #! /usr/bin/env tclsh
-  
-package require Tk
 
 #==============================================================================
 # Demo:	mentry::dateMentry, mentry::timeMentry, mentry::putClockVal,
@@ -9,6 +7,7 @@ package require Tk
 # Copyright (c) 1999-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
+package require Tk
 package require mentry_tile
 
 set title "Date & Time"
@@ -36,8 +35,8 @@ array set timeSeps {0 :    1 :  }
 
 #
 # Choose the date & time formats; don't use the %p field descriptor
-# for displaying the AM/PM indicator, because it doesn't work on
-# UNIX if Tcl/Tk 8.4 or higher is used in a non-default locale
+# for displaying the AM/PM indicator, because it doesn't
+# work on UNIX if Tcl/Tk is used in a non-default locale
 #
 wm withdraw .
 set clockVal [clock seconds]

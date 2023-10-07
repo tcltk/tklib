@@ -1,5 +1,20 @@
-What is new in Mentry 3.18?
----------------------------
+What is new in Mentry 4.0?
+--------------------------
+
+1. Dropped the support for Tk versions earlier than 8.4.  This has made
+   the code simpler and easier to maintain.
+
+2. Adapted to the changes made in the Entry and TEntry bindings in Tk
+   8.7.
+
+3. Added explicit support for the themes "black", "breeze",
+   "breeze-dark", "sun-valley-light", and "sun-valley-dark".
+
+4. Updated the Wcb command reference "wcbRef.html" to the version
+   included in the most recent Wcb release 4.0.
+
+What was new in Mentry 3.18?
+----------------------------
 
 1. For Tcl versions 8.4 and later replaced the deprecated "trace
    variable" invocations with "trace add variable".

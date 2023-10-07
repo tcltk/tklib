@@ -278,6 +278,61 @@ proc mentry::blueTheme {} {
 }
 
 #------------------------------------------------------------------------------
+# mentry::blackTheme
+#------------------------------------------------------------------------------
+proc mentry::blackTheme {} {
+    variable themeDefaults
+    array set themeDefaults [list \
+	-background		#ffffff \
+	-disabledforeground	#a9a9a9 \
+	-selectbackground	#4a6984 \
+	-selectforeground	#ffffff \
+	-selectborderwidth	0 \
+	-borderwidth		2 \
+	-labelpady		{2 2} \
+    ]
+}
+
+#------------------------------------------------------------------------------
+# mentry::BreezeTheme, mentry::breezeTheme
+#------------------------------------------------------------------------------
+proc mentry::BreezeTheme {} {
+    variable themeDefaults
+    array set themeDefaults [list \
+	-background		#fcfcfc \
+	-readonlybackground	#fcfcfc \
+	-disabledbackground	#eff0f1 \
+	-disabledforeground	#bbcbbe \
+	-selectbackground	#3daee9 \
+	-selectforeground	#ffffff \
+	-selectborderwidth	0 \
+	-borderwidth		2 \
+	-labelpady		{2 2} \
+    ]
+}
+proc mentry::breezeTheme {} {
+    BreezeTheme
+}
+
+#------------------------------------------------------------------------------
+# mentry::breeze-darkTheme
+#------------------------------------------------------------------------------
+proc mentry::breeze-darkTheme {} {
+    variable themeDefaults
+    array set themeDefaults [list \
+	-background		#2f3336 \
+	-readonlybackground	#2f3336 \
+	-disabledbackground	#31363b \
+	-disabledforeground	#7f8c8d \
+	-selectbackground	#3daee9 \
+	-selectforeground	#ffffff \
+	-selectborderwidth	0 \
+	-borderwidth		2 \
+	-labelpady		{2 2} \
+    ]
+}
+
+#------------------------------------------------------------------------------
 # mentry::clamTheme
 #------------------------------------------------------------------------------
 proc mentry::clamTheme {} {
@@ -334,10 +389,17 @@ proc mentry::defaultTheme {} {
 	-disabledforeground	#a3a3a3 \
 	-selectbackground	#4a6984 \
 	-selectforeground	#ffffff \
-	-selectborderwidth	1 \
-	-borderwidth		1 \
-	-labelpady		{1 1} \
     ]
+
+    if {[styleConfig TEntry -focuswidth] eq ""} {
+	set themeDefaults(-selectborderwidth) 1
+	set themeDefaults(-borderwidth)       1
+	set themeDefaults(-labelpady)         {1 1}
+    } else {
+	set themeDefaults(-selectborderwidth) 0
+	set themeDefaults(-borderwidth)       2
+	set themeDefaults(-labelpady)         {2 2}
+    }
 }
 
 #------------------------------------------------------------------------------
@@ -441,6 +503,44 @@ proc mentry::stepTheme {} {
 	-disabledforeground	#808080 \
 	-selectbackground	#fdcd00 \
 	-selectforeground	#ffffff \
+	-selectborderwidth	0 \
+	-borderwidth		2 \
+	-labelpady		{2 2} \
+    ]
+}
+
+#------------------------------------------------------------------------------
+# mentry::sun-valley-lightTheme
+#------------------------------------------------------------------------------
+proc mentry::sun-valley-lightTheme {} {
+    variable themeDefaults
+    array set themeDefaults [list \
+	-background		#fdfdfd \
+	-readonlybackground	#fdfdfd \
+	-disabledbackground	#fafafa \
+	-disabledforeground	#a0a0a0 \
+	-selectbackground	#2f60d8 \
+	-selectforeground	#ffffff \
+	-font			SunValleyBodyFont \
+	-selectborderwidth	0 \
+	-borderwidth		2 \
+	-labelpady		{2 2} \
+    ]
+}
+
+#------------------------------------------------------------------------------
+# mentry::sun-valley-darkTheme
+#------------------------------------------------------------------------------
+proc mentry::sun-valley-darkTheme {} {
+    variable themeDefaults
+    array set themeDefaults [list \
+	-background		#292929 \
+	-readonlybackground	#292929 \
+	-disabledbackground	#262626 \
+	-disabledforeground	#595959 \
+	-selectbackground	#2f60d8 \
+	-selectforeground	#ffffff \
+	-font			SunValleyBodyFont \
 	-selectborderwidth	0 \
 	-borderwidth		2 \
 	-labelpady		{2 2} \

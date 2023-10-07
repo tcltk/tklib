@@ -29,8 +29,7 @@ namespace eval mentry {
 	    mentry::incrIPAddrComp %W \
 		[expr {%D > 0 ? (%D + 11) / 12 : %D / 12}]
 	}
-    } elseif {[string compare $winSys "classic"] == 0 ||
-	      [string compare $winSys "aqua"] == 0} {
+    } elseif {$winSys eq "aqua"} {
 	catch {
 	    bind MentryIPAddr <MouseWheel> {
 		mentry::incrIPAddrComp %W %D
@@ -47,7 +46,7 @@ namespace eval mentry {
 	    }
 	}
 
-	if {[string compare $winSys "x11"] == 0} {
+	if {$winSys eq "x11"} {
 	    bind MentryIPAddr <Button-4> {
 		if {!$tk_strictMotif} {
 		    mentry::incrIPAddrComp %W 1
@@ -143,7 +142,7 @@ proc mentry::getIPAddr win {
     for {set n 0} {$n < 4} {incr n} {
 	set w [::$win entrypath $n]
 	set str [$w get]
-	if {[string length $str] == 0} {
+	if {$str eq ""} {
 	    focus $w
 	    return -code error EMPTY
 	}
@@ -168,8 +167,7 @@ proc mentry::checkIfIPAddrMentry win {
 	return -code error "bad window path name \"$win\""
     }
 
-    if {[string compare [winfo class $win] "Mentry"] != 0 ||
-	[string compare [::$win attrib type] "IPAddr"] != 0} {
+    if {[winfo class $win] ne "Mentry" || [::$win attrib type] ne "IPAddr"} {
 	return -code error \
 	       "window \"$win\" is not a mentry widget for IP addresses"
     }
@@ -184,7 +182,7 @@ proc mentry::checkIfIPAddrMentry win {
 #------------------------------------------------------------------------------
 proc mentry::incrIPAddrComp {w amount} {
     set str [$w get]
-    if {[string length $str] == 0} {
+    if {$str eq ""} {
 	#
 	# Insert a "0"
 	#
@@ -230,11 +228,7 @@ proc mentry::incrIPAddrComp {w amount} {
 # the mentry if it is a valid IP address.
 #------------------------------------------------------------------------------
 proc mentry::pasteIPAddr w {
-    if {[llength [info procs ::tk::GetSelection]] == 1} {
-	set res [catch {::tk::GetSelection $w CLIPBOARD} addr]
-    } else {					;# for Tk versions prior to 8.3
-	set res [catch {selection get -displayof $w -selection CLIPBOARD} addr]
-    }
+    set res [catch {::tk::GetSelection $w CLIPBOARD} addr]
     if {$res == 0} {
 	parseChildPath $w win n
 	catch { putIPAddr $addr $win }

@@ -7,21 +7,21 @@
 #
 # Regular packages:
 #
-package ifneeded mentry         3.18 \
+package ifneeded mentry         4.0 \
 	[list source [file join $dir mentry.tcl]]
-package ifneeded mentry_tile    3.18 \
+package ifneeded mentry_tile    4.0 \
 	[list source [file join $dir mentry_tile.tcl]]
 
 #
 # Aliases:
 #
-package ifneeded Mentry         3.18 \
-	[list package require -exact mentry      3.18]
-package ifneeded Mentry_tile    3.18 \
-	[list package require -exact mentry_tile 3.18]
+package ifneeded Mentry         4.0 \
+	[list package require -exact mentry      4.0]
+package ifneeded Mentry_tile    4.0 \
+	[list package require -exact mentry_tile 4.0]
 
 #
 # Code common to all packages:
 #
-package ifneeded mentry::common 3.18 \
+package ifneeded mentry::common 4.0 \
 	[list source [file join $dir mentryCommon.tcl]]

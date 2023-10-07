@@ -1,6 +1,4 @@
 #! /usr/bin/env tclsh
-  
-package require Tk
 
 #==============================================================================
 # Demonstrates how to implement a multi-entry widget for Ethernet addresses.
@@ -8,6 +6,7 @@ package require Tk
 # Copyright (c) 1999-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
+package require Tk
 package require mentry
 
 set title "Ethernet Address"
@@ -131,8 +130,8 @@ proc checkIfEthernetAddrMentry win {
 	return -code error "bad window path name \"$win\""
     }
 
-    if {[string compare [winfo class $win] "Mentry"] != 0 ||
-	[string compare [$win attrib type] "EthernetAddr"] != 0} {
+    if {[winfo class $win] ne "Mentry" ||
+	[$win attrib type] ne "EthernetAddr"} {
 	return -code error \
 	       "window \"$win\" is not a mentry widget for Ethernet addresses"
     }
@@ -148,11 +147,7 @@ bind MentryEthernetAddr <<Paste>> { pasteEthernetAddr %W }
 # mentry if it is a valid Ethernet address.
 #------------------------------------------------------------------------------
 proc pasteEthernetAddr w {
-    if {[llength [info procs ::tk::GetSelection]] == 1} {
-	set res [catch {::tk::GetSelection $w CLIPBOARD} addr]
-    } else {					;# for Tk versions prior to 8.3
-	set res [catch {selection get -displayof $w -selection CLIPBOARD} addr]
-    }
+    set res [catch {::tk::GetSelection $w CLIPBOARD} addr]
     if {$res == 0} {
 	set win [winfo parent $w]
 	catch { putEthernetAddr $addr $win }

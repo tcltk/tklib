@@ -7,7 +7,7 @@
 #   - Public procedure creating a new mentry widget
 #   - Private configuration procedures
 #   - Private procedures implementing the mentry widget command
-#   - Private callback procedures
+#   - Private callback procedure
 #   - Private procedures used in bindings
 #   - Private utility procedures
 #
@@ -21,19 +21,19 @@
 
 namespace eval mentry {
     #
-    # Get the windowing system ("x11", "win32", "classic", or "aqua")
+    # Get the windowing system ("x11", "win32", or "aqua")
     #
-    variable winSys [::mwutil::windowingSystem]
+    variable winSys [tk windowingsystem]
 
     #
     # Create aliases for a few tile commands if not yet present
     #
     proc createTileAliases {} {
-	if {[string compare [interp alias {} ::mentry::style] ""] != 0} {
+	if {[interp alias {} ::mentry::style] ne ""} {
 	    return ""
 	}
 
-	if {[string length [info commands ::ttk::style]] == 0} {
+	if {[llength [info commands ::ttk::style]] == 0} {
 	    interp alias {} ::mentry::style	{} ::style
 	    if {[string compare $::tile::version "0.7"] >= 0} {
 		interp alias {} ::mentry::styleConfig {} ::style configure
@@ -66,16 +66,16 @@ namespace eval mentry {
 	interp alias {} ::mentry::getCurrentTheme  {} ::mwutil::currentTheme
     }
     variable currentTheme [::mwutil::currentTheme]
-    if {[string length $currentTheme] != 0} {
+    if {$currentTheme ne ""} {
 	createTileAliases
     }
 
     variable widgetStyle ""
     variable colorScheme ""
-    if {[string compare $currentTheme "tileqt"] == 0} {
+    if {$currentTheme eq "tileqt"} {
 	set widgetStyle [tileqt_currentThemeName]
 	if {[info exists ::env(KDE_SESSION_VERSION)] &&
-	    [string length $::env(KDE_SESSION_VERSION)] != 0} {
+	    $::env(KDE_SESSION_VERSION) ne ""} {
 	    set colorScheme [getKdeConfigVal "General" "ColorScheme"]
 	} else {
 	    set colorScheme [getKdeConfigVal "KDE" "colorScheme"]
@@ -178,13 +178,13 @@ namespace eval mentry {
 	    # elements of the array configSpecs
 	    #
 	    variable currentTheme
-	    if {[string compare $currentTheme "aqua"] == 0} {
+	    if {$currentTheme eq "aqua"} {
 		variable newAquaSupport
 		scan $::tcl_platform(osVersion) "%d" majorOSVersion
 		if {$newAquaSupport && $majorOSVersion >= 18} {	;# OS X 10.14+
 		    update idletasks		;# needed for the isdark query
 		}
-	    } elseif {[string compare $currentTheme "tileqt"] == 0} {
+	    } elseif {$currentTheme eq "tileqt"} {
 		tileqt_kdeStyleChangeNotification
 	    }
 	    setThemeDefaults
@@ -199,19 +199,6 @@ namespace eval mentry {
 
 	    ttk::entry $helpEntry -takefocus 0
 	} else {
-	    if {$::tk_version < 8.3} {
-		foreach opt {-invalidcommand -invcmd -validate
-			     -validatecommand -vcmd} {
-		    unset configSpecs($opt)
-		}
-	    }
-	    if {$::tk_version < 8.4} {
-		foreach opt {-disabledbackground -disabledforeground
-			     -readonlybackground} {
-		    unset configSpecs($opt)
-		}
-	    }
-
 	    tk::entry $helpEntry -takefocus 0
 	}
 	foreach configSet [$helpEntry configure] {
@@ -220,7 +207,7 @@ namespace eval mentry {
 		if {[info exists configSpecs($opt)] &&
 		    [llength $configSpecs($opt)] == 3} {
 		    lappend configSpecs($opt) [lindex $configSet 3]
-		} elseif {[string compare $opt "-width"] == 0} {
+		} elseif {$opt eq "-width"} {
 		    lappend configSpecs(-body) [lindex $configSet 3]
 		}
 	    }
@@ -257,7 +244,7 @@ proc mentry::createBindings {} {
     #
     bind Mentry <KeyPress> continue
     bind Mentry <FocusIn> {
-	if {[string compare [focus -lastfor %W] %W] == 0} {
+	if {[focus -lastfor %W] eq "%W"} {
 	    catch {mentry::tabToEntry [mentry::firstNormal %W]}
 	}
     }
@@ -275,7 +262,7 @@ proc mentry::createBindings {} {
 	}
     }
     bind Mentry <<TkWorldChanged>> {
-	if {[string compare %d "FontChanged"] == 0} {
+	if {"%d" eq "FontChanged"} {
 	    mentry::updateFonts %W
 	}
     }
@@ -289,7 +276,7 @@ proc mentry::createBindings {} {
     }
     variable winSys
     variable newAquaSupport
-    if {$usingTile && [string compare $winSys "aqua"] == 0 && $newAquaSupport} {
+    if {$usingTile && $winSys eq "aqua" && $newAquaSupport} {
 	foreach event {<<LightAqua>> <<DarkAqua>>} {
 	    bind MentryMain $event {
 		if {![info exists mentry::appearanceId]} {
@@ -311,6 +298,8 @@ proc mentry::createBindings {} {
     variable entryClicked 0
     bind MentryEntry <Button-1>		{ set mentry::entryClicked 1 }
     bind MentryEntry <ButtonRelease-1>	{ set mentry::entryClicked 0 }
+    bind MentryEntry <Left>		{ mentry::condGoToPrev	 %W }
+    bind MentryEntry <Right>		{ mentry::condGoToNext	 %W }
     bind MentryEntry <Control-Left>	{ mentry::tabToPrev      %W }
     bind MentryEntry <Control-Right>	{ mentry::tabToNext      %W }
     bind MentryEntry <Home>		{ mentry::goToHome       %W }
@@ -336,6 +325,16 @@ proc mentry::createBindings {} {
     #
     # Define some emacs-like key bindings for the binding tag MentryEntry
     #
+    bind MentryEntry <Control-b> {
+	if {!$tk_strictMotif} {
+	    mentry::condGoToPrev %W
+	}
+    }
+    bind MentryEntry <Control-f> {
+	if {!$tk_strictMotif} {
+	    mentry::condGoToNext %W
+	}
+    }
     bind MentryEntry <Meta-b> {
 	if {!$tk_strictMotif} {
 	    mentry::tabToPrev %W
@@ -533,7 +532,7 @@ proc mentry::doConfig {win opt val} {
 	    # Some options need special handling
 	    #
 	    variable themeDefaults
-	    if {[string compare $opt "-font"] == 0} {
+	    if {$opt eq "-font"} {
 		if {$usingTile} {
 		    adjustChildren $win
 		}
@@ -548,9 +547,8 @@ proc mentry::doConfig {win opt val} {
 		    set index [lindex [split $name "-"] 0]
 		    setentrywidthSubCmd $win $index $data($name)
 		}
-	    } elseif {[string compare $opt "-foreground"] == 0 && $usingTile &&
-		      !$data(inActiveWin) &&
-		      [string compare $val $themeDefaults($opt)] == 0} {
+	    } elseif {$opt eq "-foreground" && $usingTile &&
+		      !$data(inActiveWin) && $val eq $themeDefaults($opt)} {
 		foreach w [labels $win] {
 		    $w configure $opt $themeDefaults(-foreground,background)
 		}
@@ -558,8 +556,7 @@ proc mentry::doConfig {win opt val} {
 	}
 
 	e {
-	    if {[string compare $opt "-textvariable"] == 0 &&
-		[string length $val] != 0} {
+	    if {$opt eq "-textvariable" && $val ne ""} {
 		#
 		# The text variable must be an array
 		#
@@ -578,7 +575,7 @@ proc mentry::doConfig {win opt val} {
 
 		set data($opt) $val
 	    } else {
-		if {[string compare $opt "-state"] == 0} {
+		if {$opt eq "-state"} {
 		    set val [mwutil::fullOpt "state" $val \
 			     {disabled normal readonly}]
 		}
@@ -589,8 +586,25 @@ proc mentry::doConfig {win opt val} {
 		#
 		$helpEntry configure $opt $val
 		set val [$helpEntry cget $opt]
+		set oldVal $data($opt)
 		set data($opt) $val
-		if {[string compare $opt "-background"] == 0 && $usingTile} {
+		if {$opt eq "-background" && $usingTile} {
+		    #
+		    # Take into account that some themes attempt to
+		    # change several widget colors by invoking
+		    # tk_setPalette before the theme change is finished
+		    # (e.g., breeze and breeze-dark) or immediately
+		    # after it (e.g., sun-valley-light|dark), still
+		    # before the variable currentTheme is updated at
+		    # idle time by the procedure handleThemeChangedEvent
+		    #
+		    set theme [::mwutil::currentTheme]
+		    variable currentTheme
+		    if {$theme ne $currentTheme} {
+			set data($opt) $oldVal	;# restore the old value
+			return ""
+		    }
+
 		    #
 		    # Most themes support the -fieldbackground option for
 		    # the style element Entry.field.  In Tk versions earlier
@@ -598,16 +612,11 @@ proc mentry::doConfig {win opt val} {
 		    # option instead.  Some themes (like Arc, plastik, tileqt,
 		    # vista, and xpnative) don't support either of them.
 		    #
-		    variable currentTheme
 		    variable newAquaSupport
-		    if {[string compare $currentTheme "aqua"] == 0 &&
-			!$newAquaSupport} {
+		    if {$currentTheme eq "aqua" && !$newAquaSupport} {
 			styleConfig $win.TEntry -background $val
 		    } else {
 			styleConfig $win.TEntry -fieldbackground $val
-		    }
-		    if {[winfo viewable $win]} {
-			update idletasks     ;# to avoid some artifacts on aqua
 		    }
 		} else {
 		    foreach w [entries $win] {
@@ -618,24 +627,20 @@ proc mentry::doConfig {win opt val} {
 		#
 		# Some options need special handling
 		#
-		if {[string compare $opt "-background"] == 0} {
-		    if {$::tk_version < 8.4} {
-			set labelBg $val
-		    } else {
-			switch $data(-state) {
-			    normal {
-				set labelBg $val
-			    }
-			    disabled {
-				set labelBg $data(-disabledbackground)
-			    }
-			    readonly {
-				set labelBg $data(-readonlybackground)
-			    }
-			}
-			if {[string length $labelBg] == 0} {
+		if {$opt eq "-background"} {
+		    switch $data(-state) {
+			normal {
 			    set labelBg $val
 			}
+			disabled {
+			    set labelBg $data(-disabledbackground)
+			}
+			readonly {
+			    set labelBg $data(-readonlybackground)
+			}
+		    }
+		    if {$labelBg eq ""} {
+			set labelBg $val
 		    }
 		    foreach w [labels $win] {
 			$w configure $opt $labelBg
@@ -646,16 +651,13 @@ proc mentry::doConfig {win opt val} {
 		    # of the shadow colors of its 3-D border
 		    #
 		    if {$usingTile} {
-			variable currentTheme
-			variable newAquaSupport
-			if {[string compare $currentTheme "aqua"] == 0 &&
-			    !$newAquaSupport} {
+			if {$currentTheme eq "aqua" && !$newAquaSupport} {
 			    styleConfig Hull$win.TEntry -background $labelBg
 			} else {
 			    styleConfig Hull$win.TEntry \
 				-fieldbackground $labelBg
 			}
-			if {[winfo viewable $win]} {
+			if {$currentTheme eq "aqua" && [winfo viewable $win]} {
 			    update idletasks ;# to avoid some artifacts on aqua
 			}
 		    } else {
@@ -663,7 +665,7 @@ proc mentry::doConfig {win opt val} {
 		    }
 		} elseif {[regexp \
 			   {^-(disabledbackground|readonlybackground|state)$} \
-			   $opt] && $::tk_version >= 8.4} {
+			   $opt]} {
 		    switch $data(-state) {
 			normal {
 			    set labelBg $data(-background)
@@ -678,7 +680,7 @@ proc mentry::doConfig {win opt val} {
 			    set labelState normal
 			}
 		    }
-		    if {[string length $labelBg] == 0} {
+		    if {$labelBg eq ""} {
 			set labelBg $data(-background)
 		    }
 		    foreach w [labels $win] {
@@ -704,7 +706,7 @@ proc mentry::doConfig {win opt val} {
 	}
 
 	w {
-	    if {[string compare $opt "-body"] == 0} {
+	    if {$opt eq "-body"} {
 		createChildren $win $val
 	    }
 	}
@@ -810,8 +812,7 @@ proc mentry::createChildren {win body} {
 	# Apply to it the current configuration options
 	#
 	foreach opt $configOpts {
-	    if {[string compare $opt "-textvariable"] == 0 &&
-		[string length $data($opt)] != 0} {
+	    if {$opt eq "-textvariable" && $data($opt) ne ""} {
 		upvar data($opt) val
 		$w configure $opt ${val}($n)
 	    } elseif {[regexp {[ec]} [lindex $configSpecs($opt) 2]]} {
@@ -842,8 +843,6 @@ proc mentry::createChildren {win body} {
 	wcb::callback $w before insert [list wcb::checkEntryLen $width]
 	wcb::callback $w  after insert \
 		      [list mentry::condTabToNext $width $win $n]
-	wcb::callback $w  after motion \
-		      [list mentry::condGoToNeighbor $win $n]
 
 	#
 	# Modify the list of binding tags of the entry
@@ -875,7 +874,7 @@ proc mentry::createChildren {win body} {
 	$w configure -underline $defVal		;# -1 or "" (see TIP #577)
 	if {$usingTile} {
 	    set padY $themeDefaults(-labelpady)
-	} elseif {[string compare $winSys "aqua"] == 0 && $newAquaSupport} {
+	} elseif {$winSys eq "aqua" && $newAquaSupport} {
 	    set padY {0 0}
 	} else {
 	    set padY {1 0}
@@ -886,33 +885,29 @@ proc mentry::createChildren {win body} {
 	# Apply to it the current configuration options
 	#
 	foreach opt $configOpts {
-	    if {[string compare [lindex $configSpecs($opt) 2] "c"] == 0 &&
+	    if {[lindex $configSpecs($opt) 2] eq "c" &&
 		[info exists data($opt)]} {
 		$w configure $opt $data($opt)
 	    }
 	}
-	if {$::tk_version < 8.4} {
-	    $w configure -background $data(-background)
-	} else {
-	    switch $data(-state) {
-		normal {
-		    set labelBg $data(-background)
-		    set labelState normal
-		}
-		disabled {
-		    set labelBg $data(-disabledbackground)
-		    set labelState disabled
-		}
-		readonly {
-		    set labelBg $data(-readonlybackground)
-		    set labelState normal
-		}
-	    }
-	    if {[string length $labelBg] == 0} {
+	switch $data(-state) {
+	    normal {
 		set labelBg $data(-background)
+		set labelState normal
 	    }
-	    $w configure -background $labelBg -state $labelState
+	    disabled {
+		set labelBg $data(-disabledbackground)
+		set labelState disabled
+	    }
+	    readonly {
+		set labelBg $data(-readonlybackground)
+		set labelState normal
+	    }
 	}
+	if {$labelBg eq ""} {
+	    set labelBg $data(-background)
+	}
+	$w configure -background $labelBg -state $labelState
 	if {$usingTile} {
 	    $w configure -disabledforeground $themeDefaults(-disabledforeground)
 	}
@@ -932,13 +927,12 @@ proc mentry::createChildren {win body} {
     if {$usingTile} {
 	if {$argCount == 1} {
 	    pack configure $w -padx [list $bd $bd]
-	} elseif {[string compare [winfo class $w] "Label"] == 0} {
+	} elseif {[winfo class $w] eq "Label"} {
 	    pack configure $w -padx [list 0 [expr {$bd + 1}]]
 	} else {
 	    pack configure $w -padx [list 0 $bd]
 	}
-    } elseif {$::tk_version >= 8.4 &&
-	      [string compare [winfo class $w] "Label"] == 0} {
+    } elseif {[winfo class $w] eq "Label"} {
 	pack configure $w -padx [list 0 1]
     }
 }
@@ -1113,7 +1107,7 @@ proc mentry::mentryWidgetCmd {win args} {
 	    switch $argCount {
 		1 {
 		    foreach w [entries $win] {
-			if {[string length [$w get]] != 0} {
+			if {[$w get] ne ""} {
 			    return 0
 			}
 		    }
@@ -1122,7 +1116,7 @@ proc mentry::mentryWidgetCmd {win args} {
 		2 {
 		    set n [childIndex [lindex $args 1] $data(maxEntryIdx)]
 		    set w [entryPath $win $n]
-		    return [expr {[string length [$w get]] == 0}]
+		    return [expr {[$w get] eq ""}]
 		}
 		default {
 		    mwutil::wrongNumArgs "$win $cmd ?index?"
@@ -1308,9 +1302,9 @@ proc mentry::putSubCmd {win startIdx strList} {
     # that the after-insert callback condTabToNext will not change it
     #
     set focus [focus -displayof $win]
-    if {[string length $focus] != 0 && [string compare $focus "."] != 0 &&
-	([string compare [winfo parent $focus] $win] == 0 ||
-	 [string compare [winfo parent [winfo parent $focus]] $win] == 0)} {
+    if {$focus ne "" && $focus ne "." &&
+	([winfo parent $focus] eq $win ||
+	 [winfo parent [winfo parent $focus]] eq $win)} {
 	focus [winfo toplevel $win]
 	set focusChanged 1
     } else {
@@ -1479,8 +1473,8 @@ proc mentry::childIndex {n max} {
 }
 
 #
-# Private callback procedures
-# ===========================
+# Private callback procedure
+# ==========================
 #
 
 #------------------------------------------------------------------------------
@@ -1494,41 +1488,9 @@ proc mentry::childIndex {n max} {
 #------------------------------------------------------------------------------
 proc mentry::condTabToNext {width win n w idx str} {
     if {[$w index insert] == $width &&
-	[string compare [focus -displayof $win] [entryPath $win $n]] == 0 &&
-	[string length [set next [nextNormal $win $n]]] != 0} {
+	[focus -displayof $win] eq [entryPath $win $n] &&
+	[set next [nextNormal $win $n]] ne ""} {
 	tabToEntry $next
-    }
-}
-
-#------------------------------------------------------------------------------
-# mentry::condGoToNeighbor
-#
-# This after-motion callback examines the index idx passed to the last icursor
-# command in the n'th entry child of the mentry widget win.  If it was
-# negative, the procedure clears the selection in the current entry widget,
-# moves the focus to the previous enabled entry child, and sets the insertion
-# cursor to the end of that widget; if it was greater than the index of the
-# last character, the procedure clears the selection in the current entry
-# widget, moves the focus to the next enabled entry child, and sets the
-# insertion cursor to the beginning of that widget.
-#------------------------------------------------------------------------------
-proc mentry::condGoToNeighbor {win n w idx} {
-    variable entryClicked
-    if {![regexp {^[0-9-]+$} $idx] || $entryClicked ||
-	[string compare [focus -displayof $win] [entryPath $win $n]] != 0} {
-	return ""
-    }
-
-    if {$idx < 0 &&
-	[string length [set prev [prevNormal $win $n]]] != 0} {
-	$w selection clear
-	focus $prev
-	entrySetCursor $prev end
-    } elseif {$idx > [$w index end] &&
-	      [string length [set next [nextNormal $win $n]]] != 0} {
-	$w selection clear
-	focus $next
-	entrySetCursor $next 0
     }
 }
 
@@ -1554,8 +1516,8 @@ proc mentry::updateLabelForegrounds {win inActiveWin} {
     upvar ::mentry::ns${win}::data data
     variable themeDefaults
     set data(inActiveWin) $inActiveWin
-    if {!$data(inActiveWin) && [string compare $data(-foreground) \
-	$themeDefaults(-foreground)] == 0} {
+    if {!$data(inActiveWin) && \
+	$data(-foreground) eq $themeDefaults(-foreground)} {
 	set labelFg $themeDefaults(-foreground,background)
     } else {
 	set labelFg $data(-foreground)
@@ -1593,17 +1555,17 @@ proc mentry::handleThemeChangedEvent {} {
     variable widgetStyle
     variable colorScheme
     set newTheme [::mwutil::currentTheme]
-    if {[string compare $newTheme $currentTheme] == 0} {
-	if {[string compare $newTheme "tileqt"] == 0} {
+    if {$newTheme eq $currentTheme} {
+	if {$newTheme eq "tileqt"} {
 	    set newWidgetStyle [tileqt_currentThemeName]
 	    if {[info exists ::env(KDE_SESSION_VERSION)] &&
-		[string length $::env(KDE_SESSION_VERSION)] != 0} {
+		$::env(KDE_SESSION_VERSION) ne ""} {
 		set newColorScheme [getKdeConfigVal "General" "ColorScheme"]
 	    } else {
 		set newColorScheme [getKdeConfigVal "KDE" "colorScheme"]
 	    }
-	    if {[string compare $newWidgetStyle $widgetStyle] == 0 &&
-		[string compare $newColorScheme $colorScheme] == 0} {
+	    if {$newWidgetStyle eq $widgetStyle &&
+		$newColorScheme eq $colorScheme} {
 		return ""
 	    }
 	} else {
@@ -1612,7 +1574,7 @@ proc mentry::handleThemeChangedEvent {} {
     }
 
     set currentTheme $newTheme
-    if {[string compare $newTheme "tileqt"] == 0} {
+    if {$newTheme eq "tileqt"} {
 	set widgetStyle $newWidgetStyle
 	set colorScheme $newColorScheme
     } else {
@@ -1634,7 +1596,7 @@ proc mentry::handleThemeChangedEvent {} {
     while {[llength $lst1] != 0} {
 	set lst2 {}
 	foreach w $lst1 {
-	    if {[string compare [winfo class $w] "Mentry"] == 0} {
+	    if {[winfo class $w] eq "Mentry"} {
 		updateConfigSpecs $w
 	    }
 	    foreach child [winfo children $w] {
@@ -1669,7 +1631,7 @@ proc mentry::updateConfigSpecs win {
 	    set data($opt) $themeDefaults($opt)
 	}
 	foreach opt {-background -foreground -font} {
-	    if {[string compare $data($opt) $tmp($opt)] == 0} {
+	    if {$data($opt) eq $tmp($opt)} {
 		doConfig $win $opt $themeDefaults($opt)
 	    }
 	}
@@ -1684,8 +1646,7 @@ proc mentry::updateConfigSpecs win {
 	variable currentTheme
 	variable newAquaSupport
 	foreach style [list $win.TEntry Hull$win.TEntry] {
-	    if {[string compare $currentTheme "aqua"] == 0 &&
-		!$newAquaSupport} {
+	    if {$currentTheme eq "aqua" && !$newAquaSupport} {
 		styleConfig $style -background $data(-background)
 	    } else {
 		styleConfig $style -fieldbackground $data(-background)
@@ -1698,8 +1659,8 @@ proc mentry::updateConfigSpecs win {
 	#
 	# Set the foreground color of the label children
 	#
-	if {!$data(inActiveWin) && [string compare $data(-foreground) \
-	    $themeDefaults(-foreground)] == 0} {
+	if {!$data(inActiveWin) && \
+	    $data(-foreground) eq $themeDefaults(-foreground)} {
 	    set labelFg $themeDefaults(-foreground,background)
 	} else {
 	    set labelFg $data(-foreground)
@@ -1723,7 +1684,7 @@ proc mentry::handleAppearanceEvent {} {
     unset appearanceId
 
     variable currentTheme
-    if {[string compare $currentTheme "aqua"] != 0} {
+    if {$currentTheme ne "aqua"} {
 	return ""
     }
 
@@ -1741,7 +1702,7 @@ proc mentry::handleAppearanceEvent {} {
     while {[llength $lst1] != 0} {
 	set lst2 {}
 	foreach w $lst1 {
-	    if {[string compare [winfo class $w] "Mentry"] == 0} {
+	    if {[winfo class $w] eq "Mentry"} {
 		updateAppearance $w
 	    }
 	    foreach child [winfo children $w] {
@@ -1776,7 +1737,7 @@ proc mentry::updateAppearance win {
 	set data($opt) $themeDefaults($opt)
     }
     foreach opt {-background -foreground} {
-	if {[string compare $data($opt) $tmp($opt)] == 0} {
+	if {$data($opt) eq $tmp($opt)} {
 	    doConfig $win $opt $themeDefaults($opt)
 	}
     }
@@ -1784,8 +1745,8 @@ proc mentry::updateAppearance win {
     #
     # Set the foreground color of the label children
     #
-    if {!$data(inActiveWin) && [string compare $data(-foreground) \
-	$themeDefaults(-foreground)] == 0} {
+    if {!$data(inActiveWin) && \
+	$data(-foreground) eq $themeDefaults(-foreground)} {
 	set labelFg $themeDefaults(-foreground,background)
     } else {
 	set labelFg $data(-foreground)
@@ -1796,6 +1757,44 @@ proc mentry::updateAppearance win {
     }
 
     set data(themeDefaults) [array get themeDefaults]
+}
+
+#------------------------------------------------------------------------------
+# mentry::condGoToPrev
+#
+# This procedure handles <Left> events in the entry child w of a mentry widget.
+# If the insertion cursor is at the beginning of the entry, the procedure
+# clears the selection in the current entry, moves the focus to the previous
+# enabled entry child, and sets the insertion cursor to the end of that widget.
+#------------------------------------------------------------------------------
+proc mentry::condGoToPrev w {
+    parseChildPath $w win n
+    if {[$w index insert] == 0 && [set prev [prevNormal $win $n]] ne ""} {
+	$w selection clear
+	focus $prev
+	entrySetCursor $prev end
+	return -code break ""
+    }
+}
+
+#------------------------------------------------------------------------------
+# mentry::condGoToNext
+#
+# This procedure handles <Right> events in the entry child w of a mentry
+# widget. If the insertion cursor is at the end of the entry's content, the
+# procedure clears the selection in the current entry, moves the focus to the
+# next enabled entry child, and sets the insertion cursor to the beginning of
+# that widget.
+#------------------------------------------------------------------------------
+proc mentry::condGoToNext w {
+    parseChildPath $w win n
+    if {[$w index insert] == [$w index end] &&
+	[set next [nextNormal $win $n]] ne ""} {
+	$w selection clear
+	focus $next
+	entrySetCursor $next 0
+	return -code break ""
+    }
 }
 
 #------------------------------------------------------------------------------
@@ -1810,7 +1809,7 @@ proc mentry::updateAppearance win {
 proc mentry::tabToPrev w {
     parseChildPath $w win n
     set prev [prevNormal $win $n]
-    if {[string length $prev] != 0} {
+    if {$prev ne ""} {
 	tabToEntry $prev
     } else {
 	entrySetCursor $w 0
@@ -1830,7 +1829,7 @@ proc mentry::tabToPrev w {
 proc mentry::tabToNext w {
     parseChildPath $w win n
     set next [nextNormal $win $n]
-    if {[string length $next] != 0} {
+    if {$next ne ""} {
 	tabToEntry $next
     } else {
 	entrySetCursor $w end
@@ -1884,7 +1883,7 @@ proc mentry::goToEnd w {
 proc mentry::selectToHome w {
     parseChildPath $w win n
     set first [firstNormal $win]
-    if {[string compare $first $w] != 0} {
+    if {$first ne $w} {
 	$w selection clear
 	focus $first
 	catch {$first icursor end}
@@ -1914,7 +1913,7 @@ proc mentry::selectToHome w {
 proc mentry::selectToEnd w {
     parseChildPath $w win n
     set last [lastNormal $win]
-    if {[string compare $last $w] != 0} {
+    if {$last ne $w} {
 	$w selection clear
 	focus $last
 	catch {$last icursor 0}
@@ -1947,8 +1946,7 @@ proc mentry::backSpace w {
     if {[$w selection present]} {
 	$w delete sel.first sel.last
     } else {
-	if {[$w index insert] == 0 &&
-	    [string length [set prev [prevNormal $win $n]]] != 0} {
+	if {[$w index insert] == 0 && [set prev [prevNormal $win $n]] ne ""} {
 	    focus $prev
 	    entrySetCursor $prev end
 	    set w $prev
@@ -1980,8 +1978,7 @@ proc mentry::backSpace w {
 #------------------------------------------------------------------------------
 proc mentry::delToLeft w {
     parseChildPath $w win n
-    if {[$w index insert] == 0 &&
-	[string length [set prev [prevNormal $win $n]]] != 0} {
+    if {[$w index insert] == 0 && [set prev [prevNormal $win $n]] ne ""} {
 	$w selection clear
 	focus $prev
 	$prev delete 0 end
@@ -2009,12 +2006,12 @@ proc mentry::procLabelChars {w char} {
 	return ""
     }
 
-    if {[string length [$w get]] == 0} {
+    if {[$w get] eq ""} {
 	return -code break ""
     }
 
     set next [nextNormal $win $n]
-    if {[string length $next] != 0} {
+    if {$next ne ""} {
 	tabToEntry $next
     }
     return -code break ""
@@ -2031,7 +2028,7 @@ proc mentry::labelButton1 w {
     parseChildPath $w win n
     incr n
     set entry [prevNormal $win $n]
-    if {[string length $entry] != 0} {
+    if {$entry ne ""} {
 	set bbox [$entry bbox end]
 	set x [expr {[lindex $bbox 0] + [lindex $bbox 2]}]
 	event generate $entry <Button-1> -x $x
@@ -2102,9 +2099,9 @@ proc mentry::entries win {
     set lst {}
     foreach w [winfo children $win] {
 	set class [winfo class $w]
-	if {[string compare $class "Entry"] == 0} {
+	if {$class eq "Entry"} {
 	    lappend lst $w
-	} elseif {[string compare $class "Frame"] == 0} {
+	} elseif {$class eq "Frame"} {
 	    lappend lst $w.e
 	}
     }
@@ -2120,7 +2117,7 @@ proc mentry::entries win {
 proc mentry::labels win {
     set lst {}
     foreach w [winfo children $win] {
-	if {[string compare [winfo class $w] "Label"] == 0} {
+	if {[winfo class $w] eq "Label"} {
 	    lappend lst $w
 	}
     }
@@ -2136,7 +2133,7 @@ proc mentry::labels win {
 proc mentry::prevNormal {win n} {
     for {incr n -1} {$n >= 0} {incr n -1} {
 	set w [entryPath $win $n]
-	if {[string compare [$w cget -state] "normal"] == 0} {
+	if {[$w cget -state] eq "normal"} {
 	    return $w
 	}
     }
@@ -2154,7 +2151,7 @@ proc mentry::nextNormal {win n} {
 
     for {incr n} {$n < $data(entryCount)} {incr n} {
 	set w [entryPath $win $n]
-	if {[string compare [$w cget -state] "normal"] == 0} {
+	if {[$w cget -state] eq "normal"} {
 	    return $w
 	}
     }
@@ -2199,7 +2196,7 @@ proc mentry::adjustChildren win {
 
     variable themeDefaults
     foreach w $childList {
-	if {[string compare [winfo class $w] "Frame"] == 0} {
+	if {[winfo class $w] eq "Frame"} {
 	    set frameWidth [expr {[reqEntryWidth $w.e] - $deltaWidth}]
 	    set frameHeight [expr {[winfo reqheight $w.e] - $bd2}]
 	    $w configure -width $frameWidth -height $frameHeight
@@ -2213,7 +2210,7 @@ proc mentry::adjustChildren win {
 
     if {$childCount == 1} {
 	pack configure $w -padx [list $bd $bd]
-    } elseif {[string compare [winfo class $w] "Label"] == 0} {
+    } elseif {[winfo class $w] eq "Label"} {
 	pack configure $w -padx [list 0 [expr {$bd + 1}]]
     } else {
 	pack configure $w -padx [list 0 $bd]
@@ -2268,16 +2265,16 @@ proc mentry::configEntry {w args} {
     foreach {opt val} $args {
 	switch -- $opt {
 	    -background {
-		if {[string compare [winfo class $w] "TEntry"] != 0} {
+		if {[winfo class $w] ne "TEntry"} {
 		    $w configure $opt $val
 		}
 	    }
 
 	    -foreground {
-		if {[string compare [winfo class $w] "TEntry"] == 0} {
+		if {[winfo class $w] eq "TEntry"} {
 		    variable themeDefaults
-		    if {[string compare [winfo rgb $w $val] [winfo rgb $w \
-			 $themeDefaults(-foreground)]] == 0} {
+		    if {[winfo rgb $w $val] eq \
+			[winfo rgb $w $themeDefaults(-foreground)]} {
 			set val ""    ;# for automatic adaptation to the states
 		    }
 		    $w instate !disabled {
@@ -2290,9 +2287,9 @@ proc mentry::configEntry {w args} {
 
 	    -state {
 		$w configure $opt $val
-		if {[string compare [winfo class $w] "TEntry"] == 0} {
+		if {[winfo class $w] eq "TEntry"} {
 		    variable themeDefaults
-		    if {[string compare $val "disabled"] == 0} {
+		    if {$val eq "disabled"} {
 			#
 			# Set the entry's foreground color to the theme-
 			# specific one (needed for current tile versions)
@@ -2335,7 +2332,7 @@ proc mentry::reqEntryWidth w {
 	#
 	set zeroWidth [font measure [$w cget -font] -displayof $w "0"]
 	return [expr {[$w cget -width] * $zeroWidth + 8}]
-    } elseif {[string compare $currentTheme "vista"] == 0} {
+    } elseif {$currentTheme eq "vista"} {
 	#
 	# If the tile entry was created with -width 1 or -width 2 then
 	# in the "vista" theme its width will silently be changed to 3.
@@ -2378,11 +2375,15 @@ proc mentry::geomParams {} {
 	    incr x 4
 	    incr deltaWidth 8
 	}
-	black - awblack - awtemplate {
+	awblack - awtemplate {
 	    incr x 2
 	    incr deltaWidth 4
 	}
-	Breeze - breeze - awbreeze - awbreezedark {
+	black - srivlg {
+	    incr x
+	    incr deltaWidth 2
+	}
+	Breeze - breeze - breeze-dark - awbreeze - awbreezedark {
 	    incr x 3
 	    incr deltaWidth 6
 	}
@@ -2394,9 +2395,9 @@ proc mentry::geomParams {} {
 		incr deltaWidth 2
 	    }
 	}
-	srivlg {
-	    incr x
-	    incr deltaWidth 2
+	sun-valley-light - sun-valley-dark {
+	    incr x 9
+	    incr deltaWidth 16
 	}
     }
 
