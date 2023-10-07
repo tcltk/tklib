@@ -1,3 +1,26 @@
+2023-10-07  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 4.0; dropped the support
+	* COPYRIGHT.txt: for Tk versions earlier than 8.4; updated the
+	* README.txt:    copyright information.
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/*.tcl: Dropped the support for Tk versions earlier than 8.4;
+	  added support for the new ttk::treeview commands "cellselection *";
+	  updated the copyright information.
+
+	* doc/*.png: Updated the screenshots.
+
+	* ../../examples/wcb/*.tcl: Dropped the support for Tk versions earlier
+	  than 8.4; the demo scripts listboxtest*.tcl no longer expect the
+	  images in the directory $tk_library/demos/images; updated the
+	  copyright information.
+
+	* ../../examples/wcb/images/*: Added images for the demo scripts
+	  listboxtest*.tcl.
+
 2022-08-12  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Wcb 3.8.
