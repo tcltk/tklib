@@ -9,7 +9,8 @@
 # Copyright (c) 2020-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require scaleutil 1.10
+package require Tk 8.4-
+package require scaleutil 1.10-
 
 #
 # Namespace initialization
@@ -20,13 +21,8 @@ namespace eval scaleutilmisc {
     #
     # Public variables:
     #
-    variable version	1.4
-    variable library
-    if {$::tcl_version >= 8.4} {
-	set library	[file dirname [file normalize [info script]]]
-    } else {
-	set library	[file dirname [info script]] ;# no "file normalize" yet
-    }
+    variable version	1.5
+    variable library	[file dirname [file normalize [info script]]]
 
     #
     # Public procedures:
@@ -35,13 +31,7 @@ namespace eval scaleutilmisc {
 			scaleIncrDateentry scaleIncrTimeentry \
 			scaleIncrCombobox scaleOakleyComboboxArrow
 
-    variable onX11
-    if {[catch {tk windowingsystem} winSys] == 0} {
-	set onX11 [expr {[string compare $winSys "x11"] == 0}]
-    } else {
-	set onX11 \
-	    [expr {[string compare $::tcl_platform(platform) "unix"] == 0}]
-    }
+    variable onX11 [expr {[tk windowingsystem] eq "x11"}]
 
     variable svgSupported \
 	[expr {$::tk_version >= 8.7 || [catch {package require tksvg}] == 0}]
@@ -90,7 +80,7 @@ proc scaleutilmisc::scaleBWidgetComboBox w {
     ComboBox::_create_popup $w
     if {![Widget::theme]} {
 	bind $w.shell <Map> [format {
-	    if {[string compare [winfo class %%W] "Toplevel"] == 0} {
+	    if {[winfo class %%W] eq "Toplevel"} {
 		%%W.sw.vscroll configure -width %d
 		%%W.sw.hscroll configure -width %d
 	    }

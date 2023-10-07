@@ -8,7 +8,7 @@
 # Copyright (c) 2000-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require Tk 8-
+package require Tk 8.4-
 
 #
 # Namespace initialization
@@ -19,13 +19,8 @@ namespace eval mwutil {
     #
     # Public variables:
     #
-    variable version	2.20
-    variable library
-    if {$::tcl_version >= 8.4} {
-	set library	[file dirname [file normalize [info script]]]
-    } else {
-	set library	[file dirname [info script]] ;# no "file normalize" yet
-    }
+    variable version	2.21
+    variable library	[file dirname [file normalize [info script]]]
 
     #
     # Public procedures:
@@ -64,7 +59,7 @@ namespace eval mwutil {
     # Invoked in the procedures focusNext and focusPrev defined above:
     #
     proc getChildren {class w} {
-	if {[string compare [winfo class $w] $class] == 0} {
+	if {[winfo class $w] eq $class} {
 	    return {}
 	} else {
 	    return [winfo children $w]
@@ -101,10 +96,10 @@ proc mwutil::wrongNumArgs args {
 #------------------------------------------------------------------------------
 proc mwutil::getAncestorByClass {w class} {
     if {[regexp {^\.[^.]+$} $w]} {
-	return [expr {[string compare [winfo class .] $class] == 0 ? "." : ""}]
+	return [expr {winfo class .] eq $class ? "." : ""}]
     } elseif {[regexp {^(\..+)\.[^.]+$} $w dummy win]} {
 	while {[winfo exists $win]} {
-	    if {[string compare [winfo class $win] $class] == 0} {
+	    if {[winfo class $win] eq $class} {
 		return $win
 	    } else {
 		set win [winfo parent $win]
@@ -164,15 +159,15 @@ proc mwutil::defineKeyNav class {
 proc mwutil::processTraversal {w class event} {
     set win [getAncestorByClass $w $class]
 
-    if {[string compare $event "<Tab>"] == 0} {
+    if {$event eq "<Tab>"} {
 	set target [focusNext $win $class]
     } else {
 	set target [focusPrev $win $class]
     }
 
-    if {[string compare $target $win] != 0} {
+    if {$target ne $win} {
 	set focusWin [focus -displayof $win]
-	if {[string length $focusWin] != 0} {
+	if {$focusWin ne ""} {
 	    event generate $focusWin <<TraverseOut>>
 	}
 
@@ -246,7 +241,7 @@ proc mwutil::configureWidget {win configSpecsName configCmd cgetCmd \
 	    set dbName [lindex $configSpecs($opt) 0]
 	    set dbClass [lindex $configSpecs($opt) 1]
 	    set dbValue [option get $win $dbName $dbClass]
-	    if {[string length $dbValue] == 0} {
+	    if {$dbValue eq ""} {
 		set default [lindex $configSpecs($opt) 3]
 		eval $configCmd [list $win $opt $default]
 	    } else {
@@ -400,12 +395,7 @@ proc mwutil::configureSubCmd {win configSpecsName configCmd cgetCmd argList} {
 	foreach opt [lsort [array names configSpecs]] {
 	    if {[llength $configSpecs($opt)] == 1} {
 		set alias $configSpecs($opt)
-		if {$::tk_version >= 8.1} {
-		    lappend result [list $opt $alias]
-		} else {
-		    set dbName [lindex $configSpecs($alias) 0]
-		    lappend result [list $opt $dbName]
-		}
+		lappend result [list $opt $alias]
 	    } else {
 		set dbName [lindex $configSpecs($opt) 0]
 		set dbClass [lindex $configSpecs($opt) 1]
@@ -612,7 +602,7 @@ proc mwutil::scrollByUnits {w axis delta divisor} {
 proc mwutil::genMouseWheelEvent {w event rootX rootY delta} {
     set needsFocus [expr {($::tk_version < 8.6 ||
 	[package vcompare $::tk_patchLevel "8.6b2"] < 0) &&
-	[string compare $::tcl_platform(platform) "windows"] == 0}]
+	$::tcl_platform(platform) eq "windows"}]
 
     if {$needsFocus} {
 	set focusWin [focus -displayof $w]
@@ -654,31 +644,23 @@ proc mwutil::containsPointer w {
 #------------------------------------------------------------------------------
 proc mwutil::hasFocus w {
     set focusWin [focus -displayof $w]
-    if {[string length $focusWin] == 0} {
+    if {$focusWin eq ""} {
 	return 0
     }
 
     return [expr {
-	([string compare $w "."] == 0 || [string first $w. $focusWin.] == 0) &&
-	[string compare [winfo toplevel $w] [winfo toplevel $focusWin]] == 0
+	($w eq "." || [string first $w. $focusWin.] == 0) &&
+	[winfo toplevel $w] eq [winfo toplevel $focusWin]
     }]
 }
 
 #------------------------------------------------------------------------------
 # mwutil::windowingSystem
 #
-# Returns the windowing system ("x11", "win32", "classic", or "aqua").
+# Returns the windowing system ("x11", "win32", or "aqua").
 #------------------------------------------------------------------------------
 proc mwutil::windowingSystem {} {
-    if {[catch {tk windowingsystem} winSys] != 0} {
-	switch $::tcl_platform(platform) {
-	    unix	{ set winSys x11 }
-	    windows	{ set winSys win32 }
-	    macintosh	{ set winSys classic }
-	}
-    }
-
-    return $winSys
+    return [tk windowingsystem]
 }
 
 #------------------------------------------------------------------------------

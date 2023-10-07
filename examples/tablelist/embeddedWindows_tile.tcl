@@ -1,6 +1,4 @@
 #! /usr/bin/env tclsh
-  
-package require Tk
 
 #==============================================================================
 # Demonstrates the use of embedded windows in tablelist widgets.
@@ -8,7 +6,8 @@ package require Tk
 # Copyright (c) 2004-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 6.22
+package require Tk
+package require tablelist_tile
 
 wm title . "Tile Library Scripts"
 
@@ -116,7 +115,8 @@ if {$tk_version >= 8.5} {
     $tbl header rowconfigure 0 -foreground blue
 
     if {$currentTheme eq "awdark" || $currentTheme eq "awbreezedark" ||
-	$currentTheme eq "black"} {
+	$currentTheme eq "black" || $currentTheme eq "breeze-dark" ||
+	$currentTheme eq "sun-valley-dark"} {
 	$tbl header rowconfigure 0 -foreground SkyBlue
     } elseif {$currentTheme eq "aqua" &&
 	[package vcompare $tk_patchLevel "8.6.10"] >= 0} {

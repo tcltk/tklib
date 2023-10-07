@@ -1,5 +1,22 @@
-What is new in Tablelist 6.22?
-------------------------------
+What is new in Tablelist 7.0?
+-----------------------------
+
+1. Dropped the support for Tk versions earlier than 8.4.  This has made
+   the code simpler and easier to maintain.
+
+2. For the selection type "cell", the F2 key now starts the interactive
+   editing of the active element, just like Return and KP_Enter (thanks
+   to Alexandru Dadalau for his proposal).
+
+3. Added explicit support for the themes "black", "breeze",
+   "breeze-dark", "sun-valley-light", and "sun-valley-dark".
+
+4. Improved the compatibility with Tcl 9.0 and Tk 8.7.
+
+5. Removed the now redundant distribution file "repair.tcl".
+
+What was new in Tablelist 6.22?
+-------------------------------
 
 1.  If SVG is supported, i.e., if the Tk version is at least 8.7 or the
     tksvg package can be loaded into the interpreter, then the new

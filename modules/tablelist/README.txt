@@ -10,7 +10,7 @@
 What Is Tablelist?
 ------------------
 
-Tablelist is a library package for Tcl/Tk versions 8.0 or higher,
+Tablelist is a library package for Tcl/Tk versions 8.4 or higher,
 written in pure Tcl/Tk code.  It contains:
 
   - the implementation of the "tablelist" mega-widget, including a
@@ -88,8 +88,8 @@ How to Get It?
 --------------
 
 Tablelist is available for free download from the same URL as Wcb.  The
-distribution file is "tablelist6.22.tar.gz" for UNIX and
-"tablelist6_22.zip" for Windows.  These files contain the same
+distribution file is "tablelist7.0.tar.gz" for UNIX and
+"tablelist7_0.zip" for Windows.  These files contain the same
 information, except for the additional carriage return character
 preceding the linefeed at the end of each line in the text files for
 Windows.
@@ -108,20 +108,20 @@ locations of these library directories are given by the "tcl_library"
 and "tk_library" variables, respectively.
 
 To install Tablelist on UNIX, "cd" to the desired directory and unpack
-the distribution file "tablelist6.22.tar.gz":
+the distribution file "tablelist7.0.tar.gz":
 
-    gunzip -c tablelist6.22.tar.gz | tar -xf -
+    gunzip -c tablelist7.0.tar.gz | tar -xf -
 
 On most UNIX systems this can be replaced with
 
-    tar -zxf tablelist6.22.tar.gz
+    tar -zxf tablelist7.0.tar.gz
 
-Both commands will create a directory named "tablelist6.22 with the
+Both commands will create a directory named "tablelist7.0 with the
 subdirectories "demos", "doc", and "scripts".
 
 On Windows, use WinZip or some other program capable of unpacking the
-distribution file "tablelist6_22.zip" into the directory
-"tablelist6.22", with the subdirectories "demos", "doc", and "scripts".
+distribution file "tablelist7_0.zip" into the directory "tablelist7.0",
+with the subdirectories "demos", "doc", and "scripts".
 
 The file "tablelistEdit.tcl" in the "scripts" directory is only needed
 for applications making use of interactive cell editing.  Similarly, the
@@ -130,22 +130,16 @@ scripts invoking the "move" or "movecolumn" tablelist command.  Finally,
 the file "tablelistThemes.tcl" is only needed for applications using
 the package Tablelist_tile (see next section).
 
-Next, you should check the exact version number of your Tcl/Tk
-distribution, given by the "tcl_patchLevel" and "tk_patchLevel"
-variables.  If you are using Tcl/Tk version 8.2.X, 8.3.0 - 8.3.2, or
-8.4a1, then you should proceed as described in the "How to Install It?"
-section of the file "tablelist.html", located in the "doc" directory.
-
 How to Use It?
 --------------
 
 The Tablelist distribution provides two packages, called Tablelist and
 Tablelist_tile.  The main difference between the two is that
 Tablelist_tile enables the tile-based, theme-specific appearance of
-tablelist widgets; this package requires Tcl/Tk 8.4 or higher and tile
-0.6 or higher.  It is not possible to use both packages in one and the
-same application, because both are implemented in the same "tablelist"
-namespace and provide identical commands.
+tablelist widgets; this package requires tile 0.6 or higher.  It is not
+possible to use both packages in one and the same application, because
+both are implemented in the same "tablelist" namespace and provide
+identical commands.
 
 To be able to use the commands and variables implemented in the package
 Tablelist, your scripts must contain one of the lines

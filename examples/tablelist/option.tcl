@@ -5,20 +5,9 @@
 #==============================================================================
 
 #
-# Get the current windowing system ("x11", "win32", "classic", or "aqua")
-#
-if {[catch {tk windowingsystem} winSys] != 0} {
-    switch $::tcl_platform(platform) {
-	unix      { set winSys x11 }
-	windows   { set winSys win32 }
-	macintosh { set winSys classic }
-    }
-}
-
-#
 # Add some entries to the Tk option database
 #
-if {[string compare $winSys "x11"] == 0} {
+if {[tk windowingsystem] eq "x11"} {
     #
     # Create the font TkDefaultFont if not yet present
     #

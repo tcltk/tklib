@@ -5,7 +5,7 @@
 # Copyright (c) 2000-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 6.22
+package require tablelist_tile
 
 namespace eval demo {
     #
@@ -22,8 +22,9 @@ namespace eval demo {
     #   b1, b2, b3	  TButton
     #
     variable currentTheme [tablelist::getCurrentTheme]
-    if {$tablelist::themeDefaults(-stripebackground) eq "" &&
-	$currentTheme ne "black"} {
+    if {$::tablelist::themeDefaults(-stripebackground) eq "" &&
+	$currentTheme ne "black" && $currentTheme ne "breeze-dark" &&
+	$currentTheme ne "sun-valley-dark"} {
 	option add *DemoTop.tf.tbl.background		white
 	option add *DemoTop.tf.tbl.stripeBackground	#f0f0f0
     }
@@ -188,7 +189,7 @@ proc demo::putConfig {w tbl} {
 	    #
 	    set default [lindex $configSet 3]
 	    set current [lindex $configSet 4]
-	    if {[string compare $default $current] != 0} {
+	    if {$default ne $current} {
 		foreach col {0 4} {
 		    $tbl cellconfigure end,$col -foreground red
 		    variable selectFgEqForeground
@@ -219,8 +220,8 @@ proc demo::putConfig {w tbl} {
 proc demo::compareAsSet {item1 item2} {
     foreach {opt1 dbName1 dbClass1 default1 current1} $item1 \
 	    {opt2 dbName2 dbClass2 default2 current2} $item2 {
-	set changed1 [expr {[string compare $default1 $current1] != 0}]
-	set changed2 [expr {[string compare $default2 $current2] != 0}]
+	set changed1 [expr {$default1 ne $current1}]
+	set changed2 [expr {$default2 ne $current2}]
 	if {$changed1 == $changed2} {
 	    return [string compare $opt1 $opt2]
 	} elseif {$changed1} {
@@ -260,7 +261,7 @@ proc demo::applyValue {tbl row col text} {
     #
     set text [$w cget $opt]
     set default [$tbl cellcget $row,3 -text]
-    if {[string compare $default $text] == 0} {
+    if {$default eq $text} {
 	foreach col {0 4} {
 	    $tbl cellconfigure $row,$col \
 		 -foreground "" -selectforeground ""

@@ -396,8 +396,7 @@ proc tablelist::setSvgImgForeground {imgName color} {
     set idx2 [expr {$idx1 + 3}]
     set data [string replace $data $idx1 $idx2 $color]
 
-    variable svgfmt
-    image create photo $imgName -format $svgfmt -data $data
+    $imgName configure -data $data
 }
 
 #------------------------------------------------------------------------------
@@ -823,7 +822,7 @@ static unsigned char sortRank9_bits[] = {
 proc tablelist::createCheckbuttonImgs {} {
     variable svgSupported
     variable winSys
-    set onX11 [expr {[string compare $winSys "x11"] == 0}]
+    set onX11 [expr {$winSys eq "x11"}]
 
     if {$svgSupported} {
 	if {$onX11} {
@@ -1262,7 +1261,7 @@ proc tablelist::aquaTreeImgs {} {
     variable pngSupported
     variable winSys
     scan $::tcl_platform(osVersion) "%d" majorOSVersion
-    if {[string compare $winSys "aqua"] == 0 && $majorOSVersion > 10} {
+    if {$winSys eq "aqua" && $majorOSVersion > 10} {
 	set osVerPost10 1
     } else {
 	set osVerPost10 0

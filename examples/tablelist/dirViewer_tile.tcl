@@ -1,6 +1,4 @@
 #! /usr/bin/env tclsh
-  
-package require Tk
 
 #==============================================================================
 # Demonstrates how to use a tablelist widget for displaying the content of a
@@ -13,7 +11,8 @@ package require Tk
 # Copyright (c) 2010-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 6.22
+package require Tk
+package require tablelist_tile
 
 #
 # Add some entries to the Tk option database
@@ -71,8 +70,13 @@ proc displayContents dir {
     #
     global isAwTheme
     if {[tk windowingsystem] eq "x11" && !$isAwTheme} {
-	global pct					;# ""|100|125|...|200
-	$tbl configure -treestyle bicolor$pct
+	global currentTheme pct				;# ""|100|125|...|200
+	if {$currentTheme eq "black" || $currentTheme eq "breeze-dark" ||
+	    $currentTheme eq "sun-valley-dark"} {
+	    $tbl configure -treestyle white$pct
+	} else {
+	    $tbl configure -treestyle bicolor$pct
+	}
     }
 
     #
@@ -140,15 +144,14 @@ proc putContents {dir tbl nodeIdx} {
     # The following check is necessary because this procedure
     # is also invoked by the "Refresh" and "Parent" buttons
     #
-    if {[string compare $dir ""] != 0 &&
-	(![file isdirectory $dir] || ![file readable $dir])} {
+    if {$dir ne "" && (![file isdirectory $dir] || ![file readable $dir])} {
 	bell
-	if {[string compare $nodeIdx "root"] == 0} {
+	if {$nodeIdx eq "root"} {
 	    set choice [tk_messageBox -title "Error" -icon warning -message \
 			"Cannot read directory \"[file nativename $dir]\"\
 			-- replacing it with nearest existent ancestor" \
 			-type okcancel -default ok]
-	    if {[string compare $choice "ok"] == 0} {
+	    if {$choice eq "ok"} {
 		while {![file isdirectory $dir] || ![file readable $dir]} {
 		    set dir [file dirname $dir]
 		}
@@ -160,8 +163,8 @@ proc putContents {dir tbl nodeIdx} {
 	}
     }
 
-    if {[string compare $nodeIdx "root"] == 0} {
-	if {[string compare $dir ""] == 0} {
+    if {$nodeIdx eq "root"} {
+	if {$dir eq ""} {
 	    if {[llength [file volumes]] == 1} {
 		wm title . "Contents of the File System"
 	    } else {
@@ -184,7 +187,7 @@ proc putContents {dir tbl nodeIdx} {
     # sorting purposes (it will be removed by formatString).
     #
     set itemList {}
-    if {[string compare $dir ""] == 0} {
+    if {$dir eq ""} {
 	foreach volume [file volumes] {
 	    lappend itemList [list D[file nativename $volume] -1 D $volume]
 	}
@@ -216,7 +219,7 @@ proc putContents {dir tbl nodeIdx} {
     #
     foreach item $itemList {
 	set name [lindex $item end]
-	if {[string compare $name ""] == 0} {			;# file
+	if {$name eq ""} {					;# file
 	    $tbl cellconfigure $row,0 -image fileImg
 	} else {						;# directory
 	    $tbl cellconfigure $row,0 -image clsdFolderImg
@@ -234,18 +237,18 @@ proc putContents {dir tbl nodeIdx} {
 	incr row
     }
 
-    if {[string compare $nodeIdx "root"] == 0} {
+    if {$nodeIdx eq "root"} {
 	#
 	# Configure the "Refresh" and "Parent" buttons
 	#
 	.bf.b1 configure -command [list refreshView $dir $tbl]
 	set b2 .bf.b2
-	if {[string compare $dir ""] == 0} {
+	if {$dir eq ""} {
 	    $b2 configure -state disabled
 	} else {
 	    $b2 configure -state normal
 	    set p [file dirname $dir]
-	    if {[string compare $p $dir] == 0} {
+	    if {$p eq $dir} {
 		$b2 configure -command [list putContents "" $tbl root]
 	    } else {
 		$b2 configure -command [list putContents $p $tbl root]
@@ -412,8 +415,7 @@ proc restoreExpandedStates {tbl nodeIdx expandedFoldersName} {
 
     foreach key [$tbl childkeys $nodeIdx] {
 	set pathName [$tbl rowattrib $key pathName]
-	if {[string compare $pathName ""] != 0 &&
-	    [info exists expandedFolders($pathName)]} {
+	if {$pathName ne "" && [info exists expandedFolders($pathName)]} {
 	    $tbl expand $key -partly
 	    restoreExpandedStates $tbl $key expandedFolders
 	}

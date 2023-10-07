@@ -1,6 +1,4 @@
 #! /usr/bin/env tclsh
-  
-package require Tk
 
 #==============================================================================
 # Demonstrates the use of embedded windows in tablelist widgets.
@@ -8,7 +6,8 @@ package require Tk
 # Copyright (c) 2004-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist 6.22
+package require Tk
+package require tablelist
 
 wm title . "Tk Library Scripts"
 
@@ -205,7 +204,7 @@ set btn [button .btn -text "Close" -command exit]
 # Manage the widgets
 #
 grid $tbl -row 0 -rowspan 2 -column 0 -sticky news
-if {[string compare $winSys "win32"] == 0} {		;# see option.tcl
+if {[tk windowingsystem] eq "win32"} {
     grid $vsb -row 0 -rowspan 2 -column 1 -sticky ns
 } else {
     grid [$tbl cornerpath] -row 0 -column 1 -sticky ew

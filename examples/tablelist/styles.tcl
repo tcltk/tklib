@@ -1,6 +1,4 @@
 #! /usr/bin/env tclsh
-  
-package require Tk
 
 #==============================================================================
 # Demonstrates some ways of improving the look & feel of a tablelist widget.
@@ -8,22 +6,15 @@ package require Tk
 # Copyright (c) 2002-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist 6.22
+package require Tk
+package require tablelist
 
 wm title . "Tablelist Styles"
 
 #
-# Get the current windowing system ("x11", "win32", "classic",
-# or "aqua") and add some entries to the Tk option database
+# Add some entries to the Tk option database
 #
-if {[catch {tk windowingsystem} winSys] != 0} {
-    switch $::tcl_platform(platform) {
-	unix      { set winSys x11 }
-	windows   { set winSys win32 }
-	macintosh { set winSys classic }
-    }
-}
-if {[string compare $winSys "x11"] == 0} {
+if {[tk windowingsystem] eq "x11"} {
     #
     # Create the font TkDefaultFont if not yet present
     #

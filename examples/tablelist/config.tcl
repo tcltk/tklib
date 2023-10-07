@@ -5,12 +5,11 @@
 # Copyright (c) 2000-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist 6.22
+package require tablelist
 
 namespace eval demo {
     #
-    # Get the current windowing system ("x11", "win32", "classic", or "aqua")
-    # and add some entries to the Tk option database for the following
+    # Add some entries to the Tk option database for the following
     # widget hierarchy within a toplevel widget of the class DemoTop:
     #
     # Name		Class
@@ -21,15 +20,7 @@ namespace eval demo {
     # bf		Frame
     #   b1, b2, b3	  Button
     #
-    variable winSys
-    if {[catch {tk windowingsystem} winSys] != 0} {
-	switch $::tcl_platform(platform) {
-	    unix	{ set winSys x11 }
-	    windows	{ set winSys win32 }
-	    macintosh	{ set winSys classic }
-	}
-    }
-    if {[string compare $winSys "x11"] == 0} {
+    if {[tk windowingsystem] eq "x11"} {
 	#
 	# Create the font TkDefaultFont if not yet present
 	#
@@ -117,8 +108,7 @@ proc demo::displayConfig w {
     # Manage the widgets
     #
     grid $tbl -row 0 -rowspan 2 -column 0 -sticky news
-    variable winSys
-    if {[string compare $winSys "win32"] == 0} {
+    if {[tk windowingsystem] eq "win32"} {
 	grid $vsb -row 0 -rowspan 2 -column 1 -sticky ns
     } else {
 	grid [$tbl cornerpath] -row 0 -column 1 -sticky ew
@@ -172,7 +162,7 @@ proc demo::putConfig {w tbl} {
 	    #
 	    set default [lindex $configSet 3]
 	    set current [lindex $configSet 4]
-	    if {[string compare $default $current] != 0} {
+	    if {$default ne $current} {
 		foreach col {0 4} {
 		    $tbl cellconfigure end,$col \
 			 -foreground red -selectforeground yellow
@@ -198,8 +188,8 @@ proc demo::putConfig {w tbl} {
 proc demo::compareAsSet {item1 item2} {
     foreach {opt1 dbName1 dbClass1 default1 current1} $item1 \
 	    {opt2 dbName2 dbClass2 default2 current2} $item2 {
-	set changed1 [expr {[string compare $default1 $current1] != 0}]
-	set changed2 [expr {[string compare $default2 $current2] != 0}]
+	set changed1 [expr {$default1 ne $current1}]
+	set changed2 [expr {$default2 ne $current2}]
 	if {$changed1 == $changed2} {
 	    return [string compare $opt1 $opt2]
 	} elseif {$changed1} {
@@ -239,7 +229,7 @@ proc demo::applyValue {tbl row col text} {
     #
     set text [$w cget $opt]
     set default [$tbl cellcget $row,3 -text]
-    if {[string compare $default $text] == 0} {
+    if {$default eq $text} {
 	foreach col {0 4} {
 	    $tbl cellconfigure $row,$col \
 		 -foreground "" -selectforeground ""

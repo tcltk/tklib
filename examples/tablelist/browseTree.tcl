@@ -5,8 +5,7 @@
 # Copyright (c) 2010-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require Tk 8.3-
-package require tablelist 6.22
+package require tablelist
 
 namespace eval demo {
     variable dir [file dirname [info script]]
@@ -89,8 +88,7 @@ proc demo::displayChildren w {
     # On X11 configure the tablelist according
     # to the display's DPI scaling level
     #
-    variable winSys					;# see config.tcl
-    if {[string compare $winSys "x11"] == 0} {
+    if {[tk windowingsystem] eq "x11"} {
 	variable pct					;# ""|100|125|...|200
 	$tbl configure -treestyle bicolor$pct
     }
@@ -139,8 +137,7 @@ proc demo::displayChildren w {
     # Manage the widgets
     #
     grid $tbl -row 0 -rowspan 2 -column 0 -sticky news
-    variable winSys					;# see config.tcl
-    if {[string compare $winSys "win32"] == 0} {
+    if {[tk windowingsystem] eq "win32"} {
 	grid $vsb -row 0 -rowspan 2 -column 1 -sticky ns
     } else {
 	grid [$tbl cornerpath] -row 0 -column 1 -sticky ew
@@ -172,13 +169,13 @@ proc demo::putChildren {w tbl nodeIdx} {
     #
     if {![winfo exists $w]} {
 	bell
-	if {[string compare $nodeIdx "root"] == 0} {
+	if {$nodeIdx eq "root"} {
 	    set choice [tk_messageBox -title "Error" -icon warning \
 			-message "Bad window path name \"$w\" -- replacing\
 				  it with nearest existent ancestor" \
 			-type okcancel -default ok \
 			-parent [winfo toplevel $tbl]]
-	    if {[string compare $choice "ok"] == 0} {
+	    if {$choice eq "ok"} {
 		while {![winfo exists $w]} {
 		    set last [string last "." $w]
 		    if {$last != 0} {
@@ -194,7 +191,7 @@ proc demo::putChildren {w tbl nodeIdx} {
 	}
     }
 
-    if {[string compare $nodeIdx "root"] == 0} {
+    if {$nodeIdx eq "root"} {
 	set top [winfo toplevel $tbl]
 	wm title $top "Children of the [winfo class $w] Widget \"$w\""
 
@@ -237,14 +234,14 @@ proc demo::putChildren {w tbl nodeIdx} {
 	incr row
     }
 
-    if {[string compare $nodeIdx "root"] == 0} {
+    if {$nodeIdx eq "root"} {
 	#
 	# Configure the "Refresh" and "Parent" buttons
 	#
 	$top.bf.b1 configure -command [list demo::refreshView $w $tbl]
 	set b2 $top.bf.b2
 	set p [winfo parent $w]
-	if {[string compare $p ""] == 0} {
+	if {$p eq ""} {
 	    $b2 configure -state disabled
 	} else {
 	    $b2 configure -state normal -command \
@@ -303,7 +300,7 @@ proc demo::updateItemsDelayed tbl {
     # Schedule the demo::updateItems command for execution
     # 500 ms later, but only if it is not yet pending
     #
-    if {[string compare [$tbl attrib afterId] ""] == 0} {
+    if {[$tbl attrib afterId] eq ""} {
 	$tbl attrib afterId [after 500 [list demo::updateItems $tbl]]
     }
 }

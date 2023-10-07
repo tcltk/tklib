@@ -9,7 +9,8 @@
 #
 set currentTheme [tablelist::getCurrentTheme]
 if {$tablelist::themeDefaults(-stripebackground) eq "" &&
-    $currentTheme ne "black"} {
+    $currentTheme ne "black" && $currentTheme ne "breeze-dark" &&
+    $currentTheme ne "sun-valley-dark"} {
     option add *Tablelist.background		white
     option add *Tablelist.stripeBackground	#f0f0f0
 }

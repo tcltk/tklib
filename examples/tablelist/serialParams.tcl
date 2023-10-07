@@ -43,7 +43,7 @@ bind $tbl <<ThemeChanged>>	   { configCkbtn %W available }
 #
 set ckbtn [$tbl labelwindowpath available]
 set varName [$ckbtn cget -variable]
-if {[string compare [winfo class $ckbtn] "Checkbutton"] == 0} {
+if {[winfo class $ckbtn] eq "Checkbutton"} {
     set $varName ""
 } else {
     unset $varName
@@ -62,7 +62,7 @@ proc updateCkbtn {tbl row col} {
 	set var 0					;# deselect
     } elseif {[lsearch -exact $lst 0] < 0} {		;# all 1
 	set var 1					;# select
-    } elseif {[string compare [winfo class $ckbtn] "Checkbutton"] == 0} {
+    } elseif {[winfo class $ckbtn] eq "Checkbutton"} {
 	set var ""					;# tri-state mode
     } else {
 	unset -nocomplain var				;# tri-state mode

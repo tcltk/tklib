@@ -14,7 +14,7 @@
   <div>
     <h1>The <code><b>tablelist::tablelist</b></code> Command</h1>
 
-    <h2>For Tablelist Version 6.22</h2>
+    <h2>For Tablelist Version 7.0</h2>
 
     <h3>by</h3>
 
@@ -1682,10 +1682,6 @@ proc acceptChildCmd {tbl targetParentNodeIdx sourceRow} {
 }
 </pre>
         </blockquote>
-
-        <p>For technical reasons (the use of the <code><b>-elide</b></code>
-        text widget tag option for collapsing a row), this option is not
-        supported for Tk versions earlier than 8.3.</p>
       </blockquote>
     </dd>
 
@@ -1807,13 +1803,12 @@ proc acceptDropCmd {tbl targetRow sourceRow} {
         <code>#595959</code> for Windows 10+, <code>#569bc0</code> for Windows
         Vista, 7, and 8, <code>#aca899</code> for Windows XP, and an empty
         string for older Windows versions.&nbsp; Finally, for the windowing
-        systems <code><b>classic</b></code> and <code><b>aqua</b></code> on the
-        Macintosh, as well as for the <code><b>aqua</b></code> theme, the
-        default arrow color depends on the version of the operating
-        system:&nbsp; Starting with version 10.10 (Yosemite) of Mac OS X, the
-        default arrow color is <code>#404040</code> on Mac OS X and
-        <code>#878787</code> on macOS 11+, while for earlier operating system
-        versions the default is <code>#777777</code>.</p>
+        system <code><b>aqua</b></code> on the Macintosh and for the
+        <code><b>aqua</b></code> theme, the default arrow color depends on the
+        version of the operating system:&nbsp; Starting with version 10.10
+        (Yosemite) of Mac OS X, the default arrow color is <code>#404040</code>
+        on Mac OS X and <code>#878787</code> on macOS 11+, while for earlier
+        operating system versions the default is <code>#777777</code>.</p>
 
         <p><b>REMARK:</b>&nbsp; If the arrow color is as empty string then the
         sort arrow will inherit the background color of the header label in
@@ -1967,11 +1962,10 @@ proc acceptDropCmd {tbl targetRow sourceRow} {
         picture), depending on the display's scaling level.&nbsp; In the
         Classic theme of Windows Vista, 7, and 8, the default arrow style is
         one of the values shown in the first column of the picture.&nbsp;
-        Finally, for the windowing systems <code><b>classic</b></code> and
-        <code><b>aqua</b></code> on the Macintosh, as well as for the
-        <code><b>aqua</b></code> theme, the default arrow style depends on the
-        version of the operating system:&nbsp; Starting with version 10.10
-        (Yosemite) of Mac OS X, the default arrow style is 
+        Finally, for the windowing system <code><b>aqua</b></code> on the
+        Macintosh and for the <code><b>aqua</b></code> theme, the default arrow
+        style depends on the version of the operating system:&nbsp; Starting
+        with version 10.10 (Yosemite) of Mac OS X, the default arrow style is 
         <code><b>flatAngle7x4</b></code>, while for earlier operating system
         versions the default is <code><b>photo7x7</b></code> in the presence of
         PNG support and <code><b>flat7x7</b></code> otherwise.</p>
@@ -2080,10 +2074,6 @@ proc acceptDropCmd {tbl targetRow sourceRow} {
         the tablelist widget and the row index, and the resulting script is
         evaluated in the global scope, before hiding the descendants of the row
         in question.</p>
-
-        <p>For technical reasons (the use of the <code><b>-elide</b></code>
-        text widget tag option for collapsing a row), this option is not
-        supported for Tk versions earlier than 8.3.</p>
       </blockquote>
     </dd>
 
@@ -2566,10 +2556,6 @@ proc myColorizeCmd {tbl textWidget key row col tabIdx1 tabIdx2 inStripe selected
         evaluated in the global scope, before displaying the children of the
         row in question.</p>
 
-        <p>For technical reasons (the use of the <code><b>-elide</b></code>
-        text widget tag option for collapsing a row), this option is not
-        supported for Tk versions earlier than 8.3.</p>
-
         <p><b>REMARK:</b>&nbsp; It is common practice to use the command
         specified as the value of this option to insert the children of the row
         that is about to be expanded, if it has no children yet.&nbsp; For
@@ -2848,13 +2834,9 @@ proc expandCmd {tbl row} {
         <p>Specifies the <code><b>-activebackground</b></code> option for the
         header labels, i.e., the background color to use when the mouse cursor
         is positioned over a header label and the value of
-        <code><b>tk_strictMotif</b></code> is false.&nbsp; This option is only
-        defined in the Tablelist package if the Tk version being used supports
-        the <code><b>-activebackground</b></code> option for label
-        widgets.&nbsp; This is checked by Tablelist at initialization time, and
-        will normally be the case for Tk versions 8.3.2 or higher.&nbsp; On the
-        other hand, the Tablelist_tile package doesn't support the
-        <code><b>-labelactivebackground</b></code> option.</p>
+        <code><b>tk_strictMotif</b></code> is false.&nbsp; The Tablelist_tile
+        package doesn't support the <code><b>-labelactivebackground</b></code>
+        option.</p>
       </blockquote>
     </dd>
 
@@ -2880,13 +2862,9 @@ proc expandCmd {tbl row} {
         <p>Specifies the <code><b>-activeforeground</b></code> option for the
         header labels, i.e., the foreground color to use when the mouse cursor
         is positioned over a header label and the value of
-        <code><b>tk_strictMotif</b></code> is false.&nbsp; This option is only
-        defined in the Tablelist package if the Tk version being used supports
-        the <code><b>-activeforeground</b></code> option for label
-        widgets.&nbsp; This is checked by Tablelist at initialization time, and
-        will normally be the case for Tk versions 8.3.2 or higher.&nbsp; On the
-        other hand, the Tablelist_tile package doesn't support the
-        <code><b>-labelactiveforeground</b></code> option.</p>
+        <code><b>tk_strictMotif</b></code> is false.&nbsp; The Tablelist_tile
+        package doesn't support the <code><b>-labelactiveforeground</b></code>
+        option.</p>
       </blockquote>
     </dd>
 
@@ -3050,13 +3028,8 @@ proc expandCmd {tbl row} {
         <p>Specifies the <code><b>-disabledforeground</b></code> option for the
         header labels, i.e., the foreground color to use for the labels when
         the tablelist's <code><b><a href="#state">state</a></b></code> is
-        <code><b>disabled</b></code>.&nbsp; This option is only defined in the
-        Tablelist package if the Tk version being used supports the
-        <code><b>-disabledforeground</b></code> option for label widgets.&nbsp;
-        This is checked by Tablelist at initialization time, and will normally
-        be the case for Tk versions 8.3.1 or higher.&nbsp; On the other hand,
-        the Tablelist_tile package doesn't support the
-        <code><b>-labeldisabledforeground</b></code> option.</p>
+        <code><b>disabled</b></code>.&nbsp; The Tablelist_tile package doesn't
+        support the <code><b>-labeldisabledforeground</b></code> option.</p>
       </blockquote>
     </dd>
 
@@ -3360,8 +3333,8 @@ for {set row 0} {$row &lt; 1000} {incr row} {
         interactively.&nbsp; The default value is <code><b>icon</b></code> on
         the windowing systems <code><b>x11</b></code> and
         <code><b>win32</b></code>, and the native cursor
-        <code><b>closedhand</b></code> on the Macintosh windowing systems
-        <code><b>classic</b></code> and <code><b>aqua</b></code>.</p>
+        <code><b>closedhand</b></code> on the Macintosh windowing system
+        <code><b>aqua</b></code>.</p>
       </blockquote>
     </dd>
 
@@ -3388,8 +3361,8 @@ for {set row 0} {$row &lt; 1000} {incr row} {
         interactively.&nbsp; The default value is <code><b>hand2</b></code> on
         the windowing systems <code><b>x11</b></code> and
         <code><b>win32</b></code>, and the native cursor
-        <code><b>pointinghand</b></code> on the Macintosh windowing systems
-        <code><b>classic</b></code> and <code><b>aqua</b></code>.</p>
+        <code><b>pointinghand</b></code> on the Macintosh windowing system
+        <code><b>aqua</b></code>.</p>
       </blockquote>
     </dd>
 
@@ -3422,10 +3395,6 @@ for {set row 0} {$row &lt; 1000} {incr row} {
         scope.&nbsp; It is expected that this script will insert the children
         of the row in question, without expanding the node or changing its
         appearance in any other way.</p>
-
-        <p>For technical reasons (the use of the <code><b>-elide</b></code>
-        text widget tag option for collapsing a row), this option is not
-        supported for Tk versions earlier than 8.3.</p>
 
         <p><b>REMARK:</b>&nbsp; There are many similarities between this option
         and <code><b><a href=
@@ -3572,7 +3541,7 @@ proc expandCmd {tbl row} {
         <code><b>sb_h_double_arrow</b></code> on the windowing systems
         <code><b>x11</b></code> and <code><b>win32</b></code>, and the native
         cursor <code><b>resizeleftright</b></code> on the Macintosh windowing
-        systems <code><b>classic</b></code> and <code><b>aqua</b></code>.</p>
+        system <code><b>aqua</b></code>.</p>
       </blockquote>
     </dd>
 
@@ -4371,10 +4340,6 @@ option add *Tablelist.showHorizSeparator 0
         can easily distinguish it from the other separators by means of its
         background color, which is different from that of the other
         separators.</p>
-
-        <p>For technical reasons (the use of the <code><b>-elide</b></code>
-        option for a text widget tag), this option is not supported for Tk
-        versions earlier than 8.3.</p>
       </blockquote>
     </dd>
 
@@ -4604,10 +4569,6 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
         specified column index is replaced with its numerical equivalent, and
         it will be updated automatically whenever columns are inserted,
         deleted, or moved.&nbsp; The default value is <code>0</code>.</p>
-
-        <p>For technical reasons (the use of the <code><b>-elide</b></code>
-        text widget tag option for collapsing a row), this option is not
-        supported for Tk versions earlier than 8.3.</p>
 
         <p><b>REMARK:</b>&nbsp; Please note that the tree structure will only
         be displayed as expected if the column specified by this option is
@@ -4987,9 +4948,8 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr valign="top">
                   <td>Tablelist:&nbsp;</td>
-                  <td>Default for the windowing systems
-                  <code><b>aqua</b></code> on Mac OS X and
-                  <code><b>classic</b></code>.</td>
+                  <td>Default for the windowing system <code><b>aqua</b></code>
+                  on Mac OS X.</td>
                 </tr>
 
                 <tr valign="top">
@@ -5055,10 +5015,11 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr valign="top">
                   <td>Tablelist_tile:&nbsp;</td>
-                  <td>Default for the themes <code><b>awblack</b></code>,
+                  <td>Default for the themes <code><b>breeze</b></code>,
                   <code><b>awbreeze</b></code>, <code><b>awlight</b></code>,
-                  and <code><b>awwinxpblue</b></code> of the awthemes package,
-                  if SVG support is available.</td>
+                  <code><b>awwinxpblue</b></code>, and
+                  <code><b>sun-valley-light</b></code>, if SVG support is
+                  available.</td>
                 </tr>
               </table>
             </td>
@@ -5077,10 +5038,11 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr valign="top">
                   <td>Tablelist_tile:&nbsp;</td>
-                  <td>Default for the themes <code><b>awblack</b></code>,
+                  <td>Default for the themes <code><b>breeze</b></code>,
                   <code><b>awbreeze</b></code>, <code><b>awlight</b></code>,
-                  and <code><b>awwinxpblue</b></code> of the awthemes package,
-                  in the absence of SVG support.</td>
+                  <code><b>awwinxpblue</b></code>, and
+                  <code><b>sun-valley-light</b></code>, in the absence of SVG
+                  support.</td>
                 </tr>
               </table>
             </td>
@@ -5096,8 +5058,8 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr valign="top">
                   <td>Tablelist_tile:&nbsp;</td>
-                  <td>Default for the <code><b>awarc</b></code> theme of the
-                  awthemes package, if SVG support is available.</td>
+                  <td>Default for the <code><b>awarc</b></code> theme, if SVG
+                  support is available.</td>
                 </tr>
               </table>
             </td>
@@ -5116,8 +5078,8 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr valign="top">
                   <td>Tablelist_tile:&nbsp;</td>
-                  <td>Default for the <code><b>awarc</b></code> theme of the
-                  awthemes package, in the absence of SVG support.</td>
+                  <td>Default for the <code><b>awarc</b></code> theme, in the
+                  absence of SVG support.</td>
                 </tr>
               </table>
             </td>
@@ -5277,8 +5239,8 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr valign="top">
                   <td>Tablelist_tile:&nbsp;</td>
-                  <td>Default for the <code><b>awclearlooks</b></code> theme of
-                  the awthemes package, if SVG support is available.</td>
+                  <td>Default for the <code><b>awclearlooks</b></code> theme,
+                  if SVG support is available.</td>
                 </tr>
               </table>
             </td>
@@ -5297,8 +5259,8 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr valign="top">
                   <td>Tablelist_tile:&nbsp;</td>
-                  <td>Default for the <code><b>awclearlooks</b></code> theme of
-                  the awthemes package, in the absence of SVG support.</td>
+                  <td>Default for the <code><b>awclearlooks</b></code> theme,
+                  in the absence of SVG support.</td>
                 </tr>
               </table>
             </td>
@@ -5428,9 +5390,12 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr valign="top">
                   <td>Tablelist_tile:&nbsp;</td>
-                  <td>Default for the themes <code><b>awdark</b></code> and
-                  <code><b>awbreezedark</b></code> of the awthemes package, if
-                  SVG support is available.</td>
+                  <td>Default for the themes <code><b>black</b></code>,
+                  <code><b>awblack</b></code>,
+                  <code><b>breeze-dark</b></code>,
+                  <code><b>awbreezedark</b></code>, <code><b>awdark</b></code>,
+                  and <code><b>sun-valley-dark</b></code>, if SVG support is
+                  available.</td>
                 </tr>
               </table>
             </td>
@@ -5449,9 +5414,12 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr valign="top">
                   <td>Tablelist_tile:&nbsp;</td>
-                  <td>Default for the themes <code><b>awdark</b></code> and
-                  <code><b>awbreezedark</b></code> of the awthemes package, in
-                  the absence of SVG support.</td>
+                  <td>Default for the themes <code><b>black</b></code>,
+                  <code><b>awblack</b></code>,
+                  <code><b>breeze-dark</b></code>,
+                  <code><b>awbreezedark</b></code>, <code><b>awdark</b></code>,
+                  and <code><b>sun-valley-dark</b></code>, in the absence of
+                  SVG support.</td>
                 </tr>
               </table>
             </td>
@@ -5619,10 +5587,6 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
             <td>Inspired by the GTK 2 theme Yuyo on Ubuntu MATE.</td>
           </tr>
         </table>
-
-        <p>For technical reasons (the use of the <code><b>-elide</b></code>
-        text widget tag option for collapsing a row), this option is not
-        supported for Tk versions earlier than 8.3.</p>
       </blockquote>
     </dd>
 
@@ -5941,10 +5905,10 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
         interactive editing of the contents of the given column's body
         cells.&nbsp; <code><i>name</i></code> may be one of
         <code><b>entry</b></code> (which is the default),
-        <code><b>text</b></code>, <code><b>spinbox</b></code> (the latter for
-        Tk versions 8.4 or higher), <code><b>checkbutton</b></code>,
-        <code><b>menubutton</b></code>, <code><b>ttk::entry</b></code>,
-        <code><b>ttk::spinbox</b></code>, <code><b>ttk::combobox</b></code>,
+        <code><b>text</b></code>, <code><b>spinbox</b></code>,
+        <code><b>checkbutton</b></code>, <code><b>menubutton</b></code>,
+        <code><b>ttk::entry</b></code>, <code><b>ttk::spinbox</b></code>,
+        <code><b>ttk::combobox</b></code>,
         <code><b>ttk::checkbutton</b></code>, or
         <code><b>ttk::menubutton</b></code> (the latter five only in the
         presence of the tile widget engine), or the value returned by one of
@@ -6707,10 +6671,6 @@ proc updateWindow {tbl row col w args} {
         virtual event is generated, with its <code><b>-data</b></code> option
         set to the numerical row index for Tk versions 8.5 and higher.</dd>
 
-        <dd class="tm">For technical reasons (the use of the
-        <code><b>-elide</b></code> option for a text widget tag), this option
-        is not supported for Tk versions earlier than 8.3.</dd>
-
         <dd class="tm"><b>CAUTION:</b>&nbsp; Tk versions 8.3 - 8.4.12 had a bug
         that caused a segmentation fault if the whole content of a text widget
         was elided.&nbsp; This bug was also present in Tk 8.5a1 - 8.5a3.&nbsp;
@@ -7318,17 +7278,16 @@ proc updateWindow {tbl row col w args} {
     the temporary embedded widget and cancels the editing of its content.&nbsp;
     The main goal of this script is, however, to enable you to define
     validations for the editing process.&nbsp; This can be done either with the
-    aid of the options for entry validation, supported by Tk versions 8.3 and
-    higher (see the <b>entry</b> reference page), or by using the widget
-    callback package <a href="https://www.nemethi.de">Wcb</a>, available for Tk
-    versions 8.0 and higher.&nbsp; The Iwidgets package (available for Tk
-    versions 8.0 or higher) provides its own validation facilities, which can
-    equally be used if the edit window is a widget belonging to that
-    extension.&nbsp; In either case, you will need the path name of the
-    temporary embedded widget or that of its entry or entry-like component; use
-    the <code><b><a href="#editwinpath">editwinpath</a></b></code> and
-    <code><b><a href="#entrypath">entrypath</a></b></code> subcommands to get
-    these path names.&nbsp; Another purpose of the command indicated by the
+    aid of the options for entry validation (see the <b>entry</b> reference
+    page), or by using the widget callback package <a href=
+    "https://www.nemethi.de">Wcb</a>.&nbsp; The Iwidgets package provides its
+    own validation facilities, which can equally be used if the edit window is
+    a widget belonging to that extension.&nbsp; In either case, you will need
+    the path name of the temporary embedded widget or that of its entry or
+    entry-like component; use the <code><b><a href=
+    "#editwinpath">editwinpath</a></b></code> and <code><b><a href=
+    "#entrypath">entrypath</a></b></code> subcommands to get these path
+    names.&nbsp; Another purpose of the command indicated by the
     <code><b>-editstartcommand</b></code> option is to enable you to prepare
     the edit window in various other ways.&nbsp; For example, if the latter is
     a combobox widget then you can set its <code><b>-editable</b></code> option
@@ -8745,11 +8704,6 @@ registerDragSrc [$tbl bodypath]
         and the row index, and the resulting script is evaluated in the global
         scope.</dd>
 
-        <dd class="tm">For technical reasons (the use of the
-        <code><b>-elide</b></code> text widget tag option for collapsing a
-        row), this subcommand is not supported for Tk versions earlier than
-        8.3.</dd>
-
         <dd class="tm"><b>REMARK:</b>&nbsp; If you want to collapse several
         rows, it is much more efficient to do it by invoking this subcommand
         for the list of their indices than by invoking it in a loop, for the
@@ -8778,11 +8732,6 @@ registerDragSrc [$tbl bodypath]
         automatically concatenated with the path name of the tablelist widget
         and the row index, and the resulting script is evaluated in the global
         scope.</dd>
-
-        <dd class="tm">For technical reasons (the use of the
-        <code><b>-elide</b></code> text widget tag option for collapsing a
-        row), this subcommand is not supported for Tk versions earlier than
-        8.3.</dd>
 
         <dt class="tm" id="columnattrib"><code><i>pathName</i>
         <b>columnattrib</b> <i>columnIndex</i> ?<i>name</i>? ?<i>value</i>
@@ -9586,11 +9535,6 @@ bind [.tbl <span class="red">editwintag</span>] &lt;Return&gt; "[bind <a href=
         scope.&nbsp; This enables you to insert a tree node's children on
         demand, just before expanding it.</dd>
 
-        <dd class="tm">For technical reasons (the use of the
-        <code><b>-elide</b></code> text widget tag option for collapsing a
-        row), this subcommand is not supported for Tk versions earlier than
-        8.3.</dd>
-
         <dd class="tm"><b>REMARK:</b>&nbsp; If you want to expand several rows,
         it is much more efficient to do it by invoking this subcommand for the
         list of their indices than by invoking it in a loop, for the individual
@@ -9616,11 +9560,6 @@ bind [.tbl <span class="red">editwintag</span>] &lt;Return&gt; "[bind <a href=
         and the row index, and the resulting script is evaluated in the global
         scope.&nbsp; This enables you to insert a tree node's children on
         demand, just before expanding it.</dd>
-
-        <dd class="tm">For technical reasons (the use of the
-        <code><b>-elide</b></code> text widget tag option for collapsing a
-        row), this subcommand is not supported for Tk versions earlier than
-        8.3.</dd>
 
         <dt class="tm" id="expandedkeys"><code><i>pathName</i>
         <b>expandedkeys</b></code></dt>
@@ -10158,11 +10097,6 @@ eval [list <i>pathName</i> <a href=
 
         <dd>but it is more efficient and easier to use.</dd>
 
-        <dd class="tm">For technical reasons (the use of the
-        <code><b>-elide</b></code> text widget tag option for collapsing a
-        row), this subcommand is not supported for Tk versions earlier than
-        8.3.</dd>
-
         <dd class="tm"><b>REMARK:</b>&nbsp; You can achieve a quite significant
         speadup by using this subcommand to insert a whole list of items rather
         than using multiple invocations of <code><b><a href=
@@ -10188,11 +10122,6 @@ eval [list <i>pathName</i> <a href=
         rise to multi-line elements (which are displayed in embedded message
         widgets, created on demand).&nbsp; The return value is the list of full
         keys associated with the items just inserted.</dd>
-
-        <dd class="tm">For technical reasons (the use of the
-        <code><b>-elide</b></code> text widget tag option for collapsing a
-        row), this subcommand is not supported for Tk versions earlier than
-        8.3.</dd>
 
         <dd class="tm"><b>REMARK:</b>&nbsp; It is explicitly allowed to
         abbreviate the name <code><b>insertchildren</b></code> as
@@ -10491,10 +10420,6 @@ upvar #0 [.tbl <span class="red">itemlistvar</span>] itemList
         file must have have been created with the aid of the <code><b><a href=
         "#dumptofile">dumptofile</a></b></code> subcommand.</dd>
 
-        <dd class="tm">For technical reasons (the use of some
-        <code><b>lsearch</b></code> options), this subcommand is not supported
-        for Tk versions earlier than 8.4.</dd>
-
         <dd class="tm">After clearing the widget's current content (if any) and
         applying to it the sorting-related information retrieved from the file,
         the subcommand inserts the header items (if any) via&nbsp;
@@ -10563,10 +10488,6 @@ upvar #0 [.tbl <span class="red">itemlistvar</span>] itemList
         string <code><i>string</i></code>, which must have have been returned
         by the <code><b><a href="#dumptostring">dumptostring</a></b></code>
         subcommand.</dd>
-
-        <dd class="tm">For technical reasons (the use of some
-        <code><b>lsearch</b></code> options), this subcommand is not supported
-        for Tk versions earlier than 8.4.</dd>
 
         <dd class="tm">The remaining details are nearly identical to the ones
         regarding the <code><b><a href=
@@ -11394,9 +11315,7 @@ upvar #0 [.tbl <span class="red">itemlistvar</span>] itemList
         virtual event is generated.&nbsp; For Tk versions 8.5 and higher, this
         virtual event is generated with its <code><b>-data</b></code> option
         set to a list consisting of the numerical row indices of the rows whose
-        <code><b>-hide</b></code> option was toggled.&nbsp; Just like the
-        <code><b>-hide</b></code> row configuration option, this subcommand is
-        not supported for Tk versions earlier than 8.3.</dd>
+        <code><b>-hide</b></code> option was toggled.</dd>
 
         <dd class="tm"><b>CAUTION:</b>&nbsp; Tk versions 8.3 - 8.4.12 had a bug
         that caused a segmentation fault if the whole content of a text widget
@@ -12344,8 +12263,7 @@ proc printClickedCell {w x y} {
         source item before that row or making it a child of the latter is
         allowed from the point of view of the general tree structure.&nbsp; If
         this is the case and the move operation would change the source item's
-        parent (and the Tk version is at least 8.3), and the command specified
-        as the value of the <code><b><a href=
+        parent, and the command specified as the value of the <code><b><a href=
         "#acceptchildcommand">-acceptchildcommand</a></b></code> configuration
         option is a nonempty string, then this command is concatenated with the
         path name of the tablelist widget, the node index of the would-be new

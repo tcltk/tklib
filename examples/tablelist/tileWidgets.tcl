@@ -1,6 +1,4 @@
 #! /usr/bin/env tclsh
-  
-package require Tk
 
 #==============================================================================
 # Demonstrates the interactive tablelist cell editing with the aid of some
@@ -9,9 +7,11 @@ package require Tk
 # Copyright (c) 2005-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 6.22
+package require Tk
+package require tablelist_tile
 
-if {[tk windowingsystem] eq "x11"} {
+if {[tk windowingsystem] eq "x11" &&
+    ($tk_version < 8.7 || [package vcompare $::tk_patchLevel "8.7a5"] <= 0)} {
     #
     # Patch the default theme's styles TCheckbutton and TRadiobutton
     #
@@ -95,12 +95,6 @@ $tbl columnconfigure 10 -name color    -editable yes \
 proc emptyStr   val { return "" }
 proc formatDate val { return [clock format $val -format "%Y-%m-%d"] }
 proc formatTime val { return [clock format $val -format "%H:%M:%S"] }
-
-if {[tk windowingsystem] eq "x11"} {
-    package req scrollutil_tile
-    package require themepatch
-    themepatch::patch default
-}
 
 #
 # Populate the tablelist widget and configure the checkbutton

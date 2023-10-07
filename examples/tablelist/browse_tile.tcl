@@ -5,7 +5,7 @@
 # Copyright (c) 2000-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 6.22
+package require tablelist_tile
 
 namespace eval demo {
     variable dir [file dirname [info script]]
@@ -167,7 +167,7 @@ proc demo::putChildren {w tbl} {
 		    -message "Bad window path name \"$w\" -- replacing\
 			      it with nearest existent ancestor" \
 		    -type okcancel -default ok -parent [winfo toplevel $tbl]]
-	if {[string compare $choice "ok"] == 0} {
+	if {$choice eq "ok"} {
 	    while {![winfo exists $w]} {
 		set last [string last "." $w]
 		if {$last != 0} {
@@ -218,7 +218,7 @@ proc demo::putChildren {w tbl} {
     $top.bf.b1 configure -command [list demo::putChildren $w $tbl]
     set b2 $top.bf.b2
     set p [winfo parent $w]
-    if {[string compare $p ""] == 0} {
+    if {$p eq ""} {
 	$b2 configure -state disabled
     } else {
 	$b2 configure -state normal -command [list demo::putChildren $p $tbl]
@@ -256,7 +256,7 @@ proc demo::updateItemsDelayed tbl {
     # Schedule the demo::updateItems command for execution
     # 500 ms later, but only if it is not yet pending
     #
-    if {[string compare [$tbl attrib afterId] ""] == 0} {
+    if {[$tbl attrib afterId] eq ""} {
 	$tbl attrib afterId [after 500 [list demo::updateItems $tbl]]
     }
 }

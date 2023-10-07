@@ -98,7 +98,7 @@ proc tablelist::setThemeDefaults {} {
 	}
     }
 
-    if {[string length $themeDefaults(-arrowcolor)] == 0} {
+    if {$themeDefaults(-arrowcolor) eq ""} {
 	set themeDefaults(-arrowdisabledcolor) ""
     } else {
 	set themeDefaults(-arrowdisabledcolor) $themeDefaults(-labeldisabledFg)
@@ -141,7 +141,7 @@ proc tablelist::awTheme theme {
     set pct [expr {$svgSupported ? "" : $scalingpct}]
     switch $theme {
 	awarc - arc			{ set treeStyle classic$pct }
-	awblack - black			{ set treeStyle bicolor$pct }
+	awblack - black			{ set treeStyle white$pct }
 	awbreeze - breeze		{ set treeStyle bicolor$pct }
 	awbreezedark			{ set treeStyle white$pct }
 	awclearlooks - clearlooks	{ set treeStyle plain$pct }
@@ -519,6 +519,39 @@ proc tablelist::ArcTheme {} {
 }
 
 #------------------------------------------------------------------------------
+# tablelist::blackTheme
+#------------------------------------------------------------------------------
+proc tablelist::blackTheme {} {
+    variable themeDefaults
+    variable svgSupported
+    variable scalingpct
+    set pct [expr {$svgSupported ? "" : $scalingpct}]
+    array set themeDefaults [list \
+	-background		#000000 \
+	-foreground		#ffffff \
+	-disabledforeground	#a9a9a9 \
+	-stripebackground	"" \
+	-selectbackground	#4a6984 \
+	-selectforeground	#ffffff \
+	-selectborderwidth	0 \
+	-labelbackground	#424242 \
+	-labeldeactivatedBg	#424242 \
+	-labeldisabledBg	#424242 \
+	-labelactiveBg		#626262 \
+	-labelpressedBg		#626262 \
+	-labelforeground	#ffffff \
+	-labeldisabledFg	#a9a9a9 \
+	-labelactiveFg		#ffffff \
+	-labelpressedFg		#ffffff \
+	-labelborderwidth	2 \
+	-labelpady		[scaleutil::scale 3 $scalingpct] \
+	-arrowcolor		#ffffff \
+	-arrowstyle		[defaultX11ArrowStyle] \
+	-treestyle		white$pct \
+    ]
+}
+
+#------------------------------------------------------------------------------
 # tablelist::blueTheme
 #------------------------------------------------------------------------------
 proc tablelist::blueTheme {} {
@@ -545,10 +578,79 @@ proc tablelist::blueTheme {} {
 }
 
 #------------------------------------------------------------------------------
+# tablelist::BreezeTheme, tablelist::breezeTheme
+#------------------------------------------------------------------------------
+proc tablelist::BreezeTheme {} {
+    variable themeDefaults
+    variable svgSupported
+    variable scalingpct
+    set pct [expr {$svgSupported ? "" : $scalingpct}]
+    array set themeDefaults [list \
+	-background		#eff0f1 \
+	-foreground		#31363b \
+	-disabledforeground	#bbcbbe \
+	-stripebackground	"" \
+	-selectbackground	#3daee9 \
+	-selectforeground	#ffffff \
+	-selectborderwidth	0 \
+	-labelbackground	#eff0f1 \
+	-labeldeactivatedBg	#eff0f1 \
+	-labeldisabledBg	#eff0f1 \
+	-labelactiveBg		#94d0eb \
+	-labelpressedBg		#94d0eb \
+	-labelforeground	#31363b \
+	-labeldisabledFg	#bbcbbe \
+	-labelactiveFg		#31363b \
+	-labelpressedFg		#31363b \
+	-labelborderwidth	0 \
+	-labelpady		1 \
+	-arrowcolor		#31363b \
+	-arrowstyle		flatAngle11x6 \
+	-treestyle		bicolor$pct \
+    ]
+}
+proc tablelist::breezeTheme {} {
+    BreezeTheme
+}
+
+#------------------------------------------------------------------------------
+# tablelist::breeze-darkTheme
+#------------------------------------------------------------------------------
+proc tablelist::breeze-darkTheme {} {
+    variable themeDefaults
+    variable svgSupported
+    variable scalingpct
+    set pct [expr {$svgSupported ? "" : $scalingpct}]
+    array set themeDefaults [list \
+	-background		#31363b \
+	-foreground		#eff0f1 \
+	-disabledforeground	#7f8c8d \
+	-stripebackground	"" \
+	-selectbackground	#3daee9 \
+	-selectforeground	#ffffff \
+	-selectborderwidth	0 \
+	-labelbackground	#31363b \
+	-labeldeactivatedBg	#31363b \
+	-labeldisabledBg	#31363b \
+	-labelactiveBg		#94d0eb \
+	-labelpressedBg		#94d0eb \
+	-labelforeground	#eff0f1 \
+	-labeldisabledFg	#bbcbbe \
+	-labelactiveFg		#eff0f1 \
+	-labelpressedFg		#eff0f1 \
+	-labelborderwidth	0 \
+	-labelpady		1 \
+	-arrowcolor		#eff0f1 \
+	-arrowstyle		flatAngle11x6 \
+	-treestyle		white$pct \
+    ]
+}
+
+#------------------------------------------------------------------------------
 # tablelist::clamTheme
 #------------------------------------------------------------------------------
 proc tablelist::clamTheme {} {
-    if {[styleConfig Heading -padding] == 1} {
+    if {[styleConfig Heading -padding] == 1} {	;# set by themepatch::patch
 	set labelPadY 1
     } else {
 	variable scalingpct
@@ -600,7 +702,7 @@ proc tablelist::classicTheme {} {
     ]
 
     if {[info exists ::tile::version] &&
-	[string compare $::tile::version 0.8] < 0} {
+	[string compare $::tile::version "0.8"] < 0} {
 	set themeDefaults(-font)	TkClassicDefaultFont
 	set themeDefaults(-labelfont)	TkClassicDefaultFont
     }
@@ -770,7 +872,7 @@ proc tablelist::srivTheme {} {
 	-labelactiveBg		#a0a0a0 \
 	-labelpressedBg		#a0a0a0 \
 	-labeldisabledFg	#666666 \
-	-labelborderwidth	2 \
+	-labelborderwidth	1 \
 	-labelpady		1 \
 	-arrowstyle		[defaultX11ArrowStyle] \
 	-treestyle		gtk \
@@ -795,7 +897,7 @@ proc tablelist::srivlgTheme {} {
 	-labelactiveBg		#6699cc \
 	-labelpressedBg		#6699cc \
 	-labeldisabledFg	#666666 \
-	-labelborderwidth	2 \
+	-labelborderwidth	1 \
 	-labelpady		1 \
 	-arrowstyle		[defaultX11ArrowStyle] \
 	-treestyle		gtk \
@@ -823,6 +925,72 @@ proc tablelist::stepTheme {} {
 	-labelpady		1 \
 	-arrowstyle		[defaultX11ArrowStyle] \
 	-treestyle		gtk \
+    ]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::sun-valley-lightTheme
+#------------------------------------------------------------------------------
+proc tablelist::sun-valley-lightTheme {} {
+    variable themeDefaults
+    variable svgSupported
+    variable scalingpct
+    set pct [expr {$svgSupported ? "" : $scalingpct}]
+    array set themeDefaults [list \
+	-background		#fafafa \
+	-foreground		#1c1c1c \
+	-disabledforeground	#a0a0a0 \
+	-stripebackground	"" \
+	-selectbackground	#2f60d8 \
+	-selectforeground	#ffffff \
+	-selectborderwidth	0 \
+	-labelbackground	#fdfdfd \
+	-labeldeactivatedBg	#fdfdfd \
+	-labeldisabledBg	#fdfdfd \
+	-labelactiveBg		#f9f9f9 \
+	-labelpressedBg		#fafafa \
+	-labelforeground	#1c1c1c \
+	-labeldisabledFg	#a0a0a0 \
+	-labelactiveFg		#1c1c1c \
+	-labelpressedFg		#1c1c1c \
+	-labelborderwidth	0 \
+	-labelpady		1 \
+	-arrowcolor		#1c1c1c \
+	-arrowstyle		[defaultX11ArrowStyle] \
+	-treestyle		bicolor$pct \
+    ]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::sun-valley-darkTheme
+#------------------------------------------------------------------------------
+proc tablelist::sun-valley-darkTheme {} {
+    variable themeDefaults
+    variable svgSupported
+    variable scalingpct
+    set pct [expr {$svgSupported ? "" : $scalingpct}]
+    array set themeDefaults [list \
+	-background		#1c1c1c \
+	-foreground		#fafafa \
+	-disabledforeground	#595959 \
+	-stripebackground	"" \
+	-selectbackground	#2f60d8 \
+	-selectforeground	#ffffff \
+	-selectborderwidth	0 \
+	-labelbackground	#2a2a2a \
+	-labeldeactivatedBg	#2a2a2a \
+	-labeldisabledBg	#2a2a2a \
+	-labelactiveBg		#2f2f2f \
+	-labelpressedBg		#232323 \
+	-labelforeground	#fafafa \
+	-labeldisabledFg	#595959 \
+	-labelactiveFg		#fafafa \
+	-labelpressedFg		#fafafa \
+	-labelborderwidth	0 \
+	-labelpady		1 \
+	-arrowcolor		#fafafa \
+	-arrowstyle		[defaultX11ArrowStyle] \
+	-treestyle		white$pct \
     ]
 }
 
@@ -1650,8 +1818,8 @@ proc tablelist::vistaTheme {} {
 	set arrowStyle	flatAngle[defaultWinArrowSize]
 	set treeStyle	win10
 
-    } elseif {[string compare [winfo rgb . SystemHighlight] \
-			      "13107 39321 65535"] == 0} {	;# Aero
+    } elseif {[winfo rgb . SystemHighlight] eq
+	      "13107 39321 65535"} {				;# Aero
 	set selectFg	SystemWindowText
 	set labelBd	4
 	set labelPadY	4
@@ -1763,7 +1931,7 @@ proc tablelist::winxpblueTheme {} {
 	-labelactiveBg		#c1d2ee \
 	-labelpressedBg		#bab5ab \
 	-labeldisabledFg	#565248 \
-	-labelborderwidth	2 \
+	-labelborderwidth	1 \
 	-labelpady		1 \
 	-arrowcolor		#4d6185 \
 	-arrowstyle		flat7x4 \
@@ -1818,7 +1986,7 @@ proc tablelist::xpnativeTheme {} {
 		set treeStyle	winxpBlue
 
 		if {[info exists ::tile::version] &&
-		    [string compare $::tile::version 0.7] < 0} {
+		    [string compare $::tile::version "0.7"] < 0} {
 		    set labelBd 0
 		}
 	    }
@@ -1837,7 +2005,7 @@ proc tablelist::xpnativeTheme {} {
 		set treeStyle	winxpOlive
 
 		if {[info exists ::tile::version] &&
-		    [string compare $::tile::version 0.7] < 0} {
+		    [string compare $::tile::version "0.7"] < 0} {
 		    set labelBd 0
 		}
 	    }
@@ -1856,7 +2024,7 @@ proc tablelist::xpnativeTheme {} {
 		set treeStyle	winxpSilver
 
 		if {[info exists ::tile::version] &&
-		    [string compare $::tile::version 0.7] < 0} {
+		    [string compare $::tile::version "0.7"] < 0} {
 		    set labelBd 0
 		}
 	    }

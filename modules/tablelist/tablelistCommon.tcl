@@ -8,13 +8,8 @@ namespace eval ::tablelist {
     #
     # Public variables:
     #
-    variable version	6.22
-    variable library
-    if {$::tcl_version >= 8.4} {
-	set library	[file dirname [file normalize [info script]]]
-    } else {
-	set library	[file dirname [info script]] ;# no "file normalize" yet
-    }
+    variable version	7.0
+    variable library	[file dirname [file normalize [info script]]]
 
     #
     # Creates a new tablelist widget:
@@ -45,22 +40,6 @@ namespace eval ::tablelist {
 
 package provide tablelist::common $::tablelist::version
 
-if {$::tcl_version >= 8.4} {
-    interp alias {} ::tablelist::addVarTrace	{} trace add variable
-    interp alias {} ::tablelist::removeVarTrace	{} trace remove variable
-} else {
-    proc ::tablelist::addVarTrace {name ops cmd} {
-	set ops2 ""
-	foreach op $ops { append ops2 [string index $op 0] }
-	trace variable $name $ops2 $cmd
-    }
-    proc ::tablelist::removeVarTrace {name ops cmd} {
-	set ops2 ""
-	foreach op $ops { append ops2 [string index $op 0] }
-	trace vdelete $name $ops2 $cmd
-    }
-}
-
 #
 # The following procedure, invoked in "tablelist.tcl" and
 # "tablelist_tile.tcl", sets the variable ::tablelist::usingTile
@@ -68,7 +47,7 @@ if {$::tcl_version >= 8.4} {
 #
 proc ::tablelist::useTile {bool} {
     variable usingTile $bool
-    addVarTrace usingTile {write unset} \
+    trace add variable usingTile {write unset} \
 	[list ::tablelist::restoreUsingTile $bool]
 }
 
@@ -79,13 +58,13 @@ proc ::tablelist::useTile {bool} {
 #
 proc ::tablelist::restoreUsingTile {origVal varName index op} {
     variable usingTile $origVal
-    switch -glob $op {
-	w* {
+    switch $op {
+	write {
 	    return -code error "it is not supported to use both Tablelist and\
 				Tablelist_tile in the same application"
 	}
-	u* {
-	    addVarTrace usingTile {write unset} \
+	unset {
+	    trace add variable usingTile {write unset} \
 		[list ::tablelist::restoreUsingTile $origVal]
 	}
     }
@@ -113,17 +92,17 @@ lappend auto_path [file join $::tablelist::library scripts]
 #
 proc ::tablelist::loadUtils {} {
     if {[catch {package present mwutil} version] == 0 &&
-	[package vcompare $version 2.20] < 0} {
+	[package vcompare $version 2.21] < 0} {
 	package forget mwutil
     }
-    package require mwutil 2.20
+    package require mwutil 2.21-
 
     if {[catch {package present scaleutil} version] == 0 &&
-	[package vcompare $version 1.11] < 0} {
+	[package vcompare $version 1.12] < 0} {
 	package forget scaleutil
     }
-    package require scaleutil 1.11
+    package require scaleutil 1.12-
 
-    package require scaleutilmisc 1.4
+    package require scaleutilmisc 1.5-
 }
 ::tablelist::loadUtils

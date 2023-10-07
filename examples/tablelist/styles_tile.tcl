@@ -1,6 +1,4 @@
 #! /usr/bin/env tclsh
-  
-package require Tk
 
 #==============================================================================
 # Demonstrates some ways of improving the look & feel of a tablelist widget.
@@ -8,7 +6,8 @@ package require Tk
 # Copyright (c) 2002-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 6.22
+package require Tk
+package require tablelist_tile
 
 wm title . "Tablelist Styles"
 

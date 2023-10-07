@@ -1,6 +1,4 @@
 #! /usr/bin/env tclsh
-  
-package require Tk
 
 #==============================================================================
 # Demonstrates the interactive tablelist cell editing with the aid of Bryan
@@ -10,7 +8,8 @@ package require Tk
 # Copyright (c) 2004-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 6.22
+package require Tk
+package require tablelist_tile
 package require combobox
 package require mentry
 

@@ -5,7 +5,7 @@
 # Copyright (c) 2010-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 6.22
+package require tablelist_tile
 
 namespace eval demo {
     variable dir [file dirname [info script]]
@@ -90,8 +90,14 @@ proc demo::displayChildren w {
     #
     variable isAwTheme
     if {[tk windowingsystem] eq "x11" && !$isAwTheme} {
+	variable currentTheme
 	variable pct					;# ""|100|125|...|200
-	$tbl configure -treestyle bicolor$pct
+	if {$currentTheme eq "black" || $currentTheme eq "breeze-dark" ||
+	    $currentTheme eq "sun-valley-dark"} {
+	    $tbl configure -treestyle white$pct
+	} else {
+	    $tbl configure -treestyle bicolor$pct
+	}
     }
 
     #
@@ -174,13 +180,13 @@ proc demo::putChildren {w tbl nodeIdx} {
     #
     if {![winfo exists $w]} {
 	bell
-	if {[string compare $nodeIdx "root"] == 0} {
+	if {$nodeIdx eq "root"} {
 	    set choice [tk_messageBox -title "Error" -icon warning \
 			-message "Bad window path name \"$w\" -- replacing\
 				  it with nearest existent ancestor" \
 			-type okcancel -default ok \
 			-parent [winfo toplevel $tbl]]
-	    if {[string compare $choice "ok"] == 0} {
+	    if {$choice eq "ok"} {
 		while {![winfo exists $w]} {
 		    set last [string last "." $w]
 		    if {$last != 0} {
@@ -196,7 +202,7 @@ proc demo::putChildren {w tbl nodeIdx} {
 	}
     }
 
-    if {[string compare $nodeIdx "root"] == 0} {
+    if {$nodeIdx eq "root"} {
 	set top [winfo toplevel $tbl]
 	wm title $top "Children of the [winfo class $w] Widget \"$w\""
 
@@ -239,14 +245,14 @@ proc demo::putChildren {w tbl nodeIdx} {
 	incr row
     }
 
-    if {[string compare $nodeIdx "root"] == 0} {
+    if {$nodeIdx eq "root"} {
 	#
 	# Configure the "Refresh" and "Parent" buttons
 	#
 	$top.bf.b1 configure -command [list demo::refreshView $w $tbl]
 	set b2 $top.bf.b2
 	set p [winfo parent $w]
-	if {[string compare $p ""] == 0} {
+	if {$p eq ""} {
 	    $b2 configure -state disabled
 	} else {
 	    $b2 configure -state normal -command \
@@ -305,7 +311,7 @@ proc demo::updateItemsDelayed tbl {
     # Schedule the demo::updateItems command for execution
     # 500 ms later, but only if it is not yet pending
     #
-    if {[string compare [$tbl attrib afterId] ""] == 0} {
+    if {[$tbl attrib afterId] eq ""} {
 	$tbl attrib afterId [after 500 [list demo::updateItems $tbl]]
     }
 }
