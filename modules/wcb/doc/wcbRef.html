@@ -5,7 +5,7 @@
 
   <meta name="Author" content="Csaba Nemethi">
   <meta name="Keywords" content=
-  "callback, widget, Tk entry, tile entry, BWidget Entry, Tk spinbox, tile spinbox, tile combobox, listbox, tablelist, tile treeview, text, ctext">
+  "callback, widget, Tk entry, Ttk entry, BWidget Entry, Tk spinbox, Ttk spinbox, Ttk combobox, listbox, tablelist, Ttk treeview, text, ctext">
 
   <link rel="stylesheet" type="text/css" href="stylesheet.css">
 </head>
@@ -14,7 +14,7 @@
   <div align="center">
     <h1>Wcb Command Reference</h1>
 
-    <h2>For Wcb Version 3.8</h2>
+    <h2>For Wcb Version 4.0</h2>
 
     <h3>by</h3>
 
@@ -95,8 +95,8 @@
 
     <dt><b>DESCRIPTION</b></dt>
 
-    <dd>Retrieves, sets, or removes the callbacks for the Tk or tile entry,
-    BWidget Entry, Tk or tile spinbox, tile combobox, listbox, tablelist, tile
+    <dd>Retrieves, sets, or removes the callbacks for the Tk or Ttk entry,
+    BWidget Entry, Tk or Ttk spinbox, Ttk combobox, listbox, tablelist, Ttk
     treeview, text, or ctext widget <code><i>widgetName</i></code>, the
     argument <code><b>before</b></code> or <code><b>after</b></code>, and the
     command corresponding to <code><i>option</i></code>.&nbsp; The values of
@@ -105,22 +105,27 @@
     <dd class="tm">
       <ul>
         <li><code><b>insert</b></code>, <code><b>delete</b></code>, or
-        <code><b>motion</b></code>, for a Tk or tile entry, BWidget Entry, Tk
-        or tile spinbox, tile combobox, text, or ctext widget;</li>
+        <code><b>motion</b></code>, for a Tk or Ttk entry, BWidget Entry, Tk
+        or Ttk spinbox, Ttk combobox, text, or ctext widget;</li>
 
         <li><code><b>replace</b></code>, for a text or ctext widget;</li>
 
-        <li><code><b>activate</b></code>, for a listbox, tablelist, or tile
+        <li><code><b>activate</b></code>, for a listbox, tablelist, or Ttk
         treeview widget;</li>
 
         <li><code><b>selset</b></code> or <code><b>selclear</b></code>, for a
-        listbox, tablelist, tile treeview, text, or ctext widget;</li>
+        listbox, tablelist, Ttk treeview, text, or ctext widget;</li>
 
         <li><code><b>seladd</b></code> or <code><b>seltoggle</b></code>, for a
-        tile treeview widget;</li>
+        Ttk treeview widget;</li>
 
-        <li><code><b>activatecell</b></code>, <code><b>cellselset</b></code>,
-        or <code><b>cellselclear</b></code>, for a tablelist widget.</li>
+        <li><code><b>cellselset</b></code> or <code><b>cellselclear</b></code>,
+        for a tablelist or Ttk treeview widget;</li>
+
+        <li><code><b>cellseladd</b></code> or
+        <code><b>cellseltoggle</b></code>, for a Ttk treeview widget;</li>
+
+        <li><code><b>activatecell</b></code>, for a tablelist widget.</li>
       </ul>
     </dd>
 
@@ -254,7 +259,9 @@
 
           <td><code><b>selection set</b></code></td>
 
-          <td><code><i>first</i> ?<i>last</i>?</code></td>
+          <td><code><i>first</i> ?<i>last</i>?</code>&nbsp;&nbsp;
+          (<code><i>indexList</i></code>&nbsp;&nbsp; or&nbsp;
+          <code><i>firstIndex</i> <i>lastIndex</i></code>)</td>
         </tr>
 
         <tr>
@@ -262,7 +269,9 @@
 
           <td><code><b>selection clear</b></code></td>
 
-          <td><code><i>first</i> ?<i>last</i>?</code></td>
+          <td><code><i>first</i> ?<i>last</i>?</code>&nbsp;&nbsp;
+          (<code><i>indexList</i></code>&nbsp;&nbsp; or&nbsp;
+          <code><i>firstIndex</i> <i>lastIndex</i></code>)</td>
         </tr>
 
         <tr>
@@ -278,7 +287,9 @@
 
           <td><code><b>cellselection set</b></code></td>
 
-          <td><code><i>first</i> ?<i>last</i>?</code></td>
+          <td><code><i>first</i> ?<i>last</i>?</code>&nbsp;&nbsp;
+          (<code><i>cellIndexList</i></code>&nbsp;&nbsp; or&nbsp;
+          <code><i>firstCell</i> <i>lastCell</i></code>)</td>
         </tr>
 
         <tr>
@@ -286,11 +297,13 @@
 
           <td><code><b>cellselection clear</b></code></td>
 
-          <td><code><i>first</i> ?<i>last</i>?</code></td>
+          <td><code><i>first</i> ?<i>last</i>?</code>&nbsp;&nbsp;
+          (<code><i>cellIndexList</i></code>&nbsp;&nbsp; or&nbsp;
+          <code><i>firstCell</i> <i>lastCell</i></code>)</td>
         </tr>
 
         <tr>
-          <td rowspan="5">ttk::treeview</td>
+          <td rowspan="9">ttk::treeview</td>
 
           <td><code><b>activate</b></code></td>
 
@@ -329,6 +342,46 @@
           <td><code><b>selection toggle</b></code></td>
 
           <td><code><i>itemList</i></code></td>
+        </tr>
+
+        <tr>
+          <td><code><b>cellselset</b></code></td>
+
+          <td><code><b>cellselection set</b></code></td>
+
+          <td><code><i>first</i> ?<i>last</i>?</code>&nbsp;&nbsp;
+          (<code><i>cellList</i></code>&nbsp;&nbsp; or&nbsp;
+          <code><i>firstCell</i> <i>lastCell</i></code>)</td>
+        </tr>
+
+        <tr>
+          <td><code><b>cellseladd</b></code></td>
+
+          <td><code><b>cellselection add</b></code></td>
+
+          <td><code><i>first</i> ?<i>last</i>?</code>&nbsp;&nbsp;
+          (<code><i>cellList</i></code>&nbsp;&nbsp; or&nbsp;
+          <code><i>firstCell</i> <i>lastCell</i></code>)</td>
+        </tr>
+
+        <tr>
+          <td><code><b>cellselclear</b></code></td>
+
+          <td><code><b>cellselection remove</b></code></td>
+
+          <td><code><i>first</i> ?<i>last</i>?</code>&nbsp;&nbsp;
+          (<code><i>cellList</i></code>&nbsp;&nbsp; or&nbsp;
+          <code><i>firstCell</i> <i>lastCell</i></code>)</td>
+        </tr>
+
+        <tr>
+          <td><code><b>cellseltoggle</b></code></td>
+
+          <td><code><b>cellselection toggle</b></code></td>
+
+          <td><code><i>first</i> ?<i>last</i>?</code>&nbsp;&nbsp;
+          (<code><i>cellList</i></code>&nbsp;&nbsp; or&nbsp;
+          <code><i>firstCell</i> <i>lastCell</i></code>)</td>
         </tr>
 
         <tr>
@@ -399,8 +452,9 @@
         Similarly, the first four characters of the words
         <code><b>selset</b></code>, <code><b>selclear</b></code>,
         <code><b>seladd</b></code>, and <code><b>seltoggle</b></code>, the
-        first eight characters of <code><b>cellselset</b></code> and
-        <code><b>cellselclear</b></code>, and the first nine characters of
+        first eight characters of <code><b>cellselset</b></code>,
+        <code><b>cellselclear</b></code>, <code><b>cellseladd</b></code>, and
+        <code><b>cellseltoggle</b></code>, and the first nine characters of
         <code><b>activatecell</b></code> are sufficient for Wcb to recognize
         these options.</li>
 
@@ -441,8 +495,8 @@
 
     <dt class="tm"><b>KEYWORDS</b></dt>
 
-    <dd>callback, widget, Tk entry, tile entry, BWidget Entry, Tk spinbox, tile
-    spinbox, tile combobox, listbox, tablelist, tile treeview, text, ctext</dd>
+    <dd>callback, widget, Tk entry, Ttk entry, BWidget Entry, Tk spinbox, Ttk
+    spinbox, Ttk combobox, listbox, tablelist, Ttk treeview, text, ctext</dd>
   </dl>
 
   <div align="center">
@@ -732,7 +786,7 @@
     <dt><b>NAME</b></dt>
 
     <dd><code>wcb::changeEntryText</code> &ndash; Change the text of a Tk or
-    tile entry, BWidget Entry, Tk or tile spinbox, or tile combobox widget</dd>
+    Ttk entry, BWidget Entry, Tk or Ttk spinbox, or Ttk combobox widget</dd>
 
     <dt class="tm"><b>SYNOPSIS</b></dt>
 
@@ -744,8 +798,8 @@
 
     <dt><b>DESCRIPTION</b></dt>
 
-    <dd>Replaces the text of the Tk or tile entry, BWidget Entry, Tk or tile
-    spinbox, or tile combobox widget <code><i>widgetName</i></code> with
+    <dd>Replaces the text of the Tk or Ttk entry, BWidget Entry, Tk or Ttk
+    spinbox, or Ttk combobox widget <code><i>widgetName</i></code> with
     <code><i>string</i></code>, by using the <code><b>delete</b></code> and
     <code><b>insert</b></code> operations.&nbsp; If the first subcommand is
     canceled by some before-<code><b>delete</b></code> callback then the
@@ -760,7 +814,7 @@
 
     <dt class="tm"><b>KEYWORDS</b></dt>
 
-    <dd>Tk entry, tile entry, BWidget Entry, Tk spinbox, tile spinbox, tile
+    <dd>Tk entry, Ttk entry, BWidget Entry, Tk spinbox, Ttk spinbox, Ttk
     combobox, widget</dd>
   </dl>
 
@@ -778,8 +832,8 @@
     <dt><b>NAME</b></dt>
 
     <dd><code>wcb::postInsertEntryLen</code> &ndash; Query the would-be length
-    of the text in a Tk or tile entry, BWidget Entry, Tk or tile spinbox, or
-    tile combobox widget after text insertion</dd>
+    of the text in a Tk or Ttk entry, BWidget Entry, Tk or Ttk spinbox, or Ttk
+    combobox widget after text insertion</dd>
 
     <dt class="tm"><b>SYNOPSIS</b></dt>
 
@@ -791,15 +845,15 @@
 
     <dt><b>DESCRIPTION</b></dt>
 
-    <dd>Returns the length of the text that would be contained in the Tk or
-    tile entry, BWidget Entry, Tk or tile spinbox, or tile combobox widget
+    <dd>Returns the length of the text that would be contained in the Tk or Ttk
+    entry, BWidget Entry, Tk or Ttk spinbox, or Ttk combobox widget
     <code><i>widgetName</i></code> after inserting
     <code><i>string</i></code>.</dd>
 
     <dt class="tm"><b>KEYWORDS</b></dt>
 
-    <dd>insert, Tk entry, tile entry, BWidget Entry, Tk spinbox, tile spinbox,
-    tile combobox, widget</dd>
+    <dd>insert, Tk entry, Ttk entry, BWidget Entry, Tk spinbox, Ttk spinbox,
+    Ttk combobox, widget</dd>
   </dl>
 
   <div align="center">
@@ -816,7 +870,7 @@
     <dt><b>NAME</b></dt>
 
     <dd><code>wcb::postInsertEntryText</code> &ndash; Query the would-be text
-    of a Tk or tile entry, BWidget Entry, Tk or tile spinbox, or tile combobox
+    of a Tk or Ttk entry, BWidget Entry, Tk or Ttk spinbox, or Ttk combobox
     widget after text insertion</dd>
 
     <dt class="tm"><b>SYNOPSIS</b></dt>
@@ -829,15 +883,15 @@
 
     <dt><b>DESCRIPTION</b></dt>
 
-    <dd>Returns the text that would be contained in the Tk or tile entry,
-    BWidget Entry, Tk or tile spinbox, or tile combobox widget
+    <dd>Returns the text that would be contained in the Tk or Ttk entry,
+    BWidget Entry, Tk or Ttk spinbox, or Ttk combobox widget
     <code><i>widgetName</i></code> after inserting <code><i>string</i></code>
     before the character indicated by <code><i>index</i></code>.</dd>
 
     <dt class="tm"><b>KEYWORDS</b></dt>
 
-    <dd>insert, Tk entry, tile entry, BWidget Entry, Tk spinbox, tile spinbox,
-    tile combobox, widget</dd>
+    <dd>insert, Tk entry, Ttk entry, BWidget Entry, Tk spinbox, Ttk spinbox,
+    Ttk combobox, widget</dd>
   </dl>
 
   <div align="center">
@@ -854,7 +908,7 @@
     <dt><b>NAME</b></dt>
 
     <dd><code>wcb::postDeleteEntryText</code> &ndash; Query the would-be text
-    of a Tk or tile entry, BWidget Entry, Tk or tile spinbox, or tile combobox
+    of a Tk or Ttk entry, BWidget Entry, Tk or Ttk spinbox, or Ttk combobox
     widget after text deletion</dd>
 
     <dt class="tm"><b>SYNOPSIS</b></dt>
@@ -867,8 +921,8 @@
 
     <dt><b>DESCRIPTION</b></dt>
 
-    <dd>Returns the text that would be contained in the Tk or tile entry,
-    BWidget Entry, Tk or tile spinbox, or tile combobox widget
+    <dd>Returns the text that would be contained in the Tk or Ttk entry,
+    BWidget Entry, Tk or Ttk spinbox, or Ttk combobox widget
     <code><i>widgetName</i></code> after deleting the characters starting with
     the one indicated by the index <code><i>from</i></code> and stopping just
     before <code><i>to</i></code>.&nbsp; If <code><i>to</i></code> is not
@@ -919,8 +973,8 @@ proc myBeforeDeleteCallback {w args} {
 
     <dt><b>KEYWORDS</b></dt>
 
-    <dd>delete, Tk entry, tile entry, BWidget Entry, Tk spinbox, tile spinbox,
-    tile combobox, widget</dd>
+    <dd>delete, Tk entry, Ttk entry, BWidget Entry, Tk spinbox, Ttk spinbox,
+    Ttk combobox, widget</dd>
   </dl>
 
   <div align="center">
@@ -938,8 +992,8 @@ proc myBeforeDeleteCallback {w args} {
 
     <dd><code>wcb::checkStrFor*</code>, <code>wcb::convStrTo*</code>,
     <code>wcb::checkEntryFor*</code>, <code>wcb::checkEntryLen</code> &ndash;
-    Before-<code><b>insert</b></code> callbacks for Tk entry, tile entry,
-    BWidget Entry, Tk spinbox, tile spinbox, and tile combobox widgets</dd>
+    Before-<code><b>insert</b></code> callbacks for Tk entry, Ttk entry,
+    BWidget Entry, Tk spinbox, Ttk spinbox, and Ttk combobox widgets</dd>
 
     <dt class="tm"><b>SYNOPSIS</b></dt>
 
@@ -966,34 +1020,31 @@ proc myBeforeDeleteCallback {w args} {
     <dt class="tm"><b>DESCRIPTION</b></dt>
 
     <dd>The <code><b>wcb::checkStrForRegExp</b></code> callback checks whether
-    the string <code><i>str</i></code> to be inserted into the Tk or tile
-    entry, BWidget Entry, Tk or tile spinbox, or tile combobox widget
+    the string <code><i>str</i></code> to be inserted into the Tk or Ttk entry,
+    BWidget Entry, Tk or Ttk spinbox, or Ttk combobox widget
     <code><i>w</i></code> is matched by the regular expression
     <code><i>exp</i></code>; if not, it cancels the <code><b>insert</b></code>
     operation.</dd>
 
     <dd class="tm">The three other <code><b>wcb::checkStrFor*</b></code>
     callbacks check whether the string <code><i>str</i></code> to be inserted
-    into the Tk or tile entry, BWidget Entry, Tk or tile spinbox, or tile
+    into the Tk or Ttk entry, BWidget Entry, Tk or Ttk spinbox, or Ttk
     combobox widget <code><i>w</i></code> is alphabetic, numeric, or
     alphanumeric, respectively; if not, they cancel the
     <code><b>insert</b></code> operation.&nbsp; These procedures just invoke
     the callback <code><b>wcb::checkStrForRegExp</b></code>, passing to it the
     Unicode-based patterns <code>{^[[:alpha:]]*$}</code>,
-    <code>{^[[:digit:]]*$}</code>, and <code>{^[[:alnum:]]*$}</code> for Tk
-    versions 8.1 or higher, and the ASCII patterns <code>{^[A-Za-z]*$}</code>,
-    <code>{^[0-9]*$}</code>, and <code>{^[A-Za-z0-9]*$}</code> if Tk version
-    8.0 is being used.</dd>
+    <code>{^[[:digit:]]*$}</code>, and <code>{^[[:alnum:]]*$}</code>.</dd>
 
     <dd class="tm">The <code><b>wcb::convStrTo*</b></code> callbacks replace
-    the string <code><i>str</i></code> to be inserted into the Tk or tile
-    entry, BWidget Entry, Tk or tile spinbox, or tile combobox widget
+    the string <code><i>str</i></code> to be inserted into the Tk or Ttk entry,
+    BWidget Entry, Tk or Ttk spinbox, or Ttk combobox widget
     <code><i>w</i></code> with its uppercase or lowercase equivalent,
     respectively.</dd>
 
     <dd class="tm">The <code><b>wcb::checkEntryFor*</b></code> callbacks check
-    whether the text contained in the Tk or tile entry, BWidget Entry, Tk or
-    tile spinbox, or tile combobox widget <code><i>w</i></code> after inserting
+    whether the text contained in the Tk or Ttk entry, BWidget Entry, Tk or Ttk
+    spinbox, or Ttk combobox widget <code><i>w</i></code> after inserting
     the string <code><i>str</i></code> before the character indicated by the
     index <code><i>idx</i></code> would represent (the starting part of) an
     integer number, unsigned integer no greater than <code><i>max</i></code>,
@@ -1002,14 +1053,14 @@ proc myBeforeDeleteCallback {w args} {
     not, they cancel the <code><b>insert</b></code> operation.&nbsp;
     <code><i>max</i></code> and <code><i>cnt</i></code> should be nonnegative
     numbers or <code><b>*</b></code>;&nbsp; <code><i>max</i> =
-    <b>*</b></code>&nbsp; means: no upper bound for the Tk or tile entry,
-    BWidget Entry, Tk or tile spinbox, or tile combobox value, while&nbsp;
+    <b>*</b></code>&nbsp; means: no upper bound for the Tk or Ttk entry,
+    BWidget Entry, Tk or Ttk spinbox, or Ttk combobox value, while&nbsp;
     <code><i>cnt</i> = <b>*</b></code>&nbsp; stands for an unlimited number of
     digits after the decimal point.</dd>
 
     <dd class="tm">The <code><b>wcb::checkEntryLen</b></code> callback checks
-    whether the length of the text contained in the Tk or tile entry, BWidget
-    Entry, Tk or tile spinbox, or tile combobox widget <code><i>w</i></code>
+    whether the length of the text contained in the Tk or Ttk entry, BWidget
+    Entry, Tk or Ttk spinbox, or Ttk combobox widget <code><i>w</i></code>
     after inserting the string <code><i>str</i></code> would be greater than
     <code><i>len</i></code>; if yes, it cancels the <code><b>insert</b></code>
     operation.</dd>
@@ -1021,8 +1072,8 @@ proc myBeforeDeleteCallback {w args} {
 
     <dt class="tm"><b>KEYWORDS</b></dt>
 
-    <dd>callback, insert, Tk entry, tile entry, BWidget Entry, Tk spinbox, tile
-    spinbox, tile combobox, widget</dd>
+    <dd>callback, insert, Tk entry, Ttk entry, BWidget Entry, Tk spinbox, Ttk
+    spinbox, Ttk combobox, widget</dd>
   </dl>
 
   <div align="center">
@@ -1075,12 +1126,7 @@ proc myBeforeDeleteCallback {w args} {
     <code><b>insert</b></code> operation.&nbsp; These procedures just invoke
     the callback <code><b>wcb::checkStrsForRegExp</b></code>, passing to it the
     Unicode-based patterns <code>{^[[:alpha:]\n]*$}</code>,
-    <code>{^[[:digit:]\n]*$}</code>, and <code>{^[[:alnum:]\n]*$}</code> for Tk
-    versions 8.1 or higher, and the ASCII patterns
-    <code>"^\[A-Za-z\n]*$"</code>, <code>"^\[0-9\n]*$"</code>, and
-    <code>"^\[A-Za-z0-9\n]*$"</code> if Tk version 8.0 is being used (in this
-    case, the presence of the <code>"\n"</code> makes the regular expressions a
-    bit ugly).</dd>
+    <code>{^[[:digit:]\n]*$}</code>, and <code>{^[[:alnum:]\n]*$}</code>.</dd>
 
     <dd class="tm">The <code><b>wcb::convStrsTo*</b></code> callbacks replace
     the strings to be inserted into the text or ctext widget

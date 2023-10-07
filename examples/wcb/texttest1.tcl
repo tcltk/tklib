@@ -1,6 +1,4 @@
 #! /usr/bin/env tclsh
-  
-package require Tk
 
 #==============================================================================
 # Demo:	wcb::callback <text> before insert <callback> ...
@@ -12,9 +10,10 @@ package require Tk
 #	wcb::cancel
 #	wcb::extend <arg>
 #
-# Copyright (c) 1999-2022  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 1999-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
+package require Tk
 package require wcb
 
 wm title . "Texttest #1"

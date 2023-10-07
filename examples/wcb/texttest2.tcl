@@ -10,10 +10,10 @@
 #	wcb::cancel
 #	wcb::extend <arg>
 #
-# Copyright (c) 2004-2022  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2004-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require Tk 8.4-	;# because of the undo mechanism for text widgets
+package require Tk
 package require wcb
 
 wm title . "Texttest #2"

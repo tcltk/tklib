@@ -1,5 +1,19 @@
-What is new in Wcb 3.8?
+What is new in Wcb 4.0?
 -----------------------
+
+1. Dropped the support for Tk versions earlier than 8.4.  This has made
+   the code simpler and easier to maintain.
+
+2. Support for the new ttk::treeview commands "cellselection set",
+   "cellselection add", "cellselection remove", and "cellselection
+   toggle", added in Tk 8.7.
+
+3. The demo scripts listboxtest*.tcl no longer expect the images in the
+   directory $tk_library/demos/images, since in Tk 8.7 and later the Tk
+   demos directory has a different location.
+
+What was new in Wcb 3.8?
+------------------------
 
 1. For more clarity, the new name of the original widget command is now
    also referred to as "proxy command" (thanks to Julian H J Loaring for
