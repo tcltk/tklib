@@ -14,8 +14,6 @@
 # Copyright (c) 2021-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require Tk 8.4-
-
 #
 # Namespace initialization
 # ========================
@@ -154,8 +152,10 @@ proc scrollutil::snb::createBindings {} {
     }
 
     bindtags . [linsert [bindtags .] 1 ScrollednotebookMain]
-    bind ScrollednotebookMain <<ThemeChanged>> {
-	scrollutil::snb::onThemeChanged %W
+    foreach event {<<ThemeChanged>> <<LightAqua>> <<DarkAqua>>} {
+	bind ScrollednotebookMain $event {
+	    scrollutil::snb::onThemeChanged %W
+	}
     }
 
     bind SnbNb <<NotebookTabChanged>> { scrollutil::snb::onNbTabChanged %W }
@@ -542,10 +542,7 @@ proc scrollutil::snb::doConfig {win opt val} {
 		    if {$val eq ""} {
 			set val TNotebook
 		    }
-		    if {[set tabPos [ttk::style lookup $val -tabposition]]
-			eq ""} {
-			set tabPos nw
-		    }
+		    set tabPos [ttk::style lookup $val -tabposition {} nw]
 		    switch -- [string index $tabPos 0] {
 			n { pack configure $data(sf) -pady {3p 0} }
 			s { pack configure $data(sf) -pady {0 3p} }
@@ -1097,9 +1094,7 @@ proc scrollutil::snb::adjustXPad {win tabIdx first last} {
 	if {[set style [$nb cget -style]] eq ""} {
 	    set style TNotebook
 	}
-	if {[set tabPos [ttk::style lookup $style -tabposition]] eq ""} {
-	    set tabPos nw
-	}
+	set tabPos [ttk::style lookup $style -tabposition {} nw]
 	set f $win.f
 	if {[string index $tabPos 0] eq "n"} {
 	    incr y [winfo pixels $win 3p]
@@ -1308,9 +1303,7 @@ proc scrollutil::snb::onButton1 {nb x y} {
     if {[set style [$nb cget -style]] eq ""} {
 	set style TNotebook
     }
-    if {[set tabPos [ttk::style lookup $style -tabposition]] eq ""} {
-	set tabPos nw
-    }
+    set tabPos [ttk::style lookup $style -tabposition {} nw]
     switch -- [string index $tabPos 0] {
 	n {
 	    set stateArr(orient) h
@@ -1614,9 +1607,7 @@ proc scrollutil::snb::yCoordForTabs nb {
     if {[set style [$nb cget -style]] eq ""} {
 	set style TNotebook
     }
-    if {[set tabPos [ttk::style lookup $style -tabposition]] eq ""} {
-	set tabPos nw
-    }
+    set tabPos [ttk::style lookup $style -tabposition {} nw]
 
     if {[set padding [$nb cget -padding]] eq ""} {
 	set padding [ttk::style lookup $style -padding]
@@ -1741,9 +1732,7 @@ proc scrollutil::snb::showHideArrows win {
     if {[set style [$nb cget -style]] eq ""} {
 	set style TNotebook
     }
-    if {[set tabPos [ttk::style lookup $style -tabposition]] eq ""} {
-	set tabPos nw
-    }
+    set tabPos [ttk::style lookup $style -tabposition {} nw]
     set tabSide [string index $tabPos 0]
 
     if {$leftTabIdx >= 0 &&

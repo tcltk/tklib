@@ -4,19 +4,12 @@
 # Copyright (c) 2019-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require Tk 8-
-
 namespace eval ::scrollutil {
     #
     # Public variables:
     #
-    variable version	1.19
-    variable library
-    if {$::tcl_version >= 8.4} {
-	set library	[file dirname [file normalize [info script]]]
-    } else {
-	set library	[file dirname [info script]] ;# no "file normalize" yet
-    }
+    variable version	2.0
+    variable library	[file dirname [file normalize [info script]]]
 
     #
     # Creates a new scrollarea/scrollsync/scrollableframe/pagesman widget:
@@ -40,16 +33,6 @@ namespace eval ::scrollutil {
 
 package provide scrollutil::common $::scrollutil::version
 
-if {$::tcl_version >= 8.4} {
-    interp alias {} ::scrollutil::addVarTrace {} trace add variable
-} else {
-    proc ::scrollutil::addVarTrace {name ops cmd} {
-	set ops2 ""
-	foreach op $ops { append ops2 [string index $op 0] }
-	trace variable $name $ops2 $cmd
-    }
-}
-
 #
 # The following procedure, invoked in "scrollutil.tcl" and
 # "scrollutil_tile.tcl", sets the variable ::scrollutil::usingTile
@@ -57,7 +40,7 @@ if {$::tcl_version >= 8.4} {
 #
 proc ::scrollutil::useTile {bool} {
     variable usingTile $bool
-    addVarTrace usingTile {write unset} \
+    trace add variable usingTile {write unset} \
 	[list ::scrollutil::restoreUsingTile $bool]
 }
 
@@ -68,13 +51,13 @@ proc ::scrollutil::useTile {bool} {
 #
 proc ::scrollutil::restoreUsingTile {origVal varName index op} {
     variable usingTile $origVal
-    switch -glob $op {
-	w* {
+    switch $op {
+	write {
 	    return -code error "it is not supported to use both Scrollutil and\
 				Scrollutil_tile in the same application"
 	}
-	u* {
-	    addVarTrace usingTile {write unset} \
+	unset {
+	    trace add variable usingTile {write unset} \
 		[list ::scrollutil::restoreUsingTile $origVal]
 	}
     }
@@ -102,15 +85,15 @@ lappend auto_path [file join $::scrollutil::library scripts]
 #
 proc ::scrollutil::loadUtils {} {
     if {[catch {package present mwutil} version] == 0 &&
-	[package vcompare $version 2.20] < 0} {
+	[package vcompare $version 2.21] < 0} {
 	package forget mwutil
     }
-    package require mwutil 2.20
+    package require mwutil 2.21-
 
     if {[catch {package present scaleutil} version] == 0 &&
-	[package vcompare $version 1.11] < 0} {
+	[package vcompare $version 1.12] < 0} {
 	package forget scaleutil
     }
-    package require scaleutil 1.11
+    package require scaleutil 1.12-
 }
 ::scrollutil::loadUtils

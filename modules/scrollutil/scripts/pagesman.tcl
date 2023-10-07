@@ -128,8 +128,8 @@ namespace eval scrollutil::pm {
 proc scrollutil::pm::createBindings {} {
     bind Pagesman <KeyPress> continue
     bind Pagesman <FocusIn> {
-	if {[string compare [focus -lastfor %W] %W] == 0} {
-	    if {[string length [%W select]] != 0} {
+	if {[focus -lastfor %W] eq "%W"} {
+	    if {[%W select] ne ""} {
 		focus [%W select]
 	    }
         }
@@ -288,7 +288,7 @@ proc scrollutil::pm::doCget {win opt} {
 proc scrollutil::pm::doPageConfig {pageIdx win opt val} {
     upvar ::scrollutil::ns${win}::data data
     set widget [lindex $data(pageList) $pageIdx]
-    set isCurrent [expr {[string compare $widget $data(currentPage)] == 0}]
+    set isCurrent [expr {$widget eq $data(currentPage)}]
 
     switch -- $opt {
 	-padding {
@@ -390,7 +390,7 @@ proc scrollutil::pm::pagesmanWidgetCmd {win args} {
 		set data(stickyList) \
 		    [lreplace $data(stickyList) $idx $idx $sticky]
 
-		if {[string compare $widget $data(currentPage)] == 0} {
+		if {$widget eq $data(currentPage)} {
 		    foreach {l t r b} [mwutil::parsePadding $win $padding] {}
 		    grid configure $widget \
 			-padx [list $l $r] -pady [list $t $b] -sticky $sticky
@@ -465,7 +465,7 @@ proc scrollutil::pm::pagesmanWidgetCmd {win args} {
 		unset attribs($name)
 	    }
 
-	    if {[string compare $widget $data(currentPage)] == 0} {
+	    if {$widget eq $data(currentPage)} {
 		#
 		# Select the next/previous page
 		#
@@ -572,7 +572,7 @@ proc scrollutil::pm::pagesmanWidgetCmd {win args} {
 		bind $widget <Map> +[list scrollutil::pm::resizeWidgetDelayed \
 				     $data(pathName) 100]
 	    } else {
-		if {[string compare $widget $data(currentPage)] == 0} {
+		if {$widget eq $data(currentPage)} {
 		    foreach {l t r b} [mwutil::parsePadding $win $padding] {}
 		    grid configure $widget \
 			-padx [list $l $r] -pady [list $t $b] -sticky $sticky
@@ -662,10 +662,9 @@ proc scrollutil::pm::pagesmanWidgetCmd {win args} {
 	    }
 
 	    set widget [lindex $data(pageList) $pageIdx]
-	    set cmpResult [string compare $widget $data(currentPage)]
 	    if {[lsearch -exact $data(pageList) $data(currentPage)] >= 0} {
-		if {$cmpResult != 0 &&
-		    [string length [set cmd $data(-leavecommand)]] != 0 &&
+		if {$widget ne $data(currentPage) &&
+		    [set cmd $data(-leavecommand)] ne "" &&
 		    ![uplevel #0 $cmd [list $win $data(currentPage)]]} {
 		    return 0
 		} else {
@@ -679,7 +678,7 @@ proc scrollutil::pm::pagesmanWidgetCmd {win args} {
 	    grid $widget -padx [list $l $r] -pady [list $t $b] -sticky $sticky
 	    set data(currentPage) $widget
 
-	    if {$cmpResult != 0} {
+	    if {$widget ne $data(currentPage)} {
 		event generate $win <<PagesmanPageChanged>>
 	    }
 
@@ -767,8 +766,7 @@ proc scrollutil::pm::resizeWidgetDelayed {win ms {force 0}} {
 # scrollutil::pm::resizeWidget
 #------------------------------------------------------------------------------
 proc scrollutil::pm::resizeWidget {win {force 0}} {
-    if {![winfo exists $win] ||
-	[string compare [winfo class $win] "Pagesman"] != 0} {
+    if {![winfo exists $win] || [winfo class $win] ne "Pagesman"} {
 	return ""
     }
 
@@ -805,8 +803,7 @@ proc scrollutil::pm::resizeWidget {win {force 0}} {
     if {$computeHeight} {
 	if {$computeWidth} {
 	    update idletasks
-	    if {![winfo exists $win] ||
-		[string compare [winfo class $win] "Pagesman"] != 0} {
+	    if {![winfo exists $win] || [winfo class $win] ne "Pagesman"} {
 		return ""
 	    }
 	}
@@ -839,7 +836,7 @@ proc scrollutil::pm::resizeWidget {win {force 0}} {
 	}
     }
 
-    if {$data(pageCount) != 0 && [string length $data(currentPage)] == 0} {
+    if {$data(pageCount) != 0 && $data(currentPage) eq ""} {
 	::$win select 0
     }
 

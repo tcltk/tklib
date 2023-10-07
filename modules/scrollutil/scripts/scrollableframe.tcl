@@ -114,7 +114,7 @@ namespace eval scrollutil::sf {
     #
     variable btn1Pressed 0
     variable scanCursor
-    switch [mwutil::windowingSystem] {
+    switch [tk windowingsystem] {
 	aqua	{ set scanCursor pointinghand }
 	default	{ set scanCursor hand2 }
     }
@@ -134,7 +134,7 @@ namespace eval scrollutil::sf {
 proc scrollutil::sf::createBindings {} {
     bind Scrollableframe <KeyPress> continue
     bind Scrollableframe <FocusIn> {
-        if {[string compare [focus -lastfor %W] %W] == 0} {
+	if {[focus -lastfor %W] eq "%W"} {
             focus [%W contentframe]
         }
     }
@@ -285,12 +285,12 @@ proc scrollutil::scrollableframe args {
     #
     # Register the scrollableframe widget for scrolling by the mouse wheel
     #
-    if {[string compare $::tcl_platform(platform) "windows"] == 0} {
+    if {$::tcl_platform(platform) eq "windows"} {
 	if {$::tk_version >= 8.6 &&
 	    [package vcompare $::tk_patchLevel "8.6b2"] >= 0} {
 	    enableScrollingByWheel $win
 	}
-    } elseif {[package vcompare $::tk_version "8.4"] >= 0} {
+    } else {
 	enableScrollingByWheel $win
     }
 
@@ -633,7 +633,7 @@ proc scrollutil::sf::scanSubCmd {win argList} {
     set y [format "%d" [lindex $argList 2]]
 
     upvar ::scrollutil::ns${win}::data data
-    if {[string compare $opt "mark"] == 0} {
+    if {$opt eq "mark"} {
 	if {$argCount != 3} {
 	    mwutil::wrongNumArgs "$win scan mark x y"
 	}
@@ -681,10 +681,10 @@ proc scrollutil::sf::seeSubCmd {win argList} {
 	return -code error \
 	    "widget $w is not a descendant of the content frame of $win"
     }
-    if {[string compare [winfo toplevel $w] [winfo toplevel $win]] != 0} {
+    if {[winfo toplevel $w] ne [winfo toplevel $win]} {
 	return -code error "widgets $w and $win have different toplevels"
     }
-    if {[string length [winfo manager $w]] == 0} {
+    if {[winfo manager $w] eq ""} {
 	return -code error "widget $w is not managed by any geometry manager"
     }
 
@@ -868,13 +868,13 @@ proc scrollutil::sf::xviewSubCmd {win argList} {
 	    #	       $win xview scroll <number> units|pages
 	    #
 	    set argList [mwutil::getScrollInfo2 "$win xview" $argList]
-	    if {[string compare [lindex $argList 0] "moveto"] == 0} {
+	    if {[lindex $argList 0] eq "moveto"} {
 		set number ""
 		set fraction [lindex $argList 1]
 		set xOffset [expr {int($fraction * $cfWidth + 0.5)}]
 	    } else {
 		set number [lindex $argList 1]
-		if {[string compare [lindex $argList 2] "units"] == 0} {
+		if {[lindex $argList 2] eq "units"} {
 		    set xScrlIncr $data(-xscrollincrement)
 		    if {$xScrlIncr > 0} {
 			set xOffset [expr {$xOffset + $number * $xScrlIncr}]
@@ -941,13 +941,13 @@ proc scrollutil::sf::yviewSubCmd {win argList} {
 	    #	       $win yview scroll <number> units|pages
 	    #
 	    set argList [mwutil::getScrollInfo2 "$win yview" $argList]
-	    if {[string compare [lindex $argList 0] "moveto"] == 0} {
+	    if {[lindex $argList 0] eq "moveto"} {
 		set number ""
 		set fraction [lindex $argList 1]
 		set yOffset [expr {int($fraction * $cfHeight + 0.5)}]
 	    } else {
 		set number [lindex $argList 1]
-		if {[string compare [lindex $argList 2] "units"] == 0} {
+		if {[lindex $argList 2] eq "units"} {
 		    set yScrlIncr $data(-yscrollincrement)
 		    if {$yScrlIncr > 0} {
 			set yOffset [expr {$yOffset + $number * $yScrlIncr}]
@@ -1058,7 +1058,7 @@ proc scrollutil::sf::applyOffset {win axis offset force} {
 	#
 	set data(${axis}Offset) $offset
 	place configure $data(cf) -$axis -$offset
-	if {[string length $data(-${axis}scrollcommand)] != 0} {
+	if {$data(-${axis}scrollcommand) ne ""} {
 	    eval $data(-${axis}scrollcommand) [${axis}viewSubCmd $win {}]
 	}
     }

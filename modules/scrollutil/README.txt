@@ -10,17 +10,16 @@
 What Is Scrollutil?
 -------------------
 
-Scrollutil is a library package for Tcl/Tk versions 8.0 or higher,
+Scrollutil is a library package for Tcl/Tk versions 8.4 or higher,
 written in pure Tcl/Tk code.  It contains:
 
   - the implementation of the "scrollarea", "scrollsync",
     "scrollableframe", "scrollednotebook", "plainnotebook", and
     "pagesman" mega-widgets, including a general utility module for
     mega-widgets.  The scrollednotebook and plainnotebook widgets
-    require Tcl/Tk 8.4 or later and tile 0.8 or higher;
+    require tile 0.8 or higher;
   - the command "scrollutil::addMouseWheelSupport", which creates mouse
-    wheel event bindings for a given binding tag.  This command requires
-    Tcl/Tk 8.4 or later;
+    wheel event bindings for a given binding tag;
   - commands for user-friendly mouse wheel event handling in scrollable
     widget containers like scrollutil::scrollableframe, BWidget
     ScrollableFrame, and iwidgets::scrolledframe.  These commands
@@ -46,8 +45,8 @@ Scrollutil is available for free download from the Web page
 
     https://www.nemethi.de
 
-The distribution file is "scrollutil1.19.tar.gz" for UNIX and
-"scrollutil1_19.zip" for Windows.  These files contain the same
+The distribution file is "scrollutil2.0.tar.gz" for UNIX and
+"scrollutil2_0.zip" for Windows.  These files contain the same
 information, except for the additional carriage return character
 preceding the linefeed at the end of each line in the text files for
 Windows.
@@ -66,20 +65,20 @@ locations of these library directories are given by the "tcl_library"
 and "tk_library" variables, respectively.
 
 To install Scrollutil on UNIX, "cd" to the desired directory and unpack
-the distribution file "scrollutil1.19.tar.gz":
+the distribution file "scrollutil2.0.tar.gz":
 
-    gunzip -c scrollutil1.19.tar.gz | tar -xf -
+    gunzip -c scrollutil2.0.tar.gz | tar -xf -
 
 On most UNIX systems this can be replaced with
 
-    tar -zxf scrollutil1.19.tar.gz
+    tar -zxf scrollutil2.0.tar.gz
 
-Both commands will create a directory named "scrollutil1.19", with the
+Both commands will create a directory named "scrollutil2.0", with the
 subdirectories "demos", "doc", and "scripts".
 
 On Windows, use WinZip or some other program capable of unpacking the
-distribution file "scrollutil1_19.zip" into the directory
-"scrollutil1.19", with the subdirectories "demos", "doc", and "scripts".
+distribution file "scrollutil2_0.zip" into the directory
+"scrollutil2.0", with the subdirectories "demos", "doc", and "scripts".
 
 How to Use It?
 --------------
@@ -89,13 +88,13 @@ Scrollutil_tile.  The main difference between the two is that
 Scrollutil_tile enables the tile-based, theme-specific appearance of
 scrollarea, scrollsync, and scrollableframe widgets, and provides the
 themed scrollednotebook and plainnotebook widgets; this package requires
-Tcl/Tk 8.4 or higher and tile 0.8 or higher.  It is not possible to use
-both packages in one and the same application, because both are
-implemented in the same "scrollutil" namespace and provide identical
-commands (except for the commands "scrollutil::scrollednotebook",
-"scrollutil::plainnotebook", "scrollutil::addclosetab",
-"scrollutil::removeclosetab", and "scrollutil::closetabstate", which are
-provided by the Scrollutil_tile package only).
+tile 0.8 or higher.  It is not possible to use both packages in one and
+the same application, because both are implemented in the same
+"scrollutil" namespace and provide identical commands (except for the
+commands "scrollutil::scrollednotebook", "scrollutil::plainnotebook",
+"scrollutil::addclosetab", "scrollutil::removeclosetab", and
+"scrollutil::closetabstate", which are provided by the Scrollutil_tile
+package only).
 
 To be able to use the commands and variables implemented in the package
 Scrollutil, your scripts must contain one of the lines

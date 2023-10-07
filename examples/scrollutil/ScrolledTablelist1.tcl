@@ -8,7 +8,7 @@
 #==============================================================================
 
 package require Tk 8.5-
-package require tablelist_tile 6.3
+package require tablelist_tile 6.3-
 set dir [file dirname [info script]]
 source [file join $dir styleUtil.tcl]
 

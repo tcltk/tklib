@@ -4,8 +4,6 @@
 # Copyright (c) 2021-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require Tk 8.4-
-
 #------------------------------------------------------------------------------
 # scrollutil::getForegroundColors
 #
@@ -14,16 +12,8 @@ package require Tk 8.4-
 proc scrollutil::getForegroundColors {normalFgName disabledFgName} {
     upvar $normalFgName normalFg  $disabledFgName disabledFg
 
-    if {[set normalFg [ttk::style lookup . -foreground]] eq ""} {
-	set normalFg black
-    }
-
-    array set arr [ttk::style map . -foreground]
-    if {[info exists arr(disabled)]} {
-	set disabledFg $arr(disabled)
-    } else {
-	set disabledFg $normalFg
-    }
+    set normalFg   [ttk::style lookup . -foreground {} black]
+    set disabledFg [ttk::style lookup . -foreground {disabled} $normalFg]
 }
 
 #------------------------------------------------------------------------------
@@ -105,8 +95,6 @@ proc scrollutil::setImgForeground {imgName color} {
     if {[image type $imgName] eq "bitmap"} {
 	$imgName configure -foreground $color
     } else {
-	variable svgfmt
-
 	switch $imgName {
 	    scrollutil_closeImg -
 	    scrollutil_closeDisabledImg {
@@ -137,7 +125,7 @@ proc scrollutil::setImgForeground {imgName color} {
 	set color [mwutil::normalizeColor $color]
 	set data [string replace $data $idx1 $idx2 $color]
 
-	image create photo $imgName -format $svgfmt -data $data
+	$imgName configure -data $data
     }
 }
 

@@ -21,11 +21,11 @@
 
 namespace eval scrollutil {
     #
-    # Get the windowing system ("x11", "win32", "classic", or "aqua")
+    # Get the windowing system ("x11", "win32", or "aqua")
     #
-    variable winSys  [mwutil::windowingSystem]
-    variable onAqua  [expr {[string compare $winSys "aqua"]  == 0}]
-    variable onWin32 [expr {[string compare $winSys "win32"] == 0}]
+    variable winSys  [tk windowingsystem]
+    variable onAqua  [expr {$winSys eq "aqua"}]
+    variable onWin32 [expr {$winSys eq "win32"}]
 
     #
     # Get the display's current scaling percentage (100, 125, 150, 175, or 200)
@@ -35,7 +35,7 @@ namespace eval scrollutil {
     #
     # Make the variable scalingpct read-only
     #
-    addVarTrace scalingpct {write unset} \
+    trace add variable scalingpct {write unset} \
 	[list scrollutil::restoreScalingpct $scalingpct]
 
     #
@@ -45,12 +45,12 @@ namespace eval scrollutil {
     #
     proc restoreScalingpct {origVal varName index op} {
 	variable scalingpct $origVal
-	switch -glob $op {
-	    w* {
+	switch $op {
+	    write {
 		return -code error "the variable is read-only"
 	    }
-	    u* {
-		addVarTrace scalingpct {write unset} \
+	    unset {
+		trace add variable scalingpct {write unset} \
 		    [list scrollutil::restoreScalingpct $origVal]
 	    }
 	}
@@ -176,7 +176,7 @@ namespace eval scrollutil::sa {
 proc scrollutil::sa::createBindings {} {
     bind Scrollarea <KeyPress> continue
     bind Scrollarea <FocusIn> {
-        if {[string compare [focus -lastfor %W] %W] == 0} {
+	if {[focus -lastfor %W] eq "%W"} {
             focus [%W widget]
         }
     }
@@ -289,7 +289,7 @@ proc scrollutil::scrollarea args {
     }
     set data(inNotebook) 0
     foreach class {TNotebook Scrollednotebook Plainnotebook Pagesman} {
-	if {[string length [mwutil::getAncestorByClass $win $class]] > 0} {
+	if {[mwutil::getAncestorByClass $win $class] ne ""} {
 	    set data(inNotebook) 1
 	    break
 	}
@@ -371,8 +371,7 @@ proc scrollutil::getscrollarea widget {
     variable sa::scrollareaArr
     if {[info exists scrollareaArr($widget)]} {
 	set win $scrollareaArr($widget)
-	if {[winfo exists $win] &&
-	    [string compare [winfo class $win] "Scrollarea"] == 0} {
+	if {[winfo exists $win] && [winfo class $win] eq "Scrollarea"} {
 	    return $win
 	}
     }
@@ -416,7 +415,7 @@ proc scrollutil::sa::doConfig {win opt val} {
 		-relief {
 		    if {[winfo exists $data(widget)] &&
 			[winfo pixels $win $data(-borderwidth)] > 0 &&
-			[string compare $data(-relief) "flat"] != 0} {
+			$data(-relief) ne "flat"} {
 			catch {::$data(widget) configure -borderwidth 0}
 		    }
 		}
@@ -468,7 +467,7 @@ proc scrollutil::sa::doConfig {win opt val} {
 		    set val \
 			[mwutil::fullOpt "scrollbar mode" $val $scrollbarModes]
 		    if {[winfo exists $data(widget)]} {
-			if {[string compare $val "none"] == 0} {
+			if {$val eq "none"} {
 			    ::$data(widget) configure -xscrollcommand ""
 			    $win.hsb configure -command ""
 			} else {
@@ -477,7 +476,7 @@ proc scrollutil::sa::doConfig {win opt val} {
 				    to support horizontal scrolling"
 			    }
 
-			    if {[string compare $val $data($opt)] != 0} {
+			    if {$val ne $data($opt)} {
 				::$data(widget) configure -xscrollcommand \
 				    [list scrollutil::sa::setHScrollbar $win]
 				$win.hsb configure -command \
@@ -489,7 +488,7 @@ proc scrollutil::sa::doConfig {win opt val} {
 
 		    set tagList [bindtags $win.hsb]
 		    set idx [lsearch -exact $tagList "DynamicHScrollbar"]
-		    if {[string compare $val "dynamic"] == 0} {
+		    if {$val eq "dynamic"} {
 			if {$idx < 0} {
 			    bindtags $win.hsb \
 				[linsert $tagList 1 DynamicHScrollbar]
@@ -511,7 +510,7 @@ proc scrollutil::sa::doConfig {win opt val} {
 		    set val \
 			[mwutil::fullOpt "scrollbar mode" $val $scrollbarModes]
 		    if {[winfo exists $data(widget)]} {
-			if {[string compare $val "none"] == 0} {
+			if {$val eq "none"} {
 			    ::$data(widget) configure -yscrollcommand ""
 			    $win.vsb configure -command ""
 			} else {
@@ -520,7 +519,7 @@ proc scrollutil::sa::doConfig {win opt val} {
 				    to support vertical scrolling"
 			    }
 
-			    if {[string compare $val $data($opt)] != 0} {
+			    if {$val ne $data($opt)} {
 				::$data(widget) configure -yscrollcommand \
 				    [list scrollutil::sa::setVScrollbar $win]
 				$win.vsb configure -command \
@@ -639,36 +638,34 @@ proc scrollutil::sa::setwidgetSubCmd {win widget} {
 
     if {[winfo exists $widget]} {
 	set sa [::scrollutil::getscrollarea $widget]
-	if {[string length $sa] != 0 && [string compare $sa $win] != 0} {
+	if {$sa ne "" && $sa ne $win} {
 	    return -code error \
 		"widget $widget already in another scrollarea $sa"
 	}
 
-	if {[string compare $data(-xscrollbarmode) "none"] != 0} {
-	    if {![mwutil::isScrollable $widget x]} {
-		return -code error \
-		    "widget $widget fails to support horizontal scrolling"
-	    }
+	if {$data(-xscrollbarmode) ne "none" &&
+	    ![mwutil::isScrollable $widget x]} {
+	    return -code error \
+		"widget $widget fails to support horizontal scrolling"
 	}
 
-	if {[string compare $data(-yscrollbarmode) "none"] != 0} {
-	    if {![mwutil::isScrollable $widget y]} {
-		return -code error \
-		    "widget $widget fails to support vertical scrolling"
-	    }
+	if {$data(-yscrollbarmode) ne "none" &&
+	    ![mwutil::isScrollable $widget y]} {
+	    return -code error \
+		"widget $widget fails to support vertical scrolling"
 	}
-    } elseif {[string length $widget] != 0} {
+    } elseif {$widget ne ""} {
 	return -code error "bad window path name \"$widget\""
     }
 
     set oldWidget $data(widget)
-    if {[string compare $widget $oldWidget] == 0} {
+    if {$widget eq $oldWidget} {
 	return $oldWidget
     }
 
     if {[winfo exists $oldWidget]} {
 	grid forget $oldWidget
-	if {[string compare [winfo class $oldWidget] "Tablelist"] == 0 &&
+	if {[winfo class $oldWidget] eq "Tablelist" &&
 	    [package vcompare $::tablelist::version "6.5"] >= 0} {
 	    grid forget $data(cf-ne) $data(cf-sw)
 	    bind $oldWidget <<TablelistHeaderHeightChanged>> ""
@@ -700,7 +697,7 @@ proc scrollutil::sa::setwidgetSubCmd {win widget} {
 	cf-sw_width  1
     }
 
-    if {[string length $widget] == 0} {
+    if {$widget eq ""} {
 	set data(widget) ""
 	return $oldWidget
     }
@@ -710,20 +707,20 @@ proc scrollutil::sa::setwidgetSubCmd {win widget} {
 
     catch {::$widget configure -highlightthickness 0}
     if {[winfo pixels $win $data(-borderwidth)] > 0 &&
-	[string compare $data(-relief) "flat"] != 0} {
+	$data(-relief) ne "flat"} {
 	catch {::$widget configure -borderwidth 0}
     }
-    if {[string compare $data(-xscrollbarmode) "none"] != 0} {
+    if {$data(-xscrollbarmode) ne "none"} {
 	::$widget configure -xscrollcommand \
 	    [list scrollutil::sa::setHScrollbar $win]
 	$win.hsb configure -command [list $widget xview]
     }
-    if {[string compare $data(-yscrollbarmode) "none"] != 0} {
+    if {$data(-yscrollbarmode) ne "none"} {
 	::$widget configure -yscrollcommand \
 	    [list scrollutil::sa::setVScrollbar $win]
 	$win.vsb configure -command [list $widget yview]
     }
-    if {[string compare [winfo class $widget] "Tablelist"] == 0 &&
+    if {[winfo class $widget] eq "Tablelist" &&
 	[package vcompare $::tablelist::version "6.5"] >= 0} {
 	set data(cf-ne) [::$widget cornerpath -ne]
 	set data(cf-sw) [::$widget cornerpath -sw]
@@ -769,7 +766,7 @@ proc scrollutil::sa::setHScrollbar {win first last} {
 	unobscureScrollbars $win
     }
 
-    if {[string compare $data(-xscrollbarmode) "dynamic"] == 0} {
+    if {$data(-xscrollbarmode) eq "dynamic"} {
 	if {$first == 0 && $last == 1} {
 	    hideHScrollbar $win
 	} elseif {[winfo width $data(widget)] > 1} {
@@ -794,7 +791,7 @@ proc scrollutil::sa::setVScrollbar {win first last} {
 	unobscureScrollbars $win
     }
 
-    if {[string compare $data(-yscrollbarmode) "dynamic"] == 0} {
+    if {$data(-yscrollbarmode) eq "dynamic"} {
 	if {$first == 0 && $last == 1} {
 	    hideVScrollbar $win
 	} elseif {[winfo height $data(widget)] > 1} {
@@ -814,8 +811,7 @@ proc scrollutil::sa::setVScrollbar {win first last} {
 # scrollutil::sa::updateScrollbars
 #------------------------------------------------------------------------------
 proc scrollutil::sa::updateScrollbars win {
-    if {[winfo exists $win] &&
-	[string compare [winfo class $win] "Scrollarea"] == 0} {
+    if {[winfo exists $win] && [winfo class $win] eq "Scrollarea"} {
 	updateHScrollbar $win
 	updateVScrollbar $win
     }
@@ -855,7 +851,7 @@ proc scrollutil::sa::onToplevelFocusIn top {
     while {[llength $lst1] != 0} {
 	set lst2 {}
 	foreach w $lst1 {
-	    if {[string compare [winfo class $w] "Scrollarea"] == 0 &&
+	    if {[winfo class $w] eq "Scrollarea" &&
 		[mwutil::containsPointer $w]} {
 		unobscureScrollbars $w
 	    }
@@ -882,7 +878,7 @@ proc scrollutil::sa::onToplevelFocusOut top {
     while {[llength $lst1] != 0} {
 	set lst2 {}
 	foreach w $lst1 {
-	    if {[string compare [winfo class $w] "Scrollarea"] == 0 &&
+	    if {[winfo class $w] eq "Scrollarea" &&
 		[::$w cget -autohidescrollbars]} {
 		obscureScrollbars $w
 	    }
@@ -925,7 +921,7 @@ proc scrollutil::sa::onScrollbarClicked sb {
 	    if {[catch {$widget instate disabled} result] == 0} {
 		set isDisabled $result
 	    } elseif {[catch {$widget cget -state} result] == 0} {
-		set isDisabled [expr {[string compare $result "disabled"] == 0}]
+		set isDisabled [expr {$result eq "disabled"}]
 	    } else {
 		set isDisabled 0
 	    }
@@ -966,7 +962,7 @@ proc scrollutil::sa::onDynamicHScrollbarMap hsb {
 #------------------------------------------------------------------------------
 proc scrollutil::sa::onWidgetOfScrollareaDestroy widget {
     set win [::scrollutil::getscrollarea $widget]
-    if {[string length $win] != 0} {
+    if {$win ne ""} {
 	::$win setwidget ""
 	$win configure -width 1 -height 1
     }
@@ -1030,8 +1026,7 @@ proc scrollutil::sa::showHScrollbar {win {redisplay 0}} {
 	}
     }
 
-    if {($vsbLocked &&
-	 [string compare $data(-xscrollbarmode) "dynamic"] == 0) ||
+    if {($vsbLocked && $data(-xscrollbarmode) eq "dynamic") ||
 	($data(hsbManaged) && !$redisplay)} {
 	return ""
     }
@@ -1079,7 +1074,7 @@ proc scrollutil::sa::updateHScrollbar win {
     # invocation returned prematurely because of the scrollbar lock
     #
     upvar ::scrollutil::ns${win}::data data
-    if {[string compare $data(-xscrollbarmode) "dynamic"] == 0} {
+    if {$data(-xscrollbarmode) eq "dynamic"} {
 	foreach {first last} [$win.hsb get] {}
 	if {$first == 0 && $last == 1} {
 	    hideHScrollbar $win
@@ -1093,8 +1088,7 @@ proc scrollutil::sa::updateHScrollbar win {
 # scrollutil::sa::unlockHScrollbar
 #------------------------------------------------------------------------------
 proc scrollutil::sa::unlockHScrollbar win {
-    if {[winfo exists $win] &&
-	[string compare [winfo class $win] "Scrollarea"] == 0} {
+    if {[winfo exists $win] && [winfo class $win] eq "Scrollarea"} {
 	upvar ::scrollutil::ns${win}::data data
 	set data(hsbLocked) 0
 
@@ -1118,8 +1112,7 @@ proc scrollutil::sa::showVScrollbar {win {redisplay 0}} {
 	}
     }
 
-    if {($hsbLocked &&
-	 [string compare $data(-yscrollbarmode) "dynamic"] == 0) ||
+    if {($hsbLocked && $data(-yscrollbarmode) eq "dynamic") ||
 	($data(vsbManaged) && !$redisplay)} {
 	return ""
     }
@@ -1167,7 +1160,7 @@ proc scrollutil::sa::updateVScrollbar win {
     # invocation returned prematurely because of the scrollbar lock
     #
     upvar ::scrollutil::ns${win}::data data
-    if {[string compare $data(-yscrollbarmode) "dynamic"] == 0} {
+    if {$data(-yscrollbarmode) eq "dynamic"} {
 	foreach {first last} [$win.vsb get] {}
 	if {$first == 0 && $last == 1} {
 	    hideVScrollbar $win
@@ -1181,8 +1174,7 @@ proc scrollutil::sa::updateVScrollbar win {
 # scrollutil::sa::unlockVScrollbar
 #------------------------------------------------------------------------------
 proc scrollutil::sa::unlockVScrollbar win {
-    if {[winfo exists $win] &&
-	[string compare [winfo class $win] "Scrollarea"] == 0} {
+    if {[winfo exists $win] && [winfo class $win] eq "Scrollarea"} {
 	upvar ::scrollutil::ns${win}::data data
 	set data(vsbLocked) 0
 
@@ -1230,14 +1222,12 @@ proc scrollutil::sa::protectGeometry win {
     } else {
 	set widget [::$win widget]
 	set class [winfo class $widget]
-	if {[string compare $class "Text"]  == 0 ||
-	    [string compare $class "Ctext"] == 0} {
+	if {$class eq "Text" || $class eq "Ctext"} {
 	    return 1
-	} elseif {[string compare $class "Scrollsync"] == 0} {
+	} elseif {$class eq "Scrollsync"} {
 	    foreach w [::$widget widgets] {
 		set class [winfo class $w]
-		if {[string compare $class "Text"]  == 0 ||
-		    [string compare $class "Ctext"] == 0} {
+		if {$class eq "Text" || $class eq "Ctext"} {
 		    return 1
 		}
 	    }

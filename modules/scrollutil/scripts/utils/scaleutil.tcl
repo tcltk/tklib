@@ -9,7 +9,7 @@
 # Copyright (c) 2020-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require Tk 8-
+package require Tk 8.4-
 
 #
 # Namespace initialization
@@ -20,13 +20,8 @@ namespace eval scaleutil {
     #
     # Public variables:
     #
-    variable version	1.11
-    variable library
-    if {$::tcl_version >= 8.4} {
-	set library	[file dirname [file normalize [info script]]]
-    } else {
-	set library	[file dirname [info script]] ;# no "file normalize" yet
-    }
+    variable version	1.12
+    variable library	[file dirname [file normalize [info script]]]
 
     #
     # Public procedures:
@@ -90,7 +85,7 @@ proc scaleutil::scalingPercentage winSys {
     set pct [expr {[tk scaling] * 75}]
     set origPct $pct
 
-    set onX11 [expr {[string compare $winSys "x11"] == 0}]
+    set onX11 [expr {$winSys eq "x11"}]
     set usingSDL [expr {[info exists ::tk::sdltk] && $::tk::sdltk}]
 
     if {$onX11 && !$usingSDL} {
@@ -158,9 +153,8 @@ proc scaleutil::scalingPercentage winSys {
 	    # Derive the value of pct from that of the font DPI
 	    #
 	    set dpi [lindex $result 1]
-	    set pct [expr {100 * $dpi / 96}]
-	} elseif {$::tk_version >= 8.3 &&
-		  [catch {exec ps -e | grep gnome-session}] == 0 &&
+	    set pct [expr {100.0 * $dpi / 96}]
+	} elseif {[catch {exec ps -e | grep gnome-session}] == 0 &&
 		  ![info exists ::env(WAYLAND_DISPLAY)] &&
 		  [catch {exec xrandr | grep " connected"} result] == 0 &&
 		  [catch {open $::env(HOME)/.config/monitors.xml} chan] == 0} {
@@ -168,16 +162,6 @@ proc scaleutil::scalingPercentage winSys {
 	    # Update pct by scanning the file ~/.config/monitors.xml
 	    #
 	    scanMonitorsFile $result $chan pct
-	}
-    }
-
-    #
-    # Set pct to a multiple of 25
-    #
-    for {set pct2 100} {1} {incr pct2 25} {
-	if {$pct < $pct2 + 12.5} {
-	    set pct $pct2
-	    break
 	}
     }
 
@@ -210,7 +194,7 @@ proc scaleutil::scalingPercentage winSys {
 	#
 	# Conditionally set Tk's scaling factor according to $pct
 	#
-	if {$pct != $origPct} {
+	if {$pct != $origPct && ![interp issafe]} {
 	    variable keepTkScaling
 	    if {!([info exists keepTkScaling] && $keepTkScaling)} {
 		tk scaling [expr {$pct / 75.0}]
@@ -274,24 +258,27 @@ proc scaleutil::scalingPercentage winSys {
 	}
     }
 
-    set scalingPct $pct
-    return [expr {$pct > 200 ? 200 : $pct}]
+    #
+    # Save the value of pct rounded to the nearest multiple
+    # of 25 that is at least 100, in the variable scalingPct
+    #
+    for {set scalingPct 100} {1} {incr scalingPct 25} {
+	if {$pct < $scalingPct + 12.5} {
+	    break
+	}
+    }
+
+    return [expr {$scalingPct > 200 ? 200 : $scalingPct}]
 }
 
 #------------------------------------------------------------------------------
 # scaleutil::scale
 #
-# Scales a nonnegative integer according to a given scaling percentage (which
-# is assumed to be a nonnegative integer itself).
+# Scales an integer num according to a given scaling percentage pct (which is
+# assumed to be a nonnegative, but not necessarily integer, number).
 #------------------------------------------------------------------------------
 proc scaleutil::scale {num pct} {
-    set factor [expr {$num * $pct}]
-    set result [expr {$factor / 100}]
-    if {$factor % 100 >= 50} {
-	incr result
-    }
-
-    return $result
+    return [expr {round($num * $pct / 100.0)}]
 }
 
 #
@@ -306,7 +293,7 @@ proc scaleutil::scale {num pct} {
 #------------------------------------------------------------------------------
 proc scaleutil::setTreeviewRowHeight {} {
     set font [ttk::style lookup Treeview -font]
-    if {[string length $font] == 0} {
+    if {$font eq ""} {
 	set font TkDefaultFont
     }
 
@@ -363,7 +350,7 @@ proc scaleutil::scanMonitorsFile {xrandrResult chan pctName} {
 	# variable pct to 100, 200, 300, 400, or 500, depending on the
 	# max. scaling within this configuration, and exit the loop
 	#
-	if {[string compare $outputList $connectorList] == 0} {
+	if {$outputList eq $connectorList} {
 	    set maxScaling 1.0
 	    foreach {dummy scaling} [regexp -all -inline \
 		    {<scale>([^<]+)</scale>} $config] {
@@ -485,7 +472,7 @@ proc scaleutil::scaleStyles_alt pct {
 proc scaleutil::scaleStyles_clam pct {
     ttk::style theme settings clam {
 	#
-	# -gripcount will be replaced by -gripsize in Tk 8.7.
+	# -gripcount will be replaced with -gripsize in Tk 8.7.
 	#
 	set gripCount [scale 5 $pct]
 	set gripSize [scale 10 $pct]
@@ -510,7 +497,7 @@ proc scaleutil::scaleStyles_clam pct {
 	ttk::style configure Toolbutton -padding [scale 2 $pct]
 
 	ttk::style configure TMenubutton -arrowsize [scale 5 $pct] \
-	    -padding [scale 5 $pct]
+	    -arrowpadding [scale 3 $pct] -padding [scale 5 $pct]
 
 	#
 	# The -indicatorsize option will be removed in Tk 8.7b1.
@@ -530,7 +517,7 @@ proc scaleutil::scaleStyles_clam pct {
 	    -padding [list selected [list $l $t $r $b]]		;# {6 4 6 2}
 
 	#
-	# -gripcount will be replaced by -gripsize in Tk 8.7.
+	# -gripcount will be replaced with -gripsize in Tk 8.7.
 	#
 	ttk::style configure Sash -sashthickness [scale 6 $pct] \
 	    -gripcount [scale 10 $pct] -gripsize [scale 20 $pct]
@@ -612,9 +599,15 @@ proc scaleutil::scaleStyles_default pct {
 	ttk::style configure TScrollbar \
 	    -arrowsize $scrlbarWidth -width $scrlbarWidth
 
-	set thickness [scale 15 $pct]
-	ttk::style configure TScale -sliderlength [scale 30 $pct] \
-	    -sliderthickness $thickness
+	if {$::tk_version >= 8.7 &&
+	    [package vcompare $::tk_patchLevel "8.7a5"] > 0} {
+	    set thickness [scale 4 $pct]
+	    ttk::style configure TScale -groovewidth $thickness
+	} else {
+	    set thickness [scale 15 $pct]
+	    ttk::style configure TScale -sliderlength [scale 30 $pct] \
+		-sliderthickness $thickness
+	}
 
 	ttk::style configure TProgressbar -barsize [scale 30 $pct] \
 	    -thickness $thickness
@@ -628,8 +621,13 @@ proc scaleutil::scaleStyles_default pct {
 	ttk::style configure TButton -padding [scale 3 $pct]
 	ttk::style configure Toolbutton -padding [scale 2 $pct]
 
+	#
+	# -indicatormargin will be replaced with
+	# -arrowsize and -arrowpadding in Tk 8.7b1.
+	#
 	ttk::style configure TMenubutton \
 	    -indicatormargin [list [scale 5 $pct] 0] \
+	    -arrowsize [scale 5 $pct] -arrowpadding [scale 3 $pct] \
 	    -padding [list [scale 10 $pct] [scale 3 $pct]]
 
 	set t [scale 2 $pct]; set r [scale 4 $pct]; set b $t

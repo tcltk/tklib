@@ -1,5 +1,16 @@
-What is new in Scrollutil 1.19?
--------------------------------
+What is new in Scrollutil 2.0?
+------------------------------
+
+1. Dropped the support for Tk versions earlier than 8.4.  This has made
+   the code simpler and easier to maintain.
+
+2. Extended the handling of the virtual event <<ThemeChanged>>, and
+   added bindings for the virtual events <<LightAqua>> and <<DarkAqua>>.
+
+3. Improved the compatibility with Tcl 9.0 and Tk 8.7.
+
+What was new in Scrollutil 1.19?
+--------------------------------
 
 1. If SVG is supported, i.e., if the Tk version is at least 8.7 or the
    tksvg package can be loaded into the interpreter, then the new

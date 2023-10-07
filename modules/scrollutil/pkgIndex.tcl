@@ -7,21 +7,21 @@
 #
 # Regular packages:
 #
-package ifneeded scrollutil         1.19 \
+package ifneeded scrollutil         2.0 \
 	[list source [file join $dir scrollutil.tcl]]
-package ifneeded scrollutil_tile    1.19 \
+package ifneeded scrollutil_tile    2.0 \
 	[list source [file join $dir scrollutil_tile.tcl]]
 
 #
 # Aliases:
 #
-package ifneeded Scrollutil         1.19 \
-	[list package require -exact scrollutil      1.19]
-package ifneeded Scrollutil_tile    1.19 \
-	[list package require -exact scrollutil_tile 1.19]
+package ifneeded Scrollutil         2.0 \
+	[list package require -exact scrollutil      2.0]
+package ifneeded Scrollutil_tile    2.0 \
+	[list package require -exact scrollutil_tile 2.0]
 
 #
 # Code common to all packages:
 #
-package ifneeded scrollutil::common 1.19 \
+package ifneeded scrollutil::common 2.0 \
 	[list source [file join $dir scrollutilCommon.tcl]]

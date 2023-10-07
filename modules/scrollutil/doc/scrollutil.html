@@ -14,7 +14,7 @@
   <div>
     <h1>Scrollutil Programmer's Guide</h1>
 
-    <h2>For Scrollutil Version 1.19</h2>
+    <h2>For Scrollutil Version 2.0</h2>
 
     <h3>by</h3>
 
@@ -98,7 +98,7 @@
 
   <h3 id="ov_what">What Is Scrollutil?</h3>
 
-  <p>Scrollutil is a library package for Tcl/Tk versions 8.0 or higher, written
+  <p>Scrollutil is a library package for Tcl/Tk versions 8.4 or higher, written
   in pure Tcl/Tk code.&nbsp; It contains:</p>
 
   <ul>
@@ -110,13 +110,11 @@
     "plainnotebook.html">plainnotebook</a></b>, and <b><a href=
     "pagesman.html">pagesman</a></b> mega-widgets, including a
     general utility module for mega-widgets.&nbsp; The scrollednotebook and
-    plainnotebook widgets require Tcl/Tk 8.4 or later and tile 0.8 or
-    higher;</li>
+    plainnotebook widgets require tile 0.8 or higher;</li>
 
     <li>the command <code><b><a href=
     "wheelEvent.html#add">scrollutil::addMouseWheelSupport</a></b></code>,
-    which creates mouse wheel event bindings for a given binding tag.&nbsp;
-    This command requires Tcl/Tk 8.4 or later;</li>
+    which creates mouse wheel event bindings for a given binding tag;</li>
 
     <li>commands for <i>user-friendly</i> mouse wheel event handling in
     <b>scrollable widget containers</b> like scrollutil::scrollableframe,
@@ -311,8 +309,8 @@
     </address>
   </blockquote>
 
-  <p>The distribution file is <code>scrollutil1.19.tar.gz</code> for UNIX and
-  <code>scrollutil1_19.zip</code> for Windows.&nbsp; These files contain the
+  <p>The distribution file is <code>scrollutil2.0.tar.gz</code> for UNIX and
+  <code>scrollutil2_0.zip</code> for Windows.&nbsp; These files contain the
   same information, except for the additional carriage return character
   preceding the linefeed at the end of each line in the text files for
   Windows.</p>
@@ -336,11 +334,11 @@
 
   <p>To install Scrollutil <i>on UNIX</i>, <code>cd</code> to the desired
   directory and unpack the distribution file
-  <code>scrollutil1.19.tar.gz</code>:</p>
+  <code>scrollutil2.0.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c scrollutil1.19.tar.gz | tar -xf -
+gunzip -c scrollutil2.0.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
@@ -348,17 +346,17 @@ gunzip -c scrollutil1.19.tar.gz | tar -xf -
 
   <blockquote>
     <pre>
-tar -zxf scrollutil1.19.tar.gz
+tar -zxf scrollutil2.0.tar.gz
 </pre>
   </blockquote>
 
-  <p>Both commands will create a directory named <code>scrollutil1.19</code>,
+  <p>Both commands will create a directory named <code>scrollutil2.0</code>,
   with the subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>scrollutil1_19.zip</code> into the directory
-  <code>scrollutil1.19</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>scrollutil2_0.zip</code> into the directory
+  <code>scrollutil2.0</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>Notice that in tklib the Scrollutil <code>demos</code> directory is
@@ -373,11 +371,10 @@ tar -zxf scrollutil1.19.tar.gz
   between the two is that Scrollutil_tile enables the tile-based,
   theme-specific appearance of scrollarea, scrollsync, and scrollableframe
   widgets, and provides the themed scrollednotebook and plainnotebook widgets;
-  this package requires Tcl/Tk 8.4 or higher and tile 0.8 or higher.&nbsp; It
-  is not possible to use both packages in one and the same application, because
-  both are implemented in the same <code>scrollutil</code> namespace and
-  provide identical commands (except for the commands
-  <code>scrollutil::scrollednotebook</code>,
+  this package requires tile 0.8 or higher.&nbsp; It is not possible to use
+  both packages in one and the same application, because both are implemented
+  in the same <code>scrollutil</code> namespace and provide identical commands
+  (except for the commands <code>scrollutil::scrollednotebook</code>,
   <code>scrollutil::plainnotebook</code>, <code>scrollutil::addclosetab</code>,
   <code>scrollutil::removeclosetab</code>, and
   <code>scrollutil::closetabstate</code>, which are provided by the
@@ -487,9 +484,9 @@ namespace import scrollutil::<i>pattern</i> ?scrollutil::<i>pattern ...</i>?
 
   <blockquote>
     <pre>
-package require Tk 8.4
+package require Tk 8.4-
 if {$::tk_version &lt; 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
-    package require tile 0.8
+    package require tile 0.8-
 }
 </pre>
   </blockquote>
@@ -867,8 +864,8 @@ themepatch::patch clam
 
   <blockquote>
     <pre>
-package require Tk 8.5
-package require tablelist_tile 6.3
+package require Tk 8.5-
+package require tablelist_tile 6.3-
 set dir [file dirname [info script]]
 source [file join $dir styleUtil.tcl]
 
@@ -930,8 +927,8 @@ pack $f   -expand yes -fill both
 
   <blockquote>
     <pre>
-package require Tk 8.5
-package require tablelist_tile 6.5
+package require Tk 8.5-
+package require tablelist_tile 6.5-
 <span class="red">package require scrollutil_tile</span>
 set dir [file dirname [info script]]
 source [file join $dir styleUtil.tcl]
@@ -1515,11 +1512,11 @@ set cf [$sf childsite]
 
   <blockquote>
     <pre>
-package require Tk 8.5.9                        ;<span class=
+package require Tk 8.5.9-                       ;<span class=
 "cmt"># for ttk::spinbox</span>
-package require mentry_tile 3.2                 ;<span class=
+package require mentry_tile 3.2-                ;<span class=
 "cmt"># for mouse wheel support</span>
-package require tablelist_tile 6.5              ;<span class=
+package require tablelist_tile 6.5-             ;<span class=
 "cmt"># for -(x|y)mousewheelwindow</span>
                                                 ;<span class=
  "cmt"># and scrollutil::scrollarea</span>
@@ -1715,13 +1712,13 @@ grid $_sa ...
 
   <blockquote>
     <pre>
-package require Tk 8.5.9                        ;<span class=
+package require Tk 8.5.9-                       ;<span class=
 "cmt"># for ttk::spinbox</span>
 package require BWidget
 Widget::theme yes
-package require mentry_tile 3.2                 ;<span class=
+package require mentry_tile 3.2-                ;<span class=
 "cmt"># for mouse wheel support</span>
-package require tablelist_tile 6.5              ;<span class=
+package require tablelist_tile 6.5-             ;<span class=
 "cmt"># for -(x|y)mousewheelwindow</span>
                                                 ;<span class=
  "cmt"># and scrollutil::scrollarea</span>
@@ -1817,7 +1814,7 @@ scrollutil::enableScrollingByWheel $sf</span>
 
   <blockquote>
     <pre>
-package require Tk 8.5.9                        ;<span class=
+package require Tk 8.5.9-                       ;<span class=
 "cmt"># for ttk::spinbox</span>
 if {[catch {package require iwidgets} result1] != 0 &&
     [catch {package require Iwidgets} result2] != 0} {
@@ -1826,9 +1823,9 @@ if {[catch {package require iwidgets} result1] != 0 &&
 set dir [file dirname [info script]]
 source [file join $dir scrolledwidgetPatch.itk] ;<span class=
 "cmt"># adds ttk::scrollbar widgets</span>
-package require mentry_tile 3.2                 ;<span class=
+package require mentry_tile 3.2-                ;<span class=
 "cmt"># for mouse wheel support</span>
-package require tablelist_tile 6.5              ;<span class=
+package require tablelist_tile 6.5-             ;<span class=
 "cmt"># for -(x|y)mousewheelwindow</span>
                                                 ;<span class=
 "cmt"># and scrollutil::scrollarea</span>

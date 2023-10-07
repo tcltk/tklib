@@ -1,6 +1,4 @@
 #! /usr/bin/env tclsh
-  
-package require Tk
 
 #==============================================================================
 # Demonstrates the use of the Scrollutil package in connection with the BWidget
@@ -9,6 +7,7 @@ package require Tk
 # Copyright (c) 2019-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
+package require Tk
 package require BWidget
 Widget::theme yes
 package require scrollutil_tile

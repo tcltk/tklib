@@ -12,10 +12,10 @@
 
 package require Tk 8.4-
 if {$::tk_version < 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
-    package require tile 0.8
+    package require tile 0.8-
 }
 if {![info exists ::tk::scalingPct]} {		;# earlier than Tk 8.7b1
-    package require scaleutil 1.10
+    package require scaleutil 1.10-
 }
 
 #
@@ -27,7 +27,7 @@ namespace eval themepatch {
     #
     # Public variables:
     #
-    variable version	1.4
+    variable version	1.5
     variable library	[file dirname [file normalize [info script]]]
 
     #

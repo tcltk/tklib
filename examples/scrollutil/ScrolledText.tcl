@@ -1,6 +1,4 @@
 #! /usr/bin/env tclsh
-  
-package require Tk
 
 #==============================================================================
 # Demonstrates the use of the scrollutil::scrollarea widget in connection with
@@ -9,6 +7,7 @@ package require Tk
 # Copyright (c) 2020-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
+package require Tk
 package require scrollutil_tile
 set dir [file dirname [info script]]
 source [file join $dir styleUtil.tcl]

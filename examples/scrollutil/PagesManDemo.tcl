@@ -1,6 +1,4 @@
 #! /usr/bin/env tclsh
-  
-package require Tk
 
 #==============================================================================
 # Demonstrates the use of the scrollutil::pagesman widget having
@@ -13,6 +11,7 @@ package require Tk
 # Copyright (c) 2021-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
+package require Tk
 package require scrollutil_tile
 set dir [file dirname [info script]]
 source [file join $dir styleUtil.tcl]

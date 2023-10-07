@@ -13,8 +13,6 @@
 # Copyright (c) 2021-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require Tk 8.4-
-
 #
 # Namespace initialization
 # ========================
@@ -301,8 +299,10 @@ proc scrollutil::pnb::createBindings {} {
     bind Plainnotebook <<ThemeChanged>> { scrollutil::pnb::onThemeChanged %W }
 
     bindtags . [linsert [bindtags .] 1 PlainnotebookMain]
-    bind PlainnotebookMain <<ThemeChanged>> {
-	scrollutil::pnb::onThemeChanged %W
+    foreach event {<<ThemeChanged>> <<LightAqua>> <<DarkAqua>>} {
+	bind PlainnotebookMain $event {
+	    scrollutil::pnb::onThemeChanged %W
+	}
     }
 
     #
@@ -1467,6 +1467,9 @@ proc scrollutil::pnb::onFontChanged win {
 proc scrollutil::pnb::onThemeChanged w {
     if {$w eq "."} {
 	::scrollutil::getForegroundColors normalFg disabledFg
+	::scrollutil::setImgForeground scrollutil_closeImg	   $normalFg
+	::scrollutil::setImgForeground scrollutil_closeDisabledImg $disabledFg
+
 	::scrollutil::setImgForeground scrollutil_descendImg	     $normalFg
 	::scrollutil::setImgForeground scrollutil_descendDisabledImg $disabledFg
 

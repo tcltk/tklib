@@ -1,6 +1,4 @@
 #! /usr/bin/env tclsh
-  
-package require Tk
 
 #==============================================================================
 # Demonstrates the use of the Scrollutil package in connection with the
@@ -9,6 +7,7 @@ package require Tk
 # Copyright (c) 2019-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
+package require Tk
 if {[catch {package require iwidgets} result1] != 0 &&
     [catch {package require Iwidgets} result2] != 0} {
     error "$result1; $result2"
