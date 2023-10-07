@@ -1,3 +1,24 @@
+2023-10-07  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 4.0; dropped the support
+	* COPYRIGHT.txt: for Tk versions earlier than 8.4.
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/*.tcl: Dropped the support for Tk versions earlier than 8.4;
+	  adapted to the changes made in the Entry and TEntry bindings in Tk
+	  8.7; added explicit support for the themes "black", "breeze",
+	  "breeze-dark", "sun-valley-light", and "sun-valley-dark".
+
+	* scripts/tclIndex: Newly generated.
+
+	* scripts/mwutil/*.tcl:        Dropped the support for Tk versions
+	* ../../examples/mentry/*.tcl: earlier than 8.4.
+
+	* doc/wcbRef.html: Updated to the version included in Wcb 4.0.
+
 2023-07-03  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Mentry 3.18.
