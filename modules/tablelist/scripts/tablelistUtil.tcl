@@ -6858,6 +6858,7 @@ proc tablelist::makeTtkCkbtn w {
 	Breeze - breeze - breeze-dark -
 	clam -
 	default -
+	sun-valley-light - sun-valley-dark -
 	winxpblue {
 	    set height [winfo reqheight $w]
 	    $frm configure -width $height -height $height
