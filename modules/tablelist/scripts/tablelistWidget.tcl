@@ -7708,11 +7708,6 @@ proc tablelist::deleteCols {win first last} {
     set data(itemList) $newItemList
 
     #
-    # Update the list variable if present
-    #
-    condUpdateListVar $win
-
-    #
     # Set up and adjust the columns, and rebuild some columns-related lists
     #
     setupColumns $win \
@@ -7721,6 +7716,11 @@ proc tablelist::deleteCols {win first last} {
     makeSortAndArrowColLists $win
     adjustColumns $win {} 1
     updateViewWhenIdle $win
+
+    #
+    # Update the list variable if present
+    #
+    condUpdateListVar $win
 
     #
     # Reconfigure the relevant column labels
@@ -8440,11 +8440,6 @@ proc tablelist::insertCols {win colIdx argList} {
     set data(itemList) $newItemList
 
     #
-    # Update the list variable if present
-    #
-    condUpdateListVar $win
-
-    #
     # Set up and adjust the columns, and rebuild some columns-related lists
     #
     setupColumns $win \
@@ -8457,6 +8452,11 @@ proc tablelist::insertCols {win colIdx argList} {
 	lappend colIdxList $col
     }
     adjustColumns $win $colIdxList 1
+
+    #
+    # Update the list variable if present
+    #
+    condUpdateListVar $win
 
     #
     # Redisplay the items

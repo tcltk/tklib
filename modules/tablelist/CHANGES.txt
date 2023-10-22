@@ -15,6 +15,10 @@ What is new in Tablelist 7.0?
 
 5. Removed the now redundant distribution file "repair.tcl".
 
+6. Fixed a long-standing bug related to updating the list variable by
+   the "insertcolumns", "insertcolumnlist", and "deletecolumns"
+   subcommands (thanks to Alexandru Dadalau for his bug report).
+
 What was new in Tablelist 6.22?
 -------------------------------
 
