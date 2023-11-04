@@ -670,12 +670,6 @@ proc scaleutil::scaleStyles_vista pct {
 	    ttk::style configure $style -padding [scale 2 $pct]
 	}
 
-	set m [scale 2 $pct]
-	set margins [list $m $m $m 0]				;# {2 2 2 0}
-	ttk::style configure TNotebook -tabmargins $margins
-	set margins [list $m $m $m $m]				;# {2 2 2 2}
-	ttk::style map TNotebook.Tab -expand [list selected $margins]
-
 	set padding [list [scale 4 $pct] 0 0 0]			;# {4 0 0 0}
 	ttk::style configure Item -padding $padding
 	ttk::style configure Treeview -indent [scale 20 $pct]
@@ -711,12 +705,8 @@ proc scaleutil::scaleStyles_winnative pct {
 	    ttk::style configure $style -padding $padding
 	}
 
-	set m [scale 2 $pct]
-	set margins [list $m $m $m 0]				;# {2 2 2 0}
-	ttk::style configure TNotebook -tabmargins $margins
 	ttk::style configure TNotebook.Tab \
 	    -padding [list [scale 3 $pct] [scale 1 $pct]]
-	ttk::style map TNotebook.Tab -expand [list selected $margins]
 
 	set l [scale 2 $pct]; set t $l; set r [scale 4 $pct]; set b $l
 	set indMargins [list $l $t $r $b]			;# {2 2 4 2}
@@ -747,12 +737,6 @@ proc scaleutil::scaleStyles_xpnative pct {
 	foreach style {TCheckbutton TRadiobutton} {
 	    ttk::style configure $style -padding [scale 2 $pct]
 	}
-
-	set m [scale 2 $pct]
-	set margins [list $m $m $m 0]				;# {2 2 2 0}
-	ttk::style configure TNotebook -tabmargins $margins
-	set margins [list $m $m $m $m]				;# {2 2 2 2}
-	ttk::style map TNotebook.Tab -expand [list selected $margins]
 
 	set l [scale 2 $pct]; set t $l; set r [scale 4 $pct]; set b $l
 	set indMargins [list $l $t $r $b]			;# {2 2 4 2}
