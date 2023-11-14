@@ -67,7 +67,7 @@ package provide scaleutil $scaleutil::version
 #------------------------------------------------------------------------------
 proc scaleutil::scalingPercentage winSys {
     variable scalingPct
-    if {[info exists ::tk::scalingPct]} {		;# Tk 8.7b1 or later
+    if {[info exists ::tk::scalingPct]} {		;# Tk 8.7b1/9 or later
 	set scalingPct $::tk::scalingPct
     }
     if {[info exists scalingPct]} {
@@ -456,10 +456,13 @@ proc scaleutil::scaleStyles_alt pct {
 	    -padding [list [scale 4 $pct] [scale 2 $pct]]
 	ttk::style map TNotebook.Tab -expand [list selected $margins]
 
+	#
+	# -diameter will be replaced with -size in Tk 9.
+	#
 	set l [scale 2 $pct]; set t $l; set r [scale 4 $pct]; set b $l
 	set indMargins [list $l $t $r $b]			;# {2 2 4 2}
 	ttk::style configure Item -diameter [scale 9 $pct] \
-	    -indicatormargins $indMargins
+	    -size [scale 9 $pct] -indicatormargins $indMargins
 	ttk::style configure Treeview -indent [scale 20 $pct]
     }
 }
@@ -472,7 +475,7 @@ proc scaleutil::scaleStyles_alt pct {
 proc scaleutil::scaleStyles_clam pct {
     ttk::style theme settings clam {
 	#
-	# -gripcount will be replaced with -gripsize in Tk 8.7.
+	# -gripcount will be replaced with -gripsize in Tk 9.
 	#
 	set gripCount [scale 5 $pct]
 	set gripSize [scale 10 $pct]
@@ -500,7 +503,7 @@ proc scaleutil::scaleStyles_clam pct {
 	    -arrowpadding [scale 3 $pct] -padding [scale 5 $pct]
 
 	#
-	# The -indicatorsize option will be removed in Tk 8.7b1.
+	# The -indicatorsize option will be removed in Tk 8.7b1/9.
 	#
 	set l [scale 1 $pct]; set t $l; set r [scale 4 $pct]; set b $l
 	set indMargin [list $l $t $r $b]			;# {1 1 4 1}
@@ -517,7 +520,7 @@ proc scaleutil::scaleStyles_clam pct {
 	    -padding [list selected [list $l $t $r $b]]		;# {6 4 6 2}
 
 	#
-	# -gripcount will be replaced with -gripsize in Tk 8.7.
+	# -gripcount will be replaced with -gripsize in Tk 9.
 	#
 	ttk::style configure Sash -sashthickness [scale 6 $pct] \
 	    -gripcount [scale 10 $pct] -gripsize [scale 20 $pct]
@@ -568,7 +571,7 @@ proc scaleutil::scaleStyles_classic pct {
 	set indMargin [list 0 $t $r $b]				;# {0 2 4 2}
 	foreach style {TCheckbutton TRadiobutton} {
 	    #
-	    # -indicatordiameter will be renamed to -indicatorsize in Tk 8.7.
+	    # -indicatordiameter will be renamed to -indicatorsize in Tk 9.
 	    #
 	    ttk::style configure $style -indicatordiameter [scale 12 $pct] \
 		-indicatorsize [scale 12 $pct] -indicatormargin $indMargin
@@ -623,7 +626,7 @@ proc scaleutil::scaleStyles_default pct {
 
 	#
 	# -indicatormargin will be replaced with
-	# -arrowsize and -arrowpadding in Tk 8.7b1.
+	# -arrowsize and -arrowpadding in Tk 8.7b1/9.
 	#
 	ttk::style configure TMenubutton \
 	    -indicatormargin [list [scale 5 $pct] 0] \
@@ -634,7 +637,7 @@ proc scaleutil::scaleStyles_default pct {
 	set indMargin [list 0 $t $r $b]				;# {0 2 4 2}
 	foreach style {TCheckbutton TRadiobutton} {
 	    #
-	    # -indicatordiameter will be removed in Tk 8.7b1.
+	    # -indicatordiameter will be removed in Tk 8.7b1/9.
 	    #
 	    ttk::style configure $style -indicatordiameter [scale 10 $pct] \
 		-indicatormargin $indMargin -padding [scale 1 $pct]
@@ -708,10 +711,13 @@ proc scaleutil::scaleStyles_winnative pct {
 	ttk::style configure TNotebook.Tab \
 	    -padding [list [scale 3 $pct] [scale 1 $pct]]
 
+	#
+	# -diameter will be replaced with -size in Tk 9.
+	#
 	set l [scale 2 $pct]; set t $l; set r [scale 4 $pct]; set b $l
 	set indMargins [list $l $t $r $b]			;# {2 2 4 2}
 	ttk::style configure Item -diameter [scale 9 $pct] \
-	    -indicatormargins $indMargins
+	    -size [scale 9 $pct] -indicatormargins $indMargins
 	ttk::style configure Treeview -indent [scale 20 $pct]
     }
 }
@@ -738,10 +744,13 @@ proc scaleutil::scaleStyles_xpnative pct {
 	    ttk::style configure $style -padding [scale 2 $pct]
 	}
 
+	#
+	# -diameter will be replaced with -size in Tk 9.
+	#
 	set l [scale 2 $pct]; set t $l; set r [scale 4 $pct]; set b $l
 	set indMargins [list $l $t $r $b]			;# {2 2 4 2}
 	ttk::style configure Item -diameter [scale 9 $pct] \
-	    -indicatormargins $indMargins
+	    -size [scale 9 $pct] -indicatormargins $indMargins
 	ttk::style configure Treeview -indent [scale 20 $pct]
     }
 }
