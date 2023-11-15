@@ -11,7 +11,7 @@ What is new in Tablelist 7.0?
 3. Added explicit support for the themes "black", "breeze",
    "breeze-dark", "sun-valley-light", and "sun-valley-dark".
 
-4. Improved the compatibility with Tcl 9.0 and Tk 8.7.
+4. Improved the compatibility with Tcl 9 and Tk 8.7/9.
 
 5. Removed the now redundant distribution file "repair.tcl".
 

@@ -7,7 +7,7 @@ What is new in Scrollutil 2.0?
 2. Extended the handling of the virtual event <<ThemeChanged>>, and
    added bindings for the virtual events <<LightAqua>> and <<DarkAqua>>.
 
-3. Improved the compatibility with Tcl 9.0 and Tk 8.7.
+3. Improved the compatibility with Tcl 9 and Tk 8.7/9.
 
 What was new in Scrollutil 1.19?
 --------------------------------
