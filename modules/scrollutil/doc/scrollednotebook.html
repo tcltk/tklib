@@ -246,10 +246,10 @@ package require scrollutil_tile
     <dd class="tm">A scrollednotebook is a mega-widget that contains a
     ttk::notebook within a <a href="scrollableframe.html">scrollableframe</a>
     and supports an arbitrary number of unsqueezed tabs.&nbsp; Currently not
-    visible tabs can be brought into view by navigating with the mouse wheel or
-    keyboard and by scrolling with the aid of the two arrow buttons placed on
-    demand in the top-left and top-right or bottom-left and bottom-right
-    corners (depending on the notebook's <a href=
+    visible tabs can be brought into view by navigating with the mouse wheel,
+    touchpad, or keyboard, and by scrolling with the aid of the two arrow
+    buttons placed on demand in the top-left and top-right or bottom-left and
+    bottom-right corners (depending on the notebook's <a href=
     "#std_options">style</a>).&nbsp; The size of the arrows depends on the
     display's scaling percentage, while their color is theme-specific and is
     updated whenever the theme changes.&nbsp; An individual tab can be made
@@ -836,17 +836,18 @@ proc populateMenu {nb data} {
     <dd>
       <ol>
         <li class="tm"><b>Navigation between the tabs of a scrollednotebook or
-        ttk::notebook widget via the mouse wheel:</b>&nbsp; A mouse wheel tick
-        selects the tab of state <code><b>normal</b></code> cyclically
-        following/preceding the currently selected one.&nbsp; (Note that the
-        same effect can also be achieved with the keys <code>Right</code>,
-        <code>Left</code>, <code>Control-Tab</code>, and
-        <code>Control-Shift-Tab</code>.)&nbsp; On the windowing system
-        <code><b>aqua</b></code>, if the <code>Option</code> key is down while
-        the mouse wheel is being rotated then a wheel tick selects the 10'th
-        tab of state <code><b>normal</b></code> cyclically following/preceding
-        the currently selected one (modulo the number of tabs).&nbsp; The same
-        holds true on the windowing systems <code><b>x11</b></code> and
+        ttk::notebook widget via the mouse wheel or touchpad:</b>&nbsp; A mouse
+        wheel tick or two-finger gesture on the touchpad selects the tab of
+        state <code><b>normal</b></code> cyclically following/preceding the
+        currently selected one.&nbsp; (Note that the same effect can also be
+        achieved with the keys <code>Right</code>, <code>Left</code>,
+        <code>Control-Tab</code>, and <code>Control-Shift-Tab</code>.)&nbsp; On
+        the windowing system <code><b>aqua</b></code>, if the
+        <code>Option</code> key is down while the mouse wheel is being rotated
+        then a wheel tick selects the 10'th tab of state
+        <code><b>normal</b></code> cyclically following/preceding the currently
+        selected one (modulo the number of tabs).&nbsp; The same holds true on
+        the windowing systems <code><b>x11</b></code> and
         <code><b>win32</b></code> if the Tk version is 8.7a4 or later and the
         mouse wheel is rotated with the <code>Alt</code> key down.</li>
 

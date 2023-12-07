@@ -29,6 +29,9 @@ namespace eval mentry {
 	    mentry::incrIPv6AddrComp %W \
 		[expr {%D > 0 ? (%D + 11) / 12 : %D / 12}]
 	}
+	bind MentryIPv6Addr <Shift-MouseWheel> {
+	    # Ignore the event
+	}
     } elseif {$winSys eq "aqua"} {
 	catch {
 	    bind MentryIPv6Addr <MouseWheel> {
@@ -37,12 +40,18 @@ namespace eval mentry {
 	    bind MentryIPv6Addr <Option-MouseWheel> {
 		mentry::incrIPv6AddrComp %W [expr {10 * %D}]
 	    }
+	    bind MentryIPv6Addr <Shift-MouseWheel> {
+		# Ignore the event
+	    }
 	}
     } else {
 	catch {
 	    bind MentryIPv6Addr <MouseWheel> {
 		mentry::incrIPv6AddrComp %W \
 		    [expr {%D > 0 ? (%D + 11) / 12 : %D / 12}]
+	    }
+	    bind MentryIPv6Addr <Shift-MouseWheel> {
+		# Ignore the event
 	    }
 	}
 
@@ -56,6 +65,21 @@ namespace eval mentry {
 		if {!$tk_strictMotif} {
 		    mentry::incrIPv6AddrComp %W -1
 		}
+	    }
+	    bind MentryIPv6Addr <Shift-Button-4> {
+		# Ignore the event
+	    }
+	    bind MentryIPv6Addr <Shift-Button-5> {
+		# Ignore the event
+	    }
+	}
+    }
+    variable touchpadScrollSupport
+    if {$touchpadScrollSupport} {
+	bind MentryIPv6Addr <TouchpadScroll> {
+	    lassign [tk::PreciseScrollDeltas %D] deltaX deltaY
+	    if {$deltaY != 0 && [expr {%# %% 12}] == 0} {
+		mentry::incrIPv6AddrComp %W [expr {$deltaY > 0 ? -1 : 1}]
 	    }
 	}
     }

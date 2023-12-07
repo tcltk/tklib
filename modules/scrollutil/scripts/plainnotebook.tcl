@@ -329,20 +329,21 @@ proc scrollutil::pnb::createBindings {} {
     }
 
     bind PnbRadiobtn <Down> {
-	scrollutil::pnb::cycleTab [scrollutil::pnb::tabToPnb %W]  1; break
+	scrollutil::pnb::cycleTab [scrollutil::pnb::tabToPnb %W] ""  1; break
     }
     bind PnbRadiobtn <Up> {
-	scrollutil::pnb::cycleTab [scrollutil::pnb::tabToPnb %W] -1; break
+	scrollutil::pnb::cycleTab [scrollutil::pnb::tabToPnb %W] "" -1; break
     }
     bind PnbRadiobtn <Control-Tab> {
-	scrollutil::pnb::cycleTab [scrollutil::pnb::tabToPnb %W]  1; break
+	scrollutil::pnb::cycleTab [scrollutil::pnb::tabToPnb %W] ""  1; break
     }
     bind PnbRadiobtn <Control-Shift-Tab> {
-	scrollutil::pnb::cycleTab [scrollutil::pnb::tabToPnb %W] -1; break
+	scrollutil::pnb::cycleTab [scrollutil::pnb::tabToPnb %W] "" -1; break
     }
     catch {
 	bind PnbRadiobtn <Control-ISO_Left_Tab> {
-	    scrollutil::pnb::cycleTab [scrollutil::pnb::tabToPnb %W] -1; break
+	    scrollutil::pnb::cycleTab [scrollutil::pnb::tabToPnb %W] "" -1
+	    break
 	}
     }
 
@@ -351,10 +352,34 @@ proc scrollutil::pnb::createBindings {} {
     # the mouse wheel (TIP 591).  Use our own bindMouseWheel procedure rather
     # than ttk::bindMouseWheel, which was not present in tile before Dec. 2008.
     #
+    bind PnbMiddleFrame <Enter> {
+	set scrollutil::xWheelEvents 0; set scrollutil::yWheelEvents 0
+    }
     ::scrollutil::bindMouseWheel PnbTab \
 	{scrollutil::pnb::cycleTab [scrollutil::pnb::tabToPnb %W]}
     ::scrollutil::bindMouseWheel PnbMiddleFrame \
 	{scrollutil::pnb::cycleTab [scrollutil::pnb::mfToPnb %W]}
+    variable ::scrollutil::touchpadScrollSupport
+    if {$touchpadScrollSupport} {
+	bind PnbTab <TouchpadScroll> {
+	    if {%# %% 30 == 0} {
+		lassign [tk::PreciseScrollDeltas %D] deltaX deltaY
+		if {$deltaY != 0} {
+		    scrollutil::pnb::cycleTab [scrollutil::pnb::tabToPnb %W] \
+			"" [expr {$deltaY < 0 ? -1 : 1}]
+		}
+	    }
+	}
+	bind PnbMiddleFrame <TouchpadScroll> {
+	    if {%# %% 30 == 0} {
+		lassign [tk::PreciseScrollDeltas %D] deltaX deltaY
+		if {$deltaY != 0} {
+		    scrollutil::pnb::cycleTab [scrollutil::pnb::mfToPnb %W] \
+			"" [expr {$deltaY < 0 ? -1 : 1}]
+		}
+	    }
+	}
+    }
 
     bind PnbContentFrame <Configure> { scrollutil::pnb::onCfConfigure %W %w }
 
@@ -365,7 +390,7 @@ proc scrollutil::pnb::createBindings {} {
 	set nb [EnclosingNotebook $w]
 	if {$nb ne ""} {
 	    if {[winfo class $nb] eq "Plainnotebook"} {
-		::scrollutil::pnb::cycleTab $nb $dir
+		::scrollutil::pnb::cycleTab $nb "" $dir
 	    } else {
 		CycleTab $nb $dir
 	    }
@@ -527,6 +552,10 @@ proc scrollutil::plainnotebook args {
     # plain ttk::notebook widget via the mouse wheel
     #
     bindMouseWheel $nb break
+    variable touchpadScrollSupport
+    if {$touchpadScrollSupport} {
+	bind $nb <TouchpadScroll> break
+    }
 
     return $win
 }
@@ -1699,7 +1728,21 @@ proc scrollutil::pnb::postMenu {menu rootX rootY} {
 #------------------------------------------------------------------------------
 # scrollutil::pnb::cycleTab
 #------------------------------------------------------------------------------
-proc scrollutil::pnb::cycleTab {win dir {divisor 1.0}} {
+proc scrollutil::pnb::cycleTab {win axis dir {divisor 1.0}} {
+    if {$axis eq "x" || $axis eq "y"} {
+	#
+	# Count both the <MouseWheel> and <Shift-MouseWheel>
+	# events, and ignore the non-dominant ones
+	#
+	variable ::scrollutil::xWheelEvents; variable ::scrollutil::yWheelEvents
+	incr ${axis}WheelEvents
+	if {($xWheelEvents + $yWheelEvents > 10) &&
+	    ($axis eq "x" && $xWheelEvents < $yWheelEvents ||
+	     $axis eq "y" && $yWheelEvents < $xWheelEvents)} {
+	    return ""
+	}
+    }
+
     set currentIdx [::$win index current]
     if {$currentIdx >= 0} {
 	set tabCount [::$win index end]

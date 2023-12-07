@@ -199,8 +199,20 @@ proc scrollutil::snb::createBindings {} {
     # wheel (TIP 591).  Use our own bindMouseWheel procedure rather than
     # ttk::bindMouseWheel, which was not present in tile before Dec. 2008.
     #
+    bind TNotebook <Enter> {
+	set scrollutil::xWheelEvents 0; set scrollutil::yWheelEvents 0
+    }
     ::scrollutil::bindMouseWheel TNotebook \
-	{%W instate disabled continue; ttk::notebook::CycleTab %W}
+	{%W instate disabled continue; scrollutil::snb::cycleTab1 %W}
+    variable ::scrollutil::touchpadScrollSupport
+    if {$touchpadScrollSupport} {
+	bind TNotebook <TouchpadScroll> {
+	    %W instate disabled continue
+	    if {%# %% 30 == 0} {
+		scrollutil::snb::cycleTab2 %W %D
+	    }
+	}
+    }
 
     bind DisabledClosetab <Destroy> {
 	unset -nocomplain scrollutil::closetabStateArr(%W)
@@ -1189,8 +1201,15 @@ proc scrollutil::snb::onNbTabChanged nb {
 	# executing the command, which might pop up a message box
 	#
 	::scrollutil::bindMouseWheel $nb break
+	variable ::scrollutil::touchpadScrollSupport
+	if {$touchpadScrollSupport} {
+	    bind $nb <TouchpadScroll> break
+	}
 	set result [uplevel #0 $cmd [list $win $currentPage]]
 	::scrollutil::bindMouseWheel $nb ""
+	if {$touchpadScrollSupport} {
+	    bind $nb <TouchpadScroll> ""
+	}
 
 	if {!$result} {
 	    #
@@ -1503,6 +1522,42 @@ proc scrollutil::snb::postMenu {menu rootX rootY} {
     catch {ttk::theme::[mwutil::currentTheme]::setMenuColors $menu}
 
     tk_popup $menu $rootX $rootY
+}
+
+#------------------------------------------------------------------------------
+# scrollutil::snb::cycleTab1
+#------------------------------------------------------------------------------
+proc scrollutil::snb::cycleTab1 {win axis dir {divisor 1.0}} {
+    #
+    # Count both the <MouseWheel> and <Shift-MouseWheel>
+    # events, and ignore the non-dominant ones
+    #
+    variable ::scrollutil::xWheelEvents; variable ::scrollutil::yWheelEvents
+    incr ${axis}WheelEvents
+    if {($xWheelEvents + $yWheelEvents > 10) &&
+	($axis eq "x" && $xWheelEvents < $yWheelEvents ||
+	 $axis eq "y" && $yWheelEvents < $xWheelEvents)} {
+	return ""
+    }
+
+    ttk::notebook::CycleTab $win $dir $divisor
+}
+
+#------------------------------------------------------------------------------
+# scrollutil::snb::cycleTab2
+#------------------------------------------------------------------------------
+proc scrollutil::snb::cycleTab2 {win dxdy} {
+    if {[set style [$win cget -style]] eq ""} {
+	set style TNotebook
+    }
+    set tabSide [string index [ttk::style lookup $style -tabposition {} nw] 0]
+
+    lassign [tk::PreciseScrollDeltas $dxdy] deltaX deltaY
+    if {$tabSide in {n s} && $deltaX != 0} {
+	ttk::notebook::CycleTab $win [expr {$deltaX < 0 ? -1 : 1}]
+    } elseif {$tabSide in {w e} && $deltaY != 0} {
+	ttk::notebook::CycleTab $win [expr {$deltaY < 0 ? -1 : 1}]
+    }
 }
 
 #

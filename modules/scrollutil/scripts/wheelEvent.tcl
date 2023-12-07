@@ -31,6 +31,13 @@ namespace eval scrollutil {
 
     variable uniformWheelSupport [expr {$::tk_version >= 8.7 &&
 	[package vcompare $::tk_patchLevel "8.7a4"] >= 0}]
+
+    variable touchpadScrollSupport [expr {
+	[llength [info commands ::tk::PreciseScrollDeltas]] != 0}]
+
+    variable scrollByUnitsProc [expr {
+	[llength [info commands ::tk::ScrollByUnits]] == 0 ?
+	"tkScrollByUnits" : "tk::ScrollByUnits"}]
 }
 
 #
@@ -56,42 +63,85 @@ proc scrollutil::createBindings {} {
     # specified by TIP 563 (i.e., the mouse wheel should scroll a horizontal or
     # vertical scrollbar regardless of whether the "Shift" key is down or not)
     #
-    if {!$uniformWheelSupport} {
-	set scrollByUnits [expr {
-	    [llength [info commands ::tk::ScrollByUnits]] == 0 ?
-	    "tkScrollByUnits" : "tk::ScrollByUnits"}]
+    bind Scrollbar <Enter> {+
+	if {![info exists tk::Priv(xEvents)]} {
+	    set scrollutil::xWheelEvents 0; set scrollutil::yWheelEvents 0
+	}
+    }
+    if {$uniformWheelSupport} {
+	bind Scrollbar <MouseWheel> {
+	    scrollutil::condScrollByUnits %W vh %D -40.0
+	}
+	bind Scrollbar <Option-MouseWheel> {
+	    scrollutil::condScrollByUnits %W vh %D -12.0
+	}
+	bind Scrollbar <Shift-MouseWheel> {
+	    scrollutil::condScrollByUnits %W hv %D -40.0
+	}
+	bind Scrollbar <Shift-Option-MouseWheel> {
+	    scrollutil::condScrollByUnits %W hv %D -12.0
+	}
+    } else {
 	if {$winSys eq "aqua"} {
-	    bind Scrollbar <MouseWheel> \
-		[format {%s %%W hv [expr {-(%%D)}]} $scrollByUnits]
-	    bind Scrollbar <Option-MouseWheel> \
-		[format {%s %%W hv [expr {-10 * (%%D)}]} $scrollByUnits]
+	    bind Scrollbar <MouseWheel> {
+		scrollutil::condScrollByUnits %W vh [expr {-(%D)}]
+	    }
+	    bind Scrollbar <Option-MouseWheel> {
+		scrollutil::condScrollByUnits %W vh [expr {-10 * (%D)}]
+	    }
+	    bind Scrollbar <Shift-MouseWheel> {
+		scrollutil::condScrollByUnits %W hv [expr {-(%D)}]
+	    }
+	    bind Scrollbar <Shift-Option-MouseWheel> {
+		scrollutil::condScrollByUnits %W hv [expr {-10 * (%D)}]
+	    }
 	} else {
-	    bind Scrollbar <MouseWheel> [format {
-		%s %%W hv [expr {%%D >= 0 ? (-%%D) / 30 : (-(%%D) + 29) / 30}]
-	    } $scrollByUnits]
+	    bind Scrollbar <MouseWheel> {
+		scrollutil::condScrollByUnits %W vh \
+		    [expr {%D >= 0 ? (-%D) / 30 : (-(%D) + 29) / 30}]
+	    }
+	    bind Scrollbar <Shift-MouseWheel> {
+		scrollutil::condScrollByUnits %W hv \
+		    [expr {%D >= 0 ? (-%D) / 30 : (-(%D) + 29) / 30}]
+	    }
 
 	    if {$winSys eq "x11"} {
-		bind Scrollbar <Button-4>	[list $scrollByUnits %W hv -5]
-		bind Scrollbar <Button-5>	[list $scrollByUnits %W hv  5]
+		bind Scrollbar <Button-4> {
+		    scrollutil::condScrollByUnits %W vh -5
+		}
+		bind Scrollbar <Button-5> {
+		    scrollutil::condScrollByUnits %W vh  5
+		}
+		bind Scrollbar <Shift-Button-4> {
+		    scrollutil::condScrollByUnits %W hv -5
+		}
+		bind Scrollbar <Shift-Button-5> {
+		    scrollutil::condScrollByUnits %W hv  5
+		}
 
 		if {$::tk_patchLevel eq "8.7a3"} {
-		    bind Scrollbar <Button-6>	[list $scrollByUnits %W hv -5]
-		    bind Scrollbar <Button-7>	[list $scrollByUnits %W hv  5]
+		    bind Scrollbar <Button-6> {
+			scrollutil::condScrollByUnits %W hv -5
+		    }
+		    bind Scrollbar <Button-7> {
+			scrollutil::condScrollByUnits %W hv  5
+		    }
 		}
 	    }
 	}
     }
 
-    set eventList [list <MouseWheel>]
+    set eventList [list <MouseWheel> <Shift-MouseWheel>]
     if {$uniformWheelSupport} {
-	lappend eventList <Option-MouseWheel>
+	lappend eventList <Option-MouseWheel> <Shift-Option-MouseWheel>
     } else {
 	switch $winSys {
 	    aqua {
-		lappend eventList <Option-MouseWheel>
+		lappend eventList <Option-MouseWheel> <Shift-Option-MouseWheel>
 	    }
 	    x11 {
-		lappend eventList <Button-4> <Button-5>
+		lappend eventList \
+		    <Button-4> <Button-5> <Shift-Button-4> <Shift-Button-5>
 		if {$::tk_patchLevel eq "8.7a3"} {
 		    lappend eventList <Button-6> <Button-7>
 		}
@@ -103,6 +153,11 @@ proc scrollutil::createBindings {} {
     # Copy the mouse wheel event bindings of the widget
     # class Scrollbar to the binding tag TScrollbar
     #
+    bind TScrollbar <Enter> {+
+	if {![info exists tk::Priv(xEvents)]} {
+	    set scrollutil::xWheelEvents 0; set scrollutil::yWheelEvents 0
+	}
+    }
     foreach event $eventList {
 	bind TScrollbar $event [bind Scrollbar $event]
     }
@@ -116,23 +171,13 @@ proc scrollutil::createBindings {} {
     # The rest is for scrollable widget containers.
     #
 
-    lappend eventList <Shift-MouseWheel>
-    if {$uniformWheelSupport} {
-	lappend eventList <Shift-Option-MouseWheel>
-    } else {
-	switch $winSys {
-	    aqua { lappend eventList <Shift-Option-MouseWheel> }
-	    x11  { lappend eventList <Shift-Button-4> <Shift-Button-5> }
-	}
-    }
-
     foreach event $eventList {
 	if {[string match <*Button-?> $event]} {
 	    bind WheeleventRedir $event [format {
 		if {![scrollutil::hasFocus %%W] ||
 		    ![scrollutil::isCompatible %s %%W]} {
 		    event generate [winfo toplevel %%W] %s \
-			  -rootx %%X -rooty %%Y
+			-rootx %%X -rooty %%Y
 		    break
 		}
 	    } $event $event]
@@ -141,13 +186,37 @@ proc scrollutil::createBindings {} {
 		if {![scrollutil::hasFocus %%W] ||
 		    ![scrollutil::isCompatible %s %%W]} {
 		    event generate [winfo toplevel %%W] %s \
-			  -rootx %%X -rooty %%Y -delta %%D
+			-rootx %%X -rooty %%Y -delta %%D
 		    break
 		}
 	    } $event $event]
 	}
 
 	bind WheeleventBreak $event { break }
+    }
+
+    variable touchpadScrollSupport
+    if {$touchpadScrollSupport} {
+	bind WheeleventRedir <TouchpadScroll> {
+	    if {%# %% 15 != 0} {
+		return
+	    }
+	    if {![scrollutil::hasFocus %W] ||
+		![scrollutil::isCompatible <TouchpadScroll> %W]} {
+		lassign [tk::PreciseScrollDeltas %D] deltaX deltaY
+		if {$deltaX != 0} {
+		    event generate [winfo toplevel %W] <Shift-MouseWheel> \
+			-rootx %X -rooty %Y -delta [expr {40 * $deltaX}]
+		}
+		if {$deltaY != 0} {
+		    event generate [winfo toplevel %W] <MouseWheel> \
+			-rootx %X -rooty %Y -delta [expr {40 * $deltaY}]
+		}
+		break
+	    }
+	}
+
+	bind WheeleventBreak <TouchpadScroll> { break }
     }
 
     bind ScrlWidgetCont <Destroy> { scrollutil::onScrlWidgetContDestroy %W }
@@ -257,6 +326,36 @@ proc scrollutil::addMouseWheelSupport {tag {axes "xy"}} {
 	    }
 	}
     }
+
+    variable touchpadScrollSupport
+    if {!$touchpadScrollSupport} {
+	return ""
+    }
+
+    set script {
+	if {%# %% 15 != 0} { return }
+	lassign [tk::PreciseScrollDeltas %D] deltaX deltaY
+    }
+    switch $axes {
+	xy {
+	    append script {
+		if {$deltaX != 0} { %W xview scroll [expr {-$deltaX}] units }
+		if {$deltaY != 0} { %W yview scroll [expr {-$deltaY}] units }
+	    }
+	}
+	x {
+	    append script {
+		if {$deltaX != 0} { %W xview scroll [expr {-$deltaX}] units }
+	    }
+	}
+	y {
+	    append script {
+		if {$deltaY != 0} { %W yview scroll [expr {-$deltaY}] units }
+	    }
+	}
+    }
+    append script $tail
+    bind $tag <TouchpadScroll> $script
 }
 
 #------------------------------------------------------------------------------
@@ -278,6 +377,7 @@ proc scrollutil::createWheelEventBindings args {
 	package require Tk 8.6b2-
     }
     variable uniformWheelSupport
+    variable touchpadScrollSupport
 
     foreach tag $args {
 	if {[string match .* $tag]} {
@@ -348,6 +448,23 @@ proc scrollutil::createWheelEventBindings args {
 		    bind $tag <Button-7> {
 			scrollutil::scrollByUnits %W %X %Y x  5 1.0
 		    }
+		}
+	    }
+	}
+
+	if {$touchpadScrollSupport} {
+	    bind $tag <TouchpadScroll> {
+		if {%# %% 15 != 0} {
+		    return
+		}
+		lassign [tk::PreciseScrollDeltas %D] deltaX deltaY
+		if {$deltaX != 0} {
+		    event generate %W <Shift-MouseWheel> -rootx %X -rooty %Y \
+			-delta [expr {40 * $deltaX}]
+		}
+		if {$deltaY != 0} {
+		    event generate %W <MouseWheel> -rootx %X -rooty %Y \
+			-delta [expr {40 * $deltaY}]
 		}
 	    }
 	}
@@ -524,7 +641,9 @@ proc scrollutil::adaptWheelEventHandling args {
 		if {$winSys eq "x11" && !$uniformWheelSupport} {
 		    set hasWheelBindings [expr {[bind $tag <Button-4>] ne ""}]
 		} else {
-		    set hasWheelBindings [expr {[bind $tag <MouseWheel>] ne ""}]
+		    set hasWheelBindings [expr {
+			[bind $tag <MouseWheel>] ne "" ||
+			[bind $tag <TouchpadScroll>] ne ""}]
 		}
 		if {$tag eq $wTop || $tag eq "all" || !$hasWheelBindings} {
 		    continue
@@ -652,15 +771,22 @@ proc scrollutil::bindMouseWheel {tag cmd} {
 	if {$uniformWheelSupport} {
 	    bind $tag <MouseWheel>		$cmd
 	    bind $tag <Option-MouseWheel>	$cmd
+	    bind $tag <Shift-MouseWheel>	$cmd
+	    bind $tag <Shift-Option-MouseWheel>	$cmd
 	} elseif {$winSys eq "aqua"} {
 	    bind $tag <MouseWheel>		$cmd
 	    bind $tag <Option-MouseWheel>	$cmd
+	    bind $tag <Shift-MouseWheel>	$cmd
+	    bind $tag <Shift-Option-MouseWheel>	$cmd
 	} else {
 	    bind $tag <MouseWheel>		$cmd
+	    bind $tag <Shift-MouseWheel>	$cmd
 
 	    if {$winSys eq "x11"} {
 		bind $tag <Button-4>		$cmd
 		bind $tag <Button-5>		$cmd
+		bind $tag <Shift-Button-4>	$cmd
+		bind $tag <Shift-Button-5>	$cmd
 
 		if {$::tk_patchLevel eq "8.7a3"} {
 		    bind $tag <Button-6>	$cmd
@@ -670,22 +796,30 @@ proc scrollutil::bindMouseWheel {tag cmd} {
 	}
     } else {
 	if {$uniformWheelSupport} {
-	    bind $tag <MouseWheel>		"$cmd %D -120.0"
-	    bind $tag <Option-MouseWheel>	"$cmd %D -12.0"
+	    bind $tag <MouseWheel>		"$cmd y %D -120.0"
+	    bind $tag <Option-MouseWheel>	"$cmd y %D -12.0"
+	    bind $tag <Shift-MouseWheel>	"$cmd x %D -120.0"
+	    bind $tag <Shift-Option-MouseWheel>	"$cmd x %D -12.0"
 	} elseif {$winSys eq "aqua"} {
-	    bind $tag <MouseWheel>		"$cmd \[expr {-%D}\]"
-	    bind $tag <Option-MouseWheel>	"$cmd \[expr {-10 * %D}\]"
+	    bind $tag <MouseWheel>		"$cmd y \[expr {-%D}\]"
+	    bind $tag <Option-MouseWheel>	"$cmd y \[expr {-10 * %D}\]"
+	    bind $tag <Shift-MouseWheel>	"$cmd x \[expr {-%D}\]"
+	    bind $tag <Shift-Option-MouseWheel>	"$cmd x \[expr {-10 * %D}\]"
 	} else {
 	    bind $tag <MouseWheel> \
-		"$cmd \[expr {%D >= 0 ? -%D / 120 : (-%D + 119) / 120}\]"
+		"$cmd y \[expr {%D >= 0 ? -%D / 120 : (-%D + 119) / 120}\]"
+	    bind $tag <Shift-MouseWheel> \
+		"$cmd x \[expr {%D >= 0 ? -%D / 120 : (-%D + 119) / 120}\]"
 
 	    if {$winSys eq "x11"} {
-		bind $tag <Button-4>		"$cmd -1"
-		bind $tag <Button-5>		"$cmd +1"
+		bind $tag <Button-4>		"$cmd y -1"
+		bind $tag <Button-5>		"$cmd y +1"
+		bind $tag <Shift-Button-4>	"$cmd x -1"
+		bind $tag <Shift-Button-5>	"$cmd x +1"
 
 		if {$::tk_patchLevel eq "8.7a3"} {
-		    bind $tag <Button-6>	"$cmd -1"
-		    bind $tag <Button-7>	"$cmd +1"
+		    bind $tag <Button-6>	"$cmd x -1"
+		    bind $tag <Button-7>	"$cmd x +1"
 		}
 	    }
 	}
@@ -696,6 +830,34 @@ proc scrollutil::bindMouseWheel {tag cmd} {
 # Private procedures
 # ==================
 #
+
+#------------------------------------------------------------------------------
+# scrollutil::condScrollByUnits
+#------------------------------------------------------------------------------
+proc scrollutil::condScrollByUnits {w orient amount {divisor 1.0}} {
+    if {![info exists ::tk::Priv(xEvents)]} {
+	#
+	# Count both the <MouseWheel> and <Shift-MouseWheel>
+	# events, and ignore the non-dominant ones
+	#
+	variable xWheelEvents; variable yWheelEvents
+	set axis [expr {[string index $orient 0] eq "h" ? "x" : "y"}]
+	incr ${axis}WheelEvents
+	if {($xWheelEvents + $yWheelEvents > 10) &&
+	    ($axis eq "x" && $xWheelEvents < $yWheelEvents ||
+	     $axis eq "y" && $yWheelEvents < $xWheelEvents)} {
+	    return ""
+	}
+    }
+
+    variable uniformWheelSupport
+    variable scrollByUnitsProc
+    if {$uniformWheelSupport} {
+	$scrollByUnitsProc $w $orient $amount $divisor
+    } else {						
+	$scrollByUnitsProc $w $orient $amount
+    }
+}
 
 #------------------------------------------------------------------------------
 # scrollutil::hasFocus

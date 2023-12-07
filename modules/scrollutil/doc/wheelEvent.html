@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Commands Related to Mouse Wheel Event Handling</title>
+  <title>Commands Related to Mouse Wheel and
+  <code><b>&lt;TouchpadScroll&gt;</b></code> Event Handling</title>
 
   <meta name="Author" content="Csaba Nemethi">
   <meta name="Keywords" content=
@@ -12,7 +13,8 @@
 
 <body>
   <div>
-    <h1>Commands Related to Mouse Wheel Event Handling</h1>
+    <h1>Commands Related to Mouse Wheel and
+    <code><b>&lt;TouchpadScroll&gt;</b></code> Event Handling</h1>
 
     <h2>For Scrollutil Version 2.0</h2>
 
@@ -65,7 +67,7 @@
     <dt><b>NAME</b></dt>
 
     <dd><code>scrollutil::addMouseWheelSupport</code> &ndash; Add mouse wheel
-    support</dd>
+    event support</dd>
 
     <dt class="tm"><b>SYNOPSIS</b></dt>
 
@@ -81,32 +83,36 @@
 
     <dt class="tm"><b>DESCRIPTION</b></dt>
 
-    <dd>Adds mouse wheel support to the widgets having the specified binding
-    tag by creating bindings for the mouse wheel events along the axes given by
-    the optional <code><i>axes</i></code> argument, which must be
-    <code>xy</code> (the default, meaning both the x and y axis),
-    <code>x</code> (meaning the x axis only), or <code>y</code> (meaning the y
-    axis only).&nbsp; The binding scripts created by this command will scroll
-    the window given by the <code><b>%W</b></code> event field with the aid of
-    the&nbsp; <code><b>xview scroll</b> <i>number</i> <b>units</b></code>&nbsp;
-    and&nbsp; <code><b>yview scroll</b> <i>number</i> <b>units</b></code>&nbsp;
-    subcommands of the associated Tcl command.</dd>
+    <dd>Adds mouse wheel and <code><b>&lt;TouchpadScroll&gt;</b></code> event
+    support to the widgets having the specified binding tag by creating
+    bindings for the mouse wheel and <code><b>&lt;TouchpadScroll&gt;</b></code>
+    events along the axes given by the optional <code><i>axes</i></code>
+    argument, which must be <code>xy</code> (the default, meaning both the x
+    and y axes), <code>x</code> (meaning the x axis only), or <code>y</code>
+    (meaning the y axis only).&nbsp; The binding scripts created by this
+    command will scroll the window given by the <code><b>%W</b></code> event
+    field with the aid of the&nbsp; <code><b>xview scroll</b> <i>number</i>
+    <b>units</b></code>&nbsp; and&nbsp; <code><b>yview scroll</b> <i>number</i>
+    <b>units</b></code>&nbsp; subcommands of the associated Tcl command.</dd>
 
     <dd class="tm"><b>REMARK 1:</b>&nbsp; If <code><i>tag</i></code> is the
     path name of a window then the binding scripts created by this command are
     terminated by an invocation of the <code><b>break</b></code> command, in
-    order to prevent the processing of the mouse wheel events by further
-    binding scripts.&nbsp; For example, if <code><i>tag</i></code> is the path
+    order to prevent the processing of the mouse wheel or
+    <code><b>&lt;TouchpadScroll&gt;</b></code> events by further binding
+    scripts.&nbsp; For example, if <code><i>tag</i></code> is the path
     name of a text widget then the terminating <code><b>break</b></code>
-    command makes sure that the mouse wheel events will not <i>additionally</i>
-    be processed by the class bindings (associated with the binding tag
-    <code><b>Text</b></code>), which in Tk 8.5 and later trigger a scrolling by
-    <i>pixels</i>, unlike the bindings created by this command, which scroll
-    the widget by <i>units</i> (i.e., lines and characters).</dd>
+    command makes sure that the mouse wheel or
+    <code><b>&lt;TouchpadScroll&gt;</b></code> events will not
+    <i>additionally</i> be processed by the class bindings (associated with the
+    binding tag <code><b>Text</b></code>), which in Tk 8.5 and later trigger a
+    scrolling by <i>pixels</i>, unlike the bindings created by this command,
+    which scroll the widget by <i>units</i> (i.e., lines and characters).</dd>
 
     <dd class="tm"><b>REMARK 2:</b>&nbsp; The canvas widget has no built-in
-    bindings, but you can use this command to add mouse wheel support to the
-    widget class <code><b>Canvas</b></code> or individual canvas widgets.</dd>
+    bindings, but you can use this command to add mouse wheel and
+    <code><b>&lt;TouchpadScroll&gt;</b></code> event support to the widget
+    class <code><b>Canvas</b></code> or individual canvas widgets.</dd>
 
     <dd class="tm">
       <b>REMARK 3:</b>&nbsp; <i>In Tk versions prior to 8.7a4</i>, the set of
@@ -207,10 +213,10 @@
 
     <dt class="tm"><b>DESCRIPTION</b></dt>
 
-    <dd>Creates mouse wheel event bindings for the specified binding tags such
-    that if the widget under the pointer is (a descendant of) one of the
-    scrollable widget containers having the same toplevel as the widget and
-    registered via <code><b><a href=
+    <dd>Creates mouse wheel and <code><b>&lt;TouchpadScroll&gt;</b></code>
+    event bindings for the specified binding tags such that if the widget under
+    the pointer is (a descendant of) one of the scrollable widget containers
+    having the same toplevel as the widget and registered via <code><b><a href=
     "#enable">scrollutil::enableScrollingByWheel</a></b></code> then these
     events will trigger a scrolling of that widget container.&nbsp; In case of
     several nested registered scrollable widget containers fulfilling these
@@ -225,12 +231,12 @@
     <code>"Scrollableframe"</code> (for scrollutil::scrollableframe),
     <code>"BwScrollableFrame"</code> (for BWidget ScrollableFrame) or
     <code>"Scrolledframe"</code> (for iwidgets::scrolledframe) is that the
-    mouse wheel events should trigger a scrolling of the widget container under
-    the pointer not only if the widget under the pointer is the widget
-    container itself but also if it is a descendant of the latter (recall that
-    for each window, the path name of its nearest toplevel ancestor and the tag
-    <code><b>all</b></code> are contained in the window's default list of
-    binding tags).</dd>
+    mouse wheel and <code><b>&lt;TouchpadScroll&gt;</b></code> events should
+    trigger a scrolling of the widget container under the pointer not only if
+    the widget under the pointer is the widget container itself but also if it
+    is a descendant of the latter (recall that for each window, the path name
+    of its nearest toplevel ancestor and the tag <code><b>all</b></code> are
+    contained in the window's default list of binding tags).</dd>
 
     <dt class="tm"><b>KEYWORDS</b></dt>
 
@@ -268,8 +274,9 @@
     <dt class="tm"><b>DESCRIPTION</b></dt>
 
     <dd>Adds the specified scrollable widget containers to the internal list of
-    widget containers that are registered for scrolling by the mouse wheel
-    event bindings created by the <code><b><a href=
+    widget containers that are registered for scrolling by the mouse wheel and
+    <code><b>&lt;TouchpadScroll&gt;</b></code> event bindings created by the
+    <code><b><a href=
     "#create">scrollutil::createWheelEventBindings</a></b></code> command.</dd>
 
     <dd class="tm"><b>REMARK 1:</b>&nbsp; When a scrollable widget container
@@ -319,7 +326,8 @@
 
     <dd>Removes the specified scrollable widget containers from the internal
     list of widget containers that are registered for scrolling by the mouse
-    wheel event bindings created by the <code><b><a href=
+    wheel and <code><b>&lt;TouchpadScroll&gt;</b></code> event bindings created
+    by the <code><b><a href=
     "#create">scrollutil::createWheelEventBindings</a></b></code> command.</dd>
 
     <dt class="tm"><b>KEYWORDS</b></dt>
@@ -371,9 +379,11 @@
           the containing toplevel window, provided that the Tablelist version
           is 6.4 or later (for earlier Tablelist versions the command silently
           ignores any tablelist widget passed to it as argument).&nbsp; As a
-          result, a mouse wheel event over the tablelist's body or edit window
-          (more precisely, a mouse wheel event sent to any component of the
-          tablelist having the binding tag <code><b>TablelistBody</b></code> or
+          result, a mouse wheel or <code><b>&lt;TouchpadScroll&gt;</b></code>
+          event over the tablelist's body or edit window (more precisely, a
+          mouse wheel or <code><b>&lt;TouchpadScroll&gt;</b></code> event sent
+          to any component of the tablelist having the binding tag
+          <code><b>TablelistBody</b></code> or
           <code><b>TablelistEdit</b></code>) will be handled as follows:
 
           <ul class="tm">
@@ -398,15 +408,16 @@
         </li>
 
         <li class="tm">
-          Otherwise it locates the (first) binding tag that has mouse wheel
+          Otherwise it locates the (first) binding tag that has mouse wheel or
+          <code><b>&lt;TouchpadScroll&gt;</b></code>
           event bindings and is different from both the path name of the
           containing toplevel window and <code><b>all</b></code>.&nbsp; If the
           search for this tag was successful then the command modifies the
           widget's list of binding tags by prepending the tag
           <code><b>WheeleventRedir</b></code> and appending the tag
           <code><b>WheeleventBreak</b></code> to this binding tag.&nbsp; As a
-          result, a mouse wheel event sent to this widget will be handled as
-          follows:
+          result, a mouse wheel or <code><b>&lt;TouchpadScroll&gt;</b></code>
+          event sent to this widget will be handled as follows:
 
           <ul class="tm">
             <li>If the focus is on or inside the window&nbsp;
@@ -448,30 +459,35 @@
         provided that the Tablelist version is 6.4 or later (for earlier
         Tablelist versions the command silently ignores any tablelist widget
         passed to it as argument).&nbsp; As a result, if the Tablelist version
-        is 6.16 or later, a mouse wheel event over the tablelist's body or edit
-        window will scroll the tablelist or its edit window and no further
-        processing of the event will take place.</li>
+        is 6.16 or later, a mouse wheel or
+        <code><b>&lt;TouchpadScroll&gt;</b></code> event over the tablelist's
+        body or edit window will scroll the tablelist or its edit window and no
+        further processing of the event will take place.</li>
 
         <li class="tm">Otherwise it locates the (first) binding tag that has
-        mouse wheel event bindings and is different from both the path name of
-        the containing toplevel window and <code><b>all</b></code>.&nbsp; If
-        the search for this tag was successful then the command modifies the
-        widget's list of binding tags by appending the tag
-        <code><b>WheeleventBreak</b></code> to this binding tag.&nbsp; As a
-        result, a mouse wheel event sent to this widget will be handled by the
-        binding script associated with this tag and no further processing of
-        the event will take place.</li>
+        mouse wheel or <code><b>&lt;TouchpadScroll&gt;</b></code> event
+        bindings and is different from both the path name of the containing
+        toplevel window and <code><b>all</b></code>.&nbsp; If the search for
+        this tag was successful then the command modifies the widget's list of
+        binding tags by appending the tag <code><b>WheeleventBreak</b></code>
+        to this binding tag.&nbsp; As a result, a mouse wheel or
+        <code><b>&lt;TouchpadScroll&gt;</b></code> event sent to this widget
+        will be handled by the binding script associated with this tag and no
+        further processing of the event will take place.</li>
       </ul>
     </dd>
 
     <dd class="tm"><b>REMARK 1:</b>&nbsp; This command is designed to be
-    invoked for widgets that have mouse wheel event bindings and are
+    invoked for widgets that have mouse wheel or
+    <code><b>&lt;TouchpadScroll&gt;</b></code> event bindings and are
     descendants of a scrollable widget container.&nbsp; The Tk and tile widgets
-    having class bindings for mouse wheel events are: listbox, text, Tk core
-    scrollbar, ttk::scrollbar, ttk::combobox, ttk::spinbox, ttk::notebook, and
-    ttk::treeview.&nbsp; Examples of widgets with binding tags other than their
-    class names that have mouse wheel event bindings are ctext and tablelist
-    widgets, as well as the entry components of <a href=
+    having class bindings for mouse wheel and
+    <code><b>&lt;TouchpadScroll&gt;</b></code> events are: listbox, text, Tk
+    core scrollbar, ttk::scrollbar, ttk::combobox, ttk::spinbox, ttk::notebook,
+    and ttk::treeview.&nbsp; Examples of widgets with binding tags other than
+    their class names that have mouse wheel and
+    <code><b>&lt;TouchpadScroll&gt;</b></code> event bindings are ctext and
+    tablelist widgets, as well as the entry components of <a href=
     "https://www.nemethi.de/mentry/">mentry</a> widgets of type
     <code>"Date"</code>, <code>"Time"</code>, <code>"DateTime"</code>,
     <code>"IPAddr"</code>, and <code>"IPv6Addr"</code> (for Mentry versions 3.2
@@ -483,34 +499,34 @@
     <dd class="tm"><b>REMARK 2:</b>&nbsp; The mouse wheel event class bindings
     for the Tk core scrollbar on Windows and X11 were added in Tk 8.6.&nbsp;
     Prior to this Tk version there were such bindings only for the windowing
-    systems <code><b>classic</b></code> and <code><b>aqua</b></code> on the
-    Macintosh.&nbsp; Scrollutil eliminates this discrepancy by automatically
-    creating the <code><b>Scrollbar</b></code> class bindings for mouse wheel
-    events on Windows and X11.&nbsp; Note also that in Tk versions prior to
-    8.7a4 the ttk::scrollbar widget had no <i>built-in</i> class bindings for
-    mouse wheel events, but Scrollutil automatically creates the missing
-    bindings by copying the mouse wheel event bindings of the widget class
+    system <code><b>aqua</b></code> on the Macintosh.&nbsp; Scrollutil
+    eliminates this discrepancy by automatically creating the
+    <code><b>Scrollbar</b></code> class bindings for mouse wheel events on
+    Windows and X11.&nbsp; Note also that in Tk versions prior to 8.7a4 the
+    ttk::scrollbar widget had no <i>built-in</i> class bindings for mouse wheel
+    events, but Scrollutil automatically creates the missing bindings by
+    copying the mouse wheel event bindings of the widget class
     <code><b>Scrollbar</b></code> to the binding tag
     <code><b>TScrollbar</b></code>.</dd>
 
     <dd class="tm"><b>REMARK 3:</b>&nbsp; As mentioned above, Tk core scrollbar
-    and ttk::scrollbar widgets have class bindings for mouse wheel events,
-    hence this command should be invoked for them in case they are descendants
-    of a scrollable widget container.&nbsp; Since this task can become tedious,
-    Scrollutil makes sure that if you pass a widget to this command and that
-    widget is embedded into a <a href="scrollarea.html">scrollarea</a> via the
-    latter's <code><b><a href=
-    "scrollarea.html#setwidget">setwidget</a></b></code> subcommand, then this
-    command will automatically be invoked for the scrollbars of that
-    scrollarea, too.</dd>
+    and ttk::scrollbar widgets have class bindings for mouse wheel and
+    <code><b>&lt;TouchpadScroll&gt;</b></code> events, hence this command
+    should be invoked for them in case they are descendants of a scrollable
+    widget container.&nbsp; Since this task can become tedious, Scrollutil
+    makes sure that if you pass a widget to this command and that widget is
+    embedded into a <a href="scrollarea.html">scrollarea</a> via the latter's
+    <code><b><a href="scrollarea.html#setwidget">setwidget</a></b></code>
+    subcommand, then this command will automatically be invoked for the
+    scrollbars of that scrollarea, too.</dd>
 
     <dd class="tm"><b>REMARK 4:</b>&nbsp; Without the
-    <code><b>-ignorefocus</b></code> option, when handling a mouse wheel event
-    sent to a Tk core or tile scrollbar whose path name was passed to this
-    command, if the focus is on or inside the associated widget then the event
-    will be processed by the scrollbar rather than being redirected to the
-    containing toplevel, just as if the focus were on the scrollbar
-    itself.</dd>
+    <code><b>-ignorefocus</b></code> option, when handling a mouse wheel or
+    <code><b>&lt;TouchpadScroll&gt;</b></code> event sent to a Tk core or tile
+    scrollbar whose path name was passed to this command, if the focus is on or
+    inside the associated widget then the event will be processed by the
+    scrollbar rather than being redirected to the containing toplevel, just as
+    if the focus were on the scrollbar itself.</dd>
 
     <dd class="tm"><b>REMARK 5:</b>&nbsp; The mouse wheel event class bindings
     for the ttk::notebook widget were added in Tk 8.7a4, but Scrollutil
@@ -520,14 +536,17 @@
     via the mouse wheel.</dd>
 
     <dd class="tm"><b>REMARK 6:</b>&nbsp; Invoking this command for widgets
-    that have mouse wheel event bindings and are descendants of a scrollable
-    widget container is essential for a user-friendly mouse wheel event
-    handling in scrollable widget containers.&nbsp; Without this step the mouse
-    wheel events would scroll both the listbox, text, ttk::treeview, or
-    tablelist widget under the pointer <i>and</i> the widget container to whose
-    descendants the latter belongs, or they would select the next/previous
-    value in the ttk::combobox or ttk::spinbox under the pointer <i>in addition
-    to</i> scrolling the widget container.</dd>
+    that have mouse wheel or <code><b>&lt;TouchpadScroll&gt;</b></code> event
+    bindings and are descendants of a scrollable widget container is essential
+    for a user-friendly mouse wheel and
+    <code><b>&lt;TouchpadScroll&gt;</b></code> event handling in scrollable
+    widget containers.&nbsp; Without this step the mouse wheel and
+    <code><b>&lt;TouchpadScroll&gt;</b></code> events would scroll both the
+    listbox, text, ttk::treeview, or tablelist widget under the pointer
+    <i>and</i> the widget container to whose descendants the latter belongs, or
+    they would select the next/previous value in the ttk::combobox or
+    ttk::spinbox under the pointer <i>in addition to</i> scrolling the widget
+    container.</dd>
 
     <dd class="tm"><b>REMARK 7:</b>&nbsp; The recommended invocation of this
     command is without the <code><b>-ignorefocus</b></code> option, because it
@@ -592,8 +611,9 @@
     <a href="https://www.nemethi.de/mentry/">mentry</a> <code><i>me</i></code>
     of type <code>"Date"</code>, <code>"Time"</code>, <code>"DateTime"</code>,
     <code>"IPAddr"</code>, or <code>"IPv6Addr"</code> and the focus is on any
-    of its siblings, then the mouse wheel events sent to this entry should be
-    handled by the entry widget itself rather than scrolling the widget
+    of its siblings, then the mouse wheel and
+    <code><b>&lt;TouchpadScroll&gt;</b></code> events sent to this entry should
+    be handled by the entry widget itself rather than scrolling the widget
     container that is an ascendant of the mentry.&nbsp; You can achieve this by
     invoking</dd>
 
@@ -627,10 +647,11 @@ set entryList [$me <a href=
     "scrollsync.html#setwidgets">setwidgets</a></b></code> subcommand with
     child widgets.&nbsp; Then, if the widget under the pointer is one of these
     children and the focus is on any of the other children passed to that
-    subcommand, then the mouse wheel events sent to the child under the pointer
-    should be handled by that child widget itself rather than scrolling the
-    widget container that is an ascendant of the scrollsync.&nbsp; You can
-    achieve this with the following code:</dd>
+    subcommand, then the mouse wheel and
+    <code><b>&lt;TouchpadScroll&gt;</b></code> events sent to the child under
+    the pointer should be handled by that child widget itself rather than
+    scrolling the widget container that is an ascendant of the
+    scrollsync.&nbsp; You can achieve this with the following code:</dd>
 
     <dd>
       <blockquote>

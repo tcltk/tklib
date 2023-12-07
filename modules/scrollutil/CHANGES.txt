@@ -7,7 +7,15 @@ What is new in Scrollutil 2.0?
 2. Extended the handling of the virtual event <<ThemeChanged>>, and
    added bindings for the virtual events <<LightAqua>> and <<DarkAqua>>.
 
-3. Improved the compatibility with Tcl 9 and Tk 8.7/9.
+3. Improved the compatibility with Tcl 9 and Tk 8.7/9.  For example,
+   added support for the new <TouchpadScroll> event, introduced in Tk
+   8.7 and 9.
+
+4. Minimized the number of artifacts caused by intermixed <MouseWheel>
+   and <Shift-MouseWheel> events triggered by two-finger gestures over a
+   (ttk::)scrollbar or ttk::notebook widget in the absence of
+   <TouchpadScroll> events (i.e., on X11 or with Tk versions earlier
+   than 8.7/9 on Windows or macOS Aqua). 
 
 What was new in Scrollutil 1.19?
 --------------------------------

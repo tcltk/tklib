@@ -52,8 +52,8 @@ namespace eval tablelist {
 	[regexp {^8\.5\.(9|[1-9][0-9])$} $::tk_patchLevel]) &&
 	[lsearch -exact [winfo server .] "AppKit"] >= 0}]
 
-    variable extendedAquaSupport \
-	[expr {[lsearch -exact [image types] "nsimage"] >= 0}]
+    variable extendedAquaSupport [expr {
+	[lsearch -exact [image types] "nsimage"] >= 0}]
 
     variable aquaCrash [expr {$winSys eq "aqua" &&
 	[lsearch -exact {8.6.11 8.6.12 8.7a5} $::tk_patchLevel] >= 0}]

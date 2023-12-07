@@ -1262,6 +1262,23 @@ proc tablelist::defineTablelistBody {} {
 	}
     }
 
+    if {[llength [info commands ::tk::PreciseScrollDeltas]] != 0} {
+	bind TablelistBody <TouchpadScroll> {
+	    if {%# %% 15 != 0} {
+		return
+	    }
+	    lassign [tk::PreciseScrollDeltas %D] deltaX deltaY
+	    if {$deltaX != 0} {
+		event generate %W <Shift-MouseWheel> -rootx %X -rooty %Y \
+		    -delta [expr {40 * $deltaX}]
+	    }
+	    if {$deltaY != 0} {
+		event generate %W <MouseWheel> -rootx %X -rooty %Y \
+		    -delta [expr {40 * $deltaY}]
+	    }
+	}
+    }
+
     if {$winSys ne "aqua"} {
 	foreach event {<Control-Key-a> <Control-Lock-Key-A>} {
 	    bind TablelistBody $event {

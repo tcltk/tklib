@@ -29,6 +29,9 @@ namespace eval mentry {
 	    mentry::incrIPAddrComp %W \
 		[expr {%D > 0 ? (%D + 11) / 12 : %D / 12}]
 	}
+	bind MentryIPAddr <Shift-MouseWheel> {
+	    # Ignore the event
+	}
     } elseif {$winSys eq "aqua"} {
 	catch {
 	    bind MentryIPAddr <MouseWheel> {
@@ -37,12 +40,18 @@ namespace eval mentry {
 	    bind MentryIPAddr <Option-MouseWheel> {
 		mentry::incrIPAddrComp %W [expr {10 * %D}]
 	    }
+	    bind MentryIPAddr <Shift-MouseWheel> {
+		# Ignore the event
+	    }
 	}
     } else {
 	catch {
 	    bind MentryIPAddr <MouseWheel> {
 		mentry::incrIPAddrComp %W \
 		    [expr {%D > 0 ? (%D + 119) / 120 : %D / 120}]
+	    }
+	    bind MentryIPAddr <Shift-MouseWheel> {
+		# Ignore the event
 	    }
 	}
 
@@ -56,6 +65,21 @@ namespace eval mentry {
 		if {!$tk_strictMotif} {
 		    mentry::incrIPAddrComp %W -1
 		}
+	    }
+	    bind MentryIPAddr <Shift-Button-4> {
+		# Ignore the event
+	    }
+	    bind MentryIPAddr <Shift-Button-5> {
+		# Ignore the event
+	    }
+	}
+    }
+    variable touchpadScrollSupport
+    if {$touchpadScrollSupport} {
+	bind MentryIPAddr <TouchpadScroll> {
+	    lassign [tk::PreciseScrollDeltas %D] deltaX deltaY
+	    if {$deltaY != 0 && [expr {%# %% 12}] == 0} {
+		mentry::incrIPAddrComp %W [expr {$deltaY > 0 ? -1 : 1}]
 	    }
 	}
     }

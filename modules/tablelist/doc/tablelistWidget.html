@@ -5641,25 +5641,28 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
       </table>
 
       <blockquote>
-        <p>This option is only relevant if the mouse wheel events are reported
-        to the widget under the pointer rather than to the one having the
-        focus.&nbsp; This condition is fulfilled on X11 and Mac OS X/11+, and
-        for Tk 8.6b2 and later on Windows, too (in earlier Tk versions the
-        mouse wheel events on Windows were sent to the widget having the
-        focus).</p>
+        <p>This option is only relevant if the mouse wheel and
+        <code><b>&lt;TouchpadScroll&gt;</b></code> events are reported to the
+        widget under the pointer rather than to the one having the focus.&nbsp;
+        This condition is fulfilled on X11 (for the mouse wheel events) and Mac
+        OS X/11+, and for Tk 8.6b2 and later on Windows, too (in earlier Tk
+        versions the mouse wheel events on Windows were sent to the widget
+        having the focus).</p>
 
         <p>The <code><b>-xmousewheelwindow</b></code> option specifies the path
         name of the window to which the default bindings for the binding tags
         <code><b><a href="#body_bindings">TablelistBody</a></b></code> and
         <code><b><a href="#edit_bindings">TablelistEdit</a></b></code> should
-        redirect the mouse wheel events along the x axis via&nbsp;
-        <code><b>event generate</b></code>&nbsp; if the focus window on the
-        display containing the tablelist widget is outside the tablelist.&nbsp;
-        The default is an empty string, meaning that the mouse wheel events
-        along the x axis received by a widget having one of the two
-        above-mentioned binding tags will give rise to horizontal scrolling of
-        the tablelist or its edit window, regardless of whether the focus is
-        inside or outside the tablelist widget.</p>
+        redirect the mouse wheel and <code><b>&lt;TouchpadScroll&gt;</b></code>
+        events along the x axis via&nbsp; <code><b>event
+        generate</b></code>&nbsp; if the focus window on the display containing
+        the tablelist widget is outside the tablelist.&nbsp; The default is an
+        empty string, meaning that the mouse wheel and
+        <code><b>&lt;TouchpadScroll&gt;</b></code> events along the x axis
+        received by a widget having one of the two above-mentioned binding tags
+        will give rise to horizontal scrolling of the tablelist or its edit
+        window, regardless of whether the focus is inside or outside the
+        tablelist widget.</p>
 
         <p><b>REMARK 1:</b>&nbsp; The set of mouse wheel events along the
         horizontal axis depends on the Tk version and partly on the windowing
@@ -5709,8 +5712,9 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
         "https://www.nemethi.de/scrollutil/scrollableframe.html">scrollutil::scrollableframe</a>,
         BWidget ScrollableFrame, or iwidgets::scrolledframe, and you set this
         option to the path name of that container window or that of the
-        containing toplevel widget, then a horizontal mouse wheel event over
-        the tablelist's body will be handled as follows:</p>
+        containing toplevel widget, then a horizontal mouse wheel or
+        <code><b>&lt;TouchpadScroll&gt;</b></code> event over the tablelist's
+        body will be handled as follows:</p>
 
         <ul>
           <li class="tm">If the focus is inside the tablelist widget then the
@@ -5724,7 +5728,8 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
           generate</b></code>&nbsp; command.&nbsp; This in turn will give rise
           to horizontal scrolling of the widget container, provided that the
           containing toplevel widget or the binding tag <code><b>all</b></code>
-          has the necessary mouse wheel event bindings.</li>
+          has the necessary mouse wheel or
+          <code><b>&lt;TouchpadScroll&gt;</b></code> event bindings.</li>
         </ul>
 
         <p><b>REMARK 3:</b>&nbsp; If you pass the tablelist widget to the
@@ -5755,25 +5760,28 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
       </table>
 
       <blockquote>
-        <p>This option is only relevant if the mouse wheel events are reported
-        to the widget under the pointer rather than to the one having the
-        focus.&nbsp; This condition is fulfilled on X11 and Mac OS X/11+, and
-        for Tk 8.6b2 and later on Windows, too (in earlier Tk versions the
-        mouse wheel events on Windows were sent to the widget having the
-        focus).</p>
+        <p>This option is only relevant if the mouse wheel and
+        <code><b>&lt;TouchpadScroll&gt;</b></code> events are reported to the
+        widget under the pointer rather than to the one having the focus.&nbsp;
+        This condition is fulfilled on X11 (for the mouse wheel events) and Mac
+        OS X/11+, and for Tk 8.6b2 and later on Windows, too (in earlier Tk
+        versions the mouse wheel events on Windows were sent to the widget
+        having the focus).</p>
 
         <p>The <code><b>-ymousewheelwindow</b></code> option specifies the path
         name of the window to which the default bindings for the binding tags
         <code><b><a href="#body_bindings">TablelistBody</a></b></code> and
         <code><b><a href="#edit_bindings">TablelistEdit</a></b></code> should
-        redirect the mouse wheel events along the y axis via&nbsp;
-        <code><b>event generate</b></code>&nbsp; if the focus window on the
-        display containing the tablelist widget is outside the tablelist.&nbsp;
-        The default is an empty string, meaning that the mouse wheel events
-        along the y axis received by a widget having one of the two
-        above-mentioned binding tags will give rise to vertical scrolling of
-        the tablelist or its edit window, regardless of whether the focus is
-        inside or outside the tablelist widget.</p>
+        redirect the mouse wheel and <code><b>&lt;TouchpadScroll&gt;</b></code>
+        events along the y axis via&nbsp; <code><b>event
+        generate</b></code>&nbsp; if the focus window on the display containing
+        the tablelist widget is outside the tablelist.&nbsp; The default is an
+        empty string, meaning that the mouse wheel and
+        <code><b>&lt;TouchpadScroll&gt;</b></code> events along the y axis
+        received by a widget having one of the two above-mentioned binding tags
+        will give rise to vertical scrolling of the tablelist or its edit
+        window, regardless of whether the focus is inside or outside the
+        tablelist widget.</p>
 
         <p><b>REMARK 1:</b>&nbsp; The set of mouse wheel events along the
         vertical axis depends on the Tk version and partly on the windowing
@@ -5806,8 +5814,9 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
         "https://www.nemethi.de/scrollutil/scrollableframe.html">scrollutil::scrollableframe</a>,
         BWidget ScrollableFrame, or iwidgets::scrolledframe, and you set this
         option to the path name of that container window or that of the
-        containing toplevel widget, then a vertical mouse wheel event over the
-        tablelist's body will be handled as follows:</p>
+        containing toplevel widget, then a vertical mouse wheel or
+        <code><b>&lt;TouchpadScroll&gt;</b></code> event over the tablelist's
+        body will be handled as follows:</p>
 
         <ul>
           <li class="tm">If the focus is inside the tablelist widget then the
@@ -5821,7 +5830,8 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
           generate</b></code>&nbsp; command.&nbsp; This in turn will give rise
           to vertical scrolling of the widget container, provided that the
           containing toplevel widget or the binding tag <code><b>all</b></code>
-          has the necessary mouse wheel event bindings.</li>
+          has the necessary mouse wheel or
+          <code><b>&lt;TouchpadScroll&gt;</b></code> event bindings.</li>
         </ul>
 
         <p><b>REMARK 3:</b>&nbsp; If you pass the tablelist widget to the

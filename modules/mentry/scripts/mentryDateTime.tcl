@@ -41,6 +41,16 @@ namespace eval mentry {
 	    mentry::incrDateTimeComp %W \
 		[expr {%D > 0 ? (%D + 11) / 12 : %D / 12}]
 	}
+	bind MentryDateTime <Shift-MouseWheel> {
+	    # Ignore the event
+	}
+
+	bind MentryMeridian <MouseWheel> {
+	    mentry::setMeridian %W [expr {%D < 0 ? "A" : "P"}]
+	}
+	bind MentryMeridian <Shift-MouseWheel> {
+	    # Ignore the event
+	}
     } elseif {$winSys eq "aqua"} {
 	catch {
 	    bind MentryDateTime <MouseWheel> {
@@ -49,12 +59,32 @@ namespace eval mentry {
 	    bind MentryDateTime <Option-MouseWheel> {
 		mentry::incrDateTimeComp %W [expr {10 * %D}]
 	    }
+	    bind MentryDateTime <Shift-MouseWheel> {
+		# Ignore the event
+	    }
+
+	    bind MentryMeridian <MouseWheel> {
+		mentry::setMeridian %W [expr {%D < 0 ? "A" : "P"}]
+	    }
+	    bind MentryMeridian <Shift-MouseWheel> {
+		# Ignore the event
+	    }
 	}
     } else {
 	catch {
 	    bind MentryDateTime <MouseWheel> {
 		mentry::incrDateTimeComp %W \
 		    [expr {%D > 0 ? (%D + 119) / 120 : %D / 120}]
+	    }
+	    bind MentryDateTime <Shift-MouseWheel> {
+		# Ignore the event
+	    }
+
+	    bind MentryMeridian <MouseWheel> {
+		mentry::setMeridian %W [expr {%D < 0 ? "A" : "P"}]
+	    }
+	    bind MentryMeridian <Shift-MouseWheel> {
+		# Ignore the event
 	    }
 	}
 
@@ -69,6 +99,13 @@ namespace eval mentry {
 		    mentry::incrDateTimeComp %W -1
 		}
 	    }
+	    bind MentryDateTime <Shift-Button-4> {
+		# Ignore the event
+	    }
+	    bind MentryDateTime <Shift-Button-5> {
+		# Ignore the event
+	    }
+
 	    bind MentryMeridian <Button-4> {
 		if {!$tk_strictMotif} {
 		    mentry::setMeridian %W "P"
@@ -79,11 +116,28 @@ namespace eval mentry {
 		    mentry::setMeridian %W "A"
 		}
 	    }
+	    bind MentryMeridian <Shift-Button-4> {
+		# Ignore the event
+	    }
+	    bind MentryMeridian <Shift-Button-5> {
+		# Ignore the event
+	    }
 	}
     }
-    catch {
-	bind MentryMeridian <MouseWheel> {
-	    mentry::setMeridian %W [expr {(%D < 0) ? "A" : "P"}]
+    variable touchpadScrollSupport
+    if {$touchpadScrollSupport} {
+	bind MentryDateTime <TouchpadScroll> {
+	    lassign [tk::PreciseScrollDeltas %D] deltaX deltaY
+	    if {$deltaY != 0 && [expr {%# %% 12}] == 0} {
+		mentry::incrDateTimeComp %W [expr {$deltaY > 0 ? -1 : 1}]
+	    }
+	}
+
+	bind MentryMeridian <TouchpadScroll> {
+	    lassign [tk::PreciseScrollDeltas %D] deltaX deltaY
+	    if {$deltaY != 0 && [expr {%# %% 12}] == 0} {
+		mentry::setMeridian %W [expr {$deltaY > 0 ? "A" : "P"}]
+	    }
 	}
     }
 }

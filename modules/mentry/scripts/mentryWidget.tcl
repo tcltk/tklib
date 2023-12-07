@@ -88,11 +88,14 @@ namespace eval mentry {
 	($::tk_version >= 8.7 &&
 	 [package vcompare $::tk_patchLevel "8.7a3"] >= 0)}]
 
-    variable extendedAquaSupport \
-	[expr {[lsearch -exact [image types] "nsimage"] >= 0}]
+    variable extendedAquaSupport [expr {
+	[lsearch -exact [image types] "nsimage"] >= 0}]
 
     variable uniformWheelSupport [expr {$::tk_version >= 8.7 &&
 	[package vcompare $::tk_patchLevel "8.7a4"] >= 0}]
+
+    variable touchpadScrollSupport [expr {
+	[llength [info commands ::tk::PreciseScrollDeltas]] != 0}]
 
     #
     # The array configSpecs is used to handle configuration options.  The

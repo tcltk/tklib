@@ -10,7 +10,11 @@ What is new in Mentry 4.0?
 3. Added explicit support for the themes "black", "breeze",
    "breeze-dark", "sun-valley-light", and "sun-valley-dark".
 
-4. Updated the Wcb command reference "wcbRef.html" to the version
+4. Improved the compatibility with Tcl 9 and Tk 8.7/9.  For example,
+   added support for the new <TouchpadScroll> event, introduced in Tk
+   8.7 and 9.
+
+5. Updated the Wcb command reference "wcbRef.html" to the version
    included in the most recent Wcb release 4.0.
 
 What was new in Mentry 3.18?
