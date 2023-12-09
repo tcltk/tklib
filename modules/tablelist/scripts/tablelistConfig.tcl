@@ -1926,7 +1926,7 @@ proc tablelist::doColConfig {col win opt val} {
 	-stretchable {
 	    set flag [expr {$val ? 1 : 0}]
 	    if {$flag} {
-		if {$data(-stretch) eq "all" &&
+		if {$data(-stretch) ne "all" &&
 		    [lsearch -exact $data(-stretch) $col] < 0} {
 		    #
 		    # col was not found in data(-stretch): add it to the list

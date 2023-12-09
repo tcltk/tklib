@@ -198,17 +198,14 @@ proc scrollutil::createBindings {} {
     variable touchpadScrollSupport
     if {$touchpadScrollSupport} {
 	bind WheeleventRedir <TouchpadScroll> {
-	    if {%# %% 15 != 0} {
-		return
-	    }
 	    if {![scrollutil::hasFocus %W] ||
 		![scrollutil::isCompatible <TouchpadScroll> %W]} {
 		lassign [tk::PreciseScrollDeltas %D] deltaX deltaY
-		if {$deltaX != 0} {
+		if {%# %% 15 == 0 && $deltaX != 0} {
 		    event generate [winfo toplevel %W] <Shift-MouseWheel> \
 			-rootx %X -rooty %Y -delta [expr {40 * $deltaX}]
 		}
-		if {$deltaY != 0} {
+		if {%# %% 15 == 0 && $deltaY != 0} {
 		    event generate [winfo toplevel %W] <MouseWheel> \
 			-rootx %X -rooty %Y -delta [expr {40 * $deltaY}]
 		}
