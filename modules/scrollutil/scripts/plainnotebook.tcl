@@ -362,7 +362,7 @@ proc scrollutil::pnb::createBindings {} {
     variable ::scrollutil::touchpadScrollSupport
     if {$touchpadScrollSupport} {
 	bind PnbTab <TouchpadScroll> {
-	    if {%# %% 30 == 0} {
+	    if {%# %% 15 == 0} {
 		lassign [tk::PreciseScrollDeltas %D] deltaX deltaY
 		if {$deltaY != 0} {
 		    scrollutil::pnb::cycleTab [scrollutil::pnb::tabToPnb %W] \
@@ -371,7 +371,7 @@ proc scrollutil::pnb::createBindings {} {
 	    }
 	}
 	bind PnbMiddleFrame <TouchpadScroll> {
-	    if {%# %% 30 == 0} {
+	    if {%# %% 15 == 0} {
 		lassign [tk::PreciseScrollDeltas %D] deltaX deltaY
 		if {$deltaY != 0} {
 		    scrollutil::pnb::cycleTab [scrollutil::pnb::mfToPnb %W] \

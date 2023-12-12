@@ -208,7 +208,7 @@ proc scrollutil::snb::createBindings {} {
     if {$touchpadScrollSupport} {
 	bind TNotebook <TouchpadScroll> {
 	    %W instate disabled continue
-	    if {%# %% 30 == 0} {
+	    if {%# %% 15 == 0} {
 		scrollutil::snb::cycleTab2 %W %D
 	    }
 	}

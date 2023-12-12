@@ -201,11 +201,11 @@ proc scrollutil::createBindings {} {
 	    if {![scrollutil::hasFocus %W] ||
 		![scrollutil::isCompatible <TouchpadScroll> %W]} {
 		lassign [tk::PreciseScrollDeltas %D] deltaX deltaY
-		if {%# %% 15 == 0 && $deltaX != 0} {
+		if {%# %% 5 == 0 && $deltaX != 0} {
 		    event generate [winfo toplevel %W] <Shift-MouseWheel> \
 			-rootx %X -rooty %Y -delta [expr {40 * $deltaX}]
 		}
-		if {%# %% 15 == 0 && $deltaY != 0} {
+		if {%# %% 5 == 0 && $deltaY != 0} {
 		    event generate [winfo toplevel %W] <MouseWheel> \
 			-rootx %X -rooty %Y -delta [expr {40 * $deltaY}]
 		}
@@ -330,7 +330,7 @@ proc scrollutil::addMouseWheelSupport {tag {axes "xy"}} {
     }
 
     set script {
-	if {%# %% 15 != 0} { return }
+	if {%# %% 5 != 0} { return }
 	lassign [tk::PreciseScrollDeltas %D] deltaX deltaY
     }
     switch $axes {
@@ -451,7 +451,7 @@ proc scrollutil::createWheelEventBindings args {
 
 	if {$touchpadScrollSupport} {
 	    bind $tag <TouchpadScroll> {
-		if {%# %% 15 != 0} {
+		if {%# %% 5 != 0} {
 		    return
 		}
 		lassign [tk::PreciseScrollDeltas %D] deltaX deltaY

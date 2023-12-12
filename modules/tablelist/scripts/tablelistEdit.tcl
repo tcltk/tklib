@@ -2892,7 +2892,7 @@ proc tablelist::defineTablelistEdit {} {
     }
     if {[llength [info commands ::tk::PreciseScrollDeltas]] != 0} {
 	bind TablelistEdit <TouchpadScroll> {
-	    if {%# %% 15 != 0} {
+	    if {%# %% 5 != 0} {
 		return
 	    }
 	    lassign [tk::PreciseScrollDeltas %D] deltaX deltaY
