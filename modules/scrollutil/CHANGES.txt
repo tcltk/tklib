@@ -9,7 +9,7 @@ What is new in Scrollutil 2.0?
 
 3. Improved the compatibility with Tcl 9 and Tk 8.7/9.  For example,
    added support for the new <TouchpadScroll> event, introduced in Tk
-   8.7 and 9.
+   8.7 and 9 (thanks to Nicolas Bats for his valuable feedback).
 
 4. Minimized the number of artifacts caused by intermixed <MouseWheel>
    and <Shift-MouseWheel> events triggered by two-finger gestures over a

@@ -557,6 +557,24 @@ proc scrollutil::plainnotebook args {
 	bind $nb <TouchpadScroll> break
     }
 
+    if {$touchpadScrollSupport} {
+	#
+	# Override the (T)Scrollbar class bindings for $sa.vsb
+	# in order to make sure that <TouchpadScroll> events will
+	# scroll the scrollableframe by units rather than pixels
+	#
+	bind $sa.vsb <TouchpadScroll> {
+	    if {%# %% 5 != 0} {
+		break
+	    }
+	    lassign [tk::PreciseScrollDeltas %D] deltaX deltaY
+	    if {$deltaY != 0} {
+		{*}[%W cget -command] scroll [expr {-$deltaY}] units
+	    }
+	    break
+	}
+    }
+
     return $win
 }
 

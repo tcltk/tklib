@@ -329,8 +329,9 @@ proc scrollutil::addMouseWheelSupport {tag {axes "xy"}} {
 	return ""
     }
 
-    set script {
-	if {%# %% 5 != 0} { return }
+    set script "if {%# %% 5 != 0} "
+    append script [expr {$isWindow ? "break" : "return"}]
+    append script {
 	lassign [tk::PreciseScrollDeltas %D] deltaX deltaY
     }
     switch $axes {
@@ -351,7 +352,9 @@ proc scrollutil::addMouseWheelSupport {tag {axes "xy"}} {
 	    }
 	}
     }
-    append script $tail
+    if {$isWindow} {
+	append script break
+    }
     bind $tag <TouchpadScroll> $script
 }
 
