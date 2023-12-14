@@ -1532,7 +1532,8 @@ proc scrollutil::snb::cycleTab1 {win axis dir {divisor 1.0}} {
     # Count both the <MouseWheel> and <Shift-MouseWheel>
     # events, and ignore the non-dominant ones
     #
-    variable ::scrollutil::xWheelEvents; variable ::scrollutil::yWheelEvents
+    variable ::scrollutil::xWheelEvents
+    variable ::scrollutil::yWheelEvents
     incr ${axis}WheelEvents
     if {($xWheelEvents + $yWheelEvents > 10) &&
 	($axis eq "x" && $xWheelEvents < $yWheelEvents ||
@@ -1540,7 +1541,12 @@ proc scrollutil::snb::cycleTab1 {win axis dir {divisor 1.0}} {
 	return ""
     }
 
-    ttk::notebook::CycleTab $win $dir $divisor
+    variable ::scrollutil::uniformWheelSupport
+    if {$uniformWheelSupport} {
+	ttk::notebook::CycleTab $win $dir $divisor
+    } else {
+	ttk::notebook::CycleTab $win $dir
+    }
 }
 
 #------------------------------------------------------------------------------

@@ -840,7 +840,8 @@ proc scrollutil::condScrollByUnits {w orient amount {divisor 1.0}} {
 	# Count both the <MouseWheel> and <Shift-MouseWheel>
 	# events, and ignore the non-dominant ones
 	#
-	variable xWheelEvents; variable yWheelEvents
+	variable xWheelEvents
+	variable yWheelEvents
 	set axis [expr {[string index $orient 0] eq "h" ? "x" : "y"}]
 	incr ${axis}WheelEvents
 	if {($xWheelEvents + $yWheelEvents > 10) &&

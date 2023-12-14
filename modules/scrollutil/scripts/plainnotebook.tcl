@@ -1752,7 +1752,8 @@ proc scrollutil::pnb::cycleTab {win axis dir {divisor 1.0}} {
 	# Count both the <MouseWheel> and <Shift-MouseWheel>
 	# events, and ignore the non-dominant ones
 	#
-	variable ::scrollutil::xWheelEvents; variable ::scrollutil::yWheelEvents
+	variable ::scrollutil::xWheelEvents
+	variable ::scrollutil::yWheelEvents
 	incr ${axis}WheelEvents
 	if {($xWheelEvents + $yWheelEvents > 10) &&
 	    ($axis eq "x" && $xWheelEvents < $yWheelEvents ||
