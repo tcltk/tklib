@@ -410,7 +410,7 @@ proc tablelist::addIncrDateTimeWidget {widgetType args} {
 
 	2 {
 	    set arg0 [lindex $args 0]
-	    if {$arg0 eq "-seconds"} {
+	    if {$arg0 ne "-seconds"} {
 		return -code error "bad option \"$arg0\": must be -seconds"
 	    }
 

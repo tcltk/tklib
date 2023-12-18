@@ -959,7 +959,7 @@ proc tablelist::moveColData {oldArrName newArrName imgArrName oldCol newCol} {
     # Replace oldCol with newCol in the list of
     # stretchable columns if explicitly specified
     #
-    if {[info exists oldArr(-stretch)] && $oldArr(-stretch) eq "all"} {
+    if {[info exists oldArr(-stretch)] && $oldArr(-stretch) ne "all"} {
 	set stretchableCols {}
 	foreach elem $oldArr(-stretch) {
 	    if {$elem == $oldCol} {
@@ -6171,7 +6171,7 @@ proc tablelist::configCanvas {win col} {
 		set labelFg [$w cget -disabledforeground]
 	    } elseif {$state eq "active"} {
 		variable winSys
-		if {$winSys eq "aqua"} {
+		if {$winSys ne "aqua"} {
 		    set labelBg [$w cget -activebackground]
 		    set labelFg [$w cget -activeforeground]
 		}

@@ -4569,7 +4569,7 @@ proc tablelist::header_iselemsnippedSubCmd {win argList} {
 	adjustElem $win text auxWidth indentWidth $cellFont $pixels "r" ""
     }
 
-    return [expr {$text eq $fullText}]
+    return [expr {$text ne $fullText}]
 }
 
 #------------------------------------------------------------------------------
