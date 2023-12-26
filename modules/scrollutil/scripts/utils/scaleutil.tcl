@@ -234,26 +234,11 @@ proc scaleutil::scalingPercentage winSys {
 	}
 
 	#
-	# Scale a few styles for the "vista" and "xpnative" themes
+	# Scale a few styles for the built-in Windows themes
 	#
 	foreach theme {vista winnative xpnative} {
 	    if {[lsearch -exact [ttk::style theme names] $theme] >= 0} {
 		scaleStyles_$theme $pct
-	    }
-	}
-
-	#
-	# For the "vista" and "xpnative" themes work around a bug
-	# related to the scaling of ttk::checkbutton and ttk::radiobutton
-	# widgets in Tk releases no later than 8.6.10 and 8.7a3
-	#
-	if {[package vcompare $::tk_patchLevel "8.6.10"] <= 0 ||
-	    ($::tk_version == 8.7 &&
-	     [package vcompare $::tk_patchLevel "8.7a3"] <= 0)} {
-	    foreach theme {vista xpnative} {
-		if {[lsearch -exact [ttk::style theme names] $theme] >= 0} {
-		    patchWinTheme $theme $pct
-		}
 	    }
 	}
     }
@@ -265,6 +250,22 @@ proc scaleutil::scalingPercentage winSys {
     for {set scalingPct 100} {1} {incr scalingPct 25} {
 	if {$pct < $scalingPct + 12.5} {
 	    break
+	}
+    }
+
+    #
+    # For the "vista" and "xpnative" themes work around a bug
+    # related to the scaling of ttk::checkbutton and ttk::radiobutton
+    # widgets in Tk releases no later than 8.6.10 and 8.7a3
+    #
+    if {$ttkSupported && $scalingPct > 100 &&
+	([package vcompare $::tk_patchLevel "8.6.10"] <= 0 ||
+	 ($::tk_version == 8.7 &&
+	  [package vcompare $::tk_patchLevel "8.7a3"] <= 0))} {
+	foreach theme {vista xpnative} {
+	    if {[lsearch -exact [ttk::style theme names] $theme] >= 0} {
+		patchWinTheme $theme $scalingPct
+	    }
 	}
     }
 
