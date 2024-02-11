@@ -1,14 +1,14 @@
 #==============================================================================
 # Main Scrollutil and Scrollutil_tile package module.
 #
-# Copyright (c) 2019-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2019-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 namespace eval ::scrollutil {
     #
     # Public variables:
     #
-    variable version	2.0
+    variable version	2.1
     variable library	[file dirname [file normalize [info script]]]
 
     #
@@ -85,10 +85,10 @@ lappend auto_path [file join $::scrollutil::library scripts]
 #
 proc ::scrollutil::loadUtils {} {
     if {[catch {package present mwutil} version] == 0 &&
-	[package vcompare $version 2.21] < 0} {
+	[package vcompare $version 2.22] < 0} {
 	package forget mwutil
     }
-    package require mwutil 2.21-
+    package require mwutil 2.22-
 
     if {[catch {package present scaleutil} version] == 0 &&
 	[package vcompare $version 1.12] < 0} {

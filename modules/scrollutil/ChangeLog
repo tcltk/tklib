@@ -1,3 +1,17 @@
+2024-02-11  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 2.1.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/utils/mwutil.tcl:   Fixed a typo in the file mwutil.tcl,
+	* scripts/utils/pkgIndex.tcl: introduced in the previous release.
+
+	* doc/ScrollableFrmDemo2.png: Updated screenshot.
+
 2023-12-27  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Scrollutil 2.0.
