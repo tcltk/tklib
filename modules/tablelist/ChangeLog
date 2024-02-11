@@ -1,3 +1,28 @@
+2024-02-11 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 7.1.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/*.tcl: The multi-line cell texts are now displayed vertically
+	  centered within their rows; fixed a long-standing bug due to which
+	  under some circumstances the default values of several configuration
+	  options became theme-specific even if the tablelist package rather
+	  than tablelist_tile was being used; fixed a long-standing bug related
+	  to creating the expand/collapse control images when handling the
+	  "-treestyle" option; guarded against destroying a tablelist widget in
+	  which an interactive column resize or row/column move operation is in
+	  progress; handled the extremely rare case that the frame widget to be
+	  used as parent of the edit window already exists.
+
+	* scripts/tclIndex: Newly generated.
+
+	* scripts/utils/mwutil.tcl:   Fixed a typo in the file mwutil.tcl,
+	* scripts/utils/pkgIndex.tcl: introduced in the previous release.
+
 2023-12-27 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Tablelist 7.0.

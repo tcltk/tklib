@@ -1,7 +1,7 @@
 #==============================================================================
 # Contains private configuration procedures for tablelist widgets.
 #
-# Copyright (c) 2000-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #------------------------------------------------------------------------------
@@ -1201,34 +1201,31 @@ proc tablelist::doConfig {win opt val} {
 		    # formatted value of val in data($opt)
 		    #
 		    variable treeStyles
-		    set newStyle [mwutil::fullOpt "tree style" $val $treeStyles]
-		    set oldStyle $data($opt)
-		    set treeCol $data(treeCol)
-		    set data($opt) $newStyle
-		    if {$newStyle ne $oldStyle} {
-			createTreeImgs $newStyle
+		    set val [mwutil::fullOpt "tree style" $val $treeStyles]
+		    set oldVal $data($opt)
+		    set data($opt) $val
+		    createTreeImgs $val
+		    if {$val ne $oldVal && $data(colCount) != 0} {
+			set itemCount $data(itemCount)
+			set treeCol $data(treeCol)
 			variable maxIndentDepths
-			if {$data(colCount) != 0} {
-			    set itemCount $data(itemCount)
-			    for {set row 0} {$row < $itemCount} {incr row} {
-				set oldIndent \
-				    [doCellCget $row $treeCol $win -indent]
-				set newIndent [string map \
-				    [list $oldStyle $newStyle "Sel" ""] \
-				    $oldIndent]
-				if {[regexp {^.+Img([0-9]+)$} $newIndent \
-				     dummy depth]} {
-				    if {$depth > $maxIndentDepths($newStyle)} {
-					setTreeLabelWidths $newStyle $depth
-					set maxIndentDepths($newStyle) $depth
-				    }
-				    doCellConfig $row $treeCol $win \
-						 -indent $newIndent
+			for {set row 0} {$row < $itemCount} {incr row} {
+			    set oldIndent \
+				[doCellCget $row $treeCol $win -indent]
+			    set newIndent [string map \
+				[list $oldVal $val "Sel" ""] $oldIndent]
+			    if {[regexp {^.+Img([0-9]+)$} $newIndent \
+				 dummy depth]} {
+				if {$depth > $maxIndentDepths($val)} {
+				    setTreeLabelWidths $val $depth
+				    set maxIndentDepths($val) $depth
 				}
+				doCellConfig $row $treeCol $win \
+					     -indent $newIndent
 			    }
 			}
 		    }
-		    switch -glob $newStyle {
+		    switch -glob $val {
 			baghira -
 			klearlooks -
 			oxygen? -

@@ -8,7 +8,7 @@
 #   - Private procedures implementing the tablelist widget command
 #   - Private callback procedures
 #
-# Copyright (c) 2000-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -936,6 +936,7 @@ proc tablelist::tablelist args {
     set data(lb)		$win.lb
     set data(vsep)		$win.vsep
     set data(hsep)		$win.hsep
+    set data(topWin)		[winfo toplevel $win]
 
     #
     # Get unique names for the north-east and south-west corner
@@ -970,8 +971,7 @@ proc tablelist::tablelist args {
 	    -padx 0 -pady 0 -state normal -takefocus 0 -wrap none
     catch {$w configure -undo 0};  # because of a text widget issue in Tk 8.6.6
     place $w -relheight 1.0 -relwidth 1.0
-    bindtags $w [list $w $data(headerTag) TablelistHeader [winfo toplevel $w] \
-		 all]
+    bindtags $w [list $w $data(headerTag) TablelistHeader $data(topWin) all]
 
     tk::frame $data(hdrTxtFrm) -borderwidth 0 -container 0 -height 0 \
 			       -highlightthickness 0 -padx 0 -pady 0 \
@@ -1110,7 +1110,7 @@ proc tablelist::tablelist args {
     catch {$w configure -undo 0};  # because of a text widget issue in Tk 8.6.6
     bind $w <Configure> { tablelist::bodyConfigure %W %w %h }
     pack $w -expand 1 -fill both
-    bindtags $w [list $w $data(bodyTag) TablelistBody [winfo toplevel $w] \
+    bindtags $w [list $w $data(bodyTag) TablelistBody $data(topWin) \
 		 TablelistKeyNav all]
 
     #
@@ -8042,7 +8042,7 @@ proc tablelist::hdr_insertRows {win index argList} {
 	findTabs $win $w $line $col $col tabIdx1 tabIdx2
 	set msgScript [list ::tablelist::displayText $win $key $col $text \
 		       $font $pixels $alignment]
-	$w window create $tabIdx2 -align top -pady $padY -create $msgScript
+	$w window create $tabIdx2 -pady $padY -create $msgScript
     }
 
     #
@@ -8317,7 +8317,7 @@ proc tablelist::displayItems win {
 	    findTabs $win $w $line $col $col tabIdx1 tabIdx2
 	    set msgScript [list ::tablelist::displayText $win $key $col $text \
 			   $font $pixels $alignment]
-	    $w window create $tabIdx2 -align top -pady $padY -create $msgScript
+	    $w window create $tabIdx2 -pady $padY -create $msgScript
 	    $w tag add elidedWin $tabIdx2
 	}
     }

@@ -7,7 +7,7 @@
 #   - Private procedures implementing the interactive cell editing
 #   - Private procedures used in bindings related to interactive cell editing
 #
-# Copyright (c) 2003-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2003-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -1570,10 +1570,13 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
     # $data(editwinTag) and TablelistEdit in the frame's list of binding tags
     #
     seeCell $win $row $col
+    set f $data(bodyFrm)
+    if {[winfo exists $f]} {		;# just in case (extremely unprobable)
+	return ""
+    }
     set netRowHeight [lindex [bboxSubCmd $win $row] 3]
     set frameHeight [expr {$netRowHeight + 6}]	;# because of the -pady -3 below
     set frameWidth 7				;# because of the -padx -3 below
-    set f $data(bodyFrm)
     tk::frame $f -borderwidth 0 -container 0 -height $frameHeight \
 		 -highlightthickness 0 -padx 0 -pady 0 -relief flat \
 		 -takefocus 0 -width $frameWidth

@@ -17,7 +17,7 @@ set auto_index(::tablelist::cleanup) [list source [file join $dir tablelistBind.
 set auto_index(::tablelist::updateBackgrounds) [list source [file join $dir tablelistBind.tcl]]
 set auto_index(::tablelist::updateFonts) [list source [file join $dir tablelistBind.tcl]]
 set auto_index(::tablelist::handleThemeChangedEvent) [list source [file join $dir tablelistBind.tcl]]
-set auto_index(::tablelist::updateConfigSpecs) [list source [file join $dir tablelistBind.tcl]]
+set auto_index(::tablelist::updateConfiguration) [list source [file join $dir tablelistBind.tcl]]
 set auto_index(::tablelist::handleAppearanceEvent) [list source [file join $dir tablelistBind.tcl]]
 set auto_index(::tablelist::updateAppearance) [list source [file join $dir tablelistBind.tcl]]
 set auto_index(::tablelist::condOpenPipeline) [list source [file join $dir tablelistBind.tcl]]

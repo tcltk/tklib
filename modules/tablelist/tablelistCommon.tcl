@@ -1,14 +1,14 @@
 #==============================================================================
 # Main Tablelist and Tablelist_tile package module.
 #
-# Copyright (c) 2000-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 namespace eval ::tablelist {
     #
     # Public variables:
     #
-    variable version	7.0
+    variable version	7.1
     variable library	[file dirname [file normalize [info script]]]
 
     #
@@ -92,10 +92,10 @@ lappend auto_path [file join $::tablelist::library scripts]
 #
 proc ::tablelist::loadUtils {} {
     if {[catch {package present mwutil} version] == 0 &&
-	[package vcompare $version 2.21] < 0} {
+	[package vcompare $version 2.22] < 0} {
 	package forget mwutil
     }
-    package require mwutil 2.21-
+    package require mwutil 2.22-
 
     if {[catch {package present scaleutil} version] == 0 &&
 	[package vcompare $version 1.12] < 0} {

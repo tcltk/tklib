@@ -10,7 +10,7 @@
 #   - Binding tag TablelistHeader
 #   - Binding tags TablelistLabel, TablelistSubLabel, and TablelistArrow
 #
-# Copyright (c) 2000-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -367,6 +367,16 @@ proc tablelist::cleanup win {
     }
 
     #
+    # Restore the <Escape> binding for the toplevel window if it was overridden
+    #
+    set topWin $data(topWin)
+    set binding [bind $topWin <Escape>]
+    if {[string first "tablelist::cancelMove $win" $binding] == 0 ||
+	[string first "tablelist::escape $win" $binding] == 0} {
+	bind $topWin <Escape> $data(topEscBinding)
+    }
+
+    #
     # Delete the bitmaps displaying the sort ranks
     # and the images used to display the sort arrows
     #
@@ -531,12 +541,15 @@ proc tablelist::handleThemeChangedEvent {} {
 	}
     }
 
-    #
-    # Populate the array themeDefaults with
-    # values corresponding to the new theme
-    #
-    setThemeDefaults
-    event generate . <<TablelistThemeDefaultsChanged>>
+    variable usingTile
+    if {$usingTile} {
+	#
+	# Populate the array themeDefaults with
+	# values corresponding to the new theme
+	#
+	setThemeDefaults
+	event generate . <<TablelistThemeDefaultsChanged>>
+    }
 
     #
     # Level-order traversal like in the Tk library procedue ::ttk::ThemeChanged
@@ -546,7 +559,7 @@ proc tablelist::handleThemeChangedEvent {} {
 	set lst2 {}
 	foreach w $lst1 {
 	    if {[winfo class $w] eq "Tablelist"} {
-		updateConfigSpecs $w
+		updateConfiguration $w
 	    }
 	    foreach child [winfo children $w] {
 		lappend lst2 $child
@@ -557,12 +570,12 @@ proc tablelist::handleThemeChangedEvent {} {
 }
 
 #------------------------------------------------------------------------------
-# tablelist::updateConfigSpecs
+# tablelist::updateConfiguration
 #
 # Updates the theme-specific default values of some tablelist configuration
 # options.
 #------------------------------------------------------------------------------
-proc tablelist::updateConfigSpecs win {
+proc tablelist::updateConfiguration win {
     upvar ::tablelist::ns${win}::data data
     variable usingTile
     if {$usingTile} {
@@ -1436,7 +1449,7 @@ proc tablelist::showOrHideTooltip {win row col X Y} {
     if {$row >= 0 && $col >= 0} {
 	set focusWin [focus -displayof $win]
 	if {$focusWin eq "" || [string first $win. $focusWin] != 0 ||
-	    [winfo toplevel $focusWin] eq [winfo toplevel $win]} {
+	    [winfo toplevel $focusWin] eq $data(topWin)} {
 	    uplevel #0 $data(-tooltipaddcommand) [list $win $row $col]
 	    if {[destroyed $win]} {
 		return ""
@@ -1795,7 +1808,7 @@ proc tablelist::condBeginMove {win row} {
     set data(sourceParentRow) [keyToRow $win $data(sourceParentKey)]
     set data(sourceParentEndRow) [nodeRow $win $data(sourceParentKey) end]
 
-    set topWin [winfo toplevel $win]
+    set topWin $data(topWin)
     set data(topEscBinding) [bind $topWin <Escape>]
     bind $topWin <Escape> \
 	 [list tablelist::cancelMove [string map {"%" "%%"} $win]]
@@ -2367,7 +2380,7 @@ proc tablelist::moveOrActivate {win row col inside} {
 	unset data(sourceParentKey)
 	unset data(sourceParentRow)
 	unset data(sourceParentEndRow)
-	bind [winfo toplevel $win] <Escape> $data(topEscBinding)
+	bind $data(topWin) <Escape> $data(topEscBinding)
 	$data(body) configure -cursor $data(-cursor)
 	place forget $data(rowGap)
 
@@ -2521,7 +2534,7 @@ proc tablelist::cancelMove win {
     unset data(sourceParentEndRow)
     array unset data targetRow
     array unset data targetChildIdx
-    bind [winfo toplevel $win] <Escape> $data(topEscBinding)
+    bind $data(topWin) <Escape> $data(topEscBinding)
     $data(body) configure -cursor $data(-cursor)
     place forget $data(rowGap)
 }
@@ -3526,7 +3539,7 @@ proc tablelist::hdr_showOrHideTooltip {win row col X Y} {
     if {$row >= 0 && $col >= 0} {
 	set focusWin [focus -displayof $win]
 	if {$focusWin eq "" || [string first $win. $focusWin] != 0 ||
-	    [winfo toplevel $focusWin] eq [winfo toplevel $win]} {
+	    [winfo toplevel $focusWin] eq $data(topWin)} {
 	    uplevel #0 $data(-tooltipaddcommand) [list $win h$row $col]
 	    if {[destroyed $win]} {
 		return ""
@@ -3689,7 +3702,7 @@ proc tablelist::labelEnter {w X Y x} {
 	set data(prevCol) $col
 	set focusWin [focus -displayof $win]
 	if {$focusWin eq "" || [string first $win. $focusWin] != 0 ||
-	    [winfo toplevel $focusWin] eq [winfo toplevel $win]} {
+	    [winfo toplevel $focusWin] eq $data(topWin)} {
 	    uplevel #0 $data(-tooltipaddcommand) [list $win -1 $col]
 	    if {[destroyed $win]} {
 		return ""
@@ -3811,7 +3824,7 @@ proc tablelist::labelB1Down {w x shiftPressed} {
 	incr data(minColWidth)
 
 	set data(focus) [focus -displayof $win]
-	set topWin [winfo toplevel $win]
+	set topWin $data(topWin)
 	focus $topWin
 	set data(topEscBinding) [bind $topWin <Escape>]
 	bind $topWin <Escape> \
@@ -3830,7 +3843,7 @@ proc tablelist::labelB1Down {w x shiftPressed} {
 
 	if {$data(-movablecolumns)} {
 	    set data(focus) [focus -displayof $win]
-	    set topWin [winfo toplevel $win]
+	    set topWin $data(topWin)
 	    focus $topWin
 	    set data(topEscBinding) [bind $topWin <Escape>]
 	    bind $topWin <Escape> \
@@ -4148,7 +4161,7 @@ proc tablelist::labelB1Up {w X} {
 	if {[winfo exists $data(focus)]} {
 	    focus $data(focus)
 	}
-	bind [winfo toplevel $win] <Escape> $data(topEscBinding)
+	bind $data(topWin) <Escape> $data(topEscBinding)
 	set col $data(colBeingResized)
 	if {$data(colResized)} {
 	    if {$data(-width) <= 0} {
@@ -4224,7 +4237,7 @@ proc tablelist::labelB1Up {w X} {
 	    if {[winfo exists $data(focus)]} {
 		focus $data(focus)
 	    }
-	    bind [winfo toplevel $win] <Escape> $data(topEscBinding)
+	    bind $data(topWin) <Escape> $data(topEscBinding)
 	    place forget $data(colGap)
 	}
 
@@ -4353,7 +4366,7 @@ proc tablelist::escape {win col} {
 	if {[winfo exists $data(focus)]} {
 	    focus $data(focus)
 	}
-	bind [winfo toplevel $win] <Escape> $data(topEscBinding)
+	bind $data(topWin) <Escape> $data(topEscBinding)
 	set data(labelClicked) 0
 	set col $data(colBeingResized)
 	set idx [expr {3*$col}]
@@ -4371,7 +4384,7 @@ proc tablelist::escape {win col} {
 	if {[winfo exists $data(focus)]} {
 	    focus $data(focus)
 	}
-	bind [winfo toplevel $win] <Escape> $data(topEscBinding)
+	bind $data(topWin) <Escape> $data(topEscBinding)
 	place forget $data(colGap)
 	array unset data targetCol
 	if {[info exists data(X)]} {
