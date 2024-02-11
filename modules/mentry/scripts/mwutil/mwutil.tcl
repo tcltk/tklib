@@ -5,7 +5,7 @@
 #   - Namespace initialization
 #   - Public utility procedures
 #
-# Copyright (c) 2000-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tk 8.4-
@@ -19,7 +19,7 @@ namespace eval mwutil {
     #
     # Public variables:
     #
-    variable version	2.21
+    variable version	2.22
     variable library	[file dirname [file normalize [info script]]]
 
     #
@@ -96,7 +96,7 @@ proc mwutil::wrongNumArgs args {
 #------------------------------------------------------------------------------
 proc mwutil::getAncestorByClass {w class} {
     if {[regexp {^\.[^.]+$} $w]} {
-	return [expr {winfo class .] eq $class ? "." : ""}]
+	return [expr {[winfo class .] eq $class ? "." : ""}]
     } elseif {[regexp {^(\..+)\.[^.]+$} $w dummy win]} {
 	while {[winfo exists $win]} {
 	    if {[winfo class $win] eq $class} {

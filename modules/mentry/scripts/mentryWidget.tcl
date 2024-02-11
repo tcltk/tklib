@@ -11,7 +11,7 @@
 #   - Private procedures used in bindings
 #   - Private utility procedures
 #
-# Copyright (c) 1999-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 1999-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -1585,12 +1585,15 @@ proc mentry::handleThemeChangedEvent {} {
 	set colorScheme ""
     }
 
-    #
-    # Populate the array themeDefaults with
-    # values corresponding to the new theme
-    #
-    setThemeDefaults
-    event generate . <<MentryThemeDefaultsChanged>>
+    variable usingTile
+    if {$usingTile} {
+	#
+	# Populate the array themeDefaults with
+	# values corresponding to the new theme
+	#
+	setThemeDefaults
+	event generate . <<MentryThemeDefaultsChanged>>
+    }
 
     #
     # Level-order traversal like in the Tk library procedue ::ttk::ThemeChanged
@@ -1600,7 +1603,7 @@ proc mentry::handleThemeChangedEvent {} {
 	set lst2 {}
 	foreach w $lst1 {
 	    if {[winfo class $w] eq "Mentry"} {
-		updateConfigSpecs $w
+		updateConfiguration $w
 	    }
 	    foreach child [winfo children $w] {
 		lappend lst2 $child
@@ -1611,12 +1614,12 @@ proc mentry::handleThemeChangedEvent {} {
 }
 
 #------------------------------------------------------------------------------
-# mentry::updateConfigSpecs
+# mentry::updateConfiguration
 #
 # Updates the theme-specific default values of some mentry configuration
 # options.
 #------------------------------------------------------------------------------
-proc mentry::updateConfigSpecs win {
+proc mentry::updateConfiguration win {
     upvar ::mentry::ns${win}::data data
     variable usingTile
     if {$usingTile} {

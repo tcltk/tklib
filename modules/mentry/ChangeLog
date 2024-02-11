@@ -1,3 +1,22 @@
+2024-02-11  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 4.1.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/mentryWidget.tcl: Fixed a long-standing bug due to which
+	  under some circumstances the default values of several configuration
+	  options became theme-specific even if the mentry package rather than
+	  mentry_tile was being used.
+
+	* scripts/tclIndex: Newly generated.
+
+	* scripts/mwutil/*.tcl: Fixed a typo in the file mwutil.tcl, introduced
+	  in the previous release.
+
 2023-12-27  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Mentry 4.0.

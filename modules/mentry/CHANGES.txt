@@ -1,5 +1,16 @@
-What is new in Mentry 4.0?
+What is new in Mentry 4.1?
 --------------------------
+
+1. Fixed a long-standing bug due to which under some circumstances the
+   default values of several configuration options became theme-specific
+   even if the mentry package rather than mentry_tile was being used.
+
+2. Fixed a typo in the mega-widget utility file mwutil.tcl, introduced
+   in the previous release (thanks to Harald Oehlmann for his bug
+   report).
+
+What was new in Mentry 4.0?
+---------------------------
 
 1. Dropped the support for Tk versions earlier than 8.4.  This has made
    the code simpler and easier to maintain.

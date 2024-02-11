@@ -84,7 +84,7 @@ set auto_index(::mentry::condTabToNext) [list source [file join $dir mentryWidge
 set auto_index(::mentry::updateLabelForegrounds) [list source [file join $dir mentryWidget.tcl]]
 set auto_index(::mentry::updateFonts) [list source [file join $dir mentryWidget.tcl]]
 set auto_index(::mentry::handleThemeChangedEvent) [list source [file join $dir mentryWidget.tcl]]
-set auto_index(::mentry::updateConfigSpecs) [list source [file join $dir mentryWidget.tcl]]
+set auto_index(::mentry::updateConfiguration) [list source [file join $dir mentryWidget.tcl]]
 set auto_index(::mentry::handleAppearanceEvent) [list source [file join $dir mentryWidget.tcl]]
 set auto_index(::mentry::updateAppearance) [list source [file join $dir mentryWidget.tcl]]
 set auto_index(::mentry::condGoToPrev) [list source [file join $dir mentryWidget.tcl]]

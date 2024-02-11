@@ -1,7 +1,7 @@
 #==============================================================================
 # Main Mentry and Mentry_tile package module.
 #
-# Copyright (c) 1999-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 1999-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 if {[catch {package require Wcb 3.1-} result1] != 0 &&
@@ -13,7 +13,7 @@ namespace eval ::mentry {
     #
     # Public variables:
     #
-    variable version	4.0
+    variable version	4.1
     variable library	[file dirname [file normalize [info script]]]
 
     #
@@ -95,7 +95,7 @@ lappend auto_path [file join $::mentry::library scripts]
 # into account that it is also included in Scrollutil and Tablelist.
 #
 if {[catch {package present mwutil} version] == 0 &&
-    [package vcompare $version 2.21] < 0} {
+    [package vcompare $version 2.22] < 0} {
     package forget mwutil
 }
-package require mwutil 2.21-
+package require mwutil 2.22-
