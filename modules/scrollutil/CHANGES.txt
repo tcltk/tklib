@@ -1,7 +1,11 @@
 What is new in Scrollutil 2.1?
 ------------------------------
 
-1. Fixed a typo in the mega-widget utility file mwutil.tcl, introduced
+1. The scrollableframe within a scrollednotebook widget is now packed
+   with a horizontal and vertical padding of 0 when both arrow buttons
+   are in unmanaged state.
+
+2. Fixed a typo in the mega-widget utility file mwutil.tcl, introduced
    in the previous release (thanks to Harald Oehlmann for his bug
    report).
 

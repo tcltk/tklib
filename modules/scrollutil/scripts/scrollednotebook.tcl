@@ -11,7 +11,7 @@
 #   - Private procedures used in bindings
 #   - Private utility procedures
 #
-# Copyright (c) 2021-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2021-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -294,7 +294,7 @@ proc scrollutil::scrollednotebook args {
 	    -contentwidth 0 -fitcontentheight 1 -relief flat -takefocus 0 \
 	    -xscrollincrement 1 -yscrollcommand "" -yscrollincrement 1]
     $sf autofillx 1	;# sets/clears the -fitcontentwidth option dynamically
-    pack $sf -expand 1 -fill both -padx 3p
+    pack $sf -expand 1 -fill both
     set cf [$sf contentframe]
     set nb [ttk::notebook $cf.nb -height 0 -width 0]
     pack $nb -expand 1 -fill both
@@ -555,9 +555,12 @@ proc scrollutil::snb::doConfig {win opt val} {
 			set val TNotebook
 		    }
 		    set tabPos [ttk::style lookup $val -tabposition {} nw]
+		    set lMan [winfo manager $data(lArrow)]
+		    set rMan [winfo manager $data(rArrow)]
+		    set pad [expr {$lMan eq "" && $rMan eq "" ? 0 : "3p"}]
 		    switch -- [string index $tabPos 0] {
-			n { pack configure $data(sf) -pady {3p 0} }
-			s { pack configure $data(sf) -pady {0 3p} }
+			n { pack configure $data(sf) -pady [list $pad 0] }
+			s { pack configure $data(sf) -pady [list 0 $pad] }
 			default {
 			    return -code error "only horizontal tab layouts\
 						are supported"
@@ -1781,6 +1784,7 @@ proc scrollutil::snb::showHideArrows win {
     unset data(arrowsId)
 
     set nb     $data(nb)
+    set sf     $data(sf)
     set lArrow $data(lArrow)
     set rArrow $data(rArrow)
 
@@ -1826,6 +1830,15 @@ proc scrollutil::snb::showHideArrows win {
 	     $::ttk::Repeat(script)]} {
 	    ::ttk::CancelRepeat
 	}
+    }
+
+    set lMan [winfo manager $lArrow]
+    set rMan [winfo manager $rArrow]
+    set pad [expr {$lMan eq "" && $rMan eq "" ? 0 : "3p"}]
+    pack configure $sf -padx $pad
+    switch -- $tabSide {
+	n { pack configure $sf -pady [list $pad 0] }
+	s { pack configure $sf -pady [list 0 $pad] }
     }
 }
 
