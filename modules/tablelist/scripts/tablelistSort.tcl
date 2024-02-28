@@ -603,7 +603,12 @@ proc tablelist::sortItems {win parentKey sortColList sortOrderList} {
     if {$editCol >= 0} {
 	set editRow [keyToRow $win $editKey]
 	if {$editRow >= $firstDescRow && $editRow <= $lastDescRow} {
-	    doEditCell $win $editRow $editCol 1
+	    if {$::tk_version >= 8.5} {
+		$w sync -command \
+		    [list tablelist::doEditCell $win $editRow $editCol 1]
+	    } else {
+		doEditCell $win $editRow $editCol 1
+	    }
 	}
     } else {
 	set selRows [curSelection $win]
@@ -612,14 +617,22 @@ proc tablelist::sortItems {win parentKey sortColList sortOrderList} {
 	    set selKey [lindex $data(keyList) $selRow]
 	    if {$selRow >= $firstDescRow && $selRow <= $lastDescRow &&
 		![info exists data($selKey-elide)]} {
-		seeRow $win $selRow
+		if {$::tk_version >= 8.5} {
+		    $w sync -command [list tablelist::seeRow $win $selRow]
+		} else {
+		    seeRow $win $selRow
+		}
 	    }
 	} elseif {[focus -lastfor $w] eq $w} {
-	    set activeKey [lindex $data(keyList) $data(activeRow)]
-	    if {$data(activeRow) >= $firstDescRow &&
-		$data(activeRow) <= $lastDescRow &&
+	    set activeRow $data(activeRow)
+	    set activeKey [lindex $data(keyList) $activeRow]
+	    if {$activeRow >= $firstDescRow && $activeRow <= $lastDescRow &&
 		![info exists data($activeKey-elide)]} {
-		seeRow $win $data(activeRow)
+		if {$::tk_version >= 8.5} {
+		    $w sync -command [list tablelist::seeRow $win $activeRow]
+		} else {
+		    seeRow $win $activeRow
+		}
 	    }
 	}
     }

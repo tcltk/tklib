@@ -7322,22 +7322,22 @@ proc updateWindow {tbl row col w args} {
     <code>Alt-Prior</code>, <code>Alt-Next</code>, <code>Alt-Home</code>, and
     <code>Alt-End</code> (as well as <code>Control-Home</code> and
     <code>Control-End</code>, except in the case of a text or ctext
-    widget).&nbsp; On Mac OS Classic and Mac OS X/11+ Aqua the
-    <code>Command</code> key is used instead of <code>Alt</code>.&nbsp; The
-    editing can be aborted with the <code>Escape</code> key (or by invoking the
-    <code><b><a href="#cancelediting">cancelediting</a></b></code> subcommand)
-    and terminated normally with <code>Return</code> or <code>KP_Enter</code>
-    (together with <code>Control</code> for a text or ctext widget).&nbsp; The
-    bindings for the keys used for normal termination of the editing just
-    invoke the <code><b><a href="#finishediting">finishediting</a></b></code>
-    subcommand; the latter can also be called explicitly to terminate the
-    editing programmatically.&nbsp; Normal termination is also triggered by
-    clicking with the left mouse button anywhere in the tablelist's body,
-    outside the cell just being edited, or moving into another editable cell by
-    using keyboard navigation.&nbsp; If the editing was started with the left
-    mouse button, the edit window is a Tk or tile checkbutton, and the value of
-    the <code><b><a href="#instanttoggle">-instanttoggle</a></b></code> option
-    is true, then the normal termination of the editing will take place
+    widget).&nbsp; On Mac OS X/11+ Aqua the <code>Command</code> key is used
+    instead of <code>Alt</code>.&nbsp; The editing can be aborted with the
+    <code>Escape</code> key (or by invoking the <code><b><a href=
+    "#cancelediting">cancelediting</a></b></code> subcommand) and terminated
+    normally with <code>Return</code> or <code>KP_Enter</code> (together with
+    <code>Control</code> for a text or ctext widget).&nbsp; The bindings for
+    the keys used for normal termination of the editing just invoke the
+    <code><b><a href="#finishediting">finishediting</a></b></code> subcommand;
+    the latter can also be called explicitly to terminate the editing
+    programmatically.&nbsp; Normal termination is also triggered by clicking
+    with the left mouse button anywhere in the tablelist's body, outside the
+    cell just being edited, or moving into another editable cell by using
+    keyboard navigation.&nbsp; If the editing was started with the left mouse
+    button, the edit window is a Tk or tile checkbutton, and the value of the
+    <code><b><a href="#instanttoggle">-instanttoggle</a></b></code> option is
+    true, then the normal termination of the editing will take place
     automatically, without any user interaction.&nbsp; Similarly, if the edit
     window is one of the four combobox widgets supported by Tablelist or a
     menubutton widget, and the value of the <code><b><a href=
@@ -12479,8 +12479,8 @@ proc printClickedCell {w x y} {
         event <code><b>&lt;&lt;Button3&gt;&gt;</b></code> as
         <code><b>&lt;Button-3&gt;</b></code> for all windowing systems and
         additionally as <code><b>&lt;Control-Button-1&gt;</b></code> for Mac OS
-        Classic and Mac OS X/11+ Aqua.&nbsp; If this event occurs over a header
-        label and both the value of the <code><b><a href=
+        X/11+ Aqua.&nbsp; If this event occurs over a header label and both the
+        value of the <code><b><a href=
         "#resizablecolumns">-resizablecolumns</a></b></code> configuration
         option and that of the <code><b><a href=
         "#col_resizable">-resizable</a></b></code> option for the column
@@ -12500,8 +12500,8 @@ proc printClickedCell {w x y} {
         <code><b>&lt;&lt;ShiftButton3&gt;&gt;</b></code> as
         <code><b>&lt;Shift-Button-3&gt;</b></code> for all windowing systems
         and additionally as <code><b>&lt;Shift-Control-Button-1&gt;</b></code>
-        for Mac OS Classic and Mac OS X/11+ Aqua.&nbsp; If this event occurs
-        over a header label and both the value of the <code><b><a href=
+        for Mac OS X/11+ Aqua.&nbsp; If this event occurs over a header label
+        and both the value of the <code><b><a href=
         "#resizablecolumns">-resizablecolumns</a></b></code> configuration
         option and that of the <code><b><a href=
         "#col_resizable">-resizable</a></b></code> option for the column
@@ -12519,10 +12519,10 @@ proc printClickedCell {w x y} {
     SELECTION:</b>&nbsp; If the selection type is <code><b>cell</b></code> then
     a few further bindings apply to the header labels.&nbsp; In the description
     below the <code>Alt</code> key can be replaced with <code>Meta</code>; on
-    Mac OS Classic and Mac OS X/11+ Aqua the <code>Command</code> key is used
-    instead of <code>Alt</code> and <code>Meta</code>.&nbsp; Notice also that
-    you can restrict the set of cells that will be selected when these bindings
-    perform a column-wise cell selection:&nbsp; If the command specified by the
+    Mac OS X/11+ Aqua the <code>Command</code> key is used instead of
+    <code>Alt</code> and <code>Meta</code>.&nbsp; Notice also that you can
+    restrict the set of cells that will be selected when these bindings perform
+    a column-wise cell selection:&nbsp; If the command specified by the
     <code><b><a href="#selectfiltercommand">-selectfiltercommand</a></b></code>
     option is a nonempty string then this command is concatenated with the path
     name of the tablelist widget and the numerical index of the respective
@@ -12674,15 +12674,14 @@ bind [.tbl <a href="#labeltag">labeltag</a>] &lt;Button-3&gt; {
 
         <li class="tm">When editing a cell that is not the first/last editable
         cell within its row, <code>Alt-Left</code>/<code>Alt-Right</code>
-        (<code>Command-Left</code>/<code>Command-Right</code> on Mac OS Classic
-        and Mac OS X/11+ Aqua) terminates the editing in the current cell,
-        moves the edit window into the previous/next editable cell of the row,
-        selects the content of the edit window's first entry or entry-like
-        component (if any), and sets the insertion cursor to its end.&nbsp; If
-        the new edit window is a text or ctext widget then its content is left
-        unselected.&nbsp; The key sequence
-        <code>Meta-Left</code>/<code>Meta-Right</code> has the same effect as
-        <code>Alt-Left</code>/<code>Alt-Right</code>.&nbsp; If
+        (<code>Command-Left</code>/<code>Command-Right</code> on Mac OS X/11+
+        Aqua) terminates the editing in the current cell, moves the edit window
+        into the previous/next editable cell of the row, selects the content of
+        the edit window's first entry or entry-like component (if any), and
+        sets the insertion cursor to its end.&nbsp; If the new edit window is a
+        text or ctext widget then its content is left unselected.&nbsp; The key
+        sequence <code>Meta-Left</code>/<code>Meta-Right</code> has the same
+        effect as <code>Alt-Left</code>/<code>Alt-Right</code>.&nbsp; If
         <code><b>tk_strictMotif</b></code> is false and the edit window is not
         a text or ctext widget then <code>Meta-b</code> and <code>Meta-f</code>
         behave the same as <code>Alt-Left</code> and <code>Alt-Right</code>,
@@ -12692,15 +12691,14 @@ bind [.tbl <a href="#labeltag">labeltag</a>] &lt;Button-3&gt; {
 
         <li class="tm">When editing a cell that is not the first/last editable
         cell within its column, <code>Alt-Up</code>/<code>Alt-Down</code>
-        (<code>Command-Up</code>/<code>Command-Down</code> on Mac OS Classic
-        and Mac OS X/11+ Aqua) terminates the editing in the current cell,
-        moves the edit window one line up/down within the column, selects the
-        content of the edit window's first entry or entry-like component (if
-        any), and sets the insertion cursor to its end.&nbsp; If the new edit
-        window is a text or ctext widget then its content is left
-        unselected.&nbsp; The key sequence
-        <code>Meta-Up</code>/<code>Meta-Down</code> has the same effect as
-        <code>Alt-Up</code>/<code>Alt-Down</code>.&nbsp; If
+        (<code>Command-Up</code>/<code>Command-Down</code> on Mac OS X/11+
+        Aqua) terminates the editing in the current cell, moves the edit window
+        one line up/down within the column, selects the content of the edit
+        window's first entry or entry-like component (if any), and sets the
+        insertion cursor to its end.&nbsp; If the new edit window is a text or
+        ctext widget then its content is left unselected.&nbsp; The key
+        sequence <code>Meta-Up</code>/<code>Meta-Down</code> has the same
+        effect as <code>Alt-Up</code>/<code>Alt-Down</code>.&nbsp; If
         <code><b>tk_strictMotif</b></code> is false and the edit window is not
         a text or ctext widget or an Iwidgets combobox, then
         <code>Control-p</code> and <code>Control-n</code> behave the same as
@@ -12713,32 +12711,30 @@ bind [.tbl <a href="#labeltag">labeltag</a>] &lt;Button-3&gt; {
 
         <li class="tm">When editing a cell that is not the first/last editable
         cell within its column, <code>Alt-Prior</code>/<code>Alt-Next</code>
-        (<code>Command-Prior</code>/<code>Command-Next</code> on Mac OS Classic
-        and Mac OS X/11+ Aqua) terminates the editing in the current cell,
-        moves the edit window up/down by one page within the column, selects
-        the content of the edit window's first entry or entry-like component
-        (if any), and sets the insertion cursor to its end.&nbsp; If the new
-        edit window is a text or ctext widget then its content is left
-        unselected.&nbsp; The key sequence
-        <code>Meta-Prior</code>/<code>Meta-Next</code> has the same effect as
-        <code>Alt-Prior</code>/<code>Alt-Next</code>.&nbsp; If the edit window
-        is not a text or ctext widget, BWidget SpinBox, Oakley combobox, or a
-        mentry widget of type <code>"Date"</code>, <code>"Time"</code>,
-        <code>"DateTime"</code>, <code>"IPAddr"</code>, or
+        (<code>Command-Prior</code>/<code>Command-Next</code> on Mac OS X/11+
+        Aqua) terminates the editing in the current cell, moves the edit window
+        up/down by one page within the column, selects the content of the edit
+        window's first entry or entry-like component (if any), and sets the
+        insertion cursor to its end.&nbsp; If the new edit window is a text or
+        ctext widget then its content is left unselected.&nbsp; The key
+        sequence <code>Meta-Prior</code>/<code>Meta-Next</code> has the same
+        effect as <code>Alt-Prior</code>/<code>Alt-Next</code>.&nbsp; If the
+        edit window is not a text or ctext widget, BWidget SpinBox, Oakley
+        combobox, or a mentry widget of type <code>"Date"</code>,
+        <code>"Time"</code>, <code>"DateTime"</code>, <code>"IPAddr"</code>, or
         <code>"IPv6Addr"</code>, then <code>Prior</code>/<code>Next</code> has
         the same effect as <code>Alt-Prior</code>/<code>Alt-Next</code>.</li>
 
         <li class="tm">When editing a cell that is not the only editable cell
         of the tablelist widget, <code>Alt-Home</code>/<code>Alt-End</code>
-        (<code>Command-Home</code>/<code>Command-End</code> on Mac OS Classic
-        and Mac OS X/11+ Aqua) terminates the editing in the current cell,
-        moves the edit window into the first/last editable cell of the
-        tablelist, selects the content of the edit window's first entry or
-        entry-like component (if any), and sets the insertion cursor to its
-        end.&nbsp; If the new edit window is a text or ctext widget then its
-        content is left unselected.&nbsp; The key sequence
-        <code>Meta-Home</code>/<code>Meta-End</code> has the same effect as
-        <code>Alt-Home</code>/<code>Alt-End</code>.&nbsp; If
+        (<code>Command-Home</code>/<code>Command-End</code> on Mac OS X/11+
+        Aqua) terminates the editing in the current cell, moves the edit window
+        into the first/last editable cell of the tablelist, selects the content
+        of the edit window's first entry or entry-like component (if any), and
+        sets the insertion cursor to its end.&nbsp; If the new edit window is a
+        text or ctext widget then its content is left unselected.&nbsp; The key
+        sequence <code>Meta-Home</code>/<code>Meta-End</code> has the same
+        effect as <code>Alt-Home</code>/<code>Alt-End</code>.&nbsp; If
         <code><b>tk_strictMotif</b></code> is false and the edit window is not
         a text or ctext widget then <code>Meta-&lt;</code> and
         <code>Meta-&gt;</code> behave the same as <code>Alt-Home</code> and
@@ -12754,17 +12750,16 @@ bind [.tbl <a href="#labeltag">labeltag</a>] &lt;Button-3&gt; {
     and the (cell)selection anchor in the body of the tablelist widget.&nbsp;
     For example, if <code>Alt-Up</code>/<code>Alt-Down</code> or
     <code>Meta-Up</code>/<code>Meta-Down</code>
-    (<code>Command-Up</code>/<code>Command-Down</code> on Mac OS Classic and
-    Mac OS X/11+ Aqua) is pressed when editing a cell that is not the
-    first/last editable cell within its column, then the active item or element
-    (depending on the selection type) moves one line up/down.&nbsp; If the
-    selection mode is <code><b>browse</b></code> or
-    <code><b>extended</b></code> then the new active item or element is also
-    selected and all other items or elements are deselected.&nbsp; In
-    <code><b>extended</b></code> mode the new active item or element becomes
-    the (cell)selection anchor.&nbsp; This is exactly the same behavior as the
-    one exhibited by the <code>Up</code> and <code>Down</code> keys in the
-    tablelist's body.</dd>
+    (<code>Command-Up</code>/<code>Command-Down</code> on Mac OS X/11+ Aqua) is
+    pressed when editing a cell that is not the first/last editable cell within
+    its column, then the active item or element (depending on the selection
+    type) moves one line up/down.&nbsp; If the selection mode is
+    <code><b>browse</b></code> or <code><b>extended</b></code> then the new
+    active item or element is also selected and all other items or elements are
+    deselected.&nbsp; In <code><b>extended</b></code> mode the new active item
+    or element becomes the (cell)selection anchor.&nbsp; This is exactly the
+    same behavior as the one exhibited by the <code>Up</code> and
+    <code>Down</code> keys in the tablelist's body.</dd>
 
     <dd class="tm">If the tablelist's <code><b><a href=
     "#state">state</a></b></code> is <code><b>disabled</b></code> then none of
