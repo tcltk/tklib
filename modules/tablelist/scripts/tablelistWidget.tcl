@@ -2732,7 +2732,7 @@ proc tablelist::fillcolumnSubCmd {win argList} {
 	    if {$pixels == 0} {
 		adjustColumns $win $col 1
 	    }
-	    redisplayColWhenIdle $win $col
+	    redisplayCol $win $col 0 last
 	    showLineNumbersWhenIdle $win
 	}
 

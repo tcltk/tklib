@@ -2579,9 +2579,9 @@ proc tablelist::defineTablelistEdit {} {
     #
     variable winSys
     switch $winSys {
-	x11	{ set modList {Alt Meta} }
-	win32	{ set modList {Alt} }
-	aqua	{ set modList {Command} }
+	x11	{ set modList {Alt Meta};  set mainMod Alt }
+	win32	{ set modList {Alt};	   set mainMod Alt }
+	aqua	{ set modList {Command};   set mainMod Command }
     }
 
     #
@@ -2635,12 +2635,16 @@ proc tablelist::defineTablelistEdit {} {
 	    if {[winfo class %W] eq "Text" || [winfo class %W] eq "Ctext"} {
 		tablelist::insertChar %W "\n"
 	    } else {
-		tablelist::finishEditing %W
+		tablelist::finishEditing %W Return
 	    }
 	}
 	bind TablelistEdit <Control-$key> {
-	    tablelist::finishEditing %W
+	    tablelist::finishEditing %W Return
 	}
+    }
+    foreach key {Return KP_Enter a d u} {
+	bind TablelistEdit <$mainMod-$key> \
+	    [format {tablelist::finishEditing %%W %s-%s} $mainMod $key]
     }
     bind TablelistEdit <Tab>	      { tablelist::goToNextPrevCell %W  1 }
     bind TablelistEdit <Shift-Tab>    { tablelist::goToNextPrevCell %W -1 }
@@ -2950,13 +2954,13 @@ proc tablelist::insertChar {w str} {
 #------------------------------------------------------------------------------
 proc tablelist::cancelEditing w {
     if {[isComboTopMapped $w]} {
-	return ""
+	return -code break ""
     }
 
     set win [getTablelistPath $w]
     upvar ::tablelist::ns${win}::data data
     if {[info exists data(sourceRow)]} {	;# move operation in progress
-	return ""
+	return -code break ""
     }
 
     doCancelEditing $win
@@ -2966,14 +2970,55 @@ proc tablelist::cancelEditing w {
 #------------------------------------------------------------------------------
 # tablelist::finishEditing
 #
-# Invokes the doFinishEditing procedure.
+# Invokes the doFinishEditing procedure.  The sequence argument is either
+# "Return" or of the form "modifier-key", where modifier = "Alt|Command" and
+# key = "Return|KP_Enter|a|d|u".
 #------------------------------------------------------------------------------
-proc tablelist::finishEditing w {
+proc tablelist::finishEditing {w sequence} {
     if {[isComboTopMapped $w]} {
-	return ""
+	return -code break ""
     }
 
-    doFinishEditing [getTablelistPath $w]
+    set win [getTablelistPath $w]
+    upvar ::tablelist::ns${win}::data data
+    set editRow $data(editRow)
+    set editCol $data(editCol)
+    set lst [split $sequence -]
+
+    if {![doFinishEditing $win] || [llength $lst] == 1} {
+	return -code break ""
+    }
+
+    set text [doCellCget $editRow $editCol $win -text]
+
+    switch [lindex $lst 1] {
+	Return - KP_Enter {		;# fill the column's selected cells
+	    foreach cellIdx [curCellSelection $win 0] {
+		scan $cellIdx "%d,%d" row col
+		if {$col == $editCol} {
+		    doCellConfig $row $col $win -text $text
+		}
+	    }
+	}
+
+	a {				;# fill all cells of the column
+	    fillcolumnSubCmd $win [list $editCol -text $text]
+	}
+
+	d {				;# fill down within the column
+	    set itemCount $data(itemCount)
+	    for {set row [expr {$editRow + 1}]} {$row < $itemCount} {incr row} {
+		doCellConfig $row $editCol $win -text $text
+	    }
+	}
+
+	u {				;# fill up within the column
+	    for {set row [expr {$editRow - 1}]} {$row >= 0} {incr row -1} {
+		doCellConfig $row $editCol $win -text $text
+	    }
+	}
+    }
+
     return -code break ""
 }
 
@@ -2985,13 +3030,13 @@ proc tablelist::finishEditing w {
 #------------------------------------------------------------------------------
 proc tablelist::goToNextPrevCell {w amount args} {
     if {[isComboTopMapped $w]} {
-	return ""
+	return -code break ""
     }
 
     variable winSys
     if {$winSys eq "aqua" &&
 	($::tk::Priv(postedMb) ne "" || $::tk::Priv(popup) ne "")} {
-	return ""
+	return -code break ""
     }
 
     set win [getTablelistPath $w]
@@ -3007,7 +3052,7 @@ proc tablelist::goToNextPrevCell {w amount args} {
     }
 
     if {![doFinishEditing $win]} {
-	return ""
+	return -code break ""
     }
 
     set oldRow $row
@@ -3048,17 +3093,16 @@ proc tablelist::goToNextPrevCell {w amount args} {
 #------------------------------------------------------------------------------
 proc tablelist::goLeftRight {w amount} {
     if {[isComboTopMapped $w]} {
-	return ""
+	return -code break ""
     }
 
     set win [getTablelistPath $w]
     upvar ::tablelist::ns${win}::data data
-
     set row $data(editRow)
     set col $data(editCol)
 
     if {![doFinishEditing $win]} {
-	return ""
+	return -code break ""
     }
 
     while 1 {
@@ -3079,14 +3123,19 @@ proc tablelist::goLeftRight {w amount} {
 #------------------------------------------------------------------------------
 proc tablelist::goUpDown {w amount} {
     if {[isComboTopMapped $w]} {
-	return ""
+	return -code break ""
     }
 
     set win [getTablelistPath $w]
     upvar ::tablelist::ns${win}::data data
+    set editRow $data(editRow)
+    set editCol $data(editCol)
 
-    goToPrevNextLine $w $amount $data(editRow) $data(editCol) \
-	condChangeSelection
+    if {![doFinishEditing $win]} {
+	return -code break ""
+    }
+
+    goToPrevNextLine $win $amount $editRow $editCol condChangeSelection
     return -code break ""
 }
 
@@ -3097,14 +3146,8 @@ proc tablelist::goUpDown {w amount} {
 # the specified column and has a row index less/greater than the given one, if
 # there is such a cell.
 #------------------------------------------------------------------------------
-proc tablelist::goToPrevNextLine {w amount row col cmd} {
-    set win [getTablelistPath $w]
+proc tablelist::goToPrevNextLine {win amount row col cmd} {
     upvar ::tablelist::ns${win}::data data
-
-    if {![doFinishEditing $win]} {
-	return ""
-    }
-
     while 1 {
 	incr row $amount
 	if {$row < 0 || $row > $data(lastRow)} {
@@ -3125,18 +3168,22 @@ proc tablelist::goToPrevNextLine {w amount row col cmd} {
 #------------------------------------------------------------------------------
 proc tablelist::goToPriorNextPage {w amount} {
     if {[isComboTopMapped $w]} {
-	return ""
+	return -code break ""
     }
 
     set win [getTablelistPath $w]
     upvar ::tablelist::ns${win}::data data
+    set row $data(editRow)
+    set col $data(editCol)
+
+    if {![doFinishEditing $win]} {
+	return -code break ""
+    }
 
     #
     # Check whether there is any viewable editable cell
     # above/below the current one, in the same column
     #
-    set row $data(editRow)
-    set col $data(editCol)
     while 1 {
 	incr row $amount
 	if {$row < 0 || $row > $data(lastRow)} {
@@ -3150,7 +3197,6 @@ proc tablelist::goToPriorNextPage {w amount} {
     #
     # Scroll up/down the view by one page and get the corresponding row index
     #
-    set row $data(editRow)
     seeRow $win $row
     set bbox [bboxSubCmd $win $row]
     yviewSubCmd $win [list scroll $amount pages]
@@ -3158,21 +3204,21 @@ proc tablelist::goToPriorNextPage {w amount} {
 
     if {$amount < 0} {
 	if {$newRow < $row} {
-	    if {![goToPrevNextLine $w -1 [expr {$newRow + 1}] $col \
+	    if {![goToPrevNextLine $win -1 [expr {$newRow + 1}] $col \
 		  changeSelection]} {
-		goToPrevNextLine $w 1 $newRow $col changeSelection
+		goToPrevNextLine $win 1 $newRow $col changeSelection
 	    }
 	} else {
-	    goToPrevNextLine $w 1 -1 $col changeSelection
+	    goToPrevNextLine $win 1 -1 $col changeSelection
 	}
     } else {
 	if {$newRow > $row} {
-	    if {![goToPrevNextLine $w 1 [expr {$newRow - 1}] $col \
+	    if {![goToPrevNextLine $win 1 [expr {$newRow - 1}] $col \
 		  changeSelection]} {
-		goToPrevNextLine $w -1 $newRow $col changeSelection
+		goToPrevNextLine $win -1 $newRow $col changeSelection
 	    }
 	} else {
-	    goToPrevNextLine $w -1 $data(itemCount) $col changeSelection
+	    goToPrevNextLine $win -1 $data(itemCount) $col changeSelection
 	}
     }
 

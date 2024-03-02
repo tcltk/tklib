@@ -7348,6 +7348,23 @@ proc updateWindow {tbl row col w args} {
     normal termination is also triggered when the tablelist widget loses the
     focus.</dd>
 
+    <dd class="tm">Tablelist also supports key bindings that terminate the
+    editing and copy the new cell value to some other cells of the
+    column:&nbsp; <code>Alt-Return</code> and <code>Alt-KP_Enter</code>
+    terminate the editing and fill the column's selected cells with the new
+    cell value (this is especially useful if the <code><b><a href=
+    "#selectmode">-selectmode</a></b></code> option was set to
+    <code><b>extended</b></code> and after clicking into an editable cell,
+    additional cells of its column were selected by dragging the pointer
+    vertically);&nbsp; <code>Alt-a</code> ("fill all") terminates the editing
+    and fills all cells of the column with the new cell value;&nbsp;
+    <code>Alt-d</code> ("fill down") terminates the editing and fills the
+    column's cells below the just edited one with the new cell value;&nbsp;
+    <code>Alt-u</code> ("fill up") terminates the editing and fills the
+    column's cells above the just edited one with the new cell value.&nbsp; On
+    Mac OS X/11+ Aqua the <code>Command</code> key is used instead of
+    <code>Alt</code>.</dd>
+
     <dd class="tm">When normal termination of the editing process occurs, the
     Tcl command associated with the tablelist widget compares the edit window's
     final content with its original one.&nbsp; If they are equal then the
@@ -12640,6 +12657,30 @@ bind [.tbl <a href="#labeltag">labeltag</a>] &lt;Button-3&gt; {
         <code>Control-KP_Enter</code> terminate the editing and destroy the
         edit window.</li>
 
+        <li class="tm"><code>Alt-Return</code> and <code>Alt-KP_Enter</code>
+        (<code>Command-Return</code>/<code>Command-KP_Enter</code> on Mac OS
+        X/11+ Aqua) terminate the editing, destroy the edit window, and fill
+        the column's selected cells with the new cell value.&nbsp; This comes
+        in handy especially if the tablelist's <code><b><a href=
+        "#selectmode">-selectmode</a></b></code> option was set to
+        <code><b>extended</b></code> and after clicking into an editable cell,
+        additional cells of its column were selected by dragging the pointer
+        vertically.</li>
+
+        <li class="tm"><code>Alt-a</code> (<code>Command-a</code> on Mac OS
+        X/11+ Aqua) terminates the editing, destroys the edit window, and fills
+        all cells of the column with the new cell value.</li>
+
+        <li class="tm"><code>Alt-d</code> (<code>Command-d</code> on Mac OS
+        X/11+ Aqua) terminates the editing, destroys the edit window, and fills
+        the column's cells below the just edited one with the new cell
+        value.</li>
+
+        <li class="tm"><code>Alt-u</code> (<code>Command-u</code> on Mac OS
+        X/11+ Aqua) terminates the editing, destroys the edit window, and fills
+        the column's cells above the just edited one with the new cell
+        value.</li>
+
         <li class="tm"><code>Escape</code> aborts the editing and destroys the
         edit window.</li>
 
@@ -12746,9 +12787,9 @@ bind [.tbl <a href="#labeltag">labeltag</a>] &lt;Button-3&gt; {
     </dd>
 
     <dd class="tm">Before moving the edit window, the key sequences mentioned
-    under 7 - 11 move the active item or element and change the (cell)selection
-    and the (cell)selection anchor in the body of the tablelist widget.&nbsp;
-    For example, if <code>Alt-Up</code>/<code>Alt-Down</code> or
+    under 11 - 15 move the active item or element and change the
+    (cell)selection and the (cell)selection anchor in the body of the tablelist
+    widget.&nbsp; For example, if <code>Alt-Up</code>/<code>Alt-Down</code> or
     <code>Meta-Up</code>/<code>Meta-Down</code>
     (<code>Command-Up</code>/<code>Command-Down</code> on Mac OS X/11+ Aqua) is
     pressed when editing a cell that is not the first/last editable cell within

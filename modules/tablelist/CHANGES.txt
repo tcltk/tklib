@@ -1,28 +1,34 @@
 What is new in Tablelist 7.1?
 -----------------------------
 
-1. The multi-line cell texts are now displayed vertically centered
+1. Added support for terminating the editing with one of the following
+   automatic postprocessings: (1) fill the column's selected cells;
+   (2) fill all cells of the column; (3) fill down within the column;
+   (4) fill up within the column (thanks to Blair J Basom for his
+   proposal).
+
+2. The multi-line cell texts are now displayed vertically centered
    within their rows, just like the single-line ones (thanks to Harald
    Oehlmann for his proposal).
 
-2. Fixed a long-standing bug due to which under some circumstances the
+3. Fixed a long-standing bug due to which under some circumstances the
    default values of several configuration options became theme-specific
    even if the tablelist package rather than tablelist_tile was being
    used.
 
-3. Fixed a long-standing bug related to creating the expand/collapse
+4. Fixed a long-standing bug related to creating the expand/collapse
    control images when handling the "-treestyle" option (thanks to
    Nicolas Bats for his bug report).
 
-4. Guarded against destroying a tablelist widget (e.g, by an "after"
+5. Guarded against destroying a tablelist widget (e.g, by an "after"
    callback) in which an interactive column resize or row/column move
    operation is in progress (thanks to Ulrich Seidl for his bug report).
 
-5. Handled the extremely rare case that the frame widget to be used as
+6. Handled the extremely rare case that the frame widget to be used as
    parent of the edit window already exists (again, thanks to Ulrich
    Seidl for his bug report).
 
-6. Fixed a typo in the mega-widget utility file mwutil.tcl, introduced
+7. Fixed a typo in the mega-widget utility file mwutil.tcl, introduced
    in the previous release (thanks to Harald Oehlmann for his bug
    report).
 
