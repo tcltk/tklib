@@ -1409,17 +1409,8 @@ proc tablelist::handleMotion win {
 	    return ""
 	}
     }
+
     updateExpCollCtrl $win $w $row $col $x
-
-    #
-    # Make sure updateCursor won't change the cursor of an embedded window
-    #
-    if {[string match "$data(body).frm_k*" $w] &&
-	[winfo parent $w] eq $data(body) && $event ne "<Leave>"} {
-	set row -1
-	set col -1
-    }
-
     updateCursor $win $row $col
 }
 
