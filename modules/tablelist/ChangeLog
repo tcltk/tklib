@@ -19,8 +19,8 @@
 	  "-format" option.
 
 	* ../../examples/tablelist/*.tcl: Photo image creation now always with
-	  explicitly specified "-format" option; demostrating how to use the
-	  new "-aftercopycommand" and "-allowduplicates" options; improved the
+	  explicitly specified "-format" option; demonstrate how to use the new
+	  "-aftercopycommand" and "-allowduplicates" options; improved the
 	  compatibility with Tcl 9.
 
 2024-03-05 Csaba Nemethi <csaba.nemethi@t-online.de>
