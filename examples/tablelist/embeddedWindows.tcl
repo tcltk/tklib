@@ -3,7 +3,7 @@
 #==============================================================================
 # Demonstrates the use of embedded windows in tablelist widgets.
 #
-# Copyright (c) 2004-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2004-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tk
@@ -31,7 +31,7 @@ if {$tk_version >= 8.7 || [catch {package require tksvg}] == 0} {
     image create photo viewImg -file [file join $dir view.svg] -format $fmt
 } else {
     set pct $tablelist::scalingpct
-    image create photo viewImg -file [file join $dir view$pct.gif]
+    image create photo viewImg -file [file join $dir view$pct.gif] -format gif
 }
 
 #

@@ -21,6 +21,7 @@ proc tablelist::extendConfigSpecs {} {
     lappend configSpecs(-acceptchildcommand)	{}
     lappend configSpecs(-acceptdropcommand)	{}
     lappend configSpecs(-activestyle)		frame
+    lappend configSpecs(-aftercopycommand)	{}
     lappend configSpecs(-autofinishediting)	0
     lappend configSpecs(-autoscan)		1
     lappend configSpecs(-collapsecommand)	{}
@@ -568,6 +569,7 @@ proc tablelist::doConfig {win opt val} {
 	    switch -- $opt {
 		-acceptchildcommand -
 		-acceptdropcommand -
+		-aftercopycommand -
 		-collapsecommand -
 		-colorizecommand -
 		-editendcommand -
@@ -1330,6 +1332,14 @@ proc tablelist::doColConfig {col win opt val} {
 	    redisplayColWhenIdle $win $col
 	}
 
+	-allowduplicates -
+	-resizable {
+	    #
+	    # Save the boolean value specified by val in data($col$opt)
+	    #
+	    set data($col$opt) [expr {$val ? 1 : 0}]
+	}
+
 	-background -
 	-foreground {
 	    if {$val eq ""} {
@@ -1857,13 +1867,6 @@ proc tablelist::doColConfig {col win opt val} {
 	    adjustColumns $win $col 1
 	    redisplayColWhenIdle $win $col
 	    updateViewWhenIdle $win
-	}
-
-	-resizable {
-	    #
-	    # Save the boolean value specified by val in data($col$opt)
-	    #
-	    set data($col$opt) [expr {$val ? 1 : 0}]
 	}
 
 	-selectbackground -

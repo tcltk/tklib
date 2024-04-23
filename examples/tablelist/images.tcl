@@ -1,7 +1,7 @@
 #==============================================================================
 # Creates some images.
 #
-# Copyright (c) 2011-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2011-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -15,8 +15,10 @@ if {$tk_version >= 8.7 || [catch {package require tksvg}] == 0} {
 	-format $fmt
 } else {
     set pct $tablelist::scalingpct
-    image create photo checkedImg   -file [file join $dir checked$pct.gif]
-    image create photo uncheckedImg -file [file join $dir unchecked$pct.gif]
+    image create photo checkedImg   -file [file join $dir checked$pct.gif] \
+	-format gif
+    image create photo uncheckedImg -file [file join $dir unchecked$pct.gif] \
+	-format gif
 }
 
 #

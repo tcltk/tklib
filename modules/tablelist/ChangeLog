@@ -1,3 +1,28 @@
+2024-04-23 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 7.2.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/*.tcl: Added the virtual event <<TablelistCopyFinished>>;
+	  added the "-aftercopycommand" configuration option; added the
+	  "-allowduplicates" column configuration option; on the windowing
+	  system "aqua" the termination of the editing with subsequent "fill
+	  all" action is now bound to the <Control-Command-a> event; photo
+	  image creation now always with explicitly specified "-format" option.
+
+	* scripts/utils/*.tcl:		     Photo image creation now always
+	* scripts/utils/indicatorImgs/*.tcl: with explicitly specified
+	  "-format" option.
+
+	* ../../examples/tablelist/*.tcl: Photo image creation now always with
+	  explicitly specified "-format" option; demostrating how to use the
+	  new "-aftercopycommand" and "-allowduplicates" options; improved the
+	  compatibility with Tcl 9.
+
 2024-03-05 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Tablelist 7.1.

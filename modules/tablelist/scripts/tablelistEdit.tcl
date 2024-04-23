@@ -1908,13 +1908,14 @@ proc tablelist::doCancelEditing win {
     }
     set col $data(editCol)
 
-    #
-    # Invoke the command specified by the -editendcommand option if needed
-    #
     set data(canceled) 1
     if {$data(-forceeditendcommand) && $data(-editendcommand) ne ""} {
+	#
+	# Pass the edit window's original content to the
+	# command specified by the -editendcommand option
+	#
 	uplevel #0 $data(-editendcommand) \
-		[list $win $row $col $data(origEditText)]
+	    [list $win $row $col $data(origEditText)]
 	if {[destroyed $win]} {
 	    return ""
 	}
@@ -1980,12 +1981,8 @@ proc tablelist::doFinishEditing {win {destroy 1}} {
     set item [lindex $data(itemList) $row]
     if {!$data(-forceeditendcommand) && $text eq $data(origEditText)} {
 	set text [lindex $item $col]
-    } else {
-	if {[catch {
-	    eval [string map {"%W" "$w"} $editWin($name-getValueCmd)]
-	} text] != 0} {
-	    set data(rejected) 1
-	}
+    } elseif {[catch {
+	eval [string map {"%W" "$w"} $editWin($name-getValueCmd)]} text] == 0} {
 	if {$data(-editendcommand) ne ""} {
 	    set text \
 		[uplevel #0 $data(-editendcommand) [list $win $row $col $text]]
@@ -1993,11 +1990,32 @@ proc tablelist::doFinishEditing {win {destroy 1}} {
 		return 0
 	    }
 	}
+
+	if {!$data(rejected) && !$data($col-allowduplicates) &&
+	    [lsearch -exact [getcolumnsSubCmd $win $col] $text] >= 0} {
+	    bell
+	    set data(rejected) 1
+
+	    if {$data(-editendcommand) ne ""} {
+		#
+		# Pass the edit window's original content to the
+		# command specified by the -editendcommand option
+		#
+		uplevel #0 $data(-editendcommand) \
+		    [list $win $row $col $data(origEditText)]
+		if {[destroyed $win]} {
+		    return 0
+		}
+	    }
+	}
+    } else {
+	set data(rejected) 1
     }
 
     #
-    # Check whether the input was rejected (by the above "set data(rejected) 1"
-    # statement or within the command specified by the -editendcommand option)
+    # Check whether the input was rejected (by one of the
+    # above "set data(rejected) 1" occurrences or within
+    # the command specified by the -editendcommand option)
     #
     if {$data(rejected)} {
 	if {[winfo exists $data(bodyFrm)]} {
@@ -2627,9 +2645,9 @@ proc tablelist::defineTablelistEdit {} {
 	    after 100 [list tablelist::condEvalInvokeCmd $tablelist::W]
 	}
     }
-    bind TablelistEdit <Control-i>    { tablelist::insertChar %W "\t" }
-    bind TablelistEdit <Control-j>    { tablelist::insertChar %W "\n" }
-    bind TablelistEdit <Escape>       { tablelist::cancelEditing %W }
+    bind TablelistEdit <Control-i>	{ tablelist::insertChar %W "\t" }
+    bind TablelistEdit <Control-j>	{ tablelist::insertChar %W "\n" }
+    bind TablelistEdit <Escape>		{ tablelist::cancelEditing %W }
     foreach key {Return KP_Enter} {
 	bind TablelistEdit <$key> {
 	    if {[winfo class %W] eq "Text" || [winfo class %W] eq "Ctext"} {
@@ -2642,13 +2660,21 @@ proc tablelist::defineTablelistEdit {} {
 	    tablelist::finishEditing %W Return
 	}
     }
-    foreach key {Return KP_Enter a d u} {
+    foreach key {Return KP_Enter d u} {
 	bind TablelistEdit <$mainMod-$key> \
 	    [format {tablelist::finishEditing %%W %s-%s} $mainMod $key]
     }
-    bind TablelistEdit <Tab>	      { tablelist::goToNextPrevCell %W  1 }
-    bind TablelistEdit <Shift-Tab>    { tablelist::goToNextPrevCell %W -1 }
-    bind TablelistEdit <<PrevWindow>> { tablelist::goToNextPrevCell %W -1 }
+    if {$winSys eq "aqua"} {
+	bind TablelistEdit <Control-Command-a> {
+	    tablelist::finishEditing %W Control-Command-a
+	}
+    } else {
+	bind TablelistEdit <Alt-a>	{ tablelist::finishEditing %W Alt-a }
+    }
+
+    bind TablelistEdit <Tab>		{ tablelist::goToNextPrevCell %W  1 }
+    bind TablelistEdit <Shift-Tab>	{ tablelist::goToNextPrevCell %W -1 }
+    bind TablelistEdit <<PrevWindow>>	{ tablelist::goToNextPrevCell %W -1 }
     foreach modifier $modList {
 	bind TablelistEdit <$modifier-Left> {
 	    tablelist::goLeftRight %W -1
@@ -2971,8 +2997,8 @@ proc tablelist::cancelEditing w {
 # tablelist::finishEditing
 #
 # Invokes the doFinishEditing procedure.  The sequence argument is either
-# "Return" or of the form "modifier-key", where modifier = "Alt|Command" and
-# key = "Return|KP_Enter|a|d|u".
+# "Return" or "Control-Command-a", or of the form "modifier-key", where
+# modifier = "Alt|Command" and key = "Return|KP_Enter|a|d|u".
 #------------------------------------------------------------------------------
 proc tablelist::finishEditing {w sequence} {
     if {[isComboTopMapped $w]} {
@@ -2984,14 +3010,20 @@ proc tablelist::finishEditing {w sequence} {
     set editRow $data(editRow)
     set editCol $data(editCol)
     set lst [split $sequence -]
+    set len [llength $lst]
 
-    if {![doFinishEditing $win] || [llength $lst] == 1} {
+    if {!$data($editCol-allowduplicates) && $len > 1} {
+	bell
+	return -code break ""
+    }
+
+    if {![doFinishEditing $win] || $len == 1} {
 	return -code break ""
     }
 
     set text [doCellCget $editRow $editCol $win -text]
 
-    switch [lindex $lst 1] {
+    switch [lindex $lst end] {
 	Return - KP_Enter {		;# fill the column's selected cells
 	    foreach cellIdx [curCellSelection $win 0] {
 		scan $cellIdx "%d,%d" row col
@@ -3019,6 +3051,10 @@ proc tablelist::finishEditing {w sequence} {
 	}
     }
 
+    genVirtualEvent $win <<TablelistCopyFinished>> $editCol
+    if {$data(-aftercopycommand) ne ""} {
+	uplevel #0 $data(-aftercopycommand) [list $win $editCol]
+    }
     return -code break ""
 }
 

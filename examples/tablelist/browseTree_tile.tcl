@@ -2,7 +2,7 @@
 # Demonstrates how to use a tablelist widget for displaying information about
 # the children of an arbitrary widget.
 #
-# Copyright (c) 2010-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2010-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require tablelist_tile
@@ -16,14 +16,14 @@ namespace eval demo {
     variable compImg [image create photo]
     variable leafImg [image create photo]
     variable pct ""
-    if {$tk_version >= 8.7 || [catch {package require tksvg}] == 0} {
+    if {$::tk_version >= 8.7 || [catch {package require tksvg}] == 0} {
 	set fmt $::tablelist::svgfmt
 	$compImg read [file join $dir comp.svg] -format $fmt
 	$leafImg read [file join $dir leaf.svg] -format $fmt
     } else {
 	set pct $::tablelist::scalingpct
-	$compImg read [file join $dir comp$pct.gif]
-	$leafImg read [file join $dir leaf$pct.gif]
+	$compImg read [file join $dir comp$pct.gif] -format gif
+	$leafImg read [file join $dir leaf$pct.gif] -format gif
     }
 }
 

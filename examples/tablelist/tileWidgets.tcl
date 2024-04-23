@@ -4,7 +4,7 @@
 # Demonstrates the interactive tablelist cell editing with the aid of some
 # widgets from the tile package.
 #
-# Copyright (c) 2005-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2005-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tk
@@ -62,7 +62,7 @@ tablelist::tablelist $tbl \
 	      0 "Activation Time" center
 	      0 "Cable Color"	  center} \
     -editstartcommand editStartCmd -editendcommand editEndCmd \
-    -height 0 -width 0
+    -aftercopycommand afterCopyCmd -height 0 -width 0
 if {$isAwTheme && ![regexp {^(aw)?(arc|breeze.*)$} $currentTheme]} {
     $tbl configure -borderwidth 2
 }
@@ -74,7 +74,7 @@ $tbl columnconfigure 1 -name available -editable yes \
     -editwindow ttk::checkbutton -formatcommand emptyStr \
     -labelwindow ttk::checkbutton
 $tbl columnconfigure 2 -name lineName  -editable yes -editwindow ttk::entry \
-    -sortmode dictionary
+    -allowduplicates 0 -sortmode dictionary
 $tbl columnconfigure 3 -name baudRate  -editable yes -editwindow ttk::combobox \
     -sortmode integer
 if {[info commands ttk::spinbox] eq ""} {

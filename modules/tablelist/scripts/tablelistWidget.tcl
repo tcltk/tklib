@@ -154,6 +154,7 @@ namespace eval tablelist {
 	-acceptchildcommand	 {acceptChildCommand	  AcceptChildCommand  w}
 	-acceptdropcommand	 {acceptDropCommand	  AcceptDropCommand   w}
 	-activestyle		 {activeStyle		  ActiveStyle	      w}
+	-aftercopycommand	 {afterCopyCommand	  AfterCopyCommand    w}
 	-arrowcolor		 {arrowColor		  ArrowColor	      w}
 	-arrowdisabledcolor	 {arrowDisabledColor	  ArrowDisabledColor  w}
 	-arrowstyle		 {arrowStyle		  ArrowStyle	      w}
@@ -274,6 +275,7 @@ namespace eval tablelist {
     variable colConfigSpecs
     array set colConfigSpecs {
 	-align			{""			""		}
+	-allowduplicates	{""			""		}
 	-background		{""			""		}
 	-bg			-background
 	-changesnipside		{""			""		}
@@ -328,6 +330,7 @@ namespace eval tablelist {
     # Extend some elements of the array colConfigSpecs
     #
     lappend colConfigSpecs(-align)			- left
+    lappend colConfigSpecs(-allowduplicates)		- 1
     lappend colConfigSpecs(-changesnipside)		- 0
     lappend colConfigSpecs(-changetitlesnipside)	- 0
     lappend colConfigSpecs(-editable)			- 0

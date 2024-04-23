@@ -14,7 +14,7 @@
   <div>
     <h1>Tablelist Programmer's Guide</h1>
 
-    <h2>For Tablelist Version 7.1</h2>
+    <h2>For Tablelist Version 7.2</h2>
 
     <h3>by</h3>
 
@@ -179,8 +179,8 @@
   <h3 id="ov_get">How to Get It?</h3>
 
   <p>Tablelist is available for free download from the same URL as Wcb.&nbsp;
-  The distribution file is <code>tablelist7.1.tar.gz</code> for UNIX and
-  <code>tablelist7_1.zip</code> for Windows.&nbsp; These files contain the same
+  The distribution file is <code>tablelist7.2.tar.gz</code> for UNIX and
+  <code>tablelist7_2.zip</code> for Windows.&nbsp; These files contain the same
   information, except for the additional carriage return character preceding
   the linefeed at the end of each line in the text files for Windows.</p>
 
@@ -203,11 +203,11 @@
 
   <p>To install Tablelist <i>on UNIX</i>, <code>cd</code> to the desired
   directory and unpack the distribution file
-  <code>tablelist7.1.tar.gz</code>:</p>
+  <code>tablelist7.2.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c tablelist7.1.tar.gz | tar -xf -
+gunzip -c tablelist7.2.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
@@ -215,17 +215,17 @@ gunzip -c tablelist7.1.tar.gz | tar -xf -
 
   <blockquote>
     <pre>
-tar -zxf tablelist7.1.tar.gz
+tar -zxf tablelist7.2.tar.gz
 </pre>
   </blockquote>
 
-  <p>Both commands will create a directory named <code>tablelist7.1</code>,
+  <p>Both commands will create a directory named <code>tablelist7.2</code>,
   with the subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>tablelist7_1.zip</code> into the directory
-  <code>tablelist7.1</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>tablelist7_2.zip</code> into the directory
+  <code>tablelist7.2</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>The file <code>tablelistEdit.tcl</code> in the <code>scripts</code>
@@ -1288,14 +1288,14 @@ namespace eval demo {
     variable leafImg [image create photo]
     variable compImg [image create photo]
     variable pct ""
-    if {$tk_version >= 8.7 || [catch {package require tksvg}] == 0} {
+    if {$::tk_version >= 8.7 || [catch {package require tksvg}] == 0} {
         set fmt $::tablelist::svgfmt
         $leafImg read [file join $dir leaf.svg] -format $fmt
         $compImg read [file join $dir comp.svg] -format $fmt
     } else {
         set pct $::tablelist::scalingpct
-        $leafImg read [file join $dir leaf$pct.gif]
-        $compImg read [file join $dir comp$pct.gif]
+        $leafImg read [file join $dir leaf$pct.gif] -format gif
+        $compImg read [file join $dir comp$pct.gif] -format gif
     } 
 }
 
@@ -1625,8 +1625,8 @@ proc demo::putChildren {w tbl nodeIdx} {
   corresponding row's first cell, containing the leaf name of the child.&nbsp;
   In this way, the procedure inserts the image <code>$leafImg</code> or
   <code>$compImg</code> into the first cell, depending on whether the child in
-  question is a leaf or a composite widget.&nbsp; (Remember that both images
-  were created outside this procedure, within the initialization of the
+  question is a leaf or a composite widget.&nbsp; (Recall that both images were
+  created outside this procedure, within the initialization of the
   <code>demo</code> namespace.)</p>
 
   <p>We mark every newly created row corresponding to a child widget that has
@@ -2413,7 +2413,7 @@ tablelist::tablelist $tbl \
               0 "Activation Time" center
               0 "Cable Color"     center} \
     -editstartcommand editStartCmd -editendcommand editEndCmd \
-    -height 0 -width 0
+    -aftercopycommand afterCopyCmd -height 0 -width 0
 if {[$tbl cget -selectborderwidth] == 0} {
     $tbl configure -spacing 1
 }
@@ -2421,7 +2421,7 @@ $tbl columnconfigure 0 -sortmode integer
 $tbl columnconfigure 1 -name available <span class="red">-editable yes -editwindow checkbutton</span> \
     -formatcommand emptyStr -labelwindow checkbutton
 $tbl columnconfigure 2 -name lineName  -editable yes -editwindow Entry \
-    -sortmode dictionary
+    -allowduplicates 0 -sortmode dictionary
 $tbl columnconfigure 3 -name baudRate  -editable yes -editwindow ComboBox \
     -sortmode integer
 $tbl columnconfigure 4 -name dataBits  -editable yes -editwindow SpinBox
@@ -2463,8 +2463,10 @@ if {$tk_version >= 8.7 || [catch {package require tksvg}] == 0} {
         -format $fmt
 } else {
     set pct $tablelist::scalingpct
-    image create photo checkedImg   -file [file join $dir checked$pct.gif]
-    image create photo uncheckedImg -file [file join $dir unchecked$pct.gif]
+    image create photo checkedImg   -file [file join $dir checked$pct.gif] \
+        -format gif
+    image create photo uncheckedImg -file [file join $dir unchecked$pct.gif] \
+        -format gif
 }
 </pre>
   </blockquote>
@@ -2521,11 +2523,19 @@ option add *Tablelist.labelCommand2     tablelist::addToSortColumns
   or more columns, with the aid of the left mouse button and of the
   <code>Shift</code> key.</p>
 
+  <p>
+  <p>Notice also that we set the <code><a href=
+  "tablelistWidget.html#col_allowduplicates">-allowduplicates</a></code> option
+  of the column containing the names of the serial lines to false, in order to
+  keep these names unique when editing them interactively.</p>
+
   <p>The file <code>serialParams.tcl</code>, which is <code>source</code>d into
   the main script, contains the following code, which is related mainly to
   the&nbsp; <code><a href=
   "tablelistWidget.html#col_labelwindow">-labelwindow</a>
-  checkbutton</code>&nbsp; setting for column no. 1:</p>
+  checkbutton</code>&nbsp; setting for column no. 1 and the <code><a href=
+  "tablelistWidget.html#aftercopycommand">-aftercopycommand</a></code>
+  configuration option:</p>
 
   <blockquote>
     <pre>
@@ -2574,7 +2584,7 @@ if {[winfo class $ckbtn] eq "Checkbutton"} {
 
 <span class="cmt">#
 # Selects/deselects the checkbutton embedded into the header label
-# of the column "available" or sets it into the tri-state mode.
+# of the specified column or sets it into the tri-state mode.
 #</span>
 proc updateCkbtn {tbl row col} {
     set lst [$tbl getcolumns $col]
@@ -2589,6 +2599,37 @@ proc updateCkbtn {tbl row col} {
         set var ""                                      ;<span class="cmt"># tri-state mode</span>
     } else {
         unset -nocomplain var                           ;<span class="cmt"># tri-state mode</span>
+    }
+}
+
+<span class="cmt">#
+# For the columns "available" and "color", updates
+# the images contained in the column's cells.
+#</span>
+proc afterCopyCmd {tbl col} {
+    switch [$tbl columncget $col -name] {
+        <span class="red">available {
+            <span class="cmt">#
+            # Update the images contained in the column's cells and
+            # the checkbutton embedded into the column's header label
+            #</span>
+            for {set row 0} {$row < 16} {incr row} {
+                set text [$tbl cellcget $row,$col -text]
+                set img [expr {$text ? "checkedImg" : "uncheckedImg"}]
+                $tbl cellconfigure $row,$col -image $img
+            }
+            updateCkbtn $tbl 0 $col
+        }</span>
+
+        color {
+            <span class="cmt">#
+            # Update the images contained in the column's cells
+            #</span>
+            for {set row 0} {$row < 16} {incr row} {
+                set text [$tbl cellcget $row,$col -text]
+                $tbl cellconfigure $row,$col -image img$::colors($text)
+            }
+        }
     }
 }
 </pre>
@@ -2858,7 +2899,7 @@ if {$tk_version >= 8.7 || [catch {package require tksvg}] == 0} {
     image create photo viewImg -file [file join $dir view.svg] -format $fmt
 } else {
     set pct $tablelist::scalingpct
-    image create photo viewImg -file [file join $dir view$pct.gif]
+    image create photo viewImg -file [file join $dir view$pct.gif] -format gif
 }
 
 <span class="cmt">#
@@ -3068,9 +3109,9 @@ proc viewFile {tbl key} {
   aid of the <code><a href="tablelistWidget.html#getkeys">getkeys</a></code>
   subcommand.&nbsp; By using the key instead of the row number, we will have a
   unique name for the toplevel, even if the order of the items changes due to
-  interactive sorting by a column.&nbsp; (Remember that the embedded windows
-  will be destroyed and automatically recreated when sorting the items or
-  moving the columns.)</p>
+  interactive sorting by a column.&nbsp; (Recall that the embedded windows will
+  be destroyed and automatically recreated when sorting the items or moving the
+  columns.)</p>
 
   <p>Having implemented the creation scripts for the frames and buttons, we can
   now use the <code><a href=

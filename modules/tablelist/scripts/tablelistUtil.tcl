@@ -2411,10 +2411,10 @@ proc tablelist::setupColumns {win columns createLabels} {
 	    foreach {name val} {
 		delta 0  lastStaticWidth 0  maxPixels 0  isSnipped 0
 		sortOrder ""  sortRank 0  checkState 0
-		changesnipside 0  changetitlesnipside 0  editable 0
-		editwindow entry  hide 0  labelvalign center  maxwidth 0
-		resizable 1  showarrow 1  showlinenumbers 0  sortmode ascii
-		stretchwindow 0  valign center  wrap 0
+		allowduplicates 1  changesnipside 0  changetitlesnipside 0
+		editable 0  editwindow entry  hide 0  labelvalign center
+		maxwidth 0  resizable 1  showarrow 1  showlinenumbers 0
+		sortmode ascii  stretchwindow 0  valign center  wrap 0
 	    } {
 		if {![info exists data($col-$name)]} {
 		    set data($col-$name) $val

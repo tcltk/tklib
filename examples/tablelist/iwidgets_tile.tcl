@@ -5,7 +5,7 @@
 # widgets from the Iwidgets package and of the Tk core checkbutton and
 # menubutton widgets.
 #
-# Copyright (c) 2004-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2004-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tk
@@ -66,7 +66,7 @@ tablelist::tablelist $tbl \
 	      0 "Activation Time" center
 	      0 "Cable Color"	  center} \
     -editstartcommand editStartCmd -editendcommand editEndCmd \
-    -height 0 -width 0
+    -aftercopycommand afterCopyCmd -height 0 -width 0
 if {[$tbl cget -selectborderwidth] == 0} {
     $tbl configure -spacing 1
 }
@@ -74,7 +74,7 @@ $tbl columnconfigure 0 -sortmode integer
 $tbl columnconfigure 1 -name available -editable yes -editwindow checkbutton \
     -formatcommand emptyStr -labelwindow checkbutton
 $tbl columnconfigure 2 -name lineName  -editable yes -editwindow entryfield \
-    -sortmode dictionary
+    -allowduplicates 0 -sortmode dictionary
 $tbl columnconfigure 3 -name baudRate  -editable yes -editwindow combobox \
     -sortmode integer
 $tbl columnconfigure 4 -name dataBits  -editable yes -editwindow spinint

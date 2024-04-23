@@ -14,7 +14,7 @@
   <div>
     <h1>The <code><b>tablelist::tablelist</b></code> Command</h1>
 
-    <h2>For Tablelist Version 7.1</h2>
+    <h2>For Tablelist Version 7.2</h2>
 
     <h3>by</h3>
 
@@ -90,6 +90,9 @@
 
     <dd><code><b><a href="#activestyle">-activestyle</a></b>
     <b>frame</b>|<b>none</b>|<b>underline</b></code></dd>
+
+    <dd><code><b><a href="#aftercopycommand">-aftercopycommand</a></b>
+    <i>command</i></code></dd>
 
     <dd><code><b><a href="#arrowcolor">-arrowcolor</a></b>
     <i>color</i></code></dd>
@@ -333,6 +336,9 @@
 
     <dd><code><b><a href="#col_align">-align</a></b>
     <b>left</b>|<b>right</b>|<b>center</b></code></dd>
+
+    <dd><code><b><a href="#col_allowduplicates">-allowduplicates</a></b>
+    <i>boolean</i></code></dd>
 
     <dd><code><b><a href="#col_background">-background</a></b>
     <i>color</i></code>&nbsp; or&nbsp; <code><b>-bg</b>
@@ -1767,6 +1773,43 @@ proc acceptDropCmd {tbl targetRow sourceRow} {
       </blockquote>
     </dd>
 
+    <dd id="aftercopycommand">
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td>Command-Line Name:&nbsp;</td>
+          <td><code><b>-aftercopycommand</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Name:</td>
+          <td><code><b>&nbsp;afterCopyCommand</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Class:</td>
+          <td><code><b>&nbsp;AfterCopyCommand</b></code></td>
+        </tr>
+      </table>
+
+      <blockquote>
+        <p>Specifies a Tcl command to be invoked when after terminating the
+        interactive editing of a cell's content with one of the key sequences
+        <code>Alt-Return</code>, <code>Alt-KP_Enter</code>, <code>Alt-a</code>,
+        <code>Alt-d</code>, or <code>Alt-u</code>, the copying of the new cell
+        value to some other cells of the column is finished.&nbsp; On Mac OS
+        X/11+ Aqua the key sequence <code>Alt-a</code> is replaced with
+        <code>Control-Command-a</code>, and in the other key sequences the
+        <code>Alt</code> modifier is substituted with
+        <code>Command</code>.&nbsp; The command is automatically concatenated
+        with the path name of the tablelist widget and the column index of the
+        cell just edited, and the resulting script is evaluated in the global
+        scope.&nbsp; This option comes in handy, e.g., if the images embedded
+        into the column's cells are to be adapted to the updated cell
+        values.&nbsp; See the <a href="#cell_editing">INTERACTIVE CELL
+        EDITING</a> section for details on the editing process.</p>
+      </blockquote>
+    </dd>
+
     <dd id="arrowcolor">
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
@@ -2116,8 +2159,8 @@ proc acceptDropCmd {tbl targetRow sourceRow} {
           <li>the path name of the tablelist's body or header text widget;</li>
 
           <li>the full key of the item containing the element being processed
-          (remember that this starts with the prefix <code><b>k</b></code> for
-          a body item and with <code><b>hk</b></code> for a header item);</li>
+          (recall that this starts with the prefix <code><b>k</b></code> for a
+          body item and with <code><b>hk</b></code> for a header item);</li>
 
           <li>the numerical row or header row index of that item;</li>
 
@@ -2613,10 +2656,10 @@ proc expandCmd {tbl row} {
         the editing process even if the final text of the temporary embedded
         widget used for the editing equals its initial one, and will also be
         invoked when the interactive cell editing is canceled (in the latter
-        case, the text passed to it as last argument will be the cell's
+        case, the text passed to it as last argument will be the edit window's
         original content, not its final one).&nbsp; The default value of this
         option is <code>0</code>, meaning that the command will only be invoked
-        on normal termination of the editing process, if the final text of the
+        on normal termination of the editing process if the final text of the
         temporary embedded widget is different from its initial one.&nbsp; See
         the <a href="#cell_editing">INTERACTIVE CELL EDITING</a> section for
         details on the editing process.</p>
@@ -5868,6 +5911,17 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
         "#columns">-columns</a></b></code> option for the tablelist widget;
         changes in either will automatically be reflected in the other.</dd>
 
+        <dt class="tm" id="col_allowduplicates"><code><b>-allowduplicates</b>
+        <i>boolean</i></code></dt>
+
+        <dd>Specifies whether the interactive cell editing will enable the user
+        to set the text of a cell within this column to the text of some other
+        cell of the column. The default is <code>1</code>.&nbsp; The value of
+        this option has also an impact on the key bindings designed for
+        terminating the editing and copying the new cell value to some other
+        cells of the column:&nbsp; If the option's value is false then none of
+        these actions will be performed.</dd>
+
         <dt class="tm" id="col_background"><code><b>-background</b>
         <i>color</i></code> or <code><b>-bg</b> <i>color</i></code></dt>
 
@@ -7350,9 +7404,11 @@ proc updateWindow {tbl row col w args} {
 
     <dd class="tm">Tablelist also supports key bindings that terminate the
     editing and copy the new cell value to some other cells of the
-    column:&nbsp; <code>Alt-Return</code> and <code>Alt-KP_Enter</code>
-    terminate the editing and fill the column's selected cells with the new
-    cell value (this is especially useful if the <code><b><a href=
+    column:&nbsp; Provided that the value of the column's <code><b><a href=
+    "#col_allowduplicates">-allowduplicates</a></b></code> option is true (the
+    default), <code>Alt-Return</code> and <code>Alt-KP_Enter</code> terminate
+    the editing and fill the column's selected cells with the new cell value
+    (this is especially useful if the <code><b><a href=
     "#selectmode">-selectmode</a></b></code> option was set to
     <code><b>extended</b></code> and after clicking into an editable cell,
     additional cells of its column were selected by dragging the pointer
@@ -7362,8 +7418,9 @@ proc updateWindow {tbl row col w args} {
     column's cells below the just edited one with the new cell value;&nbsp;
     <code>Alt-u</code> ("fill up") terminates the editing and fills the
     column's cells above the just edited one with the new cell value.&nbsp; On
-    Mac OS X/11+ Aqua the <code>Command</code> key is used instead of
-    <code>Alt</code>.</dd>
+    Mac OS X/11+ Aqua the key sequence <code>Alt-a</code> is replaced with
+    <code>Control-Command-a</code>, and in the other key sequences the
+    <code>Alt</code> modifier is substituted with <code>Command</code>.</dd>
 
     <dd class="tm">When normal termination of the editing process occurs, the
     Tcl command associated with the tablelist widget compares the edit window's
@@ -7726,6 +7783,21 @@ proc handleTblDrop {tbl data} {
           <td>A list consisting of the two lists passed to the
           <code><b><a href="tablelistWidget.html#sortbycolumnlist">sortbycolumnlist</a></b></code>
           subcommand, invoked to perform the multi-column sorting.</td>
+        </tr>
+
+        <tr valign="top">
+          <td><code><b>&lt;&lt;TablelistCopyFinished&gt;&gt;</b></code></td>
+          <td>Generated by the default bindings for the key sequences
+          <code>Alt-Return</code>, <code>Alt-KP_Enter</code>,
+          <code>Alt-a</code>, <code>Alt-d</code>, and <code>Alt-u</code> in the
+          edit window, when the copying of the new cell value to some other
+          cells of the column is finished.&nbsp; On Mac OS X/11+ Aqua the key
+          sequence <code>Alt-a</code> is replaced with
+          <code>Control-Command-a</code>, and in the other key sequences the
+          <code>Alt</code> modifier is substituted with
+          <code>Command</code>.</td>
+          <td>The numerical column index of the cell whose content was
+          edited.</td>
         </tr>
 
         <tr valign="top">
@@ -8506,10 +8578,12 @@ registerDragSrc [$tbl bodypath]
         within the Tcl command specified by the <code><b><a href=
         "#editendcommand">-editendcommand</a></b></code> configuration option,
         you can find out whether the editing session was canceled or terminated
-        normally.&nbsp; Remember that this Tcl command will be invoked in both
-        cases mentioned above if the <code><b><a href=
+        normally.&nbsp; This might be of interest if the <code><b><a href=
         "#forceeditendcommand">-forceeditendcommand</a></b></code> option was
-        set to true.</dd>
+        set to true, because in this case that Tcl command is also invoked when
+        the editing is canceled (in which case the text passed to it as last
+        argument will be the edit window's original content, not its final
+        one).</dd>
 
         <dt class="tm" id="cancelediting"><code><i>pathName</i>
         <b>cancelediting</b></code></dt>
@@ -9480,11 +9554,10 @@ bind [.tbl <span class="red">editwintag</span>] &lt;Return&gt; "[bind <a href=
         at the time of its invocation the cell's internal value will already be
         updated to reflect the checkbutton's check state.</dd>
 
-        <dd class="tm"><b>REMARK 1:</b>&nbsp; Remember that the
-        <code><b><a href="#windowpath">windowpath</a></b></code> subcommand
-        will return the path name of the embedded window, which is a frame; to
-        get the checkbutton's path name, append <code><b>.ckbtn</b></code> to
-        the frame's one.</dd>
+        <dd class="tm"><b>REMARK 1:</b>&nbsp; Recall that the <code><b><a href=
+        "#windowpath">windowpath</a></b></code> subcommand will return the path
+        name of the embedded window, which is a frame; to get the checkbutton's
+        path name, append <code><b>.ckbtn</b></code> to the frame's one.</dd>
 
         <dd class="tm"><b>REMARK 2:</b>&nbsp; As described above, the
         checkbutton's <i>initial</i> check state will reflect the cell's
@@ -9687,6 +9760,28 @@ bind [.tbl <span class="red">editwintag</span>] &lt;Return&gt; "[bind <a href=
         "#editendonfocusout">-editendonfocusout</a></b></code> option is true
         then this subcommand will also be invoked automatically when the
         tablelist widget loses the focus.</dd>
+
+        <dd class="tm">If the value of the <code><b><a href=
+        "#col_allowduplicates">-allowduplicates</a></b></code> option of the
+        cell's column is true (the default) then further key sequences in the
+        edit window that trigger an invocation of this subcommand are
+        <code>Alt-Return</code>, <code>Alt-KP_Enter</code>, <code>Alt-a</code>,
+        <code>Alt-d</code>, and <code>Alt-u</code>, which in addition copy the
+        new cell value to some other cells of the column.&nbsp; After doing so,
+        the bindings for these key sequences generate the virtual event
+        <code><b>&lt;&lt;TablelistCopyFinished&gt;&gt;</b></code>.&nbsp; For
+        Tk versions 8.5 and higher, this virtual event is generated with its
+        <code><b>-data</b></code> option set to the numerical column index of
+        the cell whose content was edited.&nbsp; If the value of the
+        <code><b><a href="#aftercopycommand">-aftercopycommand</a></b></code>
+        configuration option is a nonempty string, then after generating this
+        virtual event, the above-mentioned bindings pass the tablelist's path
+        name and the cell's column index to that command and evaluate the
+        resulting script in the global scope.&nbsp; On Mac OS X/11+ Aqua the
+        key sequence <code>Alt-a</code> is replaced with
+        <code>Control-Command-a</code>, and in the other key sequences the
+        <code>Alt</code> modifier is substituted with
+        <code>Command</code>.</dd>
 
         <dd class="tm"><b>REMARK:</b>&nbsp; There are also situations where an
         <i>explicit</i> invocation of this subcommand is needed, in order to
@@ -11809,7 +11904,7 @@ upvar #0 [.tbl <span class="red">itemlistvar</span>] itemList
 
         <dd>Similar to the <code><b><a href=
         "#getfullkeys">getfullkeys</a></b></code> command for the tablelist
-        body.&nbsp; Remember that the full keys of the header items start with
+        body.&nbsp; Recall that the full keys of the header items start with
         <code><b>hk</b></code>.</dd>
 
         <dt class="tm" id="hdr_getkeys"><code><i>pathName</i> <b>header
@@ -12657,7 +12752,10 @@ bind [.tbl <a href="#labeltag">labeltag</a>] &lt;Button-3&gt; {
         <code>Control-KP_Enter</code> terminate the editing and destroy the
         edit window.</li>
 
-        <li class="tm"><code>Alt-Return</code> and <code>Alt-KP_Enter</code>
+        <li class="tm">If the value of the column's <code><b><a href=
+        "#col_allowduplicates">-allowduplicates</a></b></code> option is true
+        (the default) then <code>Alt-Return</code> and
+        <code>Alt-KP_Enter</code>
         (<code>Command-Return</code>/<code>Command-KP_Enter</code> on Mac OS
         X/11+ Aqua) terminate the editing, destroy the edit window, and fill
         the column's selected cells with the new cell value.&nbsp; This comes
@@ -12667,16 +12765,22 @@ bind [.tbl <a href="#labeltag">labeltag</a>] &lt;Button-3&gt; {
         additional cells of its column were selected by dragging the pointer
         vertically.</li>
 
-        <li class="tm"><code>Alt-a</code> (<code>Command-a</code> on Mac OS
-        X/11+ Aqua) terminates the editing, destroys the edit window, and fills
-        all cells of the column with the new cell value.</li>
+        <li class="tm">If the value of the column's <code><b><a href=
+        "#col_allowduplicates">-allowduplicates</a></b></code> option is true
+        (the default) then <code>Alt-a</code> (<code>Control-Command-a</code>
+        on Mac OS X/11+ Aqua) terminates the editing, destroys the edit window,
+        and fills all cells of the column with the new cell value.</li>
 
-        <li class="tm"><code>Alt-d</code> (<code>Command-d</code> on Mac OS
+        <li class="tm">If the value of the column's <code><b><a href=
+        "#col_allowduplicates">-allowduplicates</a></b></code> option is true
+        (the default) then <code>Alt-d</code> (<code>Command-d</code> on Mac OS
         X/11+ Aqua) terminates the editing, destroys the edit window, and fills
         the column's cells below the just edited one with the new cell
         value.</li>
 
-        <li class="tm"><code>Alt-u</code> (<code>Command-u</code> on Mac OS
+        <li class="tm">If the value of the column's <code><b><a href=
+        "#col_allowduplicates">-allowduplicates</a></b></code> option is true
+        (the default) then <code>Alt-u</code> (<code>Command-u</code> on Mac OS
         X/11+ Aqua) terminates the editing, destroys the edit window, and fills
         the column's cells above the just edited one with the new cell
         value.</li>

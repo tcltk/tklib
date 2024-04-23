@@ -1,9 +1,9 @@
 #==============================================================================
-# Populates a tablelist widget with the parameters of 16 serial lines and
+# Populates a tablelist widget with the parameters of 16 serial lines,
 # configures the checkbutton embedded into the header label of the column
-# "available".
+# "available", and implements the procedures updateCkbtn and afterCopyCmd.
 #
-# Copyright (c) 2021-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2021-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -51,7 +51,7 @@ if {[winfo class $ckbtn] eq "Checkbutton"} {
 
 #
 # Selects/deselects the checkbutton embedded into the header label
-# of the column "available" or sets it into the tri-state mode.
+# of the specified column or sets it into the tri-state mode.
 #
 proc updateCkbtn {tbl row col} {
     set lst [$tbl getcolumns $col]
@@ -66,5 +66,36 @@ proc updateCkbtn {tbl row col} {
 	set var ""					;# tri-state mode
     } else {
 	unset -nocomplain var				;# tri-state mode
+    }
+}
+
+#
+# For the columns "available" and "color", updates
+# the images contained in the column's cells.
+#
+proc afterCopyCmd {tbl col} {
+    switch [$tbl columncget $col -name] {
+	available {
+	    #
+	    # Update the images contained in the column's cells and
+	    # the checkbutton embedded into the column's header label
+	    #
+	    for {set row 0} {$row < 16} {incr row} {
+		set text [$tbl cellcget $row,$col -text]
+		set img [expr {$text ? "checkedImg" : "uncheckedImg"}]
+		$tbl cellconfigure $row,$col -image $img
+	    }
+	    updateCkbtn $tbl 0 $col
+	}
+
+	color {
+	    #
+	    # Update the images contained in the column's cells
+	    #
+	    for {set row 0} {$row < 16} {incr row} {
+		set text [$tbl cellcget $row,$col -text]
+		$tbl cellconfigure $row,$col -image img$::colors($text)
+	    }
+	}
     }
 }

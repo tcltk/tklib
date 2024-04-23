@@ -8,7 +8,7 @@ namespace eval ::tablelist {
     #
     # Public variables:
     #
-    variable version	7.1
+    variable version	7.2
     variable library	[file dirname [file normalize [info script]]]
 
     #
@@ -103,6 +103,6 @@ proc ::tablelist::loadUtils {} {
     }
     package require scaleutil 1.12-
 
-    package require scaleutilmisc 1.5-
+    package require scaleutilmisc 1.6-
 }
 ::tablelist::loadUtils
