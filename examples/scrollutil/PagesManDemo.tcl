@@ -8,7 +8,7 @@
 #   https://icons8.com/icon/mEF_vyjYlnE3/file
 #   https://icons8.com/icon/JXYalxb9XWWd/folder
 #
-# Copyright (c) 2021-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2021-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tk
@@ -27,8 +27,10 @@ if {$tk_version >= 8.7 || [catch {package require tksvg}] == 0} {
     image create photo folderImg -file [file join $dir folder.svg] -format $fmt
 } else {
     set pct $scrollutil::scalingpct
-    image create photo fileImg   -file [file join $dir file$pct.gif]
-    image create photo folderImg -file [file join $dir folder$pct.gif]
+    image create photo fileImg   -file [file join $dir file$pct.gif] \
+	-format gif
+    image create photo folderImg -file [file join $dir folder$pct.gif] \
+	-format gif
 }
 
 #
@@ -43,7 +45,7 @@ proc populateNotebook {nb sfx} {
 	set sa [scrollutil::scrollarea $nb.sa_$baseName]
 	if {$sfx eq "gif"} {
 	    set canv [canvas $sa.canv -background #c0c0c0]
-	    set img [image create photo -file $fileName]
+	    set img [image create photo -file $fileName -format gif]
 	    $canv create image 10 10 -anchor nw -image $img
 	    bind $canv <Configure> [list setScrollRegion %W %w %h $img]
 	    scrollutil::addMouseWheelSupport $canv

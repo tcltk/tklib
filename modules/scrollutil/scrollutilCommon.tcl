@@ -8,7 +8,7 @@ namespace eval ::scrollutil {
     #
     # Public variables:
     #
-    variable version	2.1
+    variable version	2.2
     variable library	[file dirname [file normalize [info script]]]
 
     #

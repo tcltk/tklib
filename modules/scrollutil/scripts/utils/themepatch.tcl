@@ -7,7 +7,7 @@
 #   - Public utility procedures
 #   - Private helper procedures
 #
-# Copyright (c) 2022-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2022-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tk 8.4-
@@ -27,7 +27,7 @@ namespace eval themepatch {
     #
     # Public variables:
     #
-    variable version	1.5
+    variable version	1.6
     variable library	[file dirname [file normalize [info script]]]
 
     #

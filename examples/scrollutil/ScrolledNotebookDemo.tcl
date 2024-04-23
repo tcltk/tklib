@@ -6,7 +6,7 @@
 #
 #   https://icons8.com/icon/mEF_vyjYlnE3/file
 #
-# Copyright (c) 2021-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2021-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tk
@@ -26,7 +26,7 @@ if {$tk_version >= 8.7 || [catch {package require tksvg}] == 0} {
     image create photo fileImg -file [file join $dir file.svg] -format $fmt
 } else {
     set pct $scrollutil::scalingpct
-    image create photo fileImg -file [file join $dir file$pct.gif]
+    image create photo fileImg -file [file join $dir file$pct.gif] -format gif
 }
 
 #

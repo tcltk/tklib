@@ -1,3 +1,18 @@
+2024-04-23  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 2.2.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/utils/*.tcl:		     Photo image creation now always
+	* scripts/utils/indicatorImgs/*.tcl: with explicitly specified
+	* ../../examples/scrollutil/*.tcl:   "-format" option.
+
+	* doc/ScrollableFrmDemo2.png: Updated screenshot.
+
 2024-03-05  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Scrollutil 2.1.

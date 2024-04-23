@@ -1,5 +1,12 @@
-What is new in Scrollutil 2.1?
-------------------------------
+What is new in Scrollutil 2.2?
+-------------------------------
+
+1. Improved the performance of the photo image creation in the
+   themepatch code and the demo scripts, by explicitly specifying the
+   "-format" option.
+
+What was new in Scrollutil 2.1?
+-------------------------------
 
 1. The scrollableframe within a scrollednotebook widget is now packed
    with a horizontal and vertical padding of 0 when both arrow buttons

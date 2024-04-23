@@ -5,7 +5,7 @@
 #==============================================================================
 
 package require Tk 8.4-
-package require -exact scrollutil::common 2.1
+package require -exact scrollutil::common 2.2
 
 package provide scrollutil $::scrollutil::version
 package provide Scrollutil $::scrollutil::version
