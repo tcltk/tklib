@@ -1,5 +1,5 @@
 [comment {-*- tcl -*- doctools manpage}]
-[manpage_begin tooltip n 1.6]
+[manpage_begin tooltip n 1.7]
 [keywords balloon]
 [keywords help]
 [keywords hover]
@@ -9,13 +9,13 @@
 [titledesc {Tooltip management}]
 [require Tcl 8.5]
 [require msgcat 1.3]
-[require tooltip [opt 1.6]]
+[require tooltip [opt 1.7]]
 [description]
 [para]
 
-This package provides tooltips, small text messages that can be displayed
-when the mouse hovers over a widget, menu item, canvas item, listbox or
-ttk::treeview item, ttk::notebook tab or text widget tag.
+This package provides tooltips, i.e., small text messages that can be displayed
+when the mouse hovers over a widget, menu item, canvas item, listbox item,
+ttk::treeview item or column heading, ttk::notebook tab, or text widget tag.
 
 [section {COMMANDS}]
 
@@ -75,10 +75,17 @@ message [arg message].  The tooltip uses a late-binding msgcat call on the
 passed in message to allow for on-the-fly language changes in an application.
 If the widget specified is a menu, canvas, listbox, ttk::treeview,
 ttk::notebook or text widget then additional options are used to tie the
-tooltip to specific menu, canvas, listbox or ttk::treeview items, ttk::notebook
-tabs or text widget tags.
+tooltip to specific menu, canvas or listbox items, ttk::treeview items or
+column headings, ttk::notebook tabs, or text widget tags.
 
 [list_begin options]
+
+[opt_def -heading [arg columnId]]
+
+This option is used to set a tooltip for a ttk::treeview column heading.
+The column does not need to already exist. You should not use the same
+identifiers for columns and items in a widget for which you are using tooltips
+as their tooltips will be mixed. The widget must be a ttk::treeview widget.
 
 [opt_def -index [arg index]]
 

@@ -44,7 +44,10 @@ package require msgcat
 # enable OR on
 #	Enables tooltips for defined widgets.
 #
-# <widget> ?-index index? ?-item(s) items? ?-tab tabId" ?-tag tag? ?message?
+# <widget> ?-heading columnId? ?-index index? ?-item(s) items? ?-tab tabId"
+# ?-tag tag? ?message?
+#	* If -heading is specified, then <widget> is assumed to be a
+#	  ttk::treeview widget and columnId specifies a column identifier.
 #	* If -index is specified, then <widget> is assumed to be a menu and
 #	  index represents what index into the menu (either the numerical index
 #	  or the label) to associate the tooltip message with.
@@ -179,6 +182,14 @@ proc ::tooltip::register {w args} {
 		    set key [lindex $args 0]
 		    break
 	    }
+	    -heading {
+		if {[winfo class $w] ne "Treeview"} {
+		    return -code error "widget \"$w\" is not a ttk::treeview\
+			widget"
+		}
+		set columnId [lindex $args 1]
+		set args [lreplace $args 0 1]
+	    }
 	    -index {
 		if {[catch {$w entrycget 1 -label}]} {
 		    return -code error "widget \"$w\" does not seem to be a\
@@ -224,15 +235,15 @@ proc ::tooltip::register {w args} {
             }
 	    default {
 		return -code error "unknown option \"$key\":\
-			should be -index, -item(s), -tab, -tag or --"
+			should be -heading, -index, -item(s), -tab, -tag or --"
 	    }
 	}
 	set key [lindex $args 0]
     }
     if {[llength $args] != 1} {
 	return -code error "wrong # args: should be \"tooltip widget\
-		?-index index? ?-item(s) items? ?-tab tabId? ?-tag tag? ?--?\
-		message\""
+		?-heading columnId? ?-index index? ?-item(s) items?\
+		?-tab tabId? ?-tag tag? ?--? message\""
     }
     if {$key eq ""} {
 	clear $w
@@ -240,7 +251,11 @@ proc ::tooltip::register {w args} {
 	if {![winfo exists $w]} {
 	    return -code error "bad window path name \"$w\""
 	}
-	if {[info exists index]} {
+	if {[info exists columnId]} {
+	    set tooltip($w,$columnId) $key
+	    enableListbox $w $columnId
+	    return $w,$columnId
+	} elseif {[info exists index]} {
 	    set tooltip($w,$index) $key
 	    return $w,$index
 	} elseif {[info exists items]} {
@@ -515,7 +530,13 @@ proc ::tooltip::listitemTip {w x y} {
     if {[winfo class $w] eq "Listbox"} {
 	set item [$w index @$x,$y]
     } else {
-	set item [$w identify item $x $y]
+	switch [$w identify region $x $y] {
+	    tree - cell { set item [$w identify item $x $y] }
+	    heading - separator {
+		set item [$w column [$w identify column $x $y] -id]
+	    }
+	    default { set item "" }
+	}
     }
     if {$G(enabled) && [info exists tooltip($w,$item)]} {
 	set G(AFTERID) [after $G(DELAY) \
@@ -532,10 +553,12 @@ proc ::tooltip::listitemMotion {w x y} {
 	if {[winfo class $w] eq "Listbox"} {
 	    set item [$w index @$x,$y]
 	} else {
-	    set item {}
-	    set region [$w identify region $x $y]
-	    if {$region  eq "tree" || $region eq "cell"} {
-		set item [$w identify item $x $y]
+	    switch [$w identify region $x $y] {
+		tree - cell { set item [$w identify item $x $y] }
+		heading - separator {
+		    set item [$w column [$w identify column $x $y] -id]
+		}
+		default { set item "" }
 	    }
 	}
         if {$item ne $G(LAST)} {
@@ -641,4 +664,4 @@ proc ::tooltip::enableTag {w tag} {
     $w tag bind $tag <Any-Button> +[namespace code hide]
 }
 
-package provide tooltip 1.6
+package provide tooltip 1.7
