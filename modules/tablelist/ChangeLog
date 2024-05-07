@@ -1,3 +1,10 @@
+2024-05-07 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* CHANGES.txt:                 Eliminated the temporary hang-ups
+	* scripts/tablelistUtil.tcl:   experienced sporadically during
+	* scripts/tablelistWidget.tcl: scrolling in the presence of many
+	  embedded images (including tree indentations) or multi-line cells.
+
 2024-04-23 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl:         Bumped the version number to 7.2.

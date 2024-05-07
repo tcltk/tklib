@@ -5660,16 +5660,22 @@ proc tablelist::purgeWidgets win {
     }
 
     upvar ::tablelist::ns${win}::data data
-    if {$data(winSizeChanged)} {
+    if {$data(topRowChanged)} {
+	set data(topRowChanged) 0
+    } elseif {$data(winSizeChanged)} {
 	set data(winSizeChanged) 0
-	after 5000 [list tablelist::purgeWidgets $win]
     } else {
 	set w $data(body)
 	set fromTextIdx "[$w index @0,0] linestart"
 	set toTextIdx "[$w index @0,$data(btmY)] lineend"
 
 	set winList {}
+	set count 0
 	foreach {dummy path textIdx} [$w dump -window 1.0 end] {
+	    if {$count == 50} {
+		break
+	    }
+
 	    if {$path eq ""} {
 		continue
 	    }
@@ -5683,18 +5689,20 @@ proc tablelist::purgeWidgets win {
 		[$w compare $textIdx > $toTextIdx]} {
 		$w tag add elidedWin $textIdx
 		lappend winList $path
+		incr count
 	    } else {
 		set tagNames [$w tag names $textIdx]
 		if {[lsearch -glob $tagNames hidden*] >= 0 ||
 		    [lsearch -glob $tagNames elided*] >= 0} {
 		    lappend winList $path
+		    incr count
 		}
 	    }
 	}
 	eval destroy $winList
-
-	after 1000 [list tablelist::purgeWidgets $win]
     }
+
+    after 1000 [list tablelist::purgeWidgets $win]
 }
 
 #------------------------------------------------------------------------------

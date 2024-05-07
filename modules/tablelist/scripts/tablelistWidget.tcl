@@ -837,6 +837,7 @@ proc tablelist::tablelist args {
 	    colCount		 0
 	    lastCol		-1
 	    treeCol		 0
+	    topRowChanged	 0
 	    winSizeChanged	 0
 	    rightX		 0
 	    btmY		 0
@@ -6814,6 +6815,7 @@ proc tablelist::yviewSubCmd {win argList} {
 			$w yview $row
 		    }
 
+		    set data(topRowChanged) 1
 		    adjustElidedText $win
 		    redisplayVisibleItems $win
 		    if {$::tk_version >= 8.5 && $absNumber != 0} {
@@ -9021,6 +9023,7 @@ proc tablelist::vertMoveTo win {
     set offset [expr {int($data(vertFraction)*$totalViewableCount + 0.5)}]
     set row [viewableRowOffsetToRowIndex $win $offset]
     $data(body) yview $row
+    set data(topRowChanged) 1
 
     updateView $win $row
     updateIdletasksDelayed
@@ -9041,6 +9044,7 @@ proc tablelist::vertScrollByUnits win {
     set offset [expr {$upperViewableCount + $data(vertUnits)}]
     set row [viewableRowOffsetToRowIndex $win $offset]
     $data(body) yview $row
+    set data(topRowChanged) 1
 
     updateView $win $row
     updateIdletasksDelayed
@@ -9109,6 +9113,7 @@ proc tablelist::dragTo win {
 
     set row [viewableRowOffsetToRowIndex $win $newTopRowOffset]
     $w yview $row
+    set data(topRowChanged) 1
 
     hdr_adjustElidedText $win
     hdr_updateColors $win

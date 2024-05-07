@@ -31,6 +31,11 @@ What is new in Tablelist 7.2?
 7. For compatibility with Tcl 9, changed "tk_version" to "::tk_version"
    in the demo scripts "browse*.tcl" (which use a namespace).
 
+8. Eliminated the temporary hang-ups experienced sporadically during
+   scrolling in the presence of many embedded images (including tree
+   indentations) or multi-line cells (thanks to Laszlo Zoltan for his
+   bug report).
+
 What was new in Tablelist 7.1?
 ------------------------------
 
