@@ -28,10 +28,13 @@ What is new in Tablelist 7.2?
    and themepatch code as well as in the demo scripts, by explicitly
    specifying the "-format" option.
 
-7. For compatibility with Tcl 9, changed "tk_version" to "::tk_version"
+7. Adapted the scaleutil package to the recent improvements in the
+   "classic" theme by Emiliano Gavilan.
+
+8. For compatibility with Tcl 9, changed "tk_version" to "::tk_version"
    in the demo scripts "browse*.tcl" (which use a namespace).
 
-8. Eliminated the temporary hang-ups experienced sporadically during
+9. Eliminated the temporary hang-ups experienced sporadically during
    scrolling in the presence of many embedded images (including tree
    indentations) or multi-line cells (thanks to Laszlo Zoltan for his
    bug report).

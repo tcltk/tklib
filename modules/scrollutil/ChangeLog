@@ -1,3 +1,12 @@
+2024-05-11  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* CHANGES.txt:                 Adapted the scaleutil package to the
+	* scrollutilCommon.tcl:        recent improvements in the "classic"
+	* scripts/utils/pkgIndex.tcl:  theme by Emiliano Gavilan.
+	* scripts/utils/scaleutil.tcl:
+
+	* doc/ScrollableFrmDemo2.png: Updated screenshot.
+
 2024-04-23  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl:         Bumped the version number to 2.2.

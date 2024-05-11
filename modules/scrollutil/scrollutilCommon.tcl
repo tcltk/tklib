@@ -91,9 +91,9 @@ proc ::scrollutil::loadUtils {} {
     package require mwutil 2.22-
 
     if {[catch {package present scaleutil} version] == 0 &&
-	[package vcompare $version 1.12] < 0} {
+	[package vcompare $version 1.13] < 0} {
 	package forget scaleutil
     }
-    package require scaleutil 1.12-
+    package require scaleutil 1.13-
 }
 ::scrollutil::loadUtils

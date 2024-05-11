@@ -20,7 +20,7 @@ namespace eval scaleutil {
     #
     # Public variables:
     #
-    variable version	1.12
+    variable version	1.13
     variable library	[file dirname [file normalize [info script]]]
 
     #
@@ -545,7 +545,11 @@ proc scaleutil::scaleStyles_clam pct {
 #------------------------------------------------------------------------------
 proc scaleutil::scaleStyles_classic pct {
     ttk::style theme settings classic {
-	set scrlbarWidth [scale 15 $pct]
+	if {[ttk::style lookup . -borderwidth] == 1} {
+	    set scrlbarWidth [scale 12 $pct]
+	} else {
+	    set scrlbarWidth [scale 15 $pct]
+	}
 	ttk::style configure TScrollbar \
 	    -arrowsize $scrlbarWidth -width $scrlbarWidth
 

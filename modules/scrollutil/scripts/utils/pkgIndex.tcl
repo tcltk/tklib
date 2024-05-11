@@ -5,5 +5,5 @@
 #==============================================================================
 
 package ifneeded mwutil     2.22 [list source [file join $dir mwutil.tcl]]
-package ifneeded scaleutil  1.12 [list source [file join $dir scaleutil.tcl]]
+package ifneeded scaleutil  1.13 [list source [file join $dir scaleutil.tcl]]
 package ifneeded themepatch 1.6  [list source [file join $dir themepatch.tcl]]
