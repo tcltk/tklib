@@ -5,7 +5,7 @@
 #==============================================================================
 
 package require Tk 8.4-
-package require -exact mentry::common 4.1
+package require -exact mentry::common 4.2
 
 package provide mentry $::mentry::version
 package provide Mentry $::mentry::version

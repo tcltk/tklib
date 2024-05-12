@@ -1,3 +1,15 @@
+2024-05-12  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 4.2.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/mentryThemes.tcl: Adapted to the recent improvements in the
+	  "classic" theme by Emiliano Gavilan.
+
 2024-03-05  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Mentry 4.1.

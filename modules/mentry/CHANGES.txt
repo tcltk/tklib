@@ -1,5 +1,11 @@
-What is new in Mentry 4.1?
+What is new in Mentry 4.2?
 --------------------------
+
+1. Adapted to the recent improvements in the "classic" theme by Emiliano
+   Gavilan.
+
+What was new in Mentry 4.1?
+---------------------------
 
 1. Fixed a long-standing bug due to which under some circumstances the
    default values of several configuration options became theme-specific

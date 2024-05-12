@@ -7,7 +7,7 @@
 #   - Private procedures related to tile themes
 #   - Private procedures related to global KDE configuration options
 #
-# Copyright (c) 2006-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2006-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -357,10 +357,16 @@ proc mentry::classicTheme {} {
 	-disabledforeground	#a3a3a3 \
 	-selectbackground	#c3c3c3 \
 	-selectforeground	#000000 \
-	-selectborderwidth	1 \
-	-borderwidth		3 \
-	-labelpady		{3 3} \
+	-selectborderwidth	[styleConfig . -selectborderwidth] \
     ]
+
+    if {[styleConfig . -borderwidth] == 1} {
+	set themeDefaults(-borderwidth) 2
+	set themeDefaults(-labelpady)	{2 2}
+    } else {
+	set themeDefaults(-borderwidth)	3
+	set themeDefaults(-labelpady)	{3 3}
+    }
 }
 
 #------------------------------------------------------------------------------
@@ -389,14 +395,13 @@ proc mentry::defaultTheme {} {
 	-disabledforeground	#a3a3a3 \
 	-selectbackground	#4a6984 \
 	-selectforeground	#ffffff \
+	-selectborderwidth	[styleConfig . -selectborderwidth] \
     ]
 
     if {[styleConfig TEntry -focuswidth] eq ""} {
-	set themeDefaults(-selectborderwidth) 1
 	set themeDefaults(-borderwidth)       1
 	set themeDefaults(-labelpady)         {1 1}
     } else {
-	set themeDefaults(-selectborderwidth) 0
 	set themeDefaults(-borderwidth)       2
 	set themeDefaults(-labelpady)         {2 2}
     }

@@ -13,7 +13,7 @@ namespace eval ::mentry {
     #
     # Public variables:
     #
-    variable version	4.1
+    variable version	4.2
     variable library	[file dirname [file normalize [info script]]]
 
     #
