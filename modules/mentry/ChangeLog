@@ -1,3 +1,9 @@
+2024-05-14  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* CHANGES.txt:              Adapted the default value of the
+	* scripts/mentryThemes.tcl: "-selectborderwidth" option in Mentry_tile
+	  to recent changes in the "default" and "classic" themes.
+
 2024-05-12  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl:         Bumped the version number to 4.2.

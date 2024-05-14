@@ -687,7 +687,6 @@ proc tablelist::classicTheme {} {
 	-stripebackground	#f0f0f0 \
 	-selectbackground	#c3c3c3 \
 	-selectforeground	#000000 \
-	-selectborderwidth	1 \
 	-labelbackground	#d9d9d9 \
 	-labeldeactivatedBg	#d9d9d9 \
 	-labeldisabledBg	#d9d9d9 \
@@ -700,6 +699,9 @@ proc tablelist::classicTheme {} {
 	-arrowstyle		sunken10x9 \
 	-treestyle		gtk \
     ]
+
+    set val [styleConfig . -selectborderwidth]
+    set themeDefaults(-selectborderwidth) [expr {$val eq "" ? 0 : $val}]
 
     if {[info exists ::tile::version] &&
 	[string compare $::tile::version "0.8"] < 0} {
@@ -742,7 +744,6 @@ proc tablelist::defaultTheme {} {
 	-stripebackground	#e8e8e8 \
 	-selectbackground	#4a6984 \
 	-selectforeground	#ffffff \
-	-selectborderwidth	1 \
 	-labelbackground	#d9d9d9 \
 	-labeldeactivatedBg	#d9d9d9 \
 	-labeldisabledBg	#d9d9d9 \
@@ -754,6 +755,9 @@ proc tablelist::defaultTheme {} {
 	-arrowstyle		[defaultX11ArrowStyle] \
 	-treestyle		gtk \
     ]
+
+    set val [styleConfig . -selectborderwidth]
+    set themeDefaults(-selectborderwidth) [expr {$val eq "" ? 0 : $val}]
 }
 
 #------------------------------------------------------------------------------

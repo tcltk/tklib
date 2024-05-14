@@ -1,3 +1,10 @@
+2024-05-14 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* CHANGES.txt:                 Adapted the default value of the
+	* scripts/tablelistThemes.tcl: "-selectborderwidth" option in
+	  Tablelist_tile to recent changes in the "default" and "classic"
+	  themes.
+
 2024-05-11 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* CHANGES.txt:                 Adapted the scaleutil package to the

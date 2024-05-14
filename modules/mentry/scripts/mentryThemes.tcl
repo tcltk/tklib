@@ -357,8 +357,10 @@ proc mentry::classicTheme {} {
 	-disabledforeground	#a3a3a3 \
 	-selectbackground	#c3c3c3 \
 	-selectforeground	#000000 \
-	-selectborderwidth	[styleConfig . -selectborderwidth] \
     ]
+
+    set val [styleConfig . -selectborderwidth]
+    set themeDefaults(-selectborderwidth) [expr {$val eq "" ? 0 : $val}]
 
     if {[styleConfig . -borderwidth] == 1} {
 	set themeDefaults(-borderwidth) 2
@@ -395,8 +397,10 @@ proc mentry::defaultTheme {} {
 	-disabledforeground	#a3a3a3 \
 	-selectbackground	#4a6984 \
 	-selectforeground	#ffffff \
-	-selectborderwidth	[styleConfig . -selectborderwidth] \
     ]
+
+    set val [styleConfig . -selectborderwidth]
+    set themeDefaults(-selectborderwidth) [expr {$val eq "" ? 0 : $val}]
 
     if {[styleConfig TEntry -focuswidth] eq ""} {
 	set themeDefaults(-borderwidth)       1
