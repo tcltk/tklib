@@ -40,8 +40,8 @@ ntextIndent \- ntext Indentation for the Text Widget
 
 # <a name='synopsis'></a>SYNOPSIS
 
-package require Tcl 8\.5  
-package require Tk 8\.5  
+package require Tcl 8\.5\-  
+package require Tk 8\.5\-  
 package require ntext ?1\.0?  
 
 [__::ntext::new\_textCopy__ *pathName*](#1)  
@@ -218,13 +218,13 @@ __::ntext::wrapIndent__ *textWidget* *index1* *index2*
 # <a name='section6'></a>BUGS
 
 This version of __[ntext](ntext\.md)__ is intended to be compatible with
-all releases of __[Tk](\.\./\.\./\.\./\.\./index\.md\#tk)__ 8\.5 and 8\.6, and with
-the branches *core\-8\-5\-branch*, *core\-8\-6\-branch*, and *trunk* in the
+all releases of __[Tk](\.\./\.\./\.\./\.\./index\.md\#tk)__ 8\.5, 8\.6, and 8\.7, and
+with the branches *core\-8\-5\-branch*, *core\-8\-6\-branch*, and *trunk* in the
 source code repository for __[Tk](\.\./\.\./\.\./\.\./index\.md\#tk)__\. Any
 incompatibility with any of these versions, for any
 __[Tk](\.\./\.\./\.\./\.\./index\.md\#tk)__ windowing system, should be reported
 as a bug\. Please report such in the category *ntext* of the [Tklib
-Trackers](http://core\.tcl\.tk/tklib/reportlist)\.
+Trackers](https://core\.tcl\-lang\.org/tklib/reportlist)\.
 
 # <a name='section7'></a>EXAMPLES
 

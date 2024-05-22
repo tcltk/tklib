@@ -411,6 +411,9 @@ tklib
 \fBswaplist\fR
 \fIfiles/modules/swaplist/swaplist\&.n\fR: A dialog which allows a user to move options between two lists
 .TP
+\fBtipstack\fR
+\fIfiles/modules/tooltip/tipstack\&.n\fR: Stacked tooltips
+.TP
 \fBtooltip\fR
 \fIfiles/modules/tooltip/tooltip\&.n\fR: Tooltip management
 .TP

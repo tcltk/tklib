@@ -125,8 +125,8 @@
 <div id="synopsis" class="doctools_section"><h2><a name="synopsis">Synopsis</a></h2>
 <div class="doctools_synopsis">
 <ul class="doctools_requirements">
-<li>package require <b class="pkgname">Tcl 8.5</b></li>
-<li>package require <b class="pkgname">Tk 8.5</b></li>
+<li>package require <b class="pkgname">Tcl 8.5-</b></li>
+<li>package require <b class="pkgname">Tk 8.5-</b></li>
 <li>package require <b class="pkgname">ntext <span class="opt">?1.0?</span></b></li>
 </ul>
 <ul class="doctools_syntax">
@@ -134,6 +134,7 @@
 <li><a href="#2"><b class="cmd">::ntext::new_textCut</b> <i class="arg">pathName</i></a></li>
 <li><a href="#3"><b class="cmd">::ntext::new_textPaste</b> <i class="arg">pathName</i></a></li>
 <li><a href="#4"><b class="cmd">::ntext::syncIndentColor</b> <i class="arg">pathName</i></a></li>
+<li><a href="#5"><b class="cmd">::ntext::syncTabColor</b> <i class="arg">pathName</i></a></li>
 </ul>
 </div>
 </div>
@@ -160,6 +161,8 @@
 <dd><p>Replacement for ::tk_textPaste that also maintains <em>Ntext</em> indentation (see <i class="term"><a href="ntextIndent.html">ntextIndent</a></i>).</p></dd>
 <dt><a name="4"><b class="cmd">::ntext::syncIndentColor</b> <i class="arg">pathName</i></a></dt>
 <dd><p>Command to apply the current value of the variable <b class="variable">::ntext::indentColor</b> to existing lines in a text widget.  This command is useful if a text widget has been created, text has been inserted in the widget, <em>and then</em> the value of <b class="variable">::ntext::indentColor</b> is changed (see <i class="term"><a href="ntextIndent.html">ntextIndent</a></i>).</p></dd>
+<dt><a name="5"><b class="cmd">::ntext::syncTabColor</b> <i class="arg">pathName</i></a></dt>
+<dd><p>Command to apply the current values of the variables <b class="variable">::ntext::tabColor</b> and <b class="variable">::ntext::tabSelColor</b> to tab spaces in a text widget.  This command is useful if a text widget has been created, text has been inserted in the widget, <em>and then</em> the value of <b class="variable">::ntext::tabColor</b> or <b class="variable">::ntext::tabSelColor</b> is changed.</p></dd>
 </dl>
 </div>
 <div id="section3" class="doctools_section"><h2><a name="section3">CONFIGURATION OPTIONS</a></h2>
@@ -222,6 +225,18 @@
 <li><p>The value is toggled by the <em>Insert</em> key (except on macOS Aqua where there is no such key).</p></li>
 <li><p>For more information see <i class="term"><a href="ntextBindings.html">ntextBindings</a></i></p></li>
 </ul>
+<p><b class="variable">::ntext::tabColor</b></p>
+<ul class="doctools_itemized">
+<li><p><b class="const">{}</b> - if the value is the empty string, then the tab spaces have the same color as the widget background.</p></li>
+<li><p><em>color</em> - a valid <b class="package"><a href="../../../../index.html#tk">Tk</a></b> color to use for tab spaces (default value <em>#ffffaa</em>).</p>
+<p>The value of <b class="variable">::ntext::tabColor</b> will often be set at startup. If the value is changed when text widgets already exist and contain text, those widgets can be updated by calling command <b class="cmd">::ntext::syncTabColor</b>.</p></li>
+</ul>
+<p><b class="variable">::ntext::tabSelColor</b></p>
+<ul class="doctools_itemized">
+<li><p><b class="const">{}</b> - if the value is the empty string, then the color of tab spaces in the selection defaults to the same color as unselected tabs (see <b class="variable">::ntext::tabColor</b>), and <em>not</em> to the widget <i class="arg">-selectbackground</i> color.</p></li>
+<li><p><em>color</em> - a valid <b class="package"><a href="../../../../index.html#tk">Tk</a></b> color to use for tab spaces in the selection (default value <em>#418bd4</em>).</p>
+<p>The value of <b class="variable">::ntext::tabSelColor</b> will often be set at startup. If the value is changed when text widgets already exist and contain text, those widgets can be updated by calling command <b class="cmd">::ntext::syncTabColor</b>.</p></li>
+</ul>
 <p><b class="variable">::ntext::useBlockCursor</b></p>
 <ul class="doctools_itemized">
 <li><p><b class="const">0</b> - the block cursor will not be used.  When the widget is in <em>overwrite</em> mode (see <b class="const">::ntext::overwrite</b>), the ordinary cursor will change color instead.</p></li>
@@ -231,7 +246,7 @@
 </ul>
 </div>
 <div id="section4" class="doctools_section"><h2><a name="section4">BUGS</a></h2>
-<p>This version of <b class="package">ntext</b> is intended to be compatible with all releases of <b class="package"><a href="../../../../index.html#tk">Tk</a></b> 8.5 and 8.6, and with the branches <em>core-8-5-branch</em>, <em>core-8-6-branch</em>, and <em>trunk</em> in the source code repository for <b class="package"><a href="../../../../index.html#tk">Tk</a></b>.  Any incompatibility with any of these versions, for any <b class="package"><a href="../../../../index.html#tk">Tk</a></b> windowing system, should be reported as a bug. Please report such in the category <em>ntext</em> of the <a href="http://core.tcl.tk/tklib/reportlist">Tklib Trackers</a>.</p>
+<p>This version of <b class="package">ntext</b> is intended to be compatible with all releases of <b class="package"><a href="../../../../index.html#tk">Tk</a></b> 8.5, 8.6, and 8.7, and with the branches <em>core-8-5-branch</em>, <em>core-8-6-branch</em>, and <em>trunk</em> in the source code repository for <b class="package"><a href="../../../../index.html#tk">Tk</a></b>.  Any incompatibility with any of these versions, for any <b class="package"><a href="../../../../index.html#tk">Tk</a></b> windowing system, should be reported as a bug. Please report such in the category <em>ntext</em> of the <a href="https://core.tcl-lang.org/tklib/reportlist">Tklib Trackers</a>.</p>
 </div>
 <div id="section5" class="doctools_section"><h2><a name="section5">EXAMPLE</a></h2>
 <p>To create a text widget .t and use the <em>Ntext</em> bindings:</p>
@@ -240,7 +255,7 @@ package require ntext
 text .t
 bindtags .t {.t Ntext . all}
 </pre>
-<p>See bindtags for more information.</p>
+<p>See <b class="cmd"><a href="../../../../index.html#bindtags">bindtags</a></b> for more information.</p>
 </div>
 <div id="see-also" class="doctools_section"><h2><a name="see-also">See Also</a></h2>
 <p><a href="../../../../index.html#bindtags">bindtags</a>, <a href="ntextBindings.html">ntextBindings</a>, <a href="ntextIndent.html">ntextIndent</a>, <a href="ntextWordBreak.html">ntextWordBreak</a>, <a href="../../../../index.html#re_syntax">re_syntax</a>, <a href="../../../../index.html#regexp">regexp</a>, <a href="../../../../index.html#text">text</a></p>

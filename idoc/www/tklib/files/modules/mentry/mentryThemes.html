@@ -10,10 +10,10 @@
 </head>
 
 <body>
-  <div align="center">
+  <div>
     <h1>Commands Related to Tile Themes</h1>
 
-    <h2>For Mentry Version 3.16</h2>
+    <h2>For Mentry Version 4.2</h2>
 
     <h3>by</h3>
 
@@ -44,7 +44,7 @@
     <code><b>mentry::setThemeDefaults</b></code> Command</a></li>
   </ul>
 
-  <div align="center">
+  <div>
     <p><a href="index.html">Start page</a></p>
   </div>
 
@@ -57,7 +57,7 @@
   current theme, to retrieve a list of the available themes, and to make sure
   that your widgets will have a theme-specific appearance.</p>
 
-  <div align="center">
+  <div>
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>
@@ -101,7 +101,7 @@
     <dd>mentry, theme, tile</dd>
   </dl>
 
-  <div align="center">
+  <div>
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>
@@ -141,7 +141,7 @@
     <dd>mentry, theme, tile</dd>
   </dl>
 
-  <div align="center">
+  <div>
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>
@@ -178,7 +178,7 @@
     <dd>mentry, theme, tile</dd>
   </dl>
 
-  <div align="center">
+  <div>
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>
@@ -251,18 +251,19 @@
     on Mac OS 10.15 (Catalina) and later also when changing the Highlight Color
     in the General Preferences.</dd>
 
-    <dd class="tm">Besides being used by the Mentry_tile code, this command can
-    also be invoked in Tcl scripts, still before creating any tile-based mentry
-    widget.&nbsp; By calling it explicitly and using the values written by it
-    into the array <code><b>mentry::themeDefaults</b></code>, you can make sure
-    that classical Tk widgets, e.g., text, will have a theme-specific
-    appearance, just like the tile widgets.&nbsp; For example, you can add some
-    common configuration options to the option database as follows:</dd>
+    <dd class="tm">Besides being used by Mentry_tile, this command can also be
+    invoked in application code, although with current Mentry_tile versions
+    there is no need for calling it explicitly.</dd>
+
+    <dd class="tm">By using the default values contained in the array
+    <code><b>mentry::themeDefaults</b></code>, you can make sure that classical
+    Tk widgets, e.g., text, will have a theme-specific appearance, just like
+    the tile widgets.&nbsp; For example, you can add some common configuration
+    options to the option database as follows:</dd>
 
     <dd>
       <blockquote>
         <pre>
-<span class="red">mentry::setThemeDefaults</span>
 if {[tk windowingsystem] eq "x11"} {
     option add *Text.background   $mentry::themeDefaults(-background)
     option add *Text.foreground   $mentry::themeDefaults(-foreground)
@@ -303,7 +304,7 @@ bind MentryMain &lt;&lt;MentryThemeDefaultsChanged&gt;&gt; ...
     <dd>mentry, theme, tile</dd>
   </dl>
 
-  <div align="center">
+  <div>
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>

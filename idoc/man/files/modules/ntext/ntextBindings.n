@@ -273,9 +273,9 @@ Database Class:	\\fB\\$3\\fR
 .SH NAME
 ntextBindings \- Alternative Bindings for the Text Widget
 .SH SYNOPSIS
-package require \fBTcl  8\&.5\fR
+package require \fBTcl  8\&.5-\fR
 .sp
-package require \fBTk  8\&.5\fR
+package require \fBTk  8\&.5-\fR
 .sp
 package require \fBntext  ?1\&.0?\fR
 .sp
@@ -381,7 +381,7 @@ These events include <<NtextCut>>, <<NtextCopy>>, <<NtextPaste>> which are used 
 .PP
 The definition of the virtual event <<NtextCut>> (etc) is similar to that of <<Cut>> (etc) in \fBTk\fR 8\&.6\&.
 .SH BUGS
-This version of \fBntext\fR is intended to be compatible with all releases of \fBTk\fR 8\&.5 and 8\&.6, and with the branches \fIcore-8-5-branch\fR, \fIcore-8-6-branch\fR, and \fItrunk\fR in the source code repository for \fBTk\fR\&.  Any incompatibility with any of these versions, for any \fBTk\fR windowing system, should be reported as a bug\&. Please report such in the category \fIntext\fR of the \fITklib Trackers\fR [http://core\&.tcl\&.tk/tklib/reportlist]\&.
+This version of \fBntext\fR is intended to be compatible with all releases of \fBTk\fR 8\&.5, 8\&.6, and 8\&.7, and with the branches \fIcore-8-5-branch\fR, \fIcore-8-6-branch\fR, and \fItrunk\fR in the source code repository for \fBTk\fR\&.  Any incompatibility with any of these versions, for any \fBTk\fR windowing system, should be reported as a bug\&. Please report such in the category \fIntext\fR of the \fITklib Trackers\fR [https://core\&.tcl-lang\&.org/tklib/reportlist]\&.
 .SH EXAMPLE
 To use \fINtext\fR but keep classic \fIText\fR 's variable-anchor feature:
 .CS

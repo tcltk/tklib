@@ -99,6 +99,8 @@
 
           + [shtmlview\_mkdoc](tklib/files/modules/shtmlview/shtmlview\-mkdoc\.md) shtmlview extension adding support for mkdoc markup
 
+          + [tipstack](tklib/files/modules/tooltip/tipstack\.md) Stacked tooltips
+
           + [tooltip](tklib/files/modules/tooltip/tooltip\.md) Tooltip management
 
           + [widget\_listentry](tklib/files/modules/widgetl/widget\_listentry\.md) widget::listentry widget

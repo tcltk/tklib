@@ -137,6 +137,8 @@
 
       * [tooltip]()
 
+          + [tipstack](tklib/files/modules/tooltip/tipstack\.md) Stacked tooltips
+
           + [tooltip](tklib/files/modules/tooltip/tooltip\.md) Tooltip management
 
       * [widget]()

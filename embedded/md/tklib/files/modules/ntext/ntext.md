@@ -36,14 +36,15 @@ ntext \- Alternative Bindings for the Text Widget
 
 # <a name='synopsis'></a>SYNOPSIS
 
-package require Tcl 8\.5  
-package require Tk 8\.5  
+package require Tcl 8\.5\-  
+package require Tk 8\.5\-  
 package require ntext ?1\.0?  
 
 [__::ntext::new\_textCopy__ *pathName*](#1)  
 [__::ntext::new\_textCut__ *pathName*](#2)  
 [__::ntext::new\_textPaste__ *pathName*](#3)  
 [__::ntext::syncIndentColor__ *pathName*](#4)  
+[__::ntext::syncTabColor__ *pathName*](#5)  
 
 # <a name='description'></a>DESCRIPTION
 
@@ -113,6 +114,14 @@ in place of the *Text* binding tag\.
     command is useful if a text widget has been created, text has been inserted
     in the widget, *and then* the value of __::ntext::indentColor__ is
     changed \(see *[ntextIndent](ntextIndent\.md)*\)\.
+
+  - <a name='5'></a>__::ntext::syncTabColor__ *pathName*
+
+    Command to apply the current values of the variables
+    __::ntext::tabColor__ and __::ntext::tabSelColor__ to tab spaces in
+    a text widget\. This command is useful if a text widget has been created,
+    text has been inserted in the widget, *and then* the value of
+    __::ntext::tabColor__ or __::ntext::tabSelColor__ is changed\.
 
 # <a name='section3'></a>CONFIGURATION OPTIONS
 
@@ -236,6 +245,32 @@ __::ntext::overwrite__
 
   - For more information see *[ntextBindings](ntextBindings\.md)*
 
+__::ntext::tabColor__
+
+  - __\{\}__ \- if the value is the empty string, then the tab spaces have the
+    same color as the widget background\.
+
+  - *color* \- a valid __[Tk](\.\./\.\./\.\./\.\./index\.md\#tk)__ color to use
+    for tab spaces \(default value *\#ffffaa*\)\.
+
+    The value of __::ntext::tabColor__ will often be set at startup\. If the
+    value is changed when text widgets already exist and contain text, those
+    widgets can be updated by calling command __::ntext::syncTabColor__\.
+
+__::ntext::tabSelColor__
+
+  - __\{\}__ \- if the value is the empty string, then the color of tab spaces
+    in the selection defaults to the same color as unselected tabs \(see
+    __::ntext::tabColor__\), and *not* to the widget *\-selectbackground*
+    color\.
+
+  - *color* \- a valid __[Tk](\.\./\.\./\.\./\.\./index\.md\#tk)__ color to use
+    for tab spaces in the selection \(default value *\#418bd4*\)\.
+
+    The value of __::ntext::tabSelColor__ will often be set at startup\. If
+    the value is changed when text widgets already exist and contain text, those
+    widgets can be updated by calling command __::ntext::syncTabColor__\.
+
 __::ntext::useBlockCursor__
 
   - __0__ \- the block cursor will not be used\. When the widget is in
@@ -256,13 +291,13 @@ __::ntext::useBlockCursor__
 # <a name='section4'></a>BUGS
 
 This version of __ntext__ is intended to be compatible with all releases of
-__[Tk](\.\./\.\./\.\./\.\./index\.md\#tk)__ 8\.5 and 8\.6, and with the branches
-*core\-8\-5\-branch*, *core\-8\-6\-branch*, and *trunk* in the source code
-repository for __[Tk](\.\./\.\./\.\./\.\./index\.md\#tk)__\. Any incompatibility
-with any of these versions, for any __[Tk](\.\./\.\./\.\./\.\./index\.md\#tk)__
-windowing system, should be reported as a bug\. Please report such in the
-category *ntext* of the [Tklib
-Trackers](http://core\.tcl\.tk/tklib/reportlist)\.
+__[Tk](\.\./\.\./\.\./\.\./index\.md\#tk)__ 8\.5, 8\.6, and 8\.7, and with the
+branches *core\-8\-5\-branch*, *core\-8\-6\-branch*, and *trunk* in the source
+code repository for __[Tk](\.\./\.\./\.\./\.\./index\.md\#tk)__\. Any
+incompatibility with any of these versions, for any
+__[Tk](\.\./\.\./\.\./\.\./index\.md\#tk)__ windowing system, should be reported
+as a bug\. Please report such in the category *ntext* of the [Tklib
+Trackers](https://core\.tcl\-lang\.org/tklib/reportlist)\.
 
 # <a name='section5'></a>EXAMPLE
 
@@ -272,7 +307,7 @@ To create a text widget \.t and use the *Ntext* bindings:
     text .t
     bindtags .t {.t Ntext . all}
 
-See bindtags for more information\.
+See __[bindtags](\.\./\.\./\.\./\.\./index\.md\#bindtags)__ for more information\.
 
 # <a name='seealso'></a>SEE ALSO
 

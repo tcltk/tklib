@@ -44,6 +44,7 @@ modules/tkpiechart/canvaslabel.man
 modules/tkpiechart/pie.man
 modules/tkpiechart/pieboxlabeler.man
 modules/tkpiechart/pieperipherallabeler.man
+modules/tooltip/tipstack.man
 modules/tooltip/tooltip.man
 modules/widget/widget.man
 modules/widget/widget_calendar.man

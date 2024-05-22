@@ -273,9 +273,9 @@ Database Class:	\\fB\\$3\\fR
 .SH NAME
 ntextIndent \- ntext Indentation for the Text Widget
 .SH SYNOPSIS
-package require \fBTcl  8\&.5\fR
+package require \fBTcl  8\&.5-\fR
 .sp
-package require \fBTk  8\&.5\fR
+package require \fBTk  8\&.5-\fR
 .sp
 package require \fBntext  ?1\&.0?\fR
 .sp
@@ -380,7 +380,7 @@ If the widget is in \fI-word\fR \fIwrap\fR mode, and if \fB::ntext::classicWrap\
 In other cases, i\&.e\&. if the widget is in \fI-word\fR \fIchar\fR or \fI-word\fR \fInone\fR mode, or if \fB::ntext::classicWrap\fR is set to \fB1\fR,  \fB::ntext::wrapIndent\fR will remove the indentation of the logical lines within the range specified by the function's arguments\&.
 .PP
 .SH BUGS
-This version of \fBntext\fR is intended to be compatible with all releases of \fBTk\fR 8\&.5 and 8\&.6, and with the branches \fIcore-8-5-branch\fR, \fIcore-8-6-branch\fR, and \fItrunk\fR in the source code repository for \fBTk\fR\&.  Any incompatibility with any of these versions, for any \fBTk\fR windowing system, should be reported as a bug\&. Please report such in the category \fIntext\fR of the \fITklib Trackers\fR [http://core\&.tcl\&.tk/tklib/reportlist]\&.
+This version of \fBntext\fR is intended to be compatible with all releases of \fBTk\fR 8\&.5, 8\&.6, and 8\&.7, and with the branches \fIcore-8-5-branch\fR, \fIcore-8-6-branch\fR, and \fItrunk\fR in the source code repository for \fBTk\fR\&.  Any incompatibility with any of these versions, for any \fBTk\fR windowing system, should be reported as a bug\&. Please report such in the category \fIntext\fR of the \fITklib Trackers\fR [https://core\&.tcl-lang\&.org/tklib/reportlist]\&.
 .SH EXAMPLES
 To switch on \fINtext\fR 's indentation and use it in widget \&.t, using the default indent color \fI#d9d9d9\fR:
 .CS

@@ -31,7 +31,7 @@
 |||
 |---|---|
 |<a name='background'></a>background|[canvas::gradient](tklib/files/modules/canvas/canvas\_gradient\.md)|
-|<a name='balloon'></a>balloon|[tooltip](tklib/files/modules/tooltip/tooltip\.md)|
+|<a name='balloon'></a>balloon|[tipstack](tklib/files/modules/tooltip/tipstack\.md) &#183; [tooltip](tklib/files/modules/tooltip/tooltip\.md)|
 |<a name='bindtags'></a>bindtags|[ntext](tklib/files/modules/ntext/ntext\.md) &#183; [ntextBindings](tklib/files/modules/ntext/ntextBindings\.md) &#183; [ntextIndent](tklib/files/modules/ntext/ntextIndent\.md) &#183; [ntextWordBreak](tklib/files/modules/ntext/ntextWordBreak\.md)|
 |<a name='bitmap'></a>bitmap|[bitmap\-editor](tklib/files/apps/bitmap\-editor\.md)|
 |<a name='box'></a>box|[diagram](tklib/files/modules/diagrams/diagram\.md)|
@@ -108,10 +108,10 @@
 
 |||
 |---|---|
-|<a name='help'></a>help|[tooltip](tklib/files/modules/tooltip/tooltip\.md)|
+|<a name='help'></a>help|[tipstack](tklib/files/modules/tooltip/tipstack\.md) &#183; [tooltip](tklib/files/modules/tooltip/tooltip\.md)|
 |<a name='highlighting'></a>highlighting|[canvas::highlight](tklib/files/modules/canvas/canvas\_highlight\.md)|
 |<a name='history'></a>history|[history](tklib/files/modules/history/tklib\_history\.md)|
-|<a name='hover'></a>hover|[tooltip](tklib/files/modules/tooltip/tooltip\.md)|
+|<a name='hover'></a>hover|[tipstack](tklib/files/modules/tooltip/tipstack\.md) &#183; [tooltip](tklib/files/modules/tooltip/tooltip\.md)|
 |<a name='html'></a>html|[shtmlview](tklib/files/apps/shtmlview\.md) &#183; [shtmlview](tklib/files/modules/shtmlview/shtmlview\.md) &#183; [shtmlview\_doctools](tklib/files/modules/shtmlview/shtmlview\-doctools\.md) &#183; [shtmlview\_mkdoc](tklib/files/modules/shtmlview/shtmlview\-mkdoc\.md)|
 
 
@@ -240,6 +240,7 @@
 |<a name='tags'></a>tags|[canvas::tag](tklib/files/modules/canvas/canvas\_tags\.md)|
 |<a name='text'></a>text|[ctext](tklib/files/modules/ctext/ctext\.md) &#183; [diagram](tklib/files/modules/diagrams/diagram\.md) &#183; [ntext](tklib/files/modules/ntext/ntext\.md) &#183; [ntextBindings](tklib/files/modules/ntext/ntextBindings\.md) &#183; [ntextIndent](tklib/files/modules/ntext/ntextIndent\.md) &#183; [ntextWordBreak](tklib/files/modules/ntext/ntextWordBreak\.md) &#183; [shtmlview](tklib/files/modules/shtmlview/shtmlview\.md)|
 |<a name='tile'></a>tile|[canvas::sqmap](tklib/files/modules/canvas/canvas\_sqmap\.md)|
+|<a name='tipstack'></a>tipstack|[tipstack](tklib/files/modules/tooltip/tipstack\.md)|
 |<a name='tk'></a>tk|[notifywindow](tklib/files/modules/notifywindow/notifywindow\.md)|
 |<a name='toolbar'></a>toolbar|[widget](tklib/files/modules/widget/widget\.md) &#183; [widget\_toolbar](tklib/files/modules/widget/widget\_toolbar\.md)|
 |<a name='tooltip'></a>tooltip|[tooltip](tklib/files/modules/tooltip/tooltip\.md)|

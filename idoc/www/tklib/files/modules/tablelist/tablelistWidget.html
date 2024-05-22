@@ -11,10 +11,10 @@
 </head>
 
 <body>
-  <div align="center">
+  <div>
     <h1>The <code><b>tablelist::tablelist</b></code> Command</h1>
 
-    <h2>For Tablelist Version 6.20</h2>
+    <h2>For Tablelist Version 7.2</h2>
 
     <h3>by</h3>
 
@@ -35,7 +35,7 @@
     <li><a href="#detailed_ref">Detailed Reference</a></li>
   </ul>
 
-  <div align="center">
+  <div>
     <p><a href="index.html">Start page</a></p>
   </div>
 
@@ -91,6 +91,9 @@
     <dd><code><b><a href="#activestyle">-activestyle</a></b>
     <b>frame</b>|<b>none</b>|<b>underline</b></code></dd>
 
+    <dd><code><b><a href="#aftercopycommand">-aftercopycommand</a></b>
+    <i>command</i></code></dd>
+
     <dd><code><b><a href="#arrowcolor">-arrowcolor</a></b>
     <i>color</i></code></dd>
 
@@ -98,11 +101,11 @@
     <i>color</i></code></dd>
 
     <dd><code><b><a href="#arrowstyle">-arrowstyle</a></b>
-    <b>flat6x4</b>|<b>flat7x4</b>|<b>flat7x5</b>|<b>flat7x7</b>|<b>flat8x4</b>|<b>flat8x5</b>|<br>
-    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;flat9x5</b>|<b>flat9x6</b>|<b>flat11x6</b>|<b>flat13x7</b>|<b>flat15x8</b>|<b>flatAngle7x4</b>|<br>
-    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;flatAngle7x5</b>|<b>flatAngle9x5</b>|<b>flatAngle9x6</b>|<b>flatAngle9x7</b>|<br>
-    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;flatAngle10x6</b>|<b>flatAngle10x7</b>|<b>flatAngle11x6</b>|<b>flatAngle13x7</b>|<br>
-    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;flatAngle15x8</b>|<b>photo7x4</b>|<b>photo7x7</b>|<b>photo9x5</b>|<b>photo11x6</b>|<br>
+    <b>flat7x4</b>|<b>flat7x7</b>|<b>flat8x4</b>|<b>flat8x5</b>|<b>flat9x5</b>|<b>flat10x5</b>|<br>
+    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;flat11x6</b>|<b>flat12x6</b>|<b>flat13x7</b>|<b>flat14x7</b>|<b>flat15x8</b>|<b>flat16x8</b>|<br>
+    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;flatAngle7x4</b>|<b>flatAngle7x5</b>|<b>flatAngle9x5</b>|<b>flatAngle9x6</b>|<br>
+    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;flatAngle10x6</b>|<b>flatAngle11x6</b>|<b>flatAngle13x7</b>|<b>flatAngle15x8</b>|<br>
+    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;photo0x0</b>|<b>photo7x4</b>|<b>photo7x7</b>|<b>photo9x5</b>|<b>photo11x6</b>|<br>
     &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;photo13x7</b>|<b>photo15x8</b>|<b>sunken8x7</b>|<b>sunken10x9</b>|<b>sunken12x11</b></code></dd>
 
     <dd><code><b><a href="#autofinishediting">-autofinishediting</a></b>
@@ -312,14 +315,14 @@
     <i>columnIndex</i></code></dd>
 
     <dd><code><b><a href="#treestyle">-treestyle</a></b>
-    <b>adwaita</b>|<b>ambiance</b>|<b>aqua</b>|<b>aqua11</b>|<b>arc</b>|<b>baghira</b>|<b>bicolor100</b>|<b>bicolor125</b>|<br>
-    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bicolor150</b>|<b>bicolor175</b>|<b>bicolor200</b>|<b>blueMenta</b>|<b>classic100</b>|<b>classic125</b>|<br>
-    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;classic150</b>|<b>classic175</b>|<b>classic200</b>|<b>dust</b>|<b>dustSand</b>|<b>gtk</b>|<b>klearlooks</b>|<br>
-    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mate</b>|<b>menta</b>|<b>mint</b>|<b>mint2</b>|<b>newWave</b>|<b>oxygen1</b>|<b>oxygen2</b>|<b>phase</b>|<b>plain100</b>|<br>
-    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;plain125</b>|<b>plain150</b>|<b>plain175</b>|<b>plain200</b>|<b>plastik</b>|<b>plastique</b>|<b>radiance</b>|<br>
-    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ubuntu</b>|<b>ubuntu2</b>|<b>ubuntu3</b>|<b>ubuntuMate</b>|<b>vistaAero</b>|<b>vistaClassic</b>|<br>
-    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;white100</b>|<b>white125</b>|<b>white150</b>|<b>white175</b>|<b>white200</b>|<b>win7Aero</b>|<b>win7Classic</b>|<br>
-    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;win10</b>|<b>winnative</b>|<b>winxpBlue</b>|<b>winxpOlive</b>|<b>winxpSilver</b>|<b>yuyo</b></code></dd>
+    <b>adwaita</b>|<b>ambiance</b>|<b>aqua</b>|<b>aqua11</b>|<b>arc</b>|<b>baghira</b>|<b>bicolor</b>|<b>bicolor100</b>|<br>
+    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bicolor125</b>|<b>bicolor150</b>|<b>bicolor175</b>|<b>bicolor200</b>|<b>blueMenta</b>|<b>classic</b>|<br>
+    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;classic100</b>|<b>classic125</b>|<b>classic150</b>|<b>classic175</b>|<b>classic200</b>|<b>dust</b>|<b>dustSand</b>|<br>
+    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gtk</b>|<b>klearlooks</b>|<b>mate</b>|<b>menta</b>|<b>mint</b>|<b>mint2</b>|<b>newWave</b>|<b>oxygen1</b>|<b>oxygen2</b>|<b>phase</b>|<br>
+    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;plain</b>|<b>plain100</b>|<b>plain125</b>|<b>plain150</b>|<b>plain175</b>|<b>plain200</b>|<b>plastik</b>|<b>plastique</b>|<br>
+    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;radiance</b>|<b>ubuntu</b>|<b>ubuntu2</b>|<b>ubuntu3</b>|<b>ubuntuMate</b>|<b>vistaAero</b>|<b>vistaClassic</b>|<br>
+    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;white</b>|<b>white100</b>|<b>white125</b>|<b>white150</b>|<b>white175</b>|<b>white200</b>|<b>win7Aero</b>|<br>
+    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;win7Classic</b>|<b>win10</b>|<b>winnative</b>|<b>winxpBlue</b>|<b>winxpOlive</b>|<b>winxpSilver</b>|<b>yuyo</b></code></dd>
 
     <dd><code><b><a href="#width">-width</a></b> <i>characters</i></code></dd>
 
@@ -333,6 +336,9 @@
 
     <dd><code><b><a href="#col_align">-align</a></b>
     <b>left</b>|<b>right</b>|<b>center</b></code></dd>
+
+    <dd><code><b><a href="#col_allowduplicates">-allowduplicates</a></b>
+    <i>boolean</i></code></dd>
 
     <dd><code><b><a href="#col_background">-background</a></b>
     <i>color</i></code>&nbsp; or&nbsp; <code><b>-bg</b>
@@ -1457,7 +1463,7 @@
     <dd>tablelist, multi-column, listbox, tree, widget</dd>
   </dl>
 
-  <div align="center">
+  <div>
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>
@@ -1682,10 +1688,6 @@ proc acceptChildCmd {tbl targetParentNodeIdx sourceRow} {
 }
 </pre>
         </blockquote>
-
-        <p>For technical reasons (the use of the <code><b>-elide</b></code>
-        text widget tag option for collapsing a row), this option is not
-        supported for Tk versions earlier than 8.3.</p>
       </blockquote>
     </dd>
 
@@ -1771,6 +1773,43 @@ proc acceptDropCmd {tbl targetRow sourceRow} {
       </blockquote>
     </dd>
 
+    <dd id="aftercopycommand">
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td>Command-Line Name:&nbsp;</td>
+          <td><code><b>-aftercopycommand</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Name:</td>
+          <td><code><b>&nbsp;afterCopyCommand</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Class:</td>
+          <td><code><b>&nbsp;AfterCopyCommand</b></code></td>
+        </tr>
+      </table>
+
+      <blockquote>
+        <p>Specifies a Tcl command to be invoked when after terminating the
+        interactive editing of a cell's content with one of the key sequences
+        <code>Alt-Return</code>, <code>Alt-KP_Enter</code>, <code>Alt-a</code>,
+        <code>Alt-d</code>, or <code>Alt-u</code>, the copying of the new cell
+        value to some other cells of the column is finished.&nbsp; On Mac OS
+        X/11+ Aqua the key sequence <code>Alt-a</code> is replaced with
+        <code>Control-Command-a</code>, and in the other key sequences the
+        <code>Alt</code> modifier is substituted with
+        <code>Command</code>.&nbsp; The command is automatically concatenated
+        with the path name of the tablelist widget and the column index of the
+        cell just edited, and the resulting script is evaluated in the global
+        scope.&nbsp; This option comes in handy, e.g., if the images embedded
+        into the column's cells are to be adapted to the updated cell
+        values.&nbsp; See the <a href="#cell_editing">INTERACTIVE CELL
+        EDITING</a> section for details on the editing process.</p>
+      </blockquote>
+    </dd>
+
     <dd id="arrowcolor">
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
@@ -1800,36 +1839,27 @@ proc acceptDropCmd {tbl targetRow sourceRow} {
         default value depends on the windowing system in the Tablelist package
         and on the current theme in Tablelist_tile.&nbsp; For example, if the
         windowing system is <code><b>x11</b></code> then the default arrow
-        color is <code>black</code> and the <code><b><a href=
-        "#arrowstyle">-arrowstyle</a></b></code> option has the default value
-        <code><b>flat8x4</b></code>.&nbsp; The same holds true for some tile
+        color is <code>black</code>.&nbsp; The same holds true for some tile
         themes, like <code><b>alt</b></code>, <code><b>clam</b></code>, and
         <code><b>default</b></code>.&nbsp; On the windowing system
         <code><b>win32</b></code>, the default arrow color is
         <code>#595959</code> for Windows 10+, <code>#569bc0</code> for Windows
         Vista, 7, and 8, <code>#aca899</code> for Windows XP, and an empty
-        string for older Windows versions, paired with the default arrow style
-        <code><b>flatAngle7x4</b></code>, <code><b>photo7x4</b></code>,
-        <code><b>flat9x5</b></code>, and <code><b>sunken8x7</b></code>,
-        respectively.&nbsp; Finally, for the windowing systems
-        <code><b>classic</b></code> and <code><b>aqua</b></code> on the
-        Macintosh, the default arrow color and style depend on the version of
-        the operating system:&nbsp; Starting with version 10.10 (Yosemite) of
-        Mac OS X, the default arrow color for the windowing system
-        <code><b>aqua</b></code> is <code>#404040</code> on Mac OS X and
-        <code>#878787</code> on macOS 11, and the default arrow style is
-        <code><b>flatAngle7x4</b></code>.&nbsp; For earlier operating system
-        versions on the Mac, the default values are the arrow color
-        <code>#777777</code> and the arrow style <code><b>flat7x7</b></code>
-        (or <code><b>photo7x7</b></code>, in the presence of PNG support).</p>
+        string for older Windows versions.&nbsp; Finally, for the windowing
+        system <code><b>aqua</b></code> on the Macintosh and for the
+        <code><b>aqua</b></code> theme, the default arrow color depends on the
+        version of the operating system:&nbsp; Starting with version 10.10
+        (Yosemite) of Mac OS X, the default arrow color is <code>#404040</code>
+        on Mac OS X and <code>#878787</code> on macOS 11+, while for earlier
+        operating system versions the default is <code>#777777</code>.</p>
 
         <p><b>REMARK:</b>&nbsp; If the arrow color is as empty string then the
         sort arrow will inherit the background color of the header label in
-        which it is placed.&nbsp; In this case, the arrow style should be set
-        to one of <code><b>sunken8x7</b></code>,
-        <code><b>sunken10x9</b></code>, or <code><b>sunken12x11</b></code>,
-        which will give rise to sort arrows with 3-D border and sunken
-        relief.</p>
+        which it is placed.&nbsp; In this case, the <code><b><a href=
+        "#arrowstyle">-arrowstyle</a></b></code> option should be set to one of
+        <code><b>sunken8x7</b></code>, <code><b>sunken10x9</b></code>, or
+        <code><b>sunken12x11</b></code>, which will give rise to sort arrows
+        with 3-D border and sunken relief.</p>
       </blockquote>
     </dd>
 
@@ -1895,39 +1925,23 @@ proc acceptDropCmd {tbl targetRow sourceRow} {
         Tcl command associated with the widget.&nbsp; This option is only
         relevant if the value of the <code><b><a href=
         "#showarrow">-showarrow</a></b></code> option is true.&nbsp; The
-        currently supported values are <code><b>flat6x4</b></code>,
-        <code><b>flat7x4</b></code>, <code><b>flat7x5</b></code>,
+        currently supported values are <code><b>flat7x4</b></code>,
         <code><b>flat7x7</b></code>, <code><b>flat8x4</b></code>,
-        <code><b>flat8x5</b></code>, <code><b>flat9x5</b></code>,
-        <code><b>flat9x6</b></code>, <code><b>flat11x6</b></code>,
-        <code><b>flat13x7</b></code>, <code><b>flat15x8</b></code>,
+        <code><b>flat8x5</b></code>,
+        <code><b>flat9x5</b></code>, <code><b>flat10x5</b></code>,
+        <code><b>flat11x6</b></code>, <code><b>flat12x6</b></code>,
+        <code><b>flat13x7</b></code>, <code><b>flat14x7</b></code>,
+        <code><b>flat15x8</b></code>, <code><b>flat16x8</b></code>,
         <code><b>flatAngle7x4</b></code>, <code><b>flatAngle7x5</b></code>,
         <code><b>flatAngle9x5</b></code>, <code><b>flatAngle9x6</b></code>,
-        <code><b>flatAngle9x7</b></code>, <code><b>flatAngle10x6</b></code>,
-        <code><b>flatAngle10x7</b></code>, <code><b>flatAngle11x6</b></code>,
+        <code><b>flatAngle10x6</b></code>, <code><b>flatAngle11x6</b></code>,
         <code><b>flatAngle13x7</b></code>, <code><b>flatAngle15x8</b></code>,
-        <code><b>photo7x4</b></code>, <code><b>photo7x7</b></code>,
-        <code><b>photo9x5</b></code>, <code><b>photo11x6</b></code>,
-        <code><b>photo13x7</b></code>, <code><b>photo15x8</b></code>,
-        <code><b>sunken8x7</b></code>, <code><b>sunken10x9</b></code>, and
-        <code><b>sunken12x11</b></code>, as shown in the picture below.&nbsp;
-        The default value depends on the windowing system in the Tablelist
-        package and on the current theme in Tablelist_tile; see the description
-        of the <code><b><a href="#arrowcolor">-arrowcolor</a></b></code> option
-        for details.&nbsp; As mentioned there, the default arrow style on X11
-        and in some tile themes is <code><b>flat8x4</b></code>.&nbsp; While
-        this is in most cases true, notice that the default chosen by Tablelist
-        can also be <code><b>flat9x5</b></code>, <code><b>flat11x6</b></code>,
-        <code><b>flat13x7</b></code>, or <code><b>flat15x8</b></code>,
-        depending on the display's scaling level.&nbsp; Similarly, on Windows
-        10+ the default arrow style is <code><b>flatAngle7x4</b></code>,
-        <code><b>flatAngle9x5</b></code>, <code><b>flatAngle11x6</b></code>,
-        <code><b>flatAngle13x7</b></code>, or
-        <code><b>flatAngle15x8</b></code>, and on Windows Vista, 7, and 8, the
-        default chosen by Tablelist is <code><b>photo7x4</b></code>,
-        <code><b>photo9x5</b></code>, <code><b>photo11x6</b></code>,
-        <code><b>photo13x7</b></code>, or <code><b>photo15x8</b></code>,
-        depending on the display's scaling level.</p>
+        <code><b>photo0x0</b></code>, <code><b>photo7x4</b></code>,
+        <code><b>photo7x7</b></code>, <code><b>photo9x5</b></code>,
+        <code><b>photo11x6</b></code>, <code><b>photo13x7</b></code>,
+        <code><b>photo15x8</b></code>, <code><b>sunken8x7</b></code>,
+        <code><b>sunken10x9</b></code>, and <code><b>sunken12x11</b></code>, as
+        shown in the picture below:</p>
 
         <p><img src="arrowStyles.png" alt="Arrow Styles" width="826" height=
         "113"></p>
@@ -1943,30 +1957,68 @@ proc acceptDropCmd {tbl targetRow sourceRow} {
         "#arrowdisabledcolor">-arrowdisabledcolor</a></b></code> options have
         no effect.</p>
 
+        <p>The arrow style <code><b>photo0x0</b></code> uses SVG images that
+        will scale <i>automatically</i> according to the display's <i>real</i>
+        scaling percentage, which can be greater than <code>200</code> (the
+        maximum value of the variable
+        <code><b>tablelist::scalingpct</b></code>).&nbsp; This comes in handy
+        especially when running Androwish on a tablet or smartphone.&nbsp; This
+        arrow style is only supported if the Tk version is either at least 8.7
+        (with built-in SVG support), or 8.6 and the tksvg extension can be
+        loaded into the interpreter.&nbsp; The sort arrows of this arrow style
+        are quite similar to those of the styles <code><b>flat8x4</b></code>,
+        <code><b>flat10x5</b></code>, <code><b>flat12x6</b></code>,
+        <code><b>flat14x7</b></code>, and <code><b>flat16x8</b></code>, except
+        that they are rendered using anti-aliasing and are unlimitedly
+        scalable.</p>
+
+        <p>Finally, the arrow style <code><b>photo7x7</b></code> uses PNG
+        images that look and behave very close to the native sort arrows on Mac
+        OS X Aqua versions earlier than 10.10 (Yosemite).&nbsp; This arrow
+        style is only supported if the Tk version is either at least 8.6 (with
+        built-in PNG support), or 8.5 and the <code><b>img::png</b></code>
+        package can be loaded into the interpreter.&nbsp; When using this arrow
+        style, the <code><b><a href="#arrowcolor">-arrowcolor</a></b></code>
+        and <code><b><a href=
+        "#arrowdisabledcolor">-arrowdisabledcolor</a></b></code> options have
+        no effect, but, due to the transparency information contained in the
+        PNG images, the arrows will automatically adapt their color to the
+        various states of the header labels, just like the native sort
+        arrows.</p>
+
+        <p>The default value depends on the windowing system in the Tablelist
+        package and on the current theme in Tablelist_tile.&nbsp; On X11 and in
+        some tile themes the default arrow style is
+        <code><b>photo0x0</b></code> in the presence of SVG support and
+        (depending on the display's scaling level) one of
+        <code><b>flat8x4</b></code>, <code><b>flat10x5</b></code>,
+        <code><b>flat12x6</b></code>, <code><b>flat14x7</b></code>, or
+        <code><b>flat16x8</b></code> (see the 4th column of the above picture)
+        otherwise.&nbsp; On Windows 10+ the default is
+        <code><b>flatAngle7x4</b></code>, <code><b>flatAngle9x5</b></code>,
+        <code><b>flatAngle11x6</b></code>, <code><b>flatAngle13x7</b></code>,
+        or <code><b>flatAngle15x8</b></code> (shown in the third column), and
+        on Windows Vista, 7, and 8, the default chosen by Tablelist is
+        <code><b>photo7x4</b></code>, <code><b>photo9x5</b></code>,
+        <code><b>photo11x6</b></code>, <code><b>photo13x7</b></code>, or
+        <code><b>photo15x8</b></code> (shown in the second column of the
+        picture), depending on the display's scaling level.&nbsp; In the
+        Classic theme of Windows Vista, 7, and 8, the default arrow style is
+        one of the values shown in the first column of the picture.&nbsp;
+        Finally, for the windowing system <code><b>aqua</b></code> on the
+        Macintosh and for the <code><b>aqua</b></code> theme, the default arrow
+        style depends on the version of the operating system:&nbsp; Starting
+        with version 10.10 (Yosemite) of Mac OS X, the default arrow style is 
+        <code><b>flatAngle7x4</b></code>, while for earlier operating system
+        versions the default is <code><b>photo7x7</b></code> in the presence of
+        PNG support and <code><b>flat7x7</b></code> otherwise.</p>
+
         <p>On Windows Vista, 7, 8, and 10+, the sort arrows are shown
         horizontally centered in the header labels, just below their top
         edges:</p>
 
         <p><img src="arrowStyles_vista.png" alt="Arrow Styles Vista" width=
         "824" height="123"></p>
-
-        <p>The arrow style <code><b>photo7x7</b></code> uses PNG images that
-        look and behave very close to the native sort arrows on Mac OS X Aqua
-        versions earlier than 10.10 (Yosemite).&nbsp; This arrow style is only
-        supported if the Tk version is either 8.6 (with built-in PNG support),
-        or 8.5 and the <code><b>img::png</b></code> package can be loaded into
-        the interpreter.&nbsp; When supported, <code><b>photo7x7</b></code>
-        will be the default value of the <code><b>-arrowstyle</b></code> option
-        in Tablelist_tile with the <code><b>aqua</b></code> theme for Mac OS X
-        versions earlier than 10.10 (otherwise <code><b>flat7x7</b></code> will
-        be used as default for these earlier OS X versions).&nbsp; When using
-        this arrow style, the <code><b><a href=
-        "#arrowcolor">-arrowcolor</a></b></code> and <code><b><a href=
-        "#arrowdisabledcolor">-arrowdisabledcolor</a></b></code> options have
-        no effect, but, due to the transparency information contained in the
-        PNG images, the arrows will automatically adapt their color to the
-        various states of the header labels, just like the native sort
-        arrows.</p>
       </blockquote>
     </dd>
 
@@ -2065,10 +2117,6 @@ proc acceptDropCmd {tbl targetRow sourceRow} {
         the tablelist widget and the row index, and the resulting script is
         evaluated in the global scope, before hiding the descendants of the row
         in question.</p>
-
-        <p>For technical reasons (the use of the <code><b>-elide</b></code>
-        text widget tag option for collapsing a row), this option is not
-        supported for Tk versions earlier than 8.3.</p>
       </blockquote>
     </dd>
 
@@ -2111,8 +2159,8 @@ proc acceptDropCmd {tbl targetRow sourceRow} {
           <li>the path name of the tablelist's body or header text widget;</li>
 
           <li>the full key of the item containing the element being processed
-          (remember that this starts with the prefix <code><b>k</b></code> for
-          a body item and with <code><b>hk</b></code> for a header item);</li>
+          (recall that this starts with the prefix <code><b>k</b></code> for a
+          body item and with <code><b>hk</b></code> for a header item);</li>
 
           <li>the numerical row or header row index of that item;</li>
 
@@ -2551,10 +2599,6 @@ proc myColorizeCmd {tbl textWidget key row col tabIdx1 tabIdx2 inStripe selected
         evaluated in the global scope, before displaying the children of the
         row in question.</p>
 
-        <p>For technical reasons (the use of the <code><b>-elide</b></code>
-        text widget tag option for collapsing a row), this option is not
-        supported for Tk versions earlier than 8.3.</p>
-
         <p><b>REMARK:</b>&nbsp; It is common practice to use the command
         specified as the value of this option to insert the children of the row
         that is about to be expanded, if it has no children yet.&nbsp; For
@@ -2612,10 +2656,10 @@ proc expandCmd {tbl row} {
         the editing process even if the final text of the temporary embedded
         widget used for the editing equals its initial one, and will also be
         invoked when the interactive cell editing is canceled (in the latter
-        case, the text passed to it as last argument will be the cell's
+        case, the text passed to it as last argument will be the edit window's
         original content, not its final one).&nbsp; The default value of this
         option is <code>0</code>, meaning that the command will only be invoked
-        on normal termination of the editing process, if the final text of the
+        on normal termination of the editing process if the final text of the
         temporary embedded widget is different from its initial one.&nbsp; See
         the <a href="#cell_editing">INTERACTIVE CELL EDITING</a> section for
         details on the editing process.</p>
@@ -2833,13 +2877,9 @@ proc expandCmd {tbl row} {
         <p>Specifies the <code><b>-activebackground</b></code> option for the
         header labels, i.e., the background color to use when the mouse cursor
         is positioned over a header label and the value of
-        <code><b>tk_strictMotif</b></code> is false.&nbsp; This option is only
-        defined in the Tablelist package if the Tk version being used supports
-        the <code><b>-activebackground</b></code> option for label
-        widgets.&nbsp; This is checked by Tablelist at initialization time, and
-        will normally be the case for Tk versions 8.3.2 or higher.&nbsp; On the
-        other hand, the Tablelist_tile package doesn't support the
-        <code><b>-labelactivebackground</b></code> option.</p>
+        <code><b>tk_strictMotif</b></code> is false.&nbsp; The Tablelist_tile
+        package doesn't support the <code><b>-labelactivebackground</b></code>
+        option.</p>
       </blockquote>
     </dd>
 
@@ -2865,13 +2905,9 @@ proc expandCmd {tbl row} {
         <p>Specifies the <code><b>-activeforeground</b></code> option for the
         header labels, i.e., the foreground color to use when the mouse cursor
         is positioned over a header label and the value of
-        <code><b>tk_strictMotif</b></code> is false.&nbsp; This option is only
-        defined in the Tablelist package if the Tk version being used supports
-        the <code><b>-activeforeground</b></code> option for label
-        widgets.&nbsp; This is checked by Tablelist at initialization time, and
-        will normally be the case for Tk versions 8.3.2 or higher.&nbsp; On the
-        other hand, the Tablelist_tile package doesn't support the
-        <code><b>-labelactiveforeground</b></code> option.</p>
+        <code><b>tk_strictMotif</b></code> is false.&nbsp; The Tablelist_tile
+        package doesn't support the <code><b>-labelactiveforeground</b></code>
+        option.</p>
       </blockquote>
     </dd>
 
@@ -3035,13 +3071,8 @@ proc expandCmd {tbl row} {
         <p>Specifies the <code><b>-disabledforeground</b></code> option for the
         header labels, i.e., the foreground color to use for the labels when
         the tablelist's <code><b><a href="#state">state</a></b></code> is
-        <code><b>disabled</b></code>.&nbsp; This option is only defined in the
-        Tablelist package if the Tk version being used supports the
-        <code><b>-disabledforeground</b></code> option for label widgets.&nbsp;
-        This is checked by Tablelist at initialization time, and will normally
-        be the case for Tk versions 8.3.1 or higher.&nbsp; On the other hand,
-        the Tablelist_tile package doesn't support the
-        <code><b>-labeldisabledforeground</b></code> option.</p>
+        <code><b>disabled</b></code>.&nbsp; The Tablelist_tile package doesn't
+        support the <code><b>-labeldisabledforeground</b></code> option.</p>
       </blockquote>
     </dd>
 
@@ -3345,8 +3376,8 @@ for {set row 0} {$row &lt; 1000} {incr row} {
         interactively.&nbsp; The default value is <code><b>icon</b></code> on
         the windowing systems <code><b>x11</b></code> and
         <code><b>win32</b></code>, and the native cursor
-        <code><b>closedhand</b></code> on the Macintosh windowing systems
-        <code><b>classic</b></code> and <code><b>aqua</b></code>.</p>
+        <code><b>closedhand</b></code> on the Macintosh windowing system
+        <code><b>aqua</b></code>.</p>
       </blockquote>
     </dd>
 
@@ -3373,8 +3404,8 @@ for {set row 0} {$row &lt; 1000} {incr row} {
         interactively.&nbsp; The default value is <code><b>hand2</b></code> on
         the windowing systems <code><b>x11</b></code> and
         <code><b>win32</b></code>, and the native cursor
-        <code><b>pointinghand</b></code> on the Macintosh windowing systems
-        <code><b>classic</b></code> and <code><b>aqua</b></code>.</p>
+        <code><b>pointinghand</b></code> on the Macintosh windowing system
+        <code><b>aqua</b></code>.</p>
       </blockquote>
     </dd>
 
@@ -3407,10 +3438,6 @@ for {set row 0} {$row &lt; 1000} {incr row} {
         scope.&nbsp; It is expected that this script will insert the children
         of the row in question, without expanding the node or changing its
         appearance in any other way.</p>
-
-        <p>For technical reasons (the use of the <code><b>-elide</b></code>
-        text widget tag option for collapsing a row), this option is not
-        supported for Tk versions earlier than 8.3.</p>
 
         <p><b>REMARK:</b>&nbsp; There are many similarities between this option
         and <code><b><a href=
@@ -3557,7 +3584,7 @@ proc expandCmd {tbl row} {
         <code><b>sb_h_double_arrow</b></code> on the windowing systems
         <code><b>x11</b></code> and <code><b>win32</b></code>, and the native
         cursor <code><b>resizeleftright</b></code> on the Macintosh windowing
-        systems <code><b>classic</b></code> and <code><b>aqua</b></code>.</p>
+        system <code><b>aqua</b></code>.</p>
       </blockquote>
     </dd>
 
@@ -4356,10 +4383,6 @@ option add *Tablelist.showHorizSeparator 0
         can easily distinguish it from the other separators by means of its
         background color, which is different from that of the other
         separators.</p>
-
-        <p>For technical reasons (the use of the <code><b>-elide</b></code>
-        option for a text widget tag), this option is not supported for Tk
-        versions earlier than 8.3.</p>
       </blockquote>
     </dd>
 
@@ -4590,10 +4613,6 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
         it will be updated automatically whenever columns are inserted,
         deleted, or moved.&nbsp; The default value is <code>0</code>.</p>
 
-        <p>For technical reasons (the use of the <code><b>-elide</b></code>
-        text widget tag option for collapsing a row), this option is not
-        supported for Tk versions earlier than 8.3.</p>
-
         <p><b>REMARK:</b>&nbsp; Please note that the tree structure will only
         be displayed as expected if the column specified by this option is
         left-aligned.&nbsp; It is your responsibility to make sure that this
@@ -4749,7 +4768,7 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
               "54"></td>
               <td><img src="win7Classic.png" alt="win7Classic" width="120"
               height="51"></td>
-              <td><img src="win10.png" alt="win110" width="120" height=
+              <td><img src="win10.png" alt="win10" width="120" height=
               "54"></td>
             </tr>
 
@@ -4792,7 +4811,7 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
         <p>The sizes used by the tree styles <code><b>vistaAero</b></code>,
         <code><b>vistaClassic</b></code>, <code><b>win7Aero</b></code>,
         <code><b>win7Classic</b></code>, and <code><b>win10</b></code> are
-        <i>automatically</i> adapted to the display's scaling level.&nbsp;
+        <i>automatically</i> adapted to the display's scaling percentage.&nbsp;
         Platform-independent <i>manual</i> scaling is supported by the
         following tree styles:</p>
 
@@ -4817,13 +4836,13 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
             <tr>
               <td><img src="plain100.png" alt="plain100" width="120" height=
               "57"></td>
-              <td><img src="plain125.png" alt="plain125" width="140" height=
+              <td><img src="plain125.png" alt="plain125" width="150" height=
               "69"></td>
-              <td><img src="plain150.png" alt="plain150" width="160" height=
+              <td><img src="plain150.png" alt="plain150" width="180" height=
               "81"></td>
-              <td><img src="plain175.png" alt="plain175" width="185" height=
+              <td><img src="plain175.png" alt="plain175" width="210" height=
               "93"></td>
-              <td><img src="plain200.png" alt="plain200" width="210" height=
+              <td><img src="plain200.png" alt="plain200" width="240" height=
               "105"></td>
             </tr>
 
@@ -4840,13 +4859,13 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
             <tr>
               <td><img src="bicolor100.png" alt="bicolor100" width="120"
               height="57"></td>
-              <td><img src="bicolor125.png" alt="bicolor125" width="140"
+              <td><img src="bicolor125.png" alt="bicolor125" width="150"
               height="69"></td>
-              <td><img src="bicolor150.png" alt="bicolor150" width="160"
+              <td><img src="bicolor150.png" alt="bicolor150" width="180"
               height="81"></td>
-              <td><img src="bicolor175.png" alt="bicolor175" width="185"
+              <td><img src="bicolor175.png" alt="bicolor175" width="210"
               height="93"></td>
-              <td><img src="bicolor200.png" alt="bicolor200" width="210"
+              <td><img src="bicolor200.png" alt="bicolor200" width="240"
               height="105"></td>
             </tr>
 
@@ -4863,13 +4882,13 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
             <tr>
               <td><img src="white100.png" alt="white100" width="120"
               height="57"></td>
-              <td><img src="white125.png" alt="white125" width="140"
+              <td><img src="white125.png" alt="white125" width="150"
               height="69"></td>
-              <td><img src="white150.png" alt="white150" width="160"
+              <td><img src="white150.png" alt="white150" width="180"
               height="81"></td>
-              <td><img src="white175.png" alt="white175" width="185"
+              <td><img src="white175.png" alt="white175" width="210"
               height="93"></td>
-              <td><img src="white200.png" alt="white200" width="210"
+              <td><img src="white200.png" alt="white200" width="240"
               height="105"></td>
             </tr>
 
@@ -4885,13 +4904,13 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
             <tr>
               <td><img src="classic100.png" alt="classic100" width="120"
               height="57"></td>
-              <td><img src="classic125.png" alt="classic125" width="140"
+              <td><img src="classic125.png" alt="classic125" width="150"
               height="69"></td>
-              <td><img src="classic150.png" alt="classic150" width="160"
+              <td><img src="classic150.png" alt="classic150" width="180"
               height="81"></td>
-              <td><img src="classic175.png" alt="classic175" width="185"
+              <td><img src="classic175.png" alt="classic175" width="210"
               height="93"></td>
-              <td><img src="classic200.png" alt="classic200" width="210"
+              <td><img src="classic200.png" alt="classic200" width="240"
               height="105"></td>
             </tr>
 
@@ -4915,14 +4934,30 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
         <code><b>arc</b></code>, <code><b>oxygen2</b></code>,
         <code><b>aqua</b></code>, <code><b>vistaAero</b></code>,
         <code><b>win7Aero</b></code>, <code><b>win10</b></code>,
-        <code><b>newWave</b></code>, <code><b>plain*</b></code>, or
-        <code><b>bicolor*</b></code>, and the Tk version is either 8.6 (with
-        built-in PNG support) or 8.5 and the <code><b>img::png</b></code>
+        <code><b>newWave</b></code>, <code><b>plain*</b></code>,
+        <code><b>bicolor*</b></code>, <code><b>white*</b></code>, or
+        <code><b>classic*</b></code>, and the Tk version is either at least 8.6
+        (with built-in PNG support) or 8.5 and the <code><b>img::png</b></code>
         package can be loaded into the interpreter, then the images used for
         displaying the expand/collapse controls are PNG images with alpha
-        channel.&nbsp; Otherwise (i.e., for the other tree styles or in the
-        absence of PNG support) GIF images are used for the expand/collapse
-        controls.</p>
+        channel.&nbsp; Otherwise (i.e., for the other tree styles shown in the
+        first table above or in the absence of PNG support) GIF images are used
+        for the expand/collapse controls.</p>
+
+        <p>If the Tk version is either at least 8.7 (with built-in SVG
+        support), or 8.6 and the tksvg extension can be loaded into the
+        interpreter, then Tablelist supports the additional tree styles
+        <code><b>plain</b></code>, <code><b>bicolor</b></code>,
+        <code><b>white</b></code>, and <code><b>classic</b></code>, which are
+        quite similar to the styles <code><b>plain*</b></code>,
+        <code><b>bicolor*</b></code>, <code><b>white*</b></code>, and
+        <code><b>classic*</b></code>, respectively, except that they use SVG
+        images whose sizes are <i>automatically</i> adapted to the display's
+        <i>real</i> scaling percentage, which can be greater than
+        <code>200</code> (the maximum value of the variable
+        <code><b>tablelist::scalingpct</b></code>).&nbsp; These unlimitedly
+        scalable tree styles come in handy especially when running Androwish on
+        a tablet or smartphone.</p>
 
         <p>The following table contains a detailed description of the tree
         styles, in alphabetical order:</p>
@@ -4956,9 +4991,8 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr valign="top">
                   <td>Tablelist:&nbsp;</td>
-                  <td>Default for the windowing systems
-                  <code><b>aqua</b></code> on Mac OS X and
-                  <code><b>classic</b></code>.</td>
+                  <td>Default for the windowing system <code><b>aqua</b></code>
+                  on Mac OS X.</td>
                 </tr>
 
                 <tr valign="top">
@@ -4979,13 +5013,13 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
                 <tr valign="top">
                   <td>Tablelist:&nbsp;</td>
                   <td>Default for the windowing system <code><b>aqua</b></code>
-                  on macOS 11.</td>
+                  on macOS 11+.</td>
                 </tr>
 
                 <tr valign="top">
                   <td>Tablelist_tile:&nbsp;</td>
                   <td>Default for the <code><b>aqua</b></code> theme on macOS
-                  11.</td>
+                  11+.</td>
                 </tr>
               </table>
             </td>
@@ -5015,17 +5049,63 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
           </tr>
 
           <tr>
+            <td><code><b>bicolor</b></code></td>
+            <td><img src="bicolor.png" alt="bicolor" width="120" height=
+            "57"></td>
+            <td>
+              Uses SVG images that scale automatically, according to the
+              display's real scaling percentage.<br>
+              <table border="0" cellpadding="0" cellspacing="0">
+                <tr valign="top">
+                  <td>Tablelist_tile:&nbsp;</td>
+                  <td>Default for the themes <code><b>breeze</b></code>,
+                  <code><b>awbreeze</b></code>, <code><b>awlight</b></code>,
+                  <code><b>awwinxpblue</b></code>, and
+                  <code><b>sun-valley-light</b></code>, if SVG support is
+                  available.</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <tr>
             <td><code><b>bicolor100</b></code>,<br>
             . . .<br>
             <code><b>bicolor200</b></code></td>
             <td><img src="bicolor100.png" alt="bicolor100" width="120" height=
             "57"></td>
-            <td>While the tree style <code><b>bicolor100</b></code> uses
-            "normal" sizes, the four other styles are suitable for use with
-            large fonts and images (needed on high-resolution displays).<br>
-            Tablelist_tile: Default for the themes <code><b>awblack</b></code>,
-            <code><b>awbreeze</b></code>, <code><b>awlight</b></code>, and
-            <code><b>awwinxpblue</b></code> of the awthemes package.</td>
+            <td>
+              While the tree style <code><b>bicolor100</b></code> uses
+              "normal" sizes, the four other styles are suitable for use with
+              large fonts and images (needed on high-resolution displays).<br>
+              <table border="0" cellpadding="0" cellspacing="0">
+                <tr valign="top">
+                  <td>Tablelist_tile:&nbsp;</td>
+                  <td>Default for the themes <code><b>breeze</b></code>,
+                  <code><b>awbreeze</b></code>, <code><b>awlight</b></code>,
+                  <code><b>awwinxpblue</b></code>, and
+                  <code><b>sun-valley-light</b></code>, in the absence of SVG
+                  support.</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <tr>
+            <td><code><b>classic</b></code></td>
+            <td><img src="classic.png" alt="classic" width="120" height=
+            "57"></td>
+            <td>
+              Uses SVG images that scale automatically, according to the
+              display's real scaling percentage.<br>
+              <table border="0" cellpadding="0" cellspacing="0">
+                <tr valign="top">
+                  <td>Tablelist_tile:&nbsp;</td>
+                  <td>Default for the <code><b>awarc</b></code> theme, if SVG
+                  support is available.</td>
+                </tr>
+              </table>
+            </td>
           </tr>
 
           <tr>
@@ -5034,11 +5114,18 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
             <code><b>classic200</b></code></td>
             <td><img src="classic100.png" alt="classic100" width="120" height=
             "57"></td>
-            <td>While the tree style <code><b>classic100</b></code> uses
-            "normal" sizes, the four other styles are suitable for use with
-            large fonts and images (needed on high-resolution displays).<br>
-            Tablelist_tile: Default for the <code><b>awarc</b></code> theme of
-            the awthemes package.</td>
+            <td>
+              While the tree style <code><b>classic100</b></code> uses
+              "normal" sizes, the four other styles are suitable for use with
+              large fonts and images (needed on high-resolution displays).<br>
+              <table border="0" cellpadding="0" cellspacing="0">
+                <tr valign="top">
+                  <td>Tablelist_tile:&nbsp;</td>
+                  <td>Default for the <code><b>awarc</b></code> theme, in the
+                  absence of SVG support.</td>
+                </tr>
+              </table>
+            </td>
           </tr>
 
           <tr>
@@ -5187,16 +5274,39 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
           </tr>
 
           <tr>
+            <td><code><b>plain</b></code></td>
+            <td><img src="plain.png" alt="plain" width="120" height="57"></td>
+            <td>
+              Uses SVG images that scale automatically, according to the
+              display's real scaling percentage.<br>
+              <table border="0" cellpadding="0" cellspacing="0">
+                <tr valign="top">
+                  <td>Tablelist_tile:&nbsp;</td>
+                  <td>Default for the <code><b>awclearlooks</b></code> theme,
+                  if SVG support is available.</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <tr>
             <td><code><b>plain100</b></code>,<br>
             . . .<br>
             <code><b>plain200</b></code></td>
             <td><img src="plain100.png" alt="plain100" width="120" height=
             "57"></td>
-            <td>While the tree style <code><b>plain100</b></code> uses "normal"
-            sizes, the four other styles are suitable for use with large fonts
-            and images (needed on high-resolution displays).<br>
-            Tablelist_tile: Default for the <code><b>awclearlooks</b></code>
-            theme of the awthemes package.</td>
+            <td>
+              While the tree style <code><b>plain100</b></code> uses "normal"
+              sizes, the four other styles are suitable for use with large
+              fonts and images (needed on high-resolution displays).<br>
+              <table border="0" cellpadding="0" cellspacing="0">
+                <tr valign="top">
+                  <td>Tablelist_tile:&nbsp;</td>
+                  <td>Default for the <code><b>awclearlooks</b></code> theme,
+                  in the absence of SVG support.</td>
+                </tr>
+              </table>
+            </td>
           </tr>
 
           <tr>
@@ -5315,16 +5425,47 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
           </tr>
 
           <tr>
+            <td><code><b>white</b></code></td>
+            <td><img src="white.png" alt="white" width="120" height="57"></td>
+            <td>
+              Uses SVG images that scale automatically, according to the
+              display's real scaling percentage.<br>
+              <table border="0" cellpadding="0" cellspacing="0">
+                <tr valign="top">
+                  <td>Tablelist_tile:&nbsp;</td>
+                  <td>Default for the themes <code><b>black</b></code>,
+                  <code><b>awblack</b></code>,
+                  <code><b>breeze-dark</b></code>,
+                  <code><b>awbreezedark</b></code>, <code><b>awdark</b></code>,
+                  and <code><b>sun-valley-dark</b></code>, if SVG support is
+                  available.</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <tr>
             <td><code><b>white100</b></code>,<br>
             . . .<br>
             <code><b>white200</b></code></td>
             <td><img src="white100.png" alt="white100" width="120" height=
             "57"></td>
-            <td>While the tree style <code><b>white100</b></code> uses "normal"
-            sizes, the four other styles are suitable for use with large fonts
-            and images (needed on high-resolution displays).<br>
-            Tablelist_tile: Default for the themes <code><b>awdark</b></code>
-            and <code><b>awbreezedark</b></code> of the awthemes package.</td>
+            <td>
+              While the tree style <code><b>white100</b></code> uses "normal"
+              sizes, the four other styles are suitable for use with large
+              fonts and images (needed on high-resolution displays).<br>
+              <table border="0" cellpadding="0" cellspacing="0">
+                <tr valign="top">
+                  <td>Tablelist_tile:&nbsp;</td>
+                  <td>Default for the themes <code><b>black</b></code>,
+                  <code><b>awblack</b></code>,
+                  <code><b>breeze-dark</b></code>,
+                  <code><b>awbreezedark</b></code>, <code><b>awdark</b></code>,
+                  and <code><b>sun-valley-dark</b></code>, in the absence of
+                  SVG support.</td>
+                </tr>
+              </table>
+            </td>
           </tr>
 
           <tr>
@@ -5489,10 +5630,6 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
             <td>Inspired by the GTK 2 theme Yuyo on Ubuntu MATE.</td>
           </tr>
         </table>
-
-        <p>For technical reasons (the use of the <code><b>-elide</b></code>
-        text widget tag option for collapsing a row), this option is not
-        supported for Tk versions earlier than 8.3.</p>
       </blockquote>
     </dd>
 
@@ -5547,25 +5684,28 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
       </table>
 
       <blockquote>
-        <p>This option is only relevant if the mouse wheel events are reported
-        to the widget under the pointer rather than to the one having the
-        focus.&nbsp; This condition is fulfilled on X11 and Mac OS X/11+, and
-        for Tk 8.6b2 and later on Windows, too (in earlier Tk versions the
-        mouse wheel events on Windows were sent to the widget having the
-        focus).</p>
+        <p>This option is only relevant if the mouse wheel and
+        <code><b>&lt;TouchpadScroll&gt;</b></code> events are reported to the
+        widget under the pointer rather than to the one having the focus.&nbsp;
+        This condition is fulfilled on X11 (for the mouse wheel events) and Mac
+        OS X/11+, and for Tk 8.6b2 and later on Windows, too (in earlier Tk
+        versions the mouse wheel events on Windows were sent to the widget
+        having the focus).</p>
 
         <p>The <code><b>-xmousewheelwindow</b></code> option specifies the path
         name of the window to which the default bindings for the binding tags
         <code><b><a href="#body_bindings">TablelistBody</a></b></code> and
         <code><b><a href="#edit_bindings">TablelistEdit</a></b></code> should
-        redirect the mouse wheel events along the x axis via&nbsp;
-        <code><b>event generate</b></code>&nbsp; if the focus window on the
-        display containing the tablelist widget is outside the tablelist.&nbsp;
-        The default is an empty string, meaning that the mouse wheel events
-        along the x axis received by a widget having one of the two
-        above-mentioned binding tags will give rise to horizontal scrolling of
-        the tablelist or its edit window, regardless of whether the focus is
-        inside or outside the tablelist widget.</p>
+        redirect the mouse wheel and <code><b>&lt;TouchpadScroll&gt;</b></code>
+        events along the x axis via&nbsp; <code><b>event
+        generate</b></code>&nbsp; if the focus window on the display containing
+        the tablelist widget is outside the tablelist.&nbsp; The default is an
+        empty string, meaning that the mouse wheel and
+        <code><b>&lt;TouchpadScroll&gt;</b></code> events along the x axis
+        received by a widget having one of the two above-mentioned binding tags
+        will give rise to horizontal scrolling of the tablelist or its edit
+        window, regardless of whether the focus is inside or outside the
+        tablelist widget.</p>
 
         <p><b>REMARK 1:</b>&nbsp; The set of mouse wheel events along the
         horizontal axis depends on the Tk version and partly on the windowing
@@ -5615,8 +5755,9 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
         "https://www.nemethi.de/scrollutil/scrollableframe.html">scrollutil::scrollableframe</a>,
         BWidget ScrollableFrame, or iwidgets::scrolledframe, and you set this
         option to the path name of that container window or that of the
-        containing toplevel widget, then a horizontal mouse wheel event over
-        the tablelist's body will be handled as follows:</p>
+        containing toplevel widget, then a horizontal mouse wheel or
+        <code><b>&lt;TouchpadScroll&gt;</b></code> event over the tablelist's
+        body will be handled as follows:</p>
 
         <ul>
           <li class="tm">If the focus is inside the tablelist widget then the
@@ -5630,7 +5771,8 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
           generate</b></code>&nbsp; command.&nbsp; This in turn will give rise
           to horizontal scrolling of the widget container, provided that the
           containing toplevel widget or the binding tag <code><b>all</b></code>
-          has the necessary mouse wheel event bindings.</li>
+          has the necessary mouse wheel or
+          <code><b>&lt;TouchpadScroll&gt;</b></code> event bindings.</li>
         </ul>
 
         <p><b>REMARK 3:</b>&nbsp; If you pass the tablelist widget to the
@@ -5661,25 +5803,28 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
       </table>
 
       <blockquote>
-        <p>This option is only relevant if the mouse wheel events are reported
-        to the widget under the pointer rather than to the one having the
-        focus.&nbsp; This condition is fulfilled on X11 and Mac OS X/11+, and
-        for Tk 8.6b2 and later on Windows, too (in earlier Tk versions the
-        mouse wheel events on Windows were sent to the widget having the
-        focus).</p>
+        <p>This option is only relevant if the mouse wheel and
+        <code><b>&lt;TouchpadScroll&gt;</b></code> events are reported to the
+        widget under the pointer rather than to the one having the focus.&nbsp;
+        This condition is fulfilled on X11 (for the mouse wheel events) and Mac
+        OS X/11+, and for Tk 8.6b2 and later on Windows, too (in earlier Tk
+        versions the mouse wheel events on Windows were sent to the widget
+        having the focus).</p>
 
         <p>The <code><b>-ymousewheelwindow</b></code> option specifies the path
         name of the window to which the default bindings for the binding tags
         <code><b><a href="#body_bindings">TablelistBody</a></b></code> and
         <code><b><a href="#edit_bindings">TablelistEdit</a></b></code> should
-        redirect the mouse wheel events along the y axis via&nbsp;
-        <code><b>event generate</b></code>&nbsp; if the focus window on the
-        display containing the tablelist widget is outside the tablelist.&nbsp;
-        The default is an empty string, meaning that the mouse wheel events
-        along the y axis received by a widget having one of the two
-        above-mentioned binding tags will give rise to vertical scrolling of
-        the tablelist or its edit window, regardless of whether the focus is
-        inside or outside the tablelist widget.</p>
+        redirect the mouse wheel and <code><b>&lt;TouchpadScroll&gt;</b></code>
+        events along the y axis via&nbsp; <code><b>event
+        generate</b></code>&nbsp; if the focus window on the display containing
+        the tablelist widget is outside the tablelist.&nbsp; The default is an
+        empty string, meaning that the mouse wheel and
+        <code><b>&lt;TouchpadScroll&gt;</b></code> events along the y axis
+        received by a widget having one of the two above-mentioned binding tags
+        will give rise to vertical scrolling of the tablelist or its edit
+        window, regardless of whether the focus is inside or outside the
+        tablelist widget.</p>
 
         <p><b>REMARK 1:</b>&nbsp; The set of mouse wheel events along the
         vertical axis depends on the Tk version and partly on the windowing
@@ -5712,8 +5857,9 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
         "https://www.nemethi.de/scrollutil/scrollableframe.html">scrollutil::scrollableframe</a>,
         BWidget ScrollableFrame, or iwidgets::scrolledframe, and you set this
         option to the path name of that container window or that of the
-        containing toplevel widget, then a vertical mouse wheel event over the
-        tablelist's body will be handled as follows:</p>
+        containing toplevel widget, then a vertical mouse wheel or
+        <code><b>&lt;TouchpadScroll&gt;</b></code> event over the tablelist's
+        body will be handled as follows:</p>
 
         <ul>
           <li class="tm">If the focus is inside the tablelist widget then the
@@ -5727,7 +5873,8 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
           generate</b></code>&nbsp; command.&nbsp; This in turn will give rise
           to vertical scrolling of the widget container, provided that the
           containing toplevel widget or the binding tag <code><b>all</b></code>
-          has the necessary mouse wheel event bindings.</li>
+          has the necessary mouse wheel or
+          <code><b>&lt;TouchpadScroll&gt;</b></code> event bindings.</li>
         </ul>
 
         <p><b>REMARK 3:</b>&nbsp; If you pass the tablelist widget to the
@@ -5763,6 +5910,17 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
         the list specifying the value of the <code><b><a href=
         "#columns">-columns</a></b></code> option for the tablelist widget;
         changes in either will automatically be reflected in the other.</dd>
+
+        <dt class="tm" id="col_allowduplicates"><code><b>-allowduplicates</b>
+        <i>boolean</i></code></dt>
+
+        <dd>Specifies whether the interactive cell editing will enable the user
+        to set the text of a cell within this column to the text of some other
+        cell of the column. The default is <code>1</code>.&nbsp; The value of
+        this option has also an impact on the key bindings designed for
+        terminating the editing and copying the new cell value to some other
+        cells of the column:&nbsp; If the option's value is false then none of
+        these actions will be performed.</dd>
 
         <dt class="tm" id="col_background"><code><b>-background</b>
         <i>color</i></code> or <code><b>-bg</b> <i>color</i></code></dt>
@@ -5811,10 +5969,10 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
         interactive editing of the contents of the given column's body
         cells.&nbsp; <code><i>name</i></code> may be one of
         <code><b>entry</b></code> (which is the default),
-        <code><b>text</b></code>, <code><b>spinbox</b></code> (the latter for
-        Tk versions 8.4 or higher), <code><b>checkbutton</b></code>,
-        <code><b>menubutton</b></code>, <code><b>ttk::entry</b></code>,
-        <code><b>ttk::spinbox</b></code>, <code><b>ttk::combobox</b></code>,
+        <code><b>text</b></code>, <code><b>spinbox</b></code>,
+        <code><b>checkbutton</b></code>, <code><b>menubutton</b></code>,
+        <code><b>ttk::entry</b></code>, <code><b>ttk::spinbox</b></code>,
+        <code><b>ttk::combobox</b></code>,
         <code><b>ttk::checkbutton</b></code>, or
         <code><b>ttk::menubutton</b></code> (the latter five only in the
         presence of the tile widget engine), or the value returned by one of
@@ -6110,9 +6268,9 @@ proc formatNumber val { return [expr {$val == -1 ? "" : $val}] }
         <dd>
           <blockquote>
             <pre>
-<span class="cmt"># Configure the checkbutton embedded into the header label of the
-# column "available", and make sure that it will be reconfigured
-# whenever any column is moved interactively to a new position</span>
+<span class="cmt"># Configure the "-command" option of the checkbutton embedded into the
+# header label of the column "available", and make sure that it will be
+# reconfigured whenever any column is moved interactively to a new position</span>
 proc configCkbtn {tbl col} {
     set ckbtn [$tbl <a href="#labelwindowpath">labelwindowpath</a> $col]
     $ckbtn configure -command [list onCkbtnToggle $tbl $col $ckbtn]
@@ -6576,10 +6734,6 @@ proc updateWindow {tbl row col w args} {
         <code><b>&lt;&lt;TablelistRowHiddenStateChanged&gt;&gt;</b></code>
         virtual event is generated, with its <code><b>-data</b></code> option
         set to the numerical row index for Tk versions 8.5 and higher.</dd>
-
-        <dd class="tm">For technical reasons (the use of the
-        <code><b>-elide</b></code> option for a text widget tag), this option
-        is not supported for Tk versions earlier than 8.3.</dd>
 
         <dd class="tm"><b>CAUTION:</b>&nbsp; Tk versions 8.3 - 8.4.12 had a bug
         that caused a segmentation fault if the whole content of a text widget
@@ -7188,17 +7342,16 @@ proc updateWindow {tbl row col w args} {
     the temporary embedded widget and cancels the editing of its content.&nbsp;
     The main goal of this script is, however, to enable you to define
     validations for the editing process.&nbsp; This can be done either with the
-    aid of the options for entry validation, supported by Tk versions 8.3 and
-    higher (see the <b>entry</b> reference page), or by using the widget
-    callback package <a href="https://www.nemethi.de">Wcb</a>, available for Tk
-    versions 8.0 and higher.&nbsp; The Iwidgets package (available for Tk
-    versions 8.0 or higher) provides its own validation facilities, which can
-    equally be used if the edit window is a widget belonging to that
-    extension.&nbsp; In either case, you will need the path name of the
-    temporary embedded widget or that of its entry or entry-like component; use
-    the <code><b><a href="#editwinpath">editwinpath</a></b></code> and
-    <code><b><a href="#entrypath">entrypath</a></b></code> subcommands to get
-    these path names.&nbsp; Another purpose of the command indicated by the
+    aid of the options for entry validation (see the <b>entry</b> reference
+    page), or by using the widget callback package <a href=
+    "https://www.nemethi.de">Wcb</a>.&nbsp; The Iwidgets package provides its
+    own validation facilities, which can equally be used if the edit window is
+    a widget belonging to that extension.&nbsp; In either case, you will need
+    the path name of the temporary embedded widget or that of its entry or
+    entry-like component; use the <code><b><a href=
+    "#editwinpath">editwinpath</a></b></code> and <code><b><a href=
+    "#entrypath">entrypath</a></b></code> subcommands to get these path
+    names.&nbsp; Another purpose of the command indicated by the
     <code><b>-editstartcommand</b></code> option is to enable you to prepare
     the edit window in various other ways.&nbsp; For example, if the latter is
     a combobox widget then you can set its <code><b>-editable</b></code> option
@@ -7223,22 +7376,22 @@ proc updateWindow {tbl row col w args} {
     <code>Alt-Prior</code>, <code>Alt-Next</code>, <code>Alt-Home</code>, and
     <code>Alt-End</code> (as well as <code>Control-Home</code> and
     <code>Control-End</code>, except in the case of a text or ctext
-    widget).&nbsp; On Mac OS Classic and Mac OS X/11+ Aqua the
-    <code>Command</code> key is used instead of <code>Alt</code>.&nbsp; The
-    editing can be aborted with the <code>Escape</code> key (or by invoking the
-    <code><b><a href="#cancelediting">cancelediting</a></b></code> subcommand)
-    and terminated normally with <code>Return</code> or <code>KP_Enter</code>
-    (together with <code>Control</code> for a text or ctext widget).&nbsp; The
-    bindings for the keys used for normal termination of the editing just
-    invoke the <code><b><a href="#finishediting">finishediting</a></b></code>
-    subcommand; the latter can also be called explicitly to terminate the
-    editing programmatically.&nbsp; Normal termination is also triggered by
-    clicking with the left mouse button anywhere in the tablelist's body,
-    outside the cell just being edited, or moving into another editable cell by
-    using keyboard navigation.&nbsp; If the editing was started with the left
-    mouse button, the edit window is a Tk or tile checkbutton, and the value of
-    the <code><b><a href="#instanttoggle">-instanttoggle</a></b></code> option
-    is true, then the normal termination of the editing will take place
+    widget).&nbsp; On Mac OS X/11+ Aqua the <code>Command</code> key is used
+    instead of <code>Alt</code>.&nbsp; The editing can be aborted with the
+    <code>Escape</code> key (or by invoking the <code><b><a href=
+    "#cancelediting">cancelediting</a></b></code> subcommand) and terminated
+    normally with <code>Return</code> or <code>KP_Enter</code> (together with
+    <code>Control</code> for a text or ctext widget).&nbsp; The bindings for
+    the keys used for normal termination of the editing just invoke the
+    <code><b><a href="#finishediting">finishediting</a></b></code> subcommand;
+    the latter can also be called explicitly to terminate the editing
+    programmatically.&nbsp; Normal termination is also triggered by clicking
+    with the left mouse button anywhere in the tablelist's body, outside the
+    cell just being edited, or moving into another editable cell by using
+    keyboard navigation.&nbsp; If the editing was started with the left mouse
+    button, the edit window is a Tk or tile checkbutton, and the value of the
+    <code><b><a href="#instanttoggle">-instanttoggle</a></b></code> option is
+    true, then the normal termination of the editing will take place
     automatically, without any user interaction.&nbsp; Similarly, if the edit
     window is one of the four combobox widgets supported by Tablelist or a
     menubutton widget, and the value of the <code><b><a href=
@@ -7248,6 +7401,26 @@ proc updateWindow {tbl row col w args} {
     "#editendonfocusout">-editendonfocusout</a></b></code> option is true then
     normal termination is also triggered when the tablelist widget loses the
     focus.</dd>
+
+    <dd class="tm">Tablelist also supports key bindings that terminate the
+    editing and copy the new cell value to some other cells of the
+    column:&nbsp; Provided that the value of the column's <code><b><a href=
+    "#col_allowduplicates">-allowduplicates</a></b></code> option is true (the
+    default), <code>Alt-Return</code> and <code>Alt-KP_Enter</code> terminate
+    the editing and fill the column's selected cells with the new cell value
+    (this is especially useful if the <code><b><a href=
+    "#selectmode">-selectmode</a></b></code> option was set to
+    <code><b>extended</b></code> and after clicking into an editable cell,
+    additional cells of its column were selected by dragging the pointer
+    vertically);&nbsp; <code>Alt-a</code> ("fill all") terminates the editing
+    and fills all cells of the column with the new cell value;&nbsp;
+    <code>Alt-d</code> ("fill down") terminates the editing and fills the
+    column's cells below the just edited one with the new cell value;&nbsp;
+    <code>Alt-u</code> ("fill up") terminates the editing and fills the
+    column's cells above the just edited one with the new cell value.&nbsp; On
+    Mac OS X/11+ Aqua the key sequence <code>Alt-a</code> is replaced with
+    <code>Control-Command-a</code>, and in the other key sequences the
+    <code>Alt</code> modifier is substituted with <code>Command</code>.</dd>
 
     <dd class="tm">When normal termination of the editing process occurs, the
     Tcl command associated with the tablelist widget compares the edit window's
@@ -7610,6 +7783,21 @@ proc handleTblDrop {tbl data} {
           <td>A list consisting of the two lists passed to the
           <code><b><a href="tablelistWidget.html#sortbycolumnlist">sortbycolumnlist</a></b></code>
           subcommand, invoked to perform the multi-column sorting.</td>
+        </tr>
+
+        <tr valign="top">
+          <td><code><b>&lt;&lt;TablelistCopyFinished&gt;&gt;</b></code></td>
+          <td>Generated by the default bindings for the key sequences
+          <code>Alt-Return</code>, <code>Alt-KP_Enter</code>,
+          <code>Alt-a</code>, <code>Alt-d</code>, and <code>Alt-u</code> in the
+          edit window, when the copying of the new cell value to some other
+          cells of the column is finished.&nbsp; On Mac OS X/11+ Aqua the key
+          sequence <code>Alt-a</code> is replaced with
+          <code>Control-Command-a</code>, and in the other key sequences the
+          <code>Alt</code> modifier is substituted with
+          <code>Command</code>.</td>
+          <td>The numerical column index of the cell whose content was
+          edited.</td>
         </tr>
 
         <tr valign="top">
@@ -8390,10 +8578,12 @@ registerDragSrc [$tbl bodypath]
         within the Tcl command specified by the <code><b><a href=
         "#editendcommand">-editendcommand</a></b></code> configuration option,
         you can find out whether the editing session was canceled or terminated
-        normally.&nbsp; Remember that this Tcl command will be invoked in both
-        cases mentioned above if the <code><b><a href=
+        normally.&nbsp; This might be of interest if the <code><b><a href=
         "#forceeditendcommand">-forceeditendcommand</a></b></code> option was
-        set to true.</dd>
+        set to true, because in this case that Tcl command is also invoked when
+        the editing is canceled (in which case the text passed to it as last
+        argument will be the edit window's original content, not its final
+        one).</dd>
 
         <dt class="tm" id="cancelediting"><code><i>pathName</i>
         <b>cancelediting</b></code></dt>
@@ -8615,11 +8805,6 @@ registerDragSrc [$tbl bodypath]
         and the row index, and the resulting script is evaluated in the global
         scope.</dd>
 
-        <dd class="tm">For technical reasons (the use of the
-        <code><b>-elide</b></code> text widget tag option for collapsing a
-        row), this subcommand is not supported for Tk versions earlier than
-        8.3.</dd>
-
         <dd class="tm"><b>REMARK:</b>&nbsp; If you want to collapse several
         rows, it is much more efficient to do it by invoking this subcommand
         for the list of their indices than by invoking it in a loop, for the
@@ -8648,11 +8833,6 @@ registerDragSrc [$tbl bodypath]
         automatically concatenated with the path name of the tablelist widget
         and the row index, and the resulting script is evaluated in the global
         scope.</dd>
-
-        <dd class="tm">For technical reasons (the use of the
-        <code><b>-elide</b></code> text widget tag option for collapsing a
-        row), this subcommand is not supported for Tk versions earlier than
-        8.3.</dd>
 
         <dt class="tm" id="columnattrib"><code><i>pathName</i>
         <b>columnattrib</b> <i>columnIndex</i> ?<i>name</i>? ?<i>value</i>
@@ -9079,8 +9259,8 @@ pack $frm -expand yes -fill both -padx 10 -pady 10
             the screenshot below (on Windows this is only valid for the
             horizontal scrollbar):</p>
 
-            <p><img src="scrollbars.png" alt="Scrollbars" width="461" height=
-            "274"></p>
+            <p><img src="scrollbars.png" alt="Scrollbars" width="459" height=
+            "272"></p>
           </blockquote>
         </dd>
 
@@ -9368,16 +9548,16 @@ bind [.tbl <span class="red">editwintag</span>] &lt;Return&gt; "[bind <a href=
         <code><i>command</i></code> argument is a nonempty string then the
         checkbutton's <code><b>-command</b></code> option will be set to a
         script that concatenates this argument with the path name of the
-        tablelist widget and the cell's row and column indices and then invokes
-        the resulting script at idle time, thus making sure that at the time of
-        its invocation the cell's internal value will already be updated to
-        reflect the checkbutton's check state.</dd>
+        tablelist widget and the cell's current row and column indices (which
+        can be different from the ones at the checkbutton's creation time) and
+        then invokes the resulting script at idle time, thus making sure that
+        at the time of its invocation the cell's internal value will already be
+        updated to reflect the checkbutton's check state.</dd>
 
-        <dd class="tm"><b>REMARK 1:</b>&nbsp; Remember that the
-        <code><b><a href="#windowpath">windowpath</a></b></code> subcommand
-        will return the path name of the embedded window, which is a frame; to
-        get the checkbutton's path name, append <code><b>.ckbtn</b></code> to
-        the frame's one.</dd>
+        <dd class="tm"><b>REMARK 1:</b>&nbsp; Recall that the <code><b><a href=
+        "#windowpath">windowpath</a></b></code> subcommand will return the path
+        name of the embedded window, which is a frame; to get the checkbutton's
+        path name, append <code><b>.ckbtn</b></code> to the frame's one.</dd>
 
         <dd class="tm"><b>REMARK 2:</b>&nbsp; As described above, the
         checkbutton's <i>initial</i> check state will reflect the cell's
@@ -9455,11 +9635,6 @@ bind [.tbl <span class="red">editwintag</span>] &lt;Return&gt; "[bind <a href=
         scope.&nbsp; This enables you to insert a tree node's children on
         demand, just before expanding it.</dd>
 
-        <dd class="tm">For technical reasons (the use of the
-        <code><b>-elide</b></code> text widget tag option for collapsing a
-        row), this subcommand is not supported for Tk versions earlier than
-        8.3.</dd>
-
         <dd class="tm"><b>REMARK:</b>&nbsp; If you want to expand several rows,
         it is much more efficient to do it by invoking this subcommand for the
         list of their indices than by invoking it in a loop, for the individual
@@ -9485,11 +9660,6 @@ bind [.tbl <span class="red">editwintag</span>] &lt;Return&gt; "[bind <a href=
         and the row index, and the resulting script is evaluated in the global
         scope.&nbsp; This enables you to insert a tree node's children on
         demand, just before expanding it.</dd>
-
-        <dd class="tm">For technical reasons (the use of the
-        <code><b>-elide</b></code> text widget tag option for collapsing a
-        row), this subcommand is not supported for Tk versions earlier than
-        8.3.</dd>
 
         <dt class="tm" id="expandedkeys"><code><i>pathName</i>
         <b>expandedkeys</b></code></dt>
@@ -9565,7 +9735,10 @@ bind [.tbl <span class="red">editwintag</span>] &lt;Return&gt; "[bind <a href=
         numerical row and column indices of the cell whose content is being
         edited.&nbsp; If no cell was being edited when the command was invoked
         then the same value <code>1</code> is returned but no virtual event is
-        generated.</dd>
+        generated.&nbsp; Likewise, if the widget's state is
+        <code><b>disabled</b></code> then the subcommand returns the value
+        <code>1</code> immediately, without terminating the editing and
+        generating any virtual event.</dd>
 
         <dd class="tm">This subcommand is called <i>implicitly</i> by pressing
         <code>Return</code> or <code>KP_Enter</code> (together with
@@ -9587,6 +9760,28 @@ bind [.tbl <span class="red">editwintag</span>] &lt;Return&gt; "[bind <a href=
         "#editendonfocusout">-editendonfocusout</a></b></code> option is true
         then this subcommand will also be invoked automatically when the
         tablelist widget loses the focus.</dd>
+
+        <dd class="tm">If the value of the <code><b><a href=
+        "#col_allowduplicates">-allowduplicates</a></b></code> option of the
+        cell's column is true (the default) then further key sequences in the
+        edit window that trigger an invocation of this subcommand are
+        <code>Alt-Return</code>, <code>Alt-KP_Enter</code>, <code>Alt-a</code>,
+        <code>Alt-d</code>, and <code>Alt-u</code>, which in addition copy the
+        new cell value to some other cells of the column.&nbsp; After doing so,
+        the bindings for these key sequences generate the virtual event
+        <code><b>&lt;&lt;TablelistCopyFinished&gt;&gt;</b></code>.&nbsp; For
+        Tk versions 8.5 and higher, this virtual event is generated with its
+        <code><b>-data</b></code> option set to the numerical column index of
+        the cell whose content was edited.&nbsp; If the value of the
+        <code><b><a href="#aftercopycommand">-aftercopycommand</a></b></code>
+        configuration option is a nonempty string, then after generating this
+        virtual event, the above-mentioned bindings pass the tablelist's path
+        name and the cell's column index to that command and evaluate the
+        resulting script in the global scope.&nbsp; On Mac OS X/11+ Aqua the
+        key sequence <code>Alt-a</code> is replaced with
+        <code>Control-Command-a</code>, and in the other key sequences the
+        <code>Alt</code> modifier is substituted with
+        <code>Command</code>.</dd>
 
         <dd class="tm"><b>REMARK:</b>&nbsp; There are also situations where an
         <i>explicit</i> invocation of this subcommand is needed, in order to
@@ -10024,11 +10219,6 @@ eval [list <i>pathName</i> <a href=
 
         <dd>but it is more efficient and easier to use.</dd>
 
-        <dd class="tm">For technical reasons (the use of the
-        <code><b>-elide</b></code> text widget tag option for collapsing a
-        row), this subcommand is not supported for Tk versions earlier than
-        8.3.</dd>
-
         <dd class="tm"><b>REMARK:</b>&nbsp; You can achieve a quite significant
         speadup by using this subcommand to insert a whole list of items rather
         than using multiple invocations of <code><b><a href=
@@ -10054,11 +10244,6 @@ eval [list <i>pathName</i> <a href=
         rise to multi-line elements (which are displayed in embedded message
         widgets, created on demand).&nbsp; The return value is the list of full
         keys associated with the items just inserted.</dd>
-
-        <dd class="tm">For technical reasons (the use of the
-        <code><b>-elide</b></code> text widget tag option for collapsing a
-        row), this subcommand is not supported for Tk versions earlier than
-        8.3.</dd>
 
         <dd class="tm"><b>REMARK:</b>&nbsp; It is explicitly allowed to
         abbreviate the name <code><b>insertchildren</b></code> as
@@ -10357,10 +10542,6 @@ upvar #0 [.tbl <span class="red">itemlistvar</span>] itemList
         file must have have been created with the aid of the <code><b><a href=
         "#dumptofile">dumptofile</a></b></code> subcommand.</dd>
 
-        <dd class="tm">For technical reasons (the use of some
-        <code><b>lsearch</b></code> options), this subcommand is not supported
-        for Tk versions earlier than 8.4.</dd>
-
         <dd class="tm">After clearing the widget's current content (if any) and
         applying to it the sorting-related information retrieved from the file,
         the subcommand inserts the header items (if any) via&nbsp;
@@ -10429,10 +10610,6 @@ upvar #0 [.tbl <span class="red">itemlistvar</span>] itemList
         string <code><i>string</i></code>, which must have have been returned
         by the <code><b><a href="#dumptostring">dumptostring</a></b></code>
         subcommand.</dd>
-
-        <dd class="tm">For technical reasons (the use of some
-        <code><b>lsearch</b></code> options), this subcommand is not supported
-        for Tk versions earlier than 8.4.</dd>
 
         <dd class="tm">The remaining details are nearly identical to the ones
         regarding the <code><b><a href=
@@ -11260,9 +11437,7 @@ upvar #0 [.tbl <span class="red">itemlistvar</span>] itemList
         virtual event is generated.&nbsp; For Tk versions 8.5 and higher, this
         virtual event is generated with its <code><b>-data</b></code> option
         set to a list consisting of the numerical row indices of the rows whose
-        <code><b>-hide</b></code> option was toggled.&nbsp; Just like the
-        <code><b>-hide</b></code> row configuration option, this subcommand is
-        not supported for Tk versions earlier than 8.3.</dd>
+        <code><b>-hide</b></code> option was toggled.</dd>
 
         <dd class="tm"><b>CAUTION:</b>&nbsp; Tk versions 8.3 - 8.4.12 had a bug
         that caused a segmentation fault if the whole content of a text widget
@@ -11729,7 +11904,7 @@ upvar #0 [.tbl <span class="red">itemlistvar</span>] itemList
 
         <dd>Similar to the <code><b><a href=
         "#getfullkeys">getfullkeys</a></b></code> command for the tablelist
-        body.&nbsp; Remember that the full keys of the header items start with
+        body.&nbsp; Recall that the full keys of the header items start with
         <code><b>hk</b></code>.</dd>
 
         <dt class="tm" id="hdr_getkeys"><code><i>pathName</i> <b>header
@@ -12210,8 +12385,7 @@ proc printClickedCell {w x y} {
         source item before that row or making it a child of the latter is
         allowed from the point of view of the general tree structure.&nbsp; If
         this is the case and the move operation would change the source item's
-        parent (and the Tk version is at least 8.3), and the command specified
-        as the value of the <code><b><a href=
+        parent, and the command specified as the value of the <code><b><a href=
         "#acceptchildcommand">-acceptchildcommand</a></b></code> configuration
         option is a nonempty string, then this command is concatenated with the
         path name of the tablelist widget, the node index of the would-be new
@@ -12417,8 +12591,8 @@ proc printClickedCell {w x y} {
         event <code><b>&lt;&lt;Button3&gt;&gt;</b></code> as
         <code><b>&lt;Button-3&gt;</b></code> for all windowing systems and
         additionally as <code><b>&lt;Control-Button-1&gt;</b></code> for Mac OS
-        Classic and Mac OS X/11+ Aqua.&nbsp; If this event occurs over a header
-        label and both the value of the <code><b><a href=
+        X/11+ Aqua.&nbsp; If this event occurs over a header label and both the
+        value of the <code><b><a href=
         "#resizablecolumns">-resizablecolumns</a></b></code> configuration
         option and that of the <code><b><a href=
         "#col_resizable">-resizable</a></b></code> option for the column
@@ -12438,8 +12612,8 @@ proc printClickedCell {w x y} {
         <code><b>&lt;&lt;ShiftButton3&gt;&gt;</b></code> as
         <code><b>&lt;Shift-Button-3&gt;</b></code> for all windowing systems
         and additionally as <code><b>&lt;Shift-Control-Button-1&gt;</b></code>
-        for Mac OS Classic and Mac OS X/11+ Aqua.&nbsp; If this event occurs
-        over a header label and both the value of the <code><b><a href=
+        for Mac OS X/11+ Aqua.&nbsp; If this event occurs over a header label
+        and both the value of the <code><b><a href=
         "#resizablecolumns">-resizablecolumns</a></b></code> configuration
         option and that of the <code><b><a href=
         "#col_resizable">-resizable</a></b></code> option for the column
@@ -12457,10 +12631,10 @@ proc printClickedCell {w x y} {
     SELECTION:</b>&nbsp; If the selection type is <code><b>cell</b></code> then
     a few further bindings apply to the header labels.&nbsp; In the description
     below the <code>Alt</code> key can be replaced with <code>Meta</code>; on
-    Mac OS Classic and Mac OS X/11+ Aqua the <code>Command</code> key is used
-    instead of <code>Alt</code> and <code>Meta</code>.&nbsp; Notice also that
-    you can restrict the set of cells that will be selected when these bindings
-    perform a column-wise cell selection:&nbsp; If the command specified by the
+    Mac OS X/11+ Aqua the <code>Command</code> key is used instead of
+    <code>Alt</code> and <code>Meta</code>.&nbsp; Notice also that you can
+    restrict the set of cells that will be selected when these bindings perform
+    a column-wise cell selection:&nbsp; If the command specified by the
     <code><b><a href="#selectfiltercommand">-selectfiltercommand</a></b></code>
     option is a nonempty string then this command is concatenated with the path
     name of the tablelist widget and the numerical index of the respective
@@ -12578,6 +12752,39 @@ bind [.tbl <a href="#labeltag">labeltag</a>] &lt;Button-3&gt; {
         <code>Control-KP_Enter</code> terminate the editing and destroy the
         edit window.</li>
 
+        <li class="tm">If the value of the column's <code><b><a href=
+        "#col_allowduplicates">-allowduplicates</a></b></code> option is true
+        (the default) then <code>Alt-Return</code> and
+        <code>Alt-KP_Enter</code>
+        (<code>Command-Return</code>/<code>Command-KP_Enter</code> on Mac OS
+        X/11+ Aqua) terminate the editing, destroy the edit window, and fill
+        the column's selected cells with the new cell value.&nbsp; This comes
+        in handy especially if the tablelist's <code><b><a href=
+        "#selectmode">-selectmode</a></b></code> option was set to
+        <code><b>extended</b></code> and after clicking into an editable cell,
+        additional cells of its column were selected by dragging the pointer
+        vertically.</li>
+
+        <li class="tm">If the value of the column's <code><b><a href=
+        "#col_allowduplicates">-allowduplicates</a></b></code> option is true
+        (the default) then <code>Alt-a</code> (<code>Control-Command-a</code>
+        on Mac OS X/11+ Aqua) terminates the editing, destroys the edit window,
+        and fills all cells of the column with the new cell value.</li>
+
+        <li class="tm">If the value of the column's <code><b><a href=
+        "#col_allowduplicates">-allowduplicates</a></b></code> option is true
+        (the default) then <code>Alt-d</code> (<code>Command-d</code> on Mac OS
+        X/11+ Aqua) terminates the editing, destroys the edit window, and fills
+        the column's cells below the just edited one with the new cell
+        value.</li>
+
+        <li class="tm">If the value of the column's <code><b><a href=
+        "#col_allowduplicates">-allowduplicates</a></b></code> option is true
+        (the default) then <code>Alt-u</code> (<code>Command-u</code> on Mac OS
+        X/11+ Aqua) terminates the editing, destroys the edit window, and fills
+        the column's cells above the just edited one with the new cell
+        value.</li>
+
         <li class="tm"><code>Escape</code> aborts the editing and destroys the
         edit window.</li>
 
@@ -12612,15 +12819,14 @@ bind [.tbl <a href="#labeltag">labeltag</a>] &lt;Button-3&gt; {
 
         <li class="tm">When editing a cell that is not the first/last editable
         cell within its row, <code>Alt-Left</code>/<code>Alt-Right</code>
-        (<code>Command-Left</code>/<code>Command-Right</code> on Mac OS Classic
-        and Mac OS X/11+ Aqua) terminates the editing in the current cell,
-        moves the edit window into the previous/next editable cell of the row,
-        selects the content of the edit window's first entry or entry-like
-        component (if any), and sets the insertion cursor to its end.&nbsp; If
-        the new edit window is a text or ctext widget then its content is left
-        unselected.&nbsp; The key sequence
-        <code>Meta-Left</code>/<code>Meta-Right</code> has the same effect as
-        <code>Alt-Left</code>/<code>Alt-Right</code>.&nbsp; If
+        (<code>Command-Left</code>/<code>Command-Right</code> on Mac OS X/11+
+        Aqua) terminates the editing in the current cell, moves the edit window
+        into the previous/next editable cell of the row, selects the content of
+        the edit window's first entry or entry-like component (if any), and
+        sets the insertion cursor to its end.&nbsp; If the new edit window is a
+        text or ctext widget then its content is left unselected.&nbsp; The key
+        sequence <code>Meta-Left</code>/<code>Meta-Right</code> has the same
+        effect as <code>Alt-Left</code>/<code>Alt-Right</code>.&nbsp; If
         <code><b>tk_strictMotif</b></code> is false and the edit window is not
         a text or ctext widget then <code>Meta-b</code> and <code>Meta-f</code>
         behave the same as <code>Alt-Left</code> and <code>Alt-Right</code>,
@@ -12630,15 +12836,14 @@ bind [.tbl <a href="#labeltag">labeltag</a>] &lt;Button-3&gt; {
 
         <li class="tm">When editing a cell that is not the first/last editable
         cell within its column, <code>Alt-Up</code>/<code>Alt-Down</code>
-        (<code>Command-Up</code>/<code>Command-Down</code> on Mac OS Classic
-        and Mac OS X/11+ Aqua) terminates the editing in the current cell,
-        moves the edit window one line up/down within the column, selects the
-        content of the edit window's first entry or entry-like component (if
-        any), and sets the insertion cursor to its end.&nbsp; If the new edit
-        window is a text or ctext widget then its content is left
-        unselected.&nbsp; The key sequence
-        <code>Meta-Up</code>/<code>Meta-Down</code> has the same effect as
-        <code>Alt-Up</code>/<code>Alt-Down</code>.&nbsp; If
+        (<code>Command-Up</code>/<code>Command-Down</code> on Mac OS X/11+
+        Aqua) terminates the editing in the current cell, moves the edit window
+        one line up/down within the column, selects the content of the edit
+        window's first entry or entry-like component (if any), and sets the
+        insertion cursor to its end.&nbsp; If the new edit window is a text or
+        ctext widget then its content is left unselected.&nbsp; The key
+        sequence <code>Meta-Up</code>/<code>Meta-Down</code> has the same
+        effect as <code>Alt-Up</code>/<code>Alt-Down</code>.&nbsp; If
         <code><b>tk_strictMotif</b></code> is false and the edit window is not
         a text or ctext widget or an Iwidgets combobox, then
         <code>Control-p</code> and <code>Control-n</code> behave the same as
@@ -12651,32 +12856,30 @@ bind [.tbl <a href="#labeltag">labeltag</a>] &lt;Button-3&gt; {
 
         <li class="tm">When editing a cell that is not the first/last editable
         cell within its column, <code>Alt-Prior</code>/<code>Alt-Next</code>
-        (<code>Command-Prior</code>/<code>Command-Next</code> on Mac OS Classic
-        and Mac OS X/11+ Aqua) terminates the editing in the current cell,
-        moves the edit window up/down by one page within the column, selects
-        the content of the edit window's first entry or entry-like component
-        (if any), and sets the insertion cursor to its end.&nbsp; If the new
-        edit window is a text or ctext widget then its content is left
-        unselected.&nbsp; The key sequence
-        <code>Meta-Prior</code>/<code>Meta-Next</code> has the same effect as
-        <code>Alt-Prior</code>/<code>Alt-Next</code>.&nbsp; If the edit window
-        is not a text or ctext widget, BWidget SpinBox, Oakley combobox, or a
-        mentry widget of type <code>"Date"</code>, <code>"Time"</code>,
-        <code>"DateTime"</code>, <code>"IPAddr"</code>, or
+        (<code>Command-Prior</code>/<code>Command-Next</code> on Mac OS X/11+
+        Aqua) terminates the editing in the current cell, moves the edit window
+        up/down by one page within the column, selects the content of the edit
+        window's first entry or entry-like component (if any), and sets the
+        insertion cursor to its end.&nbsp; If the new edit window is a text or
+        ctext widget then its content is left unselected.&nbsp; The key
+        sequence <code>Meta-Prior</code>/<code>Meta-Next</code> has the same
+        effect as <code>Alt-Prior</code>/<code>Alt-Next</code>.&nbsp; If the
+        edit window is not a text or ctext widget, BWidget SpinBox, Oakley
+        combobox, or a mentry widget of type <code>"Date"</code>,
+        <code>"Time"</code>, <code>"DateTime"</code>, <code>"IPAddr"</code>, or
         <code>"IPv6Addr"</code>, then <code>Prior</code>/<code>Next</code> has
         the same effect as <code>Alt-Prior</code>/<code>Alt-Next</code>.</li>
 
         <li class="tm">When editing a cell that is not the only editable cell
         of the tablelist widget, <code>Alt-Home</code>/<code>Alt-End</code>
-        (<code>Command-Home</code>/<code>Command-End</code> on Mac OS Classic
-        and Mac OS X/11+ Aqua) terminates the editing in the current cell,
-        moves the edit window into the first/last editable cell of the
-        tablelist, selects the content of the edit window's first entry or
-        entry-like component (if any), and sets the insertion cursor to its
-        end.&nbsp; If the new edit window is a text or ctext widget then its
-        content is left unselected.&nbsp; The key sequence
-        <code>Meta-Home</code>/<code>Meta-End</code> has the same effect as
-        <code>Alt-Home</code>/<code>Alt-End</code>.&nbsp; If
+        (<code>Command-Home</code>/<code>Command-End</code> on Mac OS X/11+
+        Aqua) terminates the editing in the current cell, moves the edit window
+        into the first/last editable cell of the tablelist, selects the content
+        of the edit window's first entry or entry-like component (if any), and
+        sets the insertion cursor to its end.&nbsp; If the new edit window is a
+        text or ctext widget then its content is left unselected.&nbsp; The key
+        sequence <code>Meta-Home</code>/<code>Meta-End</code> has the same
+        effect as <code>Alt-Home</code>/<code>Alt-End</code>.&nbsp; If
         <code><b>tk_strictMotif</b></code> is false and the edit window is not
         a text or ctext widget then <code>Meta-&lt;</code> and
         <code>Meta-&gt;</code> behave the same as <code>Alt-Home</code> and
@@ -12688,21 +12891,20 @@ bind [.tbl <a href="#labeltag">labeltag</a>] &lt;Button-3&gt; {
     </dd>
 
     <dd class="tm">Before moving the edit window, the key sequences mentioned
-    under 7 - 11 move the active item or element and change the (cell)selection
-    and the (cell)selection anchor in the body of the tablelist widget.&nbsp;
-    For example, if <code>Alt-Up</code>/<code>Alt-Down</code> or
+    under 11 - 15 move the active item or element and change the
+    (cell)selection and the (cell)selection anchor in the body of the tablelist
+    widget.&nbsp; For example, if <code>Alt-Up</code>/<code>Alt-Down</code> or
     <code>Meta-Up</code>/<code>Meta-Down</code>
-    (<code>Command-Up</code>/<code>Command-Down</code> on Mac OS Classic and
-    Mac OS X/11+ Aqua) is pressed when editing a cell that is not the
-    first/last editable cell within its column, then the active item or element
-    (depending on the selection type) moves one line up/down.&nbsp; If the
-    selection mode is <code><b>browse</b></code> or
-    <code><b>extended</b></code> then the new active item or element is also
-    selected and all other items or elements are deselected.&nbsp; In
-    <code><b>extended</b></code> mode the new active item or element becomes
-    the (cell)selection anchor.&nbsp; This is exactly the same behavior as the
-    one exhibited by the <code>Up</code> and <code>Down</code> keys in the
-    tablelist's body.</dd>
+    (<code>Command-Up</code>/<code>Command-Down</code> on Mac OS X/11+ Aqua) is
+    pressed when editing a cell that is not the first/last editable cell within
+    its column, then the active item or element (depending on the selection
+    type) moves one line up/down.&nbsp; If the selection mode is
+    <code><b>browse</b></code> or <code><b>extended</b></code> then the new
+    active item or element is also selected and all other items or elements are
+    deselected.&nbsp; In <code><b>extended</b></code> mode the new active item
+    or element becomes the (cell)selection anchor.&nbsp; This is exactly the
+    same behavior as the one exhibited by the <code>Up</code> and
+    <code>Down</code> keys in the tablelist's body.</dd>
 
     <dd class="tm">If the tablelist's <code><b><a href=
     "#state">state</a></b></code> is <code><b>disabled</b></code> then none of
@@ -12713,7 +12915,7 @@ bind [.tbl <a href="#labeltag">labeltag</a>] &lt;Button-3&gt; {
     <dd>tablelist, multi-column, listbox, tree, widget</dd>
   </dl>
 
-  <div align="center">
+  <div>
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>

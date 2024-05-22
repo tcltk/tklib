@@ -230,7 +230,7 @@ which has the complication of permitting multiple selections\.
 # <a name='section5'></a>BUGS
 
 This version of __persistentSelection__ is intended to be compatible with
-all releases of __[Tk](\.\./\.\./\.\./\.\./index\.md\#tk)__ 8\.5 and 8\.6, and with
+all releases of __[Tk](\.\./\.\./\.\./\.\./index\.md\#tk)__ 8\.5\- and 8\.6, and with
 the branches *core\-8\-5\-branch*, *core\-8\-6\-branch*, *revised\_text*, and
 *trunk* in the source code repository for
 __[Tk](\.\./\.\./\.\./\.\./index\.md\#tk)__\. Any incompatibility with any of these

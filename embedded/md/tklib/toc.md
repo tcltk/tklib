@@ -95,6 +95,8 @@
 
   - [swaplist](tklib/files/modules/swaplist/swaplist\.md) A dialog which allows a user to move options between two lists
 
+  - [tipstack](tklib/files/modules/tooltip/tipstack\.md) Stacked tooltips
+
   - [tooltip](tklib/files/modules/tooltip/tooltip\.md) Tooltip management
 
   - [widget](tklib/files/modules/widget/widget\.md) Megawidget bundle

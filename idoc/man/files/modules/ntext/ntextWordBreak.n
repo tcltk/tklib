@@ -273,9 +273,9 @@ Database Class:	\\fB\\$3\\fR
 .SH NAME
 ntextWordBreak \- ntext Word Boundary Detection for the Text Widget
 .SH SYNOPSIS
-package require \fBTcl  8\&.5\fR
+package require \fBTcl  8\&.5-\fR
 .sp
-package require \fBTk  8\&.5\fR
+package require \fBTk  8\&.5-\fR
 .sp
 package require \fBntext  ?1\&.0?\fR
 .sp
@@ -357,7 +357,7 @@ The use of three classes of characters might make selection too fine-grained; bu
 .PP
 As well as its defaults, \fINtext\fR permits the developer to define their own classes of characters, or to revert to the classic \fIText\fR definitions, or to specify their own regexp matching patterns\&.
 .SH BUGS
-This version of \fBntext\fR is intended to be compatible with all releases of \fBTk\fR 8\&.5 and 8\&.6, and with the branches \fIcore-8-5-branch\fR, \fIcore-8-6-branch\fR, and \fItrunk\fR in the source code repository for \fBTk\fR\&.  Any incompatibility with any of these versions, for any \fBTk\fR windowing system, should be reported as a bug\&. Please report such in the category \fIntext\fR of the \fITklib Trackers\fR [http://core\&.tcl\&.tk/tklib/reportlist]\&.
+This version of \fBntext\fR is intended to be compatible with all releases of \fBTk\fR 8\&.5, 8\&.6, and 8\&.7, and with the branches \fIcore-8-5-branch\fR, \fIcore-8-6-branch\fR, and \fItrunk\fR in the source code repository for \fBTk\fR\&.  Any incompatibility with any of these versions, for any \fBTk\fR windowing system, should be reported as a bug\&. Please report such in the category \fIntext\fR of the \fITklib Trackers\fR [https://core\&.tcl-lang\&.org/tklib/reportlist]\&.
 .SH EXAMPLE
 To use \fINtext\fR with Tcl/Tk's usual word-boundary detection rules:
 .CS

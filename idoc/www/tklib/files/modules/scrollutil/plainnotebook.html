@@ -10,10 +10,10 @@
 </head>
 
 <body>
-  <div align="center">
+  <div>
     <h1>The <code><b>scrollutil::plainnotebook</b></code> Command</h1>
 
-    <h2>For Scrollutil Version 1.17</h2>
+    <h2>For Scrollutil Version 2.2</h2>
 
     <h3>by</h3>
 
@@ -34,7 +34,7 @@
     <li><a href="#detailed_ref">Detailed Reference</a></li>
   </ul>
 
-  <div align="center">
+  <div>
     <p><a href="index.html">Start page</a></p>
   </div>
 
@@ -114,6 +114,9 @@ package require scrollutil_tile
 
     <dd><code><i>pathName</i> <b><a href=
     "#addseparator">addseparator</a></b></code></dd>
+
+    <dd><code><i>pathName</i> <b><a href=
+    "#adjustsize">adjustsize</a></b></code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#attrib">attrib</a></b> ?<i>name</i>
     ?<i>value</i> <i>name</i> <i>value</i> ...??</code></dd>
@@ -203,7 +206,7 @@ package require scrollutil_tile
     <dd>plainnotebook, widget, notebook, closebtn</dd>
   </dl>
 
-  <div align="center">
+  <div>
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>
@@ -249,8 +252,8 @@ package require scrollutil_tile
     "scrollableframe.html">scrollableframe</a> whose content frame is the
     parent of a series of widgets that play the role of vertically laid-out
     notebook tabs.&nbsp; Currently not visible "tabs" can be brought into view
-    by navigating with the mouse wheel or keyboard and by scrolling with the
-    vertical scrollbar of the <a href="scrollarea.html">scrollarea</a>
+    by navigating with the mouse wheel, touchpad, or keyboard, and by scrolling
+    with the vertical scrollbar of the <a href="scrollarea.html">scrollarea</a>
     containing the scrollableframe.&nbsp; An individual "tab" can be made
     visible programmatically with the aid of the <code><b><a href=
     "#see">see</a></b></code> subcommand.&nbsp; Unlike a ttk::notebook widget
@@ -432,10 +435,10 @@ package require scrollutil_tile
 
       <blockquote>
         <p>If present and greater than zero, specifies the desired height of
-        the pane area (not including internal padding) in any of the forms
-        acceptable to <code><b>Tk_GetPixels</b></code>.&nbsp; Otherwise, the
-        maximum height of all panes is used.&nbsp; The default is
-        <code>0</code></p>
+        the pane area in any of the forms acceptable to
+        <code><b>Tk_GetPixels</b></code>.&nbsp; Otherwise, the maximum
+        requested height of all panes is used.&nbsp; The default is
+        <code>0</code>.</p>
       </blockquote>
     </dd>
 
@@ -603,10 +606,10 @@ package require scrollutil_tile
 
       <blockquote>
         <p>If present and greater than zero, specifies the desired width of the
-        pane area (not including internal padding) in any of the forms
-        acceptable to <code><b>Tk_GetPixels</b></code>.&nbsp; Otherwise, the
-        maximum width of all panes is used.&nbsp; The default is
-        <code>0</code></p>
+        pane area in any of the forms acceptable to
+        <code><b>Tk_GetPixels</b></code>.&nbsp; Otherwise, the maximum
+        requested width of all panes is used.&nbsp; The default is
+        <code>0</code>.</p>
       </blockquote>
     </dd>
 
@@ -661,7 +664,10 @@ package require scrollutil_tile
         style (<code>Page.Toolbutton</code> or
         <code>ClosablePage.Toolbutton</code>, depending on the value of the
         <code><b><a href="#closabletabs">-closabletabs</a></b></code>
-        option).</dd>
+        option).&nbsp; The return value is the path name of the widget used for
+        the tab corresponding to <code><i>window</i></code> (a ttk::radiobutton
+        or ttk::button, both using a toolbutton style, or a ttk::label, or a
+        ttk::separator).</dd>
 
         <dt class="tm" id="addbutton"><code><i>pathName</i> <b>addbutton</b>
         <i>pageIndex</i> <i>text</i> ?<i>image</i>?</code></dt>
@@ -672,11 +678,10 @@ package require scrollutil_tile
         <code><i>image</i></code>, the <code><b>descend</b></code> element,
         whose shape resembles that of a &gt; character.&nbsp; This style
         element is automatically created by the Scrollutil_tile package.&nbsp;
-        Its size depends on the display's scaling percentage (<code>100</code>,
-        <code>125</code>, <code>150</code>, <code>175</code>, or
-        <code>200</code>), while its foreground color is theme-specific and is
-        updated whenever the theme changes.&nbsp; The return value is the path
-        name of the above-mentioned ttk::button widget.</dd>
+        Its size depends on the display's scaling percentage, while its
+        foreground color is theme-specific and is updated whenever the theme
+        changes.&nbsp; The return value is the path name of the above-mentioned
+        ttk::button widget.</dd>
 
         <dd class="tm">For this subcommand to work, the widget's parent must be
         a <a href="pagesman.html">pagesman</a> widget.&nbsp;
@@ -720,6 +725,21 @@ package require scrollutil_tile
         which is typically used as a delimiter of a group of tabs.&nbsp; The
         return value is the path name of the above-mentioned ttk::separator
         widget.</dd>
+
+        <dt class="tm" id="adjustsize"><code><i>pathName</i>
+        <b>adjustsize</b></code></dt>
+
+        <dd>Sets the plainnotebook's <code><b><a href=
+        "#height">-height</a></b></code> option to the maximum requested height
+        of all panes and its <code><b><a href="#width">-width</a></b></code>
+        option to the maximum requested width of all panes.</dd>
+
+        <dd class="tm"><b>REMARK:</b>&nbsp; If the plainnotebook's
+        <code><b>-height</b></code> and <code><b>-width</b></code> options have
+        their default value <code>0</code> then in many cases there is no need
+        for invocations of this subcommand, since the widget will automatically
+        attempt to adapt its size to the maximum requested size of its
+        panes.</dd>
 
         <dt class="tm" id="attrib"><code><i>pathName</i> <b>attrib</b>
         ?<i>name</i> ?<i>value</i> <i>name</i> <i>value</i> ...??</code></dt>
@@ -825,7 +845,10 @@ package require scrollutil_tile
         style (<code>Page.Toolbutton</code> or
         <code>ClosablePage.Toolbutton</code>, depending on the value of the
         <code><b><a href="#closabletabs">-closabletabs</a></b></code>
-        option).</dd>
+        option).&nbsp; The return value is the path name of the widget used for
+        the tab corresponding to <code><i>window</i></code> (a ttk::radiobutton
+        or ttk::button, both using a toolbutton style, or a ttk::label, or a
+        ttk::separator).</dd>
 
         <dt class="tm" id="insertbutton"><code><i>pathName</i>
         <b>insertbutton</b> <i>pos</i> <i>pageIndex</i> <i>text</i>
@@ -1003,23 +1026,23 @@ proc populateMenu {nb data} {
     <dd>
       <ol>
         <li class="tm"><b>Navigation between the selectable tabs of a
-        plainnotebook widget via the mouse wheel:</b>&nbsp; Recall that the
-        selectable tabs are the ones created with the <code><b><a href=
-        "#add">add</a></b></code> and <code><b><a href=
-        "#insert">insert</a></b></code> subcommands.&nbsp; A mouse wheel
-        tick selects the selectable tab of state <code><b>normal</b></code>
-        cyclically following/preceding the currently selected one.&nbsp; (Note
-        that the same effect can also be achieved with the keys
-        <code>Down</code>, <code>Up</code>, <code>Control-Tab</code>, and
-        <code>Control-Shift-Tab</code>.)&nbsp; On the windowing system
-        <code><b>aqua</b></code>, if the <code>Option</code> key is down while
-        the mouse wheel is being rotated then a wheel tick selects the 10'th
-        selectable tab of state <code><b>normal</b></code> cyclically
-        following/preceding the currently selected one (modulo the number of
-        selectable tabs).&nbsp; The same holds true on the windowing systems
-        <code><b>x11</b></code> and <code><b>win32</b></code> if the Tk version
-        is 8.7a4 or later and the mouse wheel is rotated with the
-        <code>Alt</code> key down.</li>
+        plainnotebook widget via the mouse wheel or touchpad:</b>&nbsp; Recall
+        that the selectable tabs are the ones created with the
+        <code><b><a href="#add">add</a></b></code> and <code><b><a href=
+        "#insert">insert</a></b></code> subcommands.&nbsp; A mouse wheel tick
+        or a two-finger gesture on the touchpad selects the selectable tab of
+        state <code><b>normal</b></code> cyclically following/preceding the
+        currently selected one.&nbsp; (Note that the same effect can also be
+        achieved with the keys <code>Down</code>, <code>Up</code>,
+        <code>Control-Tab</code>, and <code>Control-Shift-Tab</code>.)&nbsp; On
+        the windowing system <code><b>aqua</b></code>, if the
+        <code>Option</code> key is down while the mouse wheel is being rotated
+        then a wheel tick selects the 10'th selectable tab of state
+        <code><b>normal</b></code> cyclically following/preceding the currently
+        selected one (modulo the number of selectable tabs).&nbsp; The same
+        holds true on the windowing systems <code><b>x11</b></code> and
+        <code><b>win32</b></code> if the Tk version is 8.7a4 or later and the
+        mouse wheel is rotated with the <code>Alt</code> key down.</li>
 
         <li class="tm"><b>Moving the tabs of a plainnotebook widget with the
         mouse</b>:&nbsp; If mouse button 1 is pressed over a tab but outside
@@ -1071,7 +1094,7 @@ proc populateMenu {nb data} {
     <dd>plainnotebook, widget, notebook, closebtn</dd>
   </dl>
 
-  <div align="center">
+  <div>
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>

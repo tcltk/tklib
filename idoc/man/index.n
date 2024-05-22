@@ -311,6 +311,9 @@ canvas::gradient
 balloon
 .RS
 .TP
+\fBfiles/modules/tooltip/tipstack\&.n\fR
+tipstack
+.TP
 \fBfiles/modules/tooltip/tooltip\&.n\fR
 tooltip
 .RE
@@ -722,6 +725,9 @@ canvas::sqmap
 help
 .RS
 .TP
+\fBfiles/modules/tooltip/tipstack\&.n\fR
+tipstack
+.TP
 \fBfiles/modules/tooltip/tooltip\&.n\fR
 tooltip
 .RE
@@ -739,6 +745,9 @@ history
 .RE
 hover
 .RS
+.TP
+\fBfiles/modules/tooltip/tipstack\&.n\fR
+tipstack
 .TP
 \fBfiles/modules/tooltip/tooltip\&.n\fR
 tooltip
@@ -1294,6 +1303,12 @@ tile
 .TP
 \fBfiles/modules/canvas/canvas_sqmap\&.n\fR
 canvas::sqmap
+.RE
+tipstack
+.RS
+.TP
+\fBfiles/modules/tooltip/tipstack\&.n\fR
+tipstack
 .RE
 tk
 .RS

@@ -10,10 +10,10 @@
 </head>
 
 <body>
-  <div align="center">
+  <div>
     <h1>The <code><b>scrollutil::pagesman</b></code> Command</h1>
 
-    <h2>For Scrollutil Version 1.17</h2>
+    <h2>For Scrollutil Version 2.2</h2>
 
     <h3>by</h3>
 
@@ -34,7 +34,7 @@
     <li><a href="#detailed_ref">Detailed Reference</a></li>
   </ul>
 
-  <div align="center">
+  <div>
     <p><a href="index.html">Start page</a></p>
   </div>
 
@@ -98,6 +98,9 @@
     <dd><code><i>pathName</i> <b><a href="#add">add</a></b> <i>window</i>
     ?<i>option</i> <i>value</i> <i>option</i> <i>value</i> ...?</code></dd>
 
+    <dd><code><i>pathName</i> <b><a href=
+    "#adjustsize">adjustsize</a></b></code></dd>
+
     <dd><code><i>pathName</i> <b><a href="#attrib">attrib</a></b> ?<i>name</i>
     ?<i>value</i> <i>name</i> <i>value</i> ...??</code></dd>
 
@@ -160,7 +163,7 @@
     <dd>pagesman, widget</dd>
   </dl>
 
-  <div align="center">
+  <div>
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>
@@ -190,12 +193,11 @@
     <code><b>Pagesman</b></code>, and makes it into a <b>pagesman</b>
     widget.&nbsp; Additional options, described below, may be specified on the
     command line or in the option database to configure aspects of the
-    plainnotebook widget such as its width, height, borderwidth, and
-    relief.&nbsp; The <code><b>scrollutil::pagesman</b></code> command returns
-    its <code><i>pathName</i></code> argument.&nbsp; At the time this command
-    is invoked, there must not exist a window named
-    <code><i>pathName</i></code>, but <code><i>pathName</i></code>'s parent
-    must exist.</dd>
+    pagesman widget such as its width, height, borderwidth, and relief.&nbsp;
+    The <code><b>scrollutil::pagesman</b></code> command returns its
+    <code><i>pathName</i></code> argument.&nbsp; At the time this command is
+    invoked, there must not exist a window named <code><i>pathName</i></code>,
+    but <code><i>pathName</i></code>'s parent must exist.</dd>
 
     <dd class="tm">A pagesman is a mega-widget that provides the basic
     functionality of a pages manager, meaning that it manages a list of
@@ -288,7 +290,8 @@
         for the widget, including the border and highlight rectangle (if any)
         drawn around the outside of the widget, in any of the forms acceptable
         to <code><b>Tk_GetPixels</b></code>.&nbsp; Otherwise, the maximum
-        height of all pages is used.&nbsp; The default is <code>0</code>.</p>
+        requested height of all pages is used.&nbsp; The default is
+        <code>0</code>.</p>
       </blockquote>
     </dd>
 
@@ -375,8 +378,9 @@
         <p>If present and greater than zero, specifies the desired total width
         for the widget, including the border and highlight rectangle (if any)
         drawn around the outside of the widget, in any of the forms acceptable
-        to <code><b>Tk_GetPixels</b></code>.&nbsp; Otherwise, the maximum width
-        of all pages is used.&nbsp; The default is <code>0</code>.</p>
+        to <code><b>Tk_GetPixels</b></code>.&nbsp; Otherwise, the maximum
+        requested width of all pages is used.&nbsp; The default is
+        <code>0</code>.</p>
       </blockquote>
     </dd>
 
@@ -451,6 +455,27 @@
         <code><i>window</i></code> is already managed by the pagesman widget,
         then the subcommand uses its optional arguments to update the options
         of the corresponding page.</dd>
+
+        <dt class="tm" id="adjustsize"><code><i>pathName</i>
+        <b>adjustsize</b></code></dt>
+
+        <dd>Sets the pagesman widget's <code><b><a href=
+        "#height">-height</a></b></code> option to the maximum requested height
+        of all pages and its <code><b><a href="#width">-width</a></b></code>
+        option to the maximum requested width of all pages.</dd>
+
+        <dd class="tm"><b>REMARK:</b>&nbsp; If all pages of the pagesman widget
+        are plainnotebooks whose <code><b>-height</b></code> and
+        <code><b>-width</b></code> options have their default value
+        <code>0</code> then in many cases there is no need to precede an
+        invocation of this subcommand for the pagesman widget by invocations of
+        the subcommand of the same name for its pages, because each
+        plainnotebook will automatically adapt its requested size to the
+        maximum requested size of its panes.&nbsp; For example, a font size
+        change in some panes of some of the pages might make it necessary to
+        invoke this subcommand for the pagesman widget, and at the invocation
+        time its pages will already have their requested sizes automatically
+        adapted to the new font size.</dd>
 
         <dt class="tm" id="attrib"><code><i>pathName</i> <b>attrib</b>
         ?<i>name</i> ?<i>value</i> <i>name</i> <i>value</i> ...??</code></dt>
@@ -651,7 +676,7 @@
     <dd>pagesman, pages manager, widget</dd>
   </dl>
 
-  <div align="center">
+  <div>
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>

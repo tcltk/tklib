@@ -12,11 +12,11 @@
 </head>
 
 <body>
-  <div align="center">
+  <div>
     <h1>The <code><b>scrollutil::scrollednotebook</b></code> Command<br>
     and the <code><b>closetab</b></code> Style Element</h1>
 
-    <h2>For Scrollutil Version 1.17</h2>
+    <h2>For Scrollutil Version 2.2</h2>
 
     <h3>by</h3>
 
@@ -53,7 +53,7 @@
     <code><b>scrollutil::closetabstate</b></code> Command</a></li>
   </ul>
 
-  <div align="center">
+  <div>
     <p><a href="index.html">Start page</a></p>
   </div>
 
@@ -116,12 +116,27 @@ package require scrollutil_tile
 
     <dt class="tm"><a href="#widget_command">WIDGET COMMAND</a></dt>
 
+    <dd><code><i>pathName</i> <b><a href="#add">add</a></b>
+    <i>window</i> ?<i>options</i>?</code></dd>
+
+    <dd><code><i>pathName</i> <b><a href=
+    "#adjustsize">adjustsize</a></b></code></dd>
+
     <dd><code><i>pathName</i> <b><a href="#attrib">attrib</a></b> ?<i>name</i>
     ?<i>value</i> <i>name</i> <i>value</i> ...??</code></dd>
+
+    <dd><code><i>pathName</i> <b><a href="#cget">cget</a></b>
+    <i>option</i></code></dd>
 
     <dd><code><i>pathName</i> <b><a href=
     "#snb_closetabstate">closetabstate</a></b> <i>tabId</i>
     ?<b>normal</b>|<b>disabled</b>?</code></dd>
+
+    <dd><code><i>pathName</i> <b><a href="#configure">configure</a></b>
+    ?<i>option</i> ?<i>value</i> <i>option</i> <i>value</i> ...??</code></dd>
+
+    <dd><code><i>pathName</i> <b><a href="#forget">forget</a></b>
+    <i>tabId</i></code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#hasattrib">hasattrib</a></b>
     <i>name</i></code></dd>
@@ -129,15 +144,44 @@ package require scrollutil_tile
     <dd><code><i>pathName</i> <b><a href="#hastabattrib">hastabattrib</a></b>
     <i>tabId</i> <i>name</i></code></dd>
 
+    <dd><code><i>pathName</i> <b><a href="#hide">hide</a></b>
+    <i>tabId</i></code></dd>
+
+    <dd><code><i>pathName</i> <b><a href="#identify">identify</a></b>
+    <i>component</i> <i>x</i> <i>y</i></code></dd>
+
+    <dd><code><i>pathName</i> <b><a href="#index">index</a></b>
+    <i>tabId</i></code></dd>
+
+    <dd><code><i>pathName</i> <b><a href="#insert">insert</a></b>
+    <i>pos</i> <i>window</i> ?<i>options</i>?</code></dd>
+
+    <dd><code><i>pathName</i> <b><a href="#instate">instate</a></b>
+    <i>stateSpec</i> ?<i>script</i>?</code></dd>
+
     <dd><code><i>pathName</i> <b><a href=
     "#notebookpath">notebookpath</a></b></code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#see">see</a></b>
     <i>tabId</i></code></dd>
 
+    <dd><code><i>pathName</i> <b><a href="#select">select</a></b>
+    ?<i>tabId</i>?</code></dd>
+
+    <dd><code><i>pathName</i> <b><a href="#state">state</a></b>
+    ?<i>stateSpec</i>?</code></dd>
+
+    <dd><code><i>pathName</i> <b><a href="#style">style</a></b></code></dd>
+
+    <dd><code><i>pathName</i> <b><a href="#tab">tab</a></b>
+    <i>tabId</i> ?<i>option</i> ?<i>value</i> <i>option</i> <i>value</i>
+    ...??</code></dd>
+
     <dd><code><i>pathName</i> <b><a href="#tabattrib">tabattrib</a></b>
     <i>tabId</i> ?<i>name</i> ?<i>value</i> <i>name</i> <i>value</i>
     ...??</code></dd>
+
+    <dd><code><i>pathName</i> <b><a href="#tabs">tabs</a></b></code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#unsetattrib">unsetattrib</a></b>
     <i>name</i></code></dd>
@@ -157,7 +201,7 @@ package require scrollutil_tile
     <dd>scrollednotebook, widget, notebook, scrolled</dd>
   </dl>
 
-  <div align="center">
+  <div>
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>
@@ -202,21 +246,19 @@ package require scrollutil_tile
     <dd class="tm">A scrollednotebook is a mega-widget that contains a
     ttk::notebook within a <a href="scrollableframe.html">scrollableframe</a>
     and supports an arbitrary number of unsqueezed tabs.&nbsp; Currently not
-    visible tabs can be brought into view by navigating with the mouse wheel or
-    keyboard and by scrolling with the aid of the two arrow buttons placed on
-    demand in the top-left and top-right or bottom-left and bottom-right
-    corners (depending on the notebook's <a href=
+    visible tabs can be brought into view by navigating with the mouse wheel,
+    touchpad, or keyboard, and by scrolling with the aid of the two arrow
+    buttons placed on demand in the top-left and top-right or bottom-left and
+    bottom-right corners (depending on the notebook's <a href=
     "#std_options">style</a>).&nbsp; The size of the arrows depends on the
-    display's scaling percentage (<code>100</code>, <code>125</code>,
-    <code>150</code>, <code>175</code>, or <code>200</code>), while their color
-    is theme-specific and is updated whenever the theme changes.&nbsp; An
-    individual tab can be made visible programmatically with the aid of the
-    <code><b><a href="#see">see</a></b></code> subcommand.&nbsp; Unlike the
-    ttk::notebook widget, whose <code><b>-width</b></code> option is quite
-    often overridden by the total width of the tabs, the scrollednotebook
-    widget respects the value of its <code><b><a href=
-    "#width">-width</a></b></code> option, regardless of the space required by
-    the tabs.</dd>
+    display's scaling percentage, while their color is theme-specific and is
+    updated whenever the theme changes.&nbsp; An individual tab can be made
+    visible programmatically with the aid of the <code><b><a href=
+    "#see">see</a></b></code> subcommand.&nbsp; Unlike the ttk::notebook
+    widget, whose <code><b>-width</b></code> option is quite often overridden
+    by the total width of the tabs, the scrollednotebook widget respects the
+    value of its <code><b><a href="#width">-width</a></b></code> option,
+    regardless of the space required by the tabs.</dd>
 
     <dd class="tm">The API of the scrollednotebook widget is nearly identical
     to that of ttk::notebook.&nbsp; Apart from a few additional,
@@ -304,11 +346,13 @@ package require scrollutil_tile
       </table>
 
       <blockquote>
-        <p>If present and greater than zero, specifies the desired height for
-        the widget in any of the forms acceptable to
+        <p>If present and greater than zero, specifies the desired height of
+        the pane area in any of the forms acceptable to
         <code><b>Tk_GetPixels</b></code>.&nbsp; Otherwise, the widget's height
         is set to the requested height of the ttk::notebook contained in it
-        (which in turn depends on the maximum height of all panes and tabs),
+        (which in turn depends on the maximum requested height of all panes and
+        tabs and the extra vertical space resulting from the value of the
+        <code><b><a href="#padding">-padding</a></b></code> option),
         immediately after the scrollednotebook gets mapped.&nbsp; The default
         is <code>0</code>.</p>
       </blockquote>
@@ -448,12 +492,14 @@ package require scrollutil_tile
       </table>
 
       <blockquote>
-        <p>If present and greater than zero, specifies the desired width for
-        the widget in any of the forms acceptable to
-        <code><b>Tk_GetPixels</b></code>.&nbsp; Otherwise, the widget's width
-        is set to the requested width of the ttk::notebook contained in it
-        (which in turn depends, among others, on the maximum width of all panes
-        and the total width of the tabs), immediately after the
+        <p>If present and greater than zero, specifies the desired width of
+        the ttk::notebook contained in the widget, in any of the forms
+        acceptable to <code><b>Tk_GetPixels</b></code>.&nbsp; Otherwise, the
+        widget's width is set to the requested width of the ttk::notebook
+        contained in it (which in turn depends on the maximum requested width
+        of all panes, the total width of the tabs, and the extra horizontal
+        space resulting from the value of the <code><b><a href=
+        "#padding">-padding</a></b></code> option), immediately after the
         scrollednotebook gets mapped.&nbsp; The default is <code>10c</code>,
         which should be overridden with a suitable application-specific
         value.</p>
@@ -484,13 +530,26 @@ package require scrollutil_tile
     </dd>
 
     <dd><code><i>option</i></code> and the <code><i>arg</i></code>s determine
-    the exact behavior of the command.&nbsp; The subcommands possible for
-    scrollednotebook widgets are the same as those for ttk::notebook widgets
-    (see the <b>ttk_notebook</b> manual entry for details), except that
-    scrollednotebook widgets provide the following additional subcommands:</dd>
+    the exact behavior of the command.&nbsp; The following commands are
+    possible for scrollednotebook widgets:</dd>
 
     <dd>
       <dl>
+        <dt class="tm" id="add"><code><i>pathName</i> <b>add</b> <i>window</i>
+        ?<i>options</i>?</code></dt>
+
+        <dd>See the <b>ttk_notebook</b> manual entry.</dd>
+
+        <dt class="tm" id="adjustsize"><code><i>pathName</i>
+        <b>adjustsize</b></code></dt>
+
+        <dd>Sets the scrollednotebook's <code><b><a href=
+        "#height">-height</a></b></code> option to the maximum requested height
+        of all panes, and its <code><b><a href="#width">-width</a></b></code>
+        option to the maximum requested width of all panes, increased by the
+        extra horizontal space resulting from the value of the
+        <code><b><a href="#padding">-padding</a></b></code> option.</dd>
+
         <dt class="tm" id="attrib"><code><i>pathName</i> <b>attrib</b>
         ?<i>name</i> ?<i>value</i> <i>name</i> <i>value</i> ...??</code></dt>
 
@@ -509,6 +568,13 @@ package require scrollutil_tile
         value(s); in this case the return value is an empty string.&nbsp; Each
         <code><i>name</i></code> may be an arbitrary string.</dd>
 
+        <dt class="tm" id="cget"><code><i>pathName</i> <b>cget</b>
+        <i>option</i></code></dt>
+
+        <dd>Returns the current value of the configuration option given by
+        <code><i>option</i></code>, which may have any of the values accepted
+        by the <code><b>scrollutil::scrollednotebook</b></code> command.</dd>
+
         <dt class="tm" id="snb_closetabstate"><code><i>pathName</i>
         <b>closetabstate</b> <i>tabId</i>
         ?<b>normal</b>|<b>disabled</b>?</code></dt>
@@ -520,6 +586,32 @@ package require scrollutil_tile
         <code><i>tabId</i></code>, and the optional argument (if present) to
         the <code><b><a href=
         "#closetabstate">scrollutil::closetabstate</a></b></code> command.</dd>
+
+        <dt class="tm" id="configure"><code><i>pathName</i> <b>configure</b>
+        ?<i>option</i> ?<i>value</i> <i>option</i> <i>value</i>
+        ...??</code></dt>
+
+        <dd>Queries or modifies the configuration options of the widget.&nbsp;
+        If no <code><i>option</i></code> is specified, the command returns a
+        list describing all of the available options for
+        <code><i>pathName</i></code> (see <code><b>Tk_ConfigureInfo</b></code>
+        for information on the format of this list).&nbsp; If
+        <code><i>option</i></code> is specified with no
+        <code><i>value</i></code>, then the command returns a list describing
+        the one named option (this list will be identical to the corresponding
+        sublist of the value returned if no <code><i>option</i></code> is
+        specified).&nbsp; If one or more
+        <code><i>option</i></code>-<code><i>value</i></code> pairs are
+        specified, then the command modifies the given widget option(s) to have
+        the given value(s); in this case the return value is an empty
+        string.&nbsp; <code><i>option</i></code> may have any of the values
+        accepted by the <code><b>scrollutil::scrollednotebook</b></code>
+        command.</dd>
+
+        <dt class="tm" id="forget"><code><i>pathName</i> <b>forget</b>
+        <i>tabId</i></code></dt>
+
+        <dd>See the <b>ttk_notebook</b> manual entry.</dd>
 
         <dt class="tm" id="hasattrib"><code><i>pathName</i> <b>hasattrib</b>
         <i>name</i></code></dt>
@@ -533,6 +625,31 @@ package require scrollutil_tile
         <dd>Returns <code>1</code> if the attribute <code><i>name</i></code>
         for the tab given by <code><i>tabId</i></code> exists and
         <code>0</code> otherwise.</dd>
+
+        <dt class="tm" id="hide"><code><i>pathName</i> <b>hide</b>
+        <i>tabId</i></code></dt>
+
+        <dd>See the <b>ttk_notebook</b> manual entry.</dd>
+
+        <dt class="tm" id="identify"><code><i>pathName</i> <b>identify</b>
+        <i>component</i> <i>x</i> <i>y</i></code></dt>
+
+        <dd>See the <b>ttk_notebook</b> manual entry.</dd>
+
+        <dt class="tm" id="index"><code><i>pathName</i> <b>index</b>
+        <i>tabId</i></code></dt>
+
+        <dd>See the <b>ttk_notebook</b> manual entry.</dd>
+
+        <dt class="tm" id="insert"><code><i>pathName</i> <b>insert</b>
+        <i>pos</i> <i>window</i> ?<i>options</i>?</code></dt>
+
+        <dd>See the <b>ttk_notebook</b> manual entry.</dd>
+
+        <dt class="tm" id="instate"><code><i>pathName</i> <b>instate</b>
+        <i>stateSpec</i> ?<i>script</i>?</code></dt>
+
+        <dd>See the <b>ttk_widget</b> manual entry.</dd>
 
         <dt class="tm" id="notebookpath"><code><i>pathName</i>
         <b>notebookpath</b></code></dt>
@@ -571,8 +688,8 @@ baltip::tip <i>nb</i> <i>message</i> -nbktab <i>tabWindow ...</i>
           The support for the <code><b>-tab</b></code> option of the
           <code><b>tooltip::tooltip</b></code> command was added in version 1.6
           of the tooltip package.&nbsp; The <code><b>baltip::tip</b></code>
-	  command accepts a great variety of additional options, too.&nbsp; The
-	  baltip package can be downloaded from the location
+          command accepts a great variety of additional options, too.&nbsp; The
+          baltip package can be downloaded from the location
 
           <blockquote>
             <address>
@@ -597,6 +714,30 @@ baltip::tip <i>nb</i> <i>message</i> -nbktab <i>tabWindow ...</i>
         it.&nbsp; Note that when a tab gets selected, this command is
         automatically invoked for it, in order to make that tab visible.</dd>
 
+        <dt class="tm" id="select"><code><i>pathName</i> <b>select</b>
+        ?<i>tabId</i>?</code></dt>
+
+        <dd>See the <b>ttk_notebook</b> manual entry.</dd>
+
+        <dt class="tm" id="state"><code><i>pathName</i> <b>state</b>
+        ?<i>stateSpec</i>?</code></dt>
+
+        <dd>See the <b>ttk_widget</b> manual entry.</dd>
+
+        <dt class="tm" id="style"><code><i>pathName</i>
+        <b>style</b></code></dt>
+
+        <dd>Returns the style used by the ttk::notebook widget contained in the
+        scrollednotebook.&nbsp; For Tk themed widgets this subcommand was
+        introduced in Tk 8.7a4, but the scrollednotebook widget provides it for
+        all supported Tk versions.</dd>
+
+        <dt class="tm" id="tab"><code><i>pathName</i> <b>tab</b> <i>tabId</i>
+        ?<i>option</i> ?<i>value</i> <i>option</i> <i>value</i>
+        ...??</code></dt>
+
+        <dd>See the <b>ttk_notebook</b> manual entry.</dd>
+
         <dt class="tm" id="tabattrib"><code><i>pathName</i> <b>tabattrib</b>
         <i>tabId</i> ?<i>name</i> ?<i>value</i> <i>name</i> <i>value</i>
         ...??</code></dt>
@@ -616,6 +757,10 @@ baltip::tip <i>nb</i> <i>message</i> -nbktab <i>tabWindow ...</i>
         then the command sets the given tab attribute(s) to the given
         value(s); in this case the return value is an empty string.&nbsp; Each
         <code><i>name</i></code> may be an arbitrary string.</dd>
+
+        <dt class="tm" id="tabs"><code><i>pathName</i> <b>tabs</b></code></dt>
+
+        <dd>See the <b>ttk_notebook</b> manual entry.</dd>
 
         <dt class="tm" id="unsetattrib"><code><i>pathName</i>
         <b>unsetattrib</b> <i>name</i></code></dt>
@@ -691,17 +836,18 @@ proc populateMenu {nb data} {
     <dd>
       <ol>
         <li class="tm"><b>Navigation between the tabs of a scrollednotebook or
-        ttk::notebook widget via the mouse wheel:</b>&nbsp; A mouse wheel tick
-        selects the tab of state <code><b>normal</b></code> cyclically
-        following/preceding the currently selected one.&nbsp; (Note that the
-        same effect can also be achieved with the keys <code>Right</code>,
-        <code>Left</code>, <code>Control-Tab</code>, and
-        <code>Control-Shift-Tab</code>.)&nbsp; On the windowing system
-        <code><b>aqua</b></code>, if the <code>Option</code> key is down while
-        the mouse wheel is being rotated then a wheel tick selects the 10'th
-        tab of state <code><b>normal</b></code> cyclically following/preceding
-        the currently selected one (modulo the number of tabs).&nbsp; The same
-        holds true on the windowing systems <code><b>x11</b></code> and
+        ttk::notebook widget via the mouse wheel or touchpad:</b>&nbsp; A mouse
+        wheel tick or two-finger gesture on the touchpad selects the tab of
+        state <code><b>normal</b></code> cyclically following/preceding the
+        currently selected one.&nbsp; (Note that the same effect can also be
+        achieved with the keys <code>Right</code>, <code>Left</code>,
+        <code>Control-Tab</code>, and <code>Control-Shift-Tab</code>.)&nbsp; On
+        the windowing system <code><b>aqua</b></code>, if the
+        <code>Option</code> key is down while the mouse wheel is being rotated
+        then a wheel tick selects the 10'th tab of state
+        <code><b>normal</b></code> cyclically following/preceding the currently
+        selected one (modulo the number of tabs).&nbsp; The same holds true on
+        the windowing systems <code><b>x11</b></code> and
         <code><b>win32</b></code> if the Tk version is 8.7a4 or later and the
         mouse wheel is rotated with the <code>Alt</code> key down.</li>
 
@@ -823,7 +969,7 @@ proc closeTab {nb tabIdx} {
     <dd>scrollednotebook, widget, notebook, scrolled</dd>
   </dl>
 
-  <div align="center">
+  <div>
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>
@@ -835,9 +981,8 @@ proc closeTab {nb tabIdx} {
   <p>The Scrollutil_tile package automatically creates a new style element
   named <code><b>closetab</b></code>, whose shape resembles that of an x
   character.&nbsp; The element's size depends on the display's scaling
-  percentage (<code>100</code>, <code>125</code>, <code>150</code>,
-  <code>175</code>, or <code>200</code>), while its foreground color is
-  theme-specific and is updated whenever the theme changes.</p>
+  percentage, while its foreground color is theme-specific and is updated
+  whenever the theme changes.</p>
 
   <p>You can add this element to the tabs of a ttk::notebook style (like
   <code><b>TNotebook</b></code> or <code>My.<b>TNotebook</b></code>) by using
@@ -854,7 +999,7 @@ proc closeTab {nb tabIdx} {
   tab can be set and queried with the aid of the <code><b><a href=
   "#closetabstate">scrollutil::closetabstate</a></b></code> command.</p>
 
-  <div align="center">
+  <div>
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>
@@ -900,7 +1045,7 @@ package require scrollutil_tile
     <dd>ttk::notebook style, closetab</dd>
   </dl>
 
-  <div align="center">
+  <div>
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>
@@ -943,7 +1088,7 @@ package require scrollutil_tile
     <dd>ttk::notebook style, closetab</dd>
   </dl>
 
-  <div align="center">
+  <div>
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>
@@ -1014,7 +1159,7 @@ package require scrollutil_tile
     <dd>tab, closetab, state</dd>
   </dl>
 
-  <div align="center">
+  <div>
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>

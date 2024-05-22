@@ -370,7 +370,7 @@ A similar wrapper has not been created for the \fB\fBlistbox\fR\fR widget, which
 Test on a system with multiple displays\&.
 .PP
 .SH BUGS
-This version of \fBpersistentSelection\fR is intended to be compatible with all releases of \fBTk\fR 8\&.5 and 8\&.6, and with the branches \fIcore-8-5-branch\fR, \fIcore-8-6-branch\fR, \fIrevised_text\fR, and \fItrunk\fR in the source code repository for \fBTk\fR\&.  Any incompatibility with any of these versions, for any \fBTk\fR windowing system, should be reported as a bug\&. Please report such in the category \fIpersistentSelection\fR of the \fITklib Trackers\fR [http://core\&.tcl\&.tk/tklib/reportlist]\&.
+This version of \fBpersistentSelection\fR is intended to be compatible with all releases of \fBTk\fR 8\&.5- and 8\&.6, and with the branches \fIcore-8-5-branch\fR, \fIcore-8-6-branch\fR, \fIrevised_text\fR, and \fItrunk\fR in the source code repository for \fBTk\fR\&.  Any incompatibility with any of these versions, for any \fBTk\fR windowing system, should be reported as a bug\&. Please report such in the category \fIpersistentSelection\fR of the \fITklib Trackers\fR [http://core\&.tcl\&.tk/tklib/reportlist]\&.
 .SH EXAMPLES
 Each example uses \fBpersistentSelection\fR to retain the last non-empty value of the selection in certain widgets\&.  Each example also includes the creation of sample widgets\&.
 .PP

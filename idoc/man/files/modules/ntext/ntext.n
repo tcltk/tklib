@@ -273,9 +273,9 @@ Database Class:	\\fB\\$3\\fR
 .SH NAME
 ntext \- Alternative Bindings for the Text Widget
 .SH SYNOPSIS
-package require \fBTcl  8\&.5\fR
+package require \fBTcl  8\&.5-\fR
 .sp
-package require \fBTk  8\&.5\fR
+package require \fBTk  8\&.5-\fR
 .sp
 package require \fBntext  ?1\&.0?\fR
 .sp
@@ -286,6 +286,8 @@ package require \fBntext  ?1\&.0?\fR
 \fB::ntext::new_textPaste\fR \fIpathName\fR
 .sp
 \fB::ntext::syncIndentColor\fR \fIpathName\fR
+.sp
+\fB::ntext::syncTabColor\fR \fIpathName\fR
 .sp
 .BE
 .SH DESCRIPTION
@@ -319,6 +321,10 @@ Replacement for ::tk_textPaste that also maintains \fINtext\fR indentation (see 
 .TP
 \fB::ntext::syncIndentColor\fR \fIpathName\fR
 Command to apply the current value of the variable \fB::ntext::indentColor\fR to existing lines in a text widget\&.  This command is useful if a text widget has been created, text has been inserted in the widget, \fIand then\fR the value of \fB::ntext::indentColor\fR is changed (see \fIntextIndent\fR)\&.
+.TP
+\fB::ntext::syncTabColor\fR \fIpathName\fR
+Command to apply the current values of the variables \fB::ntext::tabColor\fR and \fB::ntext::tabSelColor\fR to tab spaces in a text widget\&.  This command is useful if a text widget has been created, text has been inserted in the widget, \fIand then\fR the value of \fB::ntext::tabColor\fR or \fB::ntext::tabSelColor\fR is changed\&.
+.sp
 .PP
 .SH "CONFIGURATION OPTIONS"
 \fINtext\fR provides alternatives to a number of behaviours of the classic \fIText\fR binding tag\&.  Where there is an option, the \fINtext\fR behaviour (except for display-line indentation) is switched on by default\&.
@@ -412,6 +418,24 @@ The value is toggled by the \fIInsert\fR key (except on macOS Aqua where there i
 For more information see \fIntextBindings\fR
 .PP
 .PP
+\fB::ntext::tabColor\fR
+.IP \(bu
+\fB{}\fR - if the value is the empty string, then the tab spaces have the same color as the widget background\&.
+.IP \(bu
+\fIcolor\fR - a valid \fBTk\fR color to use for tab spaces (default value \fI#ffffaa\fR)\&.
+.sp
+The value of \fB::ntext::tabColor\fR will often be set at startup\&. If the value is changed when text widgets already exist and contain text, those widgets can be updated by calling command \fB::ntext::syncTabColor\fR\&.
+.PP
+.PP
+\fB::ntext::tabSelColor\fR
+.IP \(bu
+\fB{}\fR - if the value is the empty string, then the color of tab spaces in the selection defaults to the same color as unselected tabs (see \fB::ntext::tabColor\fR), and \fInot\fR to the widget \fI-selectbackground\fR color\&.
+.IP \(bu
+\fIcolor\fR - a valid \fBTk\fR color to use for tab spaces in the selection (default value \fI#418bd4\fR)\&.
+.sp
+The value of \fB::ntext::tabSelColor\fR will often be set at startup\&. If the value is changed when text widgets already exist and contain text, those widgets can be updated by calling command \fB::ntext::syncTabColor\fR\&.
+.PP
+.PP
 \fB::ntext::useBlockCursor\fR
 .IP \(bu
 \fB0\fR - the block cursor will not be used\&.  When the widget is in \fIoverwrite\fR mode (see \fB::ntext::overwrite\fR), the ordinary cursor will change color instead\&.
@@ -423,7 +447,7 @@ The default value depends on the version of \fBTk\fR\&.  In versions of \fBTk\fR
 For more information see \fIntextBindings\fR
 .PP
 .SH BUGS
-This version of \fBntext\fR is intended to be compatible with all releases of \fBTk\fR 8\&.5 and 8\&.6, and with the branches \fIcore-8-5-branch\fR, \fIcore-8-6-branch\fR, and \fItrunk\fR in the source code repository for \fBTk\fR\&.  Any incompatibility with any of these versions, for any \fBTk\fR windowing system, should be reported as a bug\&. Please report such in the category \fIntext\fR of the \fITklib Trackers\fR [http://core\&.tcl\&.tk/tklib/reportlist]\&.
+This version of \fBntext\fR is intended to be compatible with all releases of \fBTk\fR 8\&.5, 8\&.6, and 8\&.7, and with the branches \fIcore-8-5-branch\fR, \fIcore-8-6-branch\fR, and \fItrunk\fR in the source code repository for \fBTk\fR\&.  Any incompatibility with any of these versions, for any \fBTk\fR windowing system, should be reported as a bug\&. Please report such in the category \fIntext\fR of the \fITklib Trackers\fR [https://core\&.tcl-lang\&.org/tklib/reportlist]\&.
 .SH EXAMPLE
 To create a text widget \&.t and use the \fINtext\fR bindings:
 .CS
@@ -434,7 +458,7 @@ text \&.t
 bindtags \&.t {\&.t Ntext \&. all}
 
 .CE
-See bindtags for more information\&.
+See \fBbindtags\fR for more information\&.
 .SH "SEE ALSO"
 bindtags, ntextBindings, ntextIndent, ntextWordBreak, re_syntax, regexp, text
 .SH KEYWORDS
