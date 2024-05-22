@@ -152,7 +152,7 @@ snit::type ::canvas::edit::circle {
 	$self clear
 
 	lassign $center x y
-	set edge [list [expr {$x + $radius} $y]]
+	set edge [list [expr {$x + $radius}] $y]
 	
 	$myeditor add {*}$center
 	$myeditor add {*}$edge
