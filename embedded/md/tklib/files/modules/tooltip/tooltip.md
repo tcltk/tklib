@@ -3,7 +3,7 @@
 [//000000002]: # (Generated from file 'tooltip\.man' by tcllib/doctools with format 'markdown')
 [//000000003]: # (Copyright &copy; 1996\-2008, Jeffrey Hobbs)
 [//000000004]: # (Copyright &copy; 2024 Emmanuel Frecon)
-[//000000005]: # (tooltip\(n\) 1\.7\.1 tklib "Tooltip management")
+[//000000005]: # (tooltip\(n\) 1\.8 tklib "Tooltip management")
 
 <hr> [ <a href="../../../../toc.md">Main Table Of Contents</a> &#124; <a
 href="../../../toc.md">Table Of Contents</a> &#124; <a
@@ -38,10 +38,10 @@ tooltip \- Tooltip management
 
 package require Tcl 8\.5  
 package require msgcat 1\.3  
-package require tooltip ?1\.7\.1?  
+package require tooltip ?1\.8?  
 
 [__::tooltip::tooltip__ *command* ?*options*?](#1)  
-[__::tooltip::tooltip__ *pathName* ?*option value*? *message*](#2)  
+[__::tooltip::tooltip__ *pathName* ?*option value*\.\.\.? ?__\-\-__? *message*&#124;*image*](#2)  
 
 # <a name='description'></a>DESCRIPTION
 
@@ -94,15 +94,19 @@ ttk::treeview item or column heading, ttk::notebook tab, or text widget tag\.
 
         Enables tooltips for defined widgets\.
 
-  - <a name='2'></a>__::tooltip::tooltip__ *pathName* ?*option value*? *message*
+  - <a name='2'></a>__::tooltip::tooltip__ *pathName* ?*option value*\.\.\.? ?__\-\-__? *message*&#124;*image*
 
-    This command arranges for widget *pathName* to display a tooltip with
-    message *message*\. The tooltip uses a late\-binding msgcat call on the
-    passed in message to allow for on\-the\-fly language changes in an
-    application\. If the widget specified is a menu, canvas, listbox,
-    ttk::treeview, ttk::notebook or text widget then additional options are used
-    to tie the tooltip to specific menu, canvas or listbox items, ttk::treeview
-    items or column headings, ttk::notebook tabs, or text widget tags\.
+    This command arranges for widget *pathName* to display a tooltip with a
+    *message* or an *image*\. For images both bitmaps and photos are
+    supported\. For messages the tooltip uses a late\-binding __msgcat__ call
+    to allow for on\-the\-fly language changes in an application\. If the widget
+    specified is a __[menu](\.\./\.\./\.\./\.\./index\.md\#menu)__,
+    __[canvas](\.\./\.\./\.\./\.\./index\.md\#canvas)__,
+    __[listbox](\.\./\.\./\.\./\.\./index\.md\#listbox)__, __ttk::treeview__,
+    __ttk::notebook__ or __[text](\.\./\.\./\.\./\.\./index\.md\#text)__
+    widget then additional options are used to tie the tooltip to specific menu,
+    canvas or listbox items, ttk::treeview items or column headings,
+    ttk::notebook tabs, or text widget tags\.
 
       * __\-heading__ *columnId*
 
@@ -146,7 +150,8 @@ ttk::treeview item or column heading, ttk::notebook tab, or text widget tag\.
       * __\-\-__
 
         The __\-\-__ option marks the end of options\. The argument following
-        this one will be treated as *message* even if it starts with a \-\.
+        this one will be treated as *message* or *image* even if it starts
+        with a __\-__\.
 
 # <a name='section3'></a>EXAMPLE
 

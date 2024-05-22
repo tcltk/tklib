@@ -1,5 +1,5 @@
 [comment {-*- tcl -*- doctools manpage}]
-[vset VERSION 1.7.1]
+[vset VERSION 1.8]
 [manpage_begin tooltip n [vset VERSION]]
 [keywords balloon]
 [keywords help]
@@ -69,14 +69,16 @@ Enables tooltips for defined widgets.
 
 [para]
 
-[call [cmd ::tooltip::tooltip] \
-     [arg pathName] [opt [arg "option value"]] [arg message]]
+[call [cmd ::tooltip::tooltip] [arg pathName] [opt [arg "option value"]...] \
+     [opt [const --]] [arg message]|[arg image]]
 
 This command arranges for widget [arg pathName] to display a tooltip with
-message [arg message].  The tooltip uses a late-binding msgcat call on the
-passed in message to allow for on-the-fly language changes in an application.
-If the widget specified is a menu, canvas, listbox, ttk::treeview,
-ttk::notebook or text widget then additional options are used to tie the
+a [arg message] or an [arg image]. For images both bitmaps and photos are supported.
+For messages the tooltip uses a late-binding [package msgcat] call to allow for on-the-fly
+language changes in an application.
+
+If the widget specified is a [cmd menu], [cmd canvas], [cmd listbox], [cmd ttk::treeview],
+[cmd ttk::notebook] or [cmd text] widget then additional options are used to tie the
 tooltip to specific menu, canvas or listbox items, ttk::treeview items or
 column headings, ttk::notebook tabs, or text widget tags.
 
@@ -122,8 +124,8 @@ be returned. The widget must be a text widget.
 [opt_def --]
 
 The [option --] option marks the end of options.
-The argument following this one will be treated as [arg message] even if it
-starts with a -.
+The argument following this one will be treated as [arg message] or [arg image]
+even if it starts with a [const -].
 
 [list_end]
 

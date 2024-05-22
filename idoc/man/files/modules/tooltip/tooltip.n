@@ -3,7 +3,7 @@
 '\" Copyright (c) 1996-2008, Jeffrey Hobbs
 '\" Copyright (c) 2024 Emmanuel Frecon
 '\"
-.TH "tooltip" n 1\&.7\&.1 tklib "Tooltip management"
+.TH "tooltip" n 1\&.8 tklib "Tooltip management"
 .\" The -*- nroff -*- definitions below are for supplemental macros used
 .\" in Tcl/Tk manual entries.
 .\"
@@ -279,11 +279,11 @@ package require \fBTcl  8\&.5\fR
 .sp
 package require \fBmsgcat  1\&.3\fR
 .sp
-package require \fBtooltip  ?1\&.7\&.1?\fR
+package require \fBtooltip  ?1\&.8?\fR
 .sp
 \fB::tooltip::tooltip\fR \fIcommand\fR ?\fIoptions\fR?
 .sp
-\fB::tooltip::tooltip\fR \fIpathName\fR ?\fIoption value\fR? \fImessage\fR
+\fB::tooltip::tooltip\fR \fIpathName\fR ?\fIoption value\fR\&.\&.\&.? ?\fB--\fR? \fImessage\fR|\fIimage\fR
 .sp
 .BE
 .SH DESCRIPTION
@@ -331,12 +331,13 @@ Enables tooltips for defined widgets\&.
 .RE
 .sp
 .TP
-\fB::tooltip::tooltip\fR \fIpathName\fR ?\fIoption value\fR? \fImessage\fR
+\fB::tooltip::tooltip\fR \fIpathName\fR ?\fIoption value\fR\&.\&.\&.? ?\fB--\fR? \fImessage\fR|\fIimage\fR
 This command arranges for widget \fIpathName\fR to display a tooltip with
-message \fImessage\fR\&.  The tooltip uses a late-binding msgcat call on the
-passed in message to allow for on-the-fly language changes in an application\&.
-If the widget specified is a menu, canvas, listbox, ttk::treeview,
-ttk::notebook or text widget then additional options are used to tie the
+a \fImessage\fR or an \fIimage\fR\&. For images both bitmaps and photos are supported\&.
+For messages the tooltip uses a late-binding \fBmsgcat\fR call to allow for on-the-fly
+language changes in an application\&.
+If the widget specified is a \fBmenu\fR, \fBcanvas\fR, \fBlistbox\fR, \fBttk::treeview\fR,
+\fBttk::notebook\fR or \fBtext\fR widget then additional options are used to tie the
 tooltip to specific menu, canvas or listbox items, ttk::treeview items or
 column headings, ttk::notebook tabs, or text widget tags\&.
 .RS
@@ -375,8 +376,8 @@ be returned\&. The widget must be a text widget\&.
 .TP
 \fB--\fR
 The \fB--\fR option marks the end of options\&.
-The argument following this one will be treated as \fImessage\fR even if it
-starts with a -\&.
+The argument following this one will be treated as \fImessage\fR or \fIimage\fR
+even if it starts with a \fB-\fR\&.
 .RE
 .PP
 .SH EXAMPLE

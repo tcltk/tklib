@@ -43,8 +43,7 @@ package require msgcat
 # enable OR on
 #	Enables tooltips for defined widgets.
 #
-# <widget> ?-heading columnId? ?-index index? ?-item(s) items? ?-tab tabId"
-# ?-tag tag? ?message?
+# <widget> ?-heading columnId? ?-index index? ?-item(s) items? ?-tab tabId" ?-tag tag? ?--? ?message|image?
 #	* If -heading is specified, then <widget> is assumed to be a
 #	  ttk::treeview widget and columnId specifies a column identifier.
 #	* If -index is specified, then <widget> is assumed to be a menu and
@@ -242,7 +241,7 @@ proc ::tooltip::register {w args} {
     if {[llength $args] != 1} {
 	return -code error "wrong # args: should be \"tooltip widget\
 		?-heading columnId? ?-index index? ?-item(s) items?\
-		?-tab tabId? ?-tag tag? ?--? message\""
+		?-tab tabId? ?-tag tag? ?--? message|image\""
     }
     if {$key eq ""} {
 	clear $w
@@ -403,7 +402,19 @@ proc ::tooltip::show {w msg {i {}}} {
     }
     # Use late-binding msgcat (lazy translation) to support programs
     # that allow on-the-fly l10n changes
-    $b.label configure -text [::msgcat::mc $msg] -justify left
+    if {[catch {
+	set type [image type $msg]
+    }]} {
+	# not an image, assume plain text or message catalog code
+	$b.label configure -text [::msgcat::mc $msg] -bitmap {} -image {} -justify left
+    } elseif {$type eq "bitmap"} {
+	# show bitmap
+	$b.label configure -text {} -bitmap $msg -image {} -justify left
+    } else {
+	# show photo
+	$b.label configure -text {} -bitmap {} -image $msg -justify left
+    }
+
     update idletasks
 
     # Bail out if the widget went way during the idletasks
@@ -667,4 +678,4 @@ proc ::tooltip::enableTag {w tag} {
     $w tag bind $tag <Any-Button> +[namespace code hide]
 }
 
-package provide tooltip 1.7.1
+package provide tooltip 1.8
