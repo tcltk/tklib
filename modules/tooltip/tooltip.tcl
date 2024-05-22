@@ -3,11 +3,10 @@
 #       Balloon help
 #
 # Copyright (c) 1996-2007 Jeffrey Hobbs
+# Copyright (c) 2024      Emmanuel Frecon
 #
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
-#
-# RCS: @(#) $Id: tooltip.tcl,v 1.16 2008/12/01 23:37:16 hobbs Exp $
 #
 # Initiated: 28 October 1996
 
@@ -406,6 +405,10 @@ proc ::tooltip::show {w msg {i {}}} {
     # that allow on-the-fly l10n changes
     $b.label configure -text [::msgcat::mc $msg] -justify left
     update idletasks
+
+    # Bail out if the widget went way during the idletasks
+    if {![winfo exists $w]} return
+    
     set screenw [winfo screenwidth $w]
     set screenh [winfo screenheight $w]
     set reqw [winfo reqwidth $b]
@@ -664,4 +667,4 @@ proc ::tooltip::enableTag {w tag} {
     $w tag bind $tag <Any-Button> +[namespace code hide]
 }
 
-package provide tooltip 1.7
+package provide tooltip 1.7.1

@@ -1,5 +1,6 @@
 [comment {-*- tcl -*- doctools manpage}]
-[manpage_begin tipstack n 1.0.1]
+[vset VERSION 1.0.1]
+[manpage_begin tipstack n [vset VERSION]]
 [keywords balloon]
 [keywords help]
 [keywords hover]
@@ -10,7 +11,7 @@
 [require Tcl 8.5]
 [require msgcat 1.3]
 [require tooltip [opt 1.7]]
-[require tipstack [opt 1.0.1]]
+[require tipstack [opt [vset VERSION]]]
 [description]
 [para]
 

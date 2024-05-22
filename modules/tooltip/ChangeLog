@@ -1,3 +1,9 @@
+2024-05-22  Andreas Kupries <andreas.kupries@gmail.com>
+
+	* Bumped to version 1.7.1. Bail if widget goes away during early
+	  idletasks in `show`. Ticket [https://core.tcl-lang.org/tklib/tktview/ff46309014].
+	  Patch by Emmanuel Frecon.
+
 2024-05-05  Csaba Nemethi  <csaba.nemethi@t-online.de>
 
 	* pkgIndex.tcl:	Bumped the tooltip version number to 1.7.
@@ -17,10 +23,10 @@
 			version number to 1.6.
 
 2022-05-20 Emiliano Gavilan <emilianogavilan@gmail.com>
-	
+
         * tooltip.tcl, tooltip.man, tooltip.html: Add configure command.
 	* pkgIndex.tcl: Bump the version number to 1.5.
-	
+
 2021-11-30  Csaba Nemethi  <csaba.nemethi@t-online.de>
 
 	* tooltip.tcl, tooltip.man: Minor improvements.
@@ -40,7 +46,7 @@
 
 	*
 	* Released and tagged Tklib 0.7 ========================
-	* 
+	*
 
 2016-11-24  Arjen Markus  <arjenmarkus@users.sourceforge.net>
 	* tooltip.tcl: Updated one of the error messages (the new option -- was missing)

@@ -2,7 +2,8 @@
 [//000000001]: # (tooltip \- Tooltip management)
 [//000000002]: # (Generated from file 'tooltip\.man' by tcllib/doctools with format 'markdown')
 [//000000003]: # (Copyright &copy; 1996\-2008, Jeffrey Hobbs)
-[//000000004]: # (tooltip\(n\) 1\.7 tklib "Tooltip management")
+[//000000004]: # (Copyright &copy; 2024 Emmanuel Frecon)
+[//000000005]: # (tooltip\(n\) 1\.7\.1 tklib "Tooltip management")
 
 <hr> [ <a href="../../../../toc.md">Main Table Of Contents</a> &#124; <a
 href="../../../toc.md">Table Of Contents</a> &#124; <a
@@ -37,7 +38,7 @@ tooltip \- Tooltip management
 
 package require Tcl 8\.5  
 package require msgcat 1\.3  
-package require tooltip ?1\.7?  
+package require tooltip ?1\.7\.1?  
 
 [__::tooltip::tooltip__ *command* ?*options*?](#1)  
 [__::tooltip::tooltip__ *pathName* ?*option value*? *message*](#2)  
@@ -203,4 +204,5 @@ for enhancements you may have for either package and/or documentation\.
 
 # <a name='copyright'></a>COPYRIGHT
 
-Copyright &copy; 1996\-2008, Jeffrey Hobbs
+Copyright &copy; 1996\-2008, Jeffrey Hobbs  
+Copyright &copy; 2024 Emmanuel Frecon
