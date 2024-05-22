@@ -100,145 +100,149 @@ package require Plotchart ?2\.5\.2?
 [__::Plotchart::createTernaryDiagram__ *w* *args*](#25)  
 [__::Plotchart::createNormalPlot__ *w* *xscale* *args*](#26)  
 [__::Plotchart::createStatusTimeline__ *w* *xaxis* *ylabel* *args*](#27)  
-[__$anyplot__ title *text* *position*](#28)  
-[__$anyplot__ subtitle *text*](#29)  
-[__$anyplot__ canvas](#30)  
-[__$anyplot__ saveplot *filename* *args*](#31)  
-[__$anyplot__ xtext *text*](#32)  
-[__$anyplot__ ytext *text*](#33)  
-[__$anyplot__ vtext *text*](#34)  
-[__$anyplot__ xsubtext *text*](#35)  
-[__$anyplot__ ysubtext *text*](#36)  
-[__$anyplot__ vsubtext *text*](#37)  
-[__$anyplot__ xconfig __\-option__ *value* \.\.\.](#38)  
-[__$anyplot__ yconfig __\-option__ *value* \.\.\.](#39)  
-[__$anyplot__ background *part* *colour\_or\_image* *dir* ?brightness?](#40)  
-[__$anyplot__ xticklines *colour* ?dash?](#41)  
-[__$anyplot__ yticklines *colour* ?dash?](#42)  
-[__$anyplot__ legend *series* *text* ?spacing?](#43)  
-[__$anyplot__ removefromlegend *series*](#44)  
-[__$anyplot__ legendconfig __\-option__ *value* \.\.\.](#45)  
-[__$anyplot__ balloon *x* *y* *text* *dir*](#46)  
-[__$anyplot__ balloonconfig *args*](#47)  
-[__$anyplot__ plaintext *x* *y* *text* *dir*](#48)  
-[__$anyplot__ plaintextconfig *args*](#49)  
-[__$anyplot__ object *itemtype* *series* *args*](#50)  
-[__$anyplot__ deletedata](#51)  
-[__$xyplot__ plot *series* *xcrd* *ycrd*](#52)  
-[__$normalplot__ plot *series* *mean* *stdev* *data*](#53)  
-[__$normalplot__ diagonal](#54)  
-[__$xyplot__ plotlist *series* *xlist* *ylist* *every*](#55)  
-[__$xyplot__ region *series* *xlist* *ylist*](#56)  
-[__$xyplot__ minmax *series* *xcrd* *ymin* *ymax*](#57)  
-[__$histogram__ plotcumulative *series* *xcrd* *ycrd*](#58)  
-[__$xyplot__ trend *series* *xcrd* *ycrd*](#59)  
-[__$xyplot__ rchart *series* *xcrd* *ycrd*](#60)  
-[__$xyplot__ interval *series* *xcrd* *ymin* *ymax* ?ycentr?](#61)  
-[__$xyplot__ box\-and\-whiskers *series* *xcrd* *ycrd*](#62)  
-[__$xyplot__ vector *series* *xcrd* *ycrd* *ucmp* *vcmp*](#63)  
-[__$xyplot__ vectorconfig *series* __\-option__ *value* \.\.\.](#64)  
-[__$xyplot__ dot *series* *xcrd* *ycrd* *value*](#65)  
-[__$xyplot__ dotconfig *series* __\-option__ *value* \.\.\.](#66)  
-[__$xyplot__ contourlines *xcrd* *ycrd* *values* ?classes?](#67)  
-[__$xyplot__ contourlinesfunctionvalues *xvec* *yvec* *valuesmat* ?classes?](#68)  
-[__$xyplot__ contourfill *xcrd* *ycrd* *values* ?classes?](#69)  
-[__$xyplot__ contourbox *xcrd* *ycrd* *values* ?classes?](#70)  
-[__$xyplot__ colorMap *colours*](#71)  
-[__$xyplot__ legendisolines *values* *classes*](#72)  
-[__$xyplot__ legendshades *values* *classes*](#73)  
-[__$xyplot__ grid *xcrd* *ycrd*](#74)  
-[__$xyplot__ xband *ymin* *ymax*](#75)  
-[__$xyplot__ yband *xmin* *xmax*](#76)  
-[__$xyplot__ labeldot *x* *y* *text* *orient*](#77)  
-[__$polarplot__ plot *series* *radius* *angle*](#78)  
-[__$windrose__ plot *data* *colour*](#79)  
-[__$plot3d__ plotfunc *function*](#80)  
-[__$plot3d__ plotfuncont *function* *contours*](#81)  
-[__$plot3d__ gridsize *nxcells* *nycells*](#82)  
-[__$plot3d__ plotdata *data*](#83)  
-[__$plot3d__ interpolatedata *data* *contours*](#84)  
-[__$plot3d__ colour *fill* *border*](#85)  
-[__$plot3d__ ribbon *yzpairs*](#86)  
-[__$plot3d__ plot *yzpairs*](#87)  
-[__$xyplot__ dataconfig *series* __\-option__ *value* \.\.\.](#88)  
-[__$pie__ plot *data*](#89)  
-[__$pie__ colours *colour1* *colour2* \.\.\.](#90)  
-[__$pie__ explode *segment*](#91)  
-[__$radial__ plot *data* *colour* *thickness*](#92)  
-[__$pie__ colours *colour1* *colour2* \.\.\.](#93)  
-[__$barchart__ plot *series* *ydata* *colour* ?dir? ?brightness?](#94)  
-[__$barchart__ config __\-option__ *value* \.\.\.](#95)  
-[__$barchart__ plot *series* *xdata* *colour* ?dir? ?brightness?](#96)  
+[__::Plotchart::createDendrogram__ *w* *args*](#28)  
+[__$anyplot__ title *text* *position*](#29)  
+[__$anyplot__ subtitle *text*](#30)  
+[__$anyplot__ canvas](#31)  
+[__$anyplot__ saveplot *filename* *args*](#32)  
+[__$anyplot__ xtext *text*](#33)  
+[__$anyplot__ ytext *text*](#34)  
+[__$anyplot__ vtext *text*](#35)  
+[__$anyplot__ xsubtext *text*](#36)  
+[__$anyplot__ ysubtext *text*](#37)  
+[__$anyplot__ vsubtext *text*](#38)  
+[__$anyplot__ xconfig __\-option__ *value* \.\.\.](#39)  
+[__$anyplot__ yconfig __\-option__ *value* \.\.\.](#40)  
+[__$anyplot__ background *part* *colour\_or\_image* *dir* ?brightness?](#41)  
+[__$anyplot__ xticklines *colour* ?dash?](#42)  
+[__$anyplot__ yticklines *colour* ?dash?](#43)  
+[__$anyplot__ legend *series* *text* ?spacing?](#44)  
+[__$anyplot__ removefromlegend *series*](#45)  
+[__$anyplot__ legendconfig __\-option__ *value* \.\.\.](#46)  
+[__$anyplot__ balloon *x* *y* *text* *dir*](#47)  
+[__$anyplot__ balloonconfig *args*](#48)  
+[__$anyplot__ plaintext *x* *y* *text* *dir*](#49)  
+[__$anyplot__ plaintextconfig *args*](#50)  
+[__$anyplot__ object *itemtype* *series* *args*](#51)  
+[__$anyplot__ deletedata](#52)  
+[__$xyplot__ plot *series* *xcrd* *ycrd*](#53)  
+[__$normalplot__ plot *series* *mean* *stdev* *data*](#54)  
+[__$normalplot__ diagonal](#55)  
+[__$xyplot__ plotlist *series* *xlist* *ylist* *every*](#56)  
+[__$xyplot__ region *series* *xlist* *ylist*](#57)  
+[__$xyplot__ minmax *series* *xcrd* *ymin* *ymax*](#58)  
+[__$histogram__ plotcumulative *series* *xcrd* *ycrd*](#59)  
+[__$xyplot__ trend *series* *xcrd* *ycrd*](#60)  
+[__$xyplot__ rchart *series* *xcrd* *ycrd*](#61)  
+[__$xyplot__ interval *series* *xcrd* *ymin* *ymax* ?ycentr?](#62)  
+[__$xyplot__ box\-and\-whiskers *series* *xcrd* *ycrd*](#63)  
+[__$xyplot__ violin *series* *xcrd* *ycrd*](#64)  
+[__$xyplot__ vector *series* *xcrd* *ycrd* *ucmp* *vcmp*](#65)  
+[__$xyplot__ vectorconfig *series* __\-option__ *value* \.\.\.](#66)  
+[__$xyplot__ dot *series* *xcrd* *ycrd* *value*](#67)  
+[__$xyplot__ dotconfig *series* __\-option__ *value* \.\.\.](#68)  
+[__$xyplot__ contourlines *xcrd* *ycrd* *values* ?classes?](#69)  
+[__$xyplot__ contourlinesfunctionvalues *xvec* *yvec* *valuesmat* ?classes?](#70)  
+[__$xyplot__ contourfill *xcrd* *ycrd* *values* ?classes?](#71)  
+[__$xyplot__ contourbox *xcrd* *ycrd* *values* ?classes?](#72)  
+[__$xyplot__ colorMap *colours*](#73)  
+[__$xyplot__ legendisolines *values* *classes*](#74)  
+[__$xyplot__ legendshades *values* *classes*](#75)  
+[__$xyplot__ grid *xcrd* *ycrd*](#76)  
+[__$xyplot__ xband *ymin* *ymax*](#77)  
+[__$xyplot__ yband *xmin* *xmax*](#78)  
+[__$xyplot__ labeldot *x* *y* *text* *orient*](#79)  
+[__$polarplot__ plot *series* *radius* *angle*](#80)  
+[__$windrose__ plot *data* *colour*](#81)  
+[__$plot3d__ plotfunc *function*](#82)  
+[__$plot3d__ plotfuncont *function* *contours*](#83)  
+[__$plot3d__ gridsize *nxcells* *nycells*](#84)  
+[__$plot3d__ plotdata *data*](#85)  
+[__$plot3d__ interpolatedata *data* *contours*](#86)  
+[__$plot3d__ colour *fill* *border*](#87)  
+[__$plot3d__ ribbon *yzpairs*](#88)  
+[__$plot3d__ plot *yzpairs*](#89)  
+[__$xyplot__ dataconfig *series* __\-option__ *value* \.\.\.](#90)  
+[__$pie__ plot *data*](#91)  
+[__$pie__ colours *colour1* *colour2* \.\.\.](#92)  
+[__$pie__ explode *segment*](#93)  
+[__$radial__ plot *data* *colour* *thickness*](#94)  
+[__$pie__ colours *colour1* *colour2* \.\.\.](#95)  
+[__$barchart__ plot *series* *ydata* *colour* ?dir? ?brightness?](#96)  
 [__$barchart__ config __\-option__ *value* \.\.\.](#97)  
-[__$barchart__ plot *label* *yvalue* *colour*](#98)  
+[__$barchart__ plot *series* *xdata* *colour* ?dir? ?brightness?](#98)  
 [__$barchart__ config __\-option__ *value* \.\.\.](#99)  
-[__$ribbon__ line *xypairs* *colour*](#100)  
-[__$ribbon__ area *xypairs* *colour*](#101)  
-[__$boxplot__ plot *series* *label* *values*](#102)  
-[__$timechart__ period *text* *time\_begin* *time\_end* *colour*](#103)  
-[__$timechart__ addperiod *time\_begin* *time\_end* *colour*](#104)  
-[__$timechart__ milestone *text* *time* *colour*](#105)  
-[__$timechart__ addmilestone *time* *colour*](#106)  
-[__$timechart__ vertline *text* *time* *colour*](#107)  
-[__$timechart__ hscroll *scrollbar*](#108)  
-[__$timechart__ vscroll *scrollbar*](#109)  
-[__$ganttchart__ task *text* *time\_begin* *time\_end* *completed*](#110)  
-[__$ganttchart__ milestone *text* *time* *colour*](#111)  
-[__$ganttchart__ vertline *text* *time*](#112)  
-[__$ganttchart__ connect *from* *to*](#113)  
-[__$ganttchart__ summary *text* *args*](#114)  
-[__$ganttchart__ color *keyword* *newcolor*](#115)  
-[__$ganttchart__ font *keyword* *newfont*](#116)  
-[__$ganttchart__ hscroll *scrollbar*](#117)  
-[__$ganttchart__ vscroll *scrollbar*](#118)  
-[__$isoplot__ plot rectangle *x1* *y1* *x2* *y2* *colour*](#119)  
-[__$isoplot__ plot filled\-rectangle *x1* *y1* *x2* *y2* *colour*](#120)  
-[__$isoplot__ plot circle *xc* *yc* *radius* *colour*](#121)  
-[__$isoplot__ plot filled\-circle *xc* *yc* *radius* *colour*](#122)  
-[__$table__ row *items*](#123)  
-[__$table__ separator](#124)  
-[__$table__ formatcommand *procname*](#125)  
-[__$table__ cellconfigure *args*](#126)  
-[__$ternary__ plot *series* *xcrd* *ycrd* *zcrd* *text* *dir*](#127)  
-[__$ternary__ line *series* *coords*](#128)  
-[__$ternary__ fill *series* *coords*](#129)  
-[__$ternary__ text *xtext* *ytext* *ztext*](#130)  
-[__$ternary__ ticklines *colour*](#131)  
-[__$timeline__ plot *series* *item* *start* *stop* *color*](#132)  
-[__$timeline__ vertline *text* *time* *args*](#133)  
-[__::Plotchart::viewPort__ *w* *pxmin* *pymin* *pxmax* *pymax*](#134)  
-[__::Plotchart::worldCoordinates__ *w* *xmin* *ymin* *xmax* *ymax*](#135)  
-[__::Plotchart::world3DCoordinates__ *w* *xmin* *ymin* *zmin* *xmax* *ymax* *zmax*](#136)  
-[__::Plotchart::coordsToPixel__ *w* *x* *y*](#137)  
-[__::Plotchart::coords3DToPixel__ *w* *x* *y* *z*](#138)  
-[__::Plotchart::polarCoordinates__ *w* *radmax*](#139)  
-[__::Plotchart::polarToPixel__ *w* *rad* *phi*](#140)  
-[__::Plotchart::pixelToCoords__ *w* *x* *y*](#141)  
-[__::Plotchart::pixelToIndex__ *w* *x* *y*](#142)  
-[__::Plotchart::determineScale__ *xmin* *xmax* *inverted*](#143)  
-[__::Plotchart::determineScaleFromList__ *values* *inverted*](#144)  
-[__::Plotchart::plotconfig__ *charttype* *component* *property* *value*](#145)  
-[__::Plotchart::plotstyle__ *subcmd* *style* *args*](#146)  
-[__::Plotchart::eraseplot__ *anyplot*](#147)  
-[__::Plotchart::createTargetDiagram__ *w* *limits* *scale*](#148)  
-[__$target__ plot *series* *xvalues* *yvalues*](#149)  
-[__::Plotchart::createPerformanceProfile__ *w* *max*](#150)  
-[__$performance__ plot *series\_and\_data\_pairs*](#151)  
-[__::Plotchart::createTaylorDiagram__ *w* *radius\_data* *args*](#152)  
-[__$taylor__ plot *series* *stdev* *corr*](#153)  
-[__::Plotchart::createHeatmap__ *w* *rowlabels* *columnlabels* *args*](#154)  
-[__$heatmap__ plot row *label* *data*](#155)  
-[__$heatmap__ plot column *label* *data*](#156)  
-[__$heatmap__ plot cell *rowlabel* *columnlabel* *value*](#157)  
-[__$heatmap__ scale values *min* *max*](#158)  
-[__$heatmap__ scale colours *mincolour* *maxcolour*](#159)  
-[__::Plotchart::createCircleplot__ *w* *labels* *args*](#160)  
-[__$circleplot__ connect *label1* *label2* *colour* *width*](#161)  
-[__$circleplot__ modify *label* *args*](#162)  
-[__::Plotchart::plotmethod__ *charttype* *methodname* *plotproc*](#163)  
-[__::Plotchart::plotpack__ *w* *dir* *args*](#164)  
-[__$anyplot__ bindplot *event* *command* *args*](#165)  
-[__$anyplot__ bindlast *series* *event* *command*](#166)  
+[__$barchart__ plot *label* *yvalue* *colour*](#100)  
+[__$barchart__ config __\-option__ *value* \.\.\.](#101)  
+[__$ribbon__ line *xypairs* *colour*](#102)  
+[__$ribbon__ area *xypairs* *colour*](#103)  
+[__$boxplot__ plot *series* *label* *values*](#104)  
+[__$boxplot__ violin *series* *label* *values*](#105)  
+[__$timechart__ period *text* *time\_begin* *time\_end* *colour*](#106)  
+[__$timechart__ addperiod *time\_begin* *time\_end* *colour*](#107)  
+[__$timechart__ milestone *text* *time* *colour*](#108)  
+[__$timechart__ addmilestone *time* *colour*](#109)  
+[__$timechart__ vertline *text* *time* *colour*](#110)  
+[__$timechart__ hscroll *scrollbar*](#111)  
+[__$timechart__ vscroll *scrollbar*](#112)  
+[__$ganttchart__ task *text* *time\_begin* *time\_end* *completed*](#113)  
+[__$ganttchart__ milestone *text* *time* *colour*](#114)  
+[__$ganttchart__ vertline *text* *time*](#115)  
+[__$ganttchart__ connect *from* *to*](#116)  
+[__$ganttchart__ summary *text* *args*](#117)  
+[__$ganttchart__ color *keyword* *newcolor*](#118)  
+[__$ganttchart__ font *keyword* *newfont*](#119)  
+[__$ganttchart__ hscroll *scrollbar*](#120)  
+[__$ganttchart__ vscroll *scrollbar*](#121)  
+[__$isoplot__ plot rectangle *x1* *y1* *x2* *y2* *colour*](#122)  
+[__$isoplot__ plot filled\-rectangle *x1* *y1* *x2* *y2* *colour*](#123)  
+[__$isoplot__ plot circle *xc* *yc* *radius* *colour*](#124)  
+[__$isoplot__ plot filled\-circle *xc* *yc* *radius* *colour*](#125)  
+[__$table__ row *items*](#126)  
+[__$table__ separator](#127)  
+[__$table__ formatcommand *procname*](#128)  
+[__$table__ cellconfigure *args*](#129)  
+[__$ternary__ plot *series* *xcrd* *ycrd* *zcrd* *text* *dir*](#130)  
+[__$ternary__ line *series* *coords*](#131)  
+[__$ternary__ fill *series* *coords*](#132)  
+[__$ternary__ text *xtext* *ytext* *ztext*](#133)  
+[__$ternary__ ticklines *colour*](#134)  
+[__$timeline__ plot *series* *item* *start* *stop* *color*](#135)  
+[__$timeline__ vertline *text* *time* *args*](#136)  
+[__$dendrogram__ plot *series* *data*](#137)  
+[__::Plotchart::viewPort__ *w* *pxmin* *pymin* *pxmax* *pymax*](#138)  
+[__::Plotchart::worldCoordinates__ *w* *xmin* *ymin* *xmax* *ymax*](#139)  
+[__::Plotchart::world3DCoordinates__ *w* *xmin* *ymin* *zmin* *xmax* *ymax* *zmax*](#140)  
+[__::Plotchart::coordsToPixel__ *w* *x* *y*](#141)  
+[__::Plotchart::coords3DToPixel__ *w* *x* *y* *z*](#142)  
+[__::Plotchart::polarCoordinates__ *w* *radmax*](#143)  
+[__::Plotchart::polarToPixel__ *w* *rad* *phi*](#144)  
+[__::Plotchart::pixelToCoords__ *w* *x* *y*](#145)  
+[__::Plotchart::pixelToIndex__ *w* *x* *y*](#146)  
+[__::Plotchart::determineScale__ *xmin* *xmax* *inverted*](#147)  
+[__::Plotchart::determineScaleFromList__ *values* *inverted*](#148)  
+[__::Plotchart::plotconfig__ *charttype* *component* *property* *value*](#149)  
+[__::Plotchart::plotstyle__ *subcmd* *style* *args*](#150)  
+[__::Plotchart::eraseplot__ *anyplot*](#151)  
+[__::Plotchart::createTargetDiagram__ *w* *limits* *scale*](#152)  
+[__$target__ plot *series* *xvalues* *yvalues*](#153)  
+[__::Plotchart::createPerformanceProfile__ *w* *max*](#154)  
+[__$performance__ plot *series\_and\_data\_pairs*](#155)  
+[__::Plotchart::createTaylorDiagram__ *w* *radius\_data* *args*](#156)  
+[__$taylor__ plot *series* *stdev* *corr*](#157)  
+[__::Plotchart::createHeatmap__ *w* *rowlabels* *columnlabels* *args*](#158)  
+[__$heatmap__ plot row *label* *data*](#159)  
+[__$heatmap__ plot column *label* *data*](#160)  
+[__$heatmap__ plot cell *rowlabel* *columnlabel* *value*](#161)  
+[__$heatmap__ scale values *min* *max*](#162)  
+[__$heatmap__ scale colours *mincolour* *maxcolour*](#163)  
+[__::Plotchart::createCircleplot__ *w* *labels* *args*](#164)  
+[__$circleplot__ connect *label1* *label2* *colour* *width*](#165)  
+[__$circleplot__ modify *label* *args*](#166)  
+[__::Plotchart::plotmethod__ *charttype* *methodname* *plotproc*](#167)  
+[__::Plotchart::plotpack__ *w* *dir* *args*](#168)  
+[__$anyplot__ bindplot *event* *command* *args*](#169)  
+[__$anyplot__ bindlast *series* *event* *command*](#170)  
 
 # <a name='description'></a>DESCRIPTION
 
@@ -1027,6 +1031,43 @@ data:
         and \-axesbox\) the diagram supports: *\-xaxis yes/no*, to turn
         displaying the numeric labels on or off\.
 
+  - <a name='28'></a>__::Plotchart::createDendrogram__ *w* *args*
+
+    Create a dendrogram to plot hierarchically organised data\. The labels that
+    identify the endpoints of the hierarchy can all be drawn on the same level
+    or where their branch ends\. This is controlled by the option "\-extend"\.
+
+    The data are organised as nested lists, like:
+
+    \$dendrogram plot data { {"Label1"  "Label2"} {F {A B} {C {D E}}} }
+
+    Sublists with more than one element are considered a branching and are drawn
+    in that way\. Sublists with only one element are considered a leaf and are
+    drawn as text\. Because a string with two or more words can not be
+    distinguished from a list with two or more elements, a provision is made for
+    this situation: if the first element is "LEAF", then the list is considered
+    to consist of leafs only and all elements \(even if they are actually nested
+    lists themselves are drawn as text:
+
+    \$dendrogram plot data { {LEAF "Label 1"  "Label 2"} {F {A B} {C {D E}}} }
+
+      * widget *w* \(in\)
+
+        Name of the canvas widget to hold the dendrogram\.
+
+      * list *args* \(in\)
+
+        Zero or more option\-value pairs:
+
+          + The option "\-direction" takes one of the following values:
+            left\-right, right\-left, top\-bottom, bottom\-top, with "top\-bottom" as
+            the default\. The tree will be drawn according to this option, the
+            labels appear either horizontally or vertically at the end of the
+            tree\.
+
+          + The option "\-extend" with value 1 \(default\) or 0 \(no extension\) to
+            indicate that the labels should all appear at the same level\.
+
 # <a name='section3'></a>PLOT METHODS
 
 Each of the creation commands explained in the last section returns the name of
@@ -1036,7 +1077,7 @@ subcommands available to a chart command depend on the type of the chart\.
 General subcommands for all types of charts\. \\$anyplot is the command returned
 by the creation command:
 
-  - <a name='28'></a>__$anyplot__ title *text* *position*
+  - <a name='29'></a>__$anyplot__ title *text* *position*
 
     Specify the title of the whole chart\.
 
@@ -1050,7 +1091,7 @@ by the creation command:
         alternatively use "left" or "right"\. You can use multiple titles with
         different positions\.
 
-  - <a name='29'></a>__$anyplot__ subtitle *text*
+  - <a name='30'></a>__$anyplot__ subtitle *text*
 
     Specify the subtitle of the whole chart\.
 
@@ -1058,12 +1099,12 @@ by the creation command:
 
         The text of the subtitle to be drawn\.
 
-  - <a name='30'></a>__$anyplot__ canvas
+  - <a name='31'></a>__$anyplot__ canvas
 
     Return the name of the canvas \(or the alias if you use more than one plot
     within a canvas\)\. Use this value for the coordinate transformations\.
 
-  - <a name='31'></a>__$anyplot__ saveplot *filename* *args*
+  - <a name='32'></a>__$anyplot__ saveplot *filename* *args*
 
     Draws the plot into a file, using PostScript\.
 
@@ -1092,7 +1133,7 @@ by the creation command:
         of waiting for the visibility of the window, the procedure simply waits
         two seconds\. It is not ideal, but it seems to work better\.
 
-  - <a name='32'></a>__$anyplot__ xtext *text*
+  - <a name='33'></a>__$anyplot__ xtext *text*
 
     Specify the title of the \(horizontal\) x\-axis, for those plots that have a
     straight x\-axis\.
@@ -1101,7 +1142,7 @@ by the creation command:
 
         The text of the x\-axis label to be drawn\.
 
-  - <a name='33'></a>__$anyplot__ ytext *text*
+  - <a name='34'></a>__$anyplot__ ytext *text*
 
     Specify the title of the \(horizontal\) y\-axis, for those plots that have a
     straight y\-axis\.
@@ -1110,7 +1151,7 @@ by the creation command:
 
         The text of the y\-axis label to be drawn\.
 
-  - <a name='34'></a>__$anyplot__ vtext *text*
+  - <a name='35'></a>__$anyplot__ vtext *text*
 
     Draw a *vertical* label to the y\-axis\. Note: this requires Tk 8\.6 or
     later, for older versions it does nothing\.
@@ -1119,7 +1160,7 @@ by the creation command:
 
         Text to drawn to the y\-axis
 
-  - <a name='35'></a>__$anyplot__ xsubtext *text*
+  - <a name='36'></a>__$anyplot__ xsubtext *text*
 
     Specify the subtext of the \(horizontal\) x\-axis, for those plots that have a
     straight x\-axis\. This text is drawn below the primary text\.
@@ -1132,7 +1173,7 @@ by the creation command:
 
         The secondary text of the x\-axis label to be drawn\.
 
-  - <a name='36'></a>__$anyplot__ ysubtext *text*
+  - <a name='37'></a>__$anyplot__ ysubtext *text*
 
     Specify the subtext of the \(vertical\) y\-axis, for those plots that have a
     straight y\-axis\. This text is drawn below the primary text, for both axes on
@@ -1147,7 +1188,7 @@ by the creation command:
 
         The secondary text of the y\-axis label to be drawn\.
 
-  - <a name='37'></a>__$anyplot__ vsubtext *text*
+  - <a name='38'></a>__$anyplot__ vsubtext *text*
 
     Specify the subtext of the \(vertical\) y\-axis, for those plots that have a
     straight y\-axis\. This text is drawn to the *right* of the primary text,
@@ -1164,7 +1205,7 @@ by the creation command:
 
         The secondary \(vertical\) text of the y\-axis label to be drawn\.
 
-  - <a name='38'></a>__$anyplot__ xconfig __\-option__ *value* \.\.\.
+  - <a name='39'></a>__$anyplot__ xconfig __\-option__ *value* \.\.\.
 
     Set one or more configuration parameters for the x\-axis\. The following
     options are supported:
@@ -1188,12 +1229,12 @@ by the creation command:
 
         *Beware:* Setting this option will clear all data from the plot\.
 
-  - <a name='39'></a>__$anyplot__ yconfig __\-option__ *value* \.\.\.
+  - <a name='40'></a>__$anyplot__ yconfig __\-option__ *value* \.\.\.
 
     Set one or more configuration parameters for the y\-axis\. This method accepts
     the same options and values as the method __xconfig__\.
 
-  - <a name='40'></a>__$anyplot__ background *part* *colour\_or\_image* *dir* ?brightness?
+  - <a name='41'></a>__$anyplot__ background *part* *colour\_or\_image* *dir* ?brightness?
 
     Set the background of a part of the plot
 
@@ -1224,7 +1265,7 @@ by the creation command:
         Indicates whether the colour should become brighter \(bright\) or darker
         \(dark\)\. Defaults to bright
 
-  - <a name='41'></a>__$anyplot__ xticklines *colour* ?dash?
+  - <a name='42'></a>__$anyplot__ xticklines *colour* ?dash?
 
     Draw vertical ticklines at each tick location
 
@@ -1239,7 +1280,7 @@ by the creation command:
         "lines" Possible values: lines, dots1, dots2, dots3, dots4, dots5\. The
         actual effect depends on the platform\.
 
-  - <a name='42'></a>__$anyplot__ yticklines *colour* ?dash?
+  - <a name='43'></a>__$anyplot__ yticklines *colour* ?dash?
 
     Draw horizontal ticklines at each tick location
 
@@ -1254,7 +1295,7 @@ by the creation command:
         "lines" Possible values: lines, dots1, dots2, dots3, dots4, dots5\. The
         actual effect depends on the platform\.
 
-  - <a name='43'></a>__$anyplot__ legend *series* *text* ?spacing?
+  - <a name='44'></a>__$anyplot__ legend *series* *text* ?spacing?
 
     Add an entry to the legend\. The series determines which graphical symbol is
     to be used\. \(As a side effect the legend is actually drawn\.\)
@@ -1273,7 +1314,7 @@ by the creation command:
         Optional argument to specify the vertical spacing between the entries
         \(in pixels\)\. \(Note that this spacing will be reused later\.\)
 
-  - <a name='44'></a>__$anyplot__ removefromlegend *series*
+  - <a name='45'></a>__$anyplot__ removefromlegend *series*
 
     Remove an entry for a series from the legend and redraw it\.
 
@@ -1281,7 +1322,7 @@ by the creation command:
 
         Name of the data series to be removed\.
 
-  - <a name='45'></a>__$anyplot__ legendconfig __\-option__ *value* \.\.\.
+  - <a name='46'></a>__$anyplot__ legendconfig __\-option__ *value* \.\.\.
 
     Set one or more options for the legend\. The legend is drawn as a rectangle
     with text and graphics inside\.
@@ -1326,7 +1367,7 @@ by the creation command:
         in which the entries are defined, "reverse" exactly the opposite\.
         \(Default: normal\)
 
-  - <a name='46'></a>__$anyplot__ balloon *x* *y* *text* *dir*
+  - <a name='47'></a>__$anyplot__ balloon *x* *y* *text* *dir*
 
     Add balloon text to the plot \(except for 3D plots\)\. The arrow will point to
     the given x\- and y\-coordinates\. For xy\-graphs and such, the coordinates are
@@ -1350,7 +1391,7 @@ by the creation command:
         Direction of the arrow, one of: north, north\-east, east, south\-east,
         south, south\-west, west or north\-west\.
 
-  - <a name='47'></a>__$anyplot__ balloonconfig *args*
+  - <a name='48'></a>__$anyplot__ balloonconfig *args*
 
     Configure the balloon text for the plot\. The new settings will be used for
     the next balloon text\.
@@ -1387,7 +1428,7 @@ by the creation command:
 
         Length factor for the arrow \(in pixels\)
 
-  - <a name='48'></a>__$anyplot__ plaintext *x* *y* *text* *dir*
+  - <a name='49'></a>__$anyplot__ plaintext *x* *y* *text* *dir*
 
     Add plain text to the plot \(except for 3D plots\)\. The text is positioned at
     the given x\- and y\-coordinates\. For xy\-graphs and such, the coordinates are
@@ -1411,7 +1452,7 @@ by the creation command:
         Anchor for the text, one of: north, north\-east, east, south\-east, south,
         south\-west, west or north\-west\.
 
-  - <a name='49'></a>__$anyplot__ plaintextconfig *args*
+  - <a name='50'></a>__$anyplot__ plaintextconfig *args*
 
     Configure the plain text annotation for the plot\. The new settings will be
     used for the next plain text\.
@@ -1428,7 +1469,7 @@ by the creation command:
 
         Colour for the text \(synonym: textcolor\)
 
-  - <a name='50'></a>__$anyplot__ object *itemtype* *series* *args*
+  - <a name='51'></a>__$anyplot__ object *itemtype* *series* *args*
 
     Draw a canvas item in the plot where the coordinates are scaled using the
     coordinate system of the plot\. In addition to the standard canvas types, it
@@ -1454,7 +1495,7 @@ by the creation command:
 
         List of coordinates and drawing options
 
-  - <a name='51'></a>__$anyplot__ deletedata
+  - <a name='52'></a>__$anyplot__ deletedata
 
     Remove the lines, symbols and other graphical object associated with the
     actual data from the plot\.
@@ -1473,7 +1514,7 @@ effect\.
 
 For *xy plots*, *stripcharts*, *histograms* and *time\-x\-plots*:
 
-  - <a name='52'></a>__$xyplot__ plot *series* *xcrd* *ycrd*
+  - <a name='53'></a>__$xyplot__ plot *series* *xcrd* *ycrd*
 
     Add a data point to the plot\.
 
@@ -1492,7 +1533,7 @@ For *xy plots*, *stripcharts*, *histograms* and *time\-x\-plots*:
 
 For *normal plots*:
 
-  - <a name='53'></a>__$normalplot__ plot *series* *mean* *stdev* *data*
+  - <a name='54'></a>__$normalplot__ plot *series* *mean* *stdev* *data*
 
     Plot the data set using the given mean and stanard deviation\.
 
@@ -1515,14 +1556,14 @@ For *normal plots*:
 
         List of the data comprising the data set
 
-  - <a name='54'></a>__$normalplot__ diagonal
+  - <a name='55'></a>__$normalplot__ diagonal
 
     Draw a diagonal line, indicating the ideal normally distributed data set\.
 
 For *xy, x\-log y, log\-x\-y, log\-x\-log\-y plots* there is the additional command
 *plotlist*, which is useful for plotting a large amount of data:
 
-  - <a name='55'></a>__$xyplot__ plotlist *series* *xlist* *ylist* *every*
+  - <a name='56'></a>__$xyplot__ plotlist *series* *xlist* *ylist* *every*
 
     Draw a series of data as a whole\. If symbols are asked for, draw them only
     for every Nth data point\.
@@ -1547,7 +1588,7 @@ For *xy, x\-log y, log\-x\-y, log\-x\-log\-y plots* there is the additional comm
 Other commands for *xy, x\-log y, log\-x\-y, log\-x\-log\-y plots* are *region*
 and *minmax* to draw filled polygons:
 
-  - <a name='56'></a>__$xyplot__ region *series* *xlist* *ylist*
+  - <a name='57'></a>__$xyplot__ region *series* *xlist* *ylist*
 
     Draw a filled polygon \(region\)\. The configuration of the series influences
     the polygon as follows: *\-fillcolour* is used to fill the polygon,
@@ -1566,7 +1607,7 @@ and *minmax* to draw filled polygons:
 
         List of Y\-coordinates for the region\.
 
-  - <a name='57'></a>__$xyplot__ minmax *series* *xcrd* *ymin* *ymax*
+  - <a name='58'></a>__$xyplot__ minmax *series* *xcrd* *ymin* *ymax*
 
     Draw a filled strip representing a minimum and a maximum\. The configuration
     of the series influences the polygon as follows: *\-fillcolour* is used to
@@ -1602,14 +1643,14 @@ you should draw a bar at the maximum x\-coordinate\.
 
 For histograms you can also use the __plotcumulative__ command:
 
-  - <a name='58'></a>__$histogram__ plotcumulative *series* *xcrd* *ycrd*
+  - <a name='59'></a>__$histogram__ plotcumulative *series* *xcrd* *ycrd*
 
 The arguments mean exactly the same as for the __plot__ command, but the
 data are accumulated to the previous values\.
 
 For *xy plots*:
 
-  - <a name='59'></a>__$xyplot__ trend *series* *xcrd* *ycrd*
+  - <a name='60'></a>__$xyplot__ trend *series* *xcrd* *ycrd*
 
     Draw or update a trend line using the data given sofar\.
 
@@ -1625,7 +1666,7 @@ For *xy plots*:
 
         Y\-coordinate of the new data point
 
-  - <a name='60'></a>__$xyplot__ rchart *series* *xcrd* *ycrd*
+  - <a name='61'></a>__$xyplot__ rchart *series* *xcrd* *ycrd*
 
     Draw data in the same way as the plot method, but with two lines added that
     indicate the expected range \(\+/\- 3\*standard deviation\) of the data\.
@@ -1642,7 +1683,7 @@ For *xy plots*:
 
         Y\-coordinate of the new data point
 
-  - <a name='61'></a>__$xyplot__ interval *series* *xcrd* *ymin* *ymax* ?ycentr?
+  - <a name='62'></a>__$xyplot__ interval *series* *xcrd* *ymin* *ymax* ?ycentr?
 
     Add a vertical error interval to the plot\. The interval is drawn from ymin
     to ymax\. If the ycentr argument is given, a symbol is drawn at that
@@ -1668,7 +1709,7 @@ For *xy plots*:
 
         Y\-coordinate to draw the symbol at \(optional\)
 
-  - <a name='62'></a>__$xyplot__ box\-and\-whiskers *series* *xcrd* *ycrd*
+  - <a name='63'></a>__$xyplot__ box\-and\-whiskers *series* *xcrd* *ycrd*
 
     Draw a box and whiskers in the plot\. If the argument *xcrd* is a list of
     several values and the argument *ycrd* is a single value, a horizontal box
@@ -1714,7 +1755,36 @@ For *xy plots*:
     The box ends at the 1st and 3rd quartile, while the whiskers by default are
     plotted to span 1\.5 IQR \(interquartile range\) from the 1st and 3rd quartile\.
 
-  - <a name='63'></a>__$xyplot__ vector *series* *xcrd* *ycrd* *ucmp* *vcmp*
+  - <a name='64'></a>__$xyplot__ violin *series* *xcrd* *ycrd*
+
+    Draw a violin plot based on the given data set\. It is an alternative to the
+    box and whiskers presentation\. Just as with the box\-and\-whiskers subcommand,
+    if the argument *xcrd* is a list of several values and the argument
+    *ycrd* is a single value, a horizontal "violin" is drawn\.
+
+    If, instead, the argument *ycrd* contains a list of several values and the
+    argument *xcrd* a single value, then a vertical "violin" is drawn\.
+
+    The option \-violinwidth to the dataconfig command determines the width \(or
+    height\) of the violin \(default: 50 pixels\)\.
+
+    The option \-colour \(\-color\) determines the outline colour and the option
+    \-fillcolour \(\-fillcolor\) determines the colour by which the violin is filled
+    \(defaults: black and not filled\)\.
+
+      * string *series* \(in\)
+
+        Name of the data series to use\.
+
+      * float *xcrd* \(in\)
+
+        X\-coordinate of the violin or a list of values\.
+
+      * float *ymin* \(in\)
+
+        Y\-coordinate of the violin or a list of values\.
+
+  - <a name='65'></a>__$xyplot__ vector *series* *xcrd* *ycrd* *ucmp* *vcmp*
 
     Draw a vector in the plot\. The vector can be given as either cartesian
     coordinates or as length/angle, where the angle is in degrees and is
@@ -1742,7 +1812,7 @@ For *xy plots*:
 
         Y\-component or the angle of the vector
 
-  - <a name='64'></a>__$xyplot__ vectorconfig *series* __\-option__ *value* \.\.\.
+  - <a name='66'></a>__$xyplot__ vectorconfig *series* __\-option__ *value* \.\.\.
 
     \] Set the vector drawing options for a particular series
 
@@ -1773,7 +1843,7 @@ For *xy plots*:
         coincides with the positive x\-axis, 90 coincides with the positive
         y\-axis\) or "nautical" \(0 is "north" and 90 is "east"\)\.
 
-  - <a name='65'></a>__$xyplot__ dot *series* *xcrd* *ycrd* *value*
+  - <a name='67'></a>__$xyplot__ dot *series* *xcrd* *ycrd* *value*
 
     Draw a dot in the plot\. The size and colour is determined by the value and
     by the options set for the series it belongs to\. \(See the dotconfig
@@ -1795,7 +1865,7 @@ For *xy plots*:
 
         Value determining size and colour
 
-  - <a name='66'></a>__$xyplot__ dotconfig *series* __\-option__ *value* \.\.\.
+  - <a name='68'></a>__$xyplot__ dotconfig *series* __\-option__ *value* \.\.\.
 
     \] Set the dot drawing options for a particular series
 
@@ -1849,7 +1919,7 @@ For *xy plots*:
         You can combine the colouring by value and the scaling by value by
         setting a list of classes and setting the *scalebyvalue* option on\.
 
-  - <a name='67'></a>__$xyplot__ contourlines *xcrd* *ycrd* *values* ?classes?
+  - <a name='69'></a>__$xyplot__ contourlines *xcrd* *ycrd* *values* ?classes?
 
     Draw contour lines for the values given on the grid\. The grid is defined by
     the xcrd and ycrd arguments\. The xcrd argument \(resp\. ycrd\) is expected to
@@ -1885,7 +1955,7 @@ For *xy plots*:
         *Note:* The xcrd argument is generally made of nypoints identical
         rows, while each row of ycrd is made with one single value\.
 
-  - <a name='68'></a>__$xyplot__ contourlinesfunctionvalues *xvec* *yvec* *valuesmat* ?classes?
+  - <a name='70'></a>__$xyplot__ contourlinesfunctionvalues *xvec* *yvec* *valuesmat* ?classes?
 
     Draw contour lines for the values given on the grid\. The grid is defined by
     the xvec and yvec arguments\. Here, xvec \(resp\. yvec\) is a list of
@@ -1918,21 +1988,21 @@ For *xy plots*:
 
         *Note:* The class values must enclose the whole range of values\.
 
-  - <a name='69'></a>__$xyplot__ contourfill *xcrd* *ycrd* *values* ?classes?
+  - <a name='71'></a>__$xyplot__ contourfill *xcrd* *ycrd* *values* ?classes?
 
     Draw filled contours for the values given on the grid\. \(The use of this
     method is identical to the "contourlines" method\)\.
 
     Entries in the legend are drawn via the *legendshades* subcommand\.
 
-  - <a name='70'></a>__$xyplot__ contourbox *xcrd* *ycrd* *values* ?classes?
+  - <a name='72'></a>__$xyplot__ contourbox *xcrd* *ycrd* *values* ?classes?
 
     Draw the cells as filled quadrangles\. The colour is determined from the
     average of the values on all four corners\.
 
     Entries in the legend are drawn via the *legendshades* subcommand\.
 
-  - <a name='71'></a>__$xyplot__ colorMap *colours*
+  - <a name='73'></a>__$xyplot__ colorMap *colours*
 
     Set the colours to be used with the contour methods\. The argument is either
     a predefined colourmap \(grey/gray, jet, hot or cool\) or a list of colours\.
@@ -1951,7 +2021,7 @@ For *xy plots*:
 
           + cool: colours from cyan via blue to magenta
 
-  - <a name='72'></a>__$xyplot__ legendisolines *values* *classes*
+  - <a name='74'></a>__$xyplot__ legendisolines *values* *classes*
 
     Add the contour classes to the legend as coloured lines\. The text indicates
     the values\.
@@ -1965,7 +2035,7 @@ For *xy plots*:
 
         The list of classes as used for the actual drawing\.
 
-  - <a name='73'></a>__$xyplot__ legendshades *values* *classes*
+  - <a name='75'></a>__$xyplot__ legendshades *values* *classes*
 
     Add the contour classes to the legend as coloured rectangles\. The text
     indicates the values\.
@@ -1979,7 +2049,7 @@ For *xy plots*:
 
         The list of classes as used for the actual drawing\.
 
-  - <a name='74'></a>__$xyplot__ grid *xcrd* *ycrd*
+  - <a name='76'></a>__$xyplot__ grid *xcrd* *ycrd*
 
     Draw the grid cells as lines connecting the \(valid\) grid points\.
 
@@ -1991,7 +2061,7 @@ For *xy plots*:
 
         List of lists, each value is an y\-coordinate for a grid cell corner
 
-  - <a name='75'></a>__$xyplot__ xband *ymin* *ymax*
+  - <a name='77'></a>__$xyplot__ xband *ymin* *ymax*
 
     Draw a light grey band in the plot, ranging over the full x\-axis\. This can
     be used to indicate a "typical" range for the data\.
@@ -2004,7 +2074,7 @@ For *xy plots*:
 
         Upper bound for the band
 
-  - <a name='76'></a>__$xyplot__ yband *xmin* *xmax*
+  - <a name='78'></a>__$xyplot__ yband *xmin* *xmax*
 
     Draw a light grey band in the plot, ranging over the full y\-axis\. This can
     be used to indicate a "typical" range for the data\.
@@ -2017,7 +2087,7 @@ For *xy plots*:
 
         Upper bound for the band
 
-  - <a name='77'></a>__$xyplot__ labeldot *x* *y* *text* *orient*
+  - <a name='79'></a>__$xyplot__ labeldot *x* *y* *text* *orient*
 
     Draw a label and a symbol in the plot\. The label will appear near the
     symbol\. The label will be drawn in grey, so as not to be too conspicuous\.
@@ -2045,7 +2115,7 @@ For *xy plots*:
 
 For *polar plots*:
 
-  - <a name='78'></a>__$polarplot__ plot *series* *radius* *angle*
+  - <a name='80'></a>__$polarplot__ plot *series* *radius* *angle*
 
     Add a data point to the polar plot\.
 
@@ -2063,7 +2133,7 @@ For *polar plots*:
 
 For *wind rose diagrams*:
 
-  - <a name='79'></a>__$windrose__ plot *data* *colour*
+  - <a name='81'></a>__$windrose__ plot *data* *colour*
 
     Draw the data contained in the *data* argument\. The data are added to the
     existing spokes towards the outer circle\.
@@ -2078,7 +2148,7 @@ For *wind rose diagrams*:
 
 For *3D plots*:
 
-  - <a name='80'></a>__$plot3d__ plotfunc *function*
+  - <a name='82'></a>__$plot3d__ plotfunc *function*
 
     Plot a function defined over two variables __x__ and __y__\. The
     resolution is determined by the set grid sizes \(see the method
@@ -2090,7 +2160,7 @@ For *3D plots*:
         coordinates\. The procedure has to accept two float arguments \(x is first
         argument, y is second\) and return a floating\-point value\.
 
-  - <a name='81'></a>__$plot3d__ plotfuncont *function* *contours*
+  - <a name='83'></a>__$plot3d__ plotfuncont *function* *contours*
 
     Plot a function defined over two variables __x__ and __y__ using the
     contour levels in __contours__ to colour the surface\. The resolution is
@@ -2108,7 +2178,7 @@ For *3D plots*:
         List of values in ascending order that represent the contour levels \(the
         boundaries between the colours in the contour map\)\.
 
-  - <a name='82'></a>__$plot3d__ gridsize *nxcells* *nycells*
+  - <a name='84'></a>__$plot3d__ gridsize *nxcells* *nycells*
 
     Set the grid size in the two directions\. Together they determine how many
     polygons will be drawn for a function plot\.
@@ -2123,7 +2193,7 @@ For *3D plots*:
         Number of grid cells in y direction\. Has to be an integer number greater
         than zero\.
 
-  - <a name='83'></a>__$plot3d__ plotdata *data*
+  - <a name='85'></a>__$plot3d__ plotdata *data*
 
     Plot a matrix of data\.
 
@@ -2139,7 +2209,7 @@ For *3D plots*:
     {4.0 5.0 6.0}
     }
 
-  - <a name='84'></a>__$plot3d__ interpolatedata *data* *contours*
+  - <a name='86'></a>__$plot3d__ interpolatedata *data* *contours*
 
     Plot the data using bilinear interpolation with the contour levels in
     __contours__ to colour the surface\. The resolution is determined by the
@@ -2154,7 +2224,7 @@ For *3D plots*:
         List of values in ascending order that represent the contour levels \(the
         boundaries between the colours in the contour map\)\.
 
-  - <a name='85'></a>__$plot3d__ colour *fill* *border*
+  - <a name='87'></a>__$plot3d__ colour *fill* *border*
 
     Configure the colour to use for polygon borders and inner area\. *Note:*
     The "color" subcommand is a synonym\.
@@ -2167,7 +2237,7 @@ For *3D plots*:
 
         The colour to use for the border of the polygons\.
 
-  - <a name='86'></a>__$plot3d__ ribbon *yzpairs*
+  - <a name='88'></a>__$plot3d__ ribbon *yzpairs*
 
     Plot a ribbon based on the pairs of yz\-coordinates\. The colours for the
     ribbon itself and the edge are taken from the colours option\.
@@ -2178,7 +2248,7 @@ For *3D plots*:
 
 For 3D ribbon plots:
 
-  - <a name='87'></a>__$plot3d__ plot *yzpairs*
+  - <a name='89'></a>__$plot3d__ plot *yzpairs*
 
     Plot a ribbon based on the pairs of yz\-coordinates\. The colours for the
     ribbon itself and the edge are taken from the colours option\.
@@ -2190,7 +2260,7 @@ For 3D ribbon plots:
 For *xy plots*, *stripcharts*, *histograms*, *polar plots* and *ternary
 diagrams*:
 
-  - <a name='88'></a>__$xyplot__ dataconfig *series* __\-option__ *value* \.\.\.
+  - <a name='90'></a>__$xyplot__ dataconfig *series* __\-option__ *value* \.\.\.
 
     Set the value for one or more options regarding the drawing of data of a
     specific series\.
@@ -2265,7 +2335,7 @@ diagrams*:
 
 For *piecharts* and *spiral pies*:
 
-  - <a name='89'></a>__$pie__ plot *data*
+  - <a name='91'></a>__$pie__ plot *data*
 
     Fill a piechart\.
 
@@ -2274,7 +2344,7 @@ For *piecharts* and *spiral pies*:
         A list of pairs \(labels and values\)\. The values determine the relative
         size of the circle segments\. The labels are drawn beside the circle\.
 
-  - <a name='90'></a>__$pie__ colours *colour1* *colour2* \.\.\.
+  - <a name='92'></a>__$pie__ colours *colour1* *colour2* \.\.\.
 
     Set the colours to be used\.
 
@@ -2286,7 +2356,7 @@ For *piecharts* and *spiral pies*:
 
         The second colour, and so on\.
 
-  - <a name='91'></a>__$pie__ explode *segment*
+  - <a name='93'></a>__$pie__ explode *segment*
 
     Explode a segment \(that is: move one segment out of the circle\)\. If the
     segment is indicated as "auto", then you can click on a segment\. This will
@@ -2299,7 +2369,7 @@ For *piecharts* and *spiral pies*:
 
 For *radial charts*:
 
-  - <a name='92'></a>__$radial__ plot *data* *colour* *thickness*
+  - <a name='94'></a>__$radial__ plot *data* *colour* *thickness*
 
     Draw a new line in the radial chart
 
@@ -2316,7 +2386,7 @@ For *radial charts*:
 
         An optional argument for the thickness of the line\.
 
-  - <a name='93'></a>__$pie__ colours *colour1* *colour2* \.\.\.
+  - <a name='95'></a>__$pie__ colours *colour1* *colour2* \.\.\.
 
     Set the colours to be used\.
 
@@ -2330,7 +2400,7 @@ For *radial charts*:
 
 For *vertical barcharts*:
 
-  - <a name='94'></a>__$barchart__ plot *series* *ydata* *colour* ?dir? ?brightness?
+  - <a name='96'></a>__$barchart__ plot *series* *ydata* *colour* ?dir? ?brightness?
 
     Add a data series to a barchart\. The bars are tagged with a tag
     "data\_\\$series" to identify them\.
@@ -2357,7 +2427,7 @@ For *vertical barcharts*:
         If given, "bright" or "dark" \(defaulting to "bright"\)\. The colour will
         change to respectively white or black, depending on the direction\.
 
-  - <a name='95'></a>__$barchart__ config __\-option__ *value* \.\.\.
+  - <a name='97'></a>__$barchart__ config __\-option__ *value* \.\.\.
 
     Set options for drawing the bars\.
 
@@ -2379,7 +2449,7 @@ For *vertical barcharts*:
 
 For *horizontal barcharts*:
 
-  - <a name='96'></a>__$barchart__ plot *series* *xdata* *colour* ?dir? ?brightness?
+  - <a name='98'></a>__$barchart__ plot *series* *xdata* *colour* ?dir? ?brightness?
 
     Add a data series to a barchart\. The bars are tagged with a tag
     "data\_\\$series" to identify them\.
@@ -2406,7 +2476,7 @@ For *horizontal barcharts*:
         If given, "bright" or "dark" \(defaulting to "bright"\)\. The colour will
         change to respectively white or black, depending on the direction\.
 
-  - <a name='97'></a>__$barchart__ config __\-option__ *value* \.\.\.
+  - <a name='99'></a>__$barchart__ config __\-option__ *value* \.\.\.
 
     Set options for drawing the bars\.
 
@@ -2428,7 +2498,7 @@ For *horizontal barcharts*:
 
 For *3D barcharts*:
 
-  - <a name='98'></a>__$barchart__ plot *label* *yvalue* *colour*
+  - <a name='100'></a>__$barchart__ plot *label* *yvalue* *colour*
 
     Add the next bar to the barchart\.
 
@@ -2444,7 +2514,7 @@ For *3D barcharts*:
 
         The colour of the column\.
 
-  - <a name='99'></a>__$barchart__ config __\-option__ *value* \.\.\.
+  - <a name='101'></a>__$barchart__ config __\-option__ *value* \.\.\.
 
     Set one or more configuration parameters\. The following options are
     supported:
@@ -2479,7 +2549,7 @@ For *3D barcharts*:
 
 For *3D ribbon charts*:
 
-  - <a name='100'></a>__$ribbon__ line *xypairs* *colour*
+  - <a name='102'></a>__$ribbon__ line *xypairs* *colour*
 
     Plot the given xy\-pairs as a ribbon in the chart
 
@@ -2491,7 +2561,7 @@ For *3D ribbon charts*:
 
         The colour of the ribbon\.
 
-  - <a name='101'></a>__$ribbon__ area *xypairs* *colour*
+  - <a name='103'></a>__$ribbon__ area *xypairs* *colour*
 
     Plot the given xy\-pairs as a ribbon with a filled area in front\. The effect
     is that of a box with the data as its upper surface\.
@@ -2506,7 +2576,7 @@ For *3D ribbon charts*:
 
 For *boxplots*:
 
-  - <a name='102'></a>__$boxplot__ plot *series* *label* *values*
+  - <a name='104'></a>__$boxplot__ plot *series* *label* *values*
 
     Add a box\-and\-whisker to the plot\. The dataconfig command can be used to
     customize the box\-and\-whisker \(see the box\-and\-whiskers command for the
@@ -2525,9 +2595,27 @@ For *boxplots*:
         List of raw values, the extent of the box and the whiskers will be
         determined from this list\.
 
+  - <a name='105'></a>__$boxplot__ violin *series* *label* *values*
+
+    Add a "violin" to the plot\. The dataconfig command can be used to customize
+    the appearance \(see the violin command for the xyplot for details\)\.
+
+      * string *series* \(in\)
+
+        Name of the data series to be used for settings
+
+      * string *label* \(in\)
+
+        The label along the x\- or y\-axis to which the data belong
+
+      * list *values* \(in\)
+
+        List of raw values, the extent of the box and the whiskers will be
+        determined from this list\.
+
 For *timecharts*:
 
-  - <a name='103'></a>__$timechart__ period *text* *time\_begin* *time\_end* *colour*
+  - <a name='106'></a>__$timechart__ period *text* *time\_begin* *time\_end* *colour*
 
     Add a time period to the chart\.
 
@@ -2547,7 +2635,7 @@ For *timecharts*:
 
         The colour of the bar \(defaults to black\)\.
 
-  - <a name='104'></a>__$timechart__ addperiod *time\_begin* *time\_end* *colour*
+  - <a name='107'></a>__$timechart__ addperiod *time\_begin* *time\_end* *colour*
 
     Add a new period to the current row in the chart\. This allows you to
     highlight several periods in the same row\. No new text is drawn\.
@@ -2564,7 +2652,7 @@ For *timecharts*:
 
         The colour of the bar \(defaults to black\)\.
 
-  - <a name='105'></a>__$timechart__ milestone *text* *time* *colour*
+  - <a name='108'></a>__$timechart__ milestone *text* *time* *colour*
 
     Add a *milestone* \(represented as an point\-down triangle\) to the chart\.
 
@@ -2580,7 +2668,7 @@ For *timecharts*:
 
         The colour of the triangle \(defaults to black\)\.
 
-  - <a name='106'></a>__$timechart__ addmilestone *time* *colour*
+  - <a name='109'></a>__$timechart__ addmilestone *time* *colour*
 
     Add another *milestone* to the current row in the chart\.
 
@@ -2592,7 +2680,7 @@ For *timecharts*:
 
         The colour of the triangle \(defaults to black\)\.
 
-  - <a name='107'></a>__$timechart__ vertline *text* *time* *colour*
+  - <a name='110'></a>__$timechart__ vertline *text* *time* *colour*
 
     Add a vertical line \(to indicate the start of the month for instance\) to the
     chart in the specified colour\.
@@ -2610,7 +2698,7 @@ For *timecharts*:
 
         The colour of the line to be drawn \(defaults to black\)
 
-  - <a name='108'></a>__$timechart__ hscroll *scrollbar*
+  - <a name='111'></a>__$timechart__ hscroll *scrollbar*
 
     Connect a horizontal scrollbar to the chart\. See also the section on
     scrolling\.
@@ -2619,7 +2707,7 @@ For *timecharts*:
 
         The horizontal scrollbar that is to be connected to the chart
 
-  - <a name='109'></a>__$timechart__ vscroll *scrollbar*
+  - <a name='112'></a>__$timechart__ vscroll *scrollbar*
 
     Connect a vertical scrollbar to the chart\. See also the section on
     scrolling\.
@@ -2630,7 +2718,7 @@ For *timecharts*:
 
 For *Gantt charts*:
 
-  - <a name='110'></a>__$ganttchart__ task *text* *time\_begin* *time\_end* *completed*
+  - <a name='113'></a>__$ganttchart__ task *text* *time\_begin* *time\_end* *completed*
 
     Add a task with its period and level of completion to the chart\. Returns a
     list of canvas items that can be used for further manipulations, like
@@ -2652,7 +2740,7 @@ For *Gantt charts*:
 
         The percentage of the task that is completed\.
 
-  - <a name='111'></a>__$ganttchart__ milestone *text* *time* *colour*
+  - <a name='114'></a>__$ganttchart__ milestone *text* *time* *colour*
 
     Add a *milestone* \(represented as an point\-down triangle\) to the chart\.
 
@@ -2668,7 +2756,7 @@ For *Gantt charts*:
 
         The colour of the triangle \(defaults to black\)\.
 
-  - <a name='112'></a>__$ganttchart__ vertline *text* *time*
+  - <a name='115'></a>__$ganttchart__ vertline *text* *time*
 
     Add a vertical line \(to indicate the start of the month for instance\) to the
     chart\.
@@ -2682,7 +2770,7 @@ For *Gantt charts*:
 
         Time at which the line must be positioned\.
 
-  - <a name='113'></a>__$ganttchart__ connect *from* *to*
+  - <a name='116'></a>__$ganttchart__ connect *from* *to*
 
     Add an arrow that connects the *from* task with the *to* task\.
 
@@ -2705,7 +2793,7 @@ For *Gantt charts*:
         The list of items returned by the "task" command that represents the
         task at which the arrow ends\.
 
-  - <a name='114'></a>__$ganttchart__ summary *text* *args*
+  - <a name='117'></a>__$ganttchart__ summary *text* *args*
 
     Add a summary item that spans all the tasks listed\. The graphical
     representation is a thick bar running from the leftmost task to the
@@ -2723,7 +2811,7 @@ For *Gantt charts*:
         One or more tasks \(the lists returned by the "task" command\)\. They are
         shifted down to make room for the summary\.
 
-  - <a name='115'></a>__$ganttchart__ color *keyword* *newcolor*
+  - <a name='118'></a>__$ganttchart__ color *keyword* *newcolor*
 
     Set the colour of a part of the Gantt chart\. These colours hold for all
     items of that type\.
@@ -2751,7 +2839,7 @@ For *Gantt charts*:
 
         The new colour for the chosen items\.
 
-  - <a name='116'></a>__$ganttchart__ font *keyword* *newfont*
+  - <a name='119'></a>__$ganttchart__ font *keyword* *newfont*
 
     Set the font of a part of the Gantt chart\. These fonts hold for all items of
     that type\.
@@ -2770,7 +2858,7 @@ For *Gantt charts*:
 
         The new font for the chosen items\.
 
-  - <a name='117'></a>__$ganttchart__ hscroll *scrollbar*
+  - <a name='120'></a>__$ganttchart__ hscroll *scrollbar*
 
     Connect a horizontal scrollbar to the chart\. See also the section on
     scrolling\.
@@ -2779,7 +2867,7 @@ For *Gantt charts*:
 
         The horizontal scrollbar that is to be connected to the chart
 
-  - <a name='118'></a>__$ganttchart__ vscroll *scrollbar*
+  - <a name='121'></a>__$ganttchart__ vscroll *scrollbar*
 
     Connect a vertical scrollbar to the chart\. See also the section on
     scrolling\.
@@ -2790,7 +2878,7 @@ For *Gantt charts*:
 
 For *isometric plots* \(to be extended\):
 
-  - <a name='119'></a>__$isoplot__ plot rectangle *x1* *y1* *x2* *y2* *colour*
+  - <a name='122'></a>__$isoplot__ plot rectangle *x1* *y1* *x2* *y2* *colour*
 
     Plot the outlines of a rectangle\.
 
@@ -2814,7 +2902,7 @@ For *isometric plots* \(to be extended\):
 
         The colour of the rectangle\.
 
-  - <a name='120'></a>__$isoplot__ plot filled\-rectangle *x1* *y1* *x2* *y2* *colour*
+  - <a name='123'></a>__$isoplot__ plot filled\-rectangle *x1* *y1* *x2* *y2* *colour*
 
     Plot a rectangle filled with the given colour\.
 
@@ -2838,7 +2926,7 @@ For *isometric plots* \(to be extended\):
 
         The colour of the rectangle\.
 
-  - <a name='121'></a>__$isoplot__ plot circle *xc* *yc* *radius* *colour*
+  - <a name='124'></a>__$isoplot__ plot circle *xc* *yc* *radius* *colour*
 
     Plot the outline of a circle\.
 
@@ -2854,7 +2942,7 @@ For *isometric plots* \(to be extended\):
 
         The colour of the circle\.
 
-  - <a name='122'></a>__$isoplot__ plot filled\-circle *xc* *yc* *radius* *colour*
+  - <a name='125'></a>__$isoplot__ plot filled\-circle *xc* *yc* *radius* *colour*
 
     Plot a circle filled with the given colour\.
 
@@ -2872,7 +2960,7 @@ For *isometric plots* \(to be extended\):
 
 For *tables* you can use the following subcommands:
 
-  - <a name='123'></a>__$table__ row *items*
+  - <a name='126'></a>__$table__ row *items*
 
     Draw a single row of items\. The appearance of the items can be controlled
     explicitly via the format command\.
@@ -2881,11 +2969,11 @@ For *tables* you can use the following subcommands:
 
         List of text items to be drawn, one per column
 
-  - <a name='124'></a>__$table__ separator
+  - <a name='127'></a>__$table__ separator
 
     Draw a horizontal line to separate two rows
 
-  - <a name='125'></a>__$table__ formatcommand *procname*
+  - <a name='128'></a>__$table__ formatcommand *procname*
 
     Set the procedure that controls the formatting of items\. By default items
     are simply drawn as centered text\.
@@ -2898,7 +2986,7 @@ For *tables* you can use the following subcommands:
 
         Use the cellconfigure subcommand to set the attributes per cell\.
 
-  - <a name='126'></a>__$table__ cellconfigure *args*
+  - <a name='129'></a>__$table__ cellconfigure *args*
 
     Set the attributes for the next cell\(s\) to be drawn\.
 
@@ -2911,7 +2999,7 @@ For *tables* you can use the following subcommands:
 
 For *ternary diagrams* you can use the following subcommands:
 
-  - <a name='127'></a>__$ternary__ plot *series* *xcrd* *ycrd* *zcrd* *text* *dir*
+  - <a name='130'></a>__$ternary__ plot *series* *xcrd* *ycrd* *zcrd* *text* *dir*
 
     Draw a single data point with a label\. The three coordinates are scaled so
     that a unique point in the triangle results\. A label is drawn next to it\.
@@ -2942,7 +3030,7 @@ For *ternary diagrams* you can use the following subcommands:
         Optional string indicating the direction in which to plot the label \(e,
         n, etc\.\)
 
-  - <a name='128'></a>__$ternary__ line *series* *coords*
+  - <a name='131'></a>__$ternary__ line *series* *coords*
 
     Draw a continuous line based on the given coordinates \(triplets\)\.
 
@@ -2956,7 +3044,7 @@ For *ternary diagrams* you can use the following subcommands:
         The coordinates of the points that determine the line \(note that a point
         is defined by three coordinates\)\.
 
-  - <a name='129'></a>__$ternary__ fill *series* *coords*
+  - <a name='132'></a>__$ternary__ fill *series* *coords*
 
     Draw a filled polygon based on the given coordinates \(triplets\)\.
 
@@ -2970,7 +3058,7 @@ For *ternary diagrams* you can use the following subcommands:
         The coordinates of the points that determine the polygon \(note that a
         point is defined by three coordinates\)\.
 
-  - <a name='130'></a>__$ternary__ text *xtext* *ytext* *ztext*
+  - <a name='133'></a>__$ternary__ text *xtext* *ytext* *ztext*
 
     Draw text at the three corners of the diagram to identify the components\.
 
@@ -2986,7 +3074,7 @@ For *ternary diagrams* you can use the following subcommands:
 
         Text to be plotted at the top corner
 
-  - <a name='131'></a>__$ternary__ ticklines *colour*
+  - <a name='134'></a>__$ternary__ ticklines *colour*
 
     Draw ticklines to facilitate reading off the diagram\.
 
@@ -2996,7 +3084,7 @@ For *ternary diagrams* you can use the following subcommands:
 
 For *status timeline plots* you can use the following subcommands:
 
-  - <a name='132'></a>__$timeline__ plot *series* *item* *start* *stop* *color*
+  - <a name='135'></a>__$timeline__ plot *series* *item* *start* *stop* *color*
 
     Draw a bar in the given colour from *start* to *stop* for the item
     *item*\. The item is a convenient label \- there is no relation to the
@@ -3018,7 +3106,7 @@ For *status timeline plots* you can use the following subcommands:
 
         Colour to use for the bar\. Defaults to black\.
 
-  - <a name='133'></a>__$timeline__ vertline *text* *time* *args*
+  - <a name='136'></a>__$timeline__ vertline *text* *time* *args*
 
     Draw a vertical line to indicate a significant moment\.
 
@@ -3036,13 +3124,31 @@ For *status timeline plots* you can use the following subcommands:
         subcommand of the underlying canvas\. This way you can set the colour or
         the line width of the vertical line\.
 
+For *dendrograms* there is one specific subcommand:
+
+  - <a name='137'></a>__$dendrogram__ plot *series* *data*
+
+    Draw a dendrogram according to the options given or implied when the
+    dendrogram command was created\. The "series" name allows you to select the
+    colour of the branches \(\-colour/\-color\) as well as the colour and font of
+    the labels \(\-labelcolour/\-labelcolor and \-labelfont\)\.
+
+      * string *series* \(in\)
+
+        Name of the set of options to draw the dendrogram with\.
+
+      * list *data* \(in\)
+
+        Nested list, describing the tree structure\. See the *createDendrogram*
+        command\.
+
 # <a name='section4'></a>COORDINATE TRANSFORMATIONS
 
 Besides the commands that deal with the plots and charts directly, there are a
 number of commands that can be used to convert world coordinates to pixels and
 vice versa\. These include:
 
-  - <a name='134'></a>__::Plotchart::viewPort__ *w* *pxmin* *pymin* *pxmax* *pymax*
+  - <a name='138'></a>__::Plotchart::viewPort__ *w* *pxmin* *pymin* *pxmax* *pymax*
 
     Set the viewport for window *w*\. Should be used in cooperation with
     __::Plotchart::worldCoordinates__\.
@@ -3068,7 +3174,7 @@ vice versa\. These include:
 
         Bottom\-most pixel coordinate\.
 
-  - <a name='135'></a>__::Plotchart::worldCoordinates__ *w* *xmin* *ymin* *xmax* *ymax*
+  - <a name='139'></a>__::Plotchart::worldCoordinates__ *w* *xmin* *ymin* *xmax* *ymax*
 
     Set the extreme world coordinates for window *w*\. The world coordinates
     need not be in ascending order \(i\.e\. xmin can be larger than xmax, so that a
@@ -3094,7 +3200,7 @@ vice versa\. These include:
 
         Y\-coordinate to be mapped to top side of viewport\.
 
-  - <a name='136'></a>__::Plotchart::world3DCoordinates__ *w* *xmin* *ymin* *zmin* *xmax* *ymax* *zmax*
+  - <a name='140'></a>__::Plotchart::world3DCoordinates__ *w* *xmin* *ymin* *zmin* *xmax* *ymax* *zmax*
 
     Set the extreme three\-dimensional world coordinates for window *w*\. The
     world coordinates need not be in ascending order \(i\.e\. xmin can be larger
@@ -3128,7 +3234,7 @@ vice versa\. These include:
 
         Z\-coordinate to be mapped to top side of viewport\.
 
-  - <a name='137'></a>__::Plotchart::coordsToPixel__ *w* *x* *y*
+  - <a name='141'></a>__::Plotchart::coordsToPixel__ *w* *x* *y*
 
     Return a list of pixel coordinates valid for the given window\.
 
@@ -3145,7 +3251,7 @@ vice versa\. These include:
 
         Y\-coordinate to be mapped\.
 
-  - <a name='138'></a>__::Plotchart::coords3DToPixel__ *w* *x* *y* *z*
+  - <a name='142'></a>__::Plotchart::coords3DToPixel__ *w* *x* *y* *z*
 
     Return a list of pixel coordinates valid for the given window\.
 
@@ -3166,7 +3272,7 @@ vice versa\. These include:
 
         Z\-coordinate to be mapped\.
 
-  - <a name='139'></a>__::Plotchart::polarCoordinates__ *w* *radmax*
+  - <a name='143'></a>__::Plotchart::polarCoordinates__ *w* *radmax*
 
     Set the extreme polar coordinates for window *w*\. The angle always runs
     from 0 to 360 degrees and the radius starts at 0\. Hence you only need to
@@ -3184,7 +3290,7 @@ vice versa\. These include:
 
         Maximum radius\.
 
-  - <a name='140'></a>__::Plotchart::polarToPixel__ *w* *rad* *phi*
+  - <a name='144'></a>__::Plotchart::polarToPixel__ *w* *rad* *phi*
 
     Wrapper for a call to __::Plotchart::coordsToPixel__\. *Note:* This
     procedure has been deprecated \- you should use the procedure
@@ -3203,7 +3309,7 @@ vice versa\. These include:
 
         Angle to the positive x\-axis\.
 
-  - <a name='141'></a>__::Plotchart::pixelToCoords__ *w* *x* *y*
+  - <a name='145'></a>__::Plotchart::pixelToCoords__ *w* *x* *y*
 
     Return a list of world coordinates valid for the given window\.
 
@@ -3220,7 +3326,7 @@ vice versa\. These include:
 
         Y\-pixel to be mapped\.
 
-  - <a name='142'></a>__::Plotchart::pixelToIndex__ *w* *x* *y*
+  - <a name='146'></a>__::Plotchart::pixelToIndex__ *w* *x* *y*
 
     Return the index of the pie segment containing the pixel coordinates \(x,y\)
 
@@ -3240,7 +3346,7 @@ vice versa\. These include:
 Furthermore there is a routine to determine "pretty" numbers for use with an
 axis:
 
-  - <a name='143'></a>__::Plotchart::determineScale__ *xmin* *xmax* *inverted*
+  - <a name='147'></a>__::Plotchart::determineScale__ *xmin* *xmax* *inverted*
 
     Determine "pretty" numbers from the given range and return a list containing
     the minimum, maximum and stepsize that can be used for a \(linear\) axis\.
@@ -3258,7 +3364,7 @@ axis:
         Optional argument: if 1, then the returned list produces an inverted
         axis\. Defaults to 0 \(the axis will be from minimum to maximum\)
 
-  - <a name='144'></a>__::Plotchart::determineScaleFromList__ *values* *inverted*
+  - <a name='148'></a>__::Plotchart::determineScaleFromList__ *values* *inverted*
 
     Determine "pretty" numbers from the given list of values and return a list
     containing the minimum, maximum and stepsize that can be used for a \(linear\)
@@ -3499,7 +3605,7 @@ The commands __plotconfig__ and __plotstyle__ can be used to set all
 manner of options\. The command __eraseplot__ can be used to completely erase
 a plot or chart\. The syntax of these commands is:
 
-  - <a name='145'></a>__::Plotchart::plotconfig__ *charttype* *component* *property* *value*
+  - <a name='149'></a>__::Plotchart::plotconfig__ *charttype* *component* *property* *value*
 
     Set a new value for the property of a component in a particular chart or
     plot type or query its current value\. Changed properties only have effect
@@ -3538,7 +3644,7 @@ a plot or chart\. The syntax of these commands is:
         Note, that in some cases an empty value is useful\. Use "none" in this
         case \- it can be useful for colours and for formats\.
 
-  - <a name='146'></a>__::Plotchart::plotstyle__ *subcmd* *style* *args*
+  - <a name='150'></a>__::Plotchart::plotstyle__ *subcmd* *style* *args*
 
     Manipulate the *style* in which subsequent plots will be drawn\. The
     default style is "default", but you can define and load any number of other
@@ -3694,7 +3800,7 @@ Below is a detailed list of the components and properties:
     For the Taylor diagram you can specify the color of the reference circles
     via the *reference* component\.
 
-  - <a name='147'></a>__::Plotchart::eraseplot__ *anyplot*
+  - <a name='151'></a>__::Plotchart::eraseplot__ *anyplot*
 
     Erase the plot/chart with all resources connected to it\.
 
@@ -3793,7 +3899,7 @@ Currently there are the following types:
 Most of the general methods for XY\-plots work for these plots as well, but their
 creation and the methods to plot the data are very specific\.
 
-  - <a name='148'></a>__::Plotchart::createTargetDiagram__ *w* *limits* *scale*
+  - <a name='152'></a>__::Plotchart::createTargetDiagram__ *w* *limits* *scale*
 
     Create a new target diagram with circles indicating specific limits\. The
     x\-axis represents the unbiased "root\-mean\-square difference" \(typically
@@ -3817,7 +3923,7 @@ creation and the methods to plot the data are very specific\.
         fit, then that may be too small a value\. Both axes are scaled in the
         same way\.
 
-  - <a name='149'></a>__$target__ plot *series* *xvalues* *yvalues*
+  - <a name='153'></a>__$target__ plot *series* *xvalues* *yvalues*
 
     The plot method takes two series of data of the same length, the first one
     representing the model results, the second one represent the measurements
@@ -3839,7 +3945,7 @@ creation and the methods to plot the data are very specific\.
         strings; only if both the x and the y values are given, is the pair used
         in the computations\)
 
-  - <a name='150'></a>__::Plotchart::createPerformanceProfile__ *w* *max*
+  - <a name='154'></a>__::Plotchart::createPerformanceProfile__ *w* *max*
 
     Create a diagram to show the performance of various numerical methods \(or
     solvers\)\. The idea is to first run these methods on a set of problems and
@@ -3858,7 +3964,7 @@ creation and the methods to plot the data are very specific\.
         Maximum value for the x\-axis \(the x\-axis is the scaled performance of
         the series\)\.
 
-  - <a name='151'></a>__$performance__ plot *series\_and\_data\_pairs*
+  - <a name='155'></a>__$performance__ plot *series\_and\_data\_pairs*
 
     Plot the data for each given method\. The data are identified by the series
     name and the appearance is controlled via prior dataconfig subcommand\.
@@ -3867,7 +3973,7 @@ creation and the methods to plot the data are very specific\.
 
         List of series names and data\. All data must be given at once\.
 
-  - <a name='152'></a>__::Plotchart::createTaylorDiagram__ *w* *radius\_data* *args*
+  - <a name='156'></a>__::Plotchart::createTaylorDiagram__ *w* *radius\_data* *args*
 
     Create a new Taylor diagram \(one quadrant\) with circles indicating the
     distance to the reference point\.
@@ -3893,7 +3999,7 @@ creation and the methods to plot the data are very specific\.
         same spacing as the axis labels to indicate the distance of the data
         points from the reference\.
 
-  - <a name='153'></a>__$taylor__ plot *series* *stdev* *corr*
+  - <a name='157'></a>__$taylor__ plot *series* *stdev* *corr*
 
     The plot method takes the standard deviation and the correlation to the
     reference as input and draws a symbol as a representation\. The standard
@@ -3914,7 +4020,7 @@ creation and the methods to plot the data are very specific\.
 
         Correlation coefficient with the reference dataset
 
-  - <a name='154'></a>__::Plotchart::createHeatmap__ *w* *rowlabels* *columnlabels* *args*
+  - <a name='158'></a>__::Plotchart::createHeatmap__ *w* *rowlabels* *columnlabels* *args*
 
     Create a heatmap, i\.e\. a tableau of rectangles whose colours depend on some
     data\. The row and column labels are used as identifiers when filling in the
@@ -3941,7 +4047,7 @@ creation and the methods to plot the data are very specific\.
         Zero or more arguments to influence the size of the heatmap\. See XY plot
         for more information\.
 
-  - <a name='155'></a>__$heatmap__ plot row *label* *data*
+  - <a name='159'></a>__$heatmap__ plot row *label* *data*
 
     Use the given data to fill the rectangles belonging to the row "label"\.
 
@@ -3953,7 +4059,7 @@ creation and the methods to plot the data are very specific\.
 
         List of numerical data to be used for the colouring of the rectangles\.
 
-  - <a name='156'></a>__$heatmap__ plot column *label* *data*
+  - <a name='160'></a>__$heatmap__ plot column *label* *data*
 
     Use the given data to fill the rectangles belonging to the column "label"\.
 
@@ -3965,7 +4071,7 @@ creation and the methods to plot the data are very specific\.
 
         List of numerical data to be used for the colouring of the rectangles\.
 
-  - <a name='157'></a>__$heatmap__ plot cell *rowlabel* *columnlabel* *value*
+  - <a name='161'></a>__$heatmap__ plot cell *rowlabel* *columnlabel* *value*
 
     Use the given value to fill the rectangle belonging to the cell with the
     given row and column labels\.
@@ -3982,7 +4088,7 @@ creation and the methods to plot the data are very specific\.
 
         Value to be used for the colouring of the cell\.
 
-  - <a name='158'></a>__$heatmap__ scale values *min* *max*
+  - <a name='162'></a>__$heatmap__ scale values *min* *max*
 
     Set the range for the values \- they are mapped to a colour via linear
     interpolation\.
@@ -3995,7 +4101,7 @@ creation and the methods to plot the data are very specific\.
 
         Maximum value to be used\.
 
-  - <a name='159'></a>__$heatmap__ scale colours *mincolour* *maxcolour*
+  - <a name='163'></a>__$heatmap__ scale colours *mincolour* *maxcolour*
 
     Set the colours to be used for the minimum and the maximum values\. The
     actual colour is determined via linear interpolation of the RGB values\.
@@ -4008,7 +4114,7 @@ creation and the methods to plot the data are very specific\.
 
         Colour to be used at the maximum value\.
 
-  - <a name='160'></a>__::Plotchart::createCircleplot__ *w* *labels* *args*
+  - <a name='164'></a>__::Plotchart::createCircleplot__ *w* *labels* *args*
 
     Create a circle plot, i\.e\. a circle with labels that can be connected by
     coloured arcs\. Typical use: present the relationship between the items on
@@ -4030,7 +4136,7 @@ creation and the methods to plot the data are very specific\.
         Zero or more arguments to influence the size of the circle plot\. See XY
         plot for more information\.
 
-  - <a name='161'></a>__$circleplot__ connect *label1* *label2* *colour* *width*
+  - <a name='165'></a>__$circleplot__ connect *label1* *label2* *colour* *width*
 
     Connect the two labels via a coloured arc of given width \(the arc is
     actually a parabola\)\.
@@ -4051,7 +4157,7 @@ creation and the methods to plot the data are very specific\.
 
         Width for the connected arc\.
 
-  - <a name='162'></a>__$circleplot__ modify *label* *args*
+  - <a name='166'></a>__$circleplot__ modify *label* *args*
 
     Modify the appearance of the label and the accompanying dot\.
 
@@ -4077,7 +4183,7 @@ The command *plotmethod* can be used to add new methods for a particular plot
 or chart type\. It is intended to help you develop specialised graphical
 displays\.
 
-  - <a name='163'></a>__::Plotchart::plotmethod__ *charttype* *methodname* *plotproc*
+  - <a name='167'></a>__::Plotchart::plotmethod__ *charttype* *methodname* *plotproc*
 
     Adds a new method for the given plot or chart type\. The method is
     implemented by the command or procedure given in the plotproc argument\. The
@@ -4205,7 +4311,7 @@ canvas widget\. This canvas widget does not act as a composite plot, but it can
 be saved as a PostScript file for instance: Note: the command simply takes a
 snapshot of the plots/charts as they are at that moment\.
 
-  - <a name='164'></a>__::Plotchart::plotpack__ *w* *dir* *args*
+  - <a name='168'></a>__::Plotchart::plotpack__ *w* *dir* *args*
 
     Copy the contents of the plots/charts into another widget, in a manner
     similar to the *pack* geometry manager\.
@@ -4305,7 +4411,7 @@ bindings\.
 
 The *bindplot* and *bindlast* are defined as follows:
 
-  - <a name='165'></a>__$anyplot__ bindplot *event* *command* *args*
+  - <a name='169'></a>__$anyplot__ bindplot *event* *command* *args*
 
     Register a command that will be run whenever the given event occurs in the
     plot\.
@@ -4324,7 +4430,7 @@ The *bindplot* and *bindlast* are defined as follows:
 
         assuming the argument "command" is: \{cmd A B C\}
 
-  - <a name='166'></a>__$anyplot__ bindlast *series* *event* *command*
+  - <a name='170'></a>__$anyplot__ bindlast *series* *event* *command*
 
     Register a command that will be run when the event occurs within the
     neighbourhood of the last point added to the given series\. \(You can use

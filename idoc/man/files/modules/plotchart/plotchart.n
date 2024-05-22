@@ -334,6 +334,8 @@ package require \fBPlotchart  ?2\&.5\&.2?\fR
 .sp
 \fB::Plotchart::createStatusTimeline\fR \fIw\fR \fIxaxis\fR \fIylabel\fR \fIargs\fR
 .sp
+\fB::Plotchart::createDendrogram\fR \fIw\fR \fIargs\fR
+.sp
 \fB$anyplot\fR title \fItext\fR \fIposition\fR
 .sp
 \fB$anyplot\fR subtitle \fItext\fR
@@ -403,6 +405,8 @@ package require \fBPlotchart  ?2\&.5\&.2?\fR
 \fB$xyplot\fR interval \fIseries\fR \fIxcrd\fR \fIymin\fR \fIymax\fR ?ycentr?
 .sp
 \fB$xyplot\fR box-and-whiskers \fIseries\fR \fIxcrd\fR \fIycrd\fR
+.sp
+\fB$xyplot\fR violin \fIseries\fR \fIxcrd\fR \fIycrd\fR
 .sp
 \fB$xyplot\fR vector \fIseries\fR \fIxcrd\fR \fIycrd\fR \fIucmp\fR \fIvcmp\fR
 .sp
@@ -484,6 +488,8 @@ package require \fBPlotchart  ?2\&.5\&.2?\fR
 .sp
 \fB$boxplot\fR plot \fIseries\fR \fIlabel\fR \fIvalues\fR
 .sp
+\fB$boxplot\fR violin \fIseries\fR \fIlabel\fR \fIvalues\fR
+.sp
 \fB$timechart\fR period \fItext\fR \fItime_begin\fR \fItime_end\fR \fIcolour\fR
 .sp
 \fB$timechart\fR addperiod \fItime_begin\fR \fItime_end\fR \fIcolour\fR
@@ -545,6 +551,8 @@ package require \fBPlotchart  ?2\&.5\&.2?\fR
 \fB$timeline\fR plot \fIseries\fR \fIitem\fR \fIstart\fR \fIstop\fR \fIcolor\fR
 .sp
 \fB$timeline\fR vertline \fItext\fR \fItime\fR \fIargs\fR
+.sp
+\fB$dendrogram\fR plot \fIseries\fR \fIdata\fR
 .sp
 \fB::Plotchart::viewPort\fR \fIw\fR \fIpxmin\fR \fIpymin\fR \fIpxmax\fR \fIpymax\fR
 .sp
@@ -1333,6 +1341,50 @@ Zero or more option-value pairs to influence the position and the appearance of 
 diagram\&. In addition to the positioning options (-box and -axesbox) the diagram supports:
 \fI-xaxis yes/no\fR, to turn displaying the numeric labels on or off\&.
 .RE
+.TP
+\fB::Plotchart::createDendrogram\fR \fIw\fR \fIargs\fR
+Create a dendrogram to plot hierarchically organised data\&. The labels that identify
+the endpoints of the hierarchy can all be drawn on the same level or where their
+branch ends\&. This is controlled by the option "-extend"\&.
+.sp
+The data are organised as nested lists, like:
+.CS
+
+
+     \\$dendrogram plot data { {"Label1"  "Label2"} {F {A B} {C {D E}}} }
+
+.CE
+.IP
+Sublists with more than one element are considered a branching and are drawn in that way\&.
+Sublists with only one element are considered a leaf and are drawn as text\&.
+Because a string with two or more words can not be distinguished from a list with two
+or more elements, a provision is made for this situation: if the first element is "LEAF",
+then the list is considered to consist of leafs only and all elements (even if they
+are actually nested lists themselves are drawn as text:
+.CS
+
+
+     \\$dendrogram plot data { {LEAF "Label 1"  "Label 2"} {F {A B} {C {D E}}} }
+
+.CE
+.RS
+.TP
+widget \fIw\fR (in)
+Name of the canvas widget to hold the dendrogram\&.
+.TP
+list \fIargs\fR (in)
+Zero or more option-value pairs:
+.RS
+.IP \(bu
+The option "-direction" takes one of the following values: left-right, right-left,
+top-bottom, bottom-top, with "top-bottom" as the default\&. The tree will be drawn
+according to this option, the labels appear either horizontally or vertically at
+the end of the tree\&.
+.IP \(bu
+The option "-extend" with value 1 (default) or 0 (no extension) to indicate that
+the labels should all appear at the same level\&.
+.RE
+.RE
 .sp
 .PP
 .SH "PLOT METHODS"
@@ -1980,6 +2032,33 @@ Y-coordinate of the box or a list of values\&.
 .sp
 The box ends at the 1st and 3rd quartile, while the whiskers by default
 are plotted to span 1\&.5 IQR (interquartile range) from the 1st and 3rd quartile\&.
+.TP
+\fB$xyplot\fR violin \fIseries\fR \fIxcrd\fR \fIycrd\fR
+Draw a violin plot based on the given data set\&. It is an alternative to the box and whiskers presentation\&.
+Just as with the box-and-whiskers subcommand, if the argument \fIxcrd\fR is a
+list of several values and the argument \fIycrd\fR is a single value, a
+horizontal "violin" is drawn\&.
+.sp
+If, instead, the argument \fIycrd\fR contains a list of several values
+and the argument \fIxcrd\fR a single value, then a vertical "violin" is
+drawn\&.
+.sp
+The option -violinwidth to the dataconfig command determines the width (or
+height) of the violin (default: 50 pixels)\&.
+.sp
+The option -colour (-color) determines the outline colour and the option -fillcolour (-fillcolor)
+determines the colour by which the violin is filled (defaults: black and not filled)\&.
+.RS
+.TP
+string \fIseries\fR (in)
+Name of the data series to use\&.
+.TP
+float \fIxcrd\fR (in)
+X-coordinate of the violin or a list of values\&.
+.TP
+float \fIymin\fR (in)
+Y-coordinate of the violin or a list of values\&.
+.RE
 .TP
 \fB$xyplot\fR vector \fIseries\fR \fIxcrd\fR \fIycrd\fR \fIucmp\fR \fIvcmp\fR
 Draw a vector in the plot\&. The vector can be given as either cartesian
@@ -2751,6 +2830,22 @@ list \fIvalues\fR (in)
 List of raw values, the extent of the box and the whiskers will be
 determined from this list\&.
 .RE
+.TP
+\fB$boxplot\fR violin \fIseries\fR \fIlabel\fR \fIvalues\fR
+Add a "violin" to the plot\&. The dataconfig command can be used to customize
+the appearance (see the violin command for the xyplot for details)\&.
+.RS
+.TP
+string \fIseries\fR (in)
+Name of the data series to be used for settings
+.TP
+string \fIlabel\fR (in)
+The label along the x- or y-axis to which the data belong
+.TP
+list \fIvalues\fR (in)
+List of raw values, the extent of the box and the whiskers will be
+determined from this list\&.
+.RE
 .PP
 For \fItimecharts\fR:
 .TP
@@ -3234,6 +3329,21 @@ list \fIargs\fR (in)
 Individual optional arguments that will be passed to the \fIcreate line\fR subcommand
 of the underlying canvas\&. This way you can set the colour or the line width
 of the vertical line\&.
+.RE
+.PP
+For \fIdendrograms\fR there is one specific subcommand:
+.TP
+\fB$dendrogram\fR plot \fIseries\fR \fIdata\fR
+Draw a dendrogram according to the options given or implied when the dendrogram command was created\&.
+The "series" name allows you to select the colour of the branches (-colour/-color) as well as the colour and font of the labels
+(-labelcolour/-labelcolor and -labelfont)\&.
+.RS
+.TP
+string \fIseries\fR (in)
+Name of the set of options to draw the dendrogram with\&.
+.TP
+list \fIdata\fR (in)
+Nested list, describing the tree structure\&. See the \fIcreateDendrogram\fR command\&.
 .RE
 .PP
 .SH "COORDINATE TRANSFORMATIONS"

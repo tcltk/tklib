@@ -842,18 +842,14 @@ diagram. In addition to the positioning options (-box and -axesbox) the diagram 
 [term "-xaxis yes/no"], to turn displaying the numeric labels on or off.
 
 [list_end]
-[para]
-
-[list_end]
-
 
 [call [cmd ::Plotchart::createDendrogram] [arg w] [arg args]]
 
 Create a dendrogram to plot hierarchically organised data. The labels that identify
 the endpoints of the hierarchy can all be drawn on the same level or where their
 branch ends. This is controlled by the option "-extend".
-[nl]
-The data are organised as nested lists, like:
+
+[para] The data are organised as nested lists, like:
 [example {
      \$dendrogram plot data { {"Label1"  "Label2"} {F {A B} {C {D E}}} }
 }]
