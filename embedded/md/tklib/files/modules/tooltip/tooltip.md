@@ -2,7 +2,7 @@
 [//000000001]: # (tooltip \- Tooltip management)
 [//000000002]: # (Generated from file 'tooltip\.man' by tcllib/doctools with format 'markdown')
 [//000000003]: # (Copyright &copy; 1996\-2008, Jeffrey Hobbs)
-[//000000004]: # (tooltip\(n\) 1\.6 tklib "Tooltip management")
+[//000000004]: # (tooltip\(n\) 1\.7 tklib "Tooltip management")
 
 <hr> [ <a href="../../../../toc.md">Main Table Of Contents</a> &#124; <a
 href="../../../toc.md">Table Of Contents</a> &#124; <a
@@ -37,16 +37,16 @@ tooltip \- Tooltip management
 
 package require Tcl 8\.5  
 package require msgcat 1\.3  
-package require tooltip ?1\.6?  
+package require tooltip ?1\.7?  
 
 [__::tooltip::tooltip__ *command* ?*options*?](#1)  
 [__::tooltip::tooltip__ *pathName* ?*option value*? *message*](#2)  
 
 # <a name='description'></a>DESCRIPTION
 
-This package provides tooltips, small text messages that can be displayed when
-the mouse hovers over a widget, menu item, canvas item, listbox or ttk::treeview
-item, ttk::notebook tab or text widget tag\.
+This package provides tooltips, i\.e\., small text messages that can be displayed
+when the mouse hovers over a widget, menu item, canvas item, listbox item,
+ttk::treeview item or column heading, ttk::notebook tab, or text widget tag\.
 
 # <a name='section2'></a>COMMANDS
 
@@ -100,8 +100,16 @@ item, ttk::notebook tab or text widget tag\.
     passed in message to allow for on\-the\-fly language changes in an
     application\. If the widget specified is a menu, canvas, listbox,
     ttk::treeview, ttk::notebook or text widget then additional options are used
-    to tie the tooltip to specific menu, canvas, listbox or ttk::treeview items,
-    ttk::notebook tabs or text widget tags\.
+    to tie the tooltip to specific menu, canvas or listbox items, ttk::treeview
+    items or column headings, ttk::notebook tabs, or text widget tags\.
+
+      * __\-heading__ *columnId*
+
+        This option is used to set a tooltip for a ttk::treeview column heading\.
+        The column does not need to already exist\. You should not use the same
+        identifiers for columns and items in a widget for which you are using
+        tooltips as their tooltips will be mixed\. The widget must be a
+        ttk::treeview widget\.
 
       * __\-index__ *index*
 

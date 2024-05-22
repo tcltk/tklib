@@ -1,8 +1,8 @@
 '\"
-'\" Generated from file 'tooltip\&.man' by tcllib/doctools with format 'nroff'
-'\" Copyright (c) 1996-2008, Jeffrey Hobbs
+'\" Generated from file 'tipstack\&.man' by tcllib/doctools with format 'nroff'
+'\" Copyright (c) 2003 ActiveState Corp
 '\"
-.TH "tooltip" n 1\&.7 tklib "Tooltip management"
+.TH "tipstack" n 1\&.0\&.1 tklib "Tooltip management"
 .\" The -*- nroff -*- definitions below are for supplemental macros used
 .\" in Tcl/Tk manual entries.
 .\"
@@ -272,7 +272,7 @@ Database Class:	\\fB\\$3\\fR
 ..
 .BS
 .SH NAME
-tooltip \- Tooltip management
+tipstack \- Stacked tooltips
 .SH SYNOPSIS
 package require \fBTcl  8\&.5\fR
 .sp
@@ -280,168 +280,90 @@ package require \fBmsgcat  1\&.3\fR
 .sp
 package require \fBtooltip  ?1\&.7?\fR
 .sp
-\fB::tooltip::tooltip\fR \fIcommand\fR ?\fIoptions\fR?
+package require \fBtipstack  ?1\&.0\&.1?\fR
 .sp
-\fB::tooltip::tooltip\fR \fIpathName\fR ?\fIoption value\fR? \fImessage\fR
+\fB::tipstack::push\fR \fIwidget\fR ?\fB-index\fR \fIindex\fR? \fItext\fR
+.sp
+\fB::tipstack::pop\fR \fIwidget\fR ?\fB-index\fR \fIindex\fR?
+.sp
+\fB::tipstack::clear\fR \fIwidget\fR ?\fB-index\fR \fIindex\fR?
+.sp
+\fB::tipstack::def\fR \fIwidget\fR \fItext\fR \&.\&.\&.
+.sp
+\fB::tipstack::defsub\fR \fIbase\fR \fIwidget\fR \fItext\fR \&.\&.\&.
+.sp
+\fB::tipstack::clearsub\fR \fIbase\fR
 .sp
 .BE
 .SH DESCRIPTION
 .PP
-This package provides tooltips, i\&.e\&., small text messages that can be displayed
-when the mouse hovers over a widget, menu item, canvas item, listbox item,
-ttk::treeview item or column heading, ttk::notebook tab, or text widget tag\&.
+This package extends the functionality of package \fBtooltip\fR\&.
+It provides a dynamic stack of tip texts per widget\&. This enables dynamic transient changes to the
+tips, for example to temporarily replace a standard explanation of a field with an error message\&.
 .SH COMMANDS
 .TP
-\fB::tooltip::tooltip\fR \fIcommand\fR ?\fIoptions\fR?
-Manage the tooltip package using the following subcommands\&.
-.RS
-.TP
-\fBclear\fR ?\fIpattern\fR?
-Prevents the specified widgets from showing tooltips\&. \fIpattern\fR
-is a glob pattern and defaults to matching all widgets\&.
-.TP
-\fBconfigure\fR ?\fIoption\fR ?\fIvalue option value\fR \&.\&.\&.??
-Queries or modifies the configuration options of the tooltip\&. The supported
-options are \fB-backgroud\fR, \fB-foreground\fR and \fB-font\fR\&. If no
-\fIoption\fR is specified, returns a dictionary of the option values\&. If one
-\fIoption\fR is specified with no value, returns the value of that option\&.
-Otherwise, sets the given \fIoption\fRs to the corresponding \fIvalue\fRs\&.
-.TP
-\fBdelay\fR ?\fImillisecs\fR?
-Query or set the hover delay\&. This is the interval that the pointer must remain
-over the widget before the tooltip is displayed\&. The delay is specified in
-milliseconds and must be greater than or equal to 50 ms\&.
-With no argument the current delay is returned\&.
-.TP
-\fBfade\fR ?\fIboolean\fR?
-Enable or disable fading of the tooltip\&.  The fading is enabled by default on
-Win32 and Aqua\&.  The tooltip will fade away on Leave events instead
-disappearing\&.
-.TP
-\fBdisable\fR
-.TP
-\fBoff\fR
-Disable all tooltips
-.TP
-\fBenable\fR
-.TP
-\fBon\fR
-Enables tooltips for defined widgets\&.
-.RE
+\fB::tipstack::push\fR \fIwidget\fR ?\fB-index\fR \fIindex\fR? \fItext\fR
+Push a new \fItext\fR to the tooltip for the \fIwidget\fR\&.
+In case of a list widget use
+.CS
+
+-index \&.\&.\&.
+.CE
+.IP to address the particular entry to change the
+tooltip for\&.
 .sp
+The result of the command is the empty string
 .TP
-\fB::tooltip::tooltip\fR \fIpathName\fR ?\fIoption value\fR? \fImessage\fR
-This command arranges for widget \fIpathName\fR to display a tooltip with
-message \fImessage\fR\&.  The tooltip uses a late-binding msgcat call on the
-passed in message to allow for on-the-fly language changes in an application\&.
-If the widget specified is a menu, canvas, listbox, ttk::treeview,
-ttk::notebook or text widget then additional options are used to tie the
-tooltip to specific menu, canvas or listbox items, ttk::treeview items or
-column headings, ttk::notebook tabs, or text widget tags\&.
-.RS
-.TP
-\fB-heading\fR \fIcolumnId\fR
-This option is used to set a tooltip for a ttk::treeview column heading\&.
-The column does not need to already exist\&. You should not use the same
-identifiers for columns and items in a widget for which you are using tooltips
-as their tooltips will be mixed\&. The widget must be a ttk::treeview widget\&.
-.TP
-\fB-index\fR \fIindex\fR
-This option is used to set a tooltip on a menu item\&. The index may be
-either the entry index or the entry label\&. The widget must be a menu
-widget but the entries do not have to exist when the tooltip is set\&.
-.TP
-\fB-items\fR \fIitems\fR
-This option is used to set a tooltip for canvas, listbox or ttk::treview items\&.
-For the canvas widget, the item must already be present in the canvas and will
-be found with a \fBfind withtag\fR lookup\&.
-For listbox and ttk::treview widgets the item(s) may be created later but the
-programmer is responsible for managing the link between the listbox or
-ttk::treview item index and the corresponding tooltip\&. If the listbox or
-ttk::treview items are re-ordered, the tooltips will need amending\&.
+\fB::tipstack::pop\fR \fIwidget\fR ?\fB-index\fR \fIindex\fR?
+Pop the current tooltip for the \fIwidget\fR from the stack and restore the previous text\&.
+This is a no-operation if this would leave an empty stack behind\&.
+In other words, the baseline tooltip text cannot be popped of\&.
+In case of a list widget use
+.CS
+
+-index \&.\&.\&.
+.CE
+.IP to address the particular entry to change the
+tooltip for\&.
 .sp
-If the widget is not a canvas, listbox or ttk::treview then an error is raised\&.
+The result of the command is the empty string
 .TP
-\fB-tab\fR \fItabId\fR
-The \fB-tab\fR option can be used to set a tooltip for a ttk::notebook tab\&.
-The tab should already be present when this command is called, or an error will
-be returned\&. The widget must be a ttk::notebook widget\&.
+\fB::tipstack::clear\fR \fIwidget\fR ?\fB-index\fR \fIindex\fR?
+Clear the stack for the \fIwidget\fR and restore back to the baseline\&.
+In case of a list widget use
+.CS
+
+-index \&.\&.\&.
+.CE
+.IP to address the particular entry to change the
+tooltip for\&.
+.sp
+The result of the command is the empty string
 .TP
-\fB-tag\fR \fIname\fR
-The \fB-tag\fR option can be used to set a tooltip for a text widget tag\&.
-The tag should already be present when this command is called, or an error will
-be returned\&. The widget must be a text widget\&.
+\fB::tipstack::def\fR \fIwidget\fR \fItext\fR \&.\&.\&.
+Perform multiple pushes for a number of independent \fIwidget\fRs in a single call\&.
+This command cannot be used for list widgets, as it does not allow the passing of the necessary
+index information\&.
+Use with menus is not possible either\&.
+.sp
+The result of the command is the empty string
 .TP
-\fB--\fR
-The \fB--\fR option marks the end of options\&.
-The argument following this one will be treated as \fImessage\fR even if it
-starts with a -\&.
-.RE
+\fB::tipstack::defsub\fR \fIbase\fR \fIwidget\fR \fItext\fR \&.\&.\&.
+This command is a variant of \fB::tipstack::def\fR where all the widgets to push to are subwidgets
+of the \fIbase\fR\&. This is good for mega-widgets\&.
+.sp
+Note that either each \fIwidget\fR has to be specified with a proper leading dot (\fB\&.\fR),
+or the \fIbase\fR has to be specigfied with a trailing dot\&.
+.sp
+The result of the command is the empty string
+.TP
+\fB::tipstack::clearsub\fR \fIbase\fR
+This command is a variant of \fB::tipstack::clear\fR which clears all child widgets of
+the \fIbase\fR text was pushed to\&.
+Use with menus is not possible\&.
+.sp
+The result of the command is the empty string
 .PP
-.SH EXAMPLE
-.CS
-
-
-# Demonstrate widget tooltip
-package require tooltip
-pack [label \&.l -text "label"]
-tooltip::tooltip \&.l "This is a label widget"
-
-.CE
-.CS
-
-
-# Demonstrate menu tooltip
-package require tooltip
-\&. configure -menu [menu \&.menu]
-\&.menu add cascade -label Test -menu [menu \&.menu\&.test -tearoff 0]
-\&.menu\&.test add command -label Tooltip
-tooltip::tooltip \&.menu\&.test -index 0 "This is a menu tooltip"
-
-.CE
-.CS
-
-
-# Demonstrate canvas item tooltip
-package require tooltip
-pack [canvas \&.c]
-set item [\&.c create rectangle 10 10 80 80 -fill red]
-tooltip::tooltip \&.c -item $item "Canvas item tooltip"
-
-.CE
-.CS
-
-
-# Demonstrate listbox item tooltip
-package require tooltip
-pack [listbox \&.lb]
-\&.lb insert 0 "item one"
-tooltip::tooltip \&.lb -item 0 "Listbox item tooltip"
-
-.CE
-.CS
-
-
-# Demonstrate ttk::notebook tab tooltip
-package require tooltip
-pack [ttk::notebook \&.nb]
-\&.nb add [frame \&.nb\&.f1 -height 50] -text "First tab"
-\&.nb add [frame \&.nb\&.f2 -height 50] -text "Second tab"
-tooltip::tooltip \&.nb -tab 0 "Tooltip for the 1st notebook tab"
-tooltip::tooltip \&.nb -tab 1 "Tooltip for the 2nd notebook tab"
-
-.CE
-.CS
-
-
-# Demonstrate text tag tooltip
-package require tooltip
-pack [text \&.txt]
-\&.txt tag configure TIP-1 -underline 1
-tooltip::tooltip \&.txt -tag TIP-1 "tooltip one text"
-\&.txt insert end "An example of a " {} "tooltip" TIP-1 " tag\&.\\n" {}
-
-.CE
 .SH "BUGS, IDEAS, FEEDBACK"
 This document, and the package it describes, will undoubtedly contain
 bugs and other problems\&.
@@ -450,9 +372,9 @@ Please report such in the category \fItooltip\fR of the
 Please also report any ideas for enhancements you may have for either
 package and/or documentation\&.
 .SH KEYWORDS
-balloon, help, hover, tooltip
+balloon, help, hover, tipstack
 .SH COPYRIGHT
 .nf
-Copyright (c) 1996-2008, Jeffrey Hobbs
+Copyright (c) 2003 ActiveState Corp
 
 .fi
