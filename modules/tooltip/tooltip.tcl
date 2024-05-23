@@ -497,6 +497,8 @@ proc ::tooltip::show {w msg {i {}}} {
     }
     # avoid the blink issue with 1 to <1 alpha on Windows, watch half-fading
     catch {wm attributes $b -alpha 0.99}
+    # put toplevel placed outside the screen back into it, just a little below the top borser.
+    if {$y < 0} { set y 10 }
     wm geometry $b +$x+$y
     wm deiconify $b
     raise $b
@@ -581,7 +583,9 @@ proc ::tooltip::listitemTip {w x y} {
 	set item [$w index @$x,$y]
     } else {
 	switch [$w identify region $x $y] {
-	    tree - cell { set item [$w identify item $x $y] }
+	    tree - cell {
+		set item [$w identify item $x $y]
+	    }
 	    heading - separator {
 		set item [$w column [$w identify column $x $y] -id]
 	    }
@@ -594,8 +598,7 @@ proc ::tooltip::listitemTip {w x y} {
     }
 }
 
-# Handle the lack of <Enter>/<Leave> between listbox/treeview items using
-# <Motion>
+# Handle the lack of <Enter>/<Leave> between listbox/treeview items using <Motion>
 proc ::tooltip::listitemMotion {w x y} {
     variable tooltip
     variable G
@@ -703,15 +706,37 @@ proc ::tooltip::tagTip {w tag} {
         if {[info exists G(AFTERID)]} { after cancel $G(AFTERID) }
         set G(AFTERID) [after $G(DELAY) \
             [namespace code [list show $w $tooltip($w,t_$tag) cursor]]]
+        # clear the 'Enter' binding. it is restored by `conditionally-hide` below.
+        $w tag bind $tag <Enter> ""
     }
 }
 
 proc ::tooltip::enableTag {w tag} {
+    variable G
     if {[string match *tagTip* [$w tag bind $tag]]} { return }
     $w tag bind $tag <Enter> +[namespace code [list tagTip $w $tag]]
-    $w tag bind $tag <Leave> +[namespace code [list hide 1]] ; # fade ok
+    $w tag bind $tag <Leave> +[namespace code [list conditionally-hide $w $tag]] ; # fade ok
     $w tag bind $tag <Any-KeyPress> +[namespace code hide]
     $w tag bind $tag <Any-Button> +[namespace code hide]
+
+    # save the 'Enter' binding.
+    # this is cleared by `tagTip`, see above, and restored by `conditionally-hide` below.
+    set G(enterBinding,$w,$tag) [$w tag bind $tag <Enter>]
+}
+
+proc ::tooltip::conditionally-hide {w tag} {
+    variable G
+    # re-enable the 'Enter' binding. it is saved by `enableTag`, and cleared by `tagTip`.
+    $w tag bind $tag <Enter> $G(enterBinding,$w,$tag)
+    
+    # have we really left ? if the cursor is _in_ the tooltip we haven't.
+    lassign [split [wm geometry $G(TOPLEVEL)] "x+"] w h xT yT
+    lassign [winfo pointerxy "."] x y
+    
+    if {($x >= $xT) && ($x <= ($xT + $w)) &&
+	($y >= $yT) && ($y <= ($yT + $h))} return
+
+    hide 1
 }
 
 package provide tooltip 1.8
