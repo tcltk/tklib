@@ -3,7 +3,7 @@
 '\" Copyright (c) 1996-2008, Jeffrey Hobbs
 '\" Copyright (c) 2024 Emmanuel Frecon
 '\"
-.TH "tooltip" n 1\&.7\&.1 tklib "Tooltip management"
+.TH "tooltip" n 1\&.8 tklib "Tooltip management"
 .\" The -*- nroff -*- definitions below are for supplemental macros used
 .\" in Tcl/Tk manual entries.
 .\"
@@ -279,11 +279,11 @@ package require \fBTcl  8\&.5\fR
 .sp
 package require \fBmsgcat  1\&.3\fR
 .sp
-package require \fBtooltip  ?1\&.7\&.1?\fR
+package require \fBtooltip  ?1\&.8?\fR
 .sp
 \fB::tooltip::tooltip\fR \fIcommand\fR ?\fIoptions\fR?
 .sp
-\fB::tooltip::tooltip\fR \fIpathName\fR ?\fIoption value\fR? \fImessage\fR
+\fB::tooltip::tooltip\fR \fIpathName\fR ?\fIoption value\fR\&.\&.\&.? ?\fB--\fR? \fImessage\fR
 .sp
 .BE
 .SH DESCRIPTION
@@ -331,12 +331,12 @@ Enables tooltips for defined widgets\&.
 .RE
 .sp
 .TP
-\fB::tooltip::tooltip\fR \fIpathName\fR ?\fIoption value\fR? \fImessage\fR
-This command arranges for widget \fIpathName\fR to display a tooltip with
-message \fImessage\fR\&.  The tooltip uses a late-binding msgcat call on the
-passed in message to allow for on-the-fly language changes in an application\&.
-If the widget specified is a menu, canvas, listbox, ttk::treeview,
-ttk::notebook or text widget then additional options are used to tie the
+\fB::tooltip::tooltip\fR \fIpathName\fR ?\fIoption value\fR\&.\&.\&.? ?\fB--\fR? \fImessage\fR
+This command arranges for widget \fIpathName\fR to display a tooltip with a
+\fImessage\fR\&. The tooltip uses late-binding \fBmsgcat\fR calls to allow
+for on-the-fly language changes in an application\&.
+If the widget specified is a \fBmenu\fR, \fBcanvas\fR, \fBlistbox\fR, \fBttk::treeview\fR,
+\fBttk::notebook\fR or \fBtext\fR widget then additional options are used to tie the
 tooltip to specific menu, canvas or listbox items, ttk::treeview items or
 column headings, ttk::notebook tabs, or text widget tags\&.
 .RS
@@ -347,10 +347,18 @@ The column does not need to already exist\&. You should not use the same
 identifiers for columns and items in a widget for which you are using tooltips
 as their tooltips will be mixed\&. The widget must be a ttk::treeview widget\&.
 .TP
+\fB-image\fR \fIimage\fR
+The specified (photo) image will be displayed to the left of the primary
+tooltip \fImessage\fR\&.
+.TP
 \fB-index\fR \fIindex\fR
 This option is used to set a tooltip on a menu item\&. The index may be
 either the entry index or the entry label\&. The widget must be a menu
 widget but the entries do not have to exist when the tooltip is set\&.
+.TP
+\fB-info\fR \fIinfo\fR
+The specified \fIinfo\fR text will be displayed as additional information
+below the primary tooltip \fImessage\fR\&.
 .TP
 \fB-items\fR \fIitems\fR
 This option is used to set a tooltip for canvas, listbox or ttk::treview items\&.
@@ -376,7 +384,7 @@ be returned\&. The widget must be a text widget\&.
 \fB--\fR
 The \fB--\fR option marks the end of options\&.
 The argument following this one will be treated as \fImessage\fR even if it
-starts with a -\&.
+starts with a \fB-\fR\&.
 .RE
 .PP
 .SH EXAMPLE
