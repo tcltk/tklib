@@ -446,7 +446,6 @@ proc ::tooltip::show {w msg {i {}}} {
 	$b.f.info configure -text [::msgcat::mc $inf]
 	grid $b.f.info
     }
-    $b.f.label configure -text [::msgcat::mc $msg] -justify left
     update idletasks
 
     # Bail out if the widget went way during the idletasks
