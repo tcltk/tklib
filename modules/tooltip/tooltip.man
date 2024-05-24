@@ -75,6 +75,8 @@ Enables tooltips for defined widgets.
 This command arranges for widget [arg pathName] to display a tooltip with a
 [arg message]. The tooltip uses late-binding [package msgcat] calls to allow
 for on-the-fly language changes in an application.
+The namespace where [cmd ::tooltip::tooltip] is invoked is used to resolve
+msgcat, if not overwritten by the [arg -namespace] option.
 
 If the widget specified is a [cmd menu], [cmd canvas], [cmd listbox], [cmd ttk::treeview],
 [cmd ttk::notebook] or [cmd text] widget then additional options are used to tie the

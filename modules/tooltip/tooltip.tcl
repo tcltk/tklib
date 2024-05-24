@@ -194,6 +194,7 @@ proc ::tooltip::register {w args} {
     set key [lindex $args 0]
     set img {}
     set inf {}
+    set nscaller {}
     while {[string match -* $key]} {
 	switch -- $key {
 	    -- {
@@ -253,14 +254,17 @@ proc ::tooltip::register {w args} {
                 }
             }
 	    -image {
-		set args [lassign $args img]
+		set args [lassign $args _ img]
 	    }
 	    -info {
-		set args [lassign $args inf]
+		set args [lassign $args _ inf]
+	    }
+	    -namespace {
+		set args [lassign $args _ nscaller]
 	    }
 	    default {
 		return -code error "unknown option \"$key\":\
-			should be -heading, -image, -index, -info, -item(s), -tab, -tag or --"
+			should be -heading, -image, -index, -info, -item(s), -namespace, -tab, -tag or --"
 	    }
 	}
 	set key [lindex $args 0]
@@ -276,7 +280,10 @@ proc ::tooltip::register {w args} {
 	if {![winfo exists $w]} {
 	    return -code error "bad window path name \"$w\""
 	}
-	set details [list $key $img $inf]
+	if {$nscaller eq ""} {
+	    set nscaller [uplevel 2 {namespace current}]
+	}
+	set details [list $key $img $inf $nscaller]
 	if {[info exists columnId]} {
 	    set tooltip($w,$columnId) $details
 	    enableListbox $w $columnId
@@ -438,12 +445,15 @@ proc ::tooltip::show {w msg {i {}}} {
     # Use late-binding msgcat (lazy translation) to support programs
     # that allow on-the-fly l10n changes
 
-    lassign $msg txt img inf
-    $b.f.label configure -text [::msgcat::mc $txt] -image $img
+    lassign $msg txt img inf nscaller
+    $b.f.label configure\
+	    -text [namespace eval $nscaller [list ::msgcat::mc $txt]]\
+	    -image $img
     if {$inf eq {}} {
 	grid remove $b.f.info
     } else {
-	$b.f.info configure -text [::msgcat::mc $inf]
+	$b.f.info configure\
+		-text [namespace eval $nscaller [list ::msgcat::mc $inf]]
 	grid $b.f.info
     }
     update idletasks
