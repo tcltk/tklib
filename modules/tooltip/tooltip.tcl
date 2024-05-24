@@ -195,6 +195,8 @@ proc ::tooltip::register {w args} {
     set img {}
     set inf {}
     set nscaller {}
+    set msgargs {}
+    set infoargs {}
     while {[string match -* $key]} {
 	switch -- $key {
 	    -- {
@@ -260,18 +262,29 @@ proc ::tooltip::register {w args} {
 		set args [lassign $args _ inf]
 	    }
 	    -namespace {
+		# Explicit namespace for the msgcat call
 		set args [lassign $args _ nscaller]
+	    }
+	    -msgargs {
+		# Arguments for the msgcat call for the main message
+		set args [lassign $args _ msgargs]
+	    }
+	    -infoargs {
+		# Arguments for the msgcat call for the info message
+		set args [lassign $args _ infoargs]
 	    }
 	    default {
 		return -code error "unknown option \"$key\":\
-			should be -heading, -image, -index, -info, -item(s), -namespace, -tab, -tag or --"
+			should be -heading, -image, -index, -info, infoargs,\
+			-item(s), -msgargs, -namespace, -tab, -tag or --"
 	    }
 	}
 	set key [lindex $args 0]
     }
     if {[llength $args] != 1} {
 	return -code error "wrong # args: should be \"tooltip widget\
-		?-heading columnId? ?-image image? ?-index index? ?-info info? ?-item(s) items?\
+		?-heading columnId? ?-image image? ?-index index? ?-info info?\
+		?-infoargs args? ?-item(s) items? ?-msgargs args? ?-namespace ns?\
 		?-tab tabId? ?-tag tag? ?--? message\""
     }
     if {$key eq ""} {
@@ -283,7 +296,7 @@ proc ::tooltip::register {w args} {
 	if {$nscaller eq ""} {
 	    set nscaller [uplevel 2 {namespace current}]
 	}
-	set details [list $key $img $inf $nscaller]
+	set details [list $key $img $inf $nscaller $msgargs $infoargs]
 	if {[info exists columnId]} {
 	    set tooltip($w,$columnId) $details
 	    enableListbox $w $columnId
@@ -445,15 +458,15 @@ proc ::tooltip::show {w msg {i {}}} {
     # Use late-binding msgcat (lazy translation) to support programs
     # that allow on-the-fly l10n changes
 
-    lassign $msg txt img inf nscaller
+    lassign $msg txt img inf nscaller msgargs infoargs
     $b.f.label configure\
-	    -text [namespace eval $nscaller [list ::msgcat::mc $txt]]\
+	    -text [namespace eval $nscaller [list ::msgcat::mc $txt {*}$msgargs]]\
 	    -image $img
     if {$inf eq {}} {
 	grid remove $b.f.info
     } else {
-	$b.f.info configure\
-		-text [namespace eval $nscaller [list ::msgcat::mc $inf]]
+	$b.f.info configure -text [namespace eval $nscaller\
+		[list ::msgcat::mc $inf {*}$infoargs]]
 	grid $b.f.info
     }
     update idletasks
