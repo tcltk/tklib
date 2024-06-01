@@ -12,7 +12,7 @@
 #	set icos [::ico::icons $file]
 #	set img  [::ico::getIcon $file [lindex $icos 1] -format image -res 32]
 
-package require Tcl 8.4
+package require Tcl 8.4-
 
 # Instantiate vars we need for this package
 namespace eval ::ico {
@@ -81,7 +81,7 @@ proc ::ico::iconMembers {file name args} {
     parseOpts type $args
     if {![file exists $file]} {
         return -code error "couldn't open \"$file\": no such file or directory"
-    } 
+    }
     gettype type $file
     if {![llength [info commands getIconMembers$type]]} {
 	return -code error "unsupported file format $type"
@@ -215,7 +215,7 @@ proc ::ico::getIconByName {file name args} {
 #
 # ARGS:
 #	file	File to get icon for.
-#	
+#
 #	optional arguments and return values are the same as getIcon
 #
 proc ::ico::getFileIcon {file args} {
@@ -331,7 +331,7 @@ proc ::ico::copyIcon {file1 name1 file2 name2 args} {
     parseOpts {fromtype totype} $args
     if {![file exists $file1]} {
         return -code error "couldn't open \"$file1\": no such file or directory"
-    } 
+    }
     if {![file exists $file2]} {
         return -code error "couldn't open \"$file2\": no such file or directory"
     }
@@ -426,7 +426,7 @@ proc ::ico::EXEtoICO {exeFile {icoDir {}}} {
 
     if {![file exists $exeFile]} {
         return -code error "couldn't open \"$exeFile\": no such file or directory"
-    } 
+    }
 
     set file [file normalize $exeFile]
     FindResources $file
@@ -554,13 +554,13 @@ proc ::ico::createImage {colors {name {}}} {
     if {0} {
 	# if image supported "" colors as transparent pixels,
 	# we could use this much faster op
-	$img put -to 0 0 $colors
+	$img put $colors -to 0 0
     } else {
 	for {set x 0} {$x < $w} {incr x} {
 	    for {set y 0} {$y < $h} {incr y} {
                 set clr [lindex $colors $y $x]
                 if {$clr ne ""} {
-                    $img put -to $x $y $clr
+                    $img put $clr -to $x $y
                 }
             }
         }
@@ -1197,7 +1197,7 @@ proc ::ico::writeIconEXE {file name w h bpp palette xor and} {
     if {"$w $h $bpp" != $RES($file,icon,$name,data)} {
 	return -code error "icon format differs from original"
     }
-    
+
     set fh [open $file r+]
     fconfigure $fh -eofchar {} -encoding binary -translation lf
     seek $fh [expr {$RES($file,icon,$name,offset) + 40}] start
@@ -1464,4 +1464,4 @@ interp alias {} ::ico::getIconMembersICL {} ::ico::getIconMembersEXE
 interp alias {} ::ico::getRawIconDataICL {} ::ico::getRawIconDataEXE
 interp alias {} ::ico::writeIconICL      {} ::ico::writeIconEXE
 
-package provide ico 1.1
+package provide ico 1.1.1

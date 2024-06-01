@@ -1,13 +1,14 @@
 #==============================================================================
 # Main Mentry package module.
 #
-# Copyright (c) 1999-2014  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 1999-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require -exact mentry::common 3.7
+package require Tk 8.4-
+package require -exact mentry::common 4.2
 
-package provide Mentry $::mentry::version
 package provide mentry $::mentry::version
+package provide Mentry $::mentry::version
 
 ::mentry::useTile 0
 ::mentry::createBindings

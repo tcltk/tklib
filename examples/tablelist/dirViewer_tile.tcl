@@ -1,13 +1,18 @@
-#!/usr/bin/env wish
+#! /usr/bin/env tclsh
 
 #==============================================================================
-# Demonstrates how to use a tablelist widget for displaying the contents of a
-# directory.
+# Demonstrates how to use a tablelist widget for displaying the content of a
+# directory.  Uses images based on the following icons:
 #
-# Copyright (c) 2010-2015  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+#   https://icons8.com/icon/JXYalxb9XWWd/folder
+#   https://icons8.com/icon/RdCT0UIsKOIp/opened-folder
+#   https://icons8.com/icon/mEF_vyjYlnE3/file
+#
+# Copyright (c) 2010-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 5.13
+package require Tk
+package require tablelist_tile
 
 #
 # Add some entries to the Tk option database
@@ -16,23 +21,22 @@ set dir [file dirname [info script]]
 source [file join $dir option_tile.tcl]
 
 #
-# Create three images
+# Create three images corresponding to the display's DPI scaling level
 #
-image create photo clsdFolderImg -file [file join $dir clsdFolder.gif]
-image create photo openFolderImg -file [file join $dir openFolder.gif]
-image create photo fileImg       -file [file join $dir file.gif]
-
-#
-# Work around the improper appearance of the tile scrollbars in the aqua theme
-#
-if {[tablelist::getCurrentTheme] eq "aqua"} {
-    interp alias {} ttk::scrollbar {} ::scrollbar
+if {$tk_version >= 8.7 || [catch {package require tksvg}] == 0} {
+    set pct ""; set sfx "svg"; set fmt $tablelist::svgfmt
+} else {
+    set pct $tablelist::scalingpct; set sfx "gif"; set fmt "gif"
+}
+foreach name {clsdFolder openFolder file} {
+    set imgFile $name$pct.$sfx		;# e.g., "file.svg" or "file150.gif"
+    image create photo ${name}Img -file [file join $dir $imgFile] -format $fmt
 }
 
 #------------------------------------------------------------------------------
 # displayContents
 #
-# Displays the contents of the directory dir in a tablelist widget.
+# Displays the content of the directory dir in a tablelist widget.
 #------------------------------------------------------------------------------
 proc displayContents dir {
     #
@@ -61,6 +65,21 @@ proc displayContents dir {
     ttk::scrollbar $hsb -orient horizontal -command [list $tbl xview]
 
     #
+    # On X11 configure the tablelist according
+    # to the display's DPI scaling level
+    #
+    global isAwTheme
+    if {[tk windowingsystem] eq "x11" && !$isAwTheme} {
+	global currentTheme pct				;# ""|100|125|...|200
+	if {$currentTheme eq "black" || $currentTheme eq "breeze-dark" ||
+	    $currentTheme eq "sun-valley-dark"} {
+	    $tbl configure -treestyle white$pct
+	} else {
+	    $tbl configure -treestyle bicolor$pct
+	}
+    }
+
+    #
     # Create a pop-up menu with one command entry; bind the script
     # associated with its entry to the <Double-1> event, too
     #
@@ -68,6 +87,10 @@ proc displayContents dir {
     menu $menu -tearoff no
     $menu add command -label "Display Contents" \
 		      -command [list putContentsOfSelFolder $tbl]
+    if {$isAwTheme} {
+	global currentTheme
+	ttk::theme::${currentTheme}::setMenuColors $menu
+    }
     set bodyTag [$tbl bodytag]
     bind $bodyTag <<Button3>>  [bind TablelistBody <Button-1>]
     bind $bodyTag <<Button3>> +[bind TablelistBody <ButtonRelease-1>]
@@ -90,21 +113,21 @@ proc displayContents dir {
     # Manage the widgets
     #
     grid $tbl -row 0 -rowspan 2 -column 0 -sticky news
-    if {[tablelist::getCurrentTheme] eq "aqua"} {
+    if {[tk windowingsystem] eq "win32"} {
+	grid $vsb -row 0 -rowspan 2 -column 1 -sticky ns
+    } else {
 	grid [$tbl cornerpath] -row 0 -column 1 -sticky ew
 	grid $vsb	       -row 1 -column 1 -sticky ns
-    } else {
-	grid $vsb -row 0 -rowspan 2 -column 1 -sticky ns
     }
     grid $hsb -row 2 -column 0 -sticky ew
     grid rowconfigure    $tf 1 -weight 1
     grid columnconfigure $tf 0 -weight 1
-    pack $b1 $b2 $b3 -side left -expand yes -pady 10
+    pack $b1 $b2 $b3 -side left -expand yes -pady 7p
     pack $bf -side bottom -fill x
     pack $tf -side top -expand yes -fill both
 
     #
-    # Populate the tablelist with the contents of the given directory
+    # Populate the tablelist with the content of the given directory
     #
     $tbl sortbycolumn 0
     putContents $dir $tbl root
@@ -113,7 +136,7 @@ proc displayContents dir {
 #------------------------------------------------------------------------------
 # putContents
 #
-# Outputs the contents of the directory dir into the tablelist widget tbl, as
+# Outputs the content of the directory dir into the tablelist widget tbl, as
 # child items of the one identified by nodeIdx.
 #------------------------------------------------------------------------------
 proc putContents {dir tbl nodeIdx} {
@@ -121,15 +144,14 @@ proc putContents {dir tbl nodeIdx} {
     # The following check is necessary because this procedure
     # is also invoked by the "Refresh" and "Parent" buttons
     #
-    if {[string compare $dir ""] != 0 &&
-	(![file isdirectory $dir] || ![file readable $dir])} {
+    if {$dir ne "" && (![file isdirectory $dir] || ![file readable $dir])} {
 	bell
-	if {[string compare $nodeIdx "root"] == 0} {
+	if {$nodeIdx eq "root"} {
 	    set choice [tk_messageBox -title "Error" -icon warning -message \
 			"Cannot read directory \"[file nativename $dir]\"\
 			-- replacing it with nearest existent ancestor" \
 			-type okcancel -default ok]
-	    if {[string compare $choice "ok"] == 0} {
+	    if {$choice eq "ok"} {
 		while {![file isdirectory $dir] || ![file readable $dir]} {
 		    set dir [file dirname $dir]
 		}
@@ -141,8 +163,8 @@ proc putContents {dir tbl nodeIdx} {
 	}
     }
 
-    if {[string compare $nodeIdx "root"] == 0} {
-	if {[string compare $dir ""] == 0} {
+    if {$nodeIdx eq "root"} {
+	if {$dir eq ""} {
 	    if {[llength [file volumes]] == 1} {
 		wm title . "Contents of the File System"
 	    } else {
@@ -165,7 +187,7 @@ proc putContents {dir tbl nodeIdx} {
     # sorting purposes (it will be removed by formatString).
     #
     set itemList {}
-    if {[string compare $dir ""] == 0} {
+    if {$dir eq ""} {
 	foreach volume [file volumes] {
 	    lappend itemList [list D[file nativename $volume] -1 D $volume]
 	}
@@ -197,7 +219,7 @@ proc putContents {dir tbl nodeIdx} {
     #
     foreach item $itemList {
 	set name [lindex $item end]
-	if {[string compare $name ""] == 0} {			;# file
+	if {$name eq ""} {					;# file
 	    $tbl cellconfigure $row,0 -image fileImg
 	} else {						;# directory
 	    $tbl cellconfigure $row,0 -image clsdFolderImg
@@ -215,18 +237,18 @@ proc putContents {dir tbl nodeIdx} {
 	incr row
     }
 
-    if {[string compare $nodeIdx "root"] == 0} {
+    if {$nodeIdx eq "root"} {
 	#
 	# Configure the "Refresh" and "Parent" buttons
 	#
 	.bf.b1 configure -command [list refreshView $dir $tbl]
 	set b2 .bf.b2
-	if {[string compare $dir ""] == 0} {
+	if {$dir eq ""} {
 	    $b2 configure -state disabled
 	} else {
 	    $b2 configure -state normal
 	    set p [file dirname $dir]
-	    if {[string compare $p $dir] == 0} {
+	    if {$p eq $dir} {
 		$b2 configure -command [list putContents "" $tbl root]
 	    } else {
 		$b2 configure -command [list putContents $p $tbl root]
@@ -268,7 +290,7 @@ proc formatSize val {
 #------------------------------------------------------------------------------
 # expandCmd
 #
-# Outputs the contents of the directory whose leaf name is displayed in the
+# Outputs the content of the directory whose leaf name is displayed in the
 # first cell of the specified row of the tablelist widget tbl, as child items
 # of the one identified by row, and updates the image displayed in that cell.
 #------------------------------------------------------------------------------
@@ -290,13 +312,15 @@ proc expandCmd {tbl row} {
 # tablelist widget tbl.
 #------------------------------------------------------------------------------
 proc collapseCmd {tbl row} {
-    $tbl cellconfigure $row,0 -image clsdFolderImg
+    if {[$tbl hasrowattrib $row pathName]} {		;# directory item
+	$tbl cellconfigure $row,0 -image clsdFolderImg
+    }
 }
 
 #------------------------------------------------------------------------------
 # putContentsOfSelFolder
 #
-# Outputs the contents of the selected folder into the tablelist widget tbl.
+# Outputs the content of the selected folder into the tablelist widget tbl.
 #------------------------------------------------------------------------------
 proc putContentsOfSelFolder tbl {
     set row [$tbl curselection]
@@ -356,7 +380,7 @@ proc postPopupMenu {rootX rootY} {
 #------------------------------------------------------------------------------
 # refreshView
 #
-# Redisplays the contents of the directory dir in the tablelist widget tbl and
+# Redisplays the content of the directory dir in the tablelist widget tbl and
 # restores the expanded states of the folders as well as the vertical view.
 #------------------------------------------------------------------------------
 proc refreshView {dir tbl} {
@@ -371,7 +395,7 @@ proc refreshView {dir tbl} {
     }
 
     #
-    # Redisplay the directory's (possibly changed) contents and restore
+    # Redisplay the directory's (possibly changed) content and restore
     # the expanded states of the folders, along with the vertical view
     #
     putContents $dir $tbl root
@@ -391,8 +415,7 @@ proc restoreExpandedStates {tbl nodeIdx expandedFoldersName} {
 
     foreach key [$tbl childkeys $nodeIdx] {
 	set pathName [$tbl rowattrib $key pathName]
-	if {[string compare $pathName ""] != 0 &&
-	    [info exists expandedFolders($pathName)]} {
+	if {$pathName ne "" && [info exists expandedFolders($pathName)]} {
 	    $tbl expand $key -partly
 	    restoreExpandedStates $tbl $key expandedFolders
 	}

@@ -1,3 +1,14 @@
+2021-01-10  Csaba Nemethi  <csaba.nemethi@t-online.de>
+
+	* support/installation/actions.tcl: Proc _tab now passes 1 as 3rd
+	  argument to xcopy.
+
+2020-02-09  0.7  <andreas_kupries@users.sourceforge.net>
+
+	*
+	* Released and tagged Tklib 0.7 ========================
+	* 
+
 2013-10-30  Andreas Kupries (AS Senior Dev)  <andreask@activestate.com>
 
 	* examples/canvas/crosshairs_for_axes.tcl: [Ticket [19721eff15]].

@@ -75,7 +75,7 @@ proc ::Plotchart::Ceil {value step} {
 #    ymin        Minimum y coordinate
 #    ymax        Maximum y coordinate
 #    ystep       Step size
-#    args        Options (currently: -ylabels list)
+#    args        Options (currently: -ylabels list and -altylabels list)
 # Result:
 #    None
 # Side effects:
@@ -146,6 +146,15 @@ proc ::Plotchart::DrawYaxis { w ymin ymax ydelt args} {
                     }
 
                     set scaling($w,ydelt) $ys
+                }
+                -altylabels {
+                    set numeric 0
+                    foreach {yval ylabel} $val {
+                        lappend yts     $ylabel
+                        lappend ybackup $yval
+                    }
+
+                    set scaling($w,ydelt) $ylabel
                 }
                 default {
                     error "Argument $arg not recognized"
@@ -634,7 +643,7 @@ proc ::Plotchart::DrawLogXaxis { w xmin xmax xdelt args } {
         set format $scaling($w,-format,x)
     }
 
-    set scaling($w,xaxis) {}
+    set scaling($w,xaxis)       {}
 
     set x       [expr {pow(10.0,floor(log10($xmin)))}]
     set xlogmax [expr {pow(10.0,ceil(log10($xmax)))+0.1}]
@@ -663,6 +672,7 @@ proc ::Plotchart::DrawLogXaxis { w xmin xmax xdelt args } {
                 if { $format != "" } {
                     set xlabel [FormatNumber $format $xt]
                 }
+
                 $w create line $xcrd $ycrd2 $xcrd $ycrd -tag [list xaxis $w] -fill $linecolor
                 if { $factor == 1.0 && $config($w,bottomaxis,shownumbers) } {
                     $w create text $xcrd $ycrd3 -text $xlabel -tag [list xaxis $w] -anchor n \
@@ -673,7 +683,7 @@ proc ::Plotchart::DrawLogXaxis { w xmin xmax xdelt args } {
         set x [expr {10.0*$x}]
     }
 
-    set scaling($w,xdelt) $xdelt
+    set scaling($w,xdelt)       $xdelt
 }
 
 # DrawTernaryAxes --
@@ -952,7 +962,7 @@ proc ::Plotchart::DrawVtext { w text } {
     variable scaling
     variable config
 
-    if { [package vsatisfies [package present Tk] 8.6] } {
+    if { [package vsatisfies [package present Tk] 8.6-] } {
 
         set yt [expr {($scaling($w,pymin) + $scaling($w,pymax)) / 2}]
 
@@ -997,7 +1007,7 @@ proc ::Plotchart::DrawVsubtext { w text } {
     variable scaling
     variable config
 
-    if { [package vsatisfies [package present Tk] 8.6] } {
+    if { [package vsatisfies [package present Tk] 8.6-] } {
         set yt [expr {($scaling($w,pymin) + $scaling($w,pymax)) / 2}]
 
         if { [string match "r*" $w] } {
@@ -1078,19 +1088,20 @@ proc ::Plotchart::DrawPolarAxes { w rad_max rad_step } {
     #
     set angle 0.0
 
-    foreach {xcentre ycentre} [polarToPixel $w 0.0 0.0] {break}
+    foreach {xcentre ycentre} [PolarToPixelPriv $w 0.0 0.0] {break}
 
     while { $angle < 360.0 } {
-        foreach {xcrd ycrd} [polarToPixel $w $rad_max $angle] {break}
-        foreach {xtxt ytxt} [polarToPixel $w [expr {1.05*$rad_max}] $angle] {break}
+        foreach {xcrd ycrd} [PolarToPixelPriv $w $rad_max $angle] {break}
+        foreach {xtxt ytxt} [PolarToPixelPriv $w [expr {1.05*$rad_max}] $angle] {break}
         $w create line $xcentre $ycentre $xcrd $ycrd -fill $linecolor -width $thickness
         if { $xcrd > $xcentre } {
             set dir w
         } else {
             set dir e
         }
-        $w create text $xtxt $ytxt -text $angle -anchor $dir -fill $textcolor -font $textfont -tags [list polar $w]
-
+        if { $config($w,axis,shownumbers) } {
+            $w create text $xtxt $ytxt -text $angle -anchor $dir -fill $textcolor -font $textfont -tags [list polar $w]
+        }
         set angle [expr {$angle+30}]
     }
 
@@ -1100,16 +1111,18 @@ proc ::Plotchart::DrawPolarAxes { w rad_max rad_step } {
     set rad $rad_step
 
     while { $rad < $rad_max+0.5*$rad_step } {
-        foreach {xright ytxt}    [polarToPixel $w $rad    0.0] {break}
-        foreach {xleft  ycrd}    [polarToPixel $w $rad  180.0] {break}
-        foreach {xcrd   ytop}    [polarToPixel $w $rad   90.0] {break}
-        foreach {xcrd   ybottom} [polarToPixel $w $rad  270.0] {break}
+        foreach {xright ytxt}    [PolarToPixelPriv $w $rad    0.0] {break}
+        foreach {xleft  ycrd}    [PolarToPixelPriv $w $rad  180.0] {break}
+        foreach {xcrd   ytop}    [PolarToPixelPriv $w $rad   90.0] {break}
+        foreach {xcrd   ybottom} [PolarToPixelPriv $w $rad  270.0] {break}
 
         set oval [$w create oval $xleft $ytop $xright $ybottom -outline $linecolor -width $thickness -fill {} \
                      -tags [list polar $w]]
         $w lower $oval
 
-        $w create text $xright [expr {$ytxt+3}] -text $rad -anchor n -fill $textcolor -font $textfont -tags [list polar $w]
+        if { $config($w,axis,shownumbers) } {
+            $w create text $xright [expr {$ytxt+3}] -text $rad -anchor n -fill $textcolor -font $textfont -tags [list polar $w]
+        }
 
         set rad [expr {$rad+$rad_step}]
     }
@@ -1157,7 +1170,7 @@ proc ::Plotchart::DrawXlabels { w xlabels noseries arguments} {
             }
         }
     }
-    if { ! [package vsatisfies [package present Tk] 8.6] } {
+    if { ! [package vsatisfies [package present Tk] 8.6-] } {
         set angle {}
     }
 
@@ -1376,6 +1389,7 @@ proc ::Plotchart::AxisConfig { plottype w orient drawmethod option_values } {
     variable axis_option_config
 
     set clear_data 0
+    set coordsChanged 0
 
     foreach {option value} $option_values {
         set idx [lsearch $axis_options $option]
@@ -1412,6 +1426,7 @@ proc ::Plotchart::AxisConfig { plottype w orient drawmethod option_values } {
                 set scaling($w,$max)  [set $max]
                 #checker exclude warnVarRef
                 set scaling($w,$delt) [set $delt]
+                set coordsChanged 1
             }
         }
     }
@@ -1445,10 +1460,8 @@ proc ::Plotchart::AxisConfig { plottype w orient drawmethod option_values } {
     set originalSystem $scaling($w,coordSystem)
     set scaling($w,coordSystem) 0
 
-    worldCoordinates $w $xmin $ymin $xmax $ymax
-
-    console show
-    puts "$orient: $xmin $xmax $scaling($w,xdelt)"
+    worldCoordinates $w $scaling($w,xmin) $scaling($w,ymin) $scaling($w,xmax) $scaling($w,ymax)
+    set scaling($w,new) 1
 
     if { $orient == "x" } {
         if { [llength $scaling($w,xdelt)] == 1 } {
@@ -1662,6 +1675,13 @@ proc ::Plotchart::LegendConfigure { w args } {
             "-spacing" {
                 set legend($w,spacing) $value
             }
+            "-order" {
+                 if { [lsearch {normal reverse} $value] >= 0 } {
+                    set legend($w,order) $value
+                 } else {
+                     return -code error "Unknown or invalid order: $value"
+                 }
+            }
             default {
                 return -code error "Unknown or invalid option: $option (value: $value)"
             }
@@ -1684,6 +1704,9 @@ proc ::Plotchart::DrawLegend { w series text {spacing {}}} {
 
     if { [string match r* $w] } {
         set w [string range $w 1 end]
+        set series "R:$series"
+    } else {
+        set series "L:$series"
     }
 
     # Append only if new item - not in list already
@@ -1709,6 +1732,9 @@ proc ::Plotchart::RemoveFromLegend { w series } {
 
     if { [string match r* $w] } {
         set w [string range $w 1 end]
+        set series "R:$series"
+    } else {
+        set series "L:$series"
     }
 
     #
@@ -1743,29 +1769,48 @@ proc ::Plotchart::ActuallyDrawLegend { w {spacing {}}} {
     $legendw delete "legend   && $w"
     $legendw delete "legendbg && $w"
 
+    set order "normal"
+    if {[info exists legend($w,order)]} {
+        set order $legend($w,order)
+    }
+
+    set series_list $legend($w,series)
+    set text_list $legend($w,text)
+    if {$order=="reverse"} {
+        set series_list [lreverse $series_list]
+        set text_list [lreverse $text_list]
+    }
+
     set y          0
     set hasEntries 0
-    foreach series $legend($w,series) text $legend($w,text) {
+    foreach series $series_list text $text_list {
 
         set hasEntries 1
 
+        if { [string index $series 0] == "R" } {
+            set wDS r$w
+        } else {
+            set wDS $w
+        }
+        set series [string range $series 2 end]
+
         set colour "black"
-        if { [info exists data_series($w,$series,-colour)] } {
-            set colour $data_series($w,$series,-colour)
+        if { [info exists data_series($wDS,$series,-colour)] } {
+            set colour $data_series($wDS,$series,-colour)
         }
         set type "line"
-        if { [info exists data_series($w,$series,-type)] } {
-            set type $data_series($w,$series,-type)
+        if { [info exists data_series($wDS,$series,-type)] } {
+            set type $data_series($wDS,$series,-type)
         }
-        if { [info exists data_series($w,legendtype)] } {
-            set type $data_series($w,legendtype)
+        if { [info exists data_series($wDS,legendtype)] } {
+            set type $data_series($wDS,legendtype)
         }
         if {[info exists legend($w,legendtype)]} {
             set type $legend($w,legendtype)
         }
         set width 1
-        if { [info exists data_series($w,$series,-width)] } {
-            set width $data_series($w,$series,-width)
+        if { [info exists data_series($wDS,$series,-width)] } {
+            set width $data_series($wDS,$series,-width)
         }
         set font TkTextFont
         if {[info exists legend($w,font)]} {
@@ -1781,8 +1826,6 @@ proc ::Plotchart::ActuallyDrawLegend { w {spacing {}}} {
             set legend($w,spacing) $spacing
         }
 
-        # TODO: line or rectangle!
-
         if { $type != "rectangle" } {
             if { $type == "line" || $type == "both" } {
                 $legendw create line 0 $y 15 $y -fill $colour -tag [list legend legendobj $w] -width $width
@@ -1790,13 +1833,16 @@ proc ::Plotchart::ActuallyDrawLegend { w {spacing {}}} {
 
             if { $type == "symbol" || $type == "both" } {
                 set symbol "dot"
-                if { [info exists data_series($w,$series,-symbol)] } {
-                    set symbol $data_series($w,$series,-symbol)
+                if { [info exists data_series($wDS,$series,-symbol)] } {
+                    set symbol $data_series($wDS,$series,-symbol)
                 }
                 DrawSymbolPixel $legendw $series 7 $y $symbol $colour [list legend legendobj legend_$series $w]
             }
         } else {
-            $legendw create rectangle 0 [expr {$y-3}] 15 [expr {$y+3}] \
+
+            set fontheight [expr {[font metrics $font -ascent]+[font metrics $font -descent]}]
+
+            $legendw create rectangle 0 [expr {$y-$fontheight/2+2}] 15 [expr {$y+$fontheight/2-2}] \
                 -fill $colour -tag [list legend legendobj legend_$series $w]
         }
 
@@ -2052,19 +2098,19 @@ proc ::Plotchart::RescalePlot { w xscale yscale } {
 proc ::Plotchart::DrawRoseAxes { w rad_max rad_step } {
 
     #
-    # Draw the spikes
+    # Draw the spokes
     #
     set angle 0.0
 
-    foreach {xcentre ycentre} [polarToPixel $w 0.0 0.0] {break}
+    foreach {xcentre ycentre} [PolarToPixelPriv $w 0.0 0.0] {break}
 
     foreach {angle text dir} {
          90  North s
         180  West  e
         270  South n
           0  East  w } {
-        foreach {xcrd ycrd} [polarToPixel $w $rad_max $angle] {break}
-        foreach {xtxt ytxt} [polarToPixel $w [expr {1.05*$rad_max}] $angle] {break}
+        foreach {xcrd ycrd} [PolarToPixelPriv $w $rad_max $angle] {break}
+        foreach {xtxt ytxt} [PolarToPixelPriv $w [expr {1.05*$rad_max}] $angle] {break}
         $w create line $xcentre $ycentre $xcrd $ycrd
         $w create text $xtxt    $ytxt    -text $text -anchor $dir
     }
@@ -2075,11 +2121,11 @@ proc ::Plotchart::DrawRoseAxes { w rad_max rad_step } {
     set rad $rad_step
 
     while { $rad < $rad_max+0.5*$rad_step } {
-        foreach {xtxt   ytxt}    [polarToPixel $w $rad   45.0] {break}
-        foreach {xright ycrd}    [polarToPixel $w $rad    0.0] {break}
-        foreach {xleft  ycrd}    [polarToPixel $w $rad  180.0] {break}
-        foreach {xcrd   ytop}    [polarToPixel $w $rad   90.0] {break}
-        foreach {xcrd   ybottom} [polarToPixel $w $rad  270.0] {break}
+        foreach {xtxt   ytxt}    [PolarToPixelPriv $w $rad   45.0] {break}
+        foreach {xright ycrd}    [PolarToPixelPriv $w $rad    0.0] {break}
+        foreach {xleft  ycrd}    [PolarToPixelPriv $w $rad  180.0] {break}
+        foreach {xcrd   ytop}    [PolarToPixelPriv $w $rad   90.0] {break}
+        foreach {xcrd   ybottom} [PolarToPixelPriv $w $rad  270.0] {break}
 
         $w create oval $xleft $ytop $xright $ybottom
 

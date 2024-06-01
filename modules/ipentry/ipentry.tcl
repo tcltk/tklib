@@ -4,10 +4,10 @@
 #
 # Copyright (c) 2003-2008 Aaron Faupell <afaupell@users.sourceforge.net>
 # Copyright (c) 2008 Pat Thoyts <patthoyts@users.sourceforge.net>
-#  
+#
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
-# 
+#
 # RCS: @(#) $Id: ipentry.tcl,v 1.19 2009/01/21 07:10:03 afaupell Exp $
 
 package require Tk
@@ -29,7 +29,7 @@ namespace eval ::ipentry {
     bind IPEntrybindtag <FocusOut>         {::ipentry::FocusOut %W}
     bind IPEntrybindtag <<Paste>>          {::ipentry::Paste %W CLIPBOARD}
     bind IPEntrybindtag <<PasteSelection>> {::ipentry::Paste %W PRIMARY}
-    
+
     # copy all the bindings from IPEntrybindtag
     foreach x [bind IPEntrybindtag] {
         bind IPEntrybindtag6 $x [bind IPEntrybindtag $x]
@@ -39,7 +39,7 @@ namespace eval ::ipentry {
     bind IPEntrybindtag6 <colon>            {::ipentry::dot %W}
     bind IPEntrybindtag6 <period>           {}
 
-    #if {[package vsatisfies [package provide Tk] 8.5]} {
+    #if {[package vsatisfies [package provide Tk] 8.5-]} {
     #     ttk::style layout IPEntryFrame {
     #         Entry.field -sticky news -border 1 -children {
     #             IPEntryFrame.padding -sticky news
@@ -65,7 +65,7 @@ namespace eval ::ipentry {
 #
 proc ::ipentry::ipentry {w args} {
     upvar #0 [namespace current]::widget_$w state
-    #set state(themed) [package vsatisfies [package provide Tk] 8.5]
+    #set state(themed) [package vsatisfies [package provide Tk] 8.5-]
     set state(themed) 0
     foreach {name val} $args {
         if {$name eq "-themed"} {
@@ -126,7 +126,7 @@ proc ::ipentry::ipentry {w args} {
 #
 proc ::ipentry::ipentry6 {w args} {
     upvar #0 [namespace current]::widget_$w state
-    #set state(themed) [package vsatisfies [package provide Tk] 8.5]
+    #set state(themed) [package vsatisfies [package provide Tk] 8.5-]
     set state(themed) 0
     foreach {name val} $args {
         if {$name eq "-themed"} {
@@ -502,7 +502,7 @@ proc ::ipentry::validate6 {w key} {
 # used by both ipentry and ipentry6
 #
 # ARGS:
-#       w       name of the current entry widget 
+#       w       name of the current entry widget
 #       dir     direction to move, one of next or prev
 #       sel     boolean indicating whether to select the digits in the next entry
 #
@@ -536,7 +536,7 @@ proc ::ipentry::skip {w dir {sel 0}} {
 # perform a command on every subwidget of an ipentry frame
 #
 # ARGS:
-#       w       name of the ipentry frame 
+#       w       name of the ipentry frame
 #       cmd     command to perform
 #       type    one of empty, "entry", or "dot"
 #
@@ -564,7 +564,7 @@ proc ::ipentry::_foreach {w cmd {type {}}} {
 # used by both ipentry and ipentry6
 #
 # ARGS:
-#       w       name of the ipentry widget 
+#       w       name of the ipentry widget
 #       cmd     name of a configuration option
 #
 # RETURNS:
@@ -602,7 +602,7 @@ proc ::ipentry::cget {w cmd} {
 # used by both ipentry and ipentry6
 #
 # ARGS:
-#       w       name of the ipentry widget 
+#       w       name of the ipentry widget
 #       args    name/value pairs of configuration options
 #
 # RETURNS:
@@ -715,7 +715,7 @@ proc ::ipentry::configure {w args} {
 # used by both ipentry and ipentry6
 #
 # ARGS:
-#       w       name of the ipentry widget 
+#       w       name of the ipentry widget
 #
 # RETURNS:
 #       nothing
@@ -737,7 +737,7 @@ proc ::ipentry::destroyWidget {w} {
 # used by ipentry only
 #
 # ARGS:
-#       w       name of the ipentry widget 
+#       w       name of the ipentry widget
 #       varname name of the variable being traced
 #       key     array index of the variable
 #       op      operation performed on the variable, read/write/unset
@@ -771,7 +771,7 @@ proc ::ipentry::traceFired {w name key op} {
 # used by ipentry6 only
 #
 # ARGS:
-#       w       name of the ipentry widget 
+#       w       name of the ipentry widget
 #       varname name of the variable being traced
 #       key     array index of the variable
 #       op      operation performed on the variable, read/write/unset
@@ -807,7 +807,7 @@ proc ::ipentry::traceFired6 {w name key op} {
 # update the textvariable if it exists with the new value
 #
 # ARGS:
-#       w       name of the ipentry widget 
+#       w       name of the ipentry widget
 #
 # RETURNS:
 #       nothing
@@ -828,7 +828,7 @@ proc ::ipentry::updateTextvar {w} {
 # used by ipentry only
 #
 # ARGS:
-#       w       name of an ipentry widget 
+#       w       name of an ipentry widget
 #       val     a list of 4 values to be inserted into the ipentry
 #
 # RETURNS:
@@ -857,7 +857,7 @@ proc ::ipentry::_insert {w val} {
 # used by both ipentry6 only
 #
 # ARGS:
-#       w       name of an ipentry widget 
+#       w       name of an ipentry widget
 #       val     a list of 8 values to be inserted into the ipentry
 #
 # RETURNS:
@@ -885,7 +885,7 @@ proc ::ipentry::_insert6 {w val} {
 # used by ipentry, with some commands passed through from widgetCommand6
 #
 # ARGS:
-#       w       name of the ipentry widget 
+#       w       name of the ipentry widget
 #       cmd     the subcommand
 #       args    arguments to the subcommand
 #
@@ -904,7 +904,7 @@ proc ::ipentry::widgetCommand {w cmd args} {
                     set s [string trimleft $s 0]
                     if {$s == ""} { set s 0 }
                 }
-                
+
                 lappend r $s
             }
             return $r
@@ -946,7 +946,7 @@ proc ::ipentry::widgetCommand {w cmd args} {
 # most subcommands are passed through to widgetCommand by the default case
 #
 # ARGS:
-#       w       name of the ipentry widget 
+#       w       name of the ipentry widget
 #       cmd     the subcommand
 #       args    arguments to the subcommand
 #

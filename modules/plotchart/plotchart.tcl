@@ -6,7 +6,7 @@
 #    The private functions are contained in the files "sourced"
 #    at the end.
 #
-package require Tcl 8.5
+package require Tcl 8.5-
 package require Tk
 
 # Plotchart --
@@ -36,8 +36,9 @@ namespace eval ::Plotchart {
                     create3DRibbonChart create3DRibbonPlot \
                     createXLogYPlot createLogXYPlot createLogXLogYPlot \
                     createWindrose createTargetDiagram createPerformanceProfile \
-                    createTableChart createTitleBar \
+                    createTableChart createTitleBar createTaylorDiagram \
                     createSpiralPie createTernaryDiagram createStatusTimeline \
+                    createCirclePlot createHeatmap createDendrogram \
                     plotstyle plotconfig plotpack plotmethod clearcanvas eraseplot
 
    #
@@ -59,6 +60,8 @@ namespace eval ::Plotchart {
    set methodProc(xyplot,vector)            DrawVector
    set methodProc(xyplot,vectorconfig)      VectorConfigure
    set methodProc(xyplot,rchart)            DrawRchart
+   set methodProc(xyplot,region)            DrawRegion
+   set methodProc(xyplot,minmax)            DrawMinMax
    set methodProc(xyplot,grid)              DrawGrid
    set methodProc(xyplot,contourlines)      DrawIsolines
    set methodProc(xyplot,contourfill)       DrawShades
@@ -83,6 +86,7 @@ namespace eval ::Plotchart {
    set methodProc(xyplot,bindcmd)           BindCmd
    set methodProc(xyplot,rescale)           RescalePlot
    set methodProc(xyplot,box-and-whiskers)  DrawBoxWhiskers
+   set methodProc(xyplot,violin)            DrawViolin
    set methodProc(xyplot,xband)             DrawXband
    set methodProc(xyplot,yband)             DrawYband
    set methodProc(xyplot,labeldot)          DrawLabelDot
@@ -105,6 +109,9 @@ namespace eval ::Plotchart {
    set methodProc(xlogyplot,vtext)          DrawVtext
    set methodProc(xlogyplot,vsubtext)       DrawVsubtext
    set methodProc(xlogyplot,plot)           DrawData
+   set methodProc(xlogyplot,plotlist)       DrawDataList
+   set methodProc(xlogyplot,region)         DrawRegion
+   set methodProc(xlogyplot,minmax)         DrawMinMax
    set methodProc(xlogyplot,dot)            DrawDot
    set methodProc(xlogyplot,labeldot)       DrawLabelDot
    set methodProc(xlogyplot,dotconfig)      DotConfigure
@@ -126,6 +133,8 @@ namespace eval ::Plotchart {
    set methodProc(xlogyplot,plaintextconfig) ConfigPlainText
    set methodProc(xlogyplot,canvas)         GetCanvas
    set methodProc(xlogyplot,deletedata)     DeleteData
+   set methodProc(xlogyplot,bindplot)       BindPlot
+   set methodProc(xlogyplot,bindlast)       BindLast
    set methodProc(logxyplot,title)          DrawTitle
    set methodProc(logxyplot,subtitle)       DrawSubtitle
    set methodProc(logxyplot,xtext)          DrawXtext
@@ -135,6 +144,9 @@ namespace eval ::Plotchart {
    set methodProc(logxyplot,vtext)          DrawVtext
    set methodProc(logxyplot,vsubtext)       DrawVsubtext
    set methodProc(logxyplot,plot)           DrawData
+   set methodProc(logxyplot,plotlist)       DrawDataList
+   set methodProc(logxyplot,region)         DrawRegion
+   set methodProc(logxyplot,minmax)         DrawMinMax
    set methodProc(logxyplot,dot)            DrawDot
    set methodProc(logxyplot,labeldot)       DrawLabelDot
    set methodProc(logxyplot,dotconfig)      DotConfigure
@@ -156,6 +168,8 @@ namespace eval ::Plotchart {
    set methodProc(logxyplot,plaintextconfig)   ConfigPlainText
    set methodProc(logxyplot,canvas)         GetCanvas
    set methodProc(logxyplot,deletedata)     DeleteData
+   set methodProc(logxyplot,bindplot)       BindPlot
+   set methodProc(logxyplot,bindlast)       BindLast
    set methodProc(logxlogyplot,title)          DrawTitle
    set methodProc(logxlogyplot,subtitle)       DrawSubtitle
    set methodProc(logxlogyplot,xtext)          DrawXtext
@@ -165,6 +179,9 @@ namespace eval ::Plotchart {
    set methodProc(logxlogyplot,vtext)          DrawVtext
    set methodProc(logxlogyplot,vsubtext)       DrawVsubtext
    set methodProc(logxlogyplot,plot)           DrawData
+   set methodProc(logxlogyplot,plotlist)       DrawDataList
+   set methodProc(logxlogyplot,region)         DrawRegion
+   set methodProc(logxlogyplot,minmax)         DrawMinMax
    set methodProc(logxlogyplot,dot)            DrawDot
    set methodProc(logxlogyplot,labeldot)       DrawLabelDot
    set methodProc(logxlogyplot,dotconfig)      DotConfigure
@@ -186,6 +203,8 @@ namespace eval ::Plotchart {
    set methodProc(logxlogyplot,plaintextconfig) ConfigPlainText
    set methodProc(logxlogyplot,canvas)         GetCanvas
    set methodProc(logxlogyplot,deletedata)     DeleteData
+   set methodProc(logxlogyplot,bindplot)       BindPlot
+   set methodProc(logxlogyplot,bindlast)       BindLast
    set methodProc(piechart,title)              DrawTitle
    set methodProc(piechart,subtitle)           DrawSubtitle
    set methodProc(piechart,plot)               DrawPie
@@ -214,6 +233,8 @@ namespace eval ::Plotchart {
    set methodProc(polarplot,title)             DrawTitle
    set methodProc(polarplot,subtitle)          DrawSubtitle
    set methodProc(polarplot,plot)              DrawData
+   set methodProc(polarplot,region)            DrawRegion
+   set methodProc(polarplot,minmax)            DrawMinMax
    set methodProc(polarplot,saveplot)          SavePlot
    set methodProc(polarplot,dataconfig)        DataConfig
    set methodProc(polarplot,background)        BackgroundColour
@@ -224,6 +245,7 @@ namespace eval ::Plotchart {
    set methodProc(polarplot,balloonconfig)     ConfigBalloon
    set methodProc(polarplot,plaintext)         DrawPlainText
    set methodProc(polarplot,plaintextconfig)   ConfigPlainText
+   set methodProc(polarplot,dot)               DrawDot
    set methodProc(polarplot,labeldot)          DrawLabelDot
    set methodProc(polarplot,canvas)            GetCanvas
    set methodProc(polarplot,deletedata)        DeleteData
@@ -469,6 +491,7 @@ namespace eval ::Plotchart {
    set methodProc(boxplot,vtext)               DrawVtext
    set methodProc(boxplot,vsubtext)            DrawVsubtext
    set methodProc(boxplot,plot)                DrawBoxData
+   set methodProc(boxplot,violin)              DrawViolinData
    set methodProc(boxplot,saveplot)            SavePlot
    set methodProc(boxplot,dataconfig)          DataConfig
    set methodProc(boxplot,xconfig)             XConfig
@@ -513,6 +536,27 @@ namespace eval ::Plotchart {
    set methodProc(targetdiagram,dataconfig)    DataConfig
    set methodProc(targetdiagram,canvas)        GetCanvas
    set methodProc(targetdiagram,deletedata)    DeleteData
+   set methodProc(taylordiagram,title)         DrawTitle
+   set methodProc(taylordiagram,subtitle)      DrawSubtitle
+   set methodProc(taylordiagram,xtext)         DrawXtext
+   set methodProc(taylordiagram,xsubtext)      DrawXsubtext
+   set methodProc(taylordiagram,ytext)         DrawYtext
+   set methodProc(taylordiagram,ysubtext)      DrawYsubtext
+   set methodProc(taylordiagram,vtext)         DrawVtext
+   set methodProc(taylordiagram,vsubtext)      DrawVsubtext
+   set methodProc(taylordiagram,plot)          DrawTaylorData
+   set methodProc(taylordiagram,saveplot)      SavePlot
+   set methodProc(taylordiagram,background)    BackgroundColour
+   set methodProc(taylordiagram,legendconfig)  LegendConfigure
+   set methodProc(taylordiagram,legend)        DrawLegend
+   set methodProc(taylordiagram,removefromlegend) RemoveFromLegend
+   set methodProc(taylordiagram,balloon)       DrawBalloon
+   set methodProc(taylordiagram,balloonconfig) ConfigBalloon
+   set methodProc(taylordiagram,plaintext)     DrawPlainText
+   set methodProc(taylordiagram,plaintextconfig) ConfigPlainText
+   set methodProc(taylordiagram,dataconfig)    DataConfig
+   set methodProc(taylordiagram,canvas)        GetCanvas
+   set methodProc(taylordiagram,deletedata)    DeleteData
    set methodProc(3dribbonplot,title)          DrawTitle
    set methodProc(3dribbonplot,subtitle)       DrawSubtitle
    set methodProc(3dribbonplot,plot)           Draw3DRibbon
@@ -571,7 +615,27 @@ namespace eval ::Plotchart {
    set methodProc(ternary,ticklines)           DrawTernaryTicklines
    set methodProc(ternary,dataconfig)          DataConfig
    set methodProc(ternary,canvas)              GetCanvas
-
+   set methodProc(distnormal,title)            DrawTitle
+   set methodProc(distnormal,subtitle)         DrawSubtitle
+   set methodProc(distnormal,xtext)            DrawXtext
+   set methodProc(distnormal,xsubtext)         DrawXsubtext
+   set methodProc(distnormal,ytext)            DrawYtext
+   set methodProc(distnormal,ysubtext)         DrawYsubtext
+   set methodProc(distnormal,vtext)            DrawVtext
+   set methodProc(distnormal,vsubtext)         DrawVsubtext
+   set methodProc(distnormal,plot)             DrawDataNormalPlot
+   set methodProc(distnormal,diagonal)         DrawDiagonalNormalPlot
+   set methodProc(distnormal,dataconfig)       DataConfig
+   set methodProc(circleplot,title)            DrawTitle
+   set methodProc(circleplot,subtitle)         DrawSubtitle
+   set methodProc(circleplot,modify)           DrawCircleModify
+   set methodProc(circleplot,connect)          DrawCircleConnection
+   set methodProc(heatmap,title)               DrawTitle
+   set methodProc(heatmap,plot)                DrawHeatmapCells
+   set methodProc(heatmap,scale)               ConfigHeatmapScale
+   set methodProc(dendrogram,title)            DrawTitle
+   set methodProc(dendrogram,dataconfig)       DataConfig
+   set methodProc(dendrogram,plot)             DrawDendrogram
    #
    # Auxiliary parameters
    #
@@ -581,10 +645,12 @@ namespace eval ::Plotchart {
    variable options
    variable option_keys
    variable option_values
-   set options       {-colour -color  -symbol -type -filled -fillcolour -fillcolor -boxwidth -width -radius \
-      -whisker -whiskerwidth -mediancolour -mediancolor  -medianwidth -style -smooth}
-   set option_keys   {-colour -colour -symbol -type -filled -fillcolour -fillcolour -boxwidth -width -radius \
-      -whisker -whiskerwidth -mediancolour -mediancolour -medianwidth -style -smooth}
+   set options       {-colour -color  -symbol -type -filled -fillcolour -fillcolor -boxwidth -width -radius
+      -whisker -whiskerwidth -mediancolour -mediancolor  -medianwidth -style -smooth -violinwidth
+      -labelcolour -labelcolor  -labelfont}
+   set option_keys   {-colour -colour -symbol -type -filled -fillcolour -fillcolour -boxwidth -width -radius
+      -whisker -whiskerwidth -mediancolour -mediancolour -medianwidth -style -smooth -violinwidth
+      -labelcolour -labelcolour -labelfont}
    set option_values {-colour       {...}
                       -symbol       {plus cross circle up down dot upfilled downfilled}
                       -type         {line symbol both rectangle}
@@ -599,6 +665,9 @@ namespace eval ::Plotchart {
                       -whiskerwidth {...}
                       -style        {filled spike symbol plateau stair}
                       -smooth       {0 1 no yes false true}
+                      -violinwidth  {...}
+                      -labelcolour  {...}
+                      -labelfont    {...}
                      }
 
    variable axis_options
@@ -825,6 +894,7 @@ proc ::Plotchart::coordsToPixel { w xcrd ycrd {zcrd {}} } {
        }
    }
 
+
    set xpix [expr {$scaling($w,pxmin)+($xcrd-$scaling($w,xmin))*$scaling($w,xfactor)}]
    set ypix [expr {$scaling($w,pymin)+($scaling($w,ymax)-$ycrd)*$scaling($w,yfactor)}]
    return [list $xpix $ypix]
@@ -970,13 +1040,11 @@ proc ::Plotchart::pixelToIndex { w xpix ypix } {
 # Result:
 #    List of two elements, x- and y-coordinates in pixels
 #
+# Note:
+#    Deprecated - use coordsToPixel instead
+#
 proc ::Plotchart::polarToPixel { w rad phi } {
-   variable torad
-
-   set xcrd [expr {$rad*cos($phi*$torad)}]
-   set ycrd [expr {$rad*sin($phi*$torad)}]
-
-   coordsToPixel $w $xcrd $ycrd
+   coordsToPixel $w $rad $phi
 }
 
 # clearcanvas --
@@ -991,9 +1059,9 @@ proc ::Plotchart::clearcanvas { w } {
    variable config
    variable data_series
 
-   array unset scaling $w,*
-   array unset config $w,*
-   array unset data_series $w,*
+   array unset scaling *$w,*
+   array unset config *$w,*
+   array unset data_series *$w,*
 
    $w delete all
 }
@@ -1058,7 +1126,7 @@ proc ::Plotchart::createXYPlot { w xscale yscale args} {
 #    c           Name of the canvas
 #    xscale      Minimum, maximum and step for x-axis (initial)
 #    yscale      Minimum, maximum and step for y-axis
-#    argv        Options (currently: "-xlabels list" and "-ylabels list")
+#    argv        Options (currently: "-xlabels list" and "-ylabels list" and "-altylabels list")
 # Result:
 #    Name of a new command
 #
@@ -1074,6 +1142,7 @@ proc ::Plotchart::CreateXYPlotImpl {prefix c xscale yscale argv} {
    set newchart "${prefix}_$w"
    interp alias {} $newchart {} ::Plotchart::PlotHandler $prefix $w
    CopyConfig $prefix $w
+
    set scaling($w,eventobj) ""
 
    foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w $argv] {break}
@@ -1136,7 +1205,8 @@ proc ::Plotchart::CreateXYPlotImpl {prefix c xscale yscale argv} {
                }
                -axesatzero -
                -isometric  -
-               -ylabels    {
+               -ylabels    -
+               -altylabels {
                    # Ignore
                }
                default {
@@ -1151,7 +1221,8 @@ proc ::Plotchart::CreateXYPlotImpl {prefix c xscale yscale argv} {
    if { $ydelt eq {} } {
        foreach {arg val} [array get options] {
            switch -exact -- $arg {
-               -ylabels {
+               -ylabels    -
+               -altylabels {
                    DrawYaxis $w $ymin  $ymax  $ydelt $arg $val
                }
                -axesatzero -
@@ -2243,8 +2314,16 @@ proc ::Plotchart::create3DPlot { c xscale yscale zscale args } {
    viewPort           $w $pxmin $pymin $pxmax $pymax
    world3DCoordinates $w $xmin  $ymin  $zmin  $xmax  $ymax $zmax
 
+   set names {}
+   foreach {keyword value} $args {
+       switch -- $keyword {
+           "-xlabels" {
+                set names $value
+           }
+       }
+   }
    Draw3DAxes         $w $xmin  $ymin  $zmin  $xmax  $ymax $zmax \
-                         $xstep $ystep $zstep
+                         $xstep $ystep $zstep $names
    DefaultLegend      $w
    DefaultBalloon     $w
 
@@ -2698,6 +2777,7 @@ proc ::Plotchart::createWindRose { c radius_data {sectors 16} args} {
 
     set newchart "windrose_$w"
     interp alias {} $newchart {} ::Plotchart::PlotHandler windrose $w
+
     CopyConfig windrose $w
 
     set rad_max   [lindex $radius_data 0]
@@ -2730,9 +2810,8 @@ proc ::Plotchart::createWindRose { c radius_data {sectors 16} args} {
     set data_series($w,count_data)      0
 
     #
-    # TODO: Take care of the compatibility for coordsToPixel and friends
+    # Take care of the compatibility for coordsToPixel and friends
     #
-    set scaling($w,xfactor) 1.0
     CopyScalingData $w $c
 
     return $newchart
@@ -2819,6 +2898,143 @@ proc ::Plotchart::createTargetDiagram { c bounds {scale 1.0} args} {
     return $newchart
 }
 
+# createTaylorDiagram --
+#    Create a command for drawing a taylor diagram
+# Arguments:
+#    c            Name of the canvas
+#    radius_data  Maximum radius and step
+#    args         Optional arguments (-box etc.)
+#                 Specific option:
+#                 -reference value  Draw the refence circles around this point
+# Result:
+#    Name of a new command
+# Note:
+#    By default the entire canvas will be dedicated to the Taylor diagram.
+#    The plot will be drawn with axes
+#
+proc ::Plotchart::createTaylorDiagram { c radius_data args} {
+    variable scaling
+    variable data_series
+    variable config
+
+    set w [NewPlotInCanvas $c]
+    interp alias {} $w {} $c
+
+    ClearPlot $w
+
+    set newchart "taylordiagram_$w"
+    interp alias {} $newchart {} ::Plotchart::PlotHandler taylordiagram $w
+    CopyConfig taylordiagram $w
+
+    foreach {pxmin pymin pxmax pymax} [MarginsSquare $w] {break}
+
+    set scaling($w,coordSystem) 0
+
+    foreach {xmin xmax xdelt} [concat 0.0 $radius_data] {break}
+    foreach {ymin ymax ydelt} [concat 0.0 $radius_data] {break}
+
+    if { $xdelt == 0.0 || $ydelt == 0.0 } {
+        return -code error "Step size can not be zero"
+    }
+
+    set xdelt [expr {abs($xdelt)}]
+    set ydelt [expr {abs($ydelt)}]
+
+    viewPort         $w $pxmin $pymin $pxmax $pymax
+    worldCoordinates $w $xmin  $ymin  $xmax  $ymax
+
+    DrawYaxis        $w $ymin  $ymax  $ydelt
+    DrawXaxis        $w $xmin  $xmax  $xdelt
+
+    DrawMask         $w
+    DefaultLegend    $w
+    DefaultBalloon   $w
+
+    #
+    # Circles for standard deviation
+    #
+
+    set r $xdelt
+    while { $r < $xmax + 0.5*$xdelt } {
+        foreach {pxmin pymin} [coordsToPixel $w [expr {-$r}] [expr {-$r}]] {break}
+        foreach {pxmax pymax} [coordsToPixel $w $r $r] {break}
+
+        $w create arc $pxmin $pymin $pxmax $pymax -outline $config($w,limits,color) -tag limits -start 0 -extent 90 -style arc -outline $config($w,limits,color)
+
+        set r [expr {$r + $xdelt}]
+    }
+    set radmax [expr {$r - $xdelt}]
+
+    #
+    # Reference circles
+    #
+    set hasref 0
+    foreach {key value} $args {
+        if { $key eq "-reference" } {
+            set refvalue $value
+            set hasref   1
+            break
+        }
+    }
+
+    if { $hasref} {
+        set r         $xdelt
+        while { $r <= $xmax + 0.5*$xdelt } {
+            set refstart  0
+            set refextent 180
+
+            foreach {pxmin pymin} [coordsToPixel $w [expr {$refvalue-$r}] [expr {-$r}]] {break}
+            foreach {pxmax pymax} [coordsToPixel $w [expr {$refvalue+$r}] [expr {+$r}]] {break}
+
+            # Cut-off on the right side ...
+            if { $refvalue > 0.0 } {
+
+                set xright [expr {($radmax**2 + $refvalue**2 - $r**2) / (2.0 * $refvalue)}]
+
+                if { $xright < $radmax } {
+                    set yright    [expr {sqrt($radmax**2 - $xright**2)}]
+                    set refstart  [expr {180.0/acos(-1.0) * atan2($yright,$xright-$refvalue)}]
+                    set refextent [expr {$refextent - $refstart}]
+                }
+            }
+
+            $w create arc $pxmin $pymin $pxmax $pymax  -tag reference -start $refstart -extent $refextent -style arc -outline $config($w,reference,color)
+
+            set r [expr {$r + $xdelt}]
+        }
+
+        DataConfig     $w reference -type symbol -symbol dot -color $config($w,reference,color)
+        DrawTaylorData $w reference $refvalue 1.0
+    }
+
+    #
+    # Spokes for correlation
+    #
+    foreach {pxmin pymin} [coordsToPixel $w 0.0 0.0] {break}
+
+    foreach corr {0.1 0.3 0.5 0.7 0.9 0.98} {
+        set angle [expr {acos($corr)}]
+        set xend  [expr {$radmax * cos($angle)}]
+        set yend  [expr {$radmax * sin($angle)}]
+
+        foreach {pxmax pymax} [coordsToPixel $w $xend $yend] {break}
+
+        $w create text $pxmax $pymax -tag "limit limit_labels" -text " $corr" -anchor sw -fill $config($w,limits,color)
+        $w create line $pxmin $pymin $pxmax $pymax -tag limits -fill $config($w,limits,color)
+    }
+
+    #
+    # Take care of the compatibility for coordsToPixel and friends
+    #
+    CopyScalingData $w $c
+
+    .c lower limits
+    .c raise limit_labels
+    .c lower reference
+
+    return $newchart
+}
+
 # createPerformanceProfile --
 #    Create a command for drawing a performance profile
 # Arguments:
@@ -2884,6 +3100,7 @@ proc ::Plotchart::createPerformanceProfile { c scale args } {
 #    By default the entire canvas will be dedicated to the table
 #
 proc ::Plotchart::createTableChart { c columns args } {
+   variable config
    variable scaling
    variable data_series
 
@@ -2941,8 +3158,9 @@ proc ::Plotchart::createTableChart { c columns args } {
    }
 
    set scaling($w,formatcommand) ::Plotchart::DefaultFormat
-   set scaling($w,topside)       $pymin
-   set scaling($w,toptable)      $pymin
+   set scaling($w,topside)       [expr $pymin + [lindex [FontMetrics $w $config($w,subtitle,font) 1] 1]]
+   set scaling($w,toptable)      [expr $pymin + [lindex [FontMetrics $w $config($w,subtitle,font) 1] 1]]
+
    set scaling($w,row)           0
 
    set scaling($w,cell,-background) ""
@@ -3043,6 +3261,202 @@ proc ::Plotchart::createTernaryDiagram { c args } {
    return $newchart
 }
 
+# createNormalPlot --
+#    Create a command for drawing a normal distribution plot
+# Arguments:
+#    w           Name of the canvas
+#    xscale      List of minimum, maximum and step size for the x-axis
+#                (normalised!)
+#    args        Options: as for XYPlot
+# Result:
+#    Name of a new command
+#
+# Note:
+#    Requires the math::statistics package, hence the condition
+#
+#    The y-scale is essentially the same as the x-scale, but with
+#    an alternative labelling to display the probability.
+#
+if { ! [catch {package require math::statistics}] } {
+proc ::Plotchart::createNormalPlot { w xscale args } {
+
+    set p [CreateXYPlotImpl distnormal $w $xscale [lreplace $xscale end end {}] \
+             [concat -altylabels \
+                 [list [list [::math::statistics::Inverse-cdf-normal 0.0 1.0 0.001] 0.001 \
+                             [::math::statistics::Inverse-cdf-normal 0.0 1.0 0.010] 0.01  \
+                             [::math::statistics::Inverse-cdf-normal 0.0 1.0 0.100] 0.10  \
+                             [::math::statistics::Inverse-cdf-normal 0.0 1.0 0.200] 0.20  \
+                             [::math::statistics::Inverse-cdf-normal 0.0 1.0 0.500] 0.50  \
+                             [::math::statistics::Inverse-cdf-normal 0.0 1.0 0.800] 0.80  \
+                             [::math::statistics::Inverse-cdf-normal 0.0 1.0 0.900] 0.90  \
+                             [::math::statistics::Inverse-cdf-normal 0.0 1.0 0.990] 0.99  \
+                             [::math::statistics::Inverse-cdf-normal 0.0 1.0 0.999] 0.999]] $args]]
+
+   $p xtext "Normalised values"
+   $p vtext "Probability"
+
+   return $p
+}
+}
+
+# createCirclePlot --
+#    Create a command for drawing a so-called circle plot
+# Arguments:
+#    c             Name of the canvas
+#    labels        Labels defining the items in the circle plot
+#    args          Additional arguments
+# Result:
+#    Name of a new command
+# Note:
+#    By default the entire canvas will be dedicated to the circle plot
+#    Possible additional arguments (optional): -box and coordinates
+#
+proc ::Plotchart::createCirclePlot { c labels args } {
+   variable scaling
+   variable data_series
+
+   set w [NewPlotInCanvas $c]
+   interp alias {} $w {} $c
+
+   ClearPlot $w
+
+   set newchart "circle_$w"
+   interp alias {} $newchart {} ::Plotchart::PlotHandler circleplot $w
+   CopyConfig circleplot $w
+
+   foreach {pxmin pymin pxmax pymax} [MarginsCircle $w -centre 1 {*}$args] {break}
+
+   set scaling($w,coordSystem) 0
+
+   viewPort          $w $pxmin     $pymin     $pxmax   $pymax
+   polarCoordinates  $w 1.0
+   DefaultBalloon    $w
+   DrawCircleOutline $w $labels
+
+   set data_series($w,labels) $labels
+
+   set scaling($w,coordSystem) 4
+
+   #
+   # Take care of the compatibility for coordsToPixel and friends
+   #
+   CopyScalingData $w $c
+
+   return $newchart
+}
+
+# createHeatmap --
+#    Create a command for drawing a heatmap
+# Arguments:
+#    c             Name of the canvas
+#    rowlabels     Labels for the rows
+#    columnlabels  Labels for the columns
+#    args          Additional arguments
+# Result:
+#    Name of a new command
+#
+proc ::Plotchart::createHeatmap { c rowlabels columnlabels args } {
+   variable scaling
+   variable data_series
+
+   set w [NewPlotInCanvas $c]
+   interp alias {} $w {} $c
+
+   ClearPlot $w
+
+   set newchart "heatmap_$w"
+   interp alias {} $newchart {} ::Plotchart::PlotHandler heatmap $w
+   CopyConfig heatmap $w
+
+   foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w $args] {break}
+
+   set scaling($w,coordSystem) 0
+   set scaling($w,xfactor)     1.0 ;# Dummy
+   set scaling($w,yfactor)     1.0
+
+   viewPort          $w $pxmin     $pymin     $pxmax   $pymax
+   worldCoordinates  $w 0.0        0.0        1.0      1.0
+   DefaultBalloon    $w
+
+   set data_series($w,rowlabels)    $rowlabels
+   set data_series($w,columnlabels) $columnlabels
+   set data_series($w,startcolour)  {65535 65535 0    }  ;# Use the range reported by [winfo rgb]
+   set data_series($w,endcolour)    {0     0     65535}
+   set data_series($w,startvalue)   0.0
+   set data_series($w,endvalue)     1.0
+
+   DrawHeatmapOutline $w $rowlabels $columnlabels
+
+   #
+   # Take care of the compatibility for coordsToPixel and friends
+   #
+   CopyScalingData $w $c
+
+   return $newchart
+}
+
+# createDendrogram --
+#    Create a command for drawing a dendrogram (type of tree)
+# Arguments:
+#    c             Name of the canvas
+#    args          Additional arguments
+# Result:
+#    Name of a new command
+#
+proc ::Plotchart::createDendrogram { c args } {
+   variable scaling
+   variable data_series
+
+   set w [NewPlotInCanvas $c]
+   interp alias {} $w {} $c
+
+   ClearPlot $w
+
+   set newchart "dendrogram_$w"
+   interp alias {} $newchart {} ::Plotchart::PlotHandler dendrogram $w
+   CopyConfig dendrogram $w
+
+   foreach {pxmin pymin pxmax pymax} [MarginsRectangle $w $args] {break}
+
+   set scaling($w,coordSystem) 0
+   set scaling($w,xfactor)     1.0 ;# Dummy
+   set scaling($w,yfactor)     1.0
+
+   viewPort          $w $pxmin     $pymin     $pxmax   $pymax
+   worldCoordinates  $w 0.0        0.0        1.0      1.0
+   DefaultBalloon    $w
+
+   set extend 1
+   set dir    top-bottom
+
+   set knowndirs {left-right right-left top-bottom bottom-top}
+
+   foreach {keyword value} $args {
+      switch -- $keyword {
+         "-extend" {
+             set extend $value
+         }
+         "-direction" {
+             if { $value in $knowndirs } {
+                 set dir $value
+             } else {
+                 return -code error "Unknown direction: $value"
+             }
+         }
+      }
+   }
+
+   set scaling($w,extend)    [expr {!!$extend}]
+   set scaling($w,direction) $dir
+
+   #
+   # Take care of the compatibility for coordsToPixel and friends
+   #
+   CopyScalingData $w $c
+
+   return $newchart
+}
+
 # Load the private procedures
 #
 source [file join [file dirname [info script]] "plotpriv.tcl"]
@@ -3060,7 +3474,8 @@ source [file join [file dirname [info script]] "plotspecial.tcl"]
 source [file join [file dirname [info script]] "plotobject.tcl"]
 source [file join [file dirname [info script]] "plottable.tcl"]
 source [file join [file dirname [info script]] "plotstatustimeline.tcl"]
+source [file join [file dirname [info script]] "plotdendrogram.tcl"]
 
 # Announce our presence
 #
-package provide Plotchart 2.3.3
+package provide Plotchart 2.6.1

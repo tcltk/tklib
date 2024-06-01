@@ -3,30 +3,17 @@
 # values of some mentry configuration options.
 #
 # Structure of the module:
-#   - Public procedures related to tile themes
+#   - Public procedure related to tile themes
 #   - Private procedures related to tile themes
 #   - Private procedures related to global KDE configuration options
 #
-# Copyright (c) 2006-2014  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2006-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
-# Public procedures related to tile themes
-# ========================================
+# Public procedure related to tile themes
+# =======================================
 #
-
-#------------------------------------------------------------------------------
-# mentry::getCurrentTheme
-#
-# Returns the current tile theme.
-#------------------------------------------------------------------------------
-proc mentry::getCurrentTheme {} {
-    if {[info exists ttk::currentTheme]} {
-	return $ttk::currentTheme
-    } else {
-	return $tile::currentTheme
-    }
-}
 
 #------------------------------------------------------------------------------
 # mentry::setThemeDefaults
@@ -35,18 +22,86 @@ proc mentry::getCurrentTheme {} {
 # mentry configuration options and updates the array configSpecs.
 #------------------------------------------------------------------------------
 proc mentry::setThemeDefaults {} {
+    #
+    # For several themes, some of the following most frequent
+    # values will be overridden by theme-specific ones:
+    #
     variable themeDefaults
-    if {[catch {[getCurrentTheme]Theme}] != 0} {
+    array set themeDefaults [list \
+	-background		white \
+	-disabledbackground	"" \
+	-foreground		black \
+	-foreground,background	black \
+	-font			TkTextFont \
+    ]
+
+    if {[info exists themeDefaults(-readonlybackground)]} {
+	unset themeDefaults(-readonlybackground)
+    }
+
+    set currentTheme [::mwutil::currentTheme]
+    variable isAwTheme \
+	[llength [info commands ::ttk::theme::${currentTheme}::setTextColors]]
+    if {$isAwTheme} {
+	awTheme $currentTheme
+    } elseif {[catch {${currentTheme}Theme}] != 0} {
 	#
 	# Fall back to the "default" theme (which is the root of all
 	# themes) and then override the options set by the current one
 	#
 	defaultTheme
-	array set themeDefaults [style configure .]
+	array set themeDefaults [styleConfig .]
+
+	if {[set bg [styleConfig TEntry -fieldbackground]] eq ""} {
+	    set bg [styleConfig . -fieldbackground]
+	}
+	if {$bg ne ""} {
+	    set themeDefaults(-background) $bg
+	}
+
+	if {[set fg [styleConfig TEntry -foreground]] eq ""} {
+	    set fg [styleConfig . -foreground]
+	}
+	if {$fg ne ""} {
+	    set themeDefaults(-foreground) $fg
+	}
+	set themeDefaults(-foreground,background) $themeDefaults(-foreground)
+
+	set disabledBg ""
+	array set arr [style map TEntry -fieldbackground]
+	if {[info exists arr(disabled)]} {
+	    set disabledBg $arr(disabled)
+	} else {
+	    array set arr [style map . -fieldbackground]
+	    if {[info exists arr(disabled)]} {
+		set disabledBg $arr(disabled)
+	    }
+	}
+	set themeDefaults(-disabledbackground) $disabledBg	;# may be ""
+
+	set disabledFg ""
+	unset arr
+	array set arr [style map TEntry -foreground]
+	if {[info exists arr(disabled)]} {
+	    set disabledFg $arr(disabled)
+	} else {
+	    array set arr [style map . -foreground]
+	    if {[info exists arr(disabled)]} {
+		set disabledFg $arr(disabled)
+	    }
+	}
+	if {$disabledFg ne ""} {
+	    set themeDefaults(-disabledforeground) $disabledFg
+	}
+
+	set themeDefaults(-borderwidth) 2			;# just a guess
+	set themeDefaults(-labelpady)   {2 2}			;# just a guess
     }
 
-    set themeDefaults(-readonlybackground) $themeDefaults(-disabledbackground)
-    set themeDefaults(-font)		   TkTextFont
+    if {![info exists themeDefaults(-readonlybackground)]} {
+	set themeDefaults(-readonlybackground) \
+	    $themeDefaults(-disabledbackground)
+    }
 
     variable configSpecs
     foreach opt {-background -foreground -font} {
@@ -64,15 +119,44 @@ proc mentry::setThemeDefaults {} {
 #
 
 #------------------------------------------------------------------------------
+# mentry::awTheme
+#------------------------------------------------------------------------------
+proc mentry::awTheme theme {
+    switch $theme {
+	awarc - arc -
+	awbreeze - breeze -
+	awbreezedark			{ set bdWidth 3; set labelPadY {3 3} }
+	awblack - black -
+	awclearlooks - clearlooks -
+	awdark -
+	awlight -
+	awtemplate -
+	awwinxpblue - winxpblue -
+	default				{ set bdWidth 2; set labelPadY {2 2} }
+    }
+
+    variable themeDefaults
+    array set themeDefaults [list \
+	-background		[styleConfig . -fieldbackground] \
+	-disabledbackground	[lindex [style map TEntry -fieldbackground] 1] \
+	-foreground		[styleConfig TEntry -foreground] \
+	-foreground,background	[styleConfig TEntry -foreground] \
+	-disabledforeground	[lindex [style map TEntry -foreground] 1] \
+	-selectbackground	[styleConfig . -selectbackground] \
+	-selectforeground	[styleConfig . -selectforeground] \
+	-selectborderwidth	[styleConfig . -selectborderwidth] \
+	-borderwidth		$bdWidth \
+	-labelpady		$labelPadY \
+    ]
+}
+
+#------------------------------------------------------------------------------
 # mentry::altTheme
 #------------------------------------------------------------------------------
 proc mentry::altTheme {} {
     variable themeDefaults
     array set themeDefaults [list \
-	-background		white \
 	-disabledbackground	#d9d9d9 \
-	-foreground		black \
-	-foreground,background	black \
 	-disabledforeground	#a3a3a3 \
 	-selectbackground	#4a6984 \
 	-selectforeground	#ffffff \
@@ -86,19 +170,47 @@ proc mentry::altTheme {} {
 # mentry::aquaTheme
 #------------------------------------------------------------------------------
 proc mentry::aquaTheme {} {
+    variable newAquaSupport
     variable themeDefaults
-    array set themeDefaults [list \
-	-background		white \
-	-disabledbackground	white \
-	-foreground		black \
-	-foreground,background	#a3a3a3 \
-	-disabledforeground	#a3a3a3 \
-	-selectbackground	systemHighlight \
-	-selectforeground	systemHighlightText \
-	-selectborderwidth	0 \
-	-borderwidth		4 \
-	-labelpady		{4 4} \
-    ]
+    if {$newAquaSupport} {
+	variable extendedAquaSupport
+	if {[tk::unsupported::MacWindowStyle isdark .]} {
+	    set background [expr {$extendedAquaSupport ? "#3a3a3a" : "#4b4b4b"}]
+	} else {
+	    set background #ffffff
+	}
+
+	if {$extendedAquaSupport} {
+	    scan $::tcl_platform(osVersion) "%d" majorOSVersion
+	    set labelPadY [expr {$majorOSVersion >= 18 ? {4 7} : {4 5}}]
+	} else {
+	    set labelPadY {4 7}
+	}
+
+	array set themeDefaults [list \
+	    -background			$background \
+	    -foreground			systemTextColor \
+	    -foreground,background	systemTextColor \
+	    -disabledforeground		systemDisabledControlTextColor \
+	    -selectbackground		systemSelectedTextBackgroundColor \
+	    -selectforeground		systemSelectedTextColor \
+	    -selectborderwidth		0 \
+	    -borderwidth		4 \
+	    -labelpady			$labelPadY \
+	]
+    } else {
+	array set themeDefaults [list \
+	    -background			systemWindowBody \
+	    -foreground			systemModelessDialogActiveText \
+	    -foreground,background	systemModelessDialogInactiveText \
+	    -disabledforeground		systemModelessDialogInactiveText \
+	    -selectbackground		systemHighlight \
+	    -selectforeground		systemModelessDialogActiveText \
+	    -selectborderwidth		0 \
+	    -borderwidth		4 \
+	    -labelpady			{4 4} \
+	]
+    }
 }
 
 #------------------------------------------------------------------------------
@@ -107,10 +219,6 @@ proc mentry::aquaTheme {} {
 proc mentry::AquativoTheme {} {
     variable themeDefaults
     array set themeDefaults [list \
-	-background		white \
-	-disabledbackground	white \
-	-foreground		black \
-	-foreground,background	black \
 	-disabledforeground	black \
 	-selectbackground	#000000 \
 	-selectforeground	#ffffff \
@@ -121,21 +229,106 @@ proc mentry::AquativoTheme {} {
 }
 
 #------------------------------------------------------------------------------
+# mentry::aquativoTheme
+#------------------------------------------------------------------------------
+proc mentry::aquativoTheme {} {
+    variable themeDefaults
+    array set themeDefaults [list \
+	-disabledforeground	#565248 \
+	-selectbackground	#000000 \
+	-selectforeground	#ffffff \
+	-selectborderwidth	0 \
+	-borderwidth		2 \
+	-labelpady		{2 2} \
+    ]
+}
+
+#------------------------------------------------------------------------------
+# mentry::ArcTheme
+#------------------------------------------------------------------------------
+proc mentry::ArcTheme {} {
+    variable themeDefaults
+    array set themeDefaults [list \
+	-disabledbackground	#fbfcfc \
+	-foreground		#5c616c \
+	-foreground,background	#5c616c \
+	-disabledforeground	#a9acb2 \
+	-selectbackground	#5294e2 \
+	-selectforeground	#ffffff \
+	-selectborderwidth	0 \
+	-borderwidth		3 \
+	-labelpady		{3 3} \
+    ]
+}
+
+#------------------------------------------------------------------------------
 # mentry::blueTheme
 #------------------------------------------------------------------------------
 proc mentry::blueTheme {} {
     variable themeDefaults
     array set themeDefaults [list \
 	-background		#e6f3ff \
-	-disabledbackground	#e6f3ff \
-	-foreground		black \
-	-foreground,background	black \
 	-disabledforeground	#666666 \
 	-selectbackground	#ffff33 \
 	-selectforeground	#000000 \
 	-selectborderwidth	1 \
-	-borderwidth		1 \
-	-labelpady		{1 1} \
+	-borderwidth		2 \
+	-labelpady		{2 2} \
+    ]
+}
+
+#------------------------------------------------------------------------------
+# mentry::blackTheme
+#------------------------------------------------------------------------------
+proc mentry::blackTheme {} {
+    variable themeDefaults
+    array set themeDefaults [list \
+	-background		#ffffff \
+	-disabledforeground	#a9a9a9 \
+	-selectbackground	#4a6984 \
+	-selectforeground	#ffffff \
+	-selectborderwidth	0 \
+	-borderwidth		2 \
+	-labelpady		{2 2} \
+    ]
+}
+
+#------------------------------------------------------------------------------
+# mentry::BreezeTheme, mentry::breezeTheme
+#------------------------------------------------------------------------------
+proc mentry::BreezeTheme {} {
+    variable themeDefaults
+    array set themeDefaults [list \
+	-background		#fcfcfc \
+	-readonlybackground	#fcfcfc \
+	-disabledbackground	#eff0f1 \
+	-disabledforeground	#bbcbbe \
+	-selectbackground	#3daee9 \
+	-selectforeground	#ffffff \
+	-selectborderwidth	0 \
+	-borderwidth		2 \
+	-labelpady		{2 2} \
+    ]
+}
+proc mentry::breezeTheme {} {
+    BreezeTheme
+}
+
+#------------------------------------------------------------------------------
+# mentry::breeze-darkTheme
+#------------------------------------------------------------------------------
+proc mentry::breeze-darkTheme {} {
+    variable themeDefaults
+    array set themeDefaults [list \
+	-background		#2f3336 \
+	-readonlybackground	#2f3336 \
+	-disabledbackground	#31363b \
+	-disabledforeground	#7f8c8d \
+	-selectbackground	#3daee9 \
+	-selectforeground	#ffffff \
+	-selectborderwidth	0 \
+	-borderwidth		2 \
+	-labelpady		{2 2} \
     ]
 }
 
@@ -145,10 +338,6 @@ proc mentry::blueTheme {} {
 proc mentry::clamTheme {} {
     variable themeDefaults
     array set themeDefaults [list \
-	-background		white \
-	-disabledbackground	white \
-	-foreground		black \
-	-foreground,background	black \
 	-disabledforeground	#999999 \
 	-selectbackground	#4a6984 \
 	-selectforeground	#ffffff \
@@ -164,16 +353,37 @@ proc mentry::clamTheme {} {
 proc mentry::classicTheme {} {
     variable themeDefaults
     array set themeDefaults [list \
-	-background		white \
 	-disabledbackground	#d9d9d9 \
-	-foreground		black \
-	-foreground,background	black \
 	-disabledforeground	#a3a3a3 \
 	-selectbackground	#c3c3c3 \
 	-selectforeground	#000000 \
-	-selectborderwidth	1 \
-	-borderwidth		3 \
-	-labelpady		{3 3} \
+    ]
+
+    set val [styleConfig . -selectborderwidth]
+    set themeDefaults(-selectborderwidth) [expr {$val eq "" ? 0 : $val}]
+
+    if {[styleConfig . -borderwidth] == 1} {
+	set themeDefaults(-borderwidth) 2
+	set themeDefaults(-labelpady)	{2 2}
+    } else {
+	set themeDefaults(-borderwidth)	3
+	set themeDefaults(-labelpady)	{3 3}
+    }
+}
+
+#------------------------------------------------------------------------------
+# mentry::clearlooksTheme
+#------------------------------------------------------------------------------
+proc mentry::clearlooksTheme {} {
+    variable themeDefaults
+    array set themeDefaults [list \
+	-readonlybackground	#efebe7 \
+	-disabledforeground	#b5b3ac \
+	-selectbackground	#7c99ad \
+	-selectforeground	#ffffff \
+	-selectborderwidth	0 \
+	-borderwidth		2 \
+	-labelpady		{2 2} \
     ]
 }
 
@@ -183,17 +393,22 @@ proc mentry::classicTheme {} {
 proc mentry::defaultTheme {} {
     variable themeDefaults
     array set themeDefaults [list \
-	-background		white \
 	-disabledbackground	#d9d9d9 \
-	-foreground		black \
-	-foreground,background	black \
 	-disabledforeground	#a3a3a3 \
 	-selectbackground	#4a6984 \
 	-selectforeground	#ffffff \
-	-selectborderwidth	1 \
-	-borderwidth		1 \
-	-labelpady		{1 1} \
     ]
+
+    set val [styleConfig . -selectborderwidth]
+    set themeDefaults(-selectborderwidth) [expr {$val eq "" ? 0 : $val}]
+
+    if {[styleConfig TEntry -focuswidth] eq ""} {
+	set themeDefaults(-borderwidth)       1
+	set themeDefaults(-labelpady)         {1 1}
+    } else {
+	set themeDefaults(-borderwidth)       2
+	set themeDefaults(-labelpady)         {2 2}
+    }
 }
 
 #------------------------------------------------------------------------------
@@ -202,10 +417,6 @@ proc mentry::defaultTheme {} {
 proc mentry::keramikTheme {} {
     variable themeDefaults
     array set themeDefaults [list \
-	-background		white \
-	-disabledbackground	white \
-	-foreground		black \
-	-foreground,background	black \
 	-disabledforeground	#aaaaaa \
 	-selectbackground	#0a5f89 \
 	-selectforeground	#ffffff \
@@ -221,10 +432,6 @@ proc mentry::keramikTheme {} {
 proc mentry::keramik_altTheme {} {
     variable themeDefaults
     array set themeDefaults [list \
-	-background		white \
-	-disabledbackground	white \
-	-foreground		black \
-	-foreground,background	black \
 	-disabledforeground	#aaaaaa \
 	-selectbackground	#0a5f89 \
 	-selectforeground	#ffffff \
@@ -240,14 +447,10 @@ proc mentry::keramik_altTheme {} {
 proc mentry::krocTheme {} {
     variable themeDefaults
     array set themeDefaults [list \
-	-background		white \
-	-disabledbackground	white \
-	-foreground		black \
-	-foreground,background	black \
 	-disabledforeground	#b2b2b2 \
 	-selectbackground	#000000 \
 	-selectforeground	#ffffff \
-	-selectborderwidth	0 \
+	-selectborderwidth	1 \
 	-borderwidth		2 \
 	-labelpady		{2 2} \
     ]
@@ -259,16 +462,12 @@ proc mentry::krocTheme {} {
 proc mentry::plastikTheme {} {
     variable themeDefaults
     array set themeDefaults [list \
-	-background		white \
-	-disabledbackground	white \
-	-foreground		black \
-	-foreground,background	black \
 	-disabledforeground	#aaaaaa \
 	-selectbackground	#657a9e \
 	-selectforeground	#ffffff \
 	-selectborderwidth	0 \
 	-borderwidth		2 \
-	-labelpady		{3 3} \
+	-labelpady		{2 2} \
     ]
 }
 
@@ -279,9 +478,6 @@ proc mentry::srivTheme {} {
     variable themeDefaults
     array set themeDefaults [list \
 	-background		#e6f3ff \
-	-disabledbackground	#e6f3ff \
-	-foreground		black \
-	-foreground,background	black \
 	-disabledforeground	#666666 \
 	-selectbackground	#ffff33 \
 	-selectforeground	#000000 \
@@ -298,9 +494,6 @@ proc mentry::srivlgTheme {} {
     variable themeDefaults
     array set themeDefaults [list \
 	-background		#e6f3ff \
-	-disabledbackground	#e6f3ff \
-	-foreground		black \
-	-foreground,background	black \
 	-disabledforeground	#666666 \
 	-selectbackground	#ffff33 \
 	-selectforeground	#000000 \
@@ -316,13 +509,47 @@ proc mentry::srivlgTheme {} {
 proc mentry::stepTheme {} {
     variable themeDefaults
     array set themeDefaults [list \
-	-background		white \
-	-disabledbackground	white \
-	-foreground		black \
-	-foreground,background	black \
 	-disabledforeground	#808080 \
 	-selectbackground	#fdcd00 \
 	-selectforeground	#ffffff \
+	-selectborderwidth	0 \
+	-borderwidth		2 \
+	-labelpady		{2 2} \
+    ]
+}
+
+#------------------------------------------------------------------------------
+# mentry::sun-valley-lightTheme
+#------------------------------------------------------------------------------
+proc mentry::sun-valley-lightTheme {} {
+    variable themeDefaults
+    array set themeDefaults [list \
+	-background		#fdfdfd \
+	-readonlybackground	#fdfdfd \
+	-disabledbackground	#fafafa \
+	-disabledforeground	#a0a0a0 \
+	-selectbackground	#2f60d8 \
+	-selectforeground	#ffffff \
+	-font			SunValleyBodyFont \
+	-selectborderwidth	0 \
+	-borderwidth		2 \
+	-labelpady		{2 2} \
+    ]
+}
+
+#------------------------------------------------------------------------------
+# mentry::sun-valley-darkTheme
+#------------------------------------------------------------------------------
+proc mentry::sun-valley-darkTheme {} {
+    variable themeDefaults
+    array set themeDefaults [list \
+	-background		#292929 \
+	-readonlybackground	#292929 \
+	-disabledbackground	#262626 \
+	-disabledforeground	#595959 \
+	-selectbackground	#2f60d8 \
+	-selectforeground	#ffffff \
+	-font			SunValleyBodyFont \
 	-selectborderwidth	0 \
 	-borderwidth		2 \
 	-labelpady		{2 2} \
@@ -399,10 +626,6 @@ proc mentry::winnativeTheme {} {
 proc mentry::winxpblueTheme {} {
     variable themeDefaults
     array set themeDefaults [list \
-	-background		white \
-	-disabledbackground	white \
-	-foreground		black \
-	-foreground,background	black \
 	-disabledforeground	#565248 \
 	-selectbackground	#4a6984 \
 	-selectforeground	#ffffff \
@@ -426,25 +649,9 @@ proc mentry::xpnativeTheme {} {
 	-selectbackground	SystemHighlight \
 	-selectforeground	SystemHighlightText \
 	-selectborderwidth	0 \
+	-borderwidth		2 \
+	-labelpady		{2 4} \
     ]
-
-    switch [winfo rgb . SystemButtonFace] {
-	"60652 59881 55512" -
-	"57568 57311 58339" -
-	"61680 61680 61680" {
-	    array set themeDefaults [list \
-		-borderwidth	2 \
-		-labelpady	{2 4} \
-	    ]
-	}
-
-	default {
-	    array set themeDefaults [list \
-		-borderwidth	2 \
-		-labelpady	{2 2} \
-	    ]
-	}
-    }
 }
 
 #
@@ -462,7 +669,7 @@ proc mentry::getKdeConfigVal {group key} {
     variable kdeDirList
 
     if {![info exists kdeDirList]} {
-	makeKdeDirList 
+	makeKdeDirList
     }
 
     #

@@ -48,7 +48,11 @@ Module khim          _tclm _man  _null
 Module mentry        _tab  _null _exa
 Module menubar       _tcl  _man  _exa
 Module ntext         _tcl  _man  _exa
+Module notifywindow  _tcl  _man  _null
+Module persistentSelection _tcl _man _exa
 Module plotchart     _tcl  _man  _exa
+Module scrollutil    _tab  _null _exa
+Module shtmlview     _tcl  _man  _null
 Module style         _tcl  _man  _null
 Module swaplist      _tcl  _man  _null
 Module tablelist     _tab  _null _exa
@@ -57,10 +61,12 @@ Module tooltip       _tcl  _man  _null
 Module wcb           _tab  _null _exa
 Module widget        _tcl  _man  _exa
 Module widgetl       _tcl  _man  _null
+Module widgetPlus    _tcl  _man  _exa
 Module widgetv       _tcl  _man  _null
 
 Application  diagram-viewer
 Application  bitmap-editor
+Application  shtmlview
 
 # @@ Registration END
 # --------------------------------------------------------------

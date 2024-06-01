@@ -4,11 +4,12 @@ Description: This package is intended to be a collection of
     Tcl packages that provide utility functions useful to a
     large collection of Tk programmers.
 Rights: BSD
-Version: 0.6
+Version: 0.7
 URL: http://core.tcl.tk/tklib/
 Architecture: tcl
 Contributor: Aaron Faupell <afaupell at users dot sourceforge dot net>
-Contributor: Andreas Kupries <andreas_kupries at users dot sourceforge dot net>
+Contributor: Andreas Kupries <andreask at activestate dot com>
+Contributor: Andreas Kupries (AS Senior Dev) <andreask at activestate dot com>
 Contributor: Arjen Markus <arjenmarkus at users dot sourceforge dot net>
 Contributor: Csaba Nemethi <csaba dot nemethi at t-online dot de>
 Contributor: David N. Welton <davidw at dedasys dot com>

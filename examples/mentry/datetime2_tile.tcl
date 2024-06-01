@@ -1,11 +1,12 @@
-#!/usr/bin/env wish
-## -*- tcl -*-
+#! /usr/bin/env tclsh
+
 #==============================================================================
-# Demo:	mentry::dateMentry, mentry::putClockVal, mentry::getClockVal.
+# Demo:	mentry::dateTimeMentry, mentry::putClockVal, mentry::getClockVal.
 #
-# Copyright (c) 2008-2014  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2008-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
+package require Tk
 package require mentry_tile
 
 set title "Date & Time"
@@ -33,8 +34,8 @@ array set timeSeps {0 :    1 :  }
 
 #
 # Choose the date & time formats; don't use the %p field descriptor
-# for displaying the AM/PM indicator, because it doesn't work on
-# UNIX if Tcl/Tk 8.4 or higher is used in a non-default locale
+# for displaying the AM/PM indicator, because it doesn't
+# work on UNIX if Tcl/Tk is used in a non-default locale
 #
 wm withdraw .
 set clockVal [clock seconds]
@@ -56,10 +57,10 @@ wm deiconify .
 # Frame .base.f with a mentry displaying the date & time
 #
 ttk::frame .base.f
-ttk::label .base.f.l -text "A mentry widget for date & time:"
+ttk::label .base.f.l -text "Date & time: "
 mentry::dateTimeMentry .base.f.me $dateFmts($dateIdx)$timeFmts($timeIdx) \
 		       $dateSeps($dateIdx) $timeSeps($timeIdx) -justify center
-pack .base.f.l .base.f.me
+pack .base.f.l .base.f.me -side left
 
 #
 # Message strings corresponding to the values
@@ -75,7 +76,7 @@ array set msgs {
 #
 # Button .base.get invoking the procedure mentry::getClockVal
 #
-ttk::button .base.get -text "Get from mentries" -command {
+ttk::button .base.get -text "Get from mentry" -command {
     if {[catch {
 	set dateTime ""
 	set clockVal [mentry::getClockVal .base.f.me]
@@ -101,11 +102,11 @@ ttk::button .base.close -text Close -command exit
 #
 # Manage the widgets
 #
-pack .base.close -side bottom -pady 10
+pack .base.close -side bottom -pady 7p
 pack .base.sep -side bottom -fill x
-pack .base.f -padx 10 -pady 10
-pack .base.get -padx 10
-pack .base.dateTime -padx 10 -pady 10
+pack .base.f -padx 7p -pady 7p
+pack .base.get -padx 7p
+pack .base.dateTime -padx 7p -pady 7p
 pack .base -expand yes -fill both
 
 set clockVal [clock seconds]

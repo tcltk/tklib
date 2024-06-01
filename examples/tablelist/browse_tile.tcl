@@ -2,37 +2,37 @@
 # Demonstrates how to use a tablelist widget for displaying information about
 # children of an arbitrary widget.
 #
-# Copyright (c) 2000-2015  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require tablelist_tile 5.13
+package require tablelist_tile
 
 namespace eval demo {
     variable dir [file dirname [info script]]
 
     #
-    # Create two images, needed in the procedure putChildren
+    # Create two images corresponding to the display's DPI scaling level
     #
-    variable leafImg [image create bitmap -file [file join $dir leaf.xbm] \
-		      -background coral -foreground gray50]
-    variable compImg [image create bitmap -file [file join $dir comp.xbm] \
-		      -background yellow -foreground gray50]
+    variable compImg [image create photo]
+    variable leafImg [image create photo]
+    if {$::tk_version >= 8.7 || [catch {package require tksvg}] == 0} {
+	set fmt $::tablelist::svgfmt
+	$compImg read [file join $dir comp.svg] -format $fmt
+	$leafImg read [file join $dir leaf.svg] -format $fmt
+    } else {
+	set pct $::tablelist::scalingpct
+	$compImg read [file join $dir comp$pct.gif] -format gif
+	$leafImg read [file join $dir leaf$pct.gif] -format gif
+    }
 }
 
 source [file join $demo::dir config_tile.tcl]
-
-#
-# Work around the improper appearance of the tile scrollbars in the aqua theme
-#
-if {[tablelist::getCurrentTheme] eq "aqua"} {
-    interp alias {} ttk::scrollbar {} ::scrollbar
-}
 
 #------------------------------------------------------------------------------
 # demo::displayChildren
 #
 # Displays information on the children of the widget w in a tablelist widget
-# contained in a newly created top-level widget.  Returns the name of the
+# contained in a newly created toplevel widget.  Returns the name of the
 # tablelist widget.
 #------------------------------------------------------------------------------
 proc demo::displayChildren w {
@@ -44,7 +44,7 @@ proc demo::displayChildren w {
     }
 
     #
-    # Create a top-level widget of the class DemoTop
+    # Create a toplevel widget of the class DemoTop
     #
     set top .browseTop
     for {set n 2} {[winfo exists $top]} {incr n} {
@@ -54,7 +54,7 @@ proc demo::displayChildren w {
 
     #
     # Create a vertically scrolled tablelist widget with 9 dynamic-width
-    # columns and interactive sort capability within the top-level
+    # columns and interactive sort capability within the toplevel
     #
     set tf $top.tf
     ttk::frame $tf
@@ -104,6 +104,11 @@ proc demo::displayChildren w {
 		      -command [list demo::putChildrenOfSelWidget $tbl]
     $menu add command -label "Display Config" \
 		      -command [list demo::dispConfigOfSelWidget $tbl]
+    variable isAwTheme
+    if {$isAwTheme} {
+	variable currentTheme
+	ttk::theme::${currentTheme}::setMenuColors $menu
+    }
     set bodyTag [$tbl bodytag]
     bind $bodyTag <Double-1>   [list demo::putChildrenOfSelWidget $tbl]
     bind $bodyTag <<Button3>>  [bind TablelistBody <Button-1>]
@@ -111,7 +116,7 @@ proc demo::displayChildren w {
     bind $bodyTag <<Button3>> +[list demo::postPopupMenu $top %X %Y]
 
     #
-    # Create three buttons within a tile frame child of the top-level widget
+    # Create three buttons within a tile frame child of the toplevel widget
     #
     set bf $top.bf
     ttk::frame $bf
@@ -126,15 +131,15 @@ proc demo::displayChildren w {
     # Manage the widgets
     #
     grid $tbl -row 0 -rowspan 2 -column 0 -sticky news
-    if {[tablelist::getCurrentTheme] eq "aqua"} {
+    if {[tk windowingsystem] eq "win32"} {
+	grid $vsb -row 0 -rowspan 2 -column 1 -sticky ns
+    } else {
 	grid [$tbl cornerpath] -row 0 -column 1 -sticky ew
 	grid $vsb	       -row 1 -column 1 -sticky ns
-    } else {
-	grid $vsb -row 0 -rowspan 2 -column 1 -sticky ns
     }
     grid rowconfigure    $tf 1 -weight 1
     grid columnconfigure $tf 0 -weight 1
-    pack $b1 $b2 $b3 -side left -expand yes -pady 10
+    pack $b1 $b2 $b3 -side left -expand yes -pady 7p
     pack $bf -side bottom -fill x
     pack $tf -side top -expand yes -fill both
 
@@ -162,7 +167,7 @@ proc demo::putChildren {w tbl} {
 		    -message "Bad window path name \"$w\" -- replacing\
 			      it with nearest existent ancestor" \
 		    -type okcancel -default ok -parent [winfo toplevel $tbl]]
-	if {[string compare $choice "ok"] == 0} {
+	if {$choice eq "ok"} {
 	    while {![winfo exists $w]} {
 		set last [string last "." $w]
 		if {$last != 0} {
@@ -213,7 +218,7 @@ proc demo::putChildren {w tbl} {
     $top.bf.b1 configure -command [list demo::putChildren $w $tbl]
     set b2 $top.bf.b2
     set p [winfo parent $w]
-    if {[string compare $p ""] == 0} {
+    if {$p eq ""} {
 	$b2 configure -state disabled
     } else {
 	$b2 configure -state normal -command [list demo::putChildren $p $tbl]
@@ -232,7 +237,7 @@ proc demo::formatBoolean val {
 #------------------------------------------------------------------------------
 # demo::labelCmd
 #
-# Sorts the contents of the tablelist widget tbl by its col'th column and makes
+# Sorts the content of the tablelist widget tbl by its col'th column and makes
 # sure the items will be updated 500 ms later (because one of the items might
 # refer to a canvas containing the arrow that displays the sort order).
 #------------------------------------------------------------------------------
@@ -251,7 +256,7 @@ proc demo::updateItemsDelayed tbl {
     # Schedule the demo::updateItems command for execution
     # 500 ms later, but only if it is not yet pending
     #
-    if {[string compare [$tbl attrib afterId] ""] == 0} {
+    if {[$tbl attrib afterId] eq ""} {
 	$tbl attrib afterId [after 500 [list demo::updateItems $tbl]]
     }
 }
@@ -316,7 +321,7 @@ proc demo::putChildrenOfSelWidget tbl {
 # demo::dispConfigOfSelWidget
 #
 # Displays the configuration options of the selected widget within the
-# tablelist tbl in a tablelist widget contained in a newly created top-level
+# tablelist tbl in a tablelist widget contained in a newly created toplevel
 # widget.
 #------------------------------------------------------------------------------
 proc demo::dispConfigOfSelWidget tbl {

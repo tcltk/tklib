@@ -17,7 +17,7 @@
 #	set icos [::ico::getIconList $file]
 #	set img  [::ico::getIcon $file 1 -format image]
 
-package require Tcl 8.4
+package require Tcl 8.4-
 
 # Instantiate vars we need for this package
 namespace eval ::ico {
@@ -281,7 +281,7 @@ proc ::ico::EXEtoICO {exeFile icoFile} {
     set cnt  [SearchForIcos $file]
     set dir  {}
     set data {}
-    
+
     set fh [open $file]
     fconfigure $fh -eofchar {} -encoding binary -translation lf
 
@@ -397,13 +397,13 @@ proc ::ico::createImage {colors {name {}}} {
     if {0} {
 	# if image supported "" colors as transparent pixels,
 	# we could use this much faster op
-	$img put -to 0 0 $colors
+	$img put $colors -to 0 0
     } else {
 	for {set x 0} {$x < $w} {incr x} {
 	    for {set y 0} {$y < $h} {incr y} {
 		set clr [lindex $colors $y $x]
 		if {$clr ne ""} {
-		    $img put -to $x $y $clr
+		    $img put $clr -to $x $y
 		}
 	    }
 	}
@@ -987,7 +987,7 @@ proc ::ico::writeIconEXE {file index w h bpp palette xor and} {
     if {[list $w $h $bpp] != $ICONS($file,$index,data)} {
 	return -code error "icon format differs from original"
     }
-    
+
     set fh [open $file r+]
     fconfigure $fh -eofchar {} -encoding binary -translation lf
     seek $fh [expr {$ICONS($file,$index) + 40}] start
@@ -1028,7 +1028,7 @@ proc ::ico::SearchForIcosNE {fh file index} {
 
     seek $fh 36 current
     seek $fh [expr {[getword $fh] - 38}] current
-    
+
     set base [tell $fh]
     set shift [expr {int(pow(2, [getushort $fh]))}]
     while {[set type [expr {[getushort $fh] & 0x7fff}]] != 0} {
@@ -1190,4 +1190,4 @@ proc ::ico::Show {file args} {
     grid columnconfigure $parent 0 -weight 1
 }
 
-package provide ico 0.3.2
+package provide ico 0.3.3

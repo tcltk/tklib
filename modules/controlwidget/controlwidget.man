@@ -344,6 +344,10 @@ Color for the needle and the pin
 [call [cmd ::controlwidget::rdial] [arg w] [arg args]]
 Create a rotating dial. You can drag the dial to change the value. With the shift button
 depressed the value changes slowly, with the control button depressed it changes fast.
+Similarly, you can control the dial via the mouse wheel, with the shift and control button
+working in the same way as with the mouse pointer.
+
+[emph Note:] The shift and control buttons currently have no effect on Windows.
 
 [list_begin arguments]
 [arg_def widget w in]
@@ -361,6 +365,8 @@ Value for the dial (if not associated with a variable)
 Whether a horizontal disk/dial is required ("horizontal") or a vertical one ("vertical")
 [opt_def step value]
 Initial step for incrementing or decrementing the value
+[opt_def bindwheel value]
+Step size for controlling the dial's value via the mouse wheel
 [opt_def slow value]
 Factor on the step size for incrementing or decrementing the value slowly
 [opt_def fast value]

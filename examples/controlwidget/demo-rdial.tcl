@@ -1,4 +1,4 @@
-#!/usr/bin/env tclsh
+#! /usr/bin/env tclsh
 ## -*- tcl -*-
 
 package require Tk
@@ -37,7 +37,7 @@ proc show_value {which v} {
         }
     }
 }
-label .lb -text "Use mouse button with Shift &\nControl for dragging the dials"
+label .lb -text "Use mouse button with Shift &\nControl for dragging the dials\nwith Mousewheel support"
 label .lv -textvariable disp_value(rv)
 controlwidget::rdial .rv -callback {show_value rv} -value $disp_value(rv)\
         -width 200 -step 5 -bg blue -fg white \

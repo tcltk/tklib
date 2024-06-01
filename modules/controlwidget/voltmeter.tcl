@@ -41,7 +41,7 @@
 # $Id: voltmeter.tcl,v 1.3 2010/09/10 17:16:29 andreas_kupries Exp $
 #
 
-package require Tk   8.5
+package require Tk 8.5-   
 package require snit
 package provide voltmeter 0.1
 

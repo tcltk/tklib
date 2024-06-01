@@ -1,0 +1,2 @@
+package ifneeded shtmlview::shtmlview 1.1.0 [list source [file join $dir shtmlview.tcl]]
+package ifneeded shtmlview::doctools    0.1 [list source [file join $dir shtmlview-doctools.tcl]]

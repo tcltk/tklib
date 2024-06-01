@@ -140,10 +140,18 @@ proc ::Plotchart::DrawRow { w values {option {}} } {
 
             foreach {xpos ypos anchor} [TextAnchor $w header $left $right] {break}
 
-            $w create rectangle $left $scaling($w,topside) $right [expr {$scaling($w,topside)+$config($w,header,height)}] \
-                -tag cellbg -fill $scaling($w,cell,-background) -outline $scaling($w,cell,-background)
+            set font_height $config($w,header,height)
+            if { [info exists config($w,header,font)] } {
+                 set font_height [lindex [FontMetrics $w $config($w,header,font) 1] 1]
+            }
 
-            if { [info exists config($w,header,font)] } {  
+            $w create rectangle $left $scaling($w,topside) $right [expr {$scaling($w,topside)+$font_height}] \
+                -tag cellbg -fill $config($w,header,background) -outline $scaling($w,cell,-background)
+
+           #$w create rectangle $left $scaling($w,topside) $right [expr {$scaling($w,topside)+$config($w,header,height)}] \
+           #    -tag cellbg -fill $scaling($w,cell,-background) -outline $scaling($w,cell,-background)
+
+            if { [info exists config($w,header,font)] } {
                 $w create text $xpos $ypos -text $v -fill $config($w,header,color) -anchor $anchor \
                     -font $config($w,header,font)
             } else {
@@ -180,7 +188,7 @@ proc ::Plotchart::DrawRow { w values {option {}} } {
             } else {
                 $w create text $xpos $ypos -text $text -anchor $anchor -tag celltext \
                 -fill $scaling($w,cell,-color)
-            }    
+            }
             incr column
         }
     }

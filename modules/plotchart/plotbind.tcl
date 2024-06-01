@@ -20,6 +20,10 @@
 proc ::Plotchart::BindPlot {w event cmd} {
     variable scaling
 
+    if {![info exists scaling($w,eventobj)]} {
+        set scaling($w,eventobj) ""
+    }
+
     if { $scaling($w,eventobj) == "" } {
 
         set pxmin $scaling($w,pxmin)

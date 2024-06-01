@@ -5,9 +5,7 @@
 #	Calendar widget drawn on a canvas.
 #	Adapted from Suchenwirth code on the wiki.
 #
-# Copyright (c) 2008 Rüdiger Härtel
-#
-# RCS: @(#) $Id: calendar.tcl,v 1.14 2011/12/05 20:34:24 andreas_kupries Exp $
+# Copyright (c) 2008 RÃ¼diger HÃ¤rtel
 #
 
 #
@@ -302,7 +300,7 @@ snit::widgetadaptor widget::calendar {
                     }
                 }
             }
-            
+
             3 {
                 # keyboard navigation
 
@@ -581,7 +579,7 @@ snit::widgetadaptor widget::calendar {
 	today,crx-lhe {}
 
 	mn,de {
-	    . Januar Februar März April Mai Juni Juli August
+	    . Januar Februar MÃ¤rz April Mai Juni Juli August
 	    September Oktober November Dezember
 	}
 	weekdays,de {So Mo Di Mi Do Fr Sa}
@@ -602,23 +600,23 @@ snit::widgetadaptor widget::calendar {
 	today,es {}
 
 	mn,fr {
-	    . Janvier Février Mars Avril Mai Juin Juillet Août
-	    Septembre Octobre Novembre Décembre
+	    . Janvier FÃ©vrier Mars Avril Mai Juin Juillet AoÃ»t
+	    Septembre Octobre Novembre DÃ©cembre
 	}
 	weekdays,fr {Di Lu Ma Me Je Ve Sa}
 	today,fr {}
 
 	mn,gr {
-	    . Îıı???Ïıı?Ïıı??Ïıı ???Ïıı?Ïıı?Ïıı??Ïıı Îıı?ÏııÏıı??Ïıı ÎııÏııÏıı????Ïıı Îıı?Îıı?Ïıı Îıı?Ïıı???Ïıı Îıı?Ïıı???Ïıı ÎııÏıı??ÏııÏııÏıı?Ïıı
-	    ??ÏııÏııÎıı??Ïıı??Ïıı Îıı?ÏııÏıı??Ïıı??Ïıı Îıı?Îıı??Ïıı??Ïıı Îıı??Îıı??Ïıı??Ïıı
+	    . ÃÃ½Ã½???ÃÃ½Ã½?ÃÃ½Ã½??ÃÃ½Ã½ ???ÃÃ½Ã½?ÃÃ½Ã½?ÃÃ½Ã½??ÃÃ½Ã½ ÃÃ½Ã½?ÃÃ½Ã½ÃÃ½Ã½??ÃÃ½Ã½ ÃÃ½Ã½ÃÃ½Ã½ÃÃ½Ã½????ÃÃ½Ã½ ÃÃ½Ã½?ÃÃ½Ã½?ÃÃ½Ã½ ÃÃ½Ã½?ÃÃ½Ã½???ÃÃ½Ã½ ÃÃ½Ã½?ÃÃ½Ã½???ÃÃ½Ã½ ÃÃ½Ã½ÃÃ½Ã½??ÃÃ½Ã½ÃÃ½Ã½ÃÃ½Ã½?ÃÃ½Ã½
+	    ??ÃÃ½Ã½ÃÃ½Ã½ÃÃ½Ã½??ÃÃ½Ã½??ÃÃ½Ã½ ÃÃ½Ã½?ÃÃ½Ã½ÃÃ½Ã½??ÃÃ½Ã½??ÃÃ½Ã½ ÃÃ½Ã½?ÃÃ½Ã½??ÃÃ½Ã½??ÃÃ½Ã½ ÃÃ½Ã½??ÃÃ½Ã½??ÃÃ½Ã½??ÃÃ½Ã½
 	}
-	weekdays,gr {ÎııÏııÏıı Îıı?Ïıı TÏıı? ??Ïıı Î ?? Î ?Ïıı ???}
+	weekdays,gr {ÃÃ½Ã½ÃÃ½Ã½ÃÃ½Ã½ ÃÃ½Ã½?ÃÃ½Ã½ TÃÃ½Ã½? ??ÃÃ½Ã½ Ã ?? Ã ?ÃÃ½Ã½ ???}
 	today,gr {}
 
 	mn,he {
-	    . ×ıı× ×ıı×ıı? ?×ıı?×ıı×ıı? ×ıı?? ×ıı??×ıı×ıı ×ıı×ıı×ıı ×ıı×ıı× ×ıı ×ıı×ıı×ıı×ıı ×ıı×ıı×ıı×ıı?×ıı ??×ıı×ıı×ıı? ×ıı×ıı?×ıı×ıı×ıı? × ×ıı×ıı×ıı×ıı? ×ıı?×ıı×ıı?
+	    . Ã—Ã½Ã½Ã— Ã—Ã½Ã½Ã—Ã½Ã½? ?Ã—Ã½Ã½?Ã—Ã½Ã½Ã—Ã½Ã½? Ã—Ã½Ã½?? Ã—Ã½Ã½??Ã—Ã½Ã½Ã—Ã½Ã½ Ã—Ã½Ã½Ã—Ã½Ã½Ã—Ã½Ã½ Ã—Ã½Ã½Ã—Ã½Ã½Ã— Ã—Ã½Ã½ Ã—Ã½Ã½Ã—Ã½Ã½Ã—Ã½Ã½Ã—Ã½Ã½ Ã—Ã½Ã½Ã—Ã½Ã½Ã—Ã½Ã½Ã—Ã½Ã½?Ã—Ã½Ã½ ??Ã—Ã½Ã½Ã—Ã½Ã½Ã—Ã½Ã½? Ã—Ã½Ã½Ã—Ã½Ã½?Ã—Ã½Ã½Ã—Ã½Ã½Ã—Ã½Ã½? Ã— Ã—Ã½Ã½Ã—Ã½Ã½Ã—Ã½Ã½Ã—Ã½Ã½? Ã—Ã½Ã½?Ã—Ã½Ã½Ã—Ã½Ã½?
 	}
-	weekdays,he {?×ıı?×ıı×ıı ?× ×ıı ?×ıı×ıı?×ıı ?×ıı×ıı?×ıı ×ıı×ıı×ıı?×ıı ?×ıı?×ıı ?×ıı?}
+	weekdays,he {?Ã—Ã½Ã½?Ã—Ã½Ã½Ã—Ã½Ã½ ?Ã— Ã—Ã½Ã½ ?Ã—Ã½Ã½Ã—Ã½Ã½?Ã—Ã½Ã½ ?Ã—Ã½Ã½Ã—Ã½Ã½?Ã—Ã½Ã½ Ã—Ã½Ã½Ã—Ã½Ã½Ã—Ã½Ã½?Ã—Ã½Ã½ ?Ã—Ã½Ã½?Ã—Ã½Ã½ ?Ã—Ã½Ã½?}
 	today,he {}
 
 	mn,it {
@@ -678,8 +676,8 @@ snit::widgetadaptor widget::calendar {
 	today,zh {}
 
 	mn,fi {
-	    . Tammikuu Helmikuu Maaliskuu Huhtikuu Toukokuu Kesäkuu
-	    Heinäkuu Elokuu Syyskuu Lokakuu Marraskuu Joulukuu
+	    . Tammikuu Helmikuu Maaliskuu Huhtikuu Toukokuu KesÃ¤kuu
+	    HeinÃ¤kuu Elokuu Syyskuu Lokakuu Marraskuu Joulukuu
 	}
 	weekdays,fi {Ma Ti Ke To Pe La Su}
 	today,fi {}

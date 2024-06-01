@@ -46,18 +46,18 @@ by the [method highlight] method of the widget.
 [call [cmd ::ctext::addHighlightClass] [arg pathName] [arg class] [arg color] [arg keywordlist]]
 
 Add a highlighting class [arg class] to the ctext widget [arg pathName].
-The highligthing will be done with the color [arg color]. All words in the [arg keywordlist] will be
+The highlighting will be done with the color [arg color]. All words in the [arg keywordlist] will be
 highlighted.
 
 [example {
 	# highlight some tcl keywords
-	::ctext::addHighlightClass .t tclkeywords red [list set info interp uplevel upvar]]
+	::ctext::addHighlightClass .t tclkeywords red [list set info interp uplevel upvar]
  }]
 
 [call [cmd ::ctext::addHighlightClassWithOnlyCharStart] [arg pathName] [arg class] [arg color] [arg char]]
 
 Add a highlighting class [arg class] to the ctext widget [arg pathName].
-The highligthing will be done with the color [arg color]. All words starting with [arg char] will be
+The highlighting will be done with the color [arg color]. All words starting with [arg char] will be
 highlighted.
 
 [example {
@@ -67,14 +67,14 @@ highlighted.
 [call [cmd ::ctext::addHighlightClassForSpecialChars] [arg pathName] [arg class] [arg color] [arg charstring]]
 
 Add a highlighting class [arg class] to the ctext widget [arg pathName].
-The highligthing will be done with the color [arg color]. All chars in [arg charstring] will be
+The highlighting will be done with the color [arg color]. All chars in [arg charstring] will be
 highlighted.
 
 [call [cmd ::ctext::addHighlightClassForRegexp] [arg pathName] [arg class] [arg color] [arg pattern]]
 
 Add a highlighting class [arg class] to the ctext widget [arg pathName].
-The highligthing will be done with the color [arg color]. All text parts matching the regexp [arg pattern]
-will be highligthed.
+The highlighting will be done with the color [arg color]. All text parts matching the regexp [arg pattern]
+will be highlighted.
 
 [call [cmd ::ctext::clearHighlightClasses] [arg pathName]]
 

@@ -1,19 +1,10 @@
 [comment {-*- tcl -*- ntextWordBreak manpage}]
-[manpage_begin ntextWordBreak n 0.81]
-[see_also bindtags]
-[see_also ntext]
-[see_also re_syntax]
-[see_also regexp]
-[see_also text]
-[keywords bindtags]
-[keywords re_syntax]
-[keywords regexp]
-[keywords text]
+[manpage_begin ntextWordBreak n 1.0]
 [moddesc   {ntext Word Boundary Detection for the Text Widget}]
 [titledesc {ntext Word Boundary Detection for the Text Widget}]
-[require Tcl 8.5]
-[require Tk 8.5]
-[require ntext [opt 0.81]]
+[require Tcl 8.5-]
+[require Tk 8.5-]
+[require ntext [opt 1.0]]
 [description]
 
 The [package ntext] package provides a binding tag named [emph Ntext] for use by text widgets in place of the default [emph Text] binding tag.
@@ -39,6 +30,7 @@ The behaviour of [emph Ntext] may be configured application-wide by setting the 
    After changing this value, [emph Ntext] 's regexp matching patterns should be recalculated.  See [sectref FUNCTIONS] for details and advanced configuration options.
 [list_end]
 [para]
+
 
 [section {Advanced Use}]
 [comment {no subsection in my dtp kit}]
@@ -108,6 +100,10 @@ The use of three classes of characters might make selection too fine-grained; bu
 [para]
 As well as its defaults, [emph Ntext] permits the developer to define their own classes of characters, or to revert to the classic [emph Text] definitions, or to specify their own regexp matching patterns.
 
+[section BUGS]
+
+This version of [package ntext] is intended to be compatible with all releases of [package Tk] 8.5, 8.6, and 8.7, and with the branches [emph core-8-5-branch], [emph core-8-6-branch], and [emph trunk] in the source code repository for [package Tk].  Any incompatibility with any of these versions, for any [package Tk] windowing system, should be reported as a bug. Please report such in the category [emph ntext] of the [uri https://core.tcl-lang.org/tklib/reportlist {Tklib Trackers}].
+
 [section EXAMPLE]
 
 To use [emph Ntext] with Tcl/Tk's usual word-boundary detection rules:
@@ -133,6 +129,8 @@ bindtags .t {.t Ntext . all}
 }]
 
 See regexp, re_syntax for more information.
-[vset CATEGORY ntext]
-[include ../../support/devel/doc/feedback.inc]
+
+[see_also ntext]
+[see_also text bindtags regexp re_syntax]
+[keywords text bindtags regexp re_syntax]
 [manpage_end]

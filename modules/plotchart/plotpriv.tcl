@@ -132,6 +132,28 @@ proc ::Plotchart::SavePlot { w filename args } {
     }
 }
 
+# PolarToPixelPriv --
+#    Convert polar coordinates to pixel coordinates
+# Arguments:
+#    w           Name of the canvas
+#    rad         Radius of the point
+#    phi         Angle of the point (degrees)
+# Result:
+#    List of two elements, x- and y-coordinates in pixels
+#
+# Note:
+#    This is the original version, to be used by the creation routines only.
+#    It has been replaced by coordsToPixel for general use.
+#
+proc ::Plotchart::PolarToPixelPriv { w rad phi } {
+   variable torad
+
+   set xcrd [expr {$rad*cos($phi*$torad)}]
+   set ycrd [expr {$rad*sin($phi*$torad)}]
+
+   coordsToPixel $w $xcrd $ycrd
+}
+
 # DetermineFromAxesBox --
 #    Determine the layout from the information in an axes box
 # Arguments:
@@ -412,7 +434,8 @@ proc ::Plotchart::MarginsSquare { w {notext 2.0} {text_width 8}} {
 # Arguments:
 #    w           Name of the canvas
 #    args        additional arguments for placement of plot,
-#                currently: '-box', '-reference', and '-units'
+#                currently: '-box', '-reference', '-units',
+#                '-centre'
 # Result:
 #    List of four values giving the pixel coordinates
 #    of the boundary of the piechart
@@ -441,26 +464,31 @@ proc ::Plotchart::MarginsCircle { w args } {
 
    # width (dx) and height (dy) of plot region in pixels:
    if {[info exists options(-units)]} {
-      # refUnitX, refUnitY - size of one world coordinate unit in the piechart,
-      #      given as canvas coords (can also be m,c,i,p units)
-      # Note: the pie is always 2 world coordinate units in diameter
-      #
-      lassign $options(-units) refUnitX refUnitY
-      set wc [string range $w 2 end]
-      set refUnitX [winfo pixels $wc $refUnitX]
-      set refUnitY [winfo pixels $wc $refUnitY]
-      set dx [expr {$refUnitX * 2}]
-      set dy [expr {$refUnitY * 2}]
+       # refUnitX, refUnitY - size of one world coordinate unit in the piechart,
+       #      given as canvas coords (can also be m,c,i,p units)
+       # Note: the pie is always 2 world coordinate units in diameter
+       #
+       lassign $options(-units) refUnitX refUnitY
+       set wc [string range $w 2 end]
+       set refUnitX [winfo pixels $wc $refUnitX]
+       set refUnitY [winfo pixels $wc $refUnitY]
+       set dx [expr {$refUnitX * 2}]
+       set dy [expr {$refUnitY * 2}]
    } else {
-      set dx [expr {$pxmax-$pxmin+1}]
-      set dy [expr {$pymax-$pymin+1}]
-      # make sure, we get a centred circle:
-      if {$dx < $dy} {
-          set dy $dx
-      } else {
-          set dx $dy
-      }
-      set pxmin [expr {($pxmin+$pxmax-$dx)/2}]
+       set dx [expr {$pxmax-$pxmin+1}]
+       set dy [expr {$pymax-$pymin+1}]
+       # make sure, we get a centred circle:
+       if {$dx < $dy} {
+           set dy $dx
+       } else {
+           set dx $dy
+       }
+       set pxmin [expr {($pxmin+$pxmax-$dx)/2}]
+
+       if {[info exists options(-centre)] && $options(-centre)} {
+           set pymin [expr {($pymin+$pymax-$dy)/2}]
+           set pymax [expr {($pymin+$pymax+$dy)/2}]
+       }
    }
 
    # new default coords of plotting region:
@@ -605,7 +633,6 @@ proc ::Plotchart::MarginsTernary { w argv {notext 2.0} {text_width 8}} {
         set config($w,margin,bottom) [expr {$config($w,margin,bottom) + $dy}]
     }
 
-    puts "New margins: $pxmin $pymin $pxmax $pymax"
     return [list $pxmin $pymin $pxmax $pymax]
 }
 
@@ -1209,6 +1236,170 @@ proc ::Plotchart::DrawLogXData { w series xcrd ycrd } {
 proc ::Plotchart::DrawLogXLogYData { w series xcrd ycrd } {
 
     DrawData $w $series [expr {log10($xcrd)}] [expr {log10($ycrd)}]
+}
+
+# DrawRegion --
+#    Draw a filled region an XY-plot (and variants)
+# Arguments:
+#    w           Name of the canvas
+#    series      Data series
+#    xcrds       List of x coordinates
+#    ycrds       List of y coordinates
+# Result:
+#    None
+# Side effects:
+#    Filled polygon drawn in canvas
+#
+proc ::Plotchart::DrawRegion { w series xcrds ycrds } {
+   variable data_series
+   variable scaling
+
+   #
+   # Convert the coordinates
+   #
+   set pxy {}
+   foreach xcrd $xcrds ycrd $ycrds {
+       foreach {px py} [coordsToPixel $w $xcrd $ycrd] {break}
+       lappend pxy $px $py
+   }
+
+   #
+   # Get the configuration options
+   #
+   set filled "no"
+   if { [info exists data_series($w,$series,-filled)] } {
+      set filled $data_series($w,$series,-filled)
+   }
+
+   set colour "black"
+   if { [info exists data_series($w,$series,-colour)] } {
+      set colour $data_series($w,$series,-colour)
+   }
+
+   set fillcolour white
+   if { [info exists data_series($w,$series,-fillcolour)] } {
+      set fillcolour $data_series($w,$series,-fillcolour)
+   }
+
+   set width 1
+   if { [info exists data_series($w,$series,-width)] } {
+      set width $data_series($w,$series,-width)
+   }
+
+   $w create polygon $pxy \
+       -fill $fillcolour -outline $colour -width $width -tag [list data data_$series]
+
+   $w lower data
+}
+
+# DrawMinMax --
+#    Draw a filled region representing a band of minimum and maximum values in an XY-plot (and variants)
+# Arguments:
+#    w           Name of the canvas
+#    series      Data series
+#    xcrd        X coordinate
+#    ymin        Minimum y coordinate
+#    ymax        Maximum y coordinate
+# Result:
+#    None
+# Side effects:
+#    Filled polygon drawn in canvas
+# Note:
+#    ymin and ymax may be empty strings
+#
+proc ::Plotchart::DrawMinMax { w series xcrd ymin ymax } {
+   variable data_series
+   variable scaling
+
+   #
+   # Do we have a break?
+   #
+   if { $ymin eq {} && $ymax eq {} } {
+       unset -nocomplain data_series($w,$series,minmaxid)
+       return
+   }
+
+   #
+   # If not, create the canvas item with the right colours and other attributes
+   #
+   set hasmin 1
+   set hasmax 1
+   if { $ymin eq {} } {
+       set hasmin 0
+       set ymin   $ymax
+   }
+   if { $ymax eq {} } {
+       set hasmax 0
+       set ymax   $ymin
+   }
+   set ycrd $ymin
+
+   if { ![info exists data_series($w,$series,minmaxid)] } {
+      foreach {px py} [coordsToPixel $w $xcrd $ycrd] {break}
+
+      set pxy [list $px $py $px $py $px $py]
+
+      #
+      # Get the configuration options
+      #
+      set filled "no"
+      if { [info exists data_series($w,$series,-filled)] } {
+         set filled $data_series($w,$series,-filled)
+      }
+
+      set colour "black"
+      if { [info exists data_series($w,$series,-colour)] } {
+         set colour $data_series($w,$series,-colour)
+      }
+
+      set fillcolour white
+      if { [info exists data_series($w,$series,-fillcolour)] } {
+         set fillcolour $data_series($w,$series,-fillcolour)
+      }
+
+      set width 1
+      if { [info exists data_series($w,$series,-width)] } {
+         set width $data_series($w,$series,-width)
+      }
+
+      set data_series($w,$series,minmaxid) \
+         [$w create polygon $pxy \
+             -fill $fillcolour -outline $colour -width $width -tag [list data data_$series]]
+
+      $w lower data
+
+      set data_series($w,$series,minx) $xcrd
+      set data_series($w,$series,miny) $ymin
+      set data_series($w,$series,maxx) $xcrd
+      set data_series($w,$series,maxy) $ymax
+   }
+
+   #
+   # We have one or two new points - add them
+   #
+   if { $hasmin } {
+       lappend data_series($w,$series,minx) $xcrd
+       lappend data_series($w,$series,miny) $ymin
+   }
+   if { $hasmax } {
+       set data_series($w,$series,maxx) [concat $xcrd $data_series($w,$series,maxx)]
+       set data_series($w,$series,maxy) [concat $ymax $data_series($w,$series,maxy)]
+   }
+
+   #
+   # Convert the coordinates
+   #
+   set pxy {}
+   foreach xcrd $data_series($w,$series,minx) ycrd $data_series($w,$series,miny) {
+       foreach {px py} [coordsToPixel $w $xcrd $ycrd] {break}
+       lappend pxy $px $py
+   }
+   foreach xcrd $data_series($w,$series,maxx) ycrd $data_series($w,$series,maxy) {
+       foreach {px py} [coordsToPixel $w $xcrd $ycrd] {break}
+       lappend pxy $px $py
+   }
+
+   $w coords $data_series($w,$series,minmaxid) $pxy
 }
 
 # DrawInterval --
@@ -3264,43 +3455,10 @@ proc ::Plotchart::DrawDot { w series xcrd ycrd value } {
         }
     }
 
+    set data_series($w,$series,x) $xcrd
+    set data_series($w,$series,y) $ycrd
+
     $w lower [list data && $w]
-}
-
-# DrawLog*Dot, DrawPolarDot --
-#    Draw a dot at the given coordinates - variants for logarithmic axes and polar axis
-# Arguments:
-#    w           Name of the canvas
-#    series      Data series (identifier for the vectors)
-#    xcrd        X coordinate of start or centre
-#    ycrd        Y coordinate of start or centre
-#    value       Value to be used
-# Result:
-#    None
-# Side effects:
-#    New oval drawn in canvas
-#
-proc ::Plotchart::DrawLogXDot { w series xcrd ycrd value } {
-
-    DrawDot $w $series [expr {log10($xcrd)}] $ycrd $value
-}
-
-proc ::Plotchart::DrawLogYDot { w series xcrd ycrd value } {
-
-    DrawDot $w $series $xcrd [expr {log10($ycrd)}] $value
-}
-
-proc ::Plotchart::DrawLogXLogYDot { w series xcrd ycrd value } {
-
-    DrawDot $w $series [expr {log10($xcrd)}] [expr {log10($ycrd)}] $value
-}
-
-proc ::Plotchart::DrawPolarDot { w series rad phi value } {
-   variable torad
-   set xcrd [expr {$rad*cos($phi*$torad)}]
-   set ycrd [expr {$rad*sin($phi*$torad)}]
-
-   DrawDot $w $series $xcrd $ycrd $value
 }
 
 # DrawRchart --
@@ -3723,8 +3881,11 @@ proc ::Plotchart::DrawWindRoseData { w data colour } {
     foreach value $data cumulative_radius $data_series($w,cumulative_radius) {
         set radius [expr {$value + $cumulative_radius}]
 
-        foreach {xright ytop}    [polarToPixel $w [expr {$radius*sqrt(2.0)}]  45.0] {break}
-        foreach {xleft  ybottom} [polarToPixel $w [expr {$radius*sqrt(2.0)}] 225.0] {break}
+        foreach {xright ytop}    [PolarToPixelPriv $w [expr {$radius*sqrt(2.0)}]  45.0] {break}
+        foreach {xleft  ybottom} [PolarToPixelPriv $w [expr {$radius*sqrt(2.0)}] 225.0] {break}
+
+        puts "$value -- $xright -- $ytop -- $xleft -- $ybottom - $colour"
+
 
         $w create arc $xleft $ytop $xright $ybottom -style pie -fill $colour \
             -tag [list $w data_$data_series($w,count_data)] -start $start_angle -extent $width_sector
@@ -4004,10 +4165,10 @@ proc ::Plotchart::ClearPlot {w} {
     variable data_series
     variable scaling
 
-    foreach s [array names data_series "$w,*"] {
+    foreach s [array names data_series "*$w,*"] {
         unset data_series($s)
     }
-    foreach s [array names scaling "$w,*"] {
+    foreach s [array names scaling "*$w,*"] {
         unset scaling($s)
     }
     #$w delete $w
@@ -4411,4 +4572,169 @@ proc ::Plotchart::DeleteData {w} {
     }
 
     $w delete data
+}
+
+# DrawViolin --
+#     Draw a violin plot based on the given set of values
+#
+# Arguments:
+#     w          Name of the canvas (actually the plot)
+#     series     Name of the data series to be used
+#     xcrd       X-coordinate or list of data
+#     ycrd       Y-coordinate or list of data
+#
+# Result:
+#     None
+# Side effects:
+#     A violin plot at the given x- or y-coordinate
+#
+proc ::Plotchart::DrawViolin {w series xcrd ycrd} {
+    variable data_series
+    variable scaling
+
+    #
+    # Check orientation
+    #
+    set type "?"
+    if { [llength $xcrd] > 1 && [llength $ycrd] == 1 } {
+        set type h
+    }
+    if { [llength $xcrd] == 1 && [llength $ycrd] > 1 } {
+        set type v
+    }
+    if { $type == "?" } {
+        return -code error "Use either a list of x values or a list of y values - not both"
+    }
+
+    if { $type == "h" } {
+        set data [lsort -real -increasing $xcrd]
+    } else {
+        set data [lsort -real -increasing $ycrd]
+    }
+    set length [llength $data]
+
+    set extraRange 0.05
+    set maxExtent  25
+    if { [info exists data_series($w,$series,-violinwidth)] } {
+        set maxExtent $data_series($w,$series,-violinwidth)
+    }
+
+    set outlineColour black
+    if { [info exists data_series($w,$series,-colour)] } {
+        set outlineColour $data_series($w,$series,-colour)
+    }
+
+    set fillColour {}
+    if { [info exists data_series($w,$series,-fillcolour)] } {
+        set fillColour $data_series($w,$series,-fillcolour)
+    }
+
+    set numberClasses [expr {min( 10, max( 3, [llength $data]/2) )}]
+
+    #
+    # Determine the extremes - increase the range by a small margin
+    #
+    set minv [lindex $data 0]
+    set maxv [lindex $data end]
+
+    set range [expr {$maxv - $minv}]
+
+    if { $range == 0.0 } {
+        if { $type eq "h" } {
+            lassign [coordsToPixel $w $minv $ycrd] px py
+        } else {
+            lassign [coordsToPixel $w $xcrd $minv] px py
+        }
+        $w create oval [expr {$px-$maxExtent}] [expr {$py-$maxExtent}] [expr {$px+$maxExtent}] [expr {$py+$maxExtent}]
+        return
+    } else {
+        set minv [expr {$minv - $extraRange * $range}]
+        set maxv [expr {$maxv + $extraRange * $range}]
+    }
+
+    set dv [expr {($maxv - $minv) / $numberClasses}]
+
+    #
+    # Determine the distribution
+    #
+    set classCount [lrepeat $numberClasses [expr {0}]]
+
+    foreach value $data {
+        set class [expr {int( ($value-$minv) / $dv)}]
+        lset classCount $class [expr {[lindex $classCount $class] + 1}]
+    }
+
+    set ccoordB [list 0]
+    set vcoordB [list 0]
+    set ccoordE [list]
+    set vcoordE [list]
+
+    set vi       0
+    set maxCount 0
+    foreach class $classCount {
+        if { $maxCount < $class } {
+            set maxCount $class
+        }
+
+        incr vi
+        lappend ccoordB $class
+        lappend vcoordB $vi
+
+        set ccoordE [concat [expr {-$class}] $ccoordE]
+        set vcoordE [concat $vi              $vcoordE]
+    }
+
+    set ccoordB [concat $ccoordB 0              $ccoordE 0]
+    set vcoordB [concat $vcoordB $numberClasses $vcoordE 0]
+
+    set scaleV [expr {$maxExtent / double($maxCount)}]
+
+    set xyCoords [list]
+
+    foreach cc $ccoordB vc $vcoordB {
+        if { $type eq "h" } {
+            set xc [expr {$minv + $vc * $dv}]
+            lassign [coordsToPixel $w $xc $ycrd] px py
+            set py [expr {$py + $scaleV * $cc}]
+        } else {
+            set yc [expr {$minv + $vc * $dv}]
+            lassign [coordsToPixel $w $xcrd $yc] px py
+            set px [expr {$px + $scaleV * $cc}]
+        }
+        lappend xyCoords $px $py
+    }
+
+    $w create polygon $xyCoords -smooth 1 -fill $fillColour -outline $outlineColour
+}
+
+# DrawViolinData --
+#    Draw the data in a boxplot as a violin
+#    where either the x-axis or the y-axis consists of labels
+# Arguments:
+#    w           Name of the canvas
+#    series      Data series
+#    label       Label on the x- or y-axis to put the box on
+#    values      List of values to plot the violin for
+# Result:
+#    None
+# Side effects:
+#    New data drawn in canvas
+#
+proc ::Plotchart::DrawViolinData { w series label values } {
+    variable config
+    variable scaling
+    variable settings
+
+    set index [lsearch $config($w,axisnames) $label]
+    if { $index == -1 } {
+        return "Label $label not found on axis"
+    }
+
+    set coord [expr {$index + 1}]
+
+    if { $settings($w,orientation) eq "vertical" } {
+        DrawViolin $w $series $coord $values
+    } else {
+        DrawViolin $w $series $values $coord
+    }
 }

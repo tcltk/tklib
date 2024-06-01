@@ -89,7 +89,6 @@ proc ::Plotchart::ConfigBalloon { w args } {
         switch -- $option {
             "font" -
             "margin" -
-            "textcolour" -
             "justify" -
             "arrowsize" -
             "background" -
@@ -97,6 +96,7 @@ proc ::Plotchart::ConfigBalloon { w args } {
             "rimwidth" {
                 set settings($w,balloon$option) $value
             }
+            "textcolour" -
             "textcolor" {
                 set settings($w,balloontextcolour) $value
             }
@@ -121,10 +121,10 @@ proc ::Plotchart::ConfigPlainText { w args } {
         set option [string range $option 1 end]
         switch -- $option {
             "font" -
-            "textcolour" -
             "justify" {
                 set settings($w,text$option) $value
             }
+            "textcolour" -
             "textcolor" {
                 set settings($w,textcolour) $value
             }

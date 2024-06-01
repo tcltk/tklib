@@ -30,8 +30,8 @@
 #
 # THE  AUTHOR  AND DISTRIBUTORS  SPECIFICALLY  DISCLAIM ANY  WARRANTIES,
 # INCLUDING,   BUT   NOT  LIMITED   TO,   THE   IMPLIED  WARRANTIES   OF
-# MERCHANTABILITY,    FITNESS   FOR    A    PARTICULAR   PURPOSE,    AND
-# NON-INFRINGEMENT.  THIS  SOFTWARE IS PROVIDED  ON AN "AS  IS" BASIS,
+# MERCHANTABILITY,    FITNESS   FOR    A    PARTICULAR    PURPOSE,   AND
+# NON-INFRINGEMENT. THIS  SOFTWARE  IS  PROVIDED  ON AN "AS  IS"  BASIS,
 # AND  THE  AUTHOR  AND  DISTRIBUTORS  HAVE  NO  OBLIGATION  TO  PROVIDE
 # MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #
@@ -41,19 +41,27 @@
 #   rdial::create w ?-width wid? ?-height hgt?  ?-value floatval?
 #        ?-bg|-background bcol? ?-fg|-foreground fcol? ?-step step?
 #        ?-callback script? ?-scale "degrees"|"radians"|factor?
-#        ?-slow sfact? ?-fast ffact? ?-orient horizontal|vertical?
+#        ?-slow sfact? ?-fast ffact? ?-orient "horizontal"|"vertical"?
+#        ?-variable varname? ?-bindwheel step?
 #
 # History:
 #  20100526: -scale option added
 #  20100626: incorrect "rotation direction" in vertical mode repaired
 #  20100704: added -variable option and methods get and set (AM)
+#  20101020: bug {[info exists ...]<0} => {![info exists ...]} repaired
+#  20101112: drag: set opt(-value) depending on scale - thank's Manfred R.
+#  20101118: -variable option added
+#  20170518: -bindwheel option added for scrollwheel input
+#  20170523: boolean variable buttonwheel controls Button/Wheel binding.
+#            if false the <BindWheel> event is used (by default in Windows),
+#            the event <ButtonPress-4/5> if it is false (other systems).
 #
 # Todo:
 #    option -variable -- conflicts with -value
 #    methods get and set
 #
 
-package require Tk 8.5
+package require Tk 8.5-
 package require snit
 
 namespace eval controlwidget {
@@ -82,6 +90,7 @@ snit::widget controlwidget::rdial {
     option -fast       -default 10
     option -scale      -default 1.0        -configuremethod SetOption
     option -variable   -default {}         -configuremethod VariableName
+    option -bindwheel  -default 2.0        -configuremethod SetOption
 
     variable d2r
     variable sfact
@@ -89,9 +98,17 @@ snit::widget controlwidget::rdial {
     variable ovalue
     variable sector    88
     variable callback
+    variable buttonwheel 1
+    variable wheelfactor 15.0
 
 
     constructor args {
+
+        # I did not find a platform independent method :-(
+        if {$::tcl_platform(platform) eq "windows"} {
+            set buttonwheel 0
+        }
+
         #
         # A few constants to reduce expr
         #
@@ -108,8 +125,6 @@ snit::widget controlwidget::rdial {
 
         grid $win.c -sticky nsew
 
-        # just for laziness ;)
-        set nsc [namespace current]
         set wid $options(-width)
         set hgt $options(-height)
         set bgc $options(-background)
@@ -119,30 +134,50 @@ snit::widget controlwidget::rdial {
             $win.c configure -width $wid -height $hgt
             # standard bindings
             bind $win.c <ButtonPress-1> [list $self SetVar ovalue %x]
-            bind $win.c <B1-Motion>       [list $self drag %W %x]
-            bind $win.c <ButtonRelease-1> [list $self drag %W %x]
-            # fine movement
-            bind $win.c <Shift-ButtonPress-1> [list $self SetVar ovalue %x]
-            bind $win.c <Shift-B1-Motion>       [list $self drag %W %x -1]
-            bind $win.c <Shift-ButtonRelease-1> [list $self drag %W %x -1]
+            bind $win.c <B1-Motion>       [list $self drag %W %x 0]
+            bind $win.c <ButtonRelease-1> [list $self drag %W %x 0]
             # course movement
+            bind $win.c <Shift-ButtonPress-1> [list $self SetVar ovalue %x]
+            bind $win.c <Shift-B1-Motion>       [list $self drag %W %x 1]
+            bind $win.c <Shift-ButtonRelease-1> [list $self drag %W %x 1]
+            # fine movement
             bind $win.c <Control-ButtonPress-1> [list $self SetVar ovalue %x]
-            bind $win.c <Control-B1-Motion>       [list $self drag %W %x 1]
-            bind $win.c <Control-ButtonRelease-1> [list $self drag %W %x 1]
+            bind $win.c <Control-B1-Motion>       [list $self drag %W %x -1]
+            bind $win.c <Control-ButtonRelease-1> [list $self drag %W %x -1]
         } else {
             $win.c configure -width $hgt -height $wid
-            # standard bindings
+            # standard binding
             bind $win.c <ButtonPress-1> [list $self SetVar ovalue %y]
-            bind $win.c <B1-Motion>       [list $self drag %W %y]
-            bind $win.c <ButtonRelease-1> [list $self drag %W %y]
-            # fine movement
-            bind $win.c <Shift-ButtonPress-1> [list $self SetVar ovalue %y]
-            bind $win.c <Shift-B1-Motion>       [list $self drag %W %y -1]
-            bind $win.c <Shift-ButtonRelease-1> [list $self drag %W %y -1]
+            bind $win.c <B1-Motion>       [list $self drag %W %y 0]
+            bind $win.c <ButtonRelease-1> [list $self drag %W %y 0]
             # course movement
+            bind $win.c <Shift-ButtonPress-1> [list $self SetVar ovalue %y]
+            bind $win.c <Shift-B1-Motion>       [list $self drag %W %y 1]
+            bind $win.c <Shift-ButtonRelease-1> [list $self drag %W %y 1]
+            # fine movement
             bind $win.c <Control-ButtonPress-1> [list $self SetVar ovalue %y]
-            bind $win.c <Control-B1-Motion>       [list $self drag %W %y 1]
-            bind $win.c <Control-ButtonRelease-1> [list $self drag %W %y 1]
+            bind $win.c <Control-B1-Motion>       [list $self drag %W %y -1]
+            bind $win.c <Control-ButtonRelease-1> [list $self drag %W %y -1]
+        }
+        if {$options(-bindwheel) != 0} {
+            if {$buttonwheel} {
+                set up $options(-bindwheel)
+                set dn [expr {0.0 - $up}]
+                # standard binding
+                bind $win.c <ButtonPress-4> [list $self roll %W $up 0]
+                bind $win.c <ButtonPress-5> [list $self roll %W $dn 0]
+                # course movement
+                bind $win.c <Shift-ButtonPress-4> [list $self roll %W $up 1]
+                bind $win.c <Shift-ButtonPress-5> [list $self roll %W $dn 1]
+                # fine movement
+                bind $win.c <Control-ButtonPress-4> [list $self roll %W $up -1]
+                bind $win.c <Control-ButtonPress-5> [list $self roll %W $dn -1]
+            } else {
+                # it seem that Shift+Control doesn't work :-(
+                bind $win.c <MouseWheel> [list $self roll %W %D 0]
+                bind $win.c <Shift-MouseWheel> [list $self roll %W %D 1]
+                bind $win.c <Control-MouseWheel> [list $self roll %W %D -1]
+            }
         }
 
         if {$options(-variable) ne ""} {
@@ -154,7 +189,6 @@ snit::widget controlwidget::rdial {
 
             trace add variable ::$options(-variable) write [mymethod variableChanged]
         }
-
 
         # draw insides
         $self draw $win.c $options(-value)
@@ -269,7 +303,6 @@ snit::widget controlwidget::rdial {
     # draw the thumb wheel view
     method draw {w val} {
 
-
         set stp $options(-step)
         set wid $options(-width)
         set hgt $options(-height)
@@ -310,8 +343,22 @@ snit::widget controlwidget::rdial {
         set options(-value) $val
     }
 
-    method drag {w coord {mode 0}} {
-        variable opt
+    # update rdials after value change
+    method rdupdate {w diff} {
+        # calculate "new" calue
+        set options(-value) [expr {$options(-value)+$diff*$options(-scale)}]
+
+        # call callback if defined...
+        if {$options(-callback) ne ""} {
+            {*}$options(-callback) $options(-value)
+        }
+
+        # draw knob with new angle
+        $self draw $w $options(-value)
+    }
+
+    # change by mouse dragging
+    method drag {w coord mode} {
         variable ovalue
 
         # calculate new value
@@ -325,22 +372,29 @@ snit::widget controlwidget::rdial {
         } elseif {$mode>0} {
             set diff [expr {$diff*$options(-fast)}]
         }
-        set options(-value) [expr {$options(-value)+$diff}]
+        $self rdupdate $w $diff
 
-        # call callback if defined...
-        if {$options(-callback) ne ""} {
-            {*}$options(-callback) [expr {$options(-value)*$options(-scale)}]
-        }
-
-        # draw knob with new angle
-        $self draw $win.c $options(-value)
         # store "old" value for diff
         set ovalue $coord
+    }
+
+    # change by mouse wheel
+    method roll {w diff mode} {
+
+        if {! $buttonwheel} {
+            set diff [expr {$diff/$wheelfactor/$options(-bindwheel)}]
+        }
+        if {$mode<0} {
+            set diff [expr {$diff*$options(-slow)}]
+        } elseif {$mode>0} {
+            set diff [expr {$diff*$options(-fast)}]
+        }
+        $self rdupdate $w $diff
     }
 }
 
 # Announce our presence
-package provide rdial 0.3
+package provide rdial 0.7
 
 #-------- test & demo ... disable it for package autoloading -> {0}
 if {0} {
@@ -373,11 +427,14 @@ if {0} {
                 }
             }
         }
-        label .lb -text "Use mouse button with Shift &\nControl for dragging the dials"
+        set help "Use mouse button with Shift &"
+        append help "\nControl for dragging the dials"
+        append help "\nwith Mouswheel support"
+        label .lb -text $help
         label .lv -textvariable disp_value(rv)
         controlwidget::rdial .rv -callback {show_value rv} -value $disp_value(rv)\
                 -width 200 -step 5 -bg blue -fg white \
-                -variable score
+                -variable score -bindwheel -10.0
         label .lh -textvariable disp_value(rh)
         controlwidget::rdial .rh -callback {show_value rh} -value $disp_value(rh)\
                 -width $disp_value(rh) -height 20 -fg blue -bg yellow -orient vertical
