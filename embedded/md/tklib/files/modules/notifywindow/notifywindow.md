@@ -2,7 +2,7 @@
 [//000000001]: # (notifywindow \- notifywindow)
 [//000000002]: # (Generated from file 'notifywindow\.man' by tcllib/doctools with format 'markdown')
 [//000000003]: # (Copyright &copy; 2015 Kevin Walzer/WordTech Communications LLC <kw@codebykevin\.com>)
-[//000000004]: # (notifywindow\(n\) 1\.0 tklib "notifywindow")
+[//000000004]: # (notifywindow\(n\) 1\.0\.1 tklib "notifywindow")
 
 <hr> [ <a href="../../../../toc.md">Main Table Of Contents</a> &#124; <a
 href="../../../toc.md">Table Of Contents</a> &#124; <a
@@ -35,7 +35,7 @@ applications
 # <a name='synopsis'></a>SYNOPSIS
 
 package require tk  
-package require notifywindow  
+package require notifywindow ?1\.0\.1?  
 
 [__::notifywindow::notifywindow__ *msg* *img*](#1)  
 [__::notifywindow::demo__](#2)  
@@ -50,7 +50,7 @@ platforms\.
 
   - <a name='1'></a>__::notifywindow::notifywindow__ *msg* *img*
 
-    Posts the toplevel notification window with the "msg" string, which should
+    Posts the toplevel notification window with the *msg* string, which should
     not exceed 40 characters, and an optional image, which should be 16x16
     pixels\.
 
@@ -60,8 +60,8 @@ platforms\.
 
 # <a name='section2'></a>ACKNOWLEDGMENTS
 
-notifywindow was inspired by the Growl notification package for Mac OS X, but
-shares no code with that project whatsoever\.
+While __notifywindow__ was inspired by the Growl notification package for
+Mac OS X, it shares no code with that project whatsoever\.
 
 # <a name='section3'></a>Bugs, Ideas, Feedback
 
