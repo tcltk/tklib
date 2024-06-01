@@ -1,7 +1,7 @@
 
 [//000000001]: # (widget\_dateentry \- Various megawidgets)
 [//000000002]: # (Generated from file 'widget\_dateentry\.man' by tcllib/doctools with format 'markdown')
-[//000000003]: # (widget\_dateentry\(n\) 0\.96 tklib "Various megawidgets")
+[//000000003]: # (widget\_dateentry\(n\) 0\.97 tklib "Various megawidgets")
 
 <hr> [ <a href="../../../../toc.md">Main Table Of Contents</a> &#124; <a
 href="../../../toc.md">Table Of Contents</a> &#124; <a
@@ -41,9 +41,11 @@ widget\_dateentry \- Date Entry Megawidget
 package require Tcl 8\.4  
 package require Tk 8\.4  
 package require widget ?3\.0?  
-package require widget::dateentry ?0\.96?  
+package require widget::dateentry ?0\.97?  
 
 [__widget::dateentry__ *pathname* ?options?](#1)  
+[*pathname* __get__](#2)  
+[*pathname* __set__ *date*](#3)  
 
 # <a name='description'></a>DESCRIPTION
 
@@ -57,15 +59,17 @@ dateentry\.
 
   - __\-command__
 
-    A script to evaluate when a date was selected\.
+    A command prefix to evaluate when a date was selected\. The command prefix is
+    executed in the global namespace and given two arguments, the raw date in
+    seconds, and the formatted date, as per option __\-dateformat__\.
 
   - __\-dateformat__
 
-    The format of the date that is returned\. Default: %m/%d/%Y\.
+    The format of the date that is entered or returned\. Default: %m/%d/%Y\.
 
   - __\-firstday__
 
-    See the calendar man page\.
+    See the __widget::calendar__ man page\.
 
   - __\-font__
 
@@ -73,19 +77,19 @@ dateentry\.
 
   - __\-highlightcolor__
 
-    See the calendar man page\.
+    See the __widget::calendar__ man page\. See the calendar man page\.
 
   - __\-language__
 
-    See the calendar man page\.
+    See the __widget::calendar__ man page\.
 
   - __\-shadecolor__
 
-    See the calendar man page\.
+    See the __widget::calendar__ man page\.
 
   - __\-showpast__
 
-    See the calendar man page\.
+    See the __widget::calendar__ man page\.
 
   - __\-textvariable__
 
@@ -95,7 +99,17 @@ dateentry\.
 
 # <a name='section3'></a>WIDGET COMMAND
 
-*pathname* __get__ Returns the selected date\.
+  - <a name='2'></a>*pathname* __get__
+
+    Returns the selected date\.
+
+  - <a name='3'></a>*pathname* __set__ *date*
+
+    Programmatically sets a new date\. Expects that the date is in the same
+    format as configured by option __\-dateformat__\.
+
+    The same effect can also be achieved by setting a linked
+    __\-textvariable__\.
 
 # <a name='section4'></a>DEFAULT BINDINGS
 

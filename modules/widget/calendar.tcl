@@ -7,8 +7,6 @@
 #
 # Copyright (c) 2008 Rüdiger Härtel
 #
-# RCS: @(#) $Id: calendar.tcl,v 1.14 2011/12/05 20:34:24 andreas_kupries Exp $
-#
 
 #
 # Creation and Options - widget::calendar $path ...

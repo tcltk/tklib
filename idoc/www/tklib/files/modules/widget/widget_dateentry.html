@@ -105,7 +105,7 @@
 &#124; <a href="../../../../toc2.html">Applications</a>
  ] <hr>
 <div class="doctools">
-<h1 class="doctools_title">widget_dateentry(n) 0.96 tklib &quot;Various megawidgets&quot;</h1>
+<h1 class="doctools_title">widget_dateentry(n) 0.97 tklib &quot;Various megawidgets&quot;</h1>
 <div id="name" class="doctools_section"><h2><a name="name">Name</a></h2>
 <p>widget_dateentry - Date Entry Megawidget</p>
 </div>
@@ -129,10 +129,12 @@
 <li>package require <b class="pkgname">Tcl 8.4</b></li>
 <li>package require <b class="pkgname">Tk 8.4</b></li>
 <li>package require <b class="pkgname">widget <span class="opt">?3.0?</span></b></li>
-<li>package require <b class="pkgname">widget::dateentry <span class="opt">?0.96?</span></b></li>
+<li>package require <b class="pkgname">widget::dateentry <span class="opt">?0.97?</span></b></li>
 </ul>
 <ul class="doctools_syntax">
 <li><a href="#1"><b class="cmd">widget::dateentry</b> <i class="arg">pathname</i> <span class="opt">?options?</span></a></li>
+<li><a href="#2"><i class="arg">pathname</i> <b class="cmd">get</b></a></li>
+<li><a href="#3"><i class="arg">pathname</i> <b class="cmd">set</b> <i class="arg">date</i></a></li>
 </ul>
 </div>
 </div>
@@ -148,30 +150,40 @@ are available for the dateentry.</p>
 <div id="section2" class="doctools_section"><h2><a name="section2">WIDGET OPTIONS</a></h2>
 <dl class="doctools_options">
 <dt><b class="option">-command</b></dt>
-<dd><p>A script to evaluate when a date was selected.</p></dd>
+<dd><p>A command prefix to evaluate when a date was selected.
+The command prefix is executed in the global namespace and given two
+arguments, the raw date in seconds, and the formatted date, as per
+option <b class="option">-dateformat</b>.</p></dd>
 <dt><b class="option">-dateformat</b></dt>
-<dd><p>The format of the date that is returned. Default: %m/%d/%Y.</p></dd>
+<dd><p>The format of the date that is entered or returned. Default: %m/%d/%Y.</p></dd>
 <dt><b class="option">-firstday</b></dt>
-<dd><p>See the calendar man page.</p></dd>
+<dd><p>See the <b class="package">widget::calendar</b> man page.</p></dd>
 <dt><b class="option">-font</b></dt>
 <dd><p>Select the font used in the widget. It defaults to Helvetica 9.</p></dd>
 <dt><b class="option">-highlightcolor</b></dt>
-<dd><p>See the calendar man page.</p></dd>
+<dd><p>See the <b class="package">widget::calendar</b> man page.
+See the calendar man page.</p></dd>
 <dt><b class="option">-language</b></dt>
-<dd><p>See the calendar man page.</p></dd>
+<dd><p>See the <b class="package">widget::calendar</b> man page.</p></dd>
 <dt><b class="option">-shadecolor</b></dt>
-<dd><p>See the calendar man page.</p></dd>
+<dd><p>See the <b class="package">widget::calendar</b> man page.</p></dd>
 <dt><b class="option">-showpast</b></dt>
-<dd><p>See the calendar man page.</p></dd>
+<dd><p>See the <b class="package">widget::calendar</b> man page.</p></dd>
 <dt><b class="option">-textvariable</b></dt>
 <dd><p>Specifies the name of a variable whose value is linked to the entry widget's contents.
-Whenever the variable changes value, the widget's contents are updated, and
-vice versa.</p></dd>
+Whenever the variable changes value, the widget's contents are updated, and vice versa.</p></dd>
 </dl>
 </div>
 <div id="section3" class="doctools_section"><h2><a name="section3">WIDGET COMMAND</a></h2>
-<p><i class="arg">pathname</i> <b class="cmd">get</b>
-Returns the selected date.</p>
+<dl class="doctools_definitions">
+<dt><a name="2"><i class="arg">pathname</i> <b class="cmd">get</b></a></dt>
+<dd><p>Returns the selected date.</p></dd>
+<dt><a name="3"><i class="arg">pathname</i> <b class="cmd">set</b> <i class="arg">date</i></a></dt>
+<dd><p>Programmatically sets a new date. Expects that the date is in the same format
+as configured by option <b class="option">-dateformat</b>.</p>
+<p>The same effect can also be achieved by setting a linked
+<b class="option">-textvariable</b>.</p></dd>
+</dl>
 </div>
 <div id="section4" class="doctools_section"><h2><a name="section4">DEFAULT BINDINGS</a></h2>
 <p>On creation of the dateentry widget the following bindings are installed.
