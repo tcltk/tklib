@@ -224,8 +224,10 @@ proc ppackages {args} {
     array set notprovided {}
 
     foreach f $files {
-	# We ignore package indices and all files not in a module.
+	# We ignore package indices, all files not in a module,
+	# and everything which is not Tcl at all.
 
+	if {![string match *.tcl $f]}                   {continue}
 	if {[string equal pkgIndex.tcl [file tail $f]]} {continue}
 	if {![regexp modules $f]}                       {continue}
 
