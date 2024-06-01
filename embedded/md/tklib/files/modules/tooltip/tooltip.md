@@ -3,7 +3,7 @@
 [//000000002]: # (Generated from file 'tooltip\.man' by tcllib/doctools with format 'markdown')
 [//000000003]: # (Copyright &copy; 1996\-2008, Jeffrey Hobbs)
 [//000000004]: # (Copyright &copy; 2024 Emmanuel Frecon)
-[//000000005]: # (tooltip\(n\) 1\.7\.1 tklib "Tooltip management")
+[//000000005]: # (tooltip\(n\) 1\.8 tklib "Tooltip management")
 
 <hr> [ <a href="../../../../toc.md">Main Table Of Contents</a> &#124; <a
 href="../../../toc.md">Table Of Contents</a> &#124; <a
@@ -38,10 +38,10 @@ tooltip \- Tooltip management
 
 package require Tcl 8\.5  
 package require msgcat 1\.3  
-package require tooltip ?1\.7\.1?  
+package require tooltip ?1\.8?  
 
 [__::tooltip::tooltip__ *command* ?*options*?](#1)  
-[__::tooltip::tooltip__ *pathName* ?*option value*? *message*](#2)  
+[__::tooltip::tooltip__ *pathName* ?*option value*\.\.\.? ?__\-\-__? *message*](#2)  
 
 # <a name='description'></a>DESCRIPTION
 
@@ -94,15 +94,24 @@ ttk::treeview item or column heading, ttk::notebook tab, or text widget tag\.
 
         Enables tooltips for defined widgets\.
 
-  - <a name='2'></a>__::tooltip::tooltip__ *pathName* ?*option value*? *message*
+  - <a name='2'></a>__::tooltip::tooltip__ *pathName* ?*option value*\.\.\.? ?__\-\-__? *message*
 
-    This command arranges for widget *pathName* to display a tooltip with
-    message *message*\. The tooltip uses a late\-binding msgcat call on the
-    passed in message to allow for on\-the\-fly language changes in an
-    application\. If the widget specified is a menu, canvas, listbox,
-    ttk::treeview, ttk::notebook or text widget then additional options are used
-    to tie the tooltip to specific menu, canvas or listbox items, ttk::treeview
-    items or column headings, ttk::notebook tabs, or text widget tags\.
+    This command arranges for widget *pathName* to display a tooltip with a
+    *message*\. The tooltip uses late\-binding __msgcat__ calls to allow for
+    on\-the\-fly language changes in an application\. These calls are resolved by
+    default in the namespace active where __::tooltip::tooltip__ is invoked\.
+    Using option __\-namespace__ overwrites this default with a
+    user\-specified value\. Furthermore, using the options __\-msgargs__ and/or
+    __\-infoargs__ enables the passing of additional arguments to these calls
+    for the message and info text respectively\.
+
+    If the specified widget is a __[menu](\.\./\.\./\.\./\.\./index\.md\#menu)__,
+    __[canvas](\.\./\.\./\.\./\.\./index\.md\#canvas)__,
+    __[listbox](\.\./\.\./\.\./\.\./index\.md\#listbox)__, __ttk::treeview__,
+    __ttk::notebook__ or __[text](\.\./\.\./\.\./\.\./index\.md\#text)__
+    widget then additional options are used to tie the tooltip to specific menu,
+    canvas or listbox items, ttk::treeview items or column headings,
+    ttk::notebook tabs, or text widget tags\.
 
       * __\-heading__ *columnId*
 
@@ -112,11 +121,21 @@ ttk::treeview item or column heading, ttk::notebook tab, or text widget tag\.
         tooltips as their tooltips will be mixed\. The widget must be a
         ttk::treeview widget\.
 
+      * __\-image__ *image*
+
+        The specified \(photo\) image will be displayed to the left of the primary
+        tooltip *message*\.
+
       * __\-index__ *index*
 
         This option is used to set a tooltip on a menu item\. The index may be
         either the entry index or the entry label\. The widget must be a menu
         widget but the entries do not have to exist when the tooltip is set\.
+
+      * __\-info__ *info*
+
+        The specified *info* text will be displayed as additional information
+        below the primary tooltip *message*\.
 
       * __\-items__ *items*
 
@@ -146,7 +165,8 @@ ttk::treeview item or column heading, ttk::notebook tab, or text widget tag\.
       * __\-\-__
 
         The __\-\-__ option marks the end of options\. The argument following
-        this one will be treated as *message* even if it starts with a \-\.
+        this one will be treated as *message* even if it starts with a
+        __\-__\.
 
 # <a name='section3'></a>EXAMPLE
 

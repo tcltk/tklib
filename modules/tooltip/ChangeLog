@@ -1,3 +1,9 @@
+2024-05-23  Andreas Kupries <andreas.kupries@gmail.com>
+
+	* Bumped to version 1.8. Support images and additional info text.
+	  Ticket [https://core.tcl-lang.org/tklib/tktview/803a13c9f0].
+	  Patch by Rene Zaumseil.
+
 2024-05-22  Andreas Kupries <andreas.kupries@gmail.com>
 
 	* Bumped to version 1.7.1. Bail if widget goes away during early

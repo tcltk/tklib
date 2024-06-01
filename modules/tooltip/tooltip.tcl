@@ -3,7 +3,7 @@
 #       Balloon help
 #
 # Copyright (c) 1996-2007 Jeffrey Hobbs
-# Copyright (c) 2024      Emmanuel Frecon
+# Copyright (c) 2024      Emmanuel Frecon, Rene Zaumseil
 #
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
@@ -11,7 +11,7 @@
 # Initiated: 28 October 1996
 
 
-package require Tk 8.5-
+package require Tk 8.6-
 package require msgcat
 
 #------------------------------------------------------------------------
@@ -73,6 +73,11 @@ package require msgcat
 #
 #------------------------------------------------------------------------
 
+# TkTooltipFont is defined in tk library/ttk/fonts.tcl
+catch {font create    TkTooltipFontItalic}
+catch {font configure TkTooltipFontItalic \
+	   {*}[font configure TkTooltipFont] -slant italic}
+
 namespace eval ::tooltip {
     namespace export -clear tooltip
     variable tooltip
@@ -104,6 +109,19 @@ namespace eval ::tooltip {
     option add *Tooltip.Label.background         lightyellow
     option add *Tooltip.Label.foreground         black
     option add *Tooltip.Label.font               TkTooltipFont
+
+    option add *Tooltip.Frame.highlightThickness 0
+    option add *Tooltip.Frame.relief             solid
+    option add *Tooltip.Frame.borderWidth        1
+    option add *Tooltip.Frame.background         lightyellow
+
+    option add *Tooltip.Info.borderWidth        0
+    option add *Tooltip.Info.background         lightyellow
+    option add *Tooltip.Info.foreground         black
+    option add *Tooltip.Info.font               TkTooltipFontItalic
+    option add *Tooltip.Info.padX               3
+    option add *Tooltip.Info.padY               3
+
 
     # The extra ::hide call in <Enter> is necessary to catch moving to
     # child widgets where the <Leave> event won't be generated
@@ -174,74 +192,100 @@ proc ::tooltip::tooltip {w args} {
 proc ::tooltip::register {w args} {
     variable tooltip
     set key [lindex $args 0]
+    set img {}
+    set inf {}
+    set nscaller {}
+    set msgargs {}
+    set infoargs {}
     while {[string match -* $key]} {
 	switch -- $key {
 	    -- {
-		    set args [lreplace $args 0 0]
-		    set key [lindex $args 0]
-		    break
+		set args [lassign $args _ key]
+		break
 	    }
 	    -heading {
 		if {[winfo class $w] ne "Treeview"} {
-		    return -code error "widget \"$w\" is not a ttk::treeview\
-			widget"
+		    return -code error "widget \"$w\" is not a ttk::treeview widget"
 		}
-		set columnId [lindex $args 1]
-		set args [lreplace $args 0 1]
+		set args [lassign $args _ columnId]
 	    }
 	    -index {
-		if {[catch {$w entrycget 1 -label}]} {
+		if {[catch {
+		    $w entrycget 1 -label
+		}]} {
 		    return -code error "widget \"$w\" does not seem to be a\
 			    menu, which is required for the -index switch"
 		}
-		set index [lindex $args 1]
-		set args [lreplace $args 0 1]
+		set args [lassign $args _ index]
 	    }
-	    -item - -items {
+	    -item -
+	    -items {
                 if {[winfo class $w] in {Listbox Treeview}} {
-                    set items [lindex $args 1]
+		    set args [lassign $args _ items]
                 } else {
-                    set namedItem [lindex $args 1]
-                    if {[catch {$w find withtag $namedItem} items]} {
+		    set args [lassign $args _ namedItem]
+                    if {[catch {
+			$w find withtag $namedItem
+		    } items]} {
                         return -code error "widget \"$w\" is not a canvas, or\
 			    item \"$namedItem\" does not exist in the canvas"
                     }
                 }
-		set args [lreplace $args 0 1]
 	    }
 	    -tab {
 		if {[winfo class $w] ne "TNotebook"} {
-		    return -code error "widget \"$w\" is not a ttk::notebook\
-			widget"
+		    return -code error "widget \"$w\" is not a ttk::notebook widget"
 		}
-		set tabId [lindex $args 1]
-		if {[catch {$w index $tabId} tabIndex]} {
+		set args [lassign $args _ tabId]
+		if {[catch {
+		    $w index $tabId
+		} tabIndex]} {
 		    return -code error $tabIndex
 		} elseif {$tabIndex < 0 || $tabIndex >= [$w index end]} {
 		    return -code error "tab index $tabId out of bounds"
 		}
 		set tabWin [lindex [$w tabs] $tabIndex]
-		set args [lreplace $args 0 1]
 	    }
             -tag {
-                set tag [lindex $args 1]
-                set r [catch {lsearch -exact [$w tag names] $tag} ndx]
+		set args [lassign $args _ tag]
+                set r [catch {
+		    lsearch -exact [$w tag names] $tag
+		} ndx]
                 if {$r || $ndx == -1} {
                     return -code error "widget \"$w\" is not a text widget or\
                         \"$tag\" is not a text tag"
                 }
-                set args [lreplace $args 0 1]
             }
+	    -image {
+		set args [lassign $args _ img]
+	    }
+	    -info {
+		set args [lassign $args _ inf]
+	    }
+	    -namespace {
+		# Explicit namespace for the msgcat call
+		set args [lassign $args _ nscaller]
+	    }
+	    -msgargs {
+		# Arguments for the msgcat call for the main message
+		set args [lassign $args _ msgargs]
+	    }
+	    -infoargs {
+		# Arguments for the msgcat call for the info message
+		set args [lassign $args _ infoargs]
+	    }
 	    default {
 		return -code error "unknown option \"$key\":\
-			should be -heading, -index, -item(s), -tab, -tag or --"
+			should be -heading, -image, -index, -info, -infoargs,\
+			-item(s), -msgargs, -namespace, -tab, -tag or --"
 	    }
 	}
 	set key [lindex $args 0]
     }
     if {[llength $args] != 1} {
 	return -code error "wrong # args: should be \"tooltip widget\
-		?-heading columnId? ?-index index? ?-item(s) items?\
+		?-heading columnId? ?-image image? ?-index index? ?-info info?\
+		?-infoargs args? ?-item(s) items? ?-msgargs args? ?-namespace ns?\
 		?-tab tabId? ?-tag tag? ?--? message\""
     }
     if {$key eq ""} {
@@ -250,16 +294,20 @@ proc ::tooltip::register {w args} {
 	if {![winfo exists $w]} {
 	    return -code error "bad window path name \"$w\""
 	}
+	if {$nscaller eq ""} {
+	    set nscaller [uplevel 2 {namespace current}]
+	}
+	set details [list $key $img $inf $nscaller $msgargs $infoargs]
 	if {[info exists columnId]} {
-	    set tooltip($w,$columnId) $key
+	    set tooltip($w,$columnId) $details
 	    enableListbox $w $columnId
 	    return $w,$columnId
 	} elseif {[info exists index]} {
-	    set tooltip($w,$index) $key
+	    set tooltip($w,$index) $details
 	    return $w,$index
 	} elseif {[info exists items]} {
 	    foreach item $items {
-		set tooltip($w,$item) $key
+		set tooltip($w,$item) $details
 		set class [winfo class $w]
 		if { $class eq "Listbox" || $class eq "Treeview"} {
 		    enableListbox $w $item
@@ -271,15 +319,15 @@ proc ::tooltip::register {w args} {
 	    # how this is called
 	    return $w,[lindex $items 0]
 	} elseif {[info exists tabWin]} {
-	    set tooltip($w,$tabWin) $key
+	    set tooltip($w,$tabWin) $details
 	    enableNotebook $w $tabWin
 	    return $w,$tabWin
         } elseif {[info exists tag]} {
-            set tooltip($w,t_$tag) $key
+            set tooltip($w,t_$tag) $details
             enableTag $w $tag
             return $w,$tag
 	} else {
-	    set tooltip($w) $key
+	    set tooltip($w) $details
 	    # Note: Add the necessary bindings only once.
 	    set tags [bindtags $w]
 	    if {[lsearch -exact $tags "Tooltip"] == -1} {
@@ -292,7 +340,6 @@ proc ::tooltip::register {w args} {
 
 proc ::tooltip::createToplevel {} {
     variable G
-    variable labelOpts
 
     set b $G(TOPLEVEL)
     if {[winfo exists $b]} { return }
@@ -308,8 +355,15 @@ proc ::tooltip::createToplevel {} {
     catch {wm attributes $b -alpha 0.99}
     wm positionfrom $b program
     wm withdraw $b
-    label $b.label {*}[expr {[info exists labelOpts] ? $labelOpts : ""}]
-    pack $b.label -ipadx 1
+
+    frame $b.f
+    label $b.f.label -justify left -compound left
+    label $b.f.info  -justify left
+
+    grid $b.f
+    grid $b.f.label -sticky w
+    grid $b.f.info  -sticky w
+    grid columnconfigure $b.f 1 -weight 1
 }
 
 proc ::tooltip::configure {args} {
@@ -372,7 +426,8 @@ proc ::tooltip::clear {{pattern .*}} {
 	unset tooltip($w)
 	if {[winfo exists $w]} {
 	    set tags [bindtags $w]
-	    if {[set i [lsearch -exact $tags "Tooltip"]] != -1} {
+	    set i [lsearch -exact $tags "Tooltip"]
+	    if {$i != -1} {
 		bindtags $w [lreplace $tags $i $i]
 	    }
 	    ## We don't remove TooltipMenu because there
@@ -403,12 +458,22 @@ proc ::tooltip::show {w msg {i {}}} {
     }
     # Use late-binding msgcat (lazy translation) to support programs
     # that allow on-the-fly l10n changes
-    $b.label configure -text [::msgcat::mc $msg] -justify left
+
+    lassign $msg text image infotext nscaller msgargs infoargs
+    set text [namespace eval $nscaller [list ::msgcat::mc $text {*}$msgargs]]
+    $b.f.label configure -text $text -image $image
+    if {$infotext eq {}} {
+	grid remove $b.f.info
+    } else {
+	set infotext [namespace eval $nscaller [list ::msgcat::mc $infotext {*}$infoargs]]
+	$b.f.info configure -text $infotext
+	grid $b.f.info
+    }
     update idletasks
 
     # Bail out if the widget went way during the idletasks
     if {![winfo exists $w]} return
-    
+
     set screenw [winfo screenwidth $w]
     set screenh [winfo screenheight $w]
     set reqw [winfo reqwidth $b]
@@ -454,6 +519,8 @@ proc ::tooltip::show {w msg {i {}}} {
     }
     # avoid the blink issue with 1 to <1 alpha on Windows, watch half-fading
     catch {wm attributes $b -alpha 0.99}
+    # put toplevel placed outside the screen back into it, just a little below the top borser.
+    if {$y < 0} { set y 10 }
     wm geometry $b +$x+$y
     wm deiconify $b
     raise $b
@@ -481,7 +548,9 @@ proc ::tooltip::menuMotion {w} {
 	after cancel $G(AFTERID)
 	catch {wm withdraw $G(TOPLEVEL)}
 	if {[info exists tooltip($m,$cur)] || \
-		(![catch {$w entrycget $cur -label} cur] && \
+		(![catch {
+		    $w entrycget $cur -label
+		} cur] && \
 		[info exists tooltip($m,$cur)])} {
 	    set G(AFTERID) [after $G(DELAY) \
 		    [namespace code [list show $w $tooltip($m,$cur) cursor]]]
@@ -502,7 +571,9 @@ proc ::tooltip::hide {{fadeOk 0}} {
 }
 
 proc ::tooltip::fade {w step} {
-    if {[catch {wm attributes $w -alpha} alpha] || $alpha <= 0.0} {
+    if {[catch {
+	wm attributes $w -alpha
+    } alpha] || $alpha <= 0.0} {
         catch { wm withdraw $w }
         catch { wm attributes $w -alpha 0.99 }
     } else {
@@ -534,7 +605,9 @@ proc ::tooltip::listitemTip {w x y} {
 	set item [$w index @$x,$y]
     } else {
 	switch [$w identify region $x $y] {
-	    tree - cell { set item [$w identify item $x $y] }
+	    tree - cell {
+		set item [$w identify item $x $y]
+	    }
 	    heading - separator {
 		set item [$w column [$w identify column $x $y] -id]
 	    }
@@ -547,8 +620,7 @@ proc ::tooltip::listitemTip {w x y} {
     }
 }
 
-# Handle the lack of <Enter>/<Leave> between listbox/treeview items using
-# <Motion>
+# Handle the lack of <Enter>/<Leave> between listbox/treeview items using <Motion>
 proc ::tooltip::listitemMotion {w x y} {
     variable tooltip
     variable G
@@ -656,15 +728,37 @@ proc ::tooltip::tagTip {w tag} {
         if {[info exists G(AFTERID)]} { after cancel $G(AFTERID) }
         set G(AFTERID) [after $G(DELAY) \
             [namespace code [list show $w $tooltip($w,t_$tag) cursor]]]
+        # clear the 'Enter' binding. it is restored by `conditionally-hide` below.
+        $w tag bind $tag <Enter> ""
     }
 }
 
 proc ::tooltip::enableTag {w tag} {
+    variable G
     if {[string match *tagTip* [$w tag bind $tag]]} { return }
     $w tag bind $tag <Enter> +[namespace code [list tagTip $w $tag]]
-    $w tag bind $tag <Leave> +[namespace code [list hide 1]] ; # fade ok
+    $w tag bind $tag <Leave> +[namespace code [list conditionally-hide $w $tag]] ; # fade ok
     $w tag bind $tag <Any-KeyPress> +[namespace code hide]
     $w tag bind $tag <Any-Button> +[namespace code hide]
+
+    # save the 'Enter' binding.
+    # this is cleared by `tagTip`, see above, and restored by `conditionally-hide` below.
+    set G(enterBinding,$w,$tag) [$w tag bind $tag <Enter>]
 }
 
-package provide tooltip 1.7.1
+proc ::tooltip::conditionally-hide {w tag} {
+    variable G
+    # re-enable the 'Enter' binding. it is saved by `enableTag`, and cleared by `tagTip`.
+    $w tag bind $tag <Enter> $G(enterBinding,$w,$tag)
+    
+    # have we really left ? if the cursor is _in_ the tooltip we haven't.
+    lassign [split [wm geometry $G(TOPLEVEL)] "x+"] w h xT yT
+    lassign [winfo pointerxy "."] x y
+    
+    if {($x >= $xT) && ($x <= ($xT + $w)) &&
+	($y >= $yT) && ($y <= ($yT + $h))} return
+
+    hide 1
+}
+
+package provide tooltip 1.8

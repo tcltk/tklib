@@ -1,5 +1,5 @@
 [comment {-*- tcl -*- doctools manpage}]
-[vset VERSION 1.7.1]
+[vset VERSION 1.8]
 [manpage_begin tooltip n [vset VERSION]]
 [keywords balloon]
 [keywords help]
@@ -69,16 +69,22 @@ Enables tooltips for defined widgets.
 
 [para]
 
-[call [cmd ::tooltip::tooltip] \
-     [arg pathName] [opt [arg "option value"]] [arg message]]
+[call [cmd ::tooltip::tooltip] [arg pathName] [opt [arg "option value"]...] \
+     [opt [const --]] [arg message]]
 
-This command arranges for widget [arg pathName] to display a tooltip with
-message [arg message].  The tooltip uses a late-binding msgcat call on the
-passed in message to allow for on-the-fly language changes in an application.
-If the widget specified is a menu, canvas, listbox, ttk::treeview,
-ttk::notebook or text widget then additional options are used to tie the
-tooltip to specific menu, canvas or listbox items, ttk::treeview items or
-column headings, ttk::notebook tabs, or text widget tags.
+This command arranges for widget [arg pathName] to display a tooltip with a
+[arg message]. The tooltip uses late-binding [package msgcat] calls to allow
+for on-the-fly language changes in an application. These calls are resolved
+by default in the namespace active where [cmd ::tooltip::tooltip] is invoked.
+Using option [option -namespace] overwrites this default with a user-specified
+value. Furthermore, using the options [option -msgargs] and/or [option -infoargs]
+enables the passing of additional arguments to these calls for the message
+and info text respectively.
+
+[para] If the specified widget is a [cmd menu], [cmd canvas], [cmd listbox],
+[cmd ttk::treeview], [cmd ttk::notebook] or [cmd text] widget then additional
+options are used to tie the tooltip to specific menu, canvas or listbox items,
+ttk::treeview items or column headings, ttk::notebook tabs, or text widget tags.
 
 [list_begin options]
 
@@ -89,11 +95,21 @@ The column does not need to already exist. You should not use the same
 identifiers for columns and items in a widget for which you are using tooltips
 as their tooltips will be mixed. The widget must be a ttk::treeview widget.
 
+[opt_def -image [arg image]]
+
+The specified (photo) image will be displayed to the left of the primary
+tooltip [arg message].
+
 [opt_def -index [arg index]]
 
 This option is used to set a tooltip on a menu item. The index may be
 either the entry index or the entry label. The widget must be a menu
 widget but the entries do not have to exist when the tooltip is set.
+ 
+[opt_def -info [arg info]]
+
+The specified [arg info] text will be displayed as additional information
+below the primary tooltip [arg message].
 
 [opt_def -items [arg items]]
 
@@ -122,8 +138,9 @@ be returned. The widget must be a text widget.
 [opt_def --]
 
 The [option --] option marks the end of options.
+
 The argument following this one will be treated as [arg message] even if it
-starts with a -.
+starts with a [const -].
 
 [list_end]
 
