@@ -554,13 +554,13 @@ proc ::ico::createImage {colors {name {}}} {
     if {0} {
 	# if image supported "" colors as transparent pixels,
 	# we could use this much faster op
-	$img put -to 0 0 $colors
+	$img put $colors -to 0 0
     } else {
 	for {set x 0} {$x < $w} {incr x} {
 	    for {set y 0} {$y < $h} {incr y} {
                 set clr [lindex $colors $y $x]
                 if {$clr ne ""} {
-                    $img put -to $x $y $clr
+                    $img put $clr -to $x $y
                 }
             }
         }
@@ -1464,4 +1464,4 @@ interp alias {} ::ico::getIconMembersICL {} ::ico::getIconMembersEXE
 interp alias {} ::ico::getRawIconDataICL {} ::ico::getRawIconDataEXE
 interp alias {} ::ico::writeIconICL      {} ::ico::writeIconEXE
 
-package provide ico 1.1
+package provide ico 1.1.1
