@@ -334,11 +334,17 @@ Enables tooltips for defined widgets\&.
 \fB::tooltip::tooltip\fR \fIpathName\fR ?\fIoption value\fR\&.\&.\&.? ?\fB--\fR? \fImessage\fR
 This command arranges for widget \fIpathName\fR to display a tooltip with a
 \fImessage\fR\&. The tooltip uses late-binding \fBmsgcat\fR calls to allow
-for on-the-fly language changes in an application\&.
-If the widget specified is a \fBmenu\fR, \fBcanvas\fR, \fBlistbox\fR, \fBttk::treeview\fR,
-\fBttk::notebook\fR or \fBtext\fR widget then additional options are used to tie the
-tooltip to specific menu, canvas or listbox items, ttk::treeview items or
-column headings, ttk::notebook tabs, or text widget tags\&.
+for on-the-fly language changes in an application\&. These calls are resolved
+by default in the namespace active where \fB::tooltip::tooltip\fR is invoked\&.
+Using option \fB-namespace\fR overwrites this default with a user-specified
+value\&. Furthermore, using the options \fB-msgargs\fR and/or \fB-infoargs\fR
+enables the passing of additional arguments to these calls for the message
+and info text respectively\&.
+.sp
+If the specified widget is a \fBmenu\fR, \fBcanvas\fR, \fBlistbox\fR,
+\fBttk::treeview\fR, \fBttk::notebook\fR or \fBtext\fR widget then additional
+options are used to tie the tooltip to specific menu, canvas or listbox items,
+ttk::treeview items or column headings, ttk::notebook tabs, or text widget tags\&.
 .RS
 .TP
 \fB-heading\fR \fIcolumnId\fR

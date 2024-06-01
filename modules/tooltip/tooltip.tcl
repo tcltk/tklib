@@ -218,7 +218,8 @@ proc ::tooltip::register {w args} {
 		}
 		set args [lassign $args _ index]
 	    }
-	    -item - -items {
+	    -item -
+	    -items {
                 if {[winfo class $w] in {Listbox Treeview}} {
 		    set args [lassign $args _ items]
                 } else {
@@ -275,7 +276,7 @@ proc ::tooltip::register {w args} {
 	    }
 	    default {
 		return -code error "unknown option \"$key\":\
-			should be -heading, -image, -index, -info, infoargs,\
+			should be -heading, -image, -index, -info, -infoargs,\
 			-item(s), -msgargs, -namespace, -tab, -tag or --"
 	    }
 	}
@@ -458,15 +459,14 @@ proc ::tooltip::show {w msg {i {}}} {
     # Use late-binding msgcat (lazy translation) to support programs
     # that allow on-the-fly l10n changes
 
-    lassign $msg txt img inf nscaller msgargs infoargs
-    $b.f.label configure\
-	    -text [namespace eval $nscaller [list ::msgcat::mc $txt {*}$msgargs]]\
-	    -image $img
-    if {$inf eq {}} {
+    lassign $msg text image infotext nscaller msgargs infoargs
+    set text [namespace eval $nscaller [list ::msgcat::mc $text {*}$msgargs]]
+    $b.f.label configure -text $text -image $image
+    if {$infotext eq {}} {
 	grid remove $b.f.info
     } else {
-	$b.f.info configure -text [namespace eval $nscaller\
-		[list ::msgcat::mc $inf {*}$infoargs]]
+	set infotext [namespace eval $nscaller [list ::msgcat::mc $infotext {*}$infoargs]]
+	$b.f.info configure -text $infotext
 	grid $b.f.info
     }
     update idletasks

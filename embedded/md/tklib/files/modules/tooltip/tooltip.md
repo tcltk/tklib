@@ -98,8 +98,14 @@ ttk::treeview item or column heading, ttk::notebook tab, or text widget tag\.
 
     This command arranges for widget *pathName* to display a tooltip with a
     *message*\. The tooltip uses late\-binding __msgcat__ calls to allow for
-    on\-the\-fly language changes in an application\. If the widget specified is a
-    __[menu](\.\./\.\./\.\./\.\./index\.md\#menu)__,
+    on\-the\-fly language changes in an application\. These calls are resolved by
+    default in the namespace active where __::tooltip::tooltip__ is invoked\.
+    Using option __\-namespace__ overwrites this default with a
+    user\-specified value\. Furthermore, using the options __\-msgargs__ and/or
+    __\-infoargs__ enables the passing of additional arguments to these calls
+    for the message and info text respectively\.
+
+    If the specified widget is a __[menu](\.\./\.\./\.\./\.\./index\.md\#menu)__,
     __[canvas](\.\./\.\./\.\./\.\./index\.md\#canvas)__,
     __[listbox](\.\./\.\./\.\./\.\./index\.md\#listbox)__, __ttk::treeview__,
     __ttk::notebook__ or __[text](\.\./\.\./\.\./\.\./index\.md\#text)__

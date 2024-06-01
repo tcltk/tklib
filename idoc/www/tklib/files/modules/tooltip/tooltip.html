@@ -176,11 +176,16 @@ disappearing.</p></dd>
 <dt><a name="2"><b class="cmd">::tooltip::tooltip</b> <i class="arg">pathName</i> <span class="opt">?<i class="arg">option value</i>...?</span> <span class="opt">?<b class="const">--</b>?</span> <i class="arg">message</i></a></dt>
 <dd><p>This command arranges for widget <i class="arg">pathName</i> to display a tooltip with a
 <i class="arg">message</i>. The tooltip uses late-binding <b class="package">msgcat</b> calls to allow
-for on-the-fly language changes in an application.
-If the widget specified is a <b class="cmd"><a href="../../../../index.html#menu">menu</a></b>, <b class="cmd"><a href="../../../../index.html#canvas">canvas</a></b>, <b class="cmd"><a href="../../../../index.html#listbox">listbox</a></b>, <b class="cmd">ttk::treeview</b>,
-<b class="cmd">ttk::notebook</b> or <b class="cmd"><a href="../../../../index.html#text">text</a></b> widget then additional options are used to tie the
-tooltip to specific menu, canvas or listbox items, ttk::treeview items or
-column headings, ttk::notebook tabs, or text widget tags.</p>
+for on-the-fly language changes in an application. These calls are resolved
+by default in the namespace active where <b class="cmd">::tooltip::tooltip</b> is invoked.
+Using option <b class="option">-namespace</b> overwrites this default with a user-specified
+value. Furthermore, using the options <b class="option">-msgargs</b> and/or <b class="option">-infoargs</b>
+enables the passing of additional arguments to these calls for the message
+and info text respectively.</p>
+<p>If the specified widget is a <b class="cmd"><a href="../../../../index.html#menu">menu</a></b>, <b class="cmd"><a href="../../../../index.html#canvas">canvas</a></b>, <b class="cmd"><a href="../../../../index.html#listbox">listbox</a></b>,
+<b class="cmd">ttk::treeview</b>, <b class="cmd">ttk::notebook</b> or <b class="cmd"><a href="../../../../index.html#text">text</a></b> widget then additional
+options are used to tie the tooltip to specific menu, canvas or listbox items,
+ttk::treeview items or column headings, ttk::notebook tabs, or text widget tags.</p>
 <dl class="doctools_options">
 <dt><b class="option">-heading</b> <i class="arg">columnId</i></dt>
 <dd><p>This option is used to set a tooltip for a ttk::treeview column heading.
