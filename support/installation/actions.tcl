@@ -17,6 +17,20 @@ proc _tcl {module libdir} {
     return
 }
 
+proc _tcli {module libdir} {
+    global distribution
+    _tcl $module $libdir
+    xcopy \
+	[file join $distribution modules $module msgs] \
+	[file join $libdir $module msgs] \
+	0 *.msg
+    xcopy \
+	[file join $distribution modules $module icons] \
+	[file join $libdir $module icons] \
+	0 *.png
+    return
+}
+
 proc _tclm {module libdir} {
     global distribution
     _tcl $module $libdir
