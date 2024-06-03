@@ -1,7 +1,7 @@
 
 [//000000001]: # (history \- Provides a history for Entry widgets)
 [//000000002]: # (Generated from file 'tklib\_history\.man' by tcllib/doctools with format 'markdown')
-[//000000003]: # (history\(n\) 0\.1 tklib "Provides a history for Entry widgets")
+[//000000003]: # (history\(n\) 0\.2 tklib "Provides a history for Entry widgets")
 
 <hr> [ <a href="../../../../toc.md">Main Table Of Contents</a> &#124; <a
 href="../../../toc.md">Table Of Contents</a> &#124; <a
@@ -30,7 +30,7 @@ history \- Provides a history for Entry widgets
 
 package require Tcl 8\.4  
 package require Tk 8\.4  
-package require history ?0\.1?  
+package require history ?0\.2?  
 
 [__::history::init__ *pathName* ?length?](#1)  
 [__::history::remove__ *pathName*](#2)  
