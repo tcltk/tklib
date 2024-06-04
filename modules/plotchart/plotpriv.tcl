@@ -2632,14 +2632,16 @@ proc ::Plotchart::DrawTimePeriod { w text time_begin time_end {colour black}} {
    foreach {x1 y1} [coordsToPixel $w $xmin $scaling($w,current)] {break}
    foreach {x2 y2} [coordsToPixel $w $xmax $ybott              ] {break}
 
-   $w create rectangle $x1 $y1 $x2 $y2 -fill $colour \
-       -tags [list $w vertscroll horizscroll below item_[expr {int($scaling($w,current))}]]
+   set items [$w create rectangle $x1 $y1 $x2 $y2 -fill $colour \
+                  -tags [list $w vertscroll horizscroll below item_[expr {int($scaling($w,current))}]]]
 
    ReorderChartItems $w
 
    set scaling($w,current) [expr {$scaling($w,current)-1.0}]
 
    RescaleChart $w
+
+   return $items
 }
 
 # DrawAdditionalPeriod --
@@ -2670,14 +2672,16 @@ proc ::Plotchart::DrawAdditionalPeriod { w time_begin time_end {colour black}} {
    foreach {x1 y1} [coordsToPixel $w $xmin $scaling($w,current)] {break}
    foreach {x2 y2} [coordsToPixel $w $xmax $ybott              ] {break}
 
-   $w create rectangle $x1 $y1 $x2 $y2 -fill $colour \
-       -tags [list $w vertscroll horizscroll below item_[expr {int($scaling($w,current))}]]
+   set items [$w create rectangle $x1 $y1 $x2 $y2 -fill $colour \
+                  -tags [list $w vertscroll horizscroll below item_[expr {int($scaling($w,current))}]]]
 
    ReorderChartItems $w
 
    set scaling($w,current) [expr {$scaling($w,current)-1.0}]
 
    RescaleChart $w
+
+   return $items
 }
 
 # DrawTimeVertLine --
@@ -2704,7 +2708,7 @@ proc ::Plotchart::DrawTimeVertLine { w text time {colour black}} {
    foreach {x y} [coordsToPixel $w $xtime $ytext] {break}
    set y [expr {$y-5}]
 
-   $w create text $x $y -text $text -anchor sw -tags [list $w horizscroll timeline]
+   lappend items [$w create text $x $y -text $text -anchor sw -tags [list $w horizscroll timeline]]
 
    #
    # Draw the line
@@ -2712,9 +2716,11 @@ proc ::Plotchart::DrawTimeVertLine { w text time {colour black}} {
    foreach {x1 y1} [coordsToPixel $w $xtime $scaling($w,ymin)] {break}
    foreach {x2 y2} [coordsToPixel $w $xtime $scaling($w,ymax)] {break}
 
-   $w create line $x1 $y1 $x2 $y2 -fill $colour -tags [list $w horizscroll timeline tline]
+   lappend items [$w create line $x1 $y1 $x2 $y2 -fill $colour -tags [list $w horizscroll timeline tline]]
 
    $w raise topmask
+
+   return $items
 }
 
 # DrawTimeMilestone --
@@ -2739,8 +2745,8 @@ proc ::Plotchart::DrawTimeMilestone { w text time {colour black}} {
    set ytext [expr {$scaling($w,current)+0.5*$scaling($w,dy)}]
    foreach {x y} [coordsToPixel $w $scaling($w,xmin) $ytext] {break}
 
-   $w create text 5 $y -text $text -anchor w \
-       -tags [list vertscroll above item_[expr {int($scaling($w,current))}]]
+   lappend items [$w create text 5 $y -text $text -anchor w \
+                      -tags [list vertscroll above item_[expr {int($scaling($w,current))}]]]
 
    #
    # Draw an upside-down triangle to indicate the time
@@ -2756,14 +2762,16 @@ proc ::Plotchart::DrawTimeMilestone { w text time {colour black}} {
    set x3 [expr {$x1+0.4*($y1-$y2)}]
    set y3 $y2
 
-   $w create polygon $x1 $y1 $x2 $y2 $x3 $y3 -fill $colour \
-       -tags [list $w vertscroll horizscroll below item_[expr {int($scaling($w,current))}]]
+   lappend items [$w create polygon $x1 $y1 $x2 $y2 $x3 $y3 -fill $colour \
+                      -tags [list $w vertscroll horizscroll below item_[expr {int($scaling($w,current))}]]]
 
    ReorderChartItems $w
 
    set scaling($w,current) [expr {$scaling($w,current)-1.0}]
 
    RescaleChart $w
+
+   return $items
 }
 
 # DrawAdditionalMilestone --
@@ -2797,14 +2805,16 @@ proc ::Plotchart::DrawAdditionalMilestone { w time {colour black}} {
    set x3 [expr {$x1+0.4*($y1-$y2)}]
    set y3 $y2
 
-   $w create polygon $x1 $y1 $x2 $y2 $x3 $y3 -fill $colour \
-       -tags [list $w vertscroll horizscroll below item_[expr {int($scaling($w,current))}]]
+   set items [$w create polygon $x1 $y1 $x2 $y2 $x3 $y3 -fill $colour \
+                  -tags [list $w vertscroll horizscroll below item_[expr {int($scaling($w,current))}]]]
 
    ReorderChartItems $w
 
    set scaling($w,current) [expr {$scaling($w,current)-1.0}]
 
    RescaleChart $w
+
+   return $items
 }
 
 # ScaleItems --

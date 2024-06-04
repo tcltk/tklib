@@ -160,7 +160,7 @@ namespace eval ::Plotchart {
         3dbars        {title subtitle margin text legend leftaxis rightaxis bottomaxis background}
         radialchart   {title subtitle margin text legend leftaxis rightaxis bottomaxis background}
         txplot        {title subtitle margin text legend leftaxis rightaxis bottomaxis background mask}
-        3dribbon      {title subtitle margin text legend leftaxis rightaxis bottomaxis background}
+        3dribbon      {title subtitle margin text legend xaxis yaxis zaxis leftaxis rightaxis bottomaxis background}
         boxplot       {title subtitle margin text legend leftaxis rightaxis bottomaxis background mask bar}
         windrose      {title subtitle margin text legend axis                          background}
         targetdiagram {title subtitle margin text legend leftaxis rightaxis bottomaxis background mask limits}

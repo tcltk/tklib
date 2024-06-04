@@ -390,7 +390,7 @@ proc ::Plotchart::DrawGradientBackground { w colour dir intensity {rect {}} } {
     if { $dir == "h" } {
         set nmax [expr {ceil($n*($rxmax-$rxmin)/double($pxmax-$pxmin))}]
     } else {
-        set nmax [expr {ceil($n*($rymin-$rymax)/double($pymin-$pymax))}]
+        set nmax [expr {ceil($n*($rymin-$rymax)/double($pymax-$pymin))}]
     }
     for { set i 0 } { $i < $nmax } { incr i } {
         set factor [expr {($first*$i+$last*($n-$i-1))/double($n)}]
@@ -404,9 +404,9 @@ proc ::Plotchart::DrawGradientBackground { w colour dir intensity {rect {}} } {
             }
         } else {
             set y1     $y2
-            set y2     [expr {$rymax+($i+1)*$fac}]
+            set y2     [expr {$rymin+$i*$fac}]
             if { $i == $nmax-1 } {
-                set y2 $rymin
+                set y2 $rymax
             }
         }
 

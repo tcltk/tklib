@@ -497,6 +497,7 @@ proc ::Plotchart::DrawXaxis { w xmin xmax xdelt args } {
     set xbackup {}
     set numeric 1
     set gmt     0
+    set locale  {}
 
     if { $xdelt eq {} } {
         set numeric 1
@@ -552,6 +553,9 @@ proc ::Plotchart::DrawXaxis { w xmin xmax xdelt args } {
                 -gmt {
                     set gmt $val
                 }
+                -locale {
+                    set locale $val
+                }
             }
         }
     }
@@ -580,7 +584,7 @@ proc ::Plotchart::DrawXaxis { w xmin xmax xdelt args } {
                         set xlabel [FormatNumber $format $xt]
                     }
                 } else {
-                    set xlabel [clock format [expr {int($xt)}] -format $timeformat -gmt $gmt]
+                    set xlabel [clock format [expr {int($xt)}] -format $timeformat -gmt $gmt -locale $locale]
                 }
             } else {
                 set xlabel $xt

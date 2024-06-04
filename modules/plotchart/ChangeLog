@@ -1,3 +1,11 @@
+2024-06-03  Arjen Markus  <arjenmarkus@users,sourceforge.net>
+        * plotconfig.tcl:  Add missing elements for 3dribbon plots (ticket 3d35a07f665b17987c9773cfa604b07d6d9b0cb7)
+        * plotpriv.tcl:    Let the timechart methods return the canvas item IDs (ticket e8bf5556a856e0f56bfd0e12674339f3d09356ab)
+        * plotannot.tcl:   Apply patch to long-standing bug regarding shaded vertical bars (ticket 34783217f723eb452634e7af7a1855d3e09b7fac)
+        * plotaxis.tcl:    Introduce -locale option for time axis (ticket 55f89cf0be4fcdb002d3f96fc1ca8b351ccd1878)
+        * plotchart.man:   Describe the new -locale option
+        * pkgIndex.tcl:    Increase the version number to 2.6.2
+
 2023-08-13  Arjen Markus  <arjenmarkus@users,sourceforge.net>
         * plotchart.tcl:   Correct the scaling for windrose plots (ticket 8df371ba8e)
         * pkgIndex.tcl:    Increase the version number to 2.6.1

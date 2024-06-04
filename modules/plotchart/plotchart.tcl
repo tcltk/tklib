@@ -1200,6 +1200,7 @@ proc ::Plotchart::CreateXYPlotImpl {prefix c xscale yscale argv} {
            switch -exact -- $arg {
                -xlabels    -
                -timeformat -
+               -locale     -
                -gmt        {
                    lappend known_args $arg $val
                }
@@ -3478,4 +3479,4 @@ source [file join [file dirname [info script]] "plotdendrogram.tcl"]
 
 # Announce our presence
 #
-package provide Plotchart 2.6.1
+package provide Plotchart 2.6.2
