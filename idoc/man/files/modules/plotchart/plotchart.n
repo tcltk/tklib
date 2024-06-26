@@ -2,7 +2,7 @@
 '\" Generated from file 'plotchart\&.man' by tcllib/doctools with format 'nroff'
 '\" Copyright (c) 2022 Arjen Markus <arjenmarkus@users\&.sourceforge\&.net>
 '\"
-.TH "Plotchart" n 2\&.5\&.1 tklib "Plotchart"
+.TH "Plotchart" n 2\&.6\&.2 tklib "Plotchart"
 .\" The -*- nroff -*- definitions below are for supplemental macros used
 .\" in Tcl/Tk manual entries.
 .\"
@@ -278,7 +278,7 @@ package require \fBTcl  ?8\&.5?\fR
 .sp
 package require \fBTk  ?8\&.5?\fR
 .sp
-package require \fBPlotchart  ?2\&.5\&.2?\fR
+package require \fBPlotchart  ?2\&.6\&.2?\fR
 .sp
 \fB::Plotchart::createXYPlot\fR \fIw\fR \fIxaxis\fR \fIyaxis\fR \fIargs\fR
 .sp
@@ -4446,6 +4446,7 @@ labels along the x-axis for those plot types for which it makes sense\&. These
 options were implemented to take care of date/time labels for stripcharts,
 as you can also use custom labels (the option -xlabels) if the axis is "static"\&.
 Since this is not the case for stripcharts, this was not an option (Tcllib/Tklib bug 3613718)\&.
+You can also specify the -locale option to get a localised date/time label\&.
 The example below illustrates how to use the -timeformat option\&. The -gmt option
 merely suppresses the handling of daylight saving time by the [clock format] command\&.
 .CS
@@ -4461,6 +4462,9 @@ pack [canvas \&.c -width 500 -bg white]
 set start [clock scan  "0:00"]
 set stop  [clock scan "10:00"]
 set s [Plotchart::createStripchart \&.c [list $start $stop 7200] {0 10 1} -timeformat "%H:%M"]
+
+# With a locale like "de":
+#set s [Plotchart::createStripchart \&.c [list $start $stop 7200] {0 10 1} -timeformat "%H:%M" -locale de]
 
 foreach {x y} {0 0 2 5 5 2 9 9 12 10} {
     set x [expr {$start + 3600 * $x}] ;# Convert hour to clock seconds

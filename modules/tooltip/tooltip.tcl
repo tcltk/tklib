@@ -752,6 +752,7 @@ proc ::tooltip::conditionally-hide {w tag} {
     $w tag bind $tag <Enter> $G(enterBinding,$w,$tag)
     
     # have we really left ? if the cursor is _in_ the tooltip we haven't.
+    createToplevel
     lassign [split [wm geometry $G(TOPLEVEL)] "x+"] w h xT yT
     lassign [winfo pointerxy "."] x y
     
@@ -761,4 +762,4 @@ proc ::tooltip::conditionally-hide {w tag} {
     hide 1
 }
 
-package provide tooltip 1.8
+package provide tooltip 1.8.1

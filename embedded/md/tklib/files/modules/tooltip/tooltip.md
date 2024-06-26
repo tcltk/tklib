@@ -1,6 +1,6 @@
 
 [//000000001]: # (tooltip \- Tooltip management)
-[//000000002]: # (Generated from file 'tooltip\.man' by tcllib/doctools with format 'markdown')
+[//000000002]: # (Generated from file 'tooltip\.man~' by tcllib/doctools with format 'markdown')
 [//000000003]: # (Copyright &copy; 1996\-2008, Jeffrey Hobbs)
 [//000000004]: # (Copyright &copy; 2024 Emmanuel Frecon)
 [//000000005]: # (tooltip\(n\) 1\.8 tklib "Tooltip management")

@@ -2,7 +2,7 @@
 [//000000001]: # (Plotchart \- Plotchart)
 [//000000002]: # (Generated from file 'plotchart\.man' by tcllib/doctools with format 'markdown')
 [//000000003]: # (Copyright &copy; 2022 Arjen Markus <arjenmarkus@users\.sourceforge\.net>)
-[//000000004]: # (Plotchart\(n\) 2\.5\.1 tklib "Plotchart")
+[//000000004]: # (Plotchart\(n\) 2\.6\.2 tklib "Plotchart")
 
 <hr> [ <a href="../../../../toc.md">Main Table Of Contents</a> &#124; <a
 href="../../../toc.md">Table Of Contents</a> &#124; <a
@@ -71,7 +71,7 @@ Plotchart \- Simple plotting and charting package
 
 package require Tcl ?8\.5?  
 package require Tk ?8\.5?  
-package require Plotchart ?2\.5\.2?  
+package require Plotchart ?2\.6\.2?  
 
 [__::Plotchart::createXYPlot__ *w* *xaxis* *yaxis* *args*](#1)  
 [__::Plotchart::createStripchart__ *w* *xaxis* *yaxis* *args*](#2)  
@@ -4280,9 +4280,10 @@ labels along the x\-axis for those plot types for which it makes sense\. These
 options were implemented to take care of date/time labels for stripcharts, as
 you can also use custom labels \(the option \-xlabels\) if the axis is "static"\.
 Since this is not the case for stripcharts, this was not an option \(Tcllib/Tklib
-bug 3613718\)\. The example below illustrates how to use the \-timeformat option\.
-The \-gmt option merely suppresses the handling of daylight saving time by the
-\[clock format\] command\.
+bug 3613718\)\. You can also specify the \-locale option to get a localised
+date/time label\. The example below illustrates how to use the \-timeformat
+option\. The \-gmt option merely suppresses the handling of daylight saving time
+by the \[clock format\] command\.
 
     package require Plotchart
 
@@ -4294,6 +4295,9 @@ The \-gmt option merely suppresses the handling of daylight saving time by the
     set start [clock scan  "0:00"]
     set stop  [clock scan "10:00"]
     set s [Plotchart::createStripchart .c [list $start $stop 7200] {0 10 1} -timeformat "%H:%M"]
+
+    # With a locale like "de":
+    #set s [Plotchart::createStripchart .c [list $start $stop 7200] {0 10 1} -timeformat "%H:%M" -locale de]
 
     foreach {x y} {0 0 2 5 5 2 9 9 12 10} {
         set x [expr {$start + 3600 * $x}] ;# Convert hour to clock seconds

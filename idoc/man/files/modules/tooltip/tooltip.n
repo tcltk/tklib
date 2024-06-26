@@ -1,5 +1,5 @@
 '\"
-'\" Generated from file 'tooltip\&.man' by tcllib/doctools with format 'nroff'
+'\" Generated from file 'tooltip\&.man~' by tcllib/doctools with format 'nroff'
 '\" Copyright (c) 1996-2008, Jeffrey Hobbs
 '\" Copyright (c) 2024 Emmanuel Frecon
 '\"

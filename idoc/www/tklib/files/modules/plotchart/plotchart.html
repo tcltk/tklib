@@ -107,7 +107,7 @@
 &#124; <a href="../../../../toc2.html">Applications</a>
  ] <hr>
 <div class="doctools">
-<h1 class="doctools_title">Plotchart(n) 2.5.1 tklib &quot;Plotchart&quot;</h1>
+<h1 class="doctools_title">Plotchart(n) 2.6.2 tklib &quot;Plotchart&quot;</h1>
 <div id="name" class="doctools_section"><h2><a name="name">Name</a></h2>
 <p>Plotchart - Simple plotting and charting package</p>
 </div>
@@ -145,7 +145,7 @@
 <ul class="doctools_requirements">
 <li>package require <b class="pkgname">Tcl <span class="opt">?8.5?</span></b></li>
 <li>package require <b class="pkgname">Tk <span class="opt">?8.5?</span></b></li>
-<li>package require <b class="pkgname">Plotchart <span class="opt">?2.5.2?</span></b></li>
+<li>package require <b class="pkgname">Plotchart <span class="opt">?2.6.2?</span></b></li>
 </ul>
 <ul class="doctools_syntax">
 <li><a href="#1"><b class="cmd">::Plotchart::createXYPlot</b> <i class="arg">w</i> <i class="arg">xaxis</i> <i class="arg">yaxis</i> <i class="arg">args</i></a></li>
@@ -3184,6 +3184,7 @@ labels along the x-axis for those plot types for which it makes sense. These
 options were implemented to take care of date/time labels for stripcharts,
 as you can also use custom labels (the option -xlabels) if the axis is &quot;static&quot;.
 Since this is not the case for stripcharts, this was not an option (Tcllib/Tklib bug 3613718).
+You can also specify the -locale option to get a localised date/time label.
 The example below illustrates how to use the -timeformat option. The -gmt option
 merely suppresses the handling of daylight saving time by the [clock format] command.</p>
 <pre class="doctools_example">
@@ -3195,6 +3196,8 @@ pack [canvas .c -width 500 -bg white]
 set start [clock scan  &quot;0:00&quot;]
 set stop  [clock scan &quot;10:00&quot;]
 set s [Plotchart::createStripchart .c [list $start $stop 7200] {0 10 1} -timeformat &quot;%H:%M&quot;]
+# With a locale like &quot;de&quot;:
+#set s [Plotchart::createStripchart .c [list $start $stop 7200] {0 10 1} -timeformat &quot;%H:%M&quot; -locale de]
 foreach {x y} {0 0 2 5 5 2 9 9 12 10} {
     set x [expr {$start + 3600 * $x}] ;# Convert hour to clock seconds
     $s plot a $x $y
