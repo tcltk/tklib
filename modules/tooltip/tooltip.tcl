@@ -76,7 +76,7 @@ package require msgcat
 # TkTooltipFont is defined in tk library/ttk/fonts.tcl
 catch {font create    TkTooltipFontItalic}
 catch {font configure TkTooltipFontItalic \
-	   {*}[font configure TkTooltipFont] -slant italic}
+       {*}[font configure TkTooltipFont] -slant italic}
 
 namespace eval ::tooltip {
     namespace export -clear tooltip
@@ -100,28 +100,21 @@ namespace eval ::tooltip {
     }
 
     # functional options
-    option add *Tooltip.Label.highlightThickness 0
-    option add *Tooltip.Label.relief             solid
-    option add *Tooltip.Label.borderWidth        1
-    option add *Tooltip.Label.padX               5
-    option add *Tooltip.Label.padY               5
-    # configurable options
-    option add *Tooltip.Label.background         lightyellow
-    option add *Tooltip.Label.foreground         black
-    option add *Tooltip.Label.font               TkTooltipFont
-
     option add *Tooltip.Frame.highlightThickness 0
     option add *Tooltip.Frame.relief             solid
     option add *Tooltip.Frame.borderWidth        1
+    option add *Tooltip*Label.highlightThickness 0
+    option add *Tooltip*Label.relief             flat
+    option add *Tooltip*Label.borderWidth        0
+    option add *Tooltip*Label.padX               3p
+    option add *Tooltip*Label.padY               3p
+
+    # configurable options
     option add *Tooltip.Frame.background         lightyellow
-
-    option add *Tooltip.Info.borderWidth        0
-    option add *Tooltip.Info.background         lightyellow
-    option add *Tooltip.Info.foreground         black
-    option add *Tooltip.Info.font               TkTooltipFontItalic
-    option add *Tooltip.Info.padX               3
-    option add *Tooltip.Info.padY               3
-
+    option add *Tooltip*Label.background         lightyellow
+    option add *Tooltip*Label.foreground         black
+    option add *Tooltip*label.font               TkTooltipFont	;# lowercase!
+    option add *Tooltip*info.font                TkTooltipFontItalic
 
     # The extra ::hide call in <Enter> is necessary to catch moving to
     # child widgets where the <Leave> event won't be generated
@@ -363,7 +356,6 @@ proc ::tooltip::createToplevel {} {
     grid $b.f
     grid $b.f.label -sticky w
     grid $b.f.info  -sticky w
-    grid columnconfigure $b.f 1 -weight 1
 }
 
 proc ::tooltip::configure {args} {
@@ -379,7 +371,7 @@ proc ::tooltip::configure {args} {
         createToplevel
     }
     foreach opt {-foreground -background -font} {
-        set val [$b.label configure $opt]
+        set val [$b.f.label configure $opt]
         set opts($opt) [lindex $val 4]
         set defs($opt) [lindex $val 1]
         lappend keys $opt
@@ -408,8 +400,29 @@ proc ::tooltip::configure {args} {
                     return -level 2 -code error "unknown option \"$key\""
                 }
                 if {[catch {
-                    $b.label configure $key $val
-                    option add *Tooltip.Label.$defs($key) $val
+		    switch $key {
+			-background - -bg {
+			    foreach widget [list $b.f $b.f.label $b.f.info] {
+				$widget configure $key $val
+			    }
+			    option add *Tooltip*Frame.$defs($key) $val
+			    option add *Tooltip*Label.$defs($key) $val
+			}
+			-foreground - -fg {
+			    foreach widget [list $b.f.label $b.f.info] {
+				$widget configure $key $val
+			    }
+			    option add *Tooltip*Label.$defs($key) $val
+			}
+			-font {
+			    $b.f.label configure $key $val
+			    option add *Tooltip*label.$defs($key) $val
+
+			    catch {font configure TkTooltipFontItalic \
+				   {*}[font actual $val] -slant italic}
+			    $b.f.info configure $key TkTooltipFontItalic
+			}
+		    }
                 } err]} {
                     return -level 2 -code error $err
                 }
@@ -519,7 +532,7 @@ proc ::tooltip::show {w msg {i {}}} {
     }
     # avoid the blink issue with 1 to <1 alpha on Windows, watch half-fading
     catch {wm attributes $b -alpha 0.99}
-    # put toplevel placed outside the screen back into it, just a little below the top borser.
+    # put toplevel placed outside the screen back into it, just a little below the top border.
     if {$y < 0} { set y 10 }
     wm geometry $b +$x+$y
     wm deiconify $b
@@ -762,4 +775,4 @@ proc ::tooltip::conditionally-hide {w tag} {
     hide 1
 }
 
-package provide tooltip 1.8.1
+package provide tooltip 1.8.2

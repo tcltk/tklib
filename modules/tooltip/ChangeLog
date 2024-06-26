@@ -1,3 +1,11 @@
+2024-06-26  Csaba Nemethi  <csaba.nemethi@t-online.de>
+
+	* pkgIndex.tcl:	Bumped the tooltip version number to 1.8.2.
+	* tooltip.man:
+
+	* tooltip.tcl: Fixed a few bugs related to "option add" and the proc
+	  tooltip::configure; bumped the version number to 1.8.2.
+
 2024-05-23  Andreas Kupries <andreas.kupries@gmail.com>
 
 	* Bumped to version 1.8. Support images and additional info text.
