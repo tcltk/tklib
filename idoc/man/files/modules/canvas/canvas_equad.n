@@ -1,7 +1,7 @@
 '\"
 '\" Generated from file 'canvas_equad\&.man' by tcllib/doctools with format 'nroff'
 '\"
-.TH "canvas::edit::quadrilateral" n 0\&.1 tklib "Variations on a canvas"
+.TH "canvas::edit::quadrilateral" n 0\&.2 tklib "Variations on a canvas"
 .\" The -*- nroff -*- definitions below are for supplemental macros used
 .\" in Tcl/Tk manual entries.
 .\"
@@ -279,7 +279,7 @@ package require \fBTk  8\&.5\fR
 .sp
 package require \fBcanvas::edit::points  ?0\&.1?\fR
 .sp
-package require \fBcanvas::edit::quadrilateral  ?0\&.1?\fR
+package require \fBcanvas::edit::quadrilateral  ?0\&.2?\fR
 .sp
 \fB::canvas::edit\fR \fBquadrilateral\fR \fIobjectName\fR \fIcanvas\fR \fIoptions\fR\&.\&.\&.
 .sp

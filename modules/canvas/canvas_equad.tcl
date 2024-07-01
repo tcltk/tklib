@@ -407,7 +407,7 @@ snit::type ::canvas::edit::quadrilateral {
 # # ## ### ##### ######## ############# #####################
 ## Ready
 
-package provide canvas::edit::quadrilateral 0.1
+package provide canvas::edit::quadrilateral 0.2
 return
 
 # # ## ### ##### ######## ############# #####################

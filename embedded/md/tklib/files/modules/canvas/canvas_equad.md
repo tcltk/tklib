@@ -1,7 +1,7 @@
 
 [//000000001]: # (canvas::edit::quadrilateral \- Variations on a canvas)
 [//000000002]: # (Generated from file 'canvas\_equad\.man' by tcllib/doctools with format 'markdown')
-[//000000003]: # (canvas::edit::quadrilateral\(n\) 0\.1 tklib "Variations on a canvas")
+[//000000003]: # (canvas::edit::quadrilateral\(n\) 0\.2 tklib "Variations on a canvas")
 
 <hr> [ <a href="../../../../toc.md">Main Table Of Contents</a> &#124; <a
 href="../../../toc.md">Table Of Contents</a> &#124; <a
@@ -37,7 +37,7 @@ canvas::edit::quadrilateral \- Editing a quadrilateral on a canvas
 package require Tcl 8\.5  
 package require Tk 8\.5  
 package require canvas::edit::points ?0\.1?  
-package require canvas::edit::quadrilateral ?0\.1?  
+package require canvas::edit::quadrilateral ?0\.2?  
 
 [__::canvas::edit__ __quadrilateral__ *objectName* *canvas* *options*\.\.\.](#1)  
 [__objectName__ __destroy__](#2)  

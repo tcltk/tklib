@@ -6,7 +6,7 @@ package ifneeded canvas::drag                0.1   [list source [file join $dir 
 package ifneeded canvas::edit::circle        0.1   [list source [file join $dir canvas_ecircle.tcl]]
 package ifneeded canvas::edit::points        0.3   [list source [file join $dir canvas_epoints.tcl]]
 package ifneeded canvas::edit::polyline      0.2   [list source [file join $dir canvas_epolyline.tcl]]
-package ifneeded canvas::edit::quadrilateral 0.1   [list source [file join $dir canvas_equad.tcl]]
+package ifneeded canvas::edit::quadrilateral 0.2   [list source [file join $dir canvas_equad.tcl]]
 package ifneeded canvas::edit::rectangle     0.1   [list source [file join $dir canvas_erectangle.tcl]]
 package ifneeded canvas::gradient            0.2   [list source [file join $dir canvas_gradient.tcl]]
 package ifneeded canvas::highlight           0.1   [list source [file join $dir canvas_highlight.tcl]]
