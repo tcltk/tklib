@@ -41,6 +41,8 @@
 
           + [canvas::mvg](tklib/files/modules/canvas/canvas\_mvg\.md) Canvas to ImageMagick MVG vector format
 
+          + [canvas::pdf](tklib/files/modules/canvas/canvas\_pdf\.md) Canvas to PDF
+
           + [canvas::snap](tklib/files/modules/canvas/canvas\_snap\.md) Canvas snapshot to Tk photo image
 
           + [canvas::sqmap](tklib/files/modules/canvas/canvas\_sqmap\.md) Canvas with map background based on square tiles
@@ -162,6 +164,8 @@
               - [canvas::highlight](tklib/files/modules/canvas/canvas\_highlight\.md) Manage the highlighting of canvas items or item groups
 
               - [canvas::mvg](tklib/files/modules/canvas/canvas\_mvg\.md) Canvas to ImageMagick MVG vector format
+
+              - [canvas::pdf](tklib/files/modules/canvas/canvas\_pdf\.md) Canvas to PDF
 
               - [canvas::snap](tklib/files/modules/canvas/canvas\_snap\.md) Canvas snapshot to Tk photo image
 

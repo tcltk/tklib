@@ -43,7 +43,7 @@
 |||
 |---|---|
 |<a name='calendar'></a>calendar|[widget](tklib/files/modules/widget/widget\.md) &#183; [widget\_calendar](tklib/files/modules/widget/widget\_calendar\.md)|
-|<a name='canvas'></a>canvas|[canvas::drag](tklib/files/modules/canvas/canvas\_drag\.md) &#183; [canvas::edit::circle](tklib/files/modules/canvas/canvas\_ecircle\.md) &#183; [canvas::edit::points](tklib/files/modules/canvas/canvas\_epoints\.md) &#183; [canvas::edit::polyline](tklib/files/modules/canvas/canvas\_epolyline\.md) &#183; [canvas::edit::quadrilateral](tklib/files/modules/canvas/canvas\_equad\.md) &#183; [canvas::edit::rectangle](tklib/files/modules/canvas/canvas\_erectangle\.md) &#183; [canvas::gradient](tklib/files/modules/canvas/canvas\_gradient\.md) &#183; [canvas::highlight](tklib/files/modules/canvas/canvas\_highlight\.md) &#183; [canvas::mvg](tklib/files/modules/canvas/canvas\_mvg\.md) &#183; [canvas::snap](tklib/files/modules/canvas/canvas\_snap\.md) &#183; [canvas::sqmap](tklib/files/modules/canvas/canvas\_sqmap\.md) &#183; [canvas::tag](tklib/files/modules/canvas/canvas\_tags\.md) &#183; [canvas::track::lines](tklib/files/modules/canvas/canvas\_trlines\.md) &#183; [canvasLabel](tklib/files/modules/tkpiechart/canvaslabel\.md) &#183; [crosshair](tklib/files/modules/crosshair/crosshair\.md) &#183; [diagram](tklib/files/modules/diagrams/diagram\.md) &#183; [diagram\-viewer](tklib/files/apps/diagram\-viewer\.md) &#183; [pie](tklib/files/modules/tkpiechart/pie\.md) &#183; [pieBoxLabeler](tklib/files/modules/tkpiechart/pieboxlabeler\.md) &#183; [piePeripheralLabeler](tklib/files/modules/tkpiechart/pieperipherallabeler\.md)|
+|<a name='canvas'></a>canvas|[canvas::drag](tklib/files/modules/canvas/canvas\_drag\.md) &#183; [canvas::edit::circle](tklib/files/modules/canvas/canvas\_ecircle\.md) &#183; [canvas::edit::points](tklib/files/modules/canvas/canvas\_epoints\.md) &#183; [canvas::edit::polyline](tklib/files/modules/canvas/canvas\_epolyline\.md) &#183; [canvas::edit::quadrilateral](tklib/files/modules/canvas/canvas\_equad\.md) &#183; [canvas::edit::rectangle](tklib/files/modules/canvas/canvas\_erectangle\.md) &#183; [canvas::gradient](tklib/files/modules/canvas/canvas\_gradient\.md) &#183; [canvas::highlight](tklib/files/modules/canvas/canvas\_highlight\.md) &#183; [canvas::mvg](tklib/files/modules/canvas/canvas\_mvg\.md) &#183; [canvas::pdf](tklib/files/modules/canvas/canvas\_pdf\.md) &#183; [canvas::snap](tklib/files/modules/canvas/canvas\_snap\.md) &#183; [canvas::sqmap](tklib/files/modules/canvas/canvas\_sqmap\.md) &#183; [canvas::tag](tklib/files/modules/canvas/canvas\_tags\.md) &#183; [canvas::track::lines](tklib/files/modules/canvas/canvas\_trlines\.md) &#183; [canvasLabel](tklib/files/modules/tkpiechart/canvaslabel\.md) &#183; [crosshair](tklib/files/modules/crosshair/crosshair\.md) &#183; [diagram](tklib/files/modules/diagrams/diagram\.md) &#183; [diagram\-viewer](tklib/files/apps/diagram\-viewer\.md) &#183; [pie](tklib/files/modules/tkpiechart/pie\.md) &#183; [pieBoxLabeler](tklib/files/modules/tkpiechart/pieboxlabeler\.md) &#183; [piePeripheralLabeler](tklib/files/modules/tkpiechart/pieperipherallabeler\.md)|
 |<a name='cell'></a>cell|[canvas::sqmap](tklib/files/modules/canvas/canvas\_sqmap\.md)|
 |<a name='character'></a>character|[khim](tklib/files/modules/khim/khim\.md)|
 |<a name='chat'></a>chat|[chatwidget](tklib/files/modules/chatwidget/chatwidget\.md)|
@@ -100,7 +100,7 @@
 |||
 |---|---|
 |<a name='gradients'></a>gradients|[canvas::gradient](tklib/files/modules/canvas/canvas\_gradient\.md)|
-|<a name='graphics'></a>graphics|[canvas::mvg](tklib/files/modules/canvas/canvas\_mvg\.md)|
+|<a name='graphics'></a>graphics|[canvas::mvg](tklib/files/modules/canvas/canvas\_mvg\.md) &#183; [canvas::pdf](tklib/files/modules/canvas/canvas\_pdf\.md)|
 |<a name='grid'></a>grid|[canvas::sqmap](tklib/files/modules/canvas/canvas\_sqmap\.md)|
 
 
@@ -123,7 +123,7 @@
 |<a name='ico'></a>ico|[ico](tklib/files/modules/ico/ico\.md)|
 |<a name='icon'></a>icon|[ico](tklib/files/modules/ico/ico\.md)|
 |<a name='image'></a>image|[bitmap\-editor](tklib/files/apps/bitmap\-editor\.md) &#183; [canvas::gradient](tklib/files/modules/canvas/canvas\_gradient\.md) &#183; [canvas::snap](tklib/files/modules/canvas/canvas\_snap\.md) &#183; [canvas::sqmap](tklib/files/modules/canvas/canvas\_sqmap\.md) &#183; [diagram](tklib/files/modules/diagrams/diagram\.md)|
-|<a name='imagemagick'></a>imagemagick|[canvas::mvg](tklib/files/modules/canvas/canvas\_mvg\.md)|
+|<a name='imagemagick'></a>imagemagick|[canvas::mvg](tklib/files/modules/canvas/canvas\_mvg\.md) &#183; [canvas::pdf](tklib/files/modules/canvas/canvas\_pdf\.md)|
 |<a name='input'></a>input|[khim](tklib/files/modules/khim/khim\.md)|
 |<a name='insert\_tag'></a>insert tag|[canvas::tag](tklib/files/modules/canvas/canvas\_tags\.md)|
 |<a name='international'></a>international|[khim](tklib/files/modules/khim/khim\.md)|
@@ -177,6 +177,7 @@
 |||
 |---|---|
 |<a name='panelframe'></a>panelframe|[widget](tklib/files/modules/widget/widget\.md)|
+|<a name='pdf'></a>pdf|[canvas::pdf](tklib/files/modules/canvas/canvas\_pdf\.md)|
 |<a name='photo'></a>photo|[canvas::snap](tklib/files/modules/canvas/canvas\_snap\.md)|
 |<a name='picture'></a>picture|[diagram](tklib/files/modules/diagrams/diagram\.md)|
 |<a name='pie'></a>pie|[canvasLabel](tklib/files/modules/tkpiechart/canvaslabel\.md) &#183; [pie](tklib/files/modules/tkpiechart/pie\.md) &#183; [pieBoxLabeler](tklib/files/modules/tkpiechart/pieboxlabeler\.md) &#183; [piePeripheralLabeler](tklib/files/modules/tkpiechart/pieperipherallabeler\.md)|
@@ -187,7 +188,8 @@
 |<a name='point\_cloud'></a>point cloud|[canvas::edit::points](tklib/files/modules/canvas/canvas\_epoints\.md)|
 |<a name='points'></a>points|[canvas::edit::points](tklib/files/modules/canvas/canvas\_epoints\.md)|
 |<a name='polyline'></a>polyline|[canvas::edit::polyline](tklib/files/modules/canvas/canvas\_epolyline\.md)|
-|<a name='print\_screen'></a>print screen|[canvas::mvg](tklib/files/modules/canvas/canvas\_mvg\.md) &#183; [canvas::snap](tklib/files/modules/canvas/canvas\_snap\.md)|
+|<a name='portable\_document\_format'></a>portable document format|[canvas::pdf](tklib/files/modules/canvas/canvas\_pdf\.md)|
+|<a name='print\_screen'></a>print screen|[canvas::mvg](tklib/files/modules/canvas/canvas\_mvg\.md) &#183; [canvas::pdf](tklib/files/modules/canvas/canvas\_pdf\.md) &#183; [canvas::snap](tklib/files/modules/canvas/canvas\_snap\.md)|
 
 
 #### <a name='cQ'></a>Keywords: Q
@@ -219,7 +221,7 @@
 |<a name='scroll'></a>scroll|[autoscroll](tklib/files/modules/autoscroll/autoscroll\.md)|
 |<a name='scrollbar'></a>scrollbar|[autoscroll](tklib/files/modules/autoscroll/autoscroll\.md)|
 |<a name='scrolledwindow'></a>scrolledwindow|[widget](tklib/files/modules/widget/widget\.md)|
-|<a name='serialization'></a>serialization|[canvas::mvg](tklib/files/modules/canvas/canvas\_mvg\.md)|
+|<a name='serialization'></a>serialization|[canvas::mvg](tklib/files/modules/canvas/canvas\_mvg\.md) &#183; [canvas::pdf](tklib/files/modules/canvas/canvas\_pdf\.md)|
 |<a name='set\_entry\_panel'></a>set entry panel|[widget\_listentry](tklib/files/modules/widgetl/widget\_listentry\.md) &#183; [widget\_listsimple](tklib/files/modules/widgetl/widget\_listsimple\.md)|
 |<a name='slice'></a>slice|[canvasLabel](tklib/files/modules/tkpiechart/canvaslabel\.md) &#183; [pie](tklib/files/modules/tkpiechart/pie\.md) &#183; [pieBoxLabeler](tklib/files/modules/tkpiechart/pieboxlabeler\.md) &#183; [piePeripheralLabeler](tklib/files/modules/tkpiechart/pieperipherallabeler\.md)|
 |<a name='snapshot'></a>snapshot|[canvas::snap](tklib/files/modules/canvas/canvas\_snap\.md)|
@@ -255,7 +257,7 @@
 |---|---|
 |<a name='validation'></a>validation|[widget\_validator](tklib/files/modules/widgetv/widget\_validator\.md)|
 |<a name='vector'></a>vector|[diagram](tklib/files/modules/diagrams/diagram\.md) &#183; [diagram\-viewer](tklib/files/apps/diagram\-viewer\.md)|
-|<a name='vector\_graphics'></a>vector graphics|[canvas::mvg](tklib/files/modules/canvas/canvas\_mvg\.md)|
+|<a name='vector\_graphics'></a>vector graphics|[canvas::mvg](tklib/files/modules/canvas/canvas\_mvg\.md) &#183; [canvas::pdf](tklib/files/modules/canvas/canvas\_pdf\.md)|
 |<a name='viewer'></a>viewer|[shtmlview](tklib/files/apps/shtmlview\.md)|
 |<a name='viewport'></a>viewport|[crosshair](tklib/files/modules/crosshair/crosshair\.md)|
 

@@ -389,6 +389,9 @@ canvas::highlight
 \fBfiles/modules/canvas/canvas_mvg\&.n\fR
 canvas::mvg
 .TP
+\fBfiles/modules/canvas/canvas_pdf\&.n\fR
+canvas::pdf
+.TP
 \fBfiles/modules/canvas/canvas_snap\&.n\fR
 canvas::snap
 .TP
@@ -715,6 +718,9 @@ graphics
 .TP
 \fBfiles/modules/canvas/canvas_mvg\&.n\fR
 canvas::mvg
+.TP
+\fBfiles/modules/canvas/canvas_pdf\&.n\fR
+canvas::pdf
 .RE
 grid
 .RS
@@ -808,6 +814,9 @@ imagemagick
 .TP
 \fBfiles/modules/canvas/canvas_mvg\&.n\fR
 canvas::mvg
+.TP
+\fBfiles/modules/canvas/canvas_pdf\&.n\fR
+canvas::pdf
 .RE
 input
 .RS
@@ -1007,6 +1016,12 @@ panelframe
 \fBfiles/modules/widget/widget\&.n\fR
 widget
 .RE
+pdf
+.RS
+.TP
+\fBfiles/modules/canvas/canvas_pdf\&.n\fR
+canvas::pdf
+.RE
 photo
 .RS
 .TP
@@ -1076,11 +1091,20 @@ polyline
 \fBfiles/modules/canvas/canvas_epolyline\&.n\fR
 canvas::edit::polyline
 .RE
+portable document format
+.RS
+.TP
+\fBfiles/modules/canvas/canvas_pdf\&.n\fR
+canvas::pdf
+.RE
 print screen
 .RS
 .TP
 \fBfiles/modules/canvas/canvas_mvg\&.n\fR
 canvas::mvg
+.TP
+\fBfiles/modules/canvas/canvas_pdf\&.n\fR
+canvas::pdf
 .TP
 \fBfiles/modules/canvas/canvas_snap\&.n\fR
 canvas::snap
@@ -1180,6 +1204,9 @@ serialization
 .TP
 \fBfiles/modules/canvas/canvas_mvg\&.n\fR
 canvas::mvg
+.TP
+\fBfiles/modules/canvas/canvas_pdf\&.n\fR
+canvas::pdf
 .RE
 set entry panel
 .RS
@@ -1372,6 +1399,9 @@ vector graphics
 .TP
 \fBfiles/modules/canvas/canvas_mvg\&.n\fR
 canvas::mvg
+.TP
+\fBfiles/modules/canvas/canvas_pdf\&.n\fR
+canvas::pdf
 .RE
 viewer
 .RS

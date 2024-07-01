@@ -1,8 +1,9 @@
 '\"
-'\" Generated from file 'diagram-viewer\&.man' by tcllib/doctools with format 'nroff'
-'\" Copyright (c) 2010 Andreas Kupries <andreas_kupries@users\&.sourceforge\&.net>
+'\" Generated from file 'canvas_pdf\&.man' by tcllib/doctools with format 'nroff'
+'\" Copyright (c) 2014 Andreas Kupries, Arjen Markus
+'\" Copyright (c) 2014 Documentation, Andreas Kupries
 '\"
-.TH "diagram-viewer" n 1\&.0 tklib "Documentation toolbox"
+.TH "canvas::pdf" n 1 tklib "Variations on a canvas"
 .\" The -*- nroff -*- definitions below are for supplemental macros used
 .\" in Tcl/Tk manual entries.
 .\"
@@ -272,91 +273,40 @@ Database Class:	\\fB\\$3\\fR
 ..
 .BS
 .SH NAME
-diagram-viewer \- Lightweight Diagram Processor
+canvas::pdf \- Canvas to PDF
 .SH SYNOPSIS
-\fBdiagram-viewer\fR \fBshow\fR \fIinputfile\fR\&.\&.\&.
+package require \fBTcl  8\&.5\fR
 .sp
-\fBdiagram-viewer\fR \fBconvert\fR \fB-o\fR \fIoutput\fR \fIformat\fR \fIinputfile\fR\&.\&.\&.
+package require \fBTk  8\&.5\fR
+.sp
+package require \fBcanvas::pdf  ?1?\fR
+.sp
+package require \fBpdf4tcl \fR
+.sp
+\fB::canvas::pdf\fR \fIpathName\fR
 .sp
 .BE
 .SH DESCRIPTION
-.PP
-The application described by this document, \fBdiagram-viewer\fR, is a
-lightweight processor for tklib diagram files
-.PP
-\fBdiagram-viewer\fR is based upon the package \fBdiagram\fR\&.
-See it for examples and language reference\&.
-.SS "USE CASES"
-\fBdiagram-viewer\fR was written with the following two use cases in
-mind\&.
-.PP
-.IP [1]
-Processing and display of one or more diagram files\&.
-.IP [2]
-Batch conversion of one or more diagram files into raster image files\&.
-.PP
-.PP
-.SS "COMMAND LINE"
+This package provides a command to convert a canvas' contents to
+Adobe's PDF vector format\&.
+.SH API
 .TP
-\fBdiagram-viewer\fR \fBshow\fR \fIinputfile\fR\&.\&.\&.
-This is the form for use case [1]\&. The application opens a gui
-showing the list of input files to the left, allowing the user to
-choose which of them to render to the canvas on the right\&.
-.TP
-\fBdiagram-viewer\fR \fBconvert\fR \fB-o\fR \fIoutput\fR \fIformat\fR \fIinputfile\fR\&.\&.\&.
-This is the form for use case [2]\&. The application converts
-the input files into raster image of the specified \fIformat\fR\&.
-.RS
-.TP
-path \fIoutput\fR (in)
-This argument specifies where to write the generated image\&. It can
-be the path to a file or directory\&.
-.sp
-If the \fIoutput\fR does not exist then [file dirname $output]
-has to exist and must be a writable directory\&.
-.sp
-In case of multiple input files the generated image will be written to
-a file in the directory, and the name of that file will be derived
-from the \fIinputfile\fR, and \fIformat\fR\&.
-.sp
-In case of a single input file the generated image will be written to
-the file\&.
-.TP
-(handle) \fIformat\fR (in)
-This argument specifies the image format to convert the diagrams into
-when processing the input\&. The application recognizes all formats
-supported by the \fBImg\fR package, i\&.e\&. for which it can load a
-package \fBimg::\fBformat\fR\fR (together with \fBcanvas::snap\fR),
-and all formats for which it can load a package
-\fBcanvas::\fBformat\fR\fR\&. These are (currently) \fBmvg\fR,
-and \fBpdf\fR\&.
-.TP
-path \fIinputfile\fR (in)
-This argument specifies the path to the diagram file to process\&. It
-has to exist, must be readable, and written in \fIdiagram\fR format\&.
-.RE
-.sp
+\fB::canvas::pdf\fR \fIpathName\fR
+Dump the contents of the canvas \fIpathName\fR\&. The result is a string
+in Adobe's PDF\&.
 .PP
-.SH "BUGS, IDEAS, FEEDBACK"
-This document, and the application it describes, will undoubtedly
-contain bugs and other problems\&.
-Please report such in the category \fIdiagram\fR of the
-\fITcllib SF Trackers\fR [http://sourceforge\&.net/tracker/?group_id=12883]\&.
-Please also report any ideas for enhancements you may have for either
-application and/or documentation\&.
 .SH "BUGS, IDEAS, FEEDBACK"
 This document, and the package it describes, will undoubtedly contain
 bugs and other problems\&.
-Please report such in the category \fIdiagram\fR of the
+Please report such in the category \fIcanvas\fR of the
 \fITklib Trackers\fR [http://core\&.tcl\&.tk/tklib/reportlist]\&.
 Please also report any ideas for enhancements you may have for either
 package and/or documentation\&.
 .SH KEYWORDS
-canvas, conversion, diagram, vector
-.SH CATEGORY
-Documentation tools
+canvas, graphics, imagemagick, pdf, portable document format, print screen, serialization, vector graphics
 .SH COPYRIGHT
 .nf
-Copyright (c) 2010 Andreas Kupries <andreas_kupries@users\&.sourceforge\&.net>
+Copyright (c) 2014 Andreas Kupries, Arjen Markus
+Copyright (c) 2014 Documentation, Andreas Kupries
 
 .fi

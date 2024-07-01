@@ -11,6 +11,7 @@ modules/canvas/canvas_erectangle.man
 modules/canvas/canvas_gradient.man
 modules/canvas/canvas_highlight.man
 modules/canvas/canvas_mvg.man
+modules/canvas/canvas_pdf.man
 modules/canvas/canvas_snap.man
 modules/canvas/canvas_sqmap.man
 modules/canvas/canvas_tags.man

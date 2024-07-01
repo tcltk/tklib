@@ -92,7 +92,10 @@ __diagram\-viewer__ was written with the following two use cases in mind\.
         This argument specifies the image format to convert the diagrams into
         when processing the input\. The application recognizes all formats
         supported by the __Img__ package, i\.e\. for which it can load a
-        package __img::__format____
+        package __img::__format____ \(together with
+        __[canvas::snap](\.\./modules/canvas/canvas\_snap\.md)__\), and all
+        formats for which it can load a package __canvas::__format____\.
+        These are \(currently\) __mvg__, and __pdf__\.
 
       * path *inputfile* \(in\)
 

@@ -1,9 +1,9 @@
 '\"
-'\" Generated from file 'tooltip\&.man~' by tcllib/doctools with format 'nroff'
+'\" Generated from file 'tooltip\&.man' by tcllib/doctools with format 'nroff'
 '\" Copyright (c) 1996-2008, Jeffrey Hobbs
 '\" Copyright (c) 2024 Emmanuel Frecon
 '\"
-.TH "tooltip" n 1\&.8 tklib "Tooltip management"
+.TH "tooltip" n 1\&.8\&.2 tklib "Tooltip management"
 .\" The -*- nroff -*- definitions below are for supplemental macros used
 .\" in Tcl/Tk manual entries.
 .\"
@@ -279,7 +279,7 @@ package require \fBTcl  8\&.5\fR
 .sp
 package require \fBmsgcat  1\&.3\fR
 .sp
-package require \fBtooltip  ?1\&.8?\fR
+package require \fBtooltip  ?1\&.8\&.2?\fR
 .sp
 \fB::tooltip::tooltip\fR \fIcommand\fR ?\fIoptions\fR?
 .sp

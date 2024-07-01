@@ -306,6 +306,9 @@ tklib
 \fBcanvas::mvg\fR
 \fIfiles/modules/canvas/canvas_mvg\&.n\fR: Canvas to ImageMagick MVG vector format
 .TP
+\fBcanvas::pdf\fR
+\fIfiles/modules/canvas/canvas_pdf\&.n\fR: Canvas to PDF
+.TP
 \fBcanvas::snap\fR
 \fIfiles/modules/canvas/canvas_snap\&.n\fR: Canvas snapshot to Tk photo image
 .TP

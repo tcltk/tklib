@@ -173,7 +173,10 @@ the file.</p></dd>
 <dd><p>This argument specifies the image format to convert the diagrams into
 when processing the input. The application recognizes all formats
 supported by the <b class="package">Img</b> package, i.e. for which it can load a
-package <b class="package">img::<b class="variable">format</b></b></p></dd>
+package <b class="package">img::<b class="variable">format</b></b> (together with <b class="package"><a href="../modules/canvas/canvas_snap.html">canvas::snap</a></b>),
+and all formats for which it can load a package
+<b class="package">canvas::<b class="variable">format</b></b>. These are (currently) <b class="const">mvg</b>,
+and <b class="const">pdf</b>.</p></dd>
 <dt>path <i class="arg">inputfile</i> (in)</dt>
 <dd><p>This argument specifies the path to the diagram file to process. It
 has to exist, must be readable, and written in <i class="term"><a href="../../../index.html#diagram">diagram</a></i> format.</p></dd>
