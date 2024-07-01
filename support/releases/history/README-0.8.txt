@@ -1,7 +1,7 @@
 Overview
 ========
 
-    36  new packages                in 5  modules
+    50  new packages                in 6  modules
     16  changed packages            in 13 modules
     42  internally changed packages in 19 modules
     7   unchanged packages          in 2  modules
@@ -66,6 +66,21 @@ New in Tklib 0.8
     ----------- --------------------------- ------------- ----------
     text        dgw::txmixins               0.2.0
     treeview    dgw::tvmixins               0.3
+    ----------- --------------------------- ------------- ----------
+    widget      widget                      3.1
+                widget::arrowbutton         1.0
+                widget::calendar            1.0.1
+                widget::dateentry           0.97
+                widget::dialog              1.3.1
+                widget::menuentry           1.0.1
+                widget::panelframe          1.1
+                widget::ruler               1.1
+                widget::screenruler         1.2
+                widget::scrolledtext        1.0
+                widget::scrolledwindow      1.2.1
+                widget::statusbar           1.2.1
+                widget::superframe          1.0.1
+                widget::toolbar             1.2.1
     ----------- --------------------------- ------------- ----------
 
 Changes from Tklib 0.7 to 0.8

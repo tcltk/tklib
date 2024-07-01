@@ -221,6 +221,11 @@ snit::widgetadaptor widget::dateentry {
     }
     
     method post { args } {
+	# TODO TCL 8.5+: `"disabled" in [$self state]`
+	if {[lsearch -exact [$self state] "disabled"] >= 0} {
+	    return
+	}
+	
 	# XXX should we reset date on each display?
 	if {![winfo exists $dropbox]} { $self MakeCalendar }
 
