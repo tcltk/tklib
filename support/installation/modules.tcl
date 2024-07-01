@@ -45,6 +45,7 @@ Module history       _tcl  _man  _null
 Module ico           _tcl  _man  _null
 Module ipentry       _tcl  _man  _null
 Module khim          _tclm _man  _null
+Module map           _tcl  _null _exa
 Module mentry        _tab  _null _exa
 Module menubar       _tcl  _man  _exa
 Module notifywindow  _tcl  _man  _null
@@ -64,6 +65,7 @@ Module wcb           _tab  _null _exa
 Module widget        _tcl  _man  _exa
 Module widgetPlus    _tcl  _man  _exa
 Module widgetl       _tcli _man  _null
+Module widgetv       _tcl  _man  _null
 
 Application  diagram-viewer
 Application  bitmap-editor
