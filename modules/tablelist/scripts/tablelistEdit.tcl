@@ -3295,7 +3295,7 @@ proc tablelist::hasMouseWheelBindings {w axis} {
 			   [lsearch -exact $bindTags "MentryMeridian"] >= 0 ||
 			   [lsearch -exact $bindTags "MentryIPAddr"] >= 0 ||
 			   [lsearch -exact $bindTags "MentryIPv6Addr"] >= 0) &&
-			  ($mentry::version >= 3.2)}]
+			  ($::mentry::version >= 3.2)}]
 	}
     }
 }

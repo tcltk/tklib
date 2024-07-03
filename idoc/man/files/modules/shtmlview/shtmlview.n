@@ -5,7 +5,7 @@
 '\" Copyright (c) 2000, Clif Flynt
 '\" Copyright (c) 1995-1999, Stephen Uhler
 '\"
-.TH "shtmlview" n 1\&.1\&.0 tklib "Basic HTML and Markdown viewer widget"
+.TH "shtmlview" n 1\&.1\&.1 tklib "Basic HTML and Markdown viewer widget"
 .\" The -*- nroff -*- definitions below are for supplemental macros used
 .\" in Tcl/Tk manual entries.
 .\"
@@ -285,7 +285,7 @@ package require \fBMarkdown ;# optional Markdown support \fR
 .sp
 package require \fBimg::jpeg ;# optional jpeg image support \fR
 .sp
-package require \fBshtmlview::shtmlview  ?1\&.1\&.0?\fR
+package require \fBshtmlview::shtmlview  ?1\&.1\&.1?\fR
 .sp
 \fB::shtmlview::converter\fR \fIextension\fR \fIdescription\fR \fIcmdprefix\fR
 .sp

@@ -17,9 +17,6 @@
 # Refer to the file "license.terms" for the terms and conditions of
 # use and redistribution of this file, and a DISCLAIMER OF ALL WARRANTEES.
 #
-# $Id: khim.tcl,v 1.10 2007/06/08 19:24:31 kennykb Exp $
-# $Source: /home/rkeene/tmp/cvs2fossil/tcllib/tklib/modules/khim/khim.tcl,v $
-#
 #----------------------------------------------------------------------
 
 package require Tcl 8.4-
@@ -27,7 +24,7 @@ package require Tk 8.4-
 package require msgcat 1.2
 package require autoscroll 1.0
 
-package provide khim 1.0.1
+package provide khim 1.0.2
 
 namespace eval khim [list variable KHIMDir [file dirname [info script]]]
 
@@ -298,7 +295,7 @@ proc khim::getOptions {w} {
 
     checkbutton $w.v -variable ::khim::inputUse -text [mc "Use KHIM"]
     label $w.l1 -text [mc "Compose key:"]
-    button $w.b1 -textvariable khim::inputComposeKey \
+    button $w.b1 -textvariable ::khim::inputComposeKey \
 	-command [list ::khim::GetComposeKey $w.b1]
     labelframe $w.lf1 -text [mc "Key sequences"] -padx 5 -pady 5 -width 400
     listbox $w.lf1.lb -height 20 -yscroll [list $w.lf1.y set] \
@@ -1641,7 +1638,7 @@ proc khim::CMapInteractor {w} {
     }
     grid [label $map.l1 -text [mc {Select code page:}]] \
 	-row 0 -column 0 -sticky e
-    grid [spinbox $map.spin -textvariable khim::CMapInputCodePage($map) \
+    grid [spinbox $map.spin -textvariable ::khim::CMapInputCodePage($map) \
 	      -width 4] \
 	-row 0 -column 1 -sticky w
 
@@ -2017,10 +2014,10 @@ if {[info exists ::argv0] && ![string compare $::argv0 [info script]]} {
 	-padx 5 -pady 5
 
     proc testLoadConfig {} {
-	source ~/.khimrc
+	source $::env(HOME)/.khimrc
     }
     proc testSaveConfig {} {
-	set f [open ~/.khimrc w]
+	set f [open $::env(HOME)/.khimrc w]
 	puts $f [khim::getConfig]
 	close $f
     }

@@ -1,4 +1,4 @@
-[vset VERSION 1.1.0]
+[vset VERSION 1.1.1]
 [comment {-*- mode: tcl; fill-column: 80 -*- doctools manpage}]
 [manpage_begin shtmlview n [vset VERSION]]
 [see_also text]

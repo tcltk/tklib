@@ -106,7 +106,7 @@ package require Tcl 8.5-
 package require Tk
 package require snit
 
-package provide shtmlview::shtmlview 1.1.0
+package provide shtmlview::shtmlview 1.1.1
 
 # Optional packages supporting various features (jpeg images, tile/themes)
 # Markdown support - See bottom
@@ -1907,7 +1907,7 @@ namespace eval ::shtmlview {
             set var(tabletext) ""
             set var(tablecols) [list]
             set var(tablemode) false
-        }
+	}
         proc HMtag_tr {selfns win param text} {
             upvar #0 HM$win var
             upvar $text data
@@ -3248,32 +3248,37 @@ namespace eval ::svgconvert {
         package require critcl
     }
     if {[info command ::critcl::compiling] ne "" && [critcl::compiling]} {
+	# ensure that these are in the namespace, and not global
+	variable options
+	variable dirs
+	variable dir
+	variable i
+	
         catch {
-        set options [regsub -all -- -I [exec pkg-config --cflags --libs cairo --libs librsvg-2.0] "I "]
-        set dirs [list]
-        foreach {i dir} $options {
-            if {$i eq "I"} {
-                lappend dirs $dir
-            }
-        }
-        critcl::clibraries -lrsvg-2 -lm -lgio-2.0 -lgdk_pixbuf-2.0 -lgobject-2.0 -lglib-2.0 -lcairo -pthread
-        critcl::config I $dirs
-        critcl::ccode {
-            #include <string.h>
-            #include <stdio.h>
-            #include <cairo.h>
-            #include <cairo/cairo-pdf.h>
-            #include <cairo/cairo-svg.h>
-            #include <librsvg/rsvg.h>
-        }
+	    set options [regsub -all -- -I [exec pkg-config --cflags --libs cairo --libs librsvg-2.0] "I "]
+	    set dirs [list]
+	    foreach {i dir} $options {
+		if {$i eq "I"} {
+		    lappend dirs $dir
+		}
+	    }
+	    critcl::clibraries -lrsvg-2 -lm -lgio-2.0 -lgdk_pixbuf-2.0 -lgobject-2.0 -lglib-2.0 -lcairo -pthread
+	    critcl::config I $dirs
+	    critcl::ccode {
+		#include <string.h>
+		#include <stdio.h>
+		#include <cairo.h>
+		#include <cairo/cairo-pdf.h>
+		#include <cairo/cairo-svg.h>
+		#include <librsvg/rsvg.h>
+	    }
 
-
-        critcl::cproc svgconvert {char* svgfile  char* outfile double scalex double scaley} void {
-            // new
-            char *epdf = ".pdf";
-            char *esvg = ".svg";
-            char *pdf = strstr(outfile, epdf);
-            char *svg = strstr(outfile, esvg);
+	    critcl::cproc svgconvert {char* svgfile  char* outfile double scalex double scaley} void {
+		// new
+		char *epdf = ".pdf";
+		char *esvg = ".svg";
+		char *pdf = strstr(outfile, epdf);
+		char *svg = strstr(outfile, esvg);
 
             RsvgHandle *handle;
             //RsvgDimensionData dimension_data; // deprecated

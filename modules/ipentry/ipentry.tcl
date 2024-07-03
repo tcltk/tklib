@@ -7,18 +7,18 @@
 #
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
-#
-# RCS: @(#) $Id: ipentry.tcl,v 1.19 2009/01/21 07:10:03 afaupell Exp $
 
 package require Tk
-package provide ipentry 0.3
+package provide ipentry 0.3.1
 
 namespace eval ::ipentry {
     namespace export ipentry ipentry6
     # copy all the bindings from Entry class to our own IPEntrybindtag class
+    variable x
     foreach x [bind Entry] {
         bind IPEntrybindtag $x [bind Entry $x]
     }
+
     # then replace certain keys we are interested in with our own
     bind IPEntrybindtag <KeyPress>         {::ipentry::keypress %W %K}
     bind IPEntrybindtag <BackSpace>        {::ipentry::backspace %W}
@@ -49,6 +49,8 @@ namespace eval ::ipentry {
     #         [list +ttk::style layout IPEntryFrame \
     #              [ttk::style layout IPEntryFrame]]
     # }
+
+    unset x
 }
 
 # ipentry --

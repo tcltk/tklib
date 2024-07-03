@@ -4,8 +4,6 @@
 #
 # Copyright (c) 2003-2007 Aaron Faupell
 # Copyright (c) 2003-2011 ActiveState
-#
-# RCS: @(#) $Id: ico.tcl,v 1.32 2011/10/05 00:10:46 hobbs Exp $
 
 # Sample usage:
 #	set file bin/wish.exe
@@ -433,8 +431,7 @@ proc ::ico::EXEtoICO {exeFile {icoDir {}}} {
 
     if {$icoDir == ""} { set icoDir [file dirname $file] }
 
-    set fh [open $file]
-    fconfigure $fh -eofchar {} -encoding binary -translation lf
+    set fh [open $file rb]
 
     foreach group $RES($file,group,names) {
         set dir  {}
@@ -447,8 +444,7 @@ proc ::ico::EXEtoICO {exeFile {icoDir {}}} {
         }
 
         # write them out to a file
-        set ifh [open [file join $icoDir [file tail $exeFile]-$group.ico] w+]
-        fconfigure $ifh -eofchar {} -encoding binary -translation lf
+        set ifh [open [file join $icoDir [file tail $exeFile]-$group.ico] wb+]
 
         bputs $ifh sss 0 1 [llength $RES($file,group,$group,members)]
         set offset [expr {6 + ([llength $RES($file,group,$group,members)] * 16)}]
@@ -855,8 +851,7 @@ proc ::ico::readDIBFromData {data loc} {
 }
 
 proc ::ico::getIconListICO {file} {
-    set fh [open $file r]
-    fconfigure $fh -eofchar {} -encoding binary -translation lf
+    set fh [open $file rb]
 
     if {"[getword $fh] [getword $fh]" ne "0 1"} {
 	return -code error "not an icon file"
@@ -905,8 +900,7 @@ proc ::ico::getIconMembersICO {file name} {
         return $ret
     }
 
-    set fh [open $file r]
-    fconfigure $fh -eofchar {} -encoding binary -translation lf
+    set fh [open $file rb]
 
     # both words must be read to keep in sync with later reads
     if {"[getword $fh] [getword $fh]" ne "0 1"} {
@@ -996,8 +990,7 @@ proc ::ico::getIconMembersEXE {file name} {
 # returns an icon in the form:
 #       {width height depth palette xor_mask and_mask}
 proc ::ico::getRawIconDataICO {file name} {
-    set fh [open $file r]
-    fconfigure $fh -eofchar {} -encoding binary -translation lf
+    set fh [open $file rb]
 
     # both words must be read to keep in sync with later reads
     if {"[getword $fh] [getword $fh]" ne "0 1"} {
@@ -1074,8 +1067,7 @@ proc ::ico::getRawIconDataEXE {file name} {
     FindResources $file
 
     if {![info exists RES($file,icon,$name,offset)]} { error "No icon \"$name\"" }
-    set fh [open $file]
-    fconfigure $fh -eofchar {} -encoding binary -translation lf
+    set fh [open $file rb]
     seek $fh $RES($file,icon,$name,offset) start
 
     # readDIB returns: {w h bpp palette xor and}
@@ -1086,12 +1078,10 @@ proc ::ico::getRawIconDataEXE {file name} {
 
 proc ::ico::writeIconICO {file name w h bpp palette xor and} {
     if {![file exists $file]} {
-	set fh [open $file w+]
-	fconfigure $fh -eofchar {} -encoding binary -translation lf
+	set fh [open $file wb+]
 	set num 0
     } else {
-	set fh [open $file r+]
-	fconfigure $fh -eofchar {} -encoding binary -translation lf
+	set fh [open $file rb+]
 	if {"[getword $fh] [getword $fh]" ne "0 1"} {
 	    close $fh
 	    return -code error "not an icon file"
@@ -1175,8 +1165,7 @@ proc ::ico::writeIconICODATA {file name w h bpp palette xor and} {
 }
 
 proc ::ico::writeIconBMP {file name w h bpp palette xor and} {
-    set fh [open $file w+]
-    fconfigure $fh -eofchar {} -encoding binary -translation lf
+    set fh [open $file wb+]
     set size [expr {[string length $palette] + [string length $xor]}]
     # bitmap header: magic, file size, reserved, reserved, offset of bitmap data
     bputs $fh a2issi BM [expr {14 + 40 + $size}] 0 0 54
@@ -1198,8 +1187,7 @@ proc ::ico::writeIconEXE {file name w h bpp palette xor and} {
 	return -code error "icon format differs from original"
     }
 
-    set fh [open $file r+]
-    fconfigure $fh -eofchar {} -encoding binary -translation lf
+    set fh [open $file rb+]
     seek $fh [expr {$RES($file,icon,$name,offset) + 40}] start
 
     puts -nonewline $fh $palette$xor$and
@@ -1213,8 +1201,7 @@ proc ::ico::FindResources {file} {
         return [llength $RES($file,group,names)]
     }
 
-    set fh [open $file]
-    fconfigure $fh -eofchar {} -encoding binary -translation lf
+    set fh [open $file rb]
     if {[read $fh 2] ne "MZ"} {
 	close $fh
 	return -code error "file is not a valid executable"
@@ -1464,4 +1451,4 @@ interp alias {} ::ico::getIconMembersICL {} ::ico::getIconMembersEXE
 interp alias {} ::ico::getRawIconDataICL {} ::ico::getRawIconDataEXE
 interp alias {} ::ico::writeIconICL      {} ::ico::writeIconEXE
 
-package provide ico 1.1.1
+package provide ico 1.1.2

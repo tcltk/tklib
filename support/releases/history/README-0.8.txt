@@ -2,8 +2,8 @@ Overview
 ========
 
     50  new packages                in 6  modules
-    16  changed packages            in 13 modules
-    42  internally changed packages in 19 modules
+    18  changed packages            in 15 modules
+    40  internally changed packages in 17 modules
     7   unchanged packages          in 2  modules
     122 packages, total             in 35 modules, total
 
@@ -62,7 +62,7 @@ New in Tklib 0.8
     ----------- --------------------------- ------------- ----------
     shtmlview   shtmlview::doctools         0.1
                 shtmlview::mkdoc            0.1
-                shtmlview::shtmlview        1.1.0
+                shtmlview::shtmlview        1.1.1
     ----------- --------------------------- ------------- ----------
     text        dgw::txmixins               0.2.0
     treeview    dgw::tvmixins               0.3
@@ -97,8 +97,11 @@ Changes from Tklib 0.7 to 0.8
     diagrams       diagram::application          1.2        1.3      EF I
     history        history                       0.1        0.2      D EF I
     -------------- ----------------------------- ---------- -------- ------------
-    ico            ico                           0.3.2      0.3.3    B D I
-                   ico                           1.1        1.1.1    B D I
+    ico            ico                           0.3.2      0.3.4    B D I
+                   ico                           1.1        1.1.2    B D I
+    -------------- ----------------------------- ---------- -------- ------------
+    ipentry        ipentry                       0.3        0.3.1    D I
+    khim           khim                          1.0.1      1.0.2    I
     -------------- ----------------------------- ---------- -------- ------------
     mentry         mentry::common                3.10                B D EF
                    mentry::common                           4.2      B D EF
@@ -156,8 +159,6 @@ Invisible changes (documentation, testsuites)
                           diagram::point         1          1        I
     --------------------- ---------------------- ---------- -------- ----------
     getstring             getstring              0.1        0.1      D I
-    ipentry               ipentry                0.3        0.3      D I
-    khim                  khim                   1.0.1      1.0.1    I
     --------------------- ---------------------- ---------- -------- ----------
     menubar               menubar                0.5        0.5      D I
                           menubar::debug         0.5        0.5      I
