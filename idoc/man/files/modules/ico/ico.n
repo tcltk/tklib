@@ -1,7 +1,7 @@
 '\"
 '\" Generated from file 'ico\&.man' by tcllib/doctools with format 'nroff'
 '\"
-.TH "ico" n 1\&.1\&.1 tklib "Windows ICO handling"
+.TH "ico" n 1\&.1\&.2 tklib "Windows ICO handling"
 .\" The -*- nroff -*- definitions below are for supplemental macros used
 .\" in Tcl/Tk manual entries.
 .\"
@@ -275,7 +275,7 @@ ico \- Reading and writing windows icons
 .SH SYNOPSIS
 package require \fBTcl  8\&.4\fR
 .sp
-package require \fBico  ?1\&.1\&.1?\fR
+package require \fBico  ?1\&.1\&.2?\fR
 .sp
 \fB::ico::icons\fR \fIfile\fR ?\fIoption\fR \fIvalue\fR\&.\&.\&.?
 .sp

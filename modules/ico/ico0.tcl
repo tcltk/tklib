@@ -282,8 +282,7 @@ proc ::ico::EXEtoICO {exeFile icoFile} {
     set dir  {}
     set data {}
 
-    set fh [open $file]
-    fconfigure $fh -eofchar {} -encoding binary -translation lf
+    set fh [open $file rb]
 
     for {set i 0} {$i <= $cnt} {incr i} {
         seek $fh $ICONS($file,$i) start
@@ -294,8 +293,7 @@ proc ::ico::EXEtoICO {exeFile icoFile} {
     close $fh
 
     # write them out to a file
-    set ifh [open $icoFile w+]
-    fconfigure $ifh -eofchar {} -encoding binary -translation lf
+    set ifh [open $icoFile wb+]
 
     bputs $ifh sss 0 1 [expr {$cnt + 1}]
     set offset [expr {6 + (($cnt + 1) * 16)}]
@@ -697,8 +695,7 @@ proc ::ico::readDIBFromData {data loc} {
 }
 
 proc ::ico::getIconListICO {file} {
-    set fh [open $file r]
-    fconfigure $fh -eofchar {} -encoding binary -translation lf
+    set fh [open $file rb]
 
     # both words must be read to keep in sync with later reads
     if {"[getword $fh] [getword $fh]" ne "0 1"} {
@@ -779,8 +776,7 @@ proc ::ico::getIconListEXE {file} {
 # returns an icon in the form:
 #	{width height depth palette xor_mask and_mask}
 proc ::ico::getRawIconDataICO {file index} {
-    set fh [open $file r]
-    fconfigure $fh -eofchar {} -encoding binary -translation lf
+    set fh [open $file rb]
 
     # both words must be read to keep in sync with later reads
     if {"[getword $fh] [getword $fh]" ne "0 1"} {
@@ -857,8 +853,7 @@ proc ::ico::getRawIconDataEXE {file index} {
 
     if {$cnt < $index} { return -code error "index out of range" }
 
-    set fh [open $file]
-    fconfigure $fh -eofchar {} -encoding binary -translation lf
+    set fh [open $file rb]
     seek $fh $ICONS($file,$index) start
 
     # readDIB returns: {w h bpp palette xor and}
@@ -869,13 +864,11 @@ proc ::ico::getRawIconDataEXE {file index} {
 
 proc ::ico::writeIconICO {file index w h bpp palette xor and} {
     if {![file exists $file]} {
-	set fh [open $file w+]
-	fconfigure $fh -eofchar {} -encoding binary -translation lf
+	set fh [open $file wb+]
 	bputs $fh sss 0 1 0
 	seek $fh 0 start
     } else {
-	set fh [open $file r+]
-	fconfigure $fh -eofchar {} -encoding binary -translation lf
+	set fh [open $file rb+]
     }
     if {[file size $file] > 4 && "[getword $fh] [getword $fh]" ne "0 1"} {
 	close $fh
@@ -965,8 +958,7 @@ proc ::ico::writeIconICODATA {file index w h bpp palette xor and} {
 
 proc ::ico::writeIconBMP {file index w h bpp palette xor and} {
     if {$index != 0} {return -code error "index out of range"}
-    set fh [open $file w+]
-    fconfigure $fh -eofchar {} -encoding binary -translation lf
+    set fh [open $file wb+]
     set size [expr {[string length $palette] + [string length $xor]}]
     # bitmap header: magic, file size, reserved, reserved, offset of bitmap data
     bputs $fh a2issi BM [expr {14 + 40 + $size}] 0 0 54
@@ -988,8 +980,7 @@ proc ::ico::writeIconEXE {file index w h bpp palette xor and} {
 	return -code error "icon format differs from original"
     }
 
-    set fh [open $file r+]
-    fconfigure $fh -eofchar {} -encoding binary -translation lf
+    set fh [open $file rb+]
     seek $fh [expr {$ICONS($file,$index) + 40}] start
 
     puts -nonewline $fh $palette$xor$and
@@ -1002,8 +993,7 @@ proc ::ico::SearchForIcos {file {index -1}} {
     if {[info exists ICONS($file,$index)]} {
 	return $ICONS($file,$index)
     }
-    set fh [open $file]
-    fconfigure $fh -eofchar {} -encoding binary -translation lf
+    set fh [open $file rb]
     if {[read $fh 2] ne "MZ"} {
 	close $fh
 	return -code error "unknown file format"
@@ -1190,4 +1180,4 @@ proc ::ico::Show {file args} {
     grid columnconfigure $parent 0 -weight 1
 }
 
-package provide ico 0.3.3
+package provide ico 0.3.4

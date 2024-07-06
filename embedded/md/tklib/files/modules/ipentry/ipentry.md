@@ -1,7 +1,7 @@
 
 [//000000001]: # (ipentry \- An IP address entry widget)
 [//000000002]: # (Generated from file 'ipentry\.man' by tcllib/doctools with format 'markdown')
-[//000000003]: # (ipentry\(n\) 0\.3 tklib "An IP address entry widget")
+[//000000003]: # (ipentry\(n\) 0\.3\.1 tklib "An IP address entry widget")
 
 <hr> [ <a href="../../../../toc.md">Main Table Of Contents</a> &#124; <a
 href="../../../toc.md">Table Of Contents</a> &#124; <a
@@ -34,7 +34,7 @@ ipentry \- An IP address entry widget
 
 package require Tcl 8\.4  
 package require Tk 8\.4  
-package require ipentry ?0\.3?  
+package require ipentry ?0\.3\.1?  
 
 [__::ipentry::ipentry__ *pathName* ?*option* *value*\.\.\.?](#1)  
 [__::ipentry::ipentry6__ *pathName* ?*option* *value*\.\.\.?](#2)  
