@@ -106,7 +106,7 @@ package require Tcl 8.5-
 package require Tk
 package require snit
 
-package provide shtmlview::shtmlview 1.1.1
+package provide shtmlview::shtmlview 1.1.2
 
 # Optional packages supporting various features (jpeg images, tile/themes)
 # Markdown support - See bottom
@@ -385,7 +385,7 @@ namespace eval ::shtmlview {
             tk::TextSetCursor %W [tk::TextUpDownLine %W -1]
         }
     }
-    if {$tcl_platform(platform) != "windows"} {
+    if {$::tcl_platform(platform) != "windows"} {
 	bind HelpText <Control-v> {
 	    if {!$tk_strictMotif} {
 		tk::TextScrollPages %W 1
@@ -415,7 +415,7 @@ namespace eval ::shtmlview {
     # Macintosh only bindings:
 
     # if text black & highlight black -> text white, other text the same
-    if {$tcl_platform(platform) == "macintosh"} {
+    if {$::tcl_platform(platform) == "macintosh"} {
 	bind HelpText <FocusIn> {
 	    %W tag configure sel -borderwidth 0
 	    %W configure -selectbackground systemHighlight -selectforeground systemHighlightText

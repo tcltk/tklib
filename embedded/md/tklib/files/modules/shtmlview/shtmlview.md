@@ -5,7 +5,7 @@
 [//000000004]: # (Copyright &copy; 2009, Robert Heller)
 [//000000005]: # (Copyright &copy; 2000, Clif Flynt)
 [//000000006]: # (Copyright &copy; 1995\-1999, Stephen Uhler)
-[//000000007]: # (shtmlview\(n\) 1\.1\.1 tklib "Basic HTML and Markdown viewer widget")
+[//000000007]: # (shtmlview\(n\) 1\.1\.2 tklib "Basic HTML and Markdown viewer widget")
 
 <hr> [ <a href="../../../../toc.md">Main Table Of Contents</a> &#124; <a
 href="../../../toc.md">Table Of Contents</a> &#124; <a
@@ -61,7 +61,7 @@ package require Tk
 package require snit  
 package require Markdown ;\# optional Markdown support  
 package require img::jpeg ;\# optional jpeg image support  
-package require shtmlview::shtmlview ?1\.1\.1?  
+package require shtmlview::shtmlview ?1\.1\.2?  
 
 [__::shtmlview::converter__ *extension* *description* *cmdprefix*](#1)  
 [__::shtmlview::shtmlview__ *pathName* ?*options*?](#2)  
