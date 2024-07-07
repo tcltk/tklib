@@ -1,0 +1,34 @@
+[comment {-*- tcl -*- doctools manpage}]
+[vset VERSION 0.1]
+[manpage_begin map_box_map_display n [vset VERSION]]
+[category {Map Display and Supporting Utilities}][keywords map]
+[keywords {addon, box display, map display}]
+[keywords {box display, map display, addon}]
+[keywords {map display, addon, box display}]
+[moddesc   {Map display support}]
+[titledesc {Map Action Engine: Layer to display box definitions}]
+[require Tcl 8.6-]
+[require Tk  8.6-]
+[require canvas::edit::rectangle]
+[require debug]
+[require debug::caller]
+[require map::slippy 0.8]
+[require snit]
+[require map::box::map-display [opt [vset VERSION]]]
+[description]
+
+This package provides ...
+
+Attachment to map display widgets providing custom behaviour.  Shows a set of box
+definitions. Ensures that only visible boxes use canvas resources (items).
+
+[section API]
+
+[list_begin definitions]
+[list_end]
+
+[section EXAMPLE]
+
+[vset CATEGORY map]
+[include ../../support/devel/doc/feedback.inc]
+[manpage_end]

@@ -5,7 +5,7 @@
 
 ----
 
-[2](#c2) &#183; [A](#cA) &#183; [B](#cB) &#183; [C](#cC) &#183; [D](#cD) &#183; [E](#cE) &#183; [G](#cG) &#183; [H](#cH) &#183; [I](#cI) &#183; [L](#cL) &#183; [M](#cM) &#183; [N](#cN) &#183; [P](#cP) &#183; [Q](#cQ) &#183; [R](#cR) &#183; [S](#cS) &#183; [T](#cT) &#183; [V](#cV) &#183; [W](#cW) &#183; [X](#cX) &#183; [Z](#cZ)
+[2](#c2) &#183; [A](#cA) &#183; [B](#cB) &#183; [C](#cC) &#183; [D](#cD) &#183; [E](#cE) &#183; [F](#cF) &#183; [G](#cG) &#183; [H](#cH) &#183; [I](#cI) &#183; [L](#cL) &#183; [M](#cM) &#183; [N](#cN) &#183; [O](#cO) &#183; [P](#cP) &#183; [Q](#cQ) &#183; [R](#cR) &#183; [S](#cS) &#183; [T](#cT) &#183; [V](#cV) &#183; [W](#cW) &#183; [X](#cX) &#183; [Z](#cZ)
 
 ----
 
@@ -20,9 +20,17 @@
 
 |||
 |---|---|
+|<a name='addon\_area\_display\_map\_display'></a>addon, area display, map display|[map\_area\_map\_display](tklib/files/modules/map/area\-map\-display\.md)|
+|<a name='addon\_box\_display\_map\_display'></a>addon, box display, map display|[map\_box\_map\_display](tklib/files/modules/map/box\-map\-display\.md)|
+|<a name='addon\_box\_entry\_map\_display'></a>addon, box entry, map display|[map\_box\_entry](tklib/files/modules/map/box\-entry\.md)|
+|<a name='addon\_point\_display\_map\_display'></a>addon, point display, map display|[map\_point\_map\_display](tklib/files/modules/map/point\-map\-display\.md)|
+|<a name='addon\_track\_display\_map\_display'></a>addon, track display, map display|[map\_track\_map\_display](tklib/files/modules/map/track\-map\-display\.md)|
+|<a name='addon\_track\_entry\_map\_display'></a>addon, track entry, map display|[map\_track\_entry](tklib/files/modules/map/track\-entry\.md)|
 |<a name='alert'></a>alert|[notifywindow](tklib/files/modules/notifywindow/notifywindow\.md)|
 |<a name='append\_tag'></a>append tag|[canvas::tag](tklib/files/modules/canvas/canvas\_tags\.md)|
 |<a name='arc'></a>arc|[diagram](tklib/files/modules/diagrams/diagram\.md)|
+|<a name='area\_display\_map\_display\_addon'></a>area display, map display, addon|[map\_area\_map\_display](tklib/files/modules/map/area\-map\-display\.md)|
+|<a name='area\_display\_tabular'></a>area display, tabular|[map\_area\_display](tklib/files/modules/map/area\-display\.md) &#183; [map\_area\_table\_display](tklib/files/modules/map/area\-table\-display\.md)|
 |<a name='arrow'></a>arrow|[diagram](tklib/files/modules/diagrams/diagram\.md)|
 
 
@@ -35,6 +43,9 @@
 |<a name='bindtags'></a>bindtags|[ntext](tklib/files/modules/ntext/ntext\.md) &#183; [ntextBindings](tklib/files/modules/ntext/ntextBindings\.md) &#183; [ntextIndent](tklib/files/modules/ntext/ntextIndent\.md) &#183; [ntextWordBreak](tklib/files/modules/ntext/ntextWordBreak\.md)|
 |<a name='bitmap'></a>bitmap|[bitmap\-editor](tklib/files/apps/bitmap\-editor\.md)|
 |<a name='box'></a>box|[diagram](tklib/files/modules/diagrams/diagram\.md)|
+|<a name='box\_display\_map\_display\_addon'></a>box display, map display, addon|[map\_box\_map\_display](tklib/files/modules/map/box\-map\-display\.md)|
+|<a name='box\_display\_tabular'></a>box display, tabular|[map\_box\_display](tklib/files/modules/map/box\-display\.md) &#183; [map\_box\_table\_display](tklib/files/modules/map/box\-table\-display\.md)|
+|<a name='box\_entry\_map\_display\_addon'></a>box entry, map display, addon|[map\_box\_entry](tklib/files/modules/map/box\-entry\.md)|
 |<a name='bundle'></a>bundle|[widget](tklib/files/modules/widget/widget\.md)|
 
 
@@ -45,6 +56,10 @@
 |<a name='calendar'></a>calendar|[widget](tklib/files/modules/widget/widget\.md) &#183; [widget\_calendar](tklib/files/modules/widget/widget\_calendar\.md)|
 |<a name='canvas'></a>canvas|[canvas::drag](tklib/files/modules/canvas/canvas\_drag\.md) &#183; [canvas::edit::circle](tklib/files/modules/canvas/canvas\_ecircle\.md) &#183; [canvas::edit::points](tklib/files/modules/canvas/canvas\_epoints\.md) &#183; [canvas::edit::polyline](tklib/files/modules/canvas/canvas\_epolyline\.md) &#183; [canvas::edit::quadrilateral](tklib/files/modules/canvas/canvas\_equad\.md) &#183; [canvas::edit::rectangle](tklib/files/modules/canvas/canvas\_erectangle\.md) &#183; [canvas::gradient](tklib/files/modules/canvas/canvas\_gradient\.md) &#183; [canvas::highlight](tklib/files/modules/canvas/canvas\_highlight\.md) &#183; [canvas::mvg](tklib/files/modules/canvas/canvas\_mvg\.md) &#183; [canvas::pdf](tklib/files/modules/canvas/canvas\_pdf\.md) &#183; [canvas::snap](tklib/files/modules/canvas/canvas\_snap\.md) &#183; [canvas::sqmap](tklib/files/modules/canvas/canvas\_sqmap\.md) &#183; [canvas::tag](tklib/files/modules/canvas/canvas\_tags\.md) &#183; [canvas::track::lines](tklib/files/modules/canvas/canvas\_trlines\.md) &#183; [canvasLabel](tklib/files/modules/tkpiechart/canvaslabel\.md) &#183; [crosshair](tklib/files/modules/crosshair/crosshair\.md) &#183; [diagram](tklib/files/modules/diagrams/diagram\.md) &#183; [diagram\-viewer](tklib/files/apps/diagram\-viewer\.md) &#183; [pie](tklib/files/modules/tkpiechart/pie\.md) &#183; [pieBoxLabeler](tklib/files/modules/tkpiechart/pieboxlabeler\.md) &#183; [piePeripheralLabeler](tklib/files/modules/tkpiechart/pieperipherallabeler\.md)|
 |<a name='cell'></a>cell|[canvas::sqmap](tklib/files/modules/canvas/canvas\_sqmap\.md)|
+|<a name='center\_geo\_area'></a>center, geo/area|[map\_area\_store\_memory](tklib/files/modules/map/area\-store\-mem\.md)|
+|<a name='center\_geo\_box'></a>center, geo/box|[map\_box\_store\_memory](tklib/files/modules/map/box\-store\-mem\.md)|
+|<a name='center\_geo\_point'></a>center, geo/point|[map\_point\_store\_memory](tklib/files/modules/map/point\-store\-mem\.md)|
+|<a name='center\_geo\_track'></a>center, geo/track|[map\_track\_store\_memory](tklib/files/modules/map/track\-store\-mem\.md)|
 |<a name='character'></a>character|[khim](tklib/files/modules/khim/khim\.md)|
 |<a name='chat'></a>chat|[chatwidget](tklib/files/modules/chatwidget/chatwidget\.md)|
 |<a name='chatwidget'></a>chatwidget|[chatwidget](tklib/files/modules/chatwidget/chatwidget\.md)|
@@ -73,8 +88,13 @@
 |<a name='dateentry'></a>dateentry|[datefield](tklib/files/modules/datefield/datefield\.md) &#183; [widget](tklib/files/modules/widget/widget\.md) &#183; [widget\_dateentry](tklib/files/modules/widget/widget\_dateentry\.md)|
 |<a name='diagram'></a>diagram|[diagram](tklib/files/modules/diagrams/diagram\.md) &#183; [diagram\-viewer](tklib/files/apps/diagram\-viewer\.md)|
 |<a name='dialog'></a>dialog|[getstring](tklib/files/modules/getstring/tk\_getString\.md) &#183; [swaplist](tklib/files/modules/swaplist/swaplist\.md) &#183; [widget](tklib/files/modules/widget/widget\.md)|
+|<a name='diameter\_geo\_area'></a>diameter, geo/area|[map\_area\_store\_memory](tklib/files/modules/map/area\-store\-mem\.md)|
+|<a name='diameter\_geo\_box'></a>diameter, geo/box|[map\_box\_store\_memory](tklib/files/modules/map/box\-store\-mem\.md)|
+|<a name='diameter\_geo\_point'></a>diameter, geo/point|[map\_point\_store\_memory](tklib/files/modules/map/point\-store\-mem\.md)|
+|<a name='diameter\_geo\_track'></a>diameter, geo/track|[map\_track\_store\_memory](tklib/files/modules/map/track\-store\-mem\.md)|
 |<a name='diamond'></a>diamond|[diagram](tklib/files/modules/diagrams/diagram\.md)|
 |<a name='disjointlistbox'></a>disjointlistbox|[swaplist](tklib/files/modules/swaplist/swaplist\.md)|
+|<a name='display\_map'></a>display, map|[map\_display](tklib/files/modules/map/display\.md)|
 |<a name='displaying'></a>displaying|[controlwidget](tklib/files/modules/controlwidget/controlwidget\.md)|
 |<a name='dll'></a>dll|[ico](tklib/files/modules/ico/ico\.md)|
 |<a name='doctools'></a>doctools|[shtmlview](tklib/files/apps/shtmlview\.md) &#183; [shtmlview\_doctools](tklib/files/modules/shtmlview/shtmlview\-doctools\.md)|
@@ -95,10 +115,52 @@
 |<a name='exe'></a>exe|[ico](tklib/files/modules/ico/ico\.md)|
 
 
+#### <a name='cF'></a>Keywords: F
+
+|||
+|---|---|
+|<a name='file\_geo\_area'></a>file, geo/area|[map\_area\_file](tklib/files/modules/map/area\-file\.md)|
+|<a name='file\_geo\_box'></a>file, geo/box|[map\_box\_file](tklib/files/modules/map/box\-file\.md)|
+|<a name='file\_geo\_point'></a>file, geo/point|[map\_point\_file](tklib/files/modules/map/point\-file\.md)|
+|<a name='file\_geo\_track'></a>file, geo/track|[map\_track\_file](tklib/files/modules/map/track\-file\.md)|
+|<a name='filesystem\_store\_geo\_area'></a>filesystem store, geo/area|[map\_area\_store\_fs](tklib/files/modules/map/area\-store\-fs\.md)|
+|<a name='filesystem\_store\_geo\_point'></a>filesystem store, geo/point|[map\_point\_store\_fs](tklib/files/modules/map/point\-store\-fs\.md)|
+|<a name='filesystem\_store\_geo\_track'></a>filesystem store, geo/track|[map\_track\_store\_fs](tklib/files/modules/map/track\-store\-fs\.md)|
+|<a name='filesystem\_store\_geobox'></a>filesystem store, geobox|[map\_box\_store\_fs](tklib/files/modules/map/box\-store\-fs\.md)|
+
+
 #### <a name='cG'></a>Keywords: G
 
 |||
 |---|---|
+|<a name='geo\_area\_pixels\_zoom'></a>geo/area pixels, zoom|[map\_area\_store\_memory](tklib/files/modules/map/area\-store\-mem\.md)|
+|<a name='geo\_area\_center'></a>geo/area, center|[map\_area\_store\_memory](tklib/files/modules/map/area\-store\-mem\.md)|
+|<a name='geo\_area\_diameter'></a>geo/area, diameter|[map\_area\_store\_memory](tklib/files/modules/map/area\-store\-mem\.md)|
+|<a name='geo\_area\_file'></a>geo/area, file|[map\_area\_file](tklib/files/modules/map/area\-file\.md)|
+|<a name='geo\_area\_filesystem\_store'></a>geo/area, filesystem store|[map\_area\_store\_fs](tklib/files/modules/map/area\-store\-fs\.md)|
+|<a name='geo\_area\_memory\_store'></a>geo/area, memory store|[map\_area\_store\_memory](tklib/files/modules/map/area\-store\-mem\.md)|
+|<a name='geo\_area\_perimeter\_length'></a>geo/area, perimeter length|[map\_area\_store\_memory](tklib/files/modules/map/area\-store\-mem\.md)|
+|<a name='geo\_box\_pixels\_zoom'></a>geo/box pixels, zoom|[map\_box\_store\_memory](tklib/files/modules/map/box\-store\-mem\.md)|
+|<a name='geo\_box\_center'></a>geo/box, center|[map\_box\_store\_memory](tklib/files/modules/map/box\-store\-mem\.md)|
+|<a name='geo\_box\_diameter'></a>geo/box, diameter|[map\_box\_store\_memory](tklib/files/modules/map/box\-store\-mem\.md)|
+|<a name='geo\_box\_file'></a>geo/box, file|[map\_box\_file](tklib/files/modules/map/box\-file\.md)|
+|<a name='geo\_box\_memory\_store'></a>geo/box, memory store|[map\_box\_store\_memory](tklib/files/modules/map/box\-store\-mem\.md)|
+|<a name='geo\_box\_perimeter\_length'></a>geo/box, perimeter length|[map\_box\_store\_memory](tklib/files/modules/map/box\-store\-mem\.md)|
+|<a name='geo\_point\_pixels\_zoom'></a>geo/point pixels, zoom|[map\_point\_store\_memory](tklib/files/modules/map/point\-store\-mem\.md)|
+|<a name='geo\_point\_center'></a>geo/point, center|[map\_point\_store\_memory](tklib/files/modules/map/point\-store\-mem\.md)|
+|<a name='geo\_point\_diameter'></a>geo/point, diameter|[map\_point\_store\_memory](tklib/files/modules/map/point\-store\-mem\.md)|
+|<a name='geo\_point\_file'></a>geo/point, file|[map\_point\_file](tklib/files/modules/map/point\-file\.md)|
+|<a name='geo\_point\_filesystem\_store'></a>geo/point, filesystem store|[map\_point\_store\_fs](tklib/files/modules/map/point\-store\-fs\.md)|
+|<a name='geo\_point\_memory\_store'></a>geo/point, memory store|[map\_point\_store\_memory](tklib/files/modules/map/point\-store\-mem\.md)|
+|<a name='geo\_point\_perimeter\_length'></a>geo/point, perimeter length|[map\_point\_store\_memory](tklib/files/modules/map/point\-store\-mem\.md)|
+|<a name='geo\_track\_pixels\_zoom'></a>geo/track pixels, zoom|[map\_track\_store\_memory](tklib/files/modules/map/track\-store\-mem\.md)|
+|<a name='geo\_track\_center'></a>geo/track, center|[map\_track\_store\_memory](tklib/files/modules/map/track\-store\-mem\.md)|
+|<a name='geo\_track\_diameter'></a>geo/track, diameter|[map\_track\_store\_memory](tklib/files/modules/map/track\-store\-mem\.md)|
+|<a name='geo\_track\_file'></a>geo/track, file|[map\_track\_file](tklib/files/modules/map/track\-file\.md)|
+|<a name='geo\_track\_filesystem\_store'></a>geo/track, filesystem store|[map\_track\_store\_fs](tklib/files/modules/map/track\-store\-fs\.md)|
+|<a name='geo\_track\_memory\_store'></a>geo/track, memory store|[map\_track\_store\_memory](tklib/files/modules/map/track\-store\-mem\.md)|
+|<a name='geo\_track\_perimeter\_length'></a>geo/track, perimeter length|[map\_track\_store\_memory](tklib/files/modules/map/track\-store\-mem\.md)|
+|<a name='geobox\_filesystem\_store'></a>geobox, filesystem store|[map\_box\_store\_fs](tklib/files/modules/map/box\-store\-fs\.md)|
 |<a name='gradients'></a>gradients|[canvas::gradient](tklib/files/modules/canvas/canvas\_gradient\.md)|
 |<a name='graphics'></a>graphics|[canvas::mvg](tklib/files/modules/canvas/canvas\_mvg\.md) &#183; [canvas::pdf](tklib/files/modules/canvas/canvas\_pdf\.md)|
 |<a name='grid'></a>grid|[canvas::sqmap](tklib/files/modules/canvas/canvas\_sqmap\.md)|
@@ -140,10 +202,15 @@
 |---|---|
 |<a name='labeler'></a>labeler|[canvasLabel](tklib/files/modules/tkpiechart/canvaslabel\.md) &#183; [pie](tklib/files/modules/tkpiechart/pie\.md) &#183; [pieBoxLabeler](tklib/files/modules/tkpiechart/pieboxlabeler\.md) &#183; [piePeripheralLabeler](tklib/files/modules/tkpiechart/pieperipherallabeler\.md)|
 |<a name='leave\_callback'></a>leave callback|[canvas::highlight](tklib/files/modules/canvas/canvas\_highlight\.md)|
+|<a name='length\_geo\_area\_perimeter'></a>length, geo/area, perimeter|[map\_area\_store\_memory](tklib/files/modules/map/area\-store\-mem\.md)|
+|<a name='length\_geo\_box\_perimeter'></a>length, geo/box, perimeter|[map\_box\_store\_memory](tklib/files/modules/map/box\-store\-mem\.md)|
+|<a name='length\_geo\_point\_perimeter'></a>length, geo/point, perimeter|[map\_point\_store\_memory](tklib/files/modules/map/point\-store\-mem\.md)|
+|<a name='length\_geo\_track\_perimeter'></a>length, geo/track, perimeter|[map\_track\_store\_memory](tklib/files/modules/map/track\-store\-mem\.md)|
 |<a name='line'></a>line|[diagram](tklib/files/modules/diagrams/diagram\.md)|
 |<a name='list\_entry\_panel'></a>list entry panel|[widget\_listentry](tklib/files/modules/widgetl/widget\_listentry\.md) &#183; [widget\_listsimple](tklib/files/modules/widgetl/widget\_listsimple\.md)|
 |<a name='listbox'></a>listbox|[swaplist](tklib/files/modules/swaplist/swaplist\.md)|
 |<a name='location'></a>location|[crosshair](tklib/files/modules/crosshair/crosshair\.md)|
+|<a name='location\_marking'></a>location marking|[map\_mark](tklib/files/modules/map/mark\.md)|
 
 
 #### <a name='cM'></a>Keywords: M
@@ -151,10 +218,23 @@
 |||
 |---|---|
 |<a name='magick\_vector\_graphics'></a>magick vector graphics|[canvas::mvg](tklib/files/modules/canvas/canvas\_mvg\.md)|
-|<a name='map'></a>map|[canvas::sqmap](tklib/files/modules/canvas/canvas\_sqmap\.md)|
+|<a name='map'></a>map|[canvas::sqmap](tklib/files/modules/canvas/canvas\_sqmap\.md) &#183; [map\_area\_display](tklib/files/modules/map/area\-display\.md) &#183; [map\_area\_file](tklib/files/modules/map/area\-file\.md) &#183; [map\_area\_map\_display](tklib/files/modules/map/area\-map\-display\.md) &#183; [map\_area\_store\_fs](tklib/files/modules/map/area\-store\-fs\.md) &#183; [map\_area\_store\_memory](tklib/files/modules/map/area\-store\-mem\.md) &#183; [map\_area\_table\_display](tklib/files/modules/map/area\-table\-display\.md) &#183; [map\_box\_display](tklib/files/modules/map/box\-display\.md) &#183; [map\_box\_entry](tklib/files/modules/map/box\-entry\.md) &#183; [map\_box\_file](tklib/files/modules/map/box\-file\.md) &#183; [map\_box\_map\_display](tklib/files/modules/map/box\-map\-display\.md) &#183; [map\_box\_store\_fs](tklib/files/modules/map/box\-store\-fs\.md) &#183; [map\_box\_store\_memory](tklib/files/modules/map/box\-store\-mem\.md) &#183; [map\_box\_table\_display](tklib/files/modules/map/box\-table\-display\.md) &#183; [map\_display](tklib/files/modules/map/display\.md) &#183; [map\_mark](tklib/files/modules/map/mark\.md) &#183; [map\_overview](tklib/files/modules/map/map\_overview\.md) &#183; [map\_point\_file](tklib/files/modules/map/point\-file\.md) &#183; [map\_point\_map\_display](tklib/files/modules/map/point\-map\-display\.md) &#183; [map\_point\_store\_fs](tklib/files/modules/map/point\-store\-fs\.md) &#183; [map\_point\_store\_memory](tklib/files/modules/map/point\-store\-mem\.md) &#183; [map\_point\_table\_display](tklib/files/modules/map/point\-table\-display\.md) &#183; [map\_provider\_osm](tklib/files/modules/map/provider\-osm\.md) &#183; [map\_track\_display](tklib/files/modules/map/track\-display\.md) &#183; [map\_track\_entry](tklib/files/modules/map/track\-entry\.md) &#183; [map\_track\_file](tklib/files/modules/map/track\-file\.md) &#183; [map\_track\_map\_display](tklib/files/modules/map/track\-map\-display\.md) &#183; [map\_track\_store\_fs](tklib/files/modules/map/track\-store\-fs\.md) &#183; [map\_track\_store\_memory](tklib/files/modules/map/track\-store\-mem\.md) &#183; [map\_track\_table\_display](tklib/files/modules/map/track\-table\-display\.md)|
+|<a name='map\_display'></a>map display|[map\_display](tklib/files/modules/map/display\.md)|
+|<a name='map\_display\_addon\_area\_display'></a>map display, addon, area display|[map\_area\_map\_display](tklib/files/modules/map/area\-map\-display\.md)|
+|<a name='map\_display\_addon\_box\_display'></a>map display, addon, box display|[map\_box\_map\_display](tklib/files/modules/map/box\-map\-display\.md)|
+|<a name='map\_display\_addon\_box\_entry'></a>map display, addon, box entry|[map\_box\_entry](tklib/files/modules/map/box\-entry\.md)|
+|<a name='map\_display\_addon\_point\_display'></a>map display, addon, point display|[map\_point\_map\_display](tklib/files/modules/map/point\-map\-display\.md)|
+|<a name='map\_display\_addon\_track\_display'></a>map display, addon, track display|[map\_track\_map\_display](tklib/files/modules/map/track\-map\-display\.md)|
+|<a name='map\_display\_addon\_track\_entry'></a>map display, addon, track entry|[map\_track\_entry](tklib/files/modules/map/track\-entry\.md)|
+|<a name='mapnik'></a>mapnik|[map\_provider\_osm](tklib/files/modules/map/provider\-osm\.md)|
+|<a name='mark\_location'></a>mark location|[map\_mark](tklib/files/modules/map/mark\.md)|
 |<a name='markdown'></a>markdown|[shtmlview](tklib/files/apps/shtmlview\.md)|
 |<a name='mega\_widget'></a>mega\-widget|[chatwidget](tklib/files/modules/chatwidget/chatwidget\.md)|
 |<a name='megawidget'></a>megawidget|[widget](tklib/files/modules/widget/widget\.md) &#183; [widget\_calendar](tklib/files/modules/widget/widget\_calendar\.md) &#183; [widget\_dateentry](tklib/files/modules/widget/widget\_dateentry\.md) &#183; [widget\_toolbar](tklib/files/modules/widget/widget\_toolbar\.md)|
+|<a name='memory\_store\_geo\_area'></a>memory store, geo/area|[map\_area\_store\_memory](tklib/files/modules/map/area\-store\-mem\.md)|
+|<a name='memory\_store\_geo\_box'></a>memory store, geo/box|[map\_box\_store\_memory](tklib/files/modules/map/box\-store\-mem\.md)|
+|<a name='memory\_store\_geo\_point'></a>memory store, geo/point|[map\_point\_store\_memory](tklib/files/modules/map/point\-store\-mem\.md)|
+|<a name='memory\_store\_geo\_track'></a>memory store, geo/track|[map\_track\_store\_memory](tklib/files/modules/map/track\-store\-mem\.md)|
 |<a name='menu'></a>menu|[widget](tklib/files/modules/widget/widget\.md)|
 |<a name='method'></a>method|[khim](tklib/files/modules/khim/khim\.md)|
 |<a name='mkdoc'></a>mkdoc|[shtmlview](tklib/files/apps/shtmlview\.md) &#183; [shtmlview\_mkdoc](tklib/files/modules/shtmlview/shtmlview\-mkdoc\.md)|
@@ -172,24 +252,42 @@
 |<a name='numerical\_values'></a>numerical values|[controlwidget](tklib/files/modules/controlwidget/controlwidget\.md)|
 
 
+#### <a name='cO'></a>Keywords: O
+
+|||
+|---|---|
+|<a name='openstreetmap'></a>openstreetmap|[map\_provider\_osm](tklib/files/modules/map/provider\-osm\.md)|
+
+
 #### <a name='cP'></a>Keywords: P
 
 |||
 |---|---|
 |<a name='panelframe'></a>panelframe|[widget](tklib/files/modules/widget/widget\.md)|
 |<a name='pdf'></a>pdf|[canvas::pdf](tklib/files/modules/canvas/canvas\_pdf\.md)|
+|<a name='perimeter\_length\_geo\_area'></a>perimeter length, geo/area|[map\_area\_store\_memory](tklib/files/modules/map/area\-store\-mem\.md)|
+|<a name='perimeter\_length\_geo\_box'></a>perimeter length, geo/box|[map\_box\_store\_memory](tklib/files/modules/map/box\-store\-mem\.md)|
+|<a name='perimeter\_length\_geo\_point'></a>perimeter length, geo/point|[map\_point\_store\_memory](tklib/files/modules/map/point\-store\-mem\.md)|
+|<a name='perimeter\_length\_geo\_track'></a>perimeter length, geo/track|[map\_track\_store\_memory](tklib/files/modules/map/track\-store\-mem\.md)|
 |<a name='photo'></a>photo|[canvas::snap](tklib/files/modules/canvas/canvas\_snap\.md)|
 |<a name='picture'></a>picture|[diagram](tklib/files/modules/diagrams/diagram\.md)|
 |<a name='pie'></a>pie|[canvasLabel](tklib/files/modules/tkpiechart/canvaslabel\.md) &#183; [pie](tklib/files/modules/tkpiechart/pie\.md) &#183; [pieBoxLabeler](tklib/files/modules/tkpiechart/pieboxlabeler\.md) &#183; [piePeripheralLabeler](tklib/files/modules/tkpiechart/pieperipherallabeler\.md)|
 |<a name='pixel'></a>pixel|[bitmap\-editor](tklib/files/apps/bitmap\-editor\.md)|
+|<a name='pixels\_zoom\_geo\_area'></a>pixels, zoom, geo/area|[map\_area\_store\_memory](tklib/files/modules/map/area\-store\-mem\.md)|
+|<a name='pixels\_zoom\_geo\_box'></a>pixels, zoom, geo/box|[map\_box\_store\_memory](tklib/files/modules/map/box\-store\-mem\.md)|
+|<a name='pixels\_zoom\_geo\_point'></a>pixels, zoom, geo/point|[map\_point\_store\_memory](tklib/files/modules/map/point\-store\-mem\.md)|
+|<a name='pixels\_zoom\_geo\_track'></a>pixels, zoom, geo/track|[map\_track\_store\_memory](tklib/files/modules/map/track\-store\-mem\.md)|
 |<a name='plane\_geometry'></a>plane geometry|[diagram](tklib/files/modules/diagrams/diagram\.md)|
 |<a name='plotting'></a>plotting|[diagram](tklib/files/modules/diagrams/diagram\.md)|
 |<a name='point'></a>point|[diagram](tklib/files/modules/diagrams/diagram\.md)|
 |<a name='point\_cloud'></a>point cloud|[canvas::edit::points](tklib/files/modules/canvas/canvas\_epoints\.md)|
+|<a name='point\_display\_map\_display\_addon'></a>point display, map display, addon|[map\_point\_map\_display](tklib/files/modules/map/point\-map\-display\.md)|
+|<a name='point\_display\_tabular'></a>point display, tabular|[map\_point\_table\_display](tklib/files/modules/map/point\-table\-display\.md)|
 |<a name='points'></a>points|[canvas::edit::points](tklib/files/modules/canvas/canvas\_epoints\.md)|
 |<a name='polyline'></a>polyline|[canvas::edit::polyline](tklib/files/modules/canvas/canvas\_epolyline\.md)|
 |<a name='portable\_document\_format'></a>portable document format|[canvas::pdf](tklib/files/modules/canvas/canvas\_pdf\.md)|
 |<a name='print\_screen'></a>print screen|[canvas::mvg](tklib/files/modules/canvas/canvas\_mvg\.md) &#183; [canvas::pdf](tklib/files/modules/canvas/canvas\_pdf\.md) &#183; [canvas::snap](tklib/files/modules/canvas/canvas\_snap\.md)|
+|<a name='provider\_tiles'></a>provider, tiles|[map\_provider\_osm](tklib/files/modules/map/provider\-osm\.md)|
 
 
 #### <a name='cQ'></a>Keywords: Q
@@ -230,6 +328,14 @@
 |<a name='square\_map'></a>square map|[canvas::sqmap](tklib/files/modules/canvas/canvas\_sqmap\.md)|
 |<a name='state\_management'></a>state management|[widget\_validator](tklib/files/modules/widgetv/widget\_validator\.md)|
 |<a name='statusbar'></a>statusbar|[widget](tklib/files/modules/widget/widget\.md)|
+|<a name='store\_geo\_area\_filesystem'></a>store, geo/area, filesystem|[map\_area\_store\_fs](tklib/files/modules/map/area\-store\-fs\.md)|
+|<a name='store\_geo\_area\_memory'></a>store, geo/area, memory|[map\_area\_store\_memory](tklib/files/modules/map/area\-store\-mem\.md)|
+|<a name='store\_geo\_box\_memory'></a>store, geo/box, memory|[map\_box\_store\_memory](tklib/files/modules/map/box\-store\-mem\.md)|
+|<a name='store\_geo\_point\_filesystem'></a>store, geo/point, filesystem|[map\_point\_store\_fs](tklib/files/modules/map/point\-store\-fs\.md)|
+|<a name='store\_geo\_point\_memory'></a>store, geo/point, memory|[map\_point\_store\_memory](tklib/files/modules/map/point\-store\-mem\.md)|
+|<a name='store\_geo\_track\_filesystem'></a>store, geo/track, filesystem|[map\_track\_store\_fs](tklib/files/modules/map/track\-store\-fs\.md)|
+|<a name='store\_geo\_track\_memory'></a>store, geo/track, memory|[map\_track\_store\_memory](tklib/files/modules/map/track\-store\-mem\.md)|
+|<a name='store\_geobox\_filesystem'></a>store, geobox, filesystem|[map\_box\_store\_fs](tklib/files/modules/map/box\-store\-fs\.md)|
 |<a name='string'></a>string|[getstring](tklib/files/modules/getstring/tk\_getString\.md)|
 |<a name='superframe'></a>superframe|[widget](tklib/files/modules/widget/widget\.md)|
 |<a name='syntax\_highlighting'></a>syntax highlighting|[ctext](tklib/files/modules/ctext/ctext\.md)|
@@ -239,13 +345,21 @@
 
 |||
 |---|---|
+|<a name='tabular\_area\_display'></a>tabular, area display|[map\_area\_display](tklib/files/modules/map/area\-display\.md) &#183; [map\_area\_table\_display](tklib/files/modules/map/area\-table\-display\.md)|
+|<a name='tabular\_box\_display'></a>tabular, box display|[map\_box\_display](tklib/files/modules/map/box\-display\.md) &#183; [map\_box\_table\_display](tklib/files/modules/map/box\-table\-display\.md)|
+|<a name='tabular\_point\_display'></a>tabular, point display|[map\_point\_table\_display](tklib/files/modules/map/point\-table\-display\.md)|
+|<a name='tabular\_track\_display'></a>tabular, track display|[map\_track\_display](tklib/files/modules/map/track\-display\.md) &#183; [map\_track\_table\_display](tklib/files/modules/map/track\-table\-display\.md)|
 |<a name='tags'></a>tags|[canvas::tag](tklib/files/modules/canvas/canvas\_tags\.md)|
 |<a name='text'></a>text|[ctext](tklib/files/modules/ctext/ctext\.md) &#183; [diagram](tklib/files/modules/diagrams/diagram\.md) &#183; [ntext](tklib/files/modules/ntext/ntext\.md) &#183; [ntextBindings](tklib/files/modules/ntext/ntextBindings\.md) &#183; [ntextIndent](tklib/files/modules/ntext/ntextIndent\.md) &#183; [ntextWordBreak](tklib/files/modules/ntext/ntextWordBreak\.md) &#183; [shtmlview](tklib/files/modules/shtmlview/shtmlview\.md)|
 |<a name='tile'></a>tile|[canvas::sqmap](tklib/files/modules/canvas/canvas\_sqmap\.md)|
+|<a name='tile\_provider'></a>tile provider|[map\_provider\_osm](tklib/files/modules/map/provider\-osm\.md)|
 |<a name='tipstack'></a>tipstack|[tipstack](tklib/files/modules/tooltip/tipstack\.md)|
 |<a name='tk'></a>tk|[notifywindow](tklib/files/modules/notifywindow/notifywindow\.md)|
 |<a name='toolbar'></a>toolbar|[widget](tklib/files/modules/widget/widget\.md) &#183; [widget\_toolbar](tklib/files/modules/widget/widget\_toolbar\.md)|
 |<a name='tooltip'></a>tooltip|[tooltip](tklib/files/modules/tooltip/tooltip\.md)|
+|<a name='track\_display\_map\_display\_addon'></a>track display, map display, addon|[map\_track\_map\_display](tklib/files/modules/map/track\-map\-display\.md)|
+|<a name='track\_display\_tabular'></a>track display, tabular|[map\_track\_display](tklib/files/modules/map/track\-display\.md) &#183; [map\_track\_table\_display](tklib/files/modules/map/track\-table\-display\.md)|
+|<a name='track\_entry\_map\_display\_addon'></a>track entry, map display, addon|[map\_track\_entry](tklib/files/modules/map/track\-entry\.md)|
 |<a name='tracking'></a>tracking|[canvas::track::lines](tklib/files/modules/canvas/canvas\_trlines\.md) &#183; [crosshair](tklib/files/modules/crosshair/crosshair\.md)|
 |<a name='ttk\_combobox'></a>ttk::combobox|[widget\_validator](tklib/files/modules/widgetv/widget\_validator\.md)|
 |<a name='ttk\_entry'></a>ttk::entry|[widget\_validator](tklib/files/modules/widgetv/widget\_validator\.md)|
@@ -283,3 +397,7 @@
 |||
 |---|---|
 |<a name='zoom'></a>zoom|[canvas::zoom](tklib/files/modules/canvas/canvas\_zoom\.md)|
+|<a name='zoom\_geo\_area\_pixels'></a>zoom, geo/area pixels|[map\_area\_store\_memory](tklib/files/modules/map/area\-store\-mem\.md)|
+|<a name='zoom\_geo\_box\_pixels'></a>zoom, geo/box pixels|[map\_box\_store\_memory](tklib/files/modules/map/box\-store\-mem\.md)|
+|<a name='zoom\_geo\_point\_pixels'></a>zoom, geo/point pixels|[map\_point\_store\_memory](tklib/files/modules/map/point\-store\-mem\.md)|
+|<a name='zoom\_geo\_track\_pixels'></a>zoom, geo/track pixels|[map\_track\_store\_memory](tklib/files/modules/map/track\-store\-mem\.md)|

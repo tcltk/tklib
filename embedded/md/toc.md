@@ -19,6 +19,66 @@
 
           + [bitmap\-editor](tklib/files/apps/bitmap\-editor\.md) Editor for XBM images
 
+      * [Map Display and Supporting Utilities]()
+
+          + [map\_area\_display](tklib/files/modules/map/area\-display\.md) Widget to display a single geo/area definition
+
+          + [map\_area\_file](tklib/files/modules/map/area\-file\.md) Reading/writing tklib geo/area files
+
+          + [map\_area\_map\_display](tklib/files/modules/map/area\-map\-display\.md) Map Action Engine: Layer to display area definitions
+
+          + [map\_area\_store\_fs](tklib/files/modules/map/area\-store\-fs\.md) Filesystem\-based store of geo/area definitions
+
+          + [map\_area\_store\_memory](tklib/files/modules/map/area\-store\-mem\.md) In\-memory store for geo/area definitions
+
+          + [map\_area\_table\_display](tklib/files/modules/map/area\-table\-display\.md) Widget to display a table of area definitions
+
+          + [map\_box\_display](tklib/files/modules/map/box\-display\.md) Widget to display a single box definition
+
+          + [map\_box\_entry](tklib/files/modules/map/box\-entry\.md) Map Action Engine \- Box Entry
+
+          + [map\_box\_file](tklib/files/modules/map/box\-file\.md) Reading/writing tklib geo/box files
+
+          + [map\_box\_map\_display](tklib/files/modules/map/box\-map\-display\.md) Map Action Engine: Layer to display box definitions
+
+          + [map\_box\_store\_fs](tklib/files/modules/map/box\-store\-fs\.md) Filesystem\-based store of geo/box definitions
+
+          + [map\_box\_store\_memory](tklib/files/modules/map/box\-store\-mem\.md) In\-memory store for geo/box definitions
+
+          + [map\_box\_table\_display](tklib/files/modules/map/box\-table\-display\.md) Widget to display a table of box definitions
+
+          + [map\_display](tklib/files/modules/map/display\.md) Map Display Widget
+
+          + [map\_mark](tklib/files/modules/map/mark\.md) Map Action Engine: Mark A Point
+
+          + [map\_overview](tklib/files/modules/map/map\_overview\.md) Overview of the packages in the Map module
+
+          + [map\_point\_file](tklib/files/modules/map/point\-file\.md) Reading/writing tklib geo/point files
+
+          + [map\_point\_map\_display](tklib/files/modules/map/point\-map\-display\.md) Map Action Engine: Layer to display point definitions
+
+          + [map\_point\_store\_fs](tklib/files/modules/map/point\-store\-fs\.md) Filesystem\-based store of geo/point definitions
+
+          + [map\_point\_store\_memory](tklib/files/modules/map/point\-store\-mem\.md) In\-memory store for geo/point definitions
+
+          + [map\_point\_table\_display](tklib/files/modules/map/point\-table\-display\.md) Widget to display a table of point definitions
+
+          + [map\_provider\_osm](tklib/files/modules/map/provider\-osm\.md) Tile provider using OpenStreetMap Mapnik as origin
+
+          + [map\_track\_display](tklib/files/modules/map/track\-display\.md) Widget to display a single track definition
+
+          + [map\_track\_entry](tklib/files/modules/map/track\-entry\.md) Map Action Engine \- Track Entry
+
+          + [map\_track\_file](tklib/files/modules/map/track\-file\.md) Reading/writing tklib geo/track files
+
+          + [map\_track\_map\_display](tklib/files/modules/map/track\-map\-display\.md) Map Action Engine: Layer to display track definitions
+
+          + [map\_track\_store\_fs](tklib/files/modules/map/track\-store\-fs\.md) Filesystem\-based store of geo/track definitions
+
+          + [map\_track\_store\_memory](tklib/files/modules/map/track\-store\-mem\.md) In\-memory store for geo/track definitions
+
+          + [map\_track\_table\_display](tklib/files/modules/map/track\-table\-display\.md) Widget to display a table of track definitions
+
       * [Unfiled]()
 
           + [autoscroll](tklib/files/modules/autoscroll/autoscroll\.md) Provides for a scrollbar to automatically mapped and unmapped as needed
@@ -224,6 +284,66 @@
           + [khim]()
 
               - [khim](tklib/files/modules/khim/khim\.md) Provides key bindings for entering international characters on a keyboard that does not support them
+
+          + [map]()
+
+              - [map\_area\_display](tklib/files/modules/map/area\-display\.md) Widget to display a single geo/area definition
+
+              - [map\_area\_file](tklib/files/modules/map/area\-file\.md) Reading/writing tklib geo/area files
+
+              - [map\_area\_map\_display](tklib/files/modules/map/area\-map\-display\.md) Map Action Engine: Layer to display area definitions
+
+              - [map\_area\_store\_fs](tklib/files/modules/map/area\-store\-fs\.md) Filesystem\-based store of geo/area definitions
+
+              - [map\_area\_store\_memory](tklib/files/modules/map/area\-store\-mem\.md) In\-memory store for geo/area definitions
+
+              - [map\_area\_table\_display](tklib/files/modules/map/area\-table\-display\.md) Widget to display a table of area definitions
+
+              - [map\_box\_display](tklib/files/modules/map/box\-display\.md) Widget to display a single box definition
+
+              - [map\_box\_entry](tklib/files/modules/map/box\-entry\.md) Map Action Engine \- Box Entry
+
+              - [map\_box\_file](tklib/files/modules/map/box\-file\.md) Reading/writing tklib geo/box files
+
+              - [map\_box\_map\_display](tklib/files/modules/map/box\-map\-display\.md) Map Action Engine: Layer to display box definitions
+
+              - [map\_box\_store\_fs](tklib/files/modules/map/box\-store\-fs\.md) Filesystem\-based store of geo/box definitions
+
+              - [map\_box\_store\_memory](tklib/files/modules/map/box\-store\-mem\.md) In\-memory store for geo/box definitions
+
+              - [map\_box\_table\_display](tklib/files/modules/map/box\-table\-display\.md) Widget to display a table of box definitions
+
+              - [map\_display](tklib/files/modules/map/display\.md) Map Display Widget
+
+              - [map\_mark](tklib/files/modules/map/mark\.md) Map Action Engine: Mark A Point
+
+              - [map\_overview](tklib/files/modules/map/map\_overview\.md) Overview of the packages in the Map module
+
+              - [map\_point\_file](tklib/files/modules/map/point\-file\.md) Reading/writing tklib geo/point files
+
+              - [map\_point\_map\_display](tklib/files/modules/map/point\-map\-display\.md) Map Action Engine: Layer to display point definitions
+
+              - [map\_point\_store\_fs](tklib/files/modules/map/point\-store\-fs\.md) Filesystem\-based store of geo/point definitions
+
+              - [map\_point\_store\_memory](tklib/files/modules/map/point\-store\-mem\.md) In\-memory store for geo/point definitions
+
+              - [map\_point\_table\_display](tklib/files/modules/map/point\-table\-display\.md) Widget to display a table of point definitions
+
+              - [map\_provider\_osm](tklib/files/modules/map/provider\-osm\.md) Tile provider using OpenStreetMap Mapnik as origin
+
+              - [map\_track\_display](tklib/files/modules/map/track\-display\.md) Widget to display a single track definition
+
+              - [map\_track\_entry](tklib/files/modules/map/track\-entry\.md) Map Action Engine \- Track Entry
+
+              - [map\_track\_file](tklib/files/modules/map/track\-file\.md) Reading/writing tklib geo/track files
+
+              - [map\_track\_map\_display](tklib/files/modules/map/track\-map\-display\.md) Map Action Engine: Layer to display track definitions
+
+              - [map\_track\_store\_fs](tklib/files/modules/map/track\-store\-fs\.md) Filesystem\-based store of geo/track definitions
+
+              - [map\_track\_store\_memory](tklib/files/modules/map/track\-store\-mem\.md) In\-memory store for geo/track definitions
+
+              - [map\_track\_table\_display](tklib/files/modules/map/track\-table\-display\.md) Widget to display a table of track definitions
 
           + [menubar]()
 

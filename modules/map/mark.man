@@ -1,0 +1,29 @@
+[comment {-*- tcl -*- doctools manpage}]
+[vset VERSION 0.1]
+[manpage_begin map_mark n [vset VERSION]]
+[category {Map Display and Supporting Utilities}][keywords map {location marking} {mark location}]
+[moddesc   {Map display support}]
+[titledesc {Map Action Engine: Mark A Point}]
+[require Tcl 8.6-]
+[require debug]
+[require debug::caller]
+[require snit]
+[require map::mark [opt [vset VERSION]]]
+[description]
+
+This package provides ...
+
+Attachment to map display widgets providing custom behaviour.
+Enables user to mark locations. Marked locations are reported
+via callback.
+
+[section API]
+
+[list_begin definitions]
+[list_end]
+
+[section EXAMPLE]
+
+[vset CATEGORY map]
+[include ../../support/devel/doc/feedback.inc]
+[manpage_end]

@@ -12,7 +12,7 @@
 # Meta description memoized calculation of extended attributes.
 # Meta description Base data is taken from a backing store.
 # Meta description Anything API-compatible to map::box::store::fs
-# Meta subject	   {center, geo/box
+# Meta subject	   {center, geo/box}
 # Meta subject	   {diameter, geo/box}
 # Meta subject	   {geo/box pixels, zoom}
 # Meta subject	   {geo/box, center}

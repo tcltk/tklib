@@ -12,7 +12,7 @@
 # Meta description memoized calculation of extended attributes.
 # Meta description Base data is taken from a backing store.
 # Meta description Anything API-compatible to map::track::store::fs
-# Meta subject	   {center, geo/track
+# Meta subject	   {center, geo/track}
 # Meta subject	   {diameter, geo/track}
 # Meta subject	   {geo/track pixels, zoom}
 # Meta subject	   {geo/track, center}
