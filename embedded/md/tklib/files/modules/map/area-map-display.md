@@ -1,7 +1,7 @@
 
-[//000000001]: # (map\_area\_map\_display \- Map display support)
+[//000000001]: # (map::area::map\-display \- Map display support)
 [//000000002]: # (Generated from file 'area\-map\-display\.man' by tcllib/doctools with format 'markdown')
-[//000000003]: # (map\_area\_map\_display\(n\) 0\.1 tklib "Map display support")
+[//000000003]: # (map::area::map\-display\(n\) 0\.1 tklib "Map display support")
 
 <hr> [ <a href="../../../../toc.md">Main Table Of Contents</a> &#124; <a
 href="../../../toc.md">Table Of Contents</a> &#124; <a
@@ -12,7 +12,7 @@ href="../../../../toc2.md">Applications</a> ] <hr>
 
 # NAME
 
-map\_area\_map\_display \- Map Action Engine: Layer to display area definitions
+map::area::map\-display \- Map Action Engine \- Layer to display area definitions
 
 # <a name='toc'></a>Table Of Contents
 
@@ -45,9 +45,10 @@ package require map::area::map\-display ?0\.1?
 
 # <a name='description'></a>DESCRIPTION
 
-This package provides \.\.\. Attachment to map display widgets providing custom
-behaviour\. Shows a set of area definitions\. Ensures that only visible areas use
-canvas resources \(items\)\.
+This package provides a __[map::display](display\.md)__ attachment
+extending the map's behaviour\. This attachment shows a set of *geo/area*
+definitions\. It ensures that only the visible areas use canvas resources
+\(items\)\.
 
 # <a name='section2'></a>API
 

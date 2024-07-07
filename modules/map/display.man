@@ -1,6 +1,6 @@
 [comment {-*- tcl -*- doctools manpage}]
 [vset VERSION 0.1]
-[manpage_begin map_display n [vset VERSION]]
+[manpage_begin map::display n [vset VERSION]]
 [category {Map Display and Supporting Utilities}][keywords map]
 [keywords {map display} {display, map}]
 [moddesc   {Map display support}]
@@ -17,11 +17,13 @@
 [require map::display [opt [vset VERSION]]]
 [description]
 
-This package provides ...
+This package provides a map display widget with basic behaviour (Drag, Center, Zoom +/-).
 
-Map Display Widget with basic behaviour (Drag, Center, Zoom +/-)
-Configured with tile provider.
-Extensible with attachable engines providing additional behaviours.
+The map tiles are fetched from a configurable provider like [package map::provider::osm]
+or anything API compatible.
+
+The widget is extensible with attachable engines providing additional behaviours, like the
+display of geo/* resources, and/or editing of geo/* resources.
 
 [section API]
 

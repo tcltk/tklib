@@ -1,7 +1,7 @@
 
-[//000000001]: # (map\_display \- Map display support)
+[//000000001]: # (map::display \- Map display support)
 [//000000002]: # (Generated from file 'display\.man' by tcllib/doctools with format 'markdown')
-[//000000003]: # (map\_display\(n\) 0\.1 tklib "Map display support")
+[//000000003]: # (map::display\(n\) 0\.1 tklib "Map display support")
 
 <hr> [ <a href="../../../../toc.md">Main Table Of Contents</a> &#124; <a
 href="../../../toc.md">Table Of Contents</a> &#124; <a
@@ -12,7 +12,7 @@ href="../../../../toc2.md">Applications</a> ] <hr>
 
 # NAME
 
-map\_display \- Map Display Widget
+map::display \- Map Display Widget
 
 # <a name='toc'></a>Table Of Contents
 
@@ -47,9 +47,12 @@ package require map::display ?0\.1?
 
 # <a name='description'></a>DESCRIPTION
 
-This package provides \.\.\. Map Display Widget with basic behaviour \(Drag, Center,
-Zoom \+/\-\) Configured with tile provider\. Extensible with attachable engines
-providing additional behaviours\.
+This package provides a map display widget with basic behaviour \(Drag, Center,
+Zoom \+/\-\)\. The map tiles are fetched from a configurable provider like
+__[map::provider::osm](provider\-osm\.md)__ or anything API compatible\.
+The widget is extensible with attachable engines providing additional
+behaviours, like the display of geo/\* resources, and/or editing of geo/\*
+resources\.
 
 # <a name='section2'></a>API
 

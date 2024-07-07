@@ -1,7 +1,7 @@
 '\"
 '\" Generated from file 'point-table-display\&.man' by tcllib/doctools with format 'nroff'
 '\"
-.TH "map_point_table_display" n 0\&.1 tklib "Map display support"
+.TH "map::point::table-display" n 0\&.1 tklib "Map display support"
 .\" The -*- nroff -*- definitions below are for supplemental macros used
 .\" in Tcl/Tk manual entries.
 .\"
@@ -271,7 +271,7 @@ Database Class:	\\fB\\$3\\fR
 ..
 .BS
 .SH NAME
-map_point_table_display \- Widget to display a table of point definitions
+map::point::table-display \- Widget to display a table of point definitions
 .SH SYNOPSIS
 package require \fBTcl  8\&.6-\fR
 .sp
@@ -293,8 +293,8 @@ package require \fB\&.map::point::table-display  ?0\&.1?\fR
 .sp
 .BE
 .SH DESCRIPTION
-This package provides \&.\&.\&.
-Widget to display the information of many point definitions in a table\&.
+This package provides a widget showing the information of many \fIgeo/point\fR definitions in a
+table\&.
 .SH API
 .PP
 .SH EXAMPLE

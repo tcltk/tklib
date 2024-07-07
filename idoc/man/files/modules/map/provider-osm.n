@@ -1,7 +1,7 @@
 '\"
 '\" Generated from file 'provider-osm\&.man' by tcllib/doctools with format 'nroff'
 '\"
-.TH "map_provider_osm" n 0\&.1 tklib "Map display support"
+.TH "map::provider::osm" n 0\&.1 tklib "Map display support"
 .\" The -*- nroff -*- definitions below are for supplemental macros used
 .\" in Tcl/Tk manual entries.
 .\"
@@ -271,7 +271,7 @@ Database Class:	\\fB\\$3\\fR
 ..
 .BS
 .SH NAME
-map_provider_osm \- Tile provider using OpenStreetMap Mapnik as origin
+map::provider::osm \- Tile provider using OpenStreetMap Mapnik as origin
 .SH SYNOPSIS
 package require \fBTcl  8\&.6-\fR
 .sp
@@ -291,8 +291,8 @@ package require \fBmap::provider::osm  ?0\&.1?\fR
 .sp
 .BE
 .SH DESCRIPTION
-This package provides \&.\&.\&.
-Tile provider using OpenStreetMap Mapnik as origin and caching tiles in the local filesystem\&.
+This package provides a tile provider suitable for use with \fBmap::display\fR\&.
+It uses OpenStreetMap Mapnik as origin and caches fetched tiles in the local filesystem\&.
 .SH API
 .PP
 .SH EXAMPLE

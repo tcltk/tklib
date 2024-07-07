@@ -1,7 +1,7 @@
 '\"
 '\" Generated from file 'track-store-fs\&.man' by tcllib/doctools with format 'nroff'
 '\"
-.TH "map_track_store_fs" n 0\&.1 tklib "Map display support"
+.TH "map::track::store::fs" n 0\&.1 tklib "Map display support"
 .\" The -*- nroff -*- definitions below are for supplemental macros used
 .\" in Tcl/Tk manual entries.
 .\"
@@ -271,7 +271,7 @@ Database Class:	\\fB\\$3\\fR
 ..
 .BS
 .SH NAME
-map_track_store_fs \- Filesystem-based store of geo/track definitions
+map::track::store::fs \- Filesystem-based store of geo/track definitions
 .SH SYNOPSIS
 package require \fBTcl  8\&.6-\fR
 .sp
@@ -287,8 +287,8 @@ package require \fBmap::track::store::fs  ?0\&.1?\fR
 .sp
 .BE
 .SH DESCRIPTION
-This package provides \&.\&.\&.
-Store loading geo/track definitions from a directory in the filesystem\&.
+This package provides a store loading \fIgeo/track\fR definitions from a directory in the
+filesystem\&.
 .SH API
 .PP
 .SH EXAMPLE

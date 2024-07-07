@@ -1,5 +1,5 @@
 '\"
-'\" Generated from file 'map_overview\&.man' by tcllib/doctools with format 'nroff'
+'\" Generated from file 'map_overview\&.man~' by tcllib/doctools with format 'nroff'
 '\"
 .TH "map_overview" n 0\&.1 tklib "Map display support"
 .\" The -*- nroff -*- definitions below are for supplemental macros used
@@ -278,9 +278,11 @@ Storage
 .RS
 .TP
 File
-Definitions of simple file formats to hold geo/points, geo/boxes and geo/tracks, and the ability to
-read/write these files\&. Note that geo/areas are closed tracks\&.
+Definitions of simple file formats to hold various geo/* resources, and the ability to read/write
+these files\&.
 .RS
+.IP \(bu
+\fBmap::area::file\fR
 .IP \(bu
 \fBmap::box::file\fR
 .IP \(bu

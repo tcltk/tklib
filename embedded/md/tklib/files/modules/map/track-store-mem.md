@@ -1,7 +1,7 @@
 
-[//000000001]: # (map\_track\_store\_memory \- Map display support)
+[//000000001]: # (map::track::store::memory \- Map display support)
 [//000000002]: # (Generated from file 'track\-store\-mem\.man' by tcllib/doctools with format 'markdown')
-[//000000003]: # (map\_track\_store\_memory\(n\) 0\.1 tklib "Map display support")
+[//000000003]: # (map::track::store::memory\(n\) 0\.1 tklib "Map display support")
 
 <hr> [ <a href="../../../../toc.md">Main Table Of Contents</a> &#124; <a
 href="../../../toc.md">Table Of Contents</a> &#124; <a
@@ -12,7 +12,7 @@ href="../../../../toc2.md">Applications</a> ] <hr>
 
 # NAME
 
-map\_track\_store\_memory \- In\-memory store for geo/track definitions
+map::track::store::memory \- In\-memory store for geo/track definitions
 
 # <a name='toc'></a>Table Of Contents
 
@@ -44,9 +44,12 @@ package require map::track::store::memory ?0\.1?
 
 # <a name='description'></a>DESCRIPTION
 
-This package provides \.\.\. In\-memory store for geo/track definitions, with
-memoized calculation of extended attributes\. Base data is taken from a backing
-store\. Anything API\-compatible to map::track::store::fs
+This package provides an in\-memory store for *geo/track* definitions, with
+memoized calculation of extended attributes\.
+
+The base data is pulled from a backing store\. A
+__[map::track::store::fs](track\-store\-fs\.md)__ or anything
+API\-compatible to it\.
 
 # <a name='section2'></a>API
 

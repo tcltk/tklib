@@ -1,7 +1,7 @@
 
-[//000000001]: # (map\_track\_store\_fs \- Map display support)
+[//000000001]: # (map::track::store::fs \- Map display support)
 [//000000002]: # (Generated from file 'track\-store\-fs\.man' by tcllib/doctools with format 'markdown')
-[//000000003]: # (map\_track\_store\_fs\(n\) 0\.1 tklib "Map display support")
+[//000000003]: # (map::track::store::fs\(n\) 0\.1 tklib "Map display support")
 
 <hr> [ <a href="../../../../toc.md">Main Table Of Contents</a> &#124; <a
 href="../../../toc.md">Table Of Contents</a> &#124; <a
@@ -12,7 +12,7 @@ href="../../../../toc2.md">Applications</a> ] <hr>
 
 # NAME
 
-map\_track\_store\_fs \- Filesystem\-based store of geo/track definitions
+map::track::store::fs \- Filesystem\-based store of geo/track definitions
 
 # <a name='toc'></a>Table Of Contents
 
@@ -43,7 +43,7 @@ package require map::track::store::fs ?0\.1?
 
 # <a name='description'></a>DESCRIPTION
 
-This package provides \.\.\. Store loading geo/track definitions from a directory
+This package provides a store loading *geo/track* definitions from a directory
 in the filesystem\.
 
 # <a name='section2'></a>API

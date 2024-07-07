@@ -1,6 +1,6 @@
 [comment {-*- tcl -*- doctools manpage}]
 [vset VERSION 0.1]
-[manpage_begin map_area_table_display n [vset VERSION]]
+[manpage_begin map::area::table-display n [vset VERSION]]
 [category {Map Display and Supporting Utilities}][keywords map]
 [keywords {area display, tabular}]
 [keywords {tabular, area display}]
@@ -17,9 +17,8 @@
 [require map::area::table-display [opt [vset VERSION]]]
 [description]
 
-This package provides ...
-
-Widget to display the information of many area definitions in a table.
+This package provides a widget showing the information of many [term geo/area] definitions in a
+table.
 
 [section API]
 

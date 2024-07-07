@@ -1,7 +1,7 @@
 '\"
 '\" Generated from file 'track-entry\&.man' by tcllib/doctools with format 'nroff'
 '\"
-.TH "map_track_entry" n 0\&.1 tklib "Map display support"
+.TH "map::track::entry" n 0\&.1 tklib "Map display support"
 .\" The -*- nroff -*- definitions below are for supplemental macros used
 .\" in Tcl/Tk manual entries.
 .\"
@@ -271,7 +271,7 @@ Database Class:	\\fB\\$3\\fR
 ..
 .BS
 .SH NAME
-map_track_entry \- Map Action Engine - Track Entry
+map::track::entry \- Map Action Engine - Track Entry
 .SH SYNOPSIS
 package require \fBTcl  8\&.6-\fR
 .sp
@@ -289,10 +289,8 @@ package require \fBmap::track::entry  ?0\&.1?\fR
 .sp
 .BE
 .SH DESCRIPTION
-This package provides \&.\&.\&.
-Attachment to map display widgets providing custom behaviour\&.
-This attachment enabless user to enter an open series of
-points, i\&.e\&. a track\&.
+This package provides a \fBmap::display\fR attachment extending the map's behaviour\&.
+This attachment enables the user to enter an open series of points, i\&.e\&. a \fIgeo/track\fR\&.
 .SH API
 .PP
 .SH EXAMPLE

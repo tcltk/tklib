@@ -1,7 +1,7 @@
 '\"
 '\" Generated from file 'point-file\&.man' by tcllib/doctools with format 'nroff'
 '\"
-.TH "map_point_file" n 0\&.1 tklib "Map display support"
+.TH "map::point::file" n 0\&.1 tklib "Map display support"
 .\" The -*- nroff -*- definitions below are for supplemental macros used
 .\" in Tcl/Tk manual entries.
 .\"
@@ -271,7 +271,7 @@ Database Class:	\\fB\\$3\\fR
 ..
 .BS
 .SH NAME
-map_point_file \- Reading/writing tklib geo/point files
+map::point::file \- Reading/writing tklib geo/point files
 .SH SYNOPSIS
 package require \fBTcl  8\&.6-\fR
 .sp
@@ -287,8 +287,7 @@ package require \fBmap::point::file  ?0\&.1?\fR
 .sp
 .BE
 .SH DESCRIPTION
-This package provides \&.\&.\&.
-Reading/writing tklib geo/point files
+This package provides read/write functions for Tklib \fIgeo/point\fR files\&.
 .SH API
 .PP
 .SH EXAMPLE

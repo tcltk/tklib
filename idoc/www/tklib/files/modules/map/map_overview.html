@@ -91,7 +91,7 @@
     }
 --></style>
 </head>
-<!-- Generated from file 'map_overview.man' by tcllib/doctools with format 'html'
+<!-- Generated from file 'map_overview.man~' by tcllib/doctools with format 'html'
    -->
 <!-- map_overview.n
    -->
@@ -123,72 +123,73 @@
 <dt>Storage</dt>
 <dd><dl class="doctools_definitions">
 <dt>File</dt>
-<dd><p>Definitions of simple file formats to hold geo/points, geo/boxes and geo/tracks, and the ability to
-read/write these files. Note that geo/areas are closed tracks.</p>
+<dd><p>Definitions of simple file formats to hold various geo/* resources, and the ability to read/write
+these files.</p>
 <ul class="doctools_itemized">
-<li><p><b class="package">map::box::file</b></p></li>
-<li><p><b class="package">map::point::file</b></p></li>
-<li><p><b class="package">map::track::file</b></p></li>
+<li><p><b class="package"><a href="area-file.html">map::area::file</a></b></p></li>
+<li><p><b class="package"><a href="box-file.html">map::box::file</a></b></p></li>
+<li><p><b class="package"><a href="point-file.html">map::point::file</a></b></p></li>
+<li><p><b class="package"><a href="track-file.html">map::track::file</a></b></p></li>
 </ul></dd>
 <dt>Disk</dt>
 <dd><p>On-disk stores for various geo/* resources. Exist as basic examples to start with, and as API
 demonstrators. In the original project these packages were factored out of <b class="syscmd">sqlite</b> was used
 as a store. This store is however entwined too much with that project to be factored.</p>
 <ul class="doctools_itemized">
-<li><p><b class="package">map::area::store::fs</b></p></li>
-<li><p><b class="package">map::box::store::fs</b></p></li>
-<li><p><b class="package">map::point::store::fs</b></p></li>
-<li><p><b class="package">map::track::store::fs</b></p></li>
+<li><p><b class="package"><a href="area-store-fs.html">map::area::store::fs</a></b></p></li>
+<li><p><b class="package"><a href="box-store-fs.html">map::box::store::fs</a></b></p></li>
+<li><p><b class="package"><a href="point-store-fs.html">map::point::store::fs</a></b></p></li>
+<li><p><b class="package"><a href="track-store-fs.html">map::track::store::fs</a></b></p></li>
 </ul></dd>
 <dt>Memory</dt>
 <dd><p>In-memory stores caching geo/* data and adding derived attributes. The bridge between the actual
 on-disk stores and the various widgets and behaviours.</p>
 <ul class="doctools_itemized">
-<li><p><b class="package">map::area::store::memory</b></p></li>
-<li><p><b class="package">map::box::store::memory</b></p></li>
-<li><p><b class="package">map::point::store::memory</b></p></li>
-<li><p><b class="package">map::track::store::memory</b></p></li>
+<li><p><b class="package"><a href="area-store-mem.html">map::area::store::memory</a></b></p></li>
+<li><p><b class="package"><a href="box-store-mem.html">map::box::store::memory</a></b></p></li>
+<li><p><b class="package"><a href="point-store-mem.html">map::point::store::memory</a></b></p></li>
+<li><p><b class="package"><a href="track-store-mem.html">map::track::store::memory</a></b></p></li>
 </ul></dd>
 </dl></dd>
 <dt>Widgets</dt>
 <dd><p>To show maps, singular geo resources, and tables of many geo resources of the same kind.</p>
 <dl class="doctools_definitions">
 <dt>Map</dt>
-<dd><p><b class="package">map::display</b></p></dd>
+<dd><p><b class="package"><a href="display.html">map::display</a></b></p></dd>
 <dt>Geo Resource Tables</dt>
 <dd><ul class="doctools_itemized">
-<li><p><b class="package">map::area::table-display</b></p></li>
-<li><p><b class="package">map::box::table-display</b></p></li>
-<li><p><b class="package">map::track::table-display</b></p></li>
+<li><p><b class="package"><a href="area-table-display.html">map::area::table-display</a></b></p></li>
+<li><p><b class="package"><a href="box-table-display.html">map::box::table-display</a></b></p></li>
+<li><p><b class="package"><a href="track-table-display.html">map::track::table-display</a></b></p></li>
 </ul></dd>
 <dt>Geo Resource Display</dt>
 <dd><ul class="doctools_itemized">
-<li><p><b class="package">map::area::display</b></p></li>
-<li><p><b class="package">map::box::display</b></p></li>
-<li><p><b class="package">map::track::display</b></p></li>
+<li><p><b class="package"><a href="area-display.html">map::area::display</a></b></p></li>
+<li><p><b class="package"><a href="box-display.html">map::box::display</a></b></p></li>
+<li><p><b class="package"><a href="track-display.html">map::track::display</a></b></p></li>
 </ul></dd>
 </dl></dd>
 <dt>Behaviours</dt>
-<dd><p>Engines attachable to <b class="package">map::display</b> to add custom behaviours to the shown map.  The two
+<dd><p>Engines attachable to <b class="package"><a href="display.html">map::display</a></b> to add custom behaviours to the shown map.  The two
 classes of engines are for displaying overlays for specific geo resources, and the editing/entry of
 specific single geo resources.</p>
 <dl class="doctools_definitions">
 <dt>Display</dt>
 <dd><ul class="doctools_itemized">
-<li><p><b class="package">map::area::map-display</b></p></li>
-<li><p><b class="package">map::box::map-display</b></p></li>
-<li><p><b class="package">map::point::map-display</b></p></li>
-<li><p><b class="package">map::track::map-display</b></p></li>
+<li><p><b class="package"><a href="area-map-display.html">map::area::map-display</a></b></p></li>
+<li><p><b class="package"><a href="box-map-display.html">map::box::map-display</a></b></p></li>
+<li><p><b class="package"><a href="point-map-display.html">map::point::map-display</a></b></p></li>
+<li><p><b class="package"><a href="track-map-display.html">map::track::map-display</a></b></p></li>
 </ul></dd>
 <dt>Editing</dt>
 <dd><ul class="doctools_itemized">
-<li><p><b class="package">map::box::entry</b></p></li>
-<li><p><b class="package">map::mark</b></p></li>
-<li><p><b class="package">map::track::entry</b></p></li>
+<li><p><b class="package"><a href="box-entry.html">map::box::entry</a></b></p></li>
+<li><p><b class="package"><a href="mark.html">map::mark</a></b></p></li>
+<li><p><b class="package"><a href="track-entry.html">map::track::entry</a></b></p></li>
 </ul></dd>
 </dl></dd>
 <dt>Support</dt>
-<dd><p><b class="package">map::provider::osm</b></p></dd>
+<dd><p><b class="package"><a href="provider-osm.html">map::provider::osm</a></b></p></dd>
 </dl>
 </div>
 <div id="section2" class="doctools_section"><h2><a name="section2">Bugs, Ideas, Feedback</a></h2>

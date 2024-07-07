@@ -1,7 +1,7 @@
 
-[//000000001]: # (map\_track\_entry \- Map display support)
+[//000000001]: # (map::track::entry \- Map display support)
 [//000000002]: # (Generated from file 'track\-entry\.man' by tcllib/doctools with format 'markdown')
-[//000000003]: # (map\_track\_entry\(n\) 0\.1 tklib "Map display support")
+[//000000003]: # (map::track::entry\(n\) 0\.1 tklib "Map display support")
 
 <hr> [ <a href="../../../../toc.md">Main Table Of Contents</a> &#124; <a
 href="../../../toc.md">Table Of Contents</a> &#124; <a
@@ -12,7 +12,7 @@ href="../../../../toc2.md">Applications</a> ] <hr>
 
 # NAME
 
-map\_track\_entry \- Map Action Engine \- Track Entry
+map::track::entry \- Map Action Engine \- Track Entry
 
 # <a name='toc'></a>Table Of Contents
 
@@ -44,9 +44,9 @@ package require map::track::entry ?0\.1?
 
 # <a name='description'></a>DESCRIPTION
 
-This package provides \.\.\. Attachment to map display widgets providing custom
-behaviour\. This attachment enabless user to enter an open series of points, i\.e\.
-a track\.
+This package provides a __[map::display](display\.md)__ attachment
+extending the map's behaviour\. This attachment enables the user to enter an open
+series of points, i\.e\. a *geo/track*\.
 
 # <a name='section2'></a>API
 

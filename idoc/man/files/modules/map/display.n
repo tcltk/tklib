@@ -1,7 +1,7 @@
 '\"
 '\" Generated from file 'display\&.man' by tcllib/doctools with format 'nroff'
 '\"
-.TH "map_display" n 0\&.1 tklib "Map display support"
+.TH "map::display" n 0\&.1 tklib "Map display support"
 .\" The -*- nroff -*- definitions below are for supplemental macros used
 .\" in Tcl/Tk manual entries.
 .\"
@@ -271,7 +271,7 @@ Database Class:	\\fB\\$3\\fR
 ..
 .BS
 .SH NAME
-map_display \- Map Display Widget
+map::display \- Map Display Widget
 .SH SYNOPSIS
 package require \fBTcl  8\&.6-\fR
 .sp
@@ -295,10 +295,11 @@ package require \fBmap::display  ?0\&.1?\fR
 .sp
 .BE
 .SH DESCRIPTION
-This package provides \&.\&.\&.
-Map Display Widget with basic behaviour (Drag, Center, Zoom +/-)
-Configured with tile provider\&.
-Extensible with attachable engines providing additional behaviours\&.
+This package provides a map display widget with basic behaviour (Drag, Center, Zoom +/-)\&.
+The map tiles are fetched from a configurable provider like \fBmap::provider::osm\fR
+or anything API compatible\&.
+The widget is extensible with attachable engines providing additional behaviours, like the
+display of geo/* resources, and/or editing of geo/* resources\&.
 .SH API
 .PP
 .SH EXAMPLE

@@ -1,7 +1,7 @@
 
-[//000000001]: # (map\_mark \- Map display support)
+[//000000001]: # (map::mark \- Map display support)
 [//000000002]: # (Generated from file 'mark\.man' by tcllib/doctools with format 'markdown')
-[//000000003]: # (map\_mark\(n\) 0\.1 tklib "Map display support")
+[//000000003]: # (map::mark\(n\) 0\.1 tklib "Map display support")
 
 <hr> [ <a href="../../../../toc.md">Main Table Of Contents</a> &#124; <a
 href="../../../toc.md">Table Of Contents</a> &#124; <a
@@ -12,7 +12,7 @@ href="../../../../toc2.md">Applications</a> ] <hr>
 
 # NAME
 
-map\_mark \- Map Action Engine: Mark A Point
+map::mark \- Map Action Engine \- Mark A Point
 
 # <a name='toc'></a>Table Of Contents
 
@@ -42,8 +42,9 @@ package require map::mark ?0\.1?
 
 # <a name='description'></a>DESCRIPTION
 
-This package provides \.\.\. Attachment to map display widgets providing custom
-behaviour\. Enables user to mark locations\. Marked locations are reported via
+This package provides a __[map::display](display\.md)__ attachment
+extending the map's behaviour\. This attachment enables the user to mark
+locations, i\.e\. *geo/point*s\. The marked locations are reported via a
 callback\.
 
 # <a name='section2'></a>API

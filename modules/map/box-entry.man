@@ -1,6 +1,6 @@
 [comment {-*- tcl -*- doctools manpage}]
 [vset VERSION 0.1]
-[manpage_begin map_box_entry n [vset VERSION]]
+[manpage_begin map::box::entry n [vset VERSION]]
 [category {Map Display and Supporting Utilities}][keywords map]
 [keywords {addon, box entry, map display}]
 [keywords {box entry, map display, addon}]
@@ -16,10 +16,8 @@
 [require map::box::entry [opt [vset VERSION]]]
 [description]
 
-This package provides ...
-
-Attachment to map display widgets providing custom behaviour.
-This attachment enables users to enter a bounding box.
+This package provides a [package map::display] attachment extending the map's behaviour.
+This attachment enables the user to enter a (bounding) [term geo/box].
 
 [section API]
 

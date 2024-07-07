@@ -1,6 +1,6 @@
 [comment {-*- tcl -*- doctools manpage}]
 [vset VERSION 0.1]
-[manpage_begin map_box_file n [vset VERSION]]
+[manpage_begin map::box::file n [vset VERSION]]
 [category {Map Display and Supporting Utilities}][keywords map]
 [category {Map Display and Supporting Utilities}][keywords map]
 [keywords {file, geo/box}]
@@ -15,9 +15,7 @@
 [require map::box::file [opt [vset VERSION]]]
 [description]
 
-This package provides ...
-
-Reading/writing tklib geo/box files
+This package provides read/write functions for Tklib [term geo/box] files.
 
 [section API]
 

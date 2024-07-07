@@ -1,6 +1,6 @@
 
 [//000000001]: # (map\_overview \- Map display support)
-[//000000002]: # (Generated from file 'map\_overview\.man' by tcllib/doctools with format 'markdown')
+[//000000002]: # (Generated from file 'map\_overview\.man~' by tcllib/doctools with format 'markdown')
 [//000000003]: # (map\_overview\(n\) 0\.1 tklib "Map display support")
 
 <hr> [ <a href="../../../../toc.md">Main Table Of Contents</a> &#124; <a
@@ -32,15 +32,16 @@ map\_overview \- Overview of the packages in the Map module
 
       * File
 
-        Definitions of simple file formats to hold geo/points, geo/boxes and
-        geo/tracks, and the ability to read/write these files\. Note that
-        geo/areas are closed tracks\.
+        Definitions of simple file formats to hold various geo/\* resources, and
+        the ability to read/write these files\.
 
-          + __map::box::file__
+          + __[map::area::file](area\-file\.md)__
 
-          + __map::point::file__
+          + __[map::box::file](box\-file\.md)__
 
-          + __map::track::file__
+          + __[map::point::file](point\-file\.md)__
+
+          + __[map::track::file](track\-file\.md)__
 
       * Disk
 
@@ -49,13 +50,13 @@ map\_overview \- Overview of the packages in the Map module
         packages were factored out of __sqlite__ was used as a store\. This
         store is however entwined too much with that project to be factored\.
 
-          + __map::area::store::fs__
+          + __[map::area::store::fs](area\-store\-fs\.md)__
 
-          + __map::box::store::fs__
+          + __[map::box::store::fs](box\-store\-fs\.md)__
 
-          + __map::point::store::fs__
+          + __[map::point::store::fs](point\-store\-fs\.md)__
 
-          + __map::track::store::fs__
+          + __[map::track::store::fs](track\-store\-fs\.md)__
 
       * Memory
 
@@ -63,13 +64,13 @@ map\_overview \- Overview of the packages in the Map module
         bridge between the actual on\-disk stores and the various widgets and
         behaviours\.
 
-          + __map::area::store::memory__
+          + __[map::area::store::memory](area\-store\-mem\.md)__
 
-          + __map::box::store::memory__
+          + __[map::box::store::memory](box\-store\-mem\.md)__
 
-          + __map::point::store::memory__
+          + __[map::point::store::memory](point\-store\-mem\.md)__
 
-          + __map::track::store::memory__
+          + __[map::track::store::memory](track\-store\-mem\.md)__
 
   - Widgets
 
@@ -78,52 +79,52 @@ map\_overview \- Overview of the packages in the Map module
 
       * Map
 
-        __map::display__
+        __[map::display](display\.md)__
 
       * Geo Resource Tables
 
-          + __map::area::table\-display__
+          + __[map::area::table\-display](area\-table\-display\.md)__
 
-          + __map::box::table\-display__
+          + __[map::box::table\-display](box\-table\-display\.md)__
 
-          + __map::track::table\-display__
+          + __[map::track::table\-display](track\-table\-display\.md)__
 
       * Geo Resource Display
 
-          + __map::area::display__
+          + __[map::area::display](area\-display\.md)__
 
-          + __map::box::display__
+          + __[map::box::display](box\-display\.md)__
 
-          + __map::track::display__
+          + __[map::track::display](track\-display\.md)__
 
   - Behaviours
 
-    Engines attachable to __map::display__ to add custom behaviours to the
-    shown map\. The two classes of engines are for displaying overlays for
-    specific geo resources, and the editing/entry of specific single geo
-    resources\.
+    Engines attachable to __[map::display](display\.md)__ to add custom
+    behaviours to the shown map\. The two classes of engines are for displaying
+    overlays for specific geo resources, and the editing/entry of specific
+    single geo resources\.
 
       * Display
 
-          + __map::area::map\-display__
+          + __[map::area::map\-display](area\-map\-display\.md)__
 
-          + __map::box::map\-display__
+          + __[map::box::map\-display](box\-map\-display\.md)__
 
-          + __map::point::map\-display__
+          + __[map::point::map\-display](point\-map\-display\.md)__
 
-          + __map::track::map\-display__
+          + __[map::track::map\-display](track\-map\-display\.md)__
 
       * Editing
 
-          + __map::box::entry__
+          + __[map::box::entry](box\-entry\.md)__
 
-          + __map::mark__
+          + __[map::mark](mark\.md)__
 
-          + __map::track::entry__
+          + __[map::track::entry](track\-entry\.md)__
 
   - Support
 
-    __map::provider::osm__
+    __[map::provider::osm](provider\-osm\.md)__
 
 # <a name='section2'></a>Bugs, Ideas, Feedback
 

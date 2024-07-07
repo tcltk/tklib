@@ -1,6 +1,6 @@
 [comment {-*- tcl -*- doctools manpage}]
 [vset VERSION 0.1]
-[manpage_begin map_point_store_fs n [vset VERSION]]
+[manpage_begin map::point::store::fs n [vset VERSION]]
 [category {Map Display and Supporting Utilities}][keywords map]
 [keywords {filesystem store, geo/point}]
 [keywords {geo/point, filesystem store}]
@@ -15,9 +15,8 @@
 [require map::point::store::fs [opt [vset VERSION]]]
 [description]
 
-This package provides ...
-
-Store loading geo/point definitions from a directory in the filesystem.
+This package provides a store loading [term geo/point] definitions from a directory in the
+filesystem.
 
 [section API]
 

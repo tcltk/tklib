@@ -1,6 +1,6 @@
 [comment {-*- tcl -*- doctools manpage}]
 [vset VERSION 0.1]
-[manpage_begin map_area_store_fs n [vset VERSION]]
+[manpage_begin map::area::store::fs n [vset VERSION]]
 [category {Map Display and Supporting Utilities}][keywords map]
 [keywords {filesystem store, geo/area}]
 [keywords {geo/area, filesystem store}]
@@ -12,12 +12,12 @@
 [require debug::caller]
 [require map::slippy 0.8]
 [require snit]
+[require map::area::file]
 [require map::area::store::fs [opt [vset VERSION]]]
 [description]
 
-This package provides ...
-
-Store loading geo/area definitions from a directory in the filesystem.
+This package provides a store loading [term geo/area] definitions from a directory in the
+filesystem.
 
 [section API]
 

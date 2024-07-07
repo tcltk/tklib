@@ -1,7 +1,7 @@
 
-[//000000001]: # (map\_area\_store\_fs \- Map display support)
+[//000000001]: # (map::area::store::fs \- Map display support)
 [//000000002]: # (Generated from file 'area\-store\-fs\.man' by tcllib/doctools with format 'markdown')
-[//000000003]: # (map\_area\_store\_fs\(n\) 0\.1 tklib "Map display support")
+[//000000003]: # (map::area::store::fs\(n\) 0\.1 tklib "Map display support")
 
 <hr> [ <a href="../../../../toc.md">Main Table Of Contents</a> &#124; <a
 href="../../../toc.md">Table Of Contents</a> &#124; <a
@@ -12,7 +12,7 @@ href="../../../../toc2.md">Applications</a> ] <hr>
 
 # NAME
 
-map\_area\_store\_fs \- Filesystem\-based store of geo/area definitions
+map::area::store::fs \- Filesystem\-based store of geo/area definitions
 
 # <a name='toc'></a>Table Of Contents
 
@@ -39,12 +39,13 @@ package require debug
 package require debug::caller  
 package require map::slippy 0\.8  
 package require snit  
+package require map::area::file  
 package require map::area::store::fs ?0\.1?  
 
 # <a name='description'></a>DESCRIPTION
 
-This package provides \.\.\. Store loading geo/area definitions from a directory in
-the filesystem\.
+This package provides a store loading *geo/area* definitions from a directory
+in the filesystem\.
 
 # <a name='section2'></a>API
 

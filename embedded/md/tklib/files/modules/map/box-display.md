@@ -1,7 +1,7 @@
 
-[//000000001]: # (map\_box\_display \- Map display support)
+[//000000001]: # (map::box::display \- Map display support)
 [//000000002]: # (Generated from file 'box\-display\.man' by tcllib/doctools with format 'markdown')
-[//000000003]: # (map\_box\_display\(n\) 0\.1 tklib "Map display support")
+[//000000003]: # (map::box::display\(n\) 0\.1 tklib "Map display support")
 
 <hr> [ <a href="../../../../toc.md">Main Table Of Contents</a> &#124; <a
 href="../../../toc.md">Table Of Contents</a> &#124; <a
@@ -12,7 +12,7 @@ href="../../../../toc2.md">Applications</a> ] <hr>
 
 # NAME
 
-map\_box\_display \- Widget to display a single box definition
+map::box::display \- Widget to display a single box definition
 
 # <a name='toc'></a>Table Of Contents
 
@@ -46,8 +46,8 @@ package require map::box::display ?0\.1?
 
 # <a name='description'></a>DESCRIPTION
 
-This package provides \.\.\. Widget to display the information of a single box
-definition
+This package provides a widget to show the information of a single *geo/box*
+definition\.
 
 # <a name='section2'></a>API
 

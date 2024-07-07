@@ -1,7 +1,7 @@
 
-[//000000001]: # (map\_area\_file \- Map display support)
+[//000000001]: # (map::area::file \- Map display support)
 [//000000002]: # (Generated from file 'area\-file\.man' by tcllib/doctools with format 'markdown')
-[//000000003]: # (map\_area\_file\(n\) 0\.1 tklib "Map display support")
+[//000000003]: # (map::area::file\(n\) 0\.1 tklib "Map display support")
 
 <hr> [ <a href="../../../../toc.md">Main Table Of Contents</a> &#124; <a
 href="../../../toc.md">Table Of Contents</a> &#124; <a
@@ -12,7 +12,7 @@ href="../../../../toc2.md">Applications</a> ] <hr>
 
 # NAME
 
-map\_area\_file \- Reading/writing tklib geo/area files
+map::area::file \- Reading/writing tklib geo/area files
 
 # <a name='toc'></a>Table Of Contents
 
@@ -43,7 +43,7 @@ package require map::area::file ?0\.1?
 
 # <a name='description'></a>DESCRIPTION
 
-This package provides \.\.\. Reading/writing tklib geo/area files
+This package provides read/write functions for Tklib *geo/area* files\.
 
 # <a name='section2'></a>API
 

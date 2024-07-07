@@ -1,7 +1,7 @@
 
-[//000000001]: # (map\_track\_file \- Map display support)
+[//000000001]: # (map::track::file \- Map display support)
 [//000000002]: # (Generated from file 'track\-file\.man' by tcllib/doctools with format 'markdown')
-[//000000003]: # (map\_track\_file\(n\) 0\.1 tklib "Map display support")
+[//000000003]: # (map::track::file\(n\) 0\.1 tklib "Map display support")
 
 <hr> [ <a href="../../../../toc.md">Main Table Of Contents</a> &#124; <a
 href="../../../toc.md">Table Of Contents</a> &#124; <a
@@ -12,7 +12,7 @@ href="../../../../toc2.md">Applications</a> ] <hr>
 
 # NAME
 
-map\_track\_file \- Reading/writing tklib geo/track files
+map::track::file \- Reading/writing tklib geo/track files
 
 # <a name='toc'></a>Table Of Contents
 
@@ -44,7 +44,7 @@ package require map::track::file ?0\.1?
 
 # <a name='description'></a>DESCRIPTION
 
-This package provides \.\.\. Reading/writing tklib geo/track files
+This package provides read/write functions for Tklib *geo/track* files\.
 
 # <a name='section2'></a>API
 

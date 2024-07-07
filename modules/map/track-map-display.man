@@ -1,12 +1,12 @@
 [comment {-*- tcl -*- doctools manpage}]
 [vset VERSION 0.1]
-[manpage_begin map_track_map_display n [vset VERSION]]
+[manpage_begin map::track::map-display n [vset VERSION]]
 [category {Map Display and Supporting Utilities}][keywords map]
 [keywords {addon, track display, map display}]
 [keywords {track display, map display, addon}]
 [keywords {map display, addon, track display}]
 [moddesc   {Map display support}]
-[titledesc {Map Action Engine: Layer to display track definitions}]
+[titledesc {Map Action Engine - Layer to display track definitions}]
 [require Tcl 8.6-]
 [require Tk  8.6-]
 [require canvas::edit::polyline]
@@ -17,11 +17,9 @@
 [require map::track::map-display [opt [vset VERSION]]]
 [description]
 
-This package provides ...
-
-Attachment to map display widgets providing custom behaviour.
-Shows a set of track definitions. Ensures
-that only visible tracks use canvas resources (items).
+This package provides a [package map::display] attachment extending the map's behaviour. This
+attachment shows a set of [term geo/track] definitions. It ensures that only the visible tracks use
+canvas resources (items).
 
 [section API]
 

@@ -1,6 +1,6 @@
 [comment {-*- tcl -*- doctools manpage}]
 [vset VERSION 0.1]
-[manpage_begin map_track_store_memory n [vset VERSION]]
+[manpage_begin map::track::store::memory n [vset VERSION]]
 [category {Map Display and Supporting Utilities}][keywords map]
 [keywords {center, geo/track}]
 [keywords {diameter, geo/track}]
@@ -26,10 +26,11 @@
 [require map::track::store::memory [opt [vset VERSION]]]
 [description]
 
-This package provides ...
+This package provides an in-memory store for [term geo/track] definitions, with memoized calculation
+of extended attributes.
 
-In-memory store for geo/track definitions, with memoized calculation of extended attributes.  Base
-data is taken from a backing store.  Anything API-compatible to map::track::store::fs
+[para] The base data is pulled from a backing store. A [package map::track::store::fs] or anything
+API-compatible to it.
 
 [section API]
 

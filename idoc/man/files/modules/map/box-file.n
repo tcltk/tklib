@@ -1,7 +1,7 @@
 '\"
 '\" Generated from file 'box-file\&.man' by tcllib/doctools with format 'nroff'
 '\"
-.TH "map_box_file" n 0\&.1 tklib "Map display support"
+.TH "map::box::file" n 0\&.1 tklib "Map display support"
 .\" The -*- nroff -*- definitions below are for supplemental macros used
 .\" in Tcl/Tk manual entries.
 .\"
@@ -271,7 +271,7 @@ Database Class:	\\fB\\$3\\fR
 ..
 .BS
 .SH NAME
-map_box_file \- Reading/writing tklib geo/box files
+map::box::file \- Reading/writing tklib geo/box files
 .SH SYNOPSIS
 package require \fBTcl  8\&.6-\fR
 .sp
@@ -287,8 +287,7 @@ package require \fBmap::box::file  ?0\&.1?\fR
 .sp
 .BE
 .SH DESCRIPTION
-This package provides \&.\&.\&.
-Reading/writing tklib geo/box files
+This package provides read/write functions for Tklib \fIgeo/box\fR files\&.
 .SH API
 .PP
 .SH EXAMPLE

@@ -1,6 +1,6 @@
 [comment {-*- tcl -*- doctools manpage}]
 [vset VERSION 0.1]
-[manpage_begin map_track_entry n [vset VERSION]]
+[manpage_begin map::track::entry n [vset VERSION]]
 [category {Map Display and Supporting Utilities}][keywords map]
 [keywords {addon, track entry, map display}]
 [keywords {track entry, map display, addon}]
@@ -16,11 +16,8 @@
 [require map::track::entry [opt [vset VERSION]]]
 [description]
 
-This package provides ...
-
-Attachment to map display widgets providing custom behaviour.
-This attachment enabless user to enter an open series of
-points, i.e. a track.
+This package provides a [package map::display] attachment extending the map's behaviour.
+This attachment enables the user to enter an open series of points, i.e. a [term geo/track].
 
 [section API]
 

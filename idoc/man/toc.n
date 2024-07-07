@@ -366,92 +366,92 @@ tklib
 \fBkhim\fR
 \fIfiles/modules/khim/khim\&.n\fR: Provides key bindings for entering international characters on a keyboard that does not support them
 .TP
-\fBmap_area_display\fR
+\fBmap::area::display\fR
 \fIfiles/modules/map/area-display\&.n\fR: Widget to display a single geo/area definition
 .TP
-\fBmap_area_file\fR
+\fBmap::area::file\fR
 \fIfiles/modules/map/area-file\&.n\fR: Reading/writing tklib geo/area files
 .TP
-\fBmap_area_map_display\fR
-\fIfiles/modules/map/area-map-display\&.n\fR: Map Action Engine: Layer to display area definitions
+\fBmap::area::map-display\fR
+\fIfiles/modules/map/area-map-display\&.n\fR: Map Action Engine - Layer to display area definitions
 .TP
-\fBmap_area_store_fs\fR
+\fBmap::area::store::fs\fR
 \fIfiles/modules/map/area-store-fs\&.n\fR: Filesystem-based store of geo/area definitions
 .TP
-\fBmap_area_store_memory\fR
+\fBmap::area::store::memory\fR
 \fIfiles/modules/map/area-store-mem\&.n\fR: In-memory store for geo/area definitions
 .TP
-\fBmap_area_table_display\fR
+\fBmap::area::table-display\fR
 \fIfiles/modules/map/area-table-display\&.n\fR: Widget to display a table of area definitions
 .TP
-\fBmap_box_display\fR
+\fBmap::box::display\fR
 \fIfiles/modules/map/box-display\&.n\fR: Widget to display a single box definition
 .TP
-\fBmap_box_entry\fR
+\fBmap::box::entry\fR
 \fIfiles/modules/map/box-entry\&.n\fR: Map Action Engine - Box Entry
 .TP
-\fBmap_box_file\fR
+\fBmap::box::file\fR
 \fIfiles/modules/map/box-file\&.n\fR: Reading/writing tklib geo/box files
 .TP
-\fBmap_box_map_display\fR
-\fIfiles/modules/map/box-map-display\&.n\fR: Map Action Engine: Layer to display box definitions
+\fBmap::box::map-display\fR
+\fIfiles/modules/map/box-map-display\&.n\fR: Map Action Engine - Layer to display box definitions
 .TP
-\fBmap_box_store_fs\fR
+\fBmap::box::store::fs\fR
 \fIfiles/modules/map/box-store-fs\&.n\fR: Filesystem-based store of geo/box definitions
 .TP
-\fBmap_box_store_memory\fR
+\fBmap::box::store::memory\fR
 \fIfiles/modules/map/box-store-mem\&.n\fR: In-memory store for geo/box definitions
 .TP
-\fBmap_box_table_display\fR
+\fBmap::box::table-display\fR
 \fIfiles/modules/map/box-table-display\&.n\fR: Widget to display a table of box definitions
 .TP
-\fBmap_display\fR
+\fBmap::display\fR
 \fIfiles/modules/map/display\&.n\fR: Map Display Widget
 .TP
-\fBmap_mark\fR
-\fIfiles/modules/map/mark\&.n\fR: Map Action Engine: Mark A Point
+\fBmap::mark\fR
+\fIfiles/modules/map/mark\&.n\fR: Map Action Engine - Mark A Point
+.TP
+\fBmap::point::file\fR
+\fIfiles/modules/map/point-file\&.n\fR: Reading/writing tklib geo/point files
+.TP
+\fBmap::point::map-display\fR
+\fIfiles/modules/map/point-map-display\&.n\fR: Map Action Engine - Layer to display point definitions
+.TP
+\fBmap::point::store::fs\fR
+\fIfiles/modules/map/point-store-fs\&.n\fR: Filesystem-based store of geo/point definitions
+.TP
+\fBmap::point::store::memory\fR
+\fIfiles/modules/map/point-store-mem\&.n\fR: In-memory store for geo/point definitions
+.TP
+\fBmap::point::table-display\fR
+\fIfiles/modules/map/point-table-display\&.n\fR: Widget to display a table of point definitions
+.TP
+\fBmap::provider::osm\fR
+\fIfiles/modules/map/provider-osm\&.n\fR: Tile provider using OpenStreetMap Mapnik as origin
+.TP
+\fBmap::track::display\fR
+\fIfiles/modules/map/track-display\&.n\fR: Widget to display a single track definition
+.TP
+\fBmap::track::entry\fR
+\fIfiles/modules/map/track-entry\&.n\fR: Map Action Engine - Track Entry
+.TP
+\fBmap::track::file\fR
+\fIfiles/modules/map/track-file\&.n\fR: Reading/writing tklib geo/track files
+.TP
+\fBmap::track::map-display\fR
+\fIfiles/modules/map/track-map-display\&.n\fR: Map Action Engine - Layer to display track definitions
+.TP
+\fBmap::track::store::fs\fR
+\fIfiles/modules/map/track-store-fs\&.n\fR: Filesystem-based store of geo/track definitions
+.TP
+\fBmap::track::store::memory\fR
+\fIfiles/modules/map/track-store-mem\&.n\fR: In-memory store for geo/track definitions
+.TP
+\fBmap::track::table-display\fR
+\fIfiles/modules/map/track-table-display\&.n\fR: Widget to display a table of track definitions
 .TP
 \fBmap_overview\fR
 \fIfiles/modules/map/map_overview\&.n\fR: Overview of the packages in the Map module
-.TP
-\fBmap_point_file\fR
-\fIfiles/modules/map/point-file\&.n\fR: Reading/writing tklib geo/point files
-.TP
-\fBmap_point_map_display\fR
-\fIfiles/modules/map/point-map-display\&.n\fR: Map Action Engine: Layer to display point definitions
-.TP
-\fBmap_point_store_fs\fR
-\fIfiles/modules/map/point-store-fs\&.n\fR: Filesystem-based store of geo/point definitions
-.TP
-\fBmap_point_store_memory\fR
-\fIfiles/modules/map/point-store-mem\&.n\fR: In-memory store for geo/point definitions
-.TP
-\fBmap_point_table_display\fR
-\fIfiles/modules/map/point-table-display\&.n\fR: Widget to display a table of point definitions
-.TP
-\fBmap_provider_osm\fR
-\fIfiles/modules/map/provider-osm\&.n\fR: Tile provider using OpenStreetMap Mapnik as origin
-.TP
-\fBmap_track_display\fR
-\fIfiles/modules/map/track-display\&.n\fR: Widget to display a single track definition
-.TP
-\fBmap_track_entry\fR
-\fIfiles/modules/map/track-entry\&.n\fR: Map Action Engine - Track Entry
-.TP
-\fBmap_track_file\fR
-\fIfiles/modules/map/track-file\&.n\fR: Reading/writing tklib geo/track files
-.TP
-\fBmap_track_map_display\fR
-\fIfiles/modules/map/track-map-display\&.n\fR: Map Action Engine: Layer to display track definitions
-.TP
-\fBmap_track_store_fs\fR
-\fIfiles/modules/map/track-store-fs\&.n\fR: Filesystem-based store of geo/track definitions
-.TP
-\fBmap_track_store_memory\fR
-\fIfiles/modules/map/track-store-mem\&.n\fR: In-memory store for geo/track definitions
-.TP
-\fBmap_track_table_display\fR
-\fIfiles/modules/map/track-table-display\&.n\fR: Widget to display a table of track definitions
 .TP
 \fBmenubar\fR
 \fIfiles/modules/menubar/menubar\&.n\fR: Creates an instance of the  Class\&.

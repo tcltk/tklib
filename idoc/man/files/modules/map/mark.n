@@ -1,7 +1,7 @@
 '\"
 '\" Generated from file 'mark\&.man' by tcllib/doctools with format 'nroff'
 '\"
-.TH "map_mark" n 0\&.1 tklib "Map display support"
+.TH "map::mark" n 0\&.1 tklib "Map display support"
 .\" The -*- nroff -*- definitions below are for supplemental macros used
 .\" in Tcl/Tk manual entries.
 .\"
@@ -271,7 +271,7 @@ Database Class:	\\fB\\$3\\fR
 ..
 .BS
 .SH NAME
-map_mark \- Map Action Engine: Mark A Point
+map::mark \- Map Action Engine - Mark A Point
 .SH SYNOPSIS
 package require \fBTcl  8\&.6-\fR
 .sp
@@ -285,10 +285,9 @@ package require \fBmap::mark  ?0\&.1?\fR
 .sp
 .BE
 .SH DESCRIPTION
-This package provides \&.\&.\&.
-Attachment to map display widgets providing custom behaviour\&.
-Enables user to mark locations\&. Marked locations are reported
-via callback\&.
+This package provides a \fBmap::display\fR attachment extending the map's behaviour\&.
+This attachment enables the user to mark locations, i\&.e\&. \fIgeo/point\fRs\&.
+The marked locations are reported via a callback\&.
 .SH API
 .PP
 .SH EXAMPLE

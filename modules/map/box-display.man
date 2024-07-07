@@ -1,6 +1,6 @@
 [comment {-*- tcl -*- doctools manpage}]
 [vset VERSION 0.1]
-[manpage_begin map_box_display n [vset VERSION]]
+[manpage_begin map::box::display n [vset VERSION]]
 [category {Map Display and Supporting Utilities}][keywords map]
 [keywords {box display, tabular}]
 [keywords {tabular, box display}]
@@ -17,9 +17,7 @@
 [require map::box::display [opt [vset VERSION]]]
 [description]
 
-This package provides ...
-
-Widget to display the information of a single box definition
+This package provides a widget to show the information of a single [term geo/box] definition.
 
 [section API]
 

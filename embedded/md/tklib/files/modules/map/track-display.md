@@ -1,7 +1,7 @@
 
-[//000000001]: # (map\_track\_display \- Map display support)
+[//000000001]: # (map::track::display \- Map display support)
 [//000000002]: # (Generated from file 'track\-display\.man' by tcllib/doctools with format 'markdown')
-[//000000003]: # (map\_track\_display\(n\) 0\.1 tklib "Map display support")
+[//000000003]: # (map::track::display\(n\) 0\.1 tklib "Map display support")
 
 <hr> [ <a href="../../../../toc.md">Main Table Of Contents</a> &#124; <a
 href="../../../toc.md">Table Of Contents</a> &#124; <a
@@ -12,7 +12,7 @@ href="../../../../toc2.md">Applications</a> ] <hr>
 
 # NAME
 
-map\_track\_display \- Widget to display a single track definition
+map::track::display \- Widget to display a single track definition
 
 # <a name='toc'></a>Table Of Contents
 
@@ -46,8 +46,8 @@ package require map::track::display ?0\.1?
 
 # <a name='description'></a>DESCRIPTION
 
-This package provides \.\.\. Widget to display the information of a single track
-definition
+This package provides a widget to show the information of a single *geo/track*
+definition\.
 
 # <a name='section2'></a>API
 

@@ -1,7 +1,7 @@
 '\"
 '\" Generated from file 'area-store-fs\&.man' by tcllib/doctools with format 'nroff'
 '\"
-.TH "map_area_store_fs" n 0\&.1 tklib "Map display support"
+.TH "map::area::store::fs" n 0\&.1 tklib "Map display support"
 .\" The -*- nroff -*- definitions below are for supplemental macros used
 .\" in Tcl/Tk manual entries.
 .\"
@@ -271,7 +271,7 @@ Database Class:	\\fB\\$3\\fR
 ..
 .BS
 .SH NAME
-map_area_store_fs \- Filesystem-based store of geo/area definitions
+map::area::store::fs \- Filesystem-based store of geo/area definitions
 .SH SYNOPSIS
 package require \fBTcl  8\&.6-\fR
 .sp
@@ -283,12 +283,14 @@ package require \fBmap::slippy  0\&.8\fR
 .sp
 package require \fBsnit \fR
 .sp
+package require \fBmap::area::file \fR
+.sp
 package require \fBmap::area::store::fs  ?0\&.1?\fR
 .sp
 .BE
 .SH DESCRIPTION
-This package provides \&.\&.\&.
-Store loading geo/area definitions from a directory in the filesystem\&.
+This package provides a store loading \fIgeo/area\fR definitions from a directory in the
+filesystem\&.
 .SH API
 .PP
 .SH EXAMPLE

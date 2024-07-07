@@ -1,7 +1,7 @@
 '\"
 '\" Generated from file 'point-store-fs\&.man' by tcllib/doctools with format 'nroff'
 '\"
-.TH "map_point_store_fs" n 0\&.1 tklib "Map display support"
+.TH "map::point::store::fs" n 0\&.1 tklib "Map display support"
 .\" The -*- nroff -*- definitions below are for supplemental macros used
 .\" in Tcl/Tk manual entries.
 .\"
@@ -271,7 +271,7 @@ Database Class:	\\fB\\$3\\fR
 ..
 .BS
 .SH NAME
-map_point_store_fs \- Filesystem-based store of geo/point definitions
+map::point::store::fs \- Filesystem-based store of geo/point definitions
 .SH SYNOPSIS
 package require \fBTcl  8\&.6-\fR
 .sp
@@ -287,8 +287,8 @@ package require \fBmap::point::store::fs  ?0\&.1?\fR
 .sp
 .BE
 .SH DESCRIPTION
-This package provides \&.\&.\&.
-Store loading geo/point definitions from a directory in the filesystem\&.
+This package provides a store loading \fIgeo/point\fR definitions from a directory in the
+filesystem\&.
 .SH API
 .PP
 .SH EXAMPLE

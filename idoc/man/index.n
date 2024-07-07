@@ -282,37 +282,37 @@ addon, area display, map display
 .RS
 .TP
 \fBfiles/modules/map/area-map-display\&.n\fR
-map_area_map_display
+map::area::map-display
 .RE
 addon, box display, map display
 .RS
 .TP
 \fBfiles/modules/map/box-map-display\&.n\fR
-map_box_map_display
+map::box::map-display
 .RE
 addon, box entry, map display
 .RS
 .TP
 \fBfiles/modules/map/box-entry\&.n\fR
-map_box_entry
+map::box::entry
 .RE
 addon, point display, map display
 .RS
 .TP
 \fBfiles/modules/map/point-map-display\&.n\fR
-map_point_map_display
+map::point::map-display
 .RE
 addon, track display, map display
 .RS
 .TP
 \fBfiles/modules/map/track-map-display\&.n\fR
-map_track_map_display
+map::track::map-display
 .RE
 addon, track entry, map display
 .RS
 .TP
 \fBfiles/modules/map/track-entry\&.n\fR
-map_track_entry
+map::track::entry
 .RE
 alert
 .RS
@@ -336,16 +336,16 @@ area display, map display, addon
 .RS
 .TP
 \fBfiles/modules/map/area-map-display\&.n\fR
-map_area_map_display
+map::area::map-display
 .RE
 area display, tabular
 .RS
 .TP
 \fBfiles/modules/map/area-display\&.n\fR
-map_area_display
+map::area::display
 .TP
 \fBfiles/modules/map/area-table-display\&.n\fR
-map_area_table_display
+map::area::table-display
 .RE
 arrow
 .RS
@@ -399,22 +399,22 @@ box display, map display, addon
 .RS
 .TP
 \fBfiles/modules/map/box-map-display\&.n\fR
-map_box_map_display
+map::box::map-display
 .RE
 box display, tabular
 .RS
 .TP
 \fBfiles/modules/map/box-display\&.n\fR
-map_box_display
+map::box::display
 .TP
 \fBfiles/modules/map/box-table-display\&.n\fR
-map_box_table_display
+map::box::table-display
 .RE
 box entry, map display, addon
 .RS
 .TP
 \fBfiles/modules/map/box-entry\&.n\fR
-map_box_entry
+map::box::entry
 .RE
 bundle
 .RS
@@ -507,25 +507,25 @@ center, geo/area
 .RS
 .TP
 \fBfiles/modules/map/area-store-mem\&.n\fR
-map_area_store_memory
+map::area::store::memory
 .RE
 center, geo/box
 .RS
 .TP
 \fBfiles/modules/map/box-store-mem\&.n\fR
-map_box_store_memory
+map::box::store::memory
 .RE
 center, geo/point
 .RS
 .TP
 \fBfiles/modules/map/point-store-mem\&.n\fR
-map_point_store_memory
+map::point::store::memory
 .RE
 center, geo/track
 .RS
 .TP
 \fBfiles/modules/map/track-store-mem\&.n\fR
-map_track_store_memory
+map::track::store::memory
 .RE
 character
 .RS
@@ -696,25 +696,25 @@ diameter, geo/area
 .RS
 .TP
 \fBfiles/modules/map/area-store-mem\&.n\fR
-map_area_store_memory
+map::area::store::memory
 .RE
 diameter, geo/box
 .RS
 .TP
 \fBfiles/modules/map/box-store-mem\&.n\fR
-map_box_store_memory
+map::box::store::memory
 .RE
 diameter, geo/point
 .RS
 .TP
 \fBfiles/modules/map/point-store-mem\&.n\fR
-map_point_store_memory
+map::point::store::memory
 .RE
 diameter, geo/track
 .RS
 .TP
 \fBfiles/modules/map/track-store-mem\&.n\fR
-map_track_store_memory
+map::track::store::memory
 .RE
 diamond
 .RS
@@ -732,7 +732,7 @@ display, map
 .RS
 .TP
 \fBfiles/modules/map/display\&.n\fR
-map_display
+map::display
 .RE
 displaying
 .RS
@@ -837,217 +837,217 @@ file, geo/area
 .RS
 .TP
 \fBfiles/modules/map/area-file\&.n\fR
-map_area_file
+map::area::file
 .RE
 file, geo/box
 .RS
 .TP
 \fBfiles/modules/map/box-file\&.n\fR
-map_box_file
+map::box::file
 .RE
 file, geo/point
 .RS
 .TP
 \fBfiles/modules/map/point-file\&.n\fR
-map_point_file
+map::point::file
 .RE
 file, geo/track
 .RS
 .TP
 \fBfiles/modules/map/track-file\&.n\fR
-map_track_file
+map::track::file
 .RE
 filesystem store, geo/area
 .RS
 .TP
 \fBfiles/modules/map/area-store-fs\&.n\fR
-map_area_store_fs
+map::area::store::fs
 .RE
 filesystem store, geo/point
 .RS
 .TP
 \fBfiles/modules/map/point-store-fs\&.n\fR
-map_point_store_fs
+map::point::store::fs
 .RE
 filesystem store, geo/track
 .RS
 .TP
 \fBfiles/modules/map/track-store-fs\&.n\fR
-map_track_store_fs
+map::track::store::fs
 .RE
 filesystem store, geobox
 .RS
 .TP
 \fBfiles/modules/map/box-store-fs\&.n\fR
-map_box_store_fs
+map::box::store::fs
 .RE
 geo/area pixels, zoom
 .RS
 .TP
 \fBfiles/modules/map/area-store-mem\&.n\fR
-map_area_store_memory
+map::area::store::memory
 .RE
 geo/area, center
 .RS
 .TP
 \fBfiles/modules/map/area-store-mem\&.n\fR
-map_area_store_memory
+map::area::store::memory
 .RE
 geo/area, diameter
 .RS
 .TP
 \fBfiles/modules/map/area-store-mem\&.n\fR
-map_area_store_memory
+map::area::store::memory
 .RE
 geo/area, file
 .RS
 .TP
 \fBfiles/modules/map/area-file\&.n\fR
-map_area_file
+map::area::file
 .RE
 geo/area, filesystem store
 .RS
 .TP
 \fBfiles/modules/map/area-store-fs\&.n\fR
-map_area_store_fs
+map::area::store::fs
 .RE
 geo/area, memory store
 .RS
 .TP
 \fBfiles/modules/map/area-store-mem\&.n\fR
-map_area_store_memory
+map::area::store::memory
 .RE
 geo/area, perimeter length
 .RS
 .TP
 \fBfiles/modules/map/area-store-mem\&.n\fR
-map_area_store_memory
+map::area::store::memory
 .RE
 geo/box pixels, zoom
 .RS
 .TP
 \fBfiles/modules/map/box-store-mem\&.n\fR
-map_box_store_memory
+map::box::store::memory
 .RE
 geo/box, center
 .RS
 .TP
 \fBfiles/modules/map/box-store-mem\&.n\fR
-map_box_store_memory
+map::box::store::memory
 .RE
 geo/box, diameter
 .RS
 .TP
 \fBfiles/modules/map/box-store-mem\&.n\fR
-map_box_store_memory
+map::box::store::memory
 .RE
 geo/box, file
 .RS
 .TP
 \fBfiles/modules/map/box-file\&.n\fR
-map_box_file
+map::box::file
 .RE
 geo/box, memory store
 .RS
 .TP
 \fBfiles/modules/map/box-store-mem\&.n\fR
-map_box_store_memory
+map::box::store::memory
 .RE
 geo/box, perimeter length
 .RS
 .TP
 \fBfiles/modules/map/box-store-mem\&.n\fR
-map_box_store_memory
+map::box::store::memory
 .RE
 geo/point pixels, zoom
 .RS
 .TP
 \fBfiles/modules/map/point-store-mem\&.n\fR
-map_point_store_memory
+map::point::store::memory
 .RE
 geo/point, center
 .RS
 .TP
 \fBfiles/modules/map/point-store-mem\&.n\fR
-map_point_store_memory
+map::point::store::memory
 .RE
 geo/point, diameter
 .RS
 .TP
 \fBfiles/modules/map/point-store-mem\&.n\fR
-map_point_store_memory
+map::point::store::memory
 .RE
 geo/point, file
 .RS
 .TP
 \fBfiles/modules/map/point-file\&.n\fR
-map_point_file
+map::point::file
 .RE
 geo/point, filesystem store
 .RS
 .TP
 \fBfiles/modules/map/point-store-fs\&.n\fR
-map_point_store_fs
+map::point::store::fs
 .RE
 geo/point, memory store
 .RS
 .TP
 \fBfiles/modules/map/point-store-mem\&.n\fR
-map_point_store_memory
+map::point::store::memory
 .RE
 geo/point, perimeter length
 .RS
 .TP
 \fBfiles/modules/map/point-store-mem\&.n\fR
-map_point_store_memory
+map::point::store::memory
 .RE
 geo/track pixels, zoom
 .RS
 .TP
 \fBfiles/modules/map/track-store-mem\&.n\fR
-map_track_store_memory
+map::track::store::memory
 .RE
 geo/track, center
 .RS
 .TP
 \fBfiles/modules/map/track-store-mem\&.n\fR
-map_track_store_memory
+map::track::store::memory
 .RE
 geo/track, diameter
 .RS
 .TP
 \fBfiles/modules/map/track-store-mem\&.n\fR
-map_track_store_memory
+map::track::store::memory
 .RE
 geo/track, file
 .RS
 .TP
 \fBfiles/modules/map/track-file\&.n\fR
-map_track_file
+map::track::file
 .RE
 geo/track, filesystem store
 .RS
 .TP
 \fBfiles/modules/map/track-store-fs\&.n\fR
-map_track_store_fs
+map::track::store::fs
 .RE
 geo/track, memory store
 .RS
 .TP
 \fBfiles/modules/map/track-store-mem\&.n\fR
-map_track_store_memory
+map::track::store::memory
 .RE
 geo/track, perimeter length
 .RS
 .TP
 \fBfiles/modules/map/track-store-mem\&.n\fR
-map_track_store_memory
+map::track::store::memory
 .RE
 geobox, filesystem store
 .RS
 .TP
 \fBfiles/modules/map/box-store-fs\&.n\fR
-map_box_store_fs
+map::box::store::fs
 .RE
 gradients
 .RS
@@ -1233,25 +1233,25 @@ length, geo/area, perimeter
 .RS
 .TP
 \fBfiles/modules/map/area-store-mem\&.n\fR
-map_area_store_memory
+map::area::store::memory
 .RE
 length, geo/box, perimeter
 .RS
 .TP
 \fBfiles/modules/map/box-store-mem\&.n\fR
-map_box_store_memory
+map::box::store::memory
 .RE
 length, geo/point, perimeter
 .RS
 .TP
 \fBfiles/modules/map/point-store-mem\&.n\fR
-map_point_store_memory
+map::point::store::memory
 .RE
 length, geo/track, perimeter
 .RS
 .TP
 \fBfiles/modules/map/track-store-mem\&.n\fR
-map_track_store_memory
+map::track::store::memory
 .RE
 line
 .RS
@@ -1284,7 +1284,7 @@ location marking
 .RS
 .TP
 \fBfiles/modules/map/mark\&.n\fR
-map_mark
+map::mark
 .RE
 magick vector graphics
 .RS
@@ -1299,145 +1299,145 @@ map
 canvas::sqmap
 .TP
 \fBfiles/modules/map/area-display\&.n\fR
-map_area_display
+map::area::display
 .TP
 \fBfiles/modules/map/area-file\&.n\fR
-map_area_file
+map::area::file
 .TP
 \fBfiles/modules/map/area-map-display\&.n\fR
-map_area_map_display
+map::area::map-display
 .TP
 \fBfiles/modules/map/area-store-fs\&.n\fR
-map_area_store_fs
+map::area::store::fs
 .TP
 \fBfiles/modules/map/area-store-mem\&.n\fR
-map_area_store_memory
+map::area::store::memory
 .TP
 \fBfiles/modules/map/area-table-display\&.n\fR
-map_area_table_display
+map::area::table-display
 .TP
 \fBfiles/modules/map/box-display\&.n\fR
-map_box_display
+map::box::display
 .TP
 \fBfiles/modules/map/box-entry\&.n\fR
-map_box_entry
+map::box::entry
 .TP
 \fBfiles/modules/map/box-file\&.n\fR
-map_box_file
+map::box::file
 .TP
 \fBfiles/modules/map/box-map-display\&.n\fR
-map_box_map_display
+map::box::map-display
 .TP
 \fBfiles/modules/map/box-store-fs\&.n\fR
-map_box_store_fs
+map::box::store::fs
 .TP
 \fBfiles/modules/map/box-store-mem\&.n\fR
-map_box_store_memory
+map::box::store::memory
 .TP
 \fBfiles/modules/map/box-table-display\&.n\fR
-map_box_table_display
+map::box::table-display
 .TP
 \fBfiles/modules/map/display\&.n\fR
-map_display
+map::display
 .TP
 \fBfiles/modules/map/mark\&.n\fR
-map_mark
+map::mark
+.TP
+\fBfiles/modules/map/point-file\&.n\fR
+map::point::file
+.TP
+\fBfiles/modules/map/point-map-display\&.n\fR
+map::point::map-display
+.TP
+\fBfiles/modules/map/point-store-fs\&.n\fR
+map::point::store::fs
+.TP
+\fBfiles/modules/map/point-store-mem\&.n\fR
+map::point::store::memory
+.TP
+\fBfiles/modules/map/point-table-display\&.n\fR
+map::point::table-display
+.TP
+\fBfiles/modules/map/provider-osm\&.n\fR
+map::provider::osm
+.TP
+\fBfiles/modules/map/track-display\&.n\fR
+map::track::display
+.TP
+\fBfiles/modules/map/track-entry\&.n\fR
+map::track::entry
+.TP
+\fBfiles/modules/map/track-file\&.n\fR
+map::track::file
+.TP
+\fBfiles/modules/map/track-map-display\&.n\fR
+map::track::map-display
+.TP
+\fBfiles/modules/map/track-store-fs\&.n\fR
+map::track::store::fs
+.TP
+\fBfiles/modules/map/track-store-mem\&.n\fR
+map::track::store::memory
+.TP
+\fBfiles/modules/map/track-table-display\&.n\fR
+map::track::table-display
 .TP
 \fBfiles/modules/map/map_overview\&.n\fR
 map_overview
-.TP
-\fBfiles/modules/map/point-file\&.n\fR
-map_point_file
-.TP
-\fBfiles/modules/map/point-map-display\&.n\fR
-map_point_map_display
-.TP
-\fBfiles/modules/map/point-store-fs\&.n\fR
-map_point_store_fs
-.TP
-\fBfiles/modules/map/point-store-mem\&.n\fR
-map_point_store_memory
-.TP
-\fBfiles/modules/map/point-table-display\&.n\fR
-map_point_table_display
-.TP
-\fBfiles/modules/map/provider-osm\&.n\fR
-map_provider_osm
-.TP
-\fBfiles/modules/map/track-display\&.n\fR
-map_track_display
-.TP
-\fBfiles/modules/map/track-entry\&.n\fR
-map_track_entry
-.TP
-\fBfiles/modules/map/track-file\&.n\fR
-map_track_file
-.TP
-\fBfiles/modules/map/track-map-display\&.n\fR
-map_track_map_display
-.TP
-\fBfiles/modules/map/track-store-fs\&.n\fR
-map_track_store_fs
-.TP
-\fBfiles/modules/map/track-store-mem\&.n\fR
-map_track_store_memory
-.TP
-\fBfiles/modules/map/track-table-display\&.n\fR
-map_track_table_display
 .RE
 map display
 .RS
 .TP
 \fBfiles/modules/map/display\&.n\fR
-map_display
+map::display
 .RE
 map display, addon, area display
 .RS
 .TP
 \fBfiles/modules/map/area-map-display\&.n\fR
-map_area_map_display
+map::area::map-display
 .RE
 map display, addon, box display
 .RS
 .TP
 \fBfiles/modules/map/box-map-display\&.n\fR
-map_box_map_display
+map::box::map-display
 .RE
 map display, addon, box entry
 .RS
 .TP
 \fBfiles/modules/map/box-entry\&.n\fR
-map_box_entry
+map::box::entry
 .RE
 map display, addon, point display
 .RS
 .TP
 \fBfiles/modules/map/point-map-display\&.n\fR
-map_point_map_display
+map::point::map-display
 .RE
 map display, addon, track display
 .RS
 .TP
 \fBfiles/modules/map/track-map-display\&.n\fR
-map_track_map_display
+map::track::map-display
 .RE
 map display, addon, track entry
 .RS
 .TP
 \fBfiles/modules/map/track-entry\&.n\fR
-map_track_entry
+map::track::entry
 .RE
 mapnik
 .RS
 .TP
 \fBfiles/modules/map/provider-osm\&.n\fR
-map_provider_osm
+map::provider::osm
 .RE
 mark location
 .RS
 .TP
 \fBfiles/modules/map/mark\&.n\fR
-map_mark
+map::mark
 .RE
 markdown
 .RS
@@ -1470,25 +1470,25 @@ memory store, geo/area
 .RS
 .TP
 \fBfiles/modules/map/area-store-mem\&.n\fR
-map_area_store_memory
+map::area::store::memory
 .RE
 memory store, geo/box
 .RS
 .TP
 \fBfiles/modules/map/box-store-mem\&.n\fR
-map_box_store_memory
+map::box::store::memory
 .RE
 memory store, geo/point
 .RS
 .TP
 \fBfiles/modules/map/point-store-mem\&.n\fR
-map_point_store_memory
+map::point::store::memory
 .RE
 memory store, geo/track
 .RS
 .TP
 \fBfiles/modules/map/track-store-mem\&.n\fR
-map_track_store_memory
+map::track::store::memory
 .RE
 menu
 .RS
@@ -1551,7 +1551,7 @@ openstreetmap
 .RS
 .TP
 \fBfiles/modules/map/provider-osm\&.n\fR
-map_provider_osm
+map::provider::osm
 .RE
 panelframe
 .RS
@@ -1569,25 +1569,25 @@ perimeter length, geo/area
 .RS
 .TP
 \fBfiles/modules/map/area-store-mem\&.n\fR
-map_area_store_memory
+map::area::store::memory
 .RE
 perimeter length, geo/box
 .RS
 .TP
 \fBfiles/modules/map/box-store-mem\&.n\fR
-map_box_store_memory
+map::box::store::memory
 .RE
 perimeter length, geo/point
 .RS
 .TP
 \fBfiles/modules/map/point-store-mem\&.n\fR
-map_point_store_memory
+map::point::store::memory
 .RE
 perimeter length, geo/track
 .RS
 .TP
 \fBfiles/modules/map/track-store-mem\&.n\fR
-map_track_store_memory
+map::track::store::memory
 .RE
 photo
 .RS
@@ -1626,25 +1626,25 @@ pixels, zoom, geo/area
 .RS
 .TP
 \fBfiles/modules/map/area-store-mem\&.n\fR
-map_area_store_memory
+map::area::store::memory
 .RE
 pixels, zoom, geo/box
 .RS
 .TP
 \fBfiles/modules/map/box-store-mem\&.n\fR
-map_box_store_memory
+map::box::store::memory
 .RE
 pixels, zoom, geo/point
 .RS
 .TP
 \fBfiles/modules/map/point-store-mem\&.n\fR
-map_point_store_memory
+map::point::store::memory
 .RE
 pixels, zoom, geo/track
 .RS
 .TP
 \fBfiles/modules/map/track-store-mem\&.n\fR
-map_track_store_memory
+map::track::store::memory
 .RE
 plane geometry
 .RS
@@ -1674,13 +1674,13 @@ point display, map display, addon
 .RS
 .TP
 \fBfiles/modules/map/point-map-display\&.n\fR
-map_point_map_display
+map::point::map-display
 .RE
 point display, tabular
 .RS
 .TP
 \fBfiles/modules/map/point-table-display\&.n\fR
-map_point_table_display
+map::point::table-display
 .RE
 points
 .RS
@@ -1716,7 +1716,7 @@ provider, tiles
 .RS
 .TP
 \fBfiles/modules/map/provider-osm\&.n\fR
-map_provider_osm
+map::provider::osm
 .RE
 quadrilateral
 .RS
@@ -1890,49 +1890,49 @@ store, geo/area, filesystem
 .RS
 .TP
 \fBfiles/modules/map/area-store-fs\&.n\fR
-map_area_store_fs
+map::area::store::fs
 .RE
 store, geo/area, memory
 .RS
 .TP
 \fBfiles/modules/map/area-store-mem\&.n\fR
-map_area_store_memory
+map::area::store::memory
 .RE
 store, geo/box, memory
 .RS
 .TP
 \fBfiles/modules/map/box-store-mem\&.n\fR
-map_box_store_memory
+map::box::store::memory
 .RE
 store, geo/point, filesystem
 .RS
 .TP
 \fBfiles/modules/map/point-store-fs\&.n\fR
-map_point_store_fs
+map::point::store::fs
 .RE
 store, geo/point, memory
 .RS
 .TP
 \fBfiles/modules/map/point-store-mem\&.n\fR
-map_point_store_memory
+map::point::store::memory
 .RE
 store, geo/track, filesystem
 .RS
 .TP
 \fBfiles/modules/map/track-store-fs\&.n\fR
-map_track_store_fs
+map::track::store::fs
 .RE
 store, geo/track, memory
 .RS
 .TP
 \fBfiles/modules/map/track-store-mem\&.n\fR
-map_track_store_memory
+map::track::store::memory
 .RE
 store, geobox, filesystem
 .RS
 .TP
 \fBfiles/modules/map/box-store-fs\&.n\fR
-map_box_store_fs
+map::box::store::fs
 .RE
 string
 .RS
@@ -1956,34 +1956,34 @@ tabular, area display
 .RS
 .TP
 \fBfiles/modules/map/area-display\&.n\fR
-map_area_display
+map::area::display
 .TP
 \fBfiles/modules/map/area-table-display\&.n\fR
-map_area_table_display
+map::area::table-display
 .RE
 tabular, box display
 .RS
 .TP
 \fBfiles/modules/map/box-display\&.n\fR
-map_box_display
+map::box::display
 .TP
 \fBfiles/modules/map/box-table-display\&.n\fR
-map_box_table_display
+map::box::table-display
 .RE
 tabular, point display
 .RS
 .TP
 \fBfiles/modules/map/point-table-display\&.n\fR
-map_point_table_display
+map::point::table-display
 .RE
 tabular, track display
 .RS
 .TP
 \fBfiles/modules/map/track-display\&.n\fR
-map_track_display
+map::track::display
 .TP
 \fBfiles/modules/map/track-table-display\&.n\fR
-map_track_table_display
+map::track::table-display
 .RE
 tags
 .RS
@@ -2025,7 +2025,7 @@ tile provider
 .RS
 .TP
 \fBfiles/modules/map/provider-osm\&.n\fR
-map_provider_osm
+map::provider::osm
 .RE
 tipstack
 .RS
@@ -2058,22 +2058,22 @@ track display, map display, addon
 .RS
 .TP
 \fBfiles/modules/map/track-map-display\&.n\fR
-map_track_map_display
+map::track::map-display
 .RE
 track display, tabular
 .RS
 .TP
 \fBfiles/modules/map/track-display\&.n\fR
-map_track_display
+map::track::display
 .TP
 \fBfiles/modules/map/track-table-display\&.n\fR
-map_track_table_display
+map::track::table-display
 .RE
 track entry, map display, addon
 .RS
 .TP
 \fBfiles/modules/map/track-entry\&.n\fR
-map_track_entry
+map::track::entry
 .RE
 tracking
 .RS
@@ -2193,24 +2193,24 @@ zoom, geo/area pixels
 .RS
 .TP
 \fBfiles/modules/map/area-store-mem\&.n\fR
-map_area_store_memory
+map::area::store::memory
 .RE
 zoom, geo/box pixels
 .RS
 .TP
 \fBfiles/modules/map/box-store-mem\&.n\fR
-map_box_store_memory
+map::box::store::memory
 .RE
 zoom, geo/point pixels
 .RS
 .TP
 \fBfiles/modules/map/point-store-mem\&.n\fR
-map_point_store_memory
+map::point::store::memory
 .RE
 zoom, geo/track pixels
 .RS
 .TP
 \fBfiles/modules/map/track-store-mem\&.n\fR
-map_track_store_memory
+map::track::store::memory
 .RE
 .RE

@@ -11,10 +11,11 @@
 
 [list_begin definitions]
 [def File]
-Definitions of simple file formats to hold geo/points, geo/boxes and geo/tracks, and the ability to
-read/write these files. Note that geo/areas are closed tracks.
+Definitions of simple file formats to hold various geo/* resources, and the ability to read/write
+these files.
 
 [list_begin itemized]
+[item] [package map::area::file]
 [item] [package map::box::file]
 [item] [package map::point::file]
 [item] [package map::track::file]
@@ -54,6 +55,7 @@ To show maps, singular geo resources, and tables of many geo resources of the sa
 [list_begin itemized]
 [item] [package map::area::table-display]
 [item] [package map::box::table-display]
+[item] [package map::point::table-display]
 [item] [package map::track::table-display]
 [list_end][comment -----------------------widgets/resource/table]
 

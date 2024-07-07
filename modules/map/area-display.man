@@ -1,6 +1,6 @@
 [comment {-*- tcl -*- doctools manpage}]
 [vset VERSION 0.1]
-[manpage_begin map_area_display n [vset VERSION]]
+[manpage_begin map::area::display n [vset VERSION]]
 [category {Map Display and Supporting Utilities}][keywords map]
 [keywords {area display, tabular}]
 [keywords {tabular, area display}]
@@ -17,9 +17,7 @@
 [require map::area::display [opt [vset VERSION]]]
 [description]
 
-This package provides ...
-
-Widget to display the information of a single area definition
+This package provides a widget to show the information of a single [term geo/area] definition.
 
 [section API]
 

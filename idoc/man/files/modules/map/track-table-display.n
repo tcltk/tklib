@@ -1,7 +1,7 @@
 '\"
 '\" Generated from file 'track-table-display\&.man' by tcllib/doctools with format 'nroff'
 '\"
-.TH "map_track_table_display" n 0\&.1 tklib "Map display support"
+.TH "map::track::table-display" n 0\&.1 tklib "Map display support"
 .\" The -*- nroff -*- definitions below are for supplemental macros used
 .\" in Tcl/Tk manual entries.
 .\"
@@ -271,7 +271,7 @@ Database Class:	\\fB\\$3\\fR
 ..
 .BS
 .SH NAME
-map_track_table_display \- Widget to display a table of track definitions
+map::track::table-display \- Widget to display a table of track definitions
 .SH SYNOPSIS
 package require \fBTcl  8\&.6-\fR
 .sp
@@ -293,8 +293,8 @@ package require \fBmap::track::table-display  ?0\&.1?\fR
 .sp
 .BE
 .SH DESCRIPTION
-This package provides \&.\&.\&.
-Widget to display the information of many track definitions in a table\&.
+This package provides a widget showing the information of many \fIgeo/track\fR definitions in a
+table\&.
 .SH API
 .PP
 .SH EXAMPLE

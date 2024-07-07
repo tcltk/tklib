@@ -1,7 +1,7 @@
 '\"
 '\" Generated from file 'box-store-mem\&.man' by tcllib/doctools with format 'nroff'
 '\"
-.TH "map_box_store_memory" n 0\&.1 tklib "Map display support"
+.TH "map::box::store::memory" n 0\&.1 tklib "Map display support"
 .\" The -*- nroff -*- definitions below are for supplemental macros used
 .\" in Tcl/Tk manual entries.
 .\"
@@ -271,7 +271,7 @@ Database Class:	\\fB\\$3\\fR
 ..
 .BS
 .SH NAME
-map_box_store_memory \- In-memory store for geo/box definitions
+map::box::store::memory \- In-memory store for geo/box definitions
 .SH SYNOPSIS
 package require \fBTcl  8\&.6-\fR
 .sp
@@ -287,9 +287,11 @@ package require \fBmap::box::store::memory  ?0\&.1?\fR
 .sp
 .BE
 .SH DESCRIPTION
-This package provides \&.\&.\&.
-In-memory store for geo/box definitions, with memoized calculation of extended attributes\&.  Base
-data is taken from a backing store\&.  Anything API-compatible to map::box::store::fs
+This package provides an in-memory store for \fIgeo/box\fR definitions, with memoized calculation
+of extended attributes\&.
+.PP
+The base data is pulled from a backing store\&. A \fBmap::box::store::fs\fR or anything
+API-compatible to it\&.
 .SH API
 .PP
 .SH EXAMPLE

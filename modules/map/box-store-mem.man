@@ -1,6 +1,6 @@
 [comment {-*- tcl -*- doctools manpage}]
 [vset VERSION 0.1]
-[manpage_begin map_box_store_memory n [vset VERSION]]
+[manpage_begin map::box::store::memory n [vset VERSION]]
 [category {Map Display and Supporting Utilities}][keywords map]
 [keywords {center, geo/box}]
 [keywords {diameter, geo/box}]
@@ -25,10 +25,11 @@
 [require map::box::store::memory [opt [vset VERSION]]]
 [description]
 
-This package provides ...
+This package provides an in-memory store for [term geo/box] definitions, with memoized calculation
+of extended attributes.
 
-In-memory store for geo/box definitions, with memoized calculation of extended attributes.  Base
-data is taken from a backing store.  Anything API-compatible to map::box::store::fs
+[para] The base data is pulled from a backing store. A [package map::box::store::fs] or anything
+API-compatible to it.
 
 [section API]
 

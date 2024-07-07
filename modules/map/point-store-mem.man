@@ -1,6 +1,6 @@
 [comment {-*- tcl -*- doctools manpage}]
 [vset VERSION 0.1]
-[manpage_begin map_point_store_memory n [vset VERSION]]
+[manpage_begin map::point::store::memory n [vset VERSION]]
 [category {Map Display and Supporting Utilities}][keywords map]
 [keywords {center, geo/point}]
 [keywords {diameter, geo/point}]
@@ -25,10 +25,11 @@
 [require map::point::store::memory [opt [vset VERSION]]]
 [description]
 
-This package provides ...
+This package provides an in-memory store for [term geo/point] definitions, with memoized calculation
+of extended attributes.
 
-In-memory store for geo/point definitions, with memoized calculation of extended attributes.  Base
-data is taken from a backing store.  Anything API-compatible to map::point::store::fs
+[para] The base data is pulled from a backing store. A [package map::point::store::fs] or anything
+API-compatible to it.
 
 [section API]
 

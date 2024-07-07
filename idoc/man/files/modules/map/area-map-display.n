@@ -1,7 +1,7 @@
 '\"
 '\" Generated from file 'area-map-display\&.man' by tcllib/doctools with format 'nroff'
 '\"
-.TH "map_area_map_display" n 0\&.1 tklib "Map display support"
+.TH "map::area::map-display" n 0\&.1 tklib "Map display support"
 .\" The -*- nroff -*- definitions below are for supplemental macros used
 .\" in Tcl/Tk manual entries.
 .\"
@@ -271,7 +271,7 @@ Database Class:	\\fB\\$3\\fR
 ..
 .BS
 .SH NAME
-map_area_map_display \- Map Action Engine: Layer to display area definitions
+map::area::map-display \- Map Action Engine - Layer to display area definitions
 .SH SYNOPSIS
 package require \fBTcl  8\&.6-\fR
 .sp
@@ -291,9 +291,9 @@ package require \fBmap::area::map-display  ?0\&.1?\fR
 .sp
 .BE
 .SH DESCRIPTION
-This package provides \&.\&.\&.
-Attachment to map display widgets providing custom behaviour\&.  Shows a set of area
-definitions\&. Ensures that only visible areas use canvas resources (items)\&.
+This package provides a \fBmap::display\fR attachment extending the map's behaviour\&.
+This attachment shows a set of \fIgeo/area\fR definitions\&.
+It ensures that only the visible areas use canvas resources (items)\&.
 .SH API
 .PP
 .SH EXAMPLE
