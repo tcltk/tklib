@@ -135,6 +135,19 @@ The [option -tag] option can be used to set a tooltip for a text widget tag.
 The tag should already be present when this command is called, or an error will
 be returned. The widget must be a text widget.
 
+[opt_def -namespace [arg namespace]]
+
+Set an explicit namespace for the msgcat::mc call. If not given, the caller
+namespace is used.
+
+[opt_def -msgargs [arg arglist]]
+
+This list of aguments is passed to the msgcat::mc call for the message text.
+
+[opt_def -infoargs [arg arglist]]
+
+This list of aguments is passed to the msgcat::mc call for the info call.
+
 [opt_def --]
 
 The [option --] option marks the end of options.

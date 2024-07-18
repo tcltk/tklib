@@ -11,6 +11,10 @@
 	* Bumped to version 1.8. Support images and additional info text.
 	  Ticket [https://core.tcl-lang.org/tklib/tktview/803a13c9f0].
 	  Patch by Rene Zaumseil.
+	* Evaluate msgcat in the callers namespace. New options
+	  -namespace, -msgargs, infoargs to specify the namespace and the
+	  arguments to the msgcat::mc call. Patch by Harald Oehlmann
+	  Ticket [https://core.tcl-lang.org/tklib/info/3300362fffffffff].
 
 2024-05-22  Andreas Kupries <andreas.kupries@gmail.com>
 
