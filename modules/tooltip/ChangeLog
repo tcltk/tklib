@@ -1,3 +1,13 @@
+2024-07-18 Harald Oehlmann <harald.oehlmann@elmicron.de>
+
+	* pkgIndex.tcl:	Bumped the tooltip version number to 2.0.0.
+	* tooltip.man: Removed msgcat information
+	* tooltip.tcl: Removed all msgcat code and options -namespace,
+	  -msgargs and -infoargs. The implemented late binding is not
+	  possible, if the creation command is called from an oo class
+	  or method. See Ticket
+	  [https://core.tcl-lang.org/tklib/info/6e85abae9e49281b]
+
 2024-06-26  Csaba Nemethi  <csaba.nemethi@t-online.de>
 
 	* pkgIndex.tcl:	Bumped the tooltip version number to 1.8.2.
