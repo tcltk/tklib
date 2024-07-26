@@ -12,7 +12,6 @@
 
 
 package require Tk 8.5-
-package require msgcat
 
 #------------------------------------------------------------------------
 # PROCEDURE
@@ -187,9 +186,6 @@ proc ::tooltip::register {w args} {
     set key [lindex $args 0]
     set img {}
     set inf {}
-    set nscaller {}
-    set msgargs {}
-    set infoargs {}
     while {[string match -* $key]} {
 	switch -- $key {
 	    -- {
@@ -255,22 +251,10 @@ proc ::tooltip::register {w args} {
 	    -info {
 		set args [lassign $args _ inf]
 	    }
-	    -namespace {
-		# Explicit namespace for the msgcat call
-		set args [lassign $args _ nscaller]
-	    }
-	    -msgargs {
-		# Arguments for the msgcat call for the main message
-		set args [lassign $args _ msgargs]
-	    }
-	    -infoargs {
-		# Arguments for the msgcat call for the info message
-		set args [lassign $args _ infoargs]
-	    }
 	    default {
 		return -code error "unknown option \"$key\":\
-			should be -heading, -image, -index, -info, -infoargs,\
-			-item(s), -msgargs, -namespace, -tab, -tag or --"
+			should be -heading, -image, -index, -info,\
+			-item(s), -tab, -tag or --"
 	    }
 	}
 	set key [lindex $args 0]
@@ -278,8 +262,7 @@ proc ::tooltip::register {w args} {
     if {[llength $args] != 1} {
 	return -code error "wrong # args: should be \"tooltip widget\
 		?-heading columnId? ?-image image? ?-index index? ?-info info?\
-		?-infoargs args? ?-item(s) items? ?-msgargs args? ?-namespace ns?\
-		?-tab tabId? ?-tag tag? ?--? message\""
+		?-item(s) items? ?-tab tabId? ?-tag tag? ?--? message\""
     }
     if {$key eq ""} {
 	clear $w
@@ -287,10 +270,7 @@ proc ::tooltip::register {w args} {
 	if {![winfo exists $w]} {
 	    return -code error "bad window path name \"$w\""
 	}
-	if {$nscaller eq ""} {
-	    set nscaller [uplevel 2 {namespace current}]
-	}
-	set details [list $key $img $inf $nscaller $msgargs $infoargs]
+	set details [list $key $img $inf]
 	if {[info exists columnId]} {
 	    set tooltip($w,$columnId) $details
 	    enableListbox $w $columnId
@@ -469,16 +449,12 @@ proc ::tooltip::show {w msg {i {}}} {
     if {![winfo exists $b]} {
         createToplevel
     }
-    # Use late-binding msgcat (lazy translation) to support programs
-    # that allow on-the-fly l10n changes
 
-    lassign $msg text image infotext nscaller msgargs infoargs
-    set text [namespace eval $nscaller [list ::msgcat::mc $text {*}$msgargs]]
+    lassign $msg text image infotext
     $b.f.label configure -text $text -image $image
     if {$infotext eq {}} {
 	grid remove $b.f.info
     } else {
-	set infotext [namespace eval $nscaller [list ::msgcat::mc $infotext {*}$infoargs]]
 	$b.f.info configure -text $infotext
 	grid $b.f.info
     }
@@ -775,4 +751,4 @@ proc ::tooltip::conditionally-hide {w tag} {
     hide 1
 }
 
-package provide tooltip 1.8.2
+package provide tooltip 2.0.0
