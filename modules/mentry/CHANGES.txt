@@ -1,5 +1,16 @@
-What is new in Mentry 4.2?
+What is new in Mentry 4.3?
 --------------------------
+
+1. Made sure that the handling of the <TouchpadScroll> event won't
+   polluate the global namespace (thanks to Rolf Ade for drawing my
+   attention to this issue).
+
+2. Restored the support for Tcl/Tk 8.4, which was broken due to the use
+   of package version numbers with a trailing "-" (thanks to Samuel
+   Brown for his bug report).
+
+What was new in Mentry 4.2?
+---------------------------
 
 1. Adapted to the recent improvements in the "classic" theme by Emiliano
    Gavilan.

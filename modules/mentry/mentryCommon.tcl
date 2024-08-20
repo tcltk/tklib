@@ -4,16 +4,22 @@
 # Copyright (c) 1999-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-if {[catch {package require Wcb 3.1-} result1] != 0 &&
-    [catch {package require wcb 3.1-} result2] != 0} {
-    error "$result1; $result2"
-}
-
 namespace eval ::mentry {
+    proc - {} { return [expr {$::tcl_version >= 8.5 ? "-" : ""}] }
+
+    package require Tk 8.4[-]
+
+    if {[catch {package require Wcb 4.0[-]} result1] &&
+	[catch {package require wcb 4.0[-]} result2] &&
+	[catch {package require Wcb 3.1[-]} result3] &&
+	[catch {package require wcb 3.1[-]} result4]} {
+	error "$result1; $result2; $result3; $result4"
+    }
+
     #
     # Public variables:
     #
-    variable version	4.2
+    variable version	4.3
     variable library	[file dirname [file normalize [info script]]]
 
     #
@@ -95,7 +101,7 @@ lappend auto_path [file join $::mentry::library scripts]
 # into account that it is also included in Scrollutil and Tablelist.
 #
 if {[catch {package present mwutil} version] == 0 &&
-    [package vcompare $version 2.22] < 0} {
+    [package vcompare $version 2.23] < 0} {
     package forget mwutil
 }
-package require mwutil 2.22-
+package require mwutil 2.23[::mentry::-]

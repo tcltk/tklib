@@ -77,9 +77,9 @@ namespace eval mentry {
     variable touchpadScrollSupport
     if {$touchpadScrollSupport} {
 	bind MentryIPAddr <TouchpadScroll> {
-	    lassign [tk::PreciseScrollDeltas %D] deltaX deltaY
-	    if {$deltaY != 0 && [expr {%# %% 12}] == 0} {
-		mentry::incrIPAddrComp %W [expr {$deltaY > 0 ? -1 : 1}]
+	    lassign [tk::PreciseScrollDeltas %D] mentry::dX mentry::dY
+	    if {$mentry::dY != 0 && [expr {%# %% 12}] == 0} {
+		mentry::incrIPAddrComp %W [expr {$mentry::dY > 0 ? -1 : 1}]
 	    }
 	}
     }

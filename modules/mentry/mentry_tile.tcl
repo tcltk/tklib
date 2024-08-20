@@ -4,11 +4,11 @@
 # Copyright (c) 1999-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require Tk 8.4-
+package require -exact mentry::common 4.3
+
 if {$::tk_version < 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
-    package require tile 0.6-
+    package require tile 0.6[::mentry::-]
 }
-package require -exact mentry::common 4.2
 
 package provide mentry_tile $::mentry::version
 package provide Mentry_tile $::mentry::version

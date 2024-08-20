@@ -127,16 +127,16 @@ namespace eval mentry {
     variable touchpadScrollSupport
     if {$touchpadScrollSupport} {
 	bind MentryDateTime <TouchpadScroll> {
-	    lassign [tk::PreciseScrollDeltas %D] deltaX deltaY
-	    if {$deltaY != 0 && [expr {%# %% 12}] == 0} {
-		mentry::incrDateTimeComp %W [expr {$deltaY > 0 ? -1 : 1}]
+	    lassign [tk::PreciseScrollDeltas %D] mentry::dX mentry::dY
+	    if {$mentry::dY != 0 && [expr {%# %% 12}] == 0} {
+		mentry::incrDateTimeComp %W [expr {$mentry::dY > 0 ? -1 : 1}]
 	    }
 	}
 
 	bind MentryMeridian <TouchpadScroll> {
-	    lassign [tk::PreciseScrollDeltas %D] deltaX deltaY
-	    if {$deltaY != 0 && [expr {%# %% 12}] == 0} {
-		mentry::setMeridian %W [expr {$deltaY > 0 ? "A" : "P"}]
+	    lassign [tk::PreciseScrollDeltas %D] mentry::dX mentry::dY
+	    if {$mentry::dY != 0 && [expr {%# %% 12}] == 0} {
+		mentry::setMeridian %W [expr {$mentry::dY > 0 ? "A" : "P"}]
 	    }
 	}
     }

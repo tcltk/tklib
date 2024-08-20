@@ -1,3 +1,21 @@
+2024-08-20  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 4.3; restored the support
+	* COPYRIGHT.txt: for Tcl/Tk 8.4; updated the copyright information.
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/*.tcl: Made sure that the handling of the <TouchpadScroll>
+	  event won't polluate the global namespace.
+
+	* scripts/mwutil/*.tcl: Restored the support for Tcl/Tk 8.4.
+
+	* doc/*.png: Updated the screenshots.
+
+	* doc/wcbRef.html: Updated to the version included in Wcb 4.1.
+
 2024-05-15  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Mentry 4.2.

@@ -13,7 +13,7 @@
   <div>
     <h1>Mentry Programmer's Guide</h1>
 
-    <h2>For Mentry Version 4.2</h2>
+    <h2>For Mentry Version 4.3</h2>
 
     <h3>by</h3>
 
@@ -148,8 +148,8 @@ foreach w [.me entries] {
   <h3 id="ov_get">How to Get It?</h3>
 
   <p>Mentry is available for free download from the same URL as Wcb.&nbsp; The
-  distribution file is <code>mentry4.2.tar.gz</code> for UNIX and
-  <code>mentry4_2.zip</code> for Windows.&nbsp; These files contain the same
+  distribution file is <code>mentry4.3.tar.gz</code> for UNIX and
+  <code>mentry4_3.zip</code> for Windows.&nbsp; These files contain the same
   information, except for the additional carriage return character preceding
   the linefeed at the end of each line in the text files for Windows.</p>
 
@@ -171,11 +171,11 @@ foreach w [.me entries] {
   respectively.</p>
 
   <p>To install Mentry <i>on UNIX</i>, <code>cd</code> to the desired directory
-  and unpack the distribution file <code>mentry4.2.tar.gz</code>:</p>
+  and unpack the distribution file <code>mentry4.3.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c mentry4.2.tar.gz | tar -xf -
+gunzip -c mentry4.3.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
@@ -183,17 +183,17 @@ gunzip -c mentry4.2.tar.gz | tar -xf -
 
   <blockquote>
     <pre>
-tar -zxf mentry4.2.tar.gz
+tar -zxf mentry4.3.tar.gz
 </pre>
   </blockquote>
 
-  <p>Both commands will create a directory named <code>mentry4.2</code>, with
+  <p>Both commands will create a directory named <code>mentry4.3</code>, with
   the subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>mentry4_2.zip</code> into the directory
-  <code>mentry4.2</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>mentry4_3.zip</code> into the directory
+  <code>mentry4.3</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>The file <code>mentryThemes.tcl</code> in the <code>scripts</code>
@@ -650,7 +650,7 @@ proc pastePhoneNumber w {
   application displaying the following figure:</p>
 
   <blockquote>
-    <img src="phonenumber.png" alt="Phone Number" width="267" height="218">
+    <img src="phonenumber.png" alt="Phone Number" width="281" height="253">
   </blockquote>
 
   <p>Here is the relevant code fragment:</p>
@@ -862,8 +862,8 @@ proc getEthernetAddr win {
   Ethernet addresses looks like in the following figure:</p>
 
   <blockquote>
-    <img src="ethernetaddr.png" alt="Ethernet Address" width="288"
-    height="233">
+    <img src="ethernetaddr.png" alt="Ethernet Address" width="303"
+    height="272">
   </blockquote>
 
   <h3 id="ex_dateTime">Using mentry Widgets for Date and Time</h3>
@@ -985,7 +985,7 @@ pack .f.lDate .f.date .f.gap .f.lTime .f.time -side left
   2</code>&nbsp; and&nbsp; <code>timeIdx = 1</code>:</p>
 
   <blockquote>
-    <img src="datetime1.png" alt="Date & Time" width="276" height="199">
+    <img src="datetime1.png" alt="Date & Time" width="285" height="230">
   </blockquote>
 
   <p>The demo script <code>datetime2.tcl</code> displays both the date and time
@@ -1007,7 +1007,7 @@ pack .f.l .f.me
   </blockquote>
 
   <blockquote>
-    <img src="datetime2.png" alt="Date & Time" width="270" height="199">
+    <img src="datetime2.png" alt="Date & Time" width="278" height="230">
   </blockquote>
 
   <p>The Mentry package exports two further commands for date, time, and date &
@@ -1226,8 +1226,8 @@ focus [<span class="red">.base</span>.f.me entrypath 0]
   appearance:</p>
 
   <blockquote>
-    <img src="phonenumber_tile.png" alt="Phone Number" width="265"
-    height="206">
+    <img src="phonenumber_tile.png" alt="Phone Number" width="279"
+    height="243">
   </blockquote>
 
   <p>The only Mentry-specific changes in the code above consist of the use of
