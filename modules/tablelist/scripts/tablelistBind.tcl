@@ -908,6 +908,14 @@ proc tablelist::defineTablelistBody {} {
 	clickedExpCollCtrl	0
     }
 
+    bind TablelistBody <FocusIn> {
+	tablelist::addActiveTag [tablelist::getTablelistPath %W]
+    }
+    bind TablelistBody <FocusOut> {
+	if {"%d" ne "NotifyInferior"} {
+	    tablelist::removeActiveTag [tablelist::getTablelistPath %W]
+	}
+    }
     foreach event {<Enter> <Motion> <Leave>} {
 	bind TablelistBody $event [format {
 	    tablelist::handleMotionDelayed %%W %%x %%y %%X %%Y %%m %s
@@ -1280,14 +1288,14 @@ proc tablelist::defineTablelistBody {} {
 	    if {%# %% 5 != 0} {
 		return
 	    }
-	    lassign [tk::PreciseScrollDeltas %D] deltaX deltaY
-	    if {$deltaX != 0} {
+	    lassign [tk::PreciseScrollDeltas %D] tablelist::dX tablelist::dY
+	    if {$tablelist::dX != 0} {
 		event generate %W <Shift-MouseWheel> -rootx %X -rooty %Y \
-		    -delta [expr {40 * $deltaX}]
+		    -delta [expr {40 * $tablelist::dX}]
 	    }
-	    if {$deltaY != 0} {
+	    if {$tablelist::dY != 0} {
 		event generate %W <MouseWheel> -rootx %X -rooty %Y \
-		    -delta [expr {40 * $deltaY}]
+		    -delta [expr {40 * $tablelist::dY}]
 	    }
 	}
     }

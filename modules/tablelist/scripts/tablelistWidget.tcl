@@ -135,6 +135,8 @@ namespace eval tablelist {
 	($::tk_version >= 8.7 &&
 	 [package vcompare $::tk_patchLevel "8.7a3"] >= 0)}]
 
+    variable disp [expr {$::tk_version >= 8.5 ? "display" : ""}]
+
     variable scaled4 [::scaleutil::scale 4 $::scaleutil::scalingPct]
 
     #
@@ -675,7 +677,6 @@ proc tablelist::createBindings {} {
     #
     bind Tablelist <KeyPress> continue
     bind Tablelist <FocusIn> {
-	tablelist::addActiveTag %W
 	if {[focus -lastfor %W] eq "%W"} {
 	    if {[winfo exists [%W editwinpath]]} {
 		focus [set tablelist::ns%W::data(editFocus)]
@@ -685,7 +686,6 @@ proc tablelist::createBindings {} {
 	}
     }
     bind Tablelist <FocusOut> {
-	tablelist::removeActiveTag %W
 	if {[%W cget -editendonfocusout]} {
 	    tablelist::finishEditingOnFocusOut %W
 	}
@@ -7772,6 +7772,9 @@ proc tablelist::insertRows {win index argList updateListVar parentKey \
 	set index 0
     } elseif {$index > $data(itemCount)} {
 	set index $data(itemCount)
+    }
+    if {$index < $data(itemCount)} {
+	displayItems $win
     }
 
     set childCount [llength $data($parentKey-childList)]

@@ -9,8 +9,12 @@
 # Copyright (c) 2020-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require Tk 8.4-
-package require scaleutil 1.10-
+if {[catch {package require Tk 8.4-}]} {
+    package require Tk 8.4
+}
+if {[catch {package require scaleutil 1.10-}]} {
+    package require scaleutil 1.10
+}
 
 #
 # Namespace initialization
@@ -21,7 +25,7 @@ namespace eval scaleutilmisc {
     #
     # Public variables:
     #
-    variable version	1.6
+    variable version	1.7
     variable library	[file dirname [file normalize [info script]]]
 
     #

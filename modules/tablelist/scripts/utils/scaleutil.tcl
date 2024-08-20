@@ -9,7 +9,9 @@
 # Copyright (c) 2020-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require Tk 8.4-
+if {[catch {package require Tk 8.4-}]} {
+    package require Tk 8.4
+}
 
 #
 # Namespace initialization
@@ -20,7 +22,7 @@ namespace eval scaleutil {
     #
     # Public variables:
     #
-    variable version	1.13
+    variable version	1.14
     variable library	[file dirname [file normalize [info script]]]
 
     #

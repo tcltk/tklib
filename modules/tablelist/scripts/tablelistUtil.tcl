@@ -3845,6 +3845,7 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 	    set colorizeCmd $data(-colorizecommand)
 	}
 
+	variable disp
 	set rightCol [colIndex $win @$data(rightX),0 0 0]
 	set topLine [expr {int($topTextIdx)}]
 	set btmLine [expr {int($btmTextIdx)}]
@@ -3852,7 +3853,7 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 	    set btmLine $data(itemCount)
 	}
 	for {set line $topLine} {$line <= $btmLine} \
-	    {set line [expr {int([$w index "$line.end + 1 display c"])}]} {
+	    {set line [expr {int([$w index "$line.end + 1 $disp c"])}]} {
 	    if {![findTabs $win $w $line $leftCol $leftCol tabIdx1 tabIdx2]} {
 		continue
 	    }
@@ -4086,7 +4087,10 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 	    }
 	}
 	if {[$path cget -background] ne $bg} {
-	    $path configure -background $bg
+	    #
+	    # Guard against the deletion of embedded images
+	    #
+	    catch {$path configure -background $bg}
 	}
 	if {$isMessage && [$path cget -foreground] ne $fg} {
 	    $path configure -foreground $fg
@@ -4257,7 +4261,10 @@ proc tablelist::hdr_updateColors win {
 	    }
 	}
 	if {[$path cget -background] ne $bg} {
-	    $path configure -background $bg
+	    #
+	    # Guard against the deletion of embedded images
+	    #
+	    catch {$path configure -background $bg}
 	}
 	if {$isMessage && [$path cget -foreground] ne $fg} {
 	    $path configure -foreground $fg
@@ -4468,6 +4475,7 @@ proc tablelist::adjustElidedText win {
     # Add the "hiddenCol" tag to the contents of the hidden
     # columns from the top to the bottom window line
     #
+    variable disp
     variable pu
     if {$data(hiddenColCount) > 0 && $data(itemCount) > 0} {
 	set topLine [expr {int([$w index @0,0])}]
@@ -4476,7 +4484,7 @@ proc tablelist::adjustElidedText win {
 	    set btmLine $data(itemCount)
 	}
 	for {set line $topLine} {$line <= $btmLine} \
-	    {set line [expr {int([$w index "$line.end + 1 display c"])}]} {
+	    {set line [expr {int([$w index "$line.end + 1 $disp c"])}]} {
 	    set textIdx1 $line.0
 	    for {set col 0; set count 0} \
 		{$col < $data(colCount) && $count < $data(hiddenColCount)} \
@@ -4505,7 +4513,7 @@ proc tablelist::adjustElidedText win {
 
 	if {[lindex [$w yview] 1] == 1} {
 	    for {set line $btmLine} {$line >= $topLine} \
-		{set line [expr {int([$w index "$line.0 - 1 display c"])}]} {
+		{set line [expr {int([$w index "$line.0 - 1 $disp c"])}]} {
 		set textIdx1 $line.0
 		for {set col 0; set count 0} \
 		    {$col < $data(colCount) && $count < $data(hiddenColCount)} \
@@ -4584,7 +4592,7 @@ proc tablelist::adjustElidedText win {
 	    set btmLine $data(itemCount)
 	}
 	for {set line $topLine} {$line <= $btmLine} \
-	    {set line [expr {int([$w index "$line.end + 1 display c"])}]} {
+	    {set line [expr {int([$w index "$line.end + 1 $disp c"])}]} {
 	    if {[findTabs $win $w $line $firstCol $lastCol \
 		 tabIdx1 tabIdx2]} {
 		$w tag add elidedCol $tabIdx1 $tabIdx2+1$pu
@@ -4601,7 +4609,7 @@ proc tablelist::adjustElidedText win {
 
 	if {[lindex [$w yview] 1] == 1} {
 	    for {set line $btmLine} {$line >= $topLine} \
-		{set line [expr {int([$w index "$line.0 - 1 display c"])}]} {
+		{set line [expr {int([$w index "$line.0 - 1 $disp c"])}]} {
 		if {[findTabs $win $w $line $firstCol $lastCol \
 		     tabIdx1 tabIdx2]} {
 		    $w tag add elidedCol $tabIdx1 $tabIdx2+1$pu
@@ -5097,6 +5105,7 @@ proc tablelist::redisplayVisibleItems win {
 	return ""
     }
 
+    variable disp
     variable snipSides
     variable pu
 
@@ -5109,7 +5118,7 @@ proc tablelist::redisplayVisibleItems win {
     set snipStr $data(-snipstring)
 
     for {set line $topLine} {$line <= $btmLine} \
-	{set line [expr {int([$w index "$line.end + 1 display c"])}]} {
+	{set line [expr {int([$w index "$line.end + 1 $disp c"])}]} {
 	if {![findTabs $win $w $line $leftCol $leftCol tabIdx1 tabIdx2]} {
 	    continue
 	}
@@ -6687,14 +6696,16 @@ proc tablelist::makeCkbtn w {
 	x11 {
 	    variable checkedImg
 	    variable uncheckedImg
-	    variable tristateImg
 	    if {![info exists checkedImg]} {
 		createCheckbuttonImgs
 	    }
 
-	    $w configure -borderwidth 0 -indicatoron 0 \
-		-image $uncheckedImg -offrelief sunken \
-		-selectimage $checkedImg -tristateimage $tristateImg
+	    $w configure -borderwidth 0 -indicatoron 0 -image $uncheckedImg \
+		-offrelief sunken -selectimage $checkedImg
+	    if {$::tk_version >= 8.5} {
+		variable tristateImg
+		$w configure -tristateimage $tristateImg
+	    }
 	    pack $w
 	    return [list [winfo reqwidth $w] [winfo reqheight $w]]
 	}
@@ -6702,14 +6713,16 @@ proc tablelist::makeCkbtn w {
 	win32 {
 	    variable checkedImg
 	    variable uncheckedImg
-	    variable tristateImg
 	    if {![info exists checkedImg]} {
 		createCheckbuttonImgs
 	    }
 
-	    $w configure -borderwidth 0 -indicatoron 0 \
-		-image $uncheckedImg -offrelief sunken \
-		-selectimage $checkedImg -tristateimage $tristateImg
+	    $w configure -borderwidth 0 -indicatoron 0 -image $uncheckedImg \
+		-offrelief sunken -selectimage $checkedImg
+	    if {$::tk_version >= 8.5} {
+		variable tristateImg
+		$w configure -tristateimage $tristateImg
+	    }
 	    pack $w
 	    return [list [winfo reqwidth $w] [winfo reqheight $w]]
 	}
@@ -6786,7 +6799,7 @@ proc tablelist::hdr_createTtkCkbtn {cmd win row col w} {
 #------------------------------------------------------------------------------
 proc tablelist::makeTtkCkbtn w {
     if {$::tk_version < 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
-	package require tile 0.6-
+	package require tile 0.6[-]
     }
     createTileAliases
 

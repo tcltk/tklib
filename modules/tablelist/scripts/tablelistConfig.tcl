@@ -3555,7 +3555,7 @@ proc tablelist::doCellConfig {row col win opt val {skipParts 0}} {
 	}
 
 	-text {
-	    if {$data(isDisabled)} {
+	    if {$data(isDisabled) || ($inBody && $data($col-showlinenumbers))} {
 		return ""
 	    }
 
@@ -3695,9 +3695,6 @@ proc tablelist::doCellConfig {row col win opt val {skipParts 0}} {
 		}
 	    }
 
-	    if {$inBody} {
-		showLineNumbersWhenIdle $win
-	    }
 	    updateViewWhenIdle $win
 	}
 

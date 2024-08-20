@@ -1213,7 +1213,7 @@ proc tablelist::postMenuCmd w {
 #------------------------------------------------------------------------------
 proc tablelist::createTileEntry {w args} {
     if {$::tk_version < 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
-	package require tile 0.6-
+	package require tile 0.6[-]
     }
     createTileAliases
 
@@ -1265,7 +1265,7 @@ proc tablelist::createTileEntry {w args} {
 #------------------------------------------------------------------------------
 proc tablelist::createTileSpinbox {w args} {
     if {$::tk_version < 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
-	package require tile 0.8.3-
+	package require tile 0.8.3[-]
     }
     createTileAliases
 
@@ -1324,7 +1324,7 @@ proc tablelist::createTileSpinbox {w args} {
 #------------------------------------------------------------------------------
 proc tablelist::createTileCombobox {w args} {
     if {$::tk_version < 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
-	package require tile 0.6-
+	package require tile 0.6[-]
     }
     createTileAliases
 
@@ -1377,7 +1377,7 @@ proc tablelist::createTileCheckbutton {w args} {
 #------------------------------------------------------------------------------
 proc tablelist::createTileMenubutton {w args} {
     if {$::tk_version < 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
-	package require tile 0.6-
+	package require tile 0.6[-]
     }
     createTileAliases
 
@@ -2928,14 +2928,14 @@ proc tablelist::defineTablelistEdit {} {
 	    if {%# %% 5 != 0} {
 		return
 	    }
-	    lassign [tk::PreciseScrollDeltas %D] deltaX deltaY
-	    if {$deltaX != 0} {
+	    lassign [tk::PreciseScrollDeltas %D] tablelist::dX tablelist::dY
+	    if {$tablelist::dX != 0} {
 		event generate %W <Shift-MouseWheel> -rootx %X -rooty %Y \
-		    -delta [expr {40 * $deltaX}]
+		    -delta [expr {40 * $tablelist::dX}]
 	    }
-	    if {$deltaY != 0} {
+	    if {$tablelist::dY != 0} {
 		event generate %W <MouseWheel> -rootx %X -rooty %Y \
-		    -delta [expr {40 * $deltaY}]
+		    -delta [expr {40 * $tablelist::dY}]
 	    }
 	}
 	bind TablelistEditBreak <TouchpadScroll> { break }
