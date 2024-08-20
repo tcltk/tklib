@@ -3,7 +3,7 @@
 #==============================================================================
 # Demo:	wcb::callback <listbox> before selset <callback>
 #
-# Copyright (c) 1999-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 1999-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tk
@@ -23,11 +23,7 @@ set dirName [file join [file dirname [info script]] images]
 #
 frame .spacer -width 7p
 listbox .lb -height 0 -width 0 -background white
-if {$tk_version < 8.5} {
-    set pattern [file join $dirName *.bmp]
-} else {
-    set pattern [file join $dirName *.xbm]
-}
+set pattern [file join $dirName *.xbm]
 foreach pathName [lsort [glob $pattern]] {
     .lb insert end [file tail $pathName]
 }

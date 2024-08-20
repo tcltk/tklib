@@ -14,7 +14,7 @@
   <div align="center">
     <h1>Wcb Programmer's Guide</h1>
 
-    <h2>For Wcb Version 4.0</h2>
+    <h2>For Wcb Version 4.1</h2>
 
     <h3>by</h3>
 
@@ -164,8 +164,8 @@
     </address>
   </blockquote>
 
-  <p>The distribution file is <code>wcb4.0.tar.gz</code> for UNIX and
-  <code>wcb4_0.zip</code> for Windows.&nbsp; These files contain the same
+  <p>The distribution file is <code>wcb4.1.tar.gz</code> for UNIX and
+  <code>wcb4_1.zip</code> for Windows.&nbsp; These files contain the same
   information, except for the additional carriage return character preceding
   the linefeed at the end of each line in the text files for Windows.</p>
 
@@ -187,11 +187,11 @@
   respectively.</p>
 
   <p>To install Wcb <i>on UNIX</i>, <code>cd</code> to the desired directory
-  and unpack the distribution file <code>wcb4.0.tar.gz</code>:</p>
+  and unpack the distribution file <code>wcb4.1.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c wcb4.0.tar.gz | tar -xf -
+gunzip -c wcb4.1.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
@@ -199,17 +199,17 @@ gunzip -c wcb4.0.tar.gz | tar -xf -
 
   <blockquote>
     <pre>
-tar -zxf wcb4.0.tar.gz
+tar -zxf wcb4.1.tar.gz
 </pre>
   </blockquote>
 
-  <p>Both commands will create a directory named <code>wcb4.0</code>, with the
+  <p>Both commands will create a directory named <code>wcb4.1</code>, with the
   subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>wcb4_0.zip</code> into the directory
-  <code>wcb4.0</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>wcb4_1.zip</code> into the directory
+  <code>wcb4.1</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>Notice that in tklib the Wcb <code>demos</code> directory is replaced with
@@ -406,11 +406,7 @@ set dirName [file join [file dirname [info script]] images]
 #</span>
 frame .spacer -width 7p
 listbox .lb -height 0 -width 0 -background white
-if {$tk_version &lt; 8.5} {
-    set pattern [file join $dirName *.bmp] 
-} else { 
-    set pattern [file join $dirName *.xbm]
-}   
+set pattern [file join $dirName *.xbm]
 foreach pathName [lsort [glob $pattern]] {
     .lb insert end [file tail $pathName]
 }

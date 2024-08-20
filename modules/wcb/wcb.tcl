@@ -1,16 +1,20 @@
 #==============================================================================
 # Main Wcb package module.
 #
-# Copyright (c) 1999-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 1999-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require Tk 8.4-
+if {$tcl_version >= 8.5} {
+    package require Tk 8.4-
+} else {
+    package require Tk 8.4
+}
 
 namespace eval wcb {
     #
     # Public variables:
     #
-    variable version	4.0
+    variable version	4.1
     variable library	[file dirname [file normalize [info script]]]
 
     #
