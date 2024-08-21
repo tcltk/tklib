@@ -5,10 +5,14 @@
 #==============================================================================
 
 namespace eval ::scrollutil {
+    proc - {} { return [expr {$::tcl_version >= 8.5 ? "-" : ""}] }
+
+    package require Tk 8.4[-]
+
     #
     # Public variables:
     #
-    variable version	2.2
+    variable version	2.3
     variable library	[file dirname [file normalize [info script]]]
 
     #
@@ -85,15 +89,15 @@ lappend auto_path [file join $::scrollutil::library scripts]
 #
 proc ::scrollutil::loadUtils {} {
     if {[catch {package present mwutil} version] == 0 &&
-	[package vcompare $version 2.22] < 0} {
+	[package vcompare $version 2.23] < 0} {
 	package forget mwutil
     }
-    package require mwutil 2.22-
+    package require mwutil 2.23[-]
 
     if {[catch {package present scaleutil} version] == 0 &&
-	[package vcompare $version 1.13] < 0} {
+	[package vcompare $version 1.14] < 0} {
 	package forget scaleutil
     }
-    package require scaleutil 1.13-
+    package require scaleutil 1.14[-]
 }
 ::scrollutil::loadUtils

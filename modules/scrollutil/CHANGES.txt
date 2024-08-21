@@ -1,4 +1,28 @@
-What is new in Scrollutil 2.2?
+What is new in Scrollutil 2.3?
+------------------------------
+
+1. Several improvements in the implementation of the scrollarea widget.
+   For example, made sure that mapping or unmapping the horizontal
+   scrollbar as a result of resizing the toplevel window no longer
+   causes the toplevel to get higher.
+
+2. Made sure that the handling of the <TouchpadScroll> event won't
+   polluate the global namespace (thanks to Rolf Ade for drawing my
+   attention to this issue).
+
+3. Added the demo script ScrolledCanvas.tcl; improvements in several
+   other demo scripts.
+
+4. Fixed a bug that under some circumstances caused the dynamic
+   horizontal scrollbar of a newly created scrollarea widget to get
+   mapped for a short time, even though the embedded widget's "xview"
+   command returned the list {0 1}.
+
+5. Restored the support for Tcl/Tk 8.4, which was broken due to the use
+   of package version numbers with a trailing "-" (thanks to Samuel
+   Brown for his bug report).
+
+What was new in Scrollutil 2.2?
 -------------------------------
 
 1. Improved the performance of the photo image creation in the

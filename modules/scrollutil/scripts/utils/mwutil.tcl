@@ -8,7 +8,9 @@
 # Copyright (c) 2000-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require Tk 8.4-
+if {[catch {package require Tk 8.4-}]} {
+    package require Tk 8.4
+}
 
 #
 # Namespace initialization
@@ -19,7 +21,7 @@ namespace eval mwutil {
     #
     # Public variables:
     #
-    variable version	2.22
+    variable version	2.23
     variable library	[file dirname [file normalize [info script]]]
 
     #

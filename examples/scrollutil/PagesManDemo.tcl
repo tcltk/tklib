@@ -46,7 +46,7 @@ proc populateNotebook {nb sfx} {
 	if {$sfx eq "gif"} {
 	    set canv [canvas $sa.canv -background #c0c0c0]
 	    set img [image create photo -file $fileName -format gif]
-	    $canv create image 10 10 -anchor nw -image $img
+	    $canv create image 15p 15p -anchor nw -image $img
 	    bind $canv <Configure> [list setScrollRegion %W %w %h $img]
 	    scrollutil::addMouseWheelSupport $canv
 	    $sa setwidget $canv
@@ -126,11 +126,15 @@ cd [expr {[info exists ttk::library] ? $ttk::library : $tile::library}]
 populateNotebook $nbTtk "tcl"
 
 proc setScrollRegion {canv canvWidth canvHeight img} {
-    set width  [expr {[image width  $img] + 20}]
-    set height [expr {[image height $img] + 20}]
-    if {$width  < $canvWidth}  { set width  $canvWidth }
-    if {$height < $canvHeight} { set height $canvHeight }
-    $canv configure -scrollregion [list 0 0 $width $height]
+    #
+    # Use a margin of 15p around the image
+    #
+    set pixels [expr {30 * [tk scaling]}]
+    set rightX [expr {[image width  $img] + $pixels}]
+    set lowerY [expr {[image height $img] + $pixels}]
+    if {$rightX < $canvWidth}  { set rightX $canvWidth }
+    if {$lowerY < $canvHeight} { set lowerY $canvHeight }
+    $canv configure -scrollregion [list 0 0 $rightX $lowerY]
 }
 
 proc pmLeaveCmd {pm nb} {

@@ -4,7 +4,7 @@
 # Demonstrates the traditional scrollbar management in connection with a
 # tablelist widget.
 #
-# Copyright (c) 2019-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2019-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tk 8.5-
@@ -29,7 +29,7 @@ tablelist::tablelist $tbl \
     -titlecolumns 1 -borderwidth 0 \
     -xscrollcommand [list $hsb set] -yscrollcommand [list $vsb set]
 switch [tk windowingsystem] {
-    x11   { set width 53 }
+    x11   { set width 54 }
     win32 { set width 58 }
     aqua  { set width 51 }
 }

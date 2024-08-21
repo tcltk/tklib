@@ -2,13 +2,8 @@
 # Populates the content frame of the scrollutil::scrollableframe widget created
 # in the demo script SuScrollableFrmDemo2.tcl.
 #
-# Copyright (c) 2019-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2019-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
-
-#
-# Add an entry to the Tk option database
-#
-option add *selectBorderWidth	$tablelist::themeDefaults(-selectborderwidth)
 
 #
 # Create some widgets in the content frame
@@ -102,9 +97,6 @@ set tbl [tablelist::tablelist $_sa.tbl \
 if {$tablelist::themeDefaults(-stripebackground) eq ""} {
     $tbl configure -background white -stripebackground #f0f0f0
 }
-if {[$tbl cget -selectborderwidth] == 0} {
-    $tbl configure -spacing 1
-}
 $tbl columnconfigure 0 -name release -sortmode dictionary
 $tbl columnconfigure 1 -name changes -sortmode integer
 $tbl columnconfigure 2 -name comment
@@ -175,6 +167,7 @@ foreach line $lineList {
 		set changes 1
 	    }
 	    switch $version {
+		7.0 { set comment "Dropped the support for Tk versions < 8.4" }
 		6.0 { set comment "Added support for header items" }
 		5.0 { set comment "Added support for tree functionality" }
 		4.0 { set comment "Added support for the tile engine" }

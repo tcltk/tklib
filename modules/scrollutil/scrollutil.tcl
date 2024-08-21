@@ -4,8 +4,7 @@
 # Copyright (c) 2019-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require Tk 8.4-
-package require -exact scrollutil::common 2.2
+package require -exact scrollutil::common 2.3
 
 package provide scrollutil $::scrollutil::version
 package provide Scrollutil $::scrollutil::version

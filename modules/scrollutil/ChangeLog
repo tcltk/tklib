@@ -1,3 +1,30 @@
+2024-08-21  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 2.3; restored the support
+	* COPYRIGHT.txt: for Tcl/Tk 8.4.
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/*.tcl: Made sure that mapping or unmapping the horizontal
+	  scrollbar of a scrollarea widget as a result of resizing the toplevel
+	  window no longer causes the toplevel to get higher; made sure that
+	  the handling of the <TouchpadScroll> event won't polluate the global
+	  namespace; fixed a bug that under some circumstances caused the
+	  dynamic horizontal scrollbar of a newly created scrollarea widget to
+	  get mapped for a short time, even though the embedded widget's
+	  "xview" command returned the list {0 1}.
+
+	* scripts/tclIndex: Newly generated.
+
+	* scripts/utils/*.tcl: Restored the support for Tcl/Tk 8.4.
+
+	* doc/*.png: Updated the screenshots, using Tk 9.
+
+	* ../../examples/scrollutil/*: Added the demo script
+	  ScrolledCanvas.tcl; improvements in several other demo scripts.
+
 2024-05-12  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Scrollutil 2.2.

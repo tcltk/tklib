@@ -10,7 +10,7 @@
 #   - Private procedures used in bindings
 #   - Private utility procedures
 #
-# Copyright (c) 2021-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2021-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -363,19 +363,21 @@ proc scrollutil::pnb::createBindings {} {
     if {$touchpadScrollSupport} {
 	bind PnbTab <TouchpadScroll> {
 	    if {%# %% 15 == 0} {
-		lassign [tk::PreciseScrollDeltas %D] deltaX deltaY
-		if {$deltaY != 0} {
+		lassign [tk::PreciseScrollDeltas %D] \
+		    scrollutil::dX scrollutil::dY
+		if {$scrollutil::dY != 0} {
 		    scrollutil::pnb::cycleTab [scrollutil::pnb::tabToPnb %W] \
-			"" [expr {$deltaY < 0 ? -1 : 1}]
+			"" [expr {$scrollutil::dY < 0 ? -1 : 1}]
 		}
 	    }
 	}
 	bind PnbMiddleFrame <TouchpadScroll> {
 	    if {%# %% 15 == 0} {
-		lassign [tk::PreciseScrollDeltas %D] deltaX deltaY
-		if {$deltaY != 0} {
+		lassign [tk::PreciseScrollDeltas %D] \
+		    scrollutil::dX scrollutil::dY
+		if {$scrollutil::dY != 0} {
 		    scrollutil::pnb::cycleTab [scrollutil::pnb::mfToPnb %W] \
-			"" [expr {$deltaY < 0 ? -1 : 1}]
+			"" [expr {$scrollutil::dY < 0 ? -1 : 1}]
 		}
 	    }
 	}
@@ -567,9 +569,9 @@ proc scrollutil::plainnotebook args {
 	    if {%# %% 5 != 0} {
 		break
 	    }
-	    lassign [tk::PreciseScrollDeltas %D] deltaX deltaY
-	    if {$deltaY != 0} {
-		{*}[%W cget -command] scroll [expr {-$deltaY}] units
+	    lassign [tk::PreciseScrollDeltas %D] scrollutil::dX scrollutil::dY
+	    if {$scrollutil::dY != 0} {
+		{*}[%W cget -command] scroll [expr {-$scrollutil::dY}] units
 	    }
 	    break
 	}

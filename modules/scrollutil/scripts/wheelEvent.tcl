@@ -13,7 +13,7 @@
 #   - Public procedures
 #   - Private procedures
 #
-# Copyright (c) 2019-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2019-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -200,14 +200,15 @@ proc scrollutil::createBindings {} {
 	bind WheeleventRedir <TouchpadScroll> {
 	    if {![scrollutil::hasFocus %W] ||
 		![scrollutil::isCompatible <TouchpadScroll> %W]} {
-		lassign [tk::PreciseScrollDeltas %D] deltaX deltaY
-		if {%# %% 5 == 0 && $deltaX != 0} {
+		lassign [tk::PreciseScrollDeltas %D] \
+		    scrollutil::dX scrollutil::dY
+		if {%# %% 5 == 0 && $scrollutil::dX != 0} {
 		    event generate [winfo toplevel %W] <Shift-MouseWheel> \
-			-rootx %X -rooty %Y -delta [expr {40 * $deltaX}]
+			-rootx %X -rooty %Y -delta [expr {40 * $scrollutil::dX}]
 		}
-		if {%# %% 5 == 0 && $deltaY != 0} {
+		if {%# %% 5 == 0 && $scrollutil::dY != 0} {
 		    event generate [winfo toplevel %W] <MouseWheel> \
-			-rootx %X -rooty %Y -delta [expr {40 * $deltaY}]
+			-rootx %X -rooty %Y -delta [expr {40 * $scrollutil::dY}]
 		}
 		break
 	    }
@@ -332,23 +333,31 @@ proc scrollutil::addMouseWheelSupport {tag {axes "xy"}} {
     set script "if {%# %% 5 != 0} "
     append script [expr {$isWindow ? "break" : "return"}]
     append script {
-	lassign [tk::PreciseScrollDeltas %D] deltaX deltaY
+	lassign [tk::PreciseScrollDeltas %D] scrollutil::dX scrollutil::dY
     }
     switch $axes {
 	xy {
 	    append script {
-		if {$deltaX != 0} { %W xview scroll [expr {-$deltaX}] units }
-		if {$deltaY != 0} { %W yview scroll [expr {-$deltaY}] units }
+		if {$scrollutil::dX != 0} {
+		    %W xview scroll [expr {-$scrollutil::dX}] units
+		}
+		if {$scrollutil::dY != 0} {
+		    %W yview scroll [expr {-$scrollutil::dY}] units
+		}
 	    }
 	}
 	x {
 	    append script {
-		if {$deltaX != 0} { %W xview scroll [expr {-$deltaX}] units }
+		if {$scrollutil::dX != 0} {
+		    %W xview scroll [expr {-$scrollutil::dX}] units
+		}
 	    }
 	}
 	y {
 	    append script {
-		if {$deltaY != 0} { %W yview scroll [expr {-$deltaY}] units }
+		if {$scrollutil::dY != 0} {
+		    %W yview scroll [expr {-$scrollutil::dY}] units
+		}
 	    }
 	}
     }
@@ -457,14 +466,15 @@ proc scrollutil::createWheelEventBindings args {
 		if {%# %% 5 != 0} {
 		    return
 		}
-		lassign [tk::PreciseScrollDeltas %D] deltaX deltaY
-		if {$deltaX != 0} {
+		lassign [tk::PreciseScrollDeltas %D] \
+		    scrollutil::dX scrollutil::dY
+		if {$scrollutil::dX != 0} {
 		    event generate %W <Shift-MouseWheel> -rootx %X -rooty %Y \
-			-delta [expr {40 * $deltaX}]
+			-delta [expr {40 * $scrollutil::dX}]
 		}
-		if {$deltaY != 0} {
+		if {$scrollutil::dY != 0} {
 		    event generate %W <MouseWheel> -rootx %X -rooty %Y \
-			-delta [expr {40 * $deltaY}]
+			-delta [expr {40 * $scrollutil::dY}]
 		}
 	    }
 	}

@@ -1,7 +1,7 @@
 #==============================================================================
 # Patches a few ttk widget styles and defines the style Small.Toolbutton.
 #
-# Copyright (c) 2019-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2019-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require scrollutil_tile
@@ -73,11 +73,13 @@ switch [tk windowingsystem] {
     x11 {
 	font configure TkHeadingFont -weight normal	    ;# default: bold
 
+	option add *selectBorderWidth		0
 	option add *selectBackground		#4a6984	    ;# default: #c3c3c3
 	option add *selectForeground		#ffffff	    ;# default: #000000
 	option add *inactiveSelectBackground	#9e9a91	    ;# default: #c3c3c3
 
 	ttk::setTheme clam
+	ttk::style map TScrollbar -arrowcolor [list disabled #999999]
     }
 }
 

@@ -4,7 +4,7 @@
 # Demonstrates the use of the scrollutil::scrollarea widget in connection with
 # a tablelist.
 #
-# Copyright (c) 2019-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2019-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tk 8.5-
@@ -26,7 +26,7 @@ tablelist::tablelist $tbl \
 		   "Column 5" "Column 6" "Column 7" "Column 8" "Column 9"} \
     -titlecolumns 1
 switch [tk windowingsystem] {
-    x11   { set width 53 }
+    x11   { set width 54 }
     win32 { set width 58 }
     aqua  { set width 51 }
 }
