@@ -1,26 +1,30 @@
 What is new in Tablelist 7.3?
 -----------------------------
 
-1. Significantly improved the performance of "cellconfigure ... -text"
+1. Added the virtual events <<TablelistXViewChanged>> and
+   <<TablelistYViewChanged>>, generated when the horizontal/vertical
+   view in the tablelist widget's window changes.
+
+2. Significantly improved the performance of "cellconfigure ... -text"
    (thanks to Paul Obermeier for his valuable contribution).
 
-2. Guarded against the case that an embedded image was deleted (thanks
+3. Guarded against the case that an embedded image was deleted (thanks
    to Paul Obermeier for his proposal).
 
-3. Made sure that the handling of the <TouchpadScroll> event won't
+4. Made sure that the handling of the <TouchpadScroll> event won't
    polluate the global namespace (thanks to Rolf Ade for drawing my
    attention to this issue).
 
-4. Adapted the handling of the <FocusIn> and <FocusOut> events to recent
+5. Adapted the handling of the <FocusIn> and <FocusOut> events to recent
    changes made in Tk related to these events and the detail field
    "NotifyInferior".
-
-5. Fixed a long-standing bug related to the optimization of item
-   insertion.
 
 6. Restored the support for Tcl/Tk 8.4, which was broken due to the use
    of package version numbers with a trailing "-" and of a submodifier
    in text widget indices (thanks to Samuel Brown for his bug report).
+
+7. Fixed a long-standing bug related to the optimization of item
+   insertion.
 
 What was new in Tablelist 7.2?
 ------------------------------

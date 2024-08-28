@@ -9172,12 +9172,12 @@ proc tablelist::seeTextIdx {win textIdx} {
 #------------------------------------------------------------------------------
 # tablelist::updateIdletasksDelayed
 #
-# Schedules the execution of "update idletasks" 100 ms later.
+# Schedules the execution of "update idletasks" 50 ms later.
 #------------------------------------------------------------------------------
 proc tablelist::updateIdletasksDelayed {} {
     variable idletasksId
     if {![info exists idletasksId]} {
-	set idletasksId [after 100 [list tablelist::updateIdletasks]]
+	set idletasksId [after 50 [list tablelist::updateIdletasks]]
     }
 }
 

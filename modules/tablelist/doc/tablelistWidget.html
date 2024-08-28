@@ -7870,6 +7870,31 @@ proc handleTblDrop {tbl data} {
           time).</td>
           <td>Not used.</td>
         </tr>
+
+        <tr valign="top">
+          <td><code><b>&lt;&lt;TablelistXViewChanged&gt;&gt;</b></code></td>
+	  <td>Generated whenever the horizontal view in the tablelist widget's
+	  window changes (and the horizontal scrollbar, if any, is
+	  updated).</td>
+	  <td>A list of two real fractions between <code>0</code> and
+	  <code>1</code>, returned by the <code><b><a href=
+	  "#xview">xview</a></b></code> subcommand.&nbsp; Note that you can
+	  reference the leftmost and rightmost columns visible in the tablelist
+	  window via the <a href="#col_indices">column indices</a>
+	  <code><b>left</b></code> and <code><b>right</b></code>.</td>
+        </tr>
+
+        <tr valign="top">
+          <td><code><b>&lt;&lt;TablelistYViewChanged&gt;&gt;</b></code></td>
+	  <td>Generated whenever the vertical view in the tablelist widget's
+	  window changes (and the vertical scrollbar, if any, is updated).</td>
+	  <td>A list of two real fractions between <code>0</code> and
+	  <code>1</code>, returned by the <code><b><a href=
+	  "#yview">yview</a></b></code> subcommand.&nbsp; Note that you can
+	  reference the topmost and bottommost body items visible in the
+	  tablelist window via the <a href="#row_indices">row indices</a>
+	  <code><b>top</b></code> and <code><b>bottom</b></code>.</td>
+        </tr>
       </table>
     </dd>
 

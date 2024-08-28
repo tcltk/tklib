@@ -1119,8 +1119,7 @@ proc tablelist::doConfig {win opt val} {
 		}
 		-titlecolumns {
 		    #
-		    # Update the value of the -xscrollcommand option, save
-		    # the properly formatted value of val in data($opt), and
+		    # Save the properly formatted value of val in data($opt) and
 		    # create or destroy the vertical main separator if needed
 		    #
 		    set oldVal $data($opt)
@@ -1132,7 +1131,7 @@ proc tablelist::doConfig {win opt val} {
 		    set w $data(vsep)
 		    if {$val == 0} {
 			$data(hdrTxt) configure -xscrollcommand \
-				      $data(-xscrollcommand)
+				      [list tablelist::updateHScrlbar $win]
 			if {$oldVal > 0} {
 			    destroy $w
 			}
@@ -1270,17 +1269,8 @@ proc tablelist::doConfig {win opt val} {
 		    }
 		}
 		-xscrollcommand {
-		    #
-		    # Save val in data($opt), and apply it to the header text
-		    # widget if (and only if) no title columns are being used
-		    #
 		    set data($opt) $val
 		    set data(xView) {-1 -1}
-		    if {$data(-titlecolumns) == 0} {
-			$data(hdrTxt) configure $opt $val
-		    } else {
-			$data(hdrTxt) configure $opt ""
-		    }
 		}
 		-yscrollcommand {
 		    set data($opt) $val

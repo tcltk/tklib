@@ -4340,21 +4340,23 @@ proc tablelist::updateHScrlbarWhenIdle win {
 # Updates the horizontal scrollbar associated with the tablelist widget win by
 # invoking the command specified as the value of the -xscrollcommand option.
 #------------------------------------------------------------------------------
-proc tablelist::updateHScrlbar win {
+proc tablelist::updateHScrlbar {win args} {
     upvar ::tablelist::ns${win}::data data
     if {[info exists data(hScrlbarId)]} {
 	after cancel $data(hScrlbarId)
 	unset data(hScrlbarId)
     }
 
-    if {$data(-titlecolumns) > 0 && $data(-xscrollcommand) ne ""} {
-	set xView [xviewSubCmd $win {}]
-	foreach {frac1 frac2} $xView {}
-	foreach {frac1Old frac2Old} $data(xView) {}
-	if {$frac1 != $frac1Old || $frac2 != $frac2Old} {
-	    set data(xView) $xView
+    set xView [expr {[llength $args] == 0 ? [xviewSubCmd $win {}] : $args}]
+    foreach {frac1 frac2} $xView {}
+    foreach {frac1Old frac2Old} $data(xView) {}
+    if {$frac1 != $frac1Old || $frac2 != $frac2Old} {
+	set data(xView) $xView
+	if {$data(-xscrollcommand) ne ""} {
 	    eval $data(-xscrollcommand) $frac1 $frac2
 	}
+
+	genVirtualEvent $win <<TablelistXViewChanged>> $xView
     }
 }
 
@@ -4389,14 +4391,16 @@ proc tablelist::updateVScrlbar win {
 	unset data(vScrlbarId)
     }
 
-    if {$data(-yscrollcommand) ne ""} {
-	set yView [yviewSubCmd $win {}]
-	foreach {frac1 frac2} $yView {}
-	foreach {frac1Old frac2Old} $data(yView) {}
-	if {$frac1 != $frac1Old || $frac2 != $frac2Old} {
-	    set data(yView) $yView
+    set yView [yviewSubCmd $win {}]
+    foreach {frac1 frac2} $yView {}
+    foreach {frac1Old frac2Old} $data(yView) {}
+    if {$frac1 != $frac1Old || $frac2 != $frac2Old} {
+	set data(yView) $yView
+	if {$data(-yscrollcommand) ne ""} {
 	    eval $data(-yscrollcommand) $frac1 $frac2
 	}
+
+	genVirtualEvent $win <<TablelistYViewChanged>> $yView
     }
 
     if {[winfo viewable $win] && ![info exists data(colBeingResized)] &&
