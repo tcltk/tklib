@@ -4356,7 +4356,9 @@ proc tablelist::updateHScrlbar {win args} {
 	    eval $data(-xscrollcommand) $frac1 $frac2
 	}
 
-	genVirtualEvent $win <<TablelistXViewChanged>> $xView
+	set leftCol  [columnindexSubCmd $win left]
+	set rightCol [columnindexSubCmd $win right]
+	genVirtualEvent $win <<TablelistXViewChanged>> [list $leftCol $rightCol]
     }
 }
 
@@ -4400,7 +4402,9 @@ proc tablelist::updateVScrlbar win {
 	    eval $data(-yscrollcommand) $frac1 $frac2
 	}
 
-	genVirtualEvent $win <<TablelistYViewChanged>> $yView
+	set topRow [indexSubCmd $win top]
+	set btmRow [indexSubCmd $win bottom]
+	genVirtualEvent $win <<TablelistYViewChanged>> [list $topRow $btmRow]
     }
 
     if {[winfo viewable $win] && ![info exists data(colBeingResized)] &&
