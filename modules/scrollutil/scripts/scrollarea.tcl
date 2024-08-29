@@ -732,8 +732,7 @@ proc scrollutil::sa::setwidgetSubCmd {win widget} {
 
     set data(widget) $widget
     eval setHScrollbar [list $win] [$widget xview]
-    after $data(-lockinterval) \
-	[list eval scrollutil::sa::setVScrollbar [list $win] [$widget yview]]
+    eval setVScrollbar [list $win] [$widget yview]
 
     return $oldWidget
 }
