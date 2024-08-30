@@ -7873,19 +7873,23 @@ proc handleTblDrop {tbl data} {
 
         <tr valign="top">
           <td><code><b>&lt;&lt;TablelistXViewChanged&gt;&gt;</b></code></td>
-	  <td>Generated whenever the horizontal view in the tablelist widget's
-	  window changes (and the horizontal scrollbar, if any, is
-	  updated).</td>
-	  <td>A list consisting of the numerical indices of the leftmost and
-	  rightmost columns visible in the tablelist window.</td>
+          <td>Generated whenever the horizontal view in the tablelist widget's
+          window changes (and the horizontal scrollbar, if any, is
+          updated).</td>
+          <td>A list consisting of the numerical indices of the leftmost and
+          rightmost columns visible in the tablelist window, i.e., of the
+          numerical equivalents of the <a href="#col_indices">column
+          indices</a> <code><b>left</b></code> and <code><b>right</code>.</td>
         </tr>
 
         <tr valign="top">
           <td><code><b>&lt;&lt;TablelistYViewChanged&gt;&gt;</b></code></td>
-	  <td>Generated whenever the vertical view in the tablelist widget's
-	  window changes (and the vertical scrollbar, if any, is updated).</td>
-	  <td>A list consisting of the numerical indices of the topmost and
-	  bottommost body items visible in the tablelist window.</td>
+          <td>Generated whenever the vertical view in the tablelist widget's
+          window changes (and the vertical scrollbar, if any, is updated).</td>
+          <td>A list consisting of the numerical indices of the topmost and
+          bottommost body items visible in the tablelist window, i.e., of
+          the numerical equivalents of the <a href="#row_indices">row
+          indices</a> <code><b>top</b></code> and <code><b>bottom</code>.</td>
         </tr>
       </table>
     </dd>
