@@ -34,9 +34,6 @@ foreach theme {alt clam classic default} {
 	    -fieldbackground [list {readonly focus} #4a6984] \
 	    -foreground      [list {readonly focus} #ffffff]
 
-	option add *TCombobox*Listbox.selectBackground  #4a6984
-	option add *TCombobox*Listbox.selectForeground  #ffffff
-
 	#
 	# Small.Toolbutton
 	#
