@@ -2,7 +2,7 @@ What is new in Mentry 4.3?
 --------------------------
 
 1. Made sure that the handling of the <TouchpadScroll> event won't
-   polluate the global namespace (thanks to Rolf Ade for drawing my
+   pollute the global namespace (thanks to Rolf Ade for drawing my
    attention to this issue).
 
 2. Loading the package no longer sets a global variable (thanks to

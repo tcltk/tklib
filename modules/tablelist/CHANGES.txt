@@ -12,7 +12,7 @@ What is new in Tablelist 7.3?
    to Paul Obermeier for his proposal).
 
 4. Made sure that the handling of the <TouchpadScroll> event won't
-   polluate the global namespace (thanks to Rolf Ade for drawing my
+   pollute the global namespace (thanks to Rolf Ade for drawing my
    attention to this issue).
 
 5. Adapted the handling of the <FocusIn> and <FocusOut> events to recent

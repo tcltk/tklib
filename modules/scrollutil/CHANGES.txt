@@ -7,7 +7,7 @@ What is new in Scrollutil 2.3?
    causes the toplevel to get higher.
 
 2. Made sure that the handling of the <TouchpadScroll> event won't
-   polluate the global namespace (thanks to Rolf Ade for drawing my
+   pollute the global namespace (thanks to Rolf Ade for drawing my
    attention to this issue).
 
 3. Added the demo script ScrolledCanvas.tcl; improvements in several
