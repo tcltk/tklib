@@ -100,8 +100,11 @@ lappend auto_path [file join $::mentry::library scripts]
 # Load the package mwutil from the directory "scripts/mwutil".  Take
 # into account that it is also included in Scrollutil and Tablelist.
 #
-if {[catch {package present mwutil} version] == 0 &&
-    [package vcompare $version 2.23] < 0} {
-    package forget mwutil
+proc ::mentry::loadUtil {} {
+    if {[catch {package present mwutil} version] == 0 &&
+	[package vcompare $version 2.23] < 0} {
+	package forget mwutil
+    }
+    package require mwutil 2.23[-]
 }
-package require mwutil 2.23[::mentry::-]
+::mentry::loadUtil

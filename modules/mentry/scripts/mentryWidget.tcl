@@ -1300,21 +1300,6 @@ proc mentry::putSubCmd {win startIdx strList} {
     upvar ::mentry::ns${win}::data data
 
     #
-    # If the focus is currently on one of win's children then set it
-    # temporarily to the top-level window containing win, to make sure
-    # that the after-insert callback condTabToNext will not change it
-    #
-    set focus [focus -displayof $win]
-    if {$focus ne "" && $focus ne "." &&
-	([winfo parent $focus] eq $win ||
-	 [winfo parent [winfo parent $focus]] eq $win)} {
-	focus [winfo toplevel $win]
-	set focusChanged 1
-    } else {
-	set focusChanged 0
-    }
-
-    #
     # Attempt to replace the texts of the entry children whose indices are
     # >= startIdx with the given strings, until either the entries or the
     # strings are consumed, by using the delete and insert operations; abort
@@ -1339,7 +1324,25 @@ proc mentry::putSubCmd {win startIdx strList} {
 	    break
 	}
 
+	if {[set focus [focus -displayof $w]] eq $w} {
+	    #
+	    # Temporarily remove the procedure mentry::condTabToNext from
+	    # the list of after-insert callbacks of this entry, because
+	    # it might move the focus to the next enabled entry child
+	    #
+	    set callbackList [wcb::callback $w after insert]
+	    set idx [lsearch -glob $callbackList "mentry::condTabToNext *"]
+	    set callbackList2 [lreplace $callbackList $idx $idx ""]
+	    eval wcb::callback [list $w] after insert $callbackList2
+	}
 	$w insert 0 $str
+	if {$focus eq $w} {
+	    #
+	    # Restore the after-insert callbacks of this entry
+	    #
+	    eval wcb::callback [list $w] after insert $callbackList
+	}
+
 	if {[wcb::canceled $w insert]} {
 	    set undo 1
 	    break
@@ -1364,12 +1367,6 @@ proc mentry::putSubCmd {win startIdx strList} {
 	incr n
     }
 
-    #
-    # Reset the focus if needed and return the negation of $undo
-    #
-    if {$focusChanged} {
-	focus $focus
-    }
     return [expr {!$undo}]
 }
 
@@ -1485,9 +1482,9 @@ proc mentry::childIndex {n max} {
 #
 # This after-insert callback checks whether the insertion cursor in the n'th
 # entry child of the mentry widget win is just behind the character having the
-# index width; if this is the case, it moves the focus to the next enabled
-# entry child, selects the content of that widget, and sets the insertion
-# cursor to its end.
+# index width and the focus is on that entry; if this is the case, it moves the
+# focus to the next enabled entry child, selects the content of that widget,
+# and sets the insertion cursor to its end.
 #------------------------------------------------------------------------------
 proc mentry::condTabToNext {width win n w idx str} {
     if {[$w index insert] == $width &&

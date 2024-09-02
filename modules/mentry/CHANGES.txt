@@ -5,7 +5,14 @@ What is new in Mentry 4.3?
    polluate the global namespace (thanks to Rolf Ade for drawing my
    attention to this issue).
 
-2. Restored the support for Tcl/Tk 8.4, which was broken due to the use
+2. Loading the package no longer sets a global variable (thanks to
+   Emiliano Gavilan for reporting this issue).
+
+3. The "put" subcommand no longer moves the focus temporarily from the
+   mentry widget to the containing toplevel window (thanks to Emiliano
+   Gavilan for his bug report).
+
+4. Restored the support for Tcl/Tk 8.4, which was broken due to the use
    of package version numbers with a trailing "-" (thanks to Samuel
    Brown for his bug report).
 
