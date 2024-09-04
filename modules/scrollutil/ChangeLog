@@ -1,3 +1,7 @@
+2024-09-04  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* Released Scrollutil 2.3.
+
 2024-08-21  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl:         Bumped the version number to 2.3; restored the support
