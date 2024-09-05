@@ -525,8 +525,7 @@ proc scrollutil::pm::pagesmanWidgetCmd {win args} {
 		return -code error "bad window path name \"$widget\""
 	    }
 
-	    set idx [lsearch -exact $data(pageList) $widget]
-	    if {$idx < 0} {
+	    if {[set idx [lsearch -exact $data(pageList) $widget]] < 0} {
 		return -code error "window \"$widget\" is not managed by $win"
 	    }
 

@@ -1,5 +1,13 @@
-What is new in Scrollutil 2.3?
-------------------------------
+What is new in Scrollutil 2.3.1?
+--------------------------------
+
+1. Appart from a few minor cosmetic improvements, the only change in
+   this release is a fix for a bug in the scrollutil::getscrollarea
+   command, introduced in the previous Scrollutil version (thanks to
+   Nicolas Bats for his bug report).
+
+What was new in Scrollutil 2.3?
+-------------------------------
 
 1. Several improvements in the implementation of the scrollarea widget.
    For example, made sure that mapping or unmapping the horizontal

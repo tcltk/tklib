@@ -376,6 +376,10 @@ proc scrollutil::scrollarea args {
 # scrollarea's setwidget subcommand.
 #------------------------------------------------------------------------------
 proc scrollutil::getscrollarea widget {
+    if {[lsearch -exact [bindtags $widget] "WidgetOfScrollarea"] < 0} {
+	return ""
+    }
+
     set win [lindex [grid info $widget] 1]
     if {[winfo exists $win] && [winfo class $win] eq "Scrollarea"} {
 	return $win
@@ -691,6 +695,11 @@ proc scrollutil::sa::setwidgetSubCmd {win widget} {
 	return $oldWidget
     }
 
+    set tagList [bindtags $widget]
+    if {[lsearch -exact $tagList "WidgetOfScrollarea"] < 0} {
+	bindtags $widget [linsert $tagList 1 WidgetOfScrollarea]
+    }
+
     grid $widget -in $win -row 0 -rowspan 2 -column 0 -columnspan 2 -sticky news
     raise $widget
 
@@ -722,12 +731,6 @@ proc scrollutil::sa::setwidgetSubCmd {win widget} {
 	}
 	onHeaderHeightChanged $widget
 	onTitleColsWidthChanged $widget
-    }
-
-    set tagList [bindtags $widget]
-    set idx [lsearch -exact $tagList "WidgetOfScrollarea"]
-    if {$idx < 0} {
-	bindtags $widget [linsert $tagList 1 WidgetOfScrollarea]
     }
 
     set data(widget) $widget

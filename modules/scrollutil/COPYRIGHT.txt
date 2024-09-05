@@ -1,4 +1,4 @@
-Scrolling utilities package Scrollutil 2.3
+Scrolling utilities package Scrollutil 2.3.1
 Copyright (c) 2019-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 
 This library is free software; you can use, modify, and redistribute it

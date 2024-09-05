@@ -409,8 +409,7 @@ proc scrollutil::ss::setwidgetsSubCmd {win widgetList} {
 
     foreach w $widgetList {
 	set tagList [bindtags $w]
-	set idx [lsearch -exact $tagList "WidgetOfScrollsync"]
-	if {$idx < 0} {
+	if {[lsearch -exact $tagList "WidgetOfScrollsync"] < 0} {
 	    bindtags $w [linsert $tagList 1 WidgetOfScrollsync]
 	}
 

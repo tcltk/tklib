@@ -548,8 +548,7 @@ proc scrollutil::disableScrollingByWheel args {
 	    return -code error "bad window path name \"$swc\""
 	}
 
-	set idx [lsearch -exact $scrlWidgetContList $swc]
-	if {$idx < 0} {
+	if {[set idx [lsearch -exact $scrlWidgetContList $swc]] < 0} {
 	    continue
 	}
 
@@ -641,8 +640,7 @@ proc scrollutil::adaptWheelEventHandling args {
 	    set w2 [expr {$class eq "Ctext" ? "$w.t" : $w}]
 	    set tagList [bindtags $w2]
 	    foreach tag {WheeleventRedir WheeleventBreak} {
-		set idx [lsearch -exact $tagList $tag]
-		if {$idx >= 0} {
+		if {[set idx [lsearch -exact $tagList $tag]] >= 0} {
 		    set tagList [lreplace $tagList $idx $idx]
 		}
 	    }
