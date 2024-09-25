@@ -1,10 +1,10 @@
 What is new in Scrollutil 2.3.1?
 --------------------------------
 
-1. Apart from a few minor cosmetic improvements, the only change in this
-   release is a fix for a bug in the scrollutil::getscrollarea command,
-   introduced in the previous Scrollutil version (thanks to Nicolas Bats
-   for his bug report).
+1. Reverted the implementation of the "scrollutil::getscrollarea"
+   command to its version contained in Scrollutil 2.2, thus eliminating
+   two potentially critical bugs introduced in Scrollutil 2.3 (thanks to
+   Nicolas Bats and Paul Obermeier for their bug reports).
 
 What was new in Scrollutil 2.3?
 -------------------------------

@@ -376,16 +376,15 @@ proc scrollutil::scrollarea args {
 # scrollarea's setwidget subcommand.
 #------------------------------------------------------------------------------
 proc scrollutil::getscrollarea widget {
-    if {[lsearch -exact [bindtags $widget] "WidgetOfScrollarea"] < 0} {
-	return ""
+    variable sa::scrollareaArr
+    if {[info exists scrollareaArr($widget)]} {
+        set win $scrollareaArr($widget)
+        if {[winfo exists $win] && [winfo class $win] eq "Scrollarea"} {
+            return $win
+        }
     }
 
-    set win [lindex [grid info $widget] 1]
-    if {[winfo exists $win] && [winfo class $win] eq "Scrollarea"} {
-	return $win
-    } else {
-	return ""
-    }
+    return ""
 }
 
 #
@@ -631,6 +630,7 @@ proc scrollutil::sa::scrollareaWidgetCmd {win args} {
 # Processes the scrollarea setwidget subcommmand.
 #------------------------------------------------------------------------------
 proc scrollutil::sa::setwidgetSubCmd {win widget} {
+    variable scrollareaArr
     upvar ::scrollutil::ns${win}::data data
 
     if {[winfo exists $widget]} {
@@ -675,6 +675,10 @@ proc scrollutil::sa::setwidgetSubCmd {win widget} {
 	set tagList [bindtags $oldWidget]
 	set idx [lsearch -exact $tagList "WidgetOfScrollarea"]
 	bindtags $oldWidget [lreplace $tagList $idx $idx]
+
+	if {[info exists scrollareaArr($oldWidget)]} {
+	    unset scrollareaArr($oldWidget)
+	}
     }
 
     setHScrollbar $win 0 1
@@ -695,13 +699,15 @@ proc scrollutil::sa::setwidgetSubCmd {win widget} {
 	return $oldWidget
     }
 
+    grid $widget -in $win -row 0 -rowspan 2 -column 0 -columnspan 2 -sticky news
+    raise $widget
+
     set tagList [bindtags $widget]
     if {[lsearch -exact $tagList "WidgetOfScrollarea"] < 0} {
 	bindtags $widget [linsert $tagList 1 WidgetOfScrollarea]
     }
 
-    grid $widget -in $win -row 0 -rowspan 2 -column 0 -columnspan 2 -sticky news
-    raise $widget
+    set scrollareaArr($widget) $win
 
     catch {::$widget configure -highlightthickness 0}
     if {[winfo pixels $win $data(-borderwidth)] > 0 &&
@@ -777,10 +783,6 @@ proc scrollutil::sa::setHScrollbar {win first last} {
 # vertical scrollbar of the scrollarea widget win.
 #------------------------------------------------------------------------------
 proc scrollutil::sa::setVScrollbar {win first last} {
-    if {![winfo exists $win] || [winfo class $win] ne "Scrollarea"} {
-	return ""
-    }
-
     upvar ::scrollutil::ns${win}::data data
     $win.vsb set $first $last
 
@@ -992,7 +994,7 @@ proc scrollutil::sa::onWidgetOfScrollareaMap widget {
     set idx [lsearch -exact $tagList "DynamicHScrollbar"]
     if {[::$win cget -xscrollbarmode] eq "dynamic"} {
 	if {$idx < 0} {
-	    set delay [expr {[wrapsTextWidget $win] ? 0 : 500}]
+	    set delay [expr {[wrapsTextWidget $win] ? 0 : 300}]
 	    after $delay [list bindtags $win.hsb \
 		[linsert $tagList 1 DynamicHScrollbar]]
 	}
@@ -1009,6 +1011,11 @@ proc scrollutil::sa::onWidgetOfScrollareaDestroy widget {
     if {$win ne ""} {
 	::$win setwidget ""
 	$win configure -width 1 -height 1
+    }
+
+    variable scrollareaArr
+    if {[info exists scrollareaArr($widget)]} {
+	unset scrollareaArr($widget)
     }
 }
 
@@ -1121,15 +1128,15 @@ proc scrollutil::sa::updateHScrollbar win {
     # Handle the case that the last showHScrollbar or hideHScrollbar
     # invocation returned prematurely because of the scrollbar lock
     #
-    if {$data(widget) eq ""} {
-	hideHScrollbar $win
-    } else {
+    if {[winfo exists $data(widget)]} {
 	foreach {first last} [$data(widget) xview] {}
 	if {$first == 0 && $last == 1} {
 	    hideHScrollbar $win
 	} elseif {[winfo width $data(widget)] > 1} {
 	    showHScrollbar $win
 	}
+    } else {
+	hideHScrollbar $win
     }
 }
 
@@ -1217,15 +1224,15 @@ proc scrollutil::sa::updateVScrollbar win {
     # Handle the case that the last showVScrollbar or hideVScrollbar
     # invocation returned prematurely because of the scrollbar lock
     #
-    if {$data(widget) eq ""} {
-	hideVScrollbar $win
-    } else {
+    if {[winfo exists $data(widget)]} {
 	foreach {first last} [$data(widget) yview] {}
 	if {$first == 0 && $last == 1} {
 	    hideVScrollbar $win
 	} elseif {[winfo height $data(widget)] > 1} {
 	    showVScrollbar $win
 	}
+    } else {
+	hideVScrollbar $win
     }
 }
 
