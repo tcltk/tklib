@@ -81,7 +81,7 @@ snit::widgetadaptor widget::calendar {
 
 	foreach {data(day) data(month) data(year)} \
 	    [clock format $now -format "%e %m %Y"] { break }
-	scan $data(month) %d data(month) ; # avoid leading 0 issues
+	scan $data(month) %lld data(month) ; # avoid leading 0 issues
 
 	set data(selday)   $data(day)
 	set data(selmonth) $data(month)
@@ -220,7 +220,7 @@ snit::widgetadaptor widget::calendar {
 
 	foreach {data(day) data(month) data(year)} \
 	    [clock format $date -format "%e %m %Y"] { break }
-	scan $data(month) %d data(month) ; # avoid leading 0 issues
+	scan $data(month) %lld data(month) ; # avoid leading 0 issues
 
 	set data(selday)   $data(day)
 	set data(selmonth) $data(month)
@@ -696,5 +696,5 @@ snit::widgetadaptor widget::calendar {
     }
 }
 
-package provide widget::calendar 1.0.1
-
+package provide widget::calendar 1.0.2
+return

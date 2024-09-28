@@ -9,7 +9,7 @@
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 
 package require Tk
-package provide ipentry 0.3.1
+package provide ipentry 0.3.2
 
 namespace eval ::ipentry {
     namespace export ipentry ipentry6
@@ -840,6 +840,7 @@ proc ::ipentry::_insert {w val} {
     foreach x {0 1 2 3} {
         set n [lindex $val $x]
         if {$n != ""} {
+	    ##nagelfar ignore
             if {![string is integer -strict $n]} {
                 #error "cannot insert non-numeric arguments"
                 return
@@ -918,7 +919,10 @@ proc ::ipentry::widgetCommand {w cmd args} {
         icursor {
             if {![string match $w.* [focus]]} { return }
             set i [lindex $args 0]
-            if {![string is integer -strict $i]} { error "argument must be an integer" }
+	    ##nagelfar ignore
+            if {![string is integer -strict $i]} {
+		return -code error "argument must be an integer"
+	    }
             set s [expr {$i / 4}]
             focus $w.$s
             $w.$s icursor [expr {$i % 4}]
@@ -965,7 +969,10 @@ proc ::ipentry::widgetCommand6 {w cmd args} {
         icursor {
             if {![string match $w.* [focus]]} { return }
             set i [lindex $args 0]
-            if {![string is integer -strict $i]} { error "argument must be am integer" }
+	    ##nagelfar ignore
+            if {![string is integer -strict $i]} {
+		return -code error "argument must be an integer"
+	    }
             set s [expr {$i / 8}]
             focus $w.$s
             $w.$s icursor [expr {$i % 8}]

@@ -8,15 +8,13 @@
 #
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
-#
-# RCS: @(#) $Id: menubar.tcl,v 1.6 2010/01/09 20:41:29 tomk Exp $
 
 package require Tk
 package require TclOO
 
 package require menubar::tree
 
-package provide menubar 0.5
+package provide menubar 0.5.1
 
 # --------------------------------------------------
 # DESIGN NOTES
@@ -1049,6 +1047,7 @@ oo::class create ::menubar {
 			}
 			-bind {
 				lassign ${value} uline accel sequence
+				##nagelfar ignore
 				if { ${uline} eq "" || [string is integer ${uline}] } {
 					${mtree} key.set ${node} -underline [expr {(${uline} eq "") ? -1 : ${uline}}]
 				} else {
@@ -1717,6 +1716,7 @@ oo::class create ::menubar {
 			}
 			-bind {
 				lassign ${value} uline accel sequence
+				##nagelfar ignore
 				if { ${uline} eq "" || [string is integer ${uline}] } {
 					${mtree} key.set ${name} -underline [expr {(${uline} eq "") ? -1 : ${uline}}]
 				} else {

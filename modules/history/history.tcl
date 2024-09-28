@@ -9,7 +9,7 @@
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 
 package require Tk
-package provide history 0.2
+package provide history 0.3
 
 namespace eval history {
     bind History <Up>   {::history::up %W}
@@ -101,7 +101,10 @@ proc ::history::configure {w option {value {}}} {
     switch -exact -- $option {
 	length {
 	    if {$value == ""} { return $prefs(maxlen,$w) }
-	    if {![string is integer -strict $value]} { error "length must be an integer" }
+	    ##nagelfar ignore
+	    if {![string is integer -strict $value]} {
+		return -code error "length must be an integer"
+	    }
 	    set prefs(maxlen,$w) $value
 	}
 	alert {
@@ -109,7 +112,7 @@ proc ::history::configure {w option {value {}}} {
 	    proc ::history::alert w $value
 	}
 	default {
-	    error "unknown option $option"
+	    return -code error "unknown option $option, expected alert, or length"
 	}
     }
 }

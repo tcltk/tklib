@@ -526,6 +526,7 @@ proc ::ico::getword {fh} {
 
 proc ::ico::getulong {fh} {
     binary scan [read $fh 4] i tmp
+    ##nagelfar ignore
     return [format %u $tmp]
 }
 
@@ -998,6 +999,7 @@ proc ::ico::getRawIconDataICO {file name} {
         return -code error "not an icon file"
     }
     set num [getword $fh]
+    ##nagelfar ignore
     if {![string is integer -strict $name] || $name < 0 || $name >= $num} { return -code error "no icon \"$name\"" }
 
     seek $fh [expr {(16 * $name) + 12}] current
@@ -1016,6 +1018,7 @@ proc ::ico::getRawIconDataICODATA {data name} {
     if {[binary scan $data sss h1 h2 num] != 3 || $h1 != 0 || $h2 != 1} {
 	return -code error "not icon data"
     }
+    ##nagelfar ignore
     if {![string is integer -strict $name] || $name < 0 || $name >= $num} {
 	return -code error "No icon $name"
     }
@@ -1099,7 +1102,7 @@ proc ::ico::writeIconICO {file name w h bpp palette xor and} {
         seek $fh -24 current
         lappend data [read $fh [expr {$a + $b}]]
     }
-
+    ##nagelfar ignore
     if {![string is integer -strict $name] || $name < 0 || $name >= $num} {
         set name [llength $data]
         lappend data $newicon
@@ -1140,7 +1143,7 @@ proc ::ico::writeIconICODATA {file name w h bpp palette xor and} {
         lappend data [string range $data $readpos [expr {$readpos + $a + $b}]]
         incr readpos [expr {$readpos + $a + $b}]
     }
-
+    ##nagelfar ignore
     if {![string is integer -strict $name] || $name < 0 || $name >= $num} {
         set name [llength $data]
         lappend data $newicon
@@ -1451,4 +1454,4 @@ interp alias {} ::ico::getIconMembersICL {} ::ico::getIconMembersEXE
 interp alias {} ::ico::getRawIconDataICL {} ::ico::getRawIconDataEXE
 interp alias {} ::ico::writeIconICL      {} ::ico::writeIconEXE
 
-package provide ico 1.1.2
+package provide ico 1.1.3

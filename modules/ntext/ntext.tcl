@@ -2174,9 +2174,9 @@ proc ::ntext::TextResetAnchor {w index} {
 	$w mark gravity $anchorname right
 	return
     }
-    scan $a "%d.%d" lineA chA
-    scan $b "%d.%d" lineB chB
-    scan $c "%d.%d" lineC chC
+    scan $a "%lld.%lld" lineA chA
+    scan $b "%lld.%lld" lineB chB
+    scan $c "%lld.%lld" lineC chC
     if {$lineB < $lineC + 2} {
 	set total [string length [$w get $b $c]]
 	if {$total <= 2} {
@@ -3691,4 +3691,5 @@ proc ::ntext::syncIndentColor {w} {
 
 ::ntext::initializeMatchPatterns
 
-package provide ntext 1.0b6
+package provide ntext 1.0
+

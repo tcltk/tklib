@@ -24,7 +24,7 @@ package require Tk 8.4-
 package require msgcat 1.2
 package require autoscroll 1.0
 
-package provide khim 1.0.2
+package provide khim 1.0.3
 
 namespace eval khim [list variable KHIMDir [file dirname [info script]]]
 
@@ -1044,7 +1044,7 @@ proc khim::CMapUpdateSpinbox {w args} {
     set spin $w.spin
 
     # Test validity of the code page number
-
+    ##nagelfar ignore
     if { ![string is integer -strict $CMapInputCodePage($w)]
 	 || $CMapInputCodePage($w) < 0
 	 || $CMapInputCodePage($w) >= 0x100 } {

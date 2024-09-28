@@ -4,8 +4,6 @@
 #
 # Copyright (c) 2003 Aaron Faupell
 # Copyright (c) 2003-2004 ActiveState Corporation
-#
-# RCS: @(#) $Id: ico0.tcl,v 1.3 2011/10/05 00:10:46 hobbs Exp $
 
 # JH: speed has been considered in these routines, although they
 # may not be fully optimized.  Running EXEtoICO on explorer.exe,
@@ -369,6 +367,7 @@ proc ::ico::getword {fh} {
 
 proc ::ico::getulong {fh} {
     binary scan [read $fh 4] i tmp
+    ##nagelfar ignore
     return [format %u $tmp]
 }
 
@@ -1180,4 +1179,4 @@ proc ::ico::Show {file args} {
     grid columnconfigure $parent 0 -weight 1
 }
 
-package provide ico 0.3.4
+package provide ico 0.3.5

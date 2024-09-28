@@ -145,7 +145,8 @@ proc ::tooltip::tooltip {w args} {
 	delay	{
 	    if {[llength $args]} {
 		set millisecs [lindex $args 0]
-		if {![string is integer -strict $millisecs] || $millisecs<50} {
+		##nagelfar ignore
+		if {![string is integer -strict $millisecs] || ($millisecs < 50)} {
 		    return -code error "tooltip delay must be an integer\
 			    greater than or equal to 50 (delay is in millisecs)"
 		}
@@ -751,4 +752,4 @@ proc ::tooltip::conditionally-hide {w tag} {
     hide 1
 }
 
-package provide tooltip 2.0.0
+package provide tooltip 2.0.1
