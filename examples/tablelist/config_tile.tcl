@@ -37,9 +37,10 @@ namespace eval demo {
     }
     option add *DemoTop*selectBorderWidth \
 	       $::tablelist::themeDefaults(-selectborderwidth)
-    set foreground [winfo rgb . $::tablelist::themeDefaults(-foreground)]
-    set selectFg   [winfo rgb . $::tablelist::themeDefaults(-selectforeground)]
-    set selectFgEqForeground [expr {$selectFg eq $foreground}]
+    variable foreground [winfo rgb . $::tablelist::themeDefaults(-foreground)]
+    variable selectFg \
+	winfo rgb . $::tablelist::themeDefaults(-selectforeground)]
+    variable selectFgEqForeground [expr {$selectFg eq $foreground}]
     variable isAwTheme \
 	[llength [info commands ::ttk::theme::${currentTheme}::setTextColors]]
     if {$isAwTheme && ![regexp {^(aw)?(arc|breeze.*)$} $currentTheme]} {

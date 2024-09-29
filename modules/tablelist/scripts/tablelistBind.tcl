@@ -109,6 +109,7 @@ proc tablelist::delaySashPosUpdates {w ms} {
     #
     # Check the second argument
     #
+    ##nagelfar ignore
     if {[catch {format "%d" $ms} result] != 0} { ;# integer check with error msg
 	return -code error $result
     }
@@ -449,17 +450,22 @@ proc tablelist::updateFonts win {
     doConfig $win -labelfont $data(-labelfont)
 
     foreach name [array names data ?*-font] {
+	##nagelfar ignore
 	if {[scan $name "%d-%s" col dummy] == 2} {
 	    doColConfig $col $win -font $data($col-font)
+	##nagelfar ignore
 	} elseif {[scan $name "k%d-%s" num dummy] == 2} {
 	    set row [keyToRow $win [set key k$num]]
 	    doRowConfig $row $win -font $data($key-font)
+	##nagelfar ignore
 	} elseif {[scan $name "hk%d-%s" num dummy] == 2} {
 	    set row [hdr_keyToRow $win [set key hk$num]]
 	    doRowConfig h$row $win -font $data($key-font)
+	##nagelfar ignore
 	} elseif {[scan $name "k%d,%d-%s" num col dummy] == 3} {
 	    set row [keyToRow $win [set key k$num]]
 	    doCellConfig $row $col $win -font $data($key,$col-font)
+	##nagelfar ignore
 	} elseif {[scan $name "hk%d,%d-%s" num col dummy] == 3} {
 	    set row [hdr_keyToRow $win [set key hk$num]]
 	    doCellConfig h$row $col $win -font $data($key,$col-font)
@@ -467,6 +473,7 @@ proc tablelist::updateFonts win {
     }
 
     foreach name [array names data ?*-labelfont] {
+	##nagelfar ignore
 	if {[scan $name "%d-%s" col dummy] == 2} {
 	    doColConfig $col $win -labelfont $data($col-labelfont)
 	}
@@ -831,6 +838,7 @@ proc tablelist::updateAppearance win {
 # corresponding to systemSelectedTextBackgroundColor on the Mac.
 #------------------------------------------------------------------------------
 proc tablelist::condOpenPipeline {} {
+    ##nagelfar ignore
     scan $::tcl_platform(osVersion) "%d" majorOSVersion
     if {$majorOSVersion < 18 ||
 	($::tk_patchLevel ne "8.6.10" && $::tk_patchLevel ne "8.7a3")} {
@@ -917,6 +925,7 @@ proc tablelist::defineTablelistBody {} {
 	}
     }
     foreach event {<Enter> <Motion> <Leave>} {
+	##nagelfar ignore
 	bind TablelistBody $event [format {
 	    tablelist::handleMotionDelayed %%W %%x %%y %%X %%Y %%m %s
 	} $event]
@@ -1325,6 +1334,7 @@ proc tablelist::defineTablelistBody {} {
 	} [bind Listbox $event]]
 
 	if {$script ne ""} {
+	    ##nagelfar ignore
 	    bind TablelistBody $event [format {
 		if {[winfo exists %%W]} {
 		    foreach {tablelist::W tablelist::x tablelist::y} \
@@ -1756,6 +1766,7 @@ proc tablelist::condEditContainingCell {win x y} {
 	set w $data(body)
 	incr x -[winfo x $w]
 	incr y -[winfo y $w]
+	##nagelfar ignore
 	scan [$w index @$x,$y] "%d.%d" line charPos
 	doEditCell $win $row $col 0 "" $charPos
     } else {
@@ -2179,6 +2190,7 @@ proc tablelist::motion {win row col {checkIfDragSrc 0}} {
 
 		    if {[::$win cget -showbusycursor]} { ::$win setbusycursor }
 		    foreach cellIdx $priv(selection) {	;# can take long
+			##nagelfar ignore
 			scan $cellIdx "%d,%d" r c
 			if {([cellInRect $r $c $rMin1 $cMin1 $rMax1 $cMax1] ||
 			     [cellInRect $r $c $rMin2 $cMin2 $rMax2 $cMax2]) &&
@@ -3457,6 +3469,7 @@ proc tablelist::handleWheelEvent {event axis W X Y delta divisor} {
 #------------------------------------------------------------------------------
 proc tablelist::defineTablelistHeader {} {
     foreach event {<Enter> <Motion> <Leave>} {
+	##nagelfar ignore
 	bind TablelistHeader $event [format {
 	    tablelist::hdr_handleMotionDelayed %%W %%x %%y %%X %%Y %s
 	} $event]
@@ -3633,6 +3646,7 @@ proc tablelist::defineTablelistSubLabel {} {
 	    "%W" "$tablelist::W"  "%x" "$tablelist::x"  "%y" "$tablelist::y"
 	} [bind TablelistLabel $event]]
 
+	##nagelfar ignore
 	bind TablelistSubLabel $event [format {
 	    set tablelist::W \
 		[string range %%W 0 [expr {[string length %%W] - 4}]]
@@ -3660,6 +3674,7 @@ proc tablelist::defineTablelistArrow {} {
 	    "%W" "$tablelist::W"  "%x" "$tablelist::x"  "%y" "$tablelist::y"
 	} [bind TablelistLabel $event]]
 
+	##nagelfar ignore
 	bind TablelistArrow $event [format {
 	    set tablelist::W \
 		[winfo parent %%W].l[string range [winfo name %%W] 1 end]

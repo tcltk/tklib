@@ -214,6 +214,7 @@ proc tablelist::aquaTheme {} {
 	set disabledFg #b1b1b1
     }
 
+    ##nagelfar ignore
     scan $::tcl_platform(osVersion) "%d" majorOSVersion
     if {$majorOSVersion >= 14} {			;# OS X 10.10 or later
 	if {$newAquaSupport} {
@@ -1718,6 +1719,7 @@ proc tablelist::tileqtTheme {} {
     }
     if {$val eq "" || [string index $val 0] eq "#"} {
 	set stripeBg $val
+    ##nagelfar ignore
     } elseif {[scan $val "%d,%d,%d" r g b] == 3} {
 	set stripeBg [format "#%02x%02x%02x" $r $g $b]
     } else {

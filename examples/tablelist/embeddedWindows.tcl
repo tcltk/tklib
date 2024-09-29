@@ -77,6 +77,7 @@ eval font create BoldFont [font actual $tblFont] -size $size -weight bold
 cd $tk_library
 set totalSize 0
 set maxSize 0
+##nagelfar ignore
 foreach fileName [lsort [glob *.tcl]] {
     set fileSize [file size $fileName]
     $tbl insert end [list $fileName $fileSize $fileSize "" no]

@@ -17,7 +17,7 @@ namespace eval demo {
     variable leafImg [image create photo]
     variable pct ""
     if {$::tk_version >= 8.7 || [catch {package require tksvg}] == 0} {
-	set fmt $::tablelist::svgfmt
+	variable fmt $::tablelist::svgfmt
 	$compImg read [file join $dir comp.svg] -format $fmt
 	$leafImg read [file join $dir leaf.svg] -format $fmt
     } else {

@@ -1,5 +1,11 @@
-What is new in Tablelist 7.3?
------------------------------
+What is new in Tablelist 7.3.1?
+-------------------------------
+
+1. Made sure that the Migration Tool for Tcl 9 won't output any
+   warnings or notes.
+
+What was new in Tablelist 7.3?
+------------------------------
 
 1. Added the virtual events <<TablelistXViewChanged>> and
    <<TablelistYViewChanged>>, generated when the horizontal/vertical

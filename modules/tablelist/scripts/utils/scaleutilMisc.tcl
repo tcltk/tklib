@@ -25,7 +25,7 @@ namespace eval scaleutilmisc {
     #
     # Public variables:
     #
-    variable version	1.7
+    variable version	1.7.1
     variable library	[file dirname [file normalize [info script]]]
 
     #
@@ -83,6 +83,7 @@ proc scaleutilmisc::scaleBWidgetComboBox w {
     #
     ComboBox::_create_popup $w
     if {![Widget::theme]} {
+	##nagelfar ignore
 	bind $w.shell <Map> [format {
 	    if {[winfo class %%W] eq "Toplevel"} {
 		%%W.sw.vscroll configure -width %d

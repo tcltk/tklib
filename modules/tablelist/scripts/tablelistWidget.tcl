@@ -1317,7 +1317,9 @@ proc tablelist::autoscrolltargetSubCmd {win argList} {
     }
 
     set event [lindex $argList 0]
+    ##nagelfar ignore
     set x [format "%d" [lindex $argList 1]]
+    ##nagelfar ignore
     set y [format "%d" [lindex $argList 2]]
 
     synchronize $win
@@ -2001,6 +2003,7 @@ proc tablelist::containingSubCmd {win argList} {
 	mwutil::wrongNumArgs "$win containing y"
     }
 
+    ##nagelfar ignore
     set y [format "%d" [lindex $argList 0]]
     synchronize $win
     displayItems $win
@@ -2015,7 +2018,9 @@ proc tablelist::containingcellSubCmd {win argList} {
 	mwutil::wrongNumArgs "$win containingcell x y"
     }
 
+    ##nagelfar ignore
     set x [format "%d" [lindex $argList 0]]
+    ##nagelfar ignore
     set y [format "%d" [lindex $argList 1]]
     synchronize $win
     displayItems $win
@@ -2030,6 +2035,7 @@ proc tablelist::containingcolumnSubCmd {win argList} {
 	mwutil::wrongNumArgs "$win containingcolumn x"
     }
 
+    ##nagelfar ignore
     set x [format "%d" [lindex $argList 0]]
     synchronize $win
     displayItems $win
@@ -3705,6 +3711,7 @@ proc tablelist::header_containingSubCmd {win argList} {
 	mwutil::wrongNumArgs "$win header containing y"
     }
 
+    ##nagelfar ignore
     set y [format "%d" [lindex $argList 0]]
     return [hdr_containingRow $win $y]
 }
@@ -3717,7 +3724,9 @@ proc tablelist::header_containingcellSubCmd {win argList} {
 	mwutil::wrongNumArgs "$win header containingcell x y"
     }
 
+    ##nagelfar ignore
     set x [format "%d" [lindex $argList 0]]
+    ##nagelfar ignore
     set y [format "%d" [lindex $argList 1]]
     return [hdr_containingRow $win $y],[containingCol $win $x]
 }
@@ -4595,6 +4604,7 @@ proc tablelist::header_nearestSubCmd {win argList} {
 	mwutil::wrongNumArgs "$win header nearest y"
     }
 
+    ##nagelfar ignore
     set y [format "%d" [lindex $argList 0]]
     return [hdr_rowIndex $win @0,$y 0]
 }
@@ -4607,7 +4617,9 @@ proc tablelist::header_nearestcellSubCmd {win argList} {
 	mwutil::wrongNumArgs "$win header nearestcell x y"
     }
 
+    ##nagelfar ignore
     set x [format "%d" [lindex $argList 0]]
+    ##nagelfar ignore
     set y [format "%d" [lindex $argList 1]]
     return [join [hdr_cellIndex $win @$x,$y 0] ","]
 }
@@ -5384,6 +5396,7 @@ proc tablelist::nearestSubCmd {win argList} {
 	mwutil::wrongNumArgs "$win nearest y"
     }
 
+    ##nagelfar ignore
     set y [format "%d" [lindex $argList 0]]
     return [rowIndex $win @0,$y 0]
 }
@@ -5396,7 +5409,9 @@ proc tablelist::nearestcellSubCmd {win argList} {
 	mwutil::wrongNumArgs "$win nearestcell x y"
     }
 
+    ##nagelfar ignore
     set x [format "%d" [lindex $argList 0]]
+    ##nagelfar ignore
     set y [format "%d" [lindex $argList 1]]
     return [join [cellIndex $win @$x,$y 0] ","]
 }
@@ -5409,6 +5424,7 @@ proc tablelist::nearestcolumnSubCmd {win argList} {
 	mwutil::wrongNumArgs "$win nearestcolumn x"
     }
 
+    ##nagelfar ignore
     set x [format "%d" [lindex $argList 0]]
     return [colIndex $win @$x,0 0]
 }
@@ -5588,7 +5604,9 @@ proc tablelist::scanSubCmd {win argList} {
 
     variable scanOpts
     set opt [mwutil::fullOpt "option" [lindex $argList 0] $scanOpts]
+    ##nagelfar ignore
     set x [format "%d" [lindex $argList 1]]
+    ##nagelfar ignore
     set y [format "%d" [lindex $argList 2]]
     synchronize $win
     displayItems $win
@@ -6226,6 +6244,7 @@ proc tablelist::targetmarkposSubCmd {win argList} {
 	mwutil::wrongNumArgs "$win targetmarkpos y ?-any|-horizontal|-vertical?"
     }
 
+    ##nagelfar ignore
     set y [format "%d" [lindex $argList 0]]
     if {$argCount == 1} {
 	set opt -any
@@ -6579,6 +6598,7 @@ proc tablelist::xviewSubCmd {win argList} {
 	    #
 	    # Command: $win xview <units>
 	    #
+	    ##nagelfar ignore
 	    set units [format "%d" [lindex $argList 0]]
 	    if {$data(-titlecolumns) == 0} {
 		foreach w [list $data(hdrTxt) $data(body)] {
@@ -6744,6 +6764,7 @@ proc tablelist::yviewSubCmd {win argList} {
 	    # Command: $win yview <units>
 	    #
 	    set w $data(body)
+	    ##nagelfar ignore
 	    set units [format "%d" [lindex $argList 0]]
 	    set row [viewableRowOffsetToRowIndex $win $units]
 	    $w yview $row
@@ -8398,6 +8419,7 @@ proc tablelist::insertCols {win colIdx argList} {
 	#
 	# Check the column width
 	#
+	##nagelfar ignore
 	format "%d" [lindex $argList $n]    ;# integer check with error message
 
 	#
@@ -9254,6 +9276,7 @@ proc tablelist::fetchSelection {win offset maxChars} {
     set selection ""
     set prevRow -1
     foreach cellIdx [curCellSelection $win 2] {
+	##nagelfar ignore
 	scan $cellIdx "%d,%d" row col
 	if {$row != $prevRow} {
 	    if {$prevRow != -1} {

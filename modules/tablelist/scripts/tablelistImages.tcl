@@ -1262,6 +1262,7 @@ proc tablelist::aquaTreeImgs {} {
 
     variable pngSupported
     variable winSys
+    ##nagelfar ignore
     scan $::tcl_platform(osVersion) "%d" majorOSVersion
     if {$winSys eq "aqua" && $majorOSVersion > 10} {
 	set osVerPost10 1

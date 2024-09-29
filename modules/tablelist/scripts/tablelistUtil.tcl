@@ -118,6 +118,7 @@ proc tablelist::rowIndex {win idx endIsSize {checkRange 0}} {
 	set index $data(activeRow)
     } elseif {[string first $idx "anchor"] == 0 && [string length $idx] >= 2} {
 	set index $data(anchorRow)
+    ##nagelfar ignore
     } elseif {[scan $idx "@%d,%d%n" x y count] == 3 &&
 	      $count == [string length $idx]} {
 	synchronize $win
@@ -129,6 +130,7 @@ proc tablelist::rowIndex {win idx endIsSize {checkRange 0}} {
 	if {$index > $data(lastRow)} {
 	    set index $data(lastRow)
 	}
+    ##nagelfar ignore
     } elseif {[scan $idx "k%d%n" num count] == 2 &&
 	      $count == [string length $idx]} {
 	set index [keyToRow $win k$num]
@@ -182,6 +184,7 @@ proc tablelist::hdr_rowIndex {win idx endIsSize {checkRange 0}} {
 	}
     } elseif {[string first $idx "last"] == 0} {
 	set index $data(hdr_lastRow)
+    ##nagelfar ignore
     } elseif {[scan $idx "@%d,%d%n" x y count] == 3 &&
 	      $count == [string length $idx]} {
 	incr x -[winfo x $data(hdr)]
@@ -197,6 +200,7 @@ proc tablelist::hdr_rowIndex {win idx endIsSize {checkRange 0}} {
 	if {$index > $data(hdr_lastRow)} {
 	    set index $data(hdr_lastRow)
 	}
+    ##nagelfar ignore
     } elseif {[scan $idx "hk%d%n" num count] == 2 &&
 	      $count == [string length $idx]} {
 	set index [hdr_keyToRow $win hk$num]
@@ -250,6 +254,7 @@ proc tablelist::colIndex {win idx checkRange {decrX 1}} {
 	set index $data(activeCol)
     } elseif {[string first $idx "anchor"] == 0 && [string length $idx] >= 2} {
 	set index $data(anchorCol)
+    ##nagelfar ignore
     } elseif {[scan $idx "@%d,%d%n" x y count] == 3 &&
 	      $count == [string length $idx]} {
 	synchronize $win
@@ -338,6 +343,7 @@ proc tablelist::colIndex2 {win idx} {
 	return $data(activeCol)
     } elseif {[string first $idx "anchor"] == 0 && [string length $idx] >= 2} {
 	return $data(anchorCol)
+    ##nagelfar ignore
     } elseif {[scan $idx "@%d,%d%n" x y count] == 3 &&
 	      $count == [string length $idx]} {
 	return [colIndex $win @$x,$y 0 1]
@@ -2323,6 +2329,7 @@ proc tablelist::setupColumns {win columns createLabels} {
 	# Get the column width
 	#
 	set width [lindex $columns $n]
+	##nagelfar ignore
 	set width [format "%d" $width]	;# integer check with error message
 
 	#
@@ -6658,6 +6665,7 @@ proc tablelist::createCkbtn {cmd win row col w} {
     $w.ckbtn configure -variable ::tablelist::ns${win}::checkStates($key,$col)
 
     if {$cmd ne ""} {
+	##nagelfar ignore
 	$w.ckbtn configure -command [format {
 	    after idle [list %s %s [%s index %s] %d]
 	} $cmd $win $win $key $col]
@@ -6683,6 +6691,7 @@ proc tablelist::hdr_createCkbtn {cmd win row col w} {
     $w.ckbtn configure -variable ::tablelist::ns${win}::checkStates($key,$col)
 
     if {$cmd ne ""} {
+	##nagelfar ignore
 	$w.ckbtn configure -command [format {
 	    after idle [list %s %s [%s header index %s] %d]
 	} $cmd $win $win $key $col]
@@ -6768,6 +6777,7 @@ proc tablelist::createTtkCkbtn {cmd win row col w} {
     $w.ckbtn configure -variable ::tablelist::ns${win}::checkStates($key,$col)
 
     if {$cmd ne ""} {
+	##nagelfar ignore
 	$w.ckbtn configure -command [format {
 	    after idle [list %s %s [%s index %s] %d]
 	} $cmd $win $win $key $col]
@@ -6793,6 +6803,7 @@ proc tablelist::hdr_createTtkCkbtn {cmd win row col w} {
     $w.ckbtn configure -variable ::tablelist::ns${win}::checkStates($key,$col)
 
     if {$cmd ne ""} {
+	##nagelfar ignore
 	$w.ckbtn configure -command [format {
 	    after idle [list %s %s [%s header index %s] %d]
 	} $cmd $win $win $key $col]

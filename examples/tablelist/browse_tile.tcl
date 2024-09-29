@@ -16,11 +16,11 @@ namespace eval demo {
     variable compImg [image create photo]
     variable leafImg [image create photo]
     if {$::tk_version >= 8.7 || [catch {package require tksvg}] == 0} {
-	set fmt $::tablelist::svgfmt
+	variable fmt $::tablelist::svgfmt
 	$compImg read [file join $dir comp.svg] -format $fmt
 	$leafImg read [file join $dir leaf.svg] -format $fmt
     } else {
-	set pct $::tablelist::scalingpct
+	variable pct $::tablelist::scalingpct
 	$compImg read [file join $dir comp$pct.gif] -format gif
 	$leafImg read [file join $dir leaf$pct.gif] -format gif
     }

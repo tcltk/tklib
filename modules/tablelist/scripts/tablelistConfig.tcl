@@ -115,6 +115,7 @@ proc tablelist::extendConfigSpecs {} {
 	variable currentTheme
 	if {$currentTheme eq "aqua"} {
 	    variable newAquaSupport
+	    ##nagelfar ignore
 	    scan $::tcl_platform(osVersion) "%d" majorOSVersion
 	    if {$newAquaSupport && $majorOSVersion >= 18} {	;# OS X 10.14+
 		update idletasks		;# needed for the isdark query
@@ -288,6 +289,7 @@ proc tablelist::extendConfigSpecs {} {
 	    }
 
 	    aqua {
+		##nagelfar ignore
 		scan $::tcl_platform(osVersion) "%d" majorOSVersion
 		if {$majorOSVersion >= 20} {		;# macOS 11.0 or higher
 		    set arrowColor	#878787
@@ -814,6 +816,7 @@ proc tablelist::doConfig {win opt val} {
 		    # and of the listbox child, and save the
 		    # properly formatted value of val in data($opt)
 		    #
+		    ##nagelfar ignore
 		    set val [format "%d" $val]	;# integer check with error msg
 		    if {$val <= 0} {
 			set viewableRowCount [expr \
@@ -1079,6 +1082,7 @@ proc tablelist::doConfig {win opt val} {
 		    # Save the properly formatted value of val in
 		    # data($opt) and draw the stripes if necessary
 		    #
+		    ##nagelfar ignore
 		    set val [format "%d" $val]	;# integer check with error msg
 		    set data($opt) $val
 		    makeStripesWhenIdle $win
@@ -1123,6 +1127,7 @@ proc tablelist::doConfig {win opt val} {
 		    # create or destroy the vertical main separator if needed
 		    #
 		    set oldVal $data($opt)
+		    ##nagelfar ignore
 		    set val [format "%d" $val]	;# integer check with error msg
 		    if {$val < 0} {
 			set val 0
@@ -1247,6 +1252,7 @@ proc tablelist::doConfig {win opt val} {
 		    # header frame, and listbox child, and save the
 		    # properly formatted value of val in data($opt)
 		    #
+		    ##nagelfar ignore
 		    set val [format "%d" $val]	;# integer check with error msg
 		    $data(body) configure $opt $val
 		    if {$val <= 0} {
@@ -1844,6 +1850,7 @@ proc tablelist::doColConfig {col win opt val} {
 	    # data($col$opt), adjust the columns, and make sure
 	    # the specified column will be redisplayed at idle time
 	    #
+	    ##nagelfar ignore
 	    set val [format "%d" $val]	;# integer check with error message
 	    set data($col$opt) $val
 	    if {$val > 0} {		;# convention: max. width in characters

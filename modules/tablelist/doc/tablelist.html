@@ -179,10 +179,11 @@
   <h3 id="ov_get">How to Get It?</h3>
 
   <p>Tablelist is available for free download from the same URL as Wcb.&nbsp;
-  The distribution file is <code>tablelist7.3.tar.gz</code> for UNIX and
-  <code>tablelist7_3.zip</code> for Windows.&nbsp; These files contain the same
-  information, except for the additional carriage return character preceding
-  the linefeed at the end of each line in the text files for Windows.</p>
+  The distribution file is <code>tablelist7.3.1.tar.gz</code> for UNIX and
+  <code>tablelist7_3_1.zip</code> for Windows.&nbsp; These files contain the
+  same information, except for the additional carriage return character
+  preceding the linefeed at the end of each line in the text files for
+  Windows.</p>
 
   <p>Tablelist is also included in tklib, which has the address</p>
 
@@ -203,11 +204,11 @@
 
   <p>To install Tablelist <i>on UNIX</i>, <code>cd</code> to the desired
   directory and unpack the distribution file
-  <code>tablelist7.3.tar.gz</code>:</p>
+  <code>tablelist7.3.1.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c tablelist7.3.tar.gz | tar -xf -
+gunzip -c tablelist7.3.1.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
@@ -215,17 +216,17 @@ gunzip -c tablelist7.3.tar.gz | tar -xf -
 
   <blockquote>
     <pre>
-tar -zxf tablelist7.3.tar.gz
+tar -zxf tablelist7.3.1.tar.gz
 </pre>
   </blockquote>
 
-  <p>Both commands will create a directory named <code>tablelist7.3</code>,
+  <p>Both commands will create a directory named <code>tablelist7.3.1</code>,
   with the subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>tablelist7_3.zip</code> into the directory
-  <code>tablelist7.3</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>tablelist7_3_1.zip</code> into the directory
+  <code>tablelist7.3.1</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>The file <code>tablelistEdit.tcl</code> in the <code>scripts</code>
@@ -1289,7 +1290,7 @@ namespace eval demo {
     variable compImg [image create photo]
     variable pct ""
     if {$::tk_version >= 8.7 || [catch {package require tksvg}] == 0} {
-        set fmt $::tablelist::svgfmt
+        variable fmt $::tablelist::svgfmt
         $leafImg read [file join $dir leaf.svg] -format $fmt
         $compImg read [file join $dir comp.svg] -format $fmt
     } else {

@@ -1803,6 +1803,7 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
 		    [info exists data($key,$col-image)] ||
 		    [info exists data($key,$col-window)]}]
 		if {$alignment eq "right"} {
+		    ##nagelfar ignore
 		    scan $tabIdx2 "%d.%d" line tabCharIdx2
 		    if {$isMentry} {
 			set len [string length [$w getstring]]
@@ -1814,6 +1815,7 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
 			incr number 2
 		    }
 		} else {
+		    ##nagelfar ignore
 		    scan $tabIdx1 "%d.%d" line tabCharIdx1
 		    set number [expr {$charPos - $tabCharIdx1 - 1}]
 		    if {$hasAuxObject} {
@@ -2702,6 +2704,7 @@ proc tablelist::defineTablelistEdit {} {
 	}
     }
     foreach dir {Left Right} amount {-1 1} {
+	##nagelfar ignore
 	bind TablelistEdit <$dir> [format {
 	    if {![tablelist::isKeyReserved %%W %%K]} {
 		tablelist::goLeftRight %%W %d
@@ -2709,6 +2712,7 @@ proc tablelist::defineTablelistEdit {} {
 	} $amount]
     }
     foreach dir {Up Down} amount {-1 1} {
+	##nagelfar ignore
 	bind TablelistEdit <$dir> [format {
 	    if {![tablelist::isKeyReserved %%W %%K]} {
 		tablelist::goUpDown %%W %d
@@ -2716,6 +2720,7 @@ proc tablelist::defineTablelistEdit {} {
 	} $amount]
     }
     foreach page {Prior Next} amount {-1 1} {
+	##nagelfar ignore
 	bind TablelistEdit <$page> [format {
 	    if {![tablelist::isKeyReserved %%W %%K]} {
 		tablelist::goToPriorNextPage %%W %d
@@ -2750,6 +2755,7 @@ proc tablelist::defineTablelistEdit {} {
     # Define some emacs-like key bindings for the binding tag TablelistEdit
     #
     foreach pattern {Meta-b Meta-f} amount {-1 1} {
+	##nagelfar ignore
 	bind TablelistEdit <$pattern> [format {
 	    if {!$tk_strictMotif && ![tablelist::isKeyReserved %%W %s]} {
 		tablelist::goLeftRight %%W %d
@@ -2757,6 +2763,7 @@ proc tablelist::defineTablelistEdit {} {
 	} $pattern $amount]
     }
     foreach pattern {Control-p Control-n} amount {-1 1} {
+	##nagelfar ignore
 	bind TablelistEdit <$pattern> [format {
 	    if {!$tk_strictMotif && ![tablelist::isKeyReserved %%W %s]} {
 		tablelist::goUpDown %%W %d
@@ -2861,6 +2868,7 @@ proc tablelist::defineTablelistEdit {} {
     }
     if {$winSys eq "x11"} {
 	foreach detail {4 5} {
+	    ##nagelfar ignore
 	    bind TablelistEdit <Button-$detail> [format {
 		if {[tablelist::hasMouseWheelBindings %%W y]} {
 		    set tablelist::W [tablelist::getTablelistPath %%W]
@@ -2880,6 +2888,7 @@ proc tablelist::defineTablelistEdit {} {
 	    } $detail $detail]
 	    bind TablelistEditBreak <Button-$detail> { break }
 
+	    ##nagelfar ignore
 	    bind TablelistEdit <Shift-Button-$detail> [format {
 		if {[tablelist::hasMouseWheelBindings %%W x]} {
 		    set tablelist::W [tablelist::getTablelistPath %%W]
@@ -2902,6 +2911,7 @@ proc tablelist::defineTablelistEdit {} {
 
 	if {$::tk_patchLevel eq "8.7a3"} {
 	    foreach detail {6 7} {
+		##nagelfar ignore
 		bind TablelistEdit <Button-$detail> [format {
 		    if {[tablelist::hasMouseWheelBindings %%W x]} {
 			set tablelist::W [tablelist::getTablelistPath %%W]
@@ -3026,6 +3036,7 @@ proc tablelist::finishEditing {w sequence} {
     switch [lindex $lst end] {
 	Return - KP_Enter {		;# fill the column's selected cells
 	    foreach cellIdx [curCellSelection $win 0] {
+		##nagelfar ignore
 		scan $cellIdx "%d,%d" row col
 		if {$col == $editCol} {
 		    doCellConfig $row $col $win -text $text
