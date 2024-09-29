@@ -627,6 +627,7 @@ proc scrollutil::pnb::doConfig {win opt val} {
 	w {
 	    switch -- $opt {
 		-caller {
+		    ##nagelfar ignore
 		    if {![string is integer -strict $val]} {
 			return -code error "bad page index $val"
 		    }
@@ -770,6 +771,7 @@ proc scrollutil::pnb::plainnotebookWidgetCmd {win args} {
 		return -code error "\"$pm\" is not a pagesman widget"
 	    }
 	    foreach {pageIdx text img} $argList {}
+	    ##nagelfar ignore
 	    if {![string is integer -strict $pageIdx] || $pageIdx < 0} {
 		return -code error "bad page index $pageIdx"
 	    }
@@ -957,6 +959,7 @@ proc scrollutil::pnb::plainnotebookWidgetCmd {win args} {
 	    }
 
 	    set tabId [lindex $args 1]
+	    ##nagelfar ignore
 	    if {[scan $tabId "@%d,%d%n" x y count] == 3 &&
 		$count == [string length $tabId]} {
 		set cf $data(cf)
@@ -1027,6 +1030,7 @@ proc scrollutil::pnb::plainnotebookWidgetCmd {win args} {
 		return -code error "\"$pm\" is not a pagesman widget"
 	    }
 	    foreach {pageIdx text img} [lrange $args 2 end] {}
+	    ##nagelfar ignore
 	    if {![string is integer -strict $pageIdx] || $pageIdx < 0} {
 		return -code error "bad page index $pageIdx"
 	    }

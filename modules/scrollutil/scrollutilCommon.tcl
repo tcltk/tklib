@@ -12,7 +12,7 @@ namespace eval ::scrollutil {
     #
     # Public variables:
     #
-    variable version	2.3.1
+    variable version	2.3.2
     variable library	[file dirname [file normalize [info script]]]
 
     #
@@ -95,9 +95,9 @@ proc ::scrollutil::loadUtils {} {
     package require mwutil 2.23[-]
 
     if {[catch {package present scaleutil} version] == 0 &&
-	[package vcompare $version 1.14] < 0} {
+	[package vcompare $version 1.14.1] < 0} {
 	package forget scaleutil
     }
-    package require scaleutil 1.14[-]
+    package require scaleutil 1.14.1[-]
 }
 ::scrollutil::loadUtils

@@ -447,6 +447,7 @@ proc scrollutil::sa::doConfig {win opt val} {
 		    }
 		}
 		-lockinterval {
+		    ##nagelfar ignore
 		    set val [format "%d" $val]	;# integer check with error msg
 		    if {$val < 0} {
 			set val 0

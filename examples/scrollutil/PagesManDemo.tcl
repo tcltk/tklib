@@ -40,6 +40,7 @@ if {$tk_version >= 8.7 || [catch {package require tksvg}] == 0} {
 proc populateNotebook {nb sfx} {
     set currentTheme [styleutil::getCurrentTheme]
     set panePadding [expr {$currentTheme eq "aqua" ? 0 : "7p"}]
+    ##nagelfar ignore
     foreach fileName [lsort -dictionary [glob *.$sfx]] {
 	set baseName [string range $fileName 0 end-4]
 	set sa [scrollutil::scrollarea $nb.sa_$baseName]

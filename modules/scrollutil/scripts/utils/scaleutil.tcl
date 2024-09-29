@@ -22,7 +22,7 @@ namespace eval scaleutil {
     #
     # Public variables:
     #
-    variable version	1.14
+    variable version	1.14.1
     variable library	[file dirname [file normalize [info script]]]
 
     #
@@ -142,6 +142,7 @@ proc scaleutil::scalingPercentage winSys {
 		   result] == 0 &&
 		  [set idx \
 		   [string first "'Gdk/WindowScalingFactor'" $result]] >= 0} {
+	    ##nagelfar ignore
 	    scan [string range $result $idx end] "%*s <%d>" winScalingFactor
 	}
 
@@ -390,6 +391,7 @@ proc scaleutil::scaleX11Fonts factor {
     set str [string range $str $idx end]
 
     set idx [string first "size" $str]
+    ##nagelfar ignore
     scan [string range $str $idx end] "%*s %d" size
     set points [expr {$size < 0 ? 9 : $size}]		;# -12 -> 9, else 10
     foreach font {TkDefaultFont TkTextFont TkHeadingFont
@@ -398,6 +400,7 @@ proc scaleutil::scaleX11Fonts factor {
     }
 
     set idx [string first "ttsize" $str]
+    ##nagelfar ignore
     scan [string range $str $idx end] "%*s %d" size
     set points [expr {$size < 0 ? 8 : $size}]		;# -10 -> 8, else 9
     foreach font {TkTooltipFont TkSmallCaptionFont} {
@@ -405,11 +408,13 @@ proc scaleutil::scaleX11Fonts factor {
     }
 
     set idx [string first "capsize" $str]
+    ##nagelfar ignore
     scan [string range $str $idx end] "%*s %d" size
     set points [expr {$size < 0 ? 11 : $size}]		;# -14 -> 11, else 12
     font configure TkCaptionFont -size [expr {$factor * $points}]
 
     set idx [string first "fixedsize" $str]
+    ##nagelfar ignore
     scan [string range $str $idx end] "%*s %d" size
     set points [expr {$size < 0 ? 9 : $size}]		;# -12 -> 9, else 10
     font configure TkFixedFont -size [expr {$factor * $points}]

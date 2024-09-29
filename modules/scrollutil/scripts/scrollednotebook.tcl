@@ -1984,6 +1984,7 @@ proc scrollutil::snb::destroyed win {
 proc scrollutil::snb::snbTabIdToNbTabId {win tabId} {
     upvar ::scrollutil::ns${win}::data data
 
+    ##nagelfar ignore
     if {[scan $tabId "@%d,%d%n" x y count] == 3 &&
 	$count == [string length $tabId]} {
 	foreach {first last} [$data(sf) xview] {}

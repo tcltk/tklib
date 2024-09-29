@@ -443,6 +443,7 @@ proc scrollutil::pm::pagesmanWidgetCmd {win args} {
 	    }
 
 	    set pageIdx [lindex $args 1]
+	    ##nagelfar ignore
 	    set pageIdx [format "%d" $pageIdx]	;# integer check with error msg
 	    if {$pageIdx < 0 || $pageIdx >= $data(pageCount)} {
 		return -code error "page index $pageIdx out of bounds"
@@ -503,6 +504,7 @@ proc scrollutil::pm::pagesmanWidgetCmd {win args} {
 	    }
 
 	    set pageIdx [lindex $args 1]
+	    ##nagelfar ignore
 	    set pageIdx [format "%d" $pageIdx]	;# integer check with error msg
 	    if {$pageIdx < 0 || $pageIdx >= $data(pageCount)} {
 		return -code error "page index $pageIdx out of bounds"
@@ -539,6 +541,7 @@ proc scrollutil::pm::pagesmanWidgetCmd {win args} {
 	    }
 
 	    set pageIdx [lindex $args 1]
+	    ##nagelfar ignore
 	    set pageIdx [format "%d" $pageIdx]	;# integer check with error msg
 
 	    set widget [lindex $args 2]
@@ -592,6 +595,7 @@ proc scrollutil::pm::pagesmanWidgetCmd {win args} {
 	    }
 
 	    set pageIdx [lindex $args 1]
+	    ##nagelfar ignore
 	    set pageIdx [format "%d" $pageIdx]	;# integer check with error msg
 	    if {$pageIdx < 0 || $pageIdx >= $data(pageCount)} {
 		return -code error "page index $pageIdx out of bounds"
@@ -608,6 +612,7 @@ proc scrollutil::pm::pagesmanWidgetCmd {win args} {
 	    }
 
 	    set pageIdx [lindex $args 1]
+	    ##nagelfar ignore
 	    set pageIdx [format "%d" $pageIdx]	;# integer check with error msg
 	    if {$pageIdx < 0 || $pageIdx >= $data(pageCount)} {
 		return -code error "page index $pageIdx out of bounds"
@@ -625,6 +630,7 @@ proc scrollutil::pm::pagesmanWidgetCmd {win args} {
 	    }
 
 	    set pageIdx [lindex $args 1]
+	    ##nagelfar ignore
 	    set pageIdx [format "%d" $pageIdx]	;# integer check with error msg
 	    if {$pageIdx < 0 || $pageIdx >= $data(pageCount)} {
 		return -code error "page index $pageIdx out of bounds"
@@ -655,6 +661,7 @@ proc scrollutil::pm::pagesmanWidgetCmd {win args} {
 	    }
 
 	    set pageIdx [lindex $args 1]
+	    ##nagelfar ignore
 	    set pageIdx [format "%d" $pageIdx]	;# integer check with error msg
 	    if {$pageIdx < 0 || $pageIdx >= $data(pageCount)} {
 		return -code error "page index $pageIdx out of bounds"
@@ -698,6 +705,7 @@ proc scrollutil::pm::pagesmanWidgetCmd {win args} {
 	    }
 
 	    set pageIdx [lindex $args 1]
+	    ##nagelfar ignore
 	    set pageIdx [format "%d" $pageIdx]	;# integer check with error msg
 	    if {$pageIdx < 0 || $pageIdx >= $data(pageCount)} {
 		return -code error "page index $pageIdx out of bounds"

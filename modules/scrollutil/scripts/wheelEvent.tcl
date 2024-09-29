@@ -173,6 +173,7 @@ proc scrollutil::createBindings {} {
 
     foreach event $eventList {
 	if {[string match <*Button-?> $event]} {
+	    ##nagelfar ignore
 	    bind WheeleventRedir $event [format {
 		if {![scrollutil::hasFocus %%W] ||
 		    ![scrollutil::isCompatible %s %%W]} {
@@ -182,6 +183,7 @@ proc scrollutil::createBindings {} {
 		}
 	    } $event $event]
 	} else {
+	    ##nagelfar ignore
 	    bind WheeleventRedir $event [format {
 		if {![scrollutil::hasFocus %%W] ||
 		    ![scrollutil::isCompatible %s %%W]} {

@@ -629,7 +629,9 @@ proc scrollutil::sf::scanSubCmd {win argList} {
 
     variable scanOpts
     set opt [mwutil::fullOpt "option" [lindex $argList 0] $scanOpts]
+    ##nagelfar ignore
     set x [format "%d" [lindex $argList 1]]
+    ##nagelfar ignore
     set y [format "%d" [lindex $argList 2]]
 
     upvar ::scrollutil::ns${win}::data data
@@ -646,6 +648,7 @@ proc scrollutil::sf::scanSubCmd {win argList} {
 	if {$argCount == 3} {
 	    set gain 10
 	} elseif {$argCount == 4} {
+	    ##nagelfar ignore
 	    set gain [format "%d" [lindex $argList 3]]
 	} else {
 	    mwutil::wrongNumArgs "$win scan dragto x y ?gain?"
@@ -719,9 +722,13 @@ proc scrollutil::sf::seerectSubCmd {win argList} {
 	mwutil::wrongNumArgs "$win seerect x1 y1 x2 y2 ?nw|ne|sw|se?"
     }
 
+    ##nagelfar ignore
     set x1 [format "%d" [lindex $argList 0]]
+    ##nagelfar ignore
     set y1 [format "%d" [lindex $argList 1]]
+    ##nagelfar ignore
     set x2 [format "%d" [lindex $argList 2]]
+    ##nagelfar ignore
     set y2 [format "%d" [lindex $argList 3]]
     if {$x1 > $x2} {
 	set tmp $x1; set x1 $x2; set x2 $temp
@@ -851,6 +858,7 @@ proc scrollutil::sf::xviewSubCmd {win argList} {
 	    #
 	    # Command: $win xview <units>
 	    #
+	    ##nagelfar ignore
 	    set units [format "%d" [lindex $argList 0]]
 	    set xScrlIncr $data(-xscrollincrement)
 	    if {$xScrlIncr > 0} {
@@ -924,6 +932,7 @@ proc scrollutil::sf::yviewSubCmd {win argList} {
 	    #
 	    # Command: $win yview <units>
 	    #
+	    ##nagelfar ignore
 	    set units [format "%d" [lindex $argList 0]]
 	    set yScrlIncr $data(-yscrollincrement)
 	    if {$yScrlIncr > 0} {

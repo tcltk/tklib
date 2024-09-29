@@ -38,6 +38,7 @@ set nb [scrollutil::plainnotebook $f.nb -closabletabs 1 \
 set currentTheme [styleutil::getCurrentTheme]
 set panePadding [expr {$currentTheme eq "aqua" ? 0 : "7p"}]
 cd [expr {[info exists ttk::library] ? $ttk::library : $tile::library}]
+##nagelfar ignore
 foreach fileName [lsort [glob *.tcl]] {
     set baseName [string range $fileName 0 end-4]
     set sa [scrollutil::scrollarea $nb.sa_$baseName -lockinterval 10]

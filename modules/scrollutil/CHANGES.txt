@@ -1,5 +1,11 @@
-What is new in Scrollutil 2.3.1?
+What is new in Scrollutil 2.3.2?
 --------------------------------
+
+1. Made sure that the Migration Tool for Tcl 9 won't output any
+   warnings or notes.
+
+What was new in Scrollutil 2.3.1?
+---------------------------------
 
 1. Reverted the implementation of the "scrollutil::getscrollarea"
    command to its version contained in Scrollutil 2.2, thus eliminating
