@@ -142,6 +142,7 @@ proc mentry::putIPAddr {addr win} {
     #
     for {set n 0} {$n < 4} {incr n} {
 	set val [lindex $lst $n]
+	##nagelfar ignore
 	if {[catch {format "%d" $val} str$n] != 0 || $val < 0 || $val > 255} {
 	    return -code error $errorMsg
 	}
@@ -170,6 +171,7 @@ proc mentry::getIPAddr win {
 	    focus $w
 	    return -code error EMPTY
 	}
+	##nagelfar ignore
 	scan $str "%d" val$n
     }
 
@@ -216,6 +218,7 @@ proc mentry::incrIPAddrComp {w amount} {
 	#
 	# Increment the entry's value by the given amount if allowed
 	#
+	##nagelfar ignore
 	scan $str "%d" val
 	if {$amount > 0} {
 	    if {$val < 255} {
@@ -236,6 +239,7 @@ proc mentry::incrIPAddrComp {w amount} {
 		return ""
 	    }
 	}
+	##nagelfar ignore
 	set str [format "%d" $val]
 	set oldPos [$w index insert]
 	_$w delete 0 end

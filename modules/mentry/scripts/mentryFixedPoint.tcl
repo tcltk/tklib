@@ -22,9 +22,11 @@ proc mentry::fixedPointMentry {win cnt1 cnt2 args} {
     #
     # Check the arguments
     #
+    ##nagelfar ignore
     if {[catch {format "%d" $cnt1}] != 0 || $cnt1 <= 0} {
 	return -code error "expected positive integer but got \"$cnt1\""
     }
+    ##nagelfar ignore
     if {[catch {format "%d" $cnt2}] != 0 || $cnt2 <= 0} {
 	return -code error "expected positive integer but got \"$cnt2\""
     }

@@ -181,6 +181,7 @@ proc mentry::putIPv6Addr {addr win} {
     #
     for {set n 0} {$n < 8} {incr n} {
 	set val 0x[lindex $lst $n]
+	##nagelfar ignore
 	if {[catch {format "%x" $val} str$n] != 0 | $val > 65535} {
 	    return -code error $errorMsg
 	}
@@ -209,6 +210,7 @@ proc mentry::getIPv6Addr win {
     }
 
     ::$win getarray strs
+    ##nagelfar ignore
     return [format "%x:%x:%x:%x:%x:%x:%x:%x" \
 	    0x$strs(0) 0x$strs(1) 0x$strs(2) 0x$strs(3) \
 	    0x$strs(4) 0x$strs(5) 0x$strs(6) 0x$strs(7)]
@@ -254,6 +256,7 @@ proc mentry::incrIPv6AddrComp {w amount} {
 	#
 	# Increment the entry's value by the given amount if allowed
 	#
+	##nagelfar ignore
 	scan $str "%x" val
 	if {$amount > 0} {
 	    if {$val < 65535} {
@@ -274,6 +277,7 @@ proc mentry::incrIPv6AddrComp {w amount} {
 		return ""
 	    }
 	}
+	##nagelfar ignore
 	set str [format "%x" $val]
 	set oldPos [$w index insert]
 	_$w delete 0 end

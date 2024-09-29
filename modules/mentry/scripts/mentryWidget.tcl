@@ -183,6 +183,7 @@ namespace eval mentry {
 	    variable currentTheme
 	    if {$currentTheme eq "aqua"} {
 		variable newAquaSupport
+		##nagelfar ignore
 		scan $::tcl_platform(osVersion) "%d" majorOSVersion
 		if {$newAquaSupport && $majorOSVersion >= 18} {	;# OS X 10.14+
 		    update idletasks		;# needed for the isdark query
@@ -751,6 +752,7 @@ proc mentry::createChildren {win body} {
 	return -code error "expected at least one entry child width"
     }
     foreach {width text} $body {
+	##nagelfar ignore
 	if {[catch {format "%d" $width}] != 0 || $width <= 0} {
 	    return -code error "expected positive integer but got \"$width\""
 	}
@@ -791,6 +793,7 @@ proc mentry::createChildren {win body} {
 	# Append the properly formatted value
 	# of width to the list data(-body)
 	#
+	##nagelfar ignore
 	lappend data(-body) [format "%d" $width]
 
 	#
@@ -1460,6 +1463,7 @@ proc mentry::setentrywidthSubCmd {win index width} {
 proc mentry::childIndex {n max} {
     if {[string first $n "end"] == 0} {
 	return $max
+    ##nagelfar ignore
     } elseif {[catch {format "%d" $n} index] != 0} {
 	return -code error \
 	       "bad index \"$n\": must be end or a number"

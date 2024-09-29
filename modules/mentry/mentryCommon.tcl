@@ -9,17 +9,20 @@ namespace eval ::mentry {
 
     package require Tk 8.4[-]
 
-    if {[catch {package require Wcb 4.0[-]} result1] &&
-	[catch {package require wcb 4.0[-]} result2] &&
-	[catch {package require Wcb 3.1[-]} result3] &&
-	[catch {package require wcb 3.1[-]} result4]} {
-	error "$result1; $result2; $result3; $result4"
+    proc loadWcb {} {
+	if {[catch {package require Wcb 4.0[-]} result1] &&
+	    [catch {package require wcb 4.0[-]} result2] &&
+	    [catch {package require Wcb 3.1[-]} result3] &&
+	    [catch {package require wcb 3.1[-]} result4]} {
+	    error "$result1; $result2; $result3; $result4"
+	}
     }
+    loadWcb
 
     #
     # Public variables:
     #
-    variable version	4.3
+    variable version	4.3.1
     variable library	[file dirname [file normalize [info script]]]
 
     #

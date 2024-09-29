@@ -387,6 +387,7 @@ proc mentry::putClockVal {clockVal win args} {
     #
     # Check whether clockVal is an integer number
     #
+    ##nagelfar ignore
     if {[catch {format "%d" $clockVal} res] != 0} {
 	return -code error $res
     }
@@ -485,6 +486,7 @@ proc mentry::getClockVal {win args} {
 	    #
 	    # Check whether val is an integer number
 	    #
+	    ##nagelfar ignore
 	    if {[catch {format "%d" $val} res] != 0} {
 		return -code error $res
 	    }
@@ -556,6 +558,7 @@ proc mentry::getClockValFromDateMentry {win base useGMT} {
 	    focus $w
 	    return -code error EMPTY
 	}
+	##nagelfar ignore
 	scan $str "%d" vals($n)
 	set field [string index $fmt $n]
 	if {$vals($n) < $dateTimeMins($field)} {
@@ -640,6 +643,7 @@ proc mentry::getClockValFromTimeMentry {win base useGMT} {
 	    }
 	}
 	if {$n == 0 && $meridianFlag} {
+	    ##nagelfar ignore
 	    scan $str "%d" val
 	    if {$val < 1} {
 		tabToEntry $w
@@ -710,6 +714,7 @@ proc mentry::getClockValFromDateTimeMentry {win base useGMT} {
 	    focus $w
 	    return -code error EMPTY
 	}
+	##nagelfar ignore
 	scan $str "%d" vals($n)
 	set field [string index $fmt $n]
 	if {$vals($n) < $dateTimeMins($field)} {
@@ -772,6 +777,7 @@ proc mentry::getClockValFromDateTimeMentry {win base useGMT} {
 	    }
 	}
 	if {$n == 3 && $meridianFlag} {
+	    ##nagelfar ignore
 	    scan $str "%d" val
 	    if {$val < 1} {
 		tabToEntry $w
@@ -855,6 +861,7 @@ proc mentry::incrDateTimeComp {w amount} {
 	#
 	# Increment the entry's value by the given amount if allowed
 	#
+	##nagelfar ignore
 	scan $str "%d" val
 	if {$amount > 0} {
 	    variable dateTimeMaxs

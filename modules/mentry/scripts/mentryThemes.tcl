@@ -181,6 +181,7 @@ proc mentry::aquaTheme {} {
 	}
 
 	if {$extendedAquaSupport} {
+	    ##nagelfar ignore
 	    scan $::tcl_platform(osVersion) "%d" majorOSVersion
 	    set labelPadY [expr {$majorOSVersion >= 18 ? {4 7} : {4 5}}]
 	} else {
