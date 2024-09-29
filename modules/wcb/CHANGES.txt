@@ -1,5 +1,11 @@
-What is new in Wcb 4.1?
------------------------
+What is new in Wcb 4.1.1?
+-------------------------
+
+1. Made sure that the Migration Tool for Tcl 9 won't output any
+   warnings or notes.
+
+What was new in Wcb 4.1?
+------------------------
 
 1. The demo script "listboxtest1.tcl" now correctly takes into account
    that the names of all bitmap files in the directory "images" have the

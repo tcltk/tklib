@@ -14,7 +14,7 @@ namespace eval wcb {
     #
     # Public variables:
     #
-    variable version	4.1
+    variable version	4.1.1
     variable library	[file dirname [file normalize [info script]]]
 
     #

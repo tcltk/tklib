@@ -1,4 +1,4 @@
-Widget callback package Wcb, version 4.1
+Widget callback package Wcb, version 4.1.1
 Copyright (c) 1999-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 
 This library is free software; you can use, modify, and redistribute it

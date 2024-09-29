@@ -25,6 +25,7 @@ image create photo photoImage
 frame .spacer -width 7p
 listbox .lb -height 0 -width 0 -background white
 set pattern [file join $dirName *]
+##nagelfar ignore
 foreach pathName [lsort [glob $pattern]] {
     .lb insert end [file tail $pathName]
 }

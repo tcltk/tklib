@@ -87,10 +87,12 @@ proc changeColor {w args} {
 #
 proc displayPos {w idx} {
     set index [$w index $idx]
+    ##nagelfar ignore
     scan $index "%d.%d" line column
     incr column
 
     global pos
+    ##nagelfar ignore
     set pos [format "Line: %d   Column: %d" $line $column]
 }
 
@@ -105,8 +107,10 @@ proc checkLines {maxCharsPerLine w args} {
     #
     # Undo the last insert or delete action if necessary
     #
+    ##nagelfar ignore
     scan [$w index end] "%d" lastLine
     for {set line 1} {$line < $lastLine} {incr line} {
+	##nagelfar ignore
 	scan [$w index $line.end] "%d.%d" dummy charsInLine
 	if {$charsInLine > $maxCharsPerLine} {
 	    $w edit undo

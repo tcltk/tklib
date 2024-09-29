@@ -214,6 +214,7 @@ proc wcb::checkEntryForUInt {max w idx str} {
     if {![regexp {^[0-9]*$} $newText]} {
 	cancel
     } elseif {$max ne "*"} {
+	##nagelfar ignore
 	scan $newText "%d" val
 	if {$val > $max} {
 	    cancel

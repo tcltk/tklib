@@ -7,9 +7,9 @@
 #
 # Regular package:
 #
-package ifneeded wcb 4.1 [list source [file join $dir wcb.tcl]]
+package ifneeded wcb 4.1.1 [list source [file join $dir wcb.tcl]]
 
 #
 # Alias:
 #
-package ifneeded Wcb 4.1 { package require -exact wcb 4.1 }
+package ifneeded Wcb 4.1.1 { package require -exact wcb 4.1.1 }
