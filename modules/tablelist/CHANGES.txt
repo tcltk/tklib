@@ -4,6 +4,13 @@ What is new in Tablelist 7.3.1?
 1. Made sure that the Migration Tool for Tcl 9 won't output any
    warnings or notes.
 
+2. Optimizations in the themepatch package, especially regarding the
+   "default" theme.
+
+3. Eliminated a potential error message caused by the handling of
+   <TouchpadScroll> events (thanks to Paul Obermeier for his bug
+   report).
+
 What was new in Tablelist 7.3?
 ------------------------------
 

@@ -1295,7 +1295,7 @@ proc tablelist::defineTablelistBody {} {
     if {[llength [info commands ::tk::PreciseScrollDeltas]] != 0} {
 	bind TablelistBody <TouchpadScroll> {
 	    if {%# %% 5 != 0} {
-		return
+		continue
 	    }
 	    lassign [tk::PreciseScrollDeltas %D] tablelist::dX tablelist::dY
 	    if {$tablelist::dX != 0} {

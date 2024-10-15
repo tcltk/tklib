@@ -33,7 +33,7 @@ namespace eval themepatch {
     #
     # Public variables:
     #
-    variable version	1.7
+    variable version	1.8
     variable library	[file dirname [file normalize [info script]]]
 
     #
@@ -81,10 +81,15 @@ proc themepatch::patch args {
 	}
     }
 
+    set currentTheme [getCurrentTheme]
     foreach theme $args {
 	if {[lsearch -exact {alt clam default} $theme] < 0} {
 	    return -code error \
 		"bad theme \"$theme\": must be alt, clam, or default"
+	}
+
+	if {$theme eq "default" && [info exists ::tk::scalingPct]} {
+	    continue
 	}
 
 	#
@@ -116,10 +121,12 @@ proc themepatch::patch args {
 	    }
 	}
 
-	#
-	# Send a <<ThemeChanged>> virtual event to all widgets
-	#
-	::ttk::ThemeChanged
+	if {$theme eq $currentTheme} {
+	    #
+	    # Send a <<ThemeChanged>> virtual event to all widgets
+	    #
+	    ::ttk::ThemeChanged
+	}
     }
 }
 
@@ -139,20 +146,27 @@ proc themepatch::unpatch args {
 	}
     }
 
+    set currentTheme [getCurrentTheme]
     foreach theme $args {
 	if {[lsearch -exact {alt clam default} $theme] < 0} {
 	    return -code error \
 		"bad theme \"$theme\": must be alt, clam, or default"
 	}
 
+	if {$theme eq "default" && [info exists ::tk::scalingPct]} {
+	    continue
+	}
+
 	ttk::style theme settings $theme {
 	    unpatch_$theme $pct
 	}
 
-	#
-	# Send a <<ThemeChanged>> virtual event to all widgets
-	#
-	::ttk::ThemeChanged
+	if {$theme eq $currentTheme} {
+	    #
+	    # Send a <<ThemeChanged>> virtual event to all widgets
+	    #
+	    ::ttk::ThemeChanged
+	}
     }
 }
 
@@ -167,6 +181,10 @@ proc themepatch::ispatched theme {
 	    "bad theme \"$theme\": must be alt, clam, or default"
     }
 
+    if {$theme eq "default" && [info exists ::tk::scalingPct]} {
+	return 0
+    }
+
     ttk::style theme settings $theme {
 	set ckbtnLayout [ttk::style layout TCheckbutton]
 	return [expr {[string first "Checkbutton.indicator" $ckbtnLayout] < 0}]
@@ -177,6 +195,23 @@ proc themepatch::ispatched theme {
 # Private helper procedures
 # =========================
 #
+
+#------------------------------------------------------------------------------
+# themepatch::getCurrentTheme
+#
+# Returns the current tile theme.
+#------------------------------------------------------------------------------
+proc themepatch::getCurrentTheme {} {
+    if {[catch {ttk::style theme use} result] == 0} {
+	return $result
+    } elseif {[info exists ::ttk::currentTheme]} {
+	return $::ttk::currentTheme
+    } elseif {[info exists ::tile::currentTheme]} {
+	return $::tile::currentTheme
+    } else {					;# this is highly improbable
+	return ""
+    }
+}
 
 #------------------------------------------------------------------------------
 # themepatch::patch_alt
