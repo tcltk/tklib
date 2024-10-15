@@ -466,7 +466,7 @@ proc scrollutil::createWheelEventBindings args {
 	if {$touchpadScrollSupport} {
 	    bind $tag <TouchpadScroll> {
 		if {%# %% 5 != 0} {
-		    return
+		    continue
 		}
 		lassign [tk::PreciseScrollDeltas %D] \
 		    scrollutil::dX scrollutil::dY
