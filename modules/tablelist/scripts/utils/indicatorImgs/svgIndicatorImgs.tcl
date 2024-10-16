@@ -260,52 +260,52 @@ proc themepatch::default::createCheckbtnIndImgs_svg fmt {
     variable ckIndArr
     set ckIndArr(default) [image create photo -format $fmt -data {
 <svg width="16" height="16" version="1.1" xmlns="http://www.w3.org/2000/svg">
- <rect x=".5" y=".5" width="15" height="15" rx="1.5" fill="#fff" stroke="#888"/>
+ <rect x=".5" y=".5" width="15" height="15" rx="3.5" fill="#fff" stroke="#888"/>
 </svg>
     }]
     set ckIndArr(disabled) [image create photo -format $fmt -data {
 <svg width="16" height="16" version="1.1" xmlns="http://www.w3.org/2000/svg">
- <rect x=".5" y=".5" width="15" height="15" rx="1.5" fill="#d9d9d9" stroke="#888"/>
+ <rect x=".5" y=".5" width="15" height="15" rx="3.5" fill="#d9d9d9" stroke="#888"/>
 </svg>
     }]
     set ckIndArr(pressed) [image create photo -format $fmt -data {
 <svg width="16" height="16" version="1.1" xmlns="http://www.w3.org/2000/svg">
- <rect x=".5" y=".5" width="15" height="15" rx="1.5" fill="#c3c3c3" stroke="#888"/>
+ <rect x=".5" y=".5" width="15" height="15" rx="3.5" fill="#c3c3c3" stroke="#888"/>
 </svg>
     }]
     set ckIndArr(alternate) [image create photo -format $fmt -data {
 <svg width="16" height="16" version="1.1" xmlns="http://www.w3.org/2000/svg">
- <rect x="0" y="0" width="16" height="16" fill="#4a6984" rx="2"/>
+ <rect x="0" y="0" width="16" height="16" fill="#4a6984" rx="4"/>
  <path d="m4 8h8" fill="none" stroke="#fff" stroke-width="2"/>
 </svg>
     }]
     set ckIndArr(alt_disabled) [image create photo -format $fmt -data {
 <svg width="16" height="16" version="1.1" xmlns="http://www.w3.org/2000/svg">
- <rect x="0" y="0" width="16" height="16" fill="#a3a3a3" rx="2"/>
+ <rect x="0" y="0" width="16" height="16" fill="#a3a3a3" rx="4"/>
  <path d="m4 8h8" fill="none" stroke="#fff" stroke-width="2"/>
 </svg>
     }]
     set ckIndArr(alt_pressed) [image create photo -format $fmt -data {
 <svg width="16" height="16" version="1.1" xmlns="http://www.w3.org/2000/svg">
- <rect x="0" y="0" width="16" height="16" fill="#5895bc" rx="2"/>
+ <rect x="0" y="0" width="16" height="16" fill="#5895bc" rx="4"/>
  <path d="m4 8h8" fill="none" stroke="#fff" stroke-width="2"/>
 </svg>
     }]
     set ckIndArr(selected) [image create photo -format $fmt -data {
 <svg width="16" height="16" version="1.1" xmlns="http://www.w3.org/2000/svg">
- <rect x="0" y="0" width="16" height="16" fill="#4a6984" rx="2"/>
+ <rect x="0" y="0" width="16" height="16" fill="#4a6984" rx="4"/>
  <path d="m4.5 8 3 3 4-6" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
 </svg>
     }]
     set ckIndArr(sel_disabled) [image create photo -format $fmt -data {
 <svg width="16" height="16" version="1.1" xmlns="http://www.w3.org/2000/svg">
- <rect x="0" y="0" width="16" height="16" fill="#a3a3a3" rx="2"/>
+ <rect x="0" y="0" width="16" height="16" fill="#a3a3a3" rx="4"/>
  <path d="m4.5 8 3 3 4-6" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
 </svg>
     }]
     set ckIndArr(sel_pressed) [image create photo -format $fmt -data {
 <svg width="16" height="16" version="1.1" xmlns="http://www.w3.org/2000/svg">
- <rect x="0" y="0" width="16" height="16" fill="#5895bc" rx="2"/>
+ <rect x="0" y="0" width="16" height="16" fill="#5895bc" rx="4"/>
  <path d="m4.5 8 3 3 4-6" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
 </svg>
     }]
