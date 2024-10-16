@@ -88,10 +88,6 @@ proc themepatch::patch args {
 		"bad theme \"$theme\": must be alt, clam, or default"
 	}
 
-	if {$theme eq "default" && [info exists ::tk::scalingPct]} {
-	    continue
-	}
-
 	#
 	# Save the TCheckbutton and TRadiobutton layouts of the other
 	# themes, because some of them might have $theme as ancestor
@@ -153,10 +149,6 @@ proc themepatch::unpatch args {
 		"bad theme \"$theme\": must be alt, clam, or default"
 	}
 
-	if {$theme eq "default" && [info exists ::tk::scalingPct]} {
-	    continue
-	}
-
 	ttk::style theme settings $theme {
 	    unpatch_$theme $pct
 	}
@@ -179,10 +171,6 @@ proc themepatch::ispatched theme {
     if {[lsearch -exact {alt clam default} $theme] < 0} {
 	return -code error \
 	    "bad theme \"$theme\": must be alt, clam, or default"
-    }
-
-    if {$theme eq "default" && [info exists ::tk::scalingPct]} {
-	return 0
     }
 
     ttk::style theme settings $theme {
