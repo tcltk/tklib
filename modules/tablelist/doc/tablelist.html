@@ -795,7 +795,7 @@ demo::displayConfig .configTop.tf.tbl
   the following figure:</p>
 
   <blockquote>
-    <img src="config.png" alt="Configuration Options" width="843" height="411">
+    <img src="config.png" alt="Configuration Options" width="743" height="445">
   </blockquote>
 
   <p>It is assumed that the Tcl command associated with the widget specified by
@@ -1249,14 +1249,14 @@ demo::displayChildren .
   in the file <code>browse.tcl</code> is a multi-column listbox:</p>
 
   <blockquote>
-    <img src="browse.png" alt="Widget Browser" width="615" height="308">
+    <img src="browse.png" alt="Widget Browser" width="570" height="332">
   </blockquote>
 
   <p>The tablelist created by the procedure of the same name in the file
   <code>browseTree.tcl</code> is a multi-column tree widget:</p>
 
   <blockquote>
-    <img src="browseTree.png" alt="Widget Browser" width="631" height="308">
+    <img src="browseTree.png" alt="Widget Browser" width="588" height="332">
   </blockquote>
 
   <p>The <code>demo::displayChildren</code> command inserts some data of the
@@ -1914,7 +1914,7 @@ proc demo::restoreExpandedStates {tbl nodeIdx expandedWidgetsName} {
   as multi-column tree widget:</p>
 
   <blockquote>
-    <img src="dirViewer.png" alt="Directory Viewer" width="683" height="465">
+    <img src="dirViewer.png" alt="Directory Viewer" width="603" height="465">
   </blockquote>
 
   <p>By double-clicking an item or invoking the single entry of a pop-up menu
@@ -1997,7 +1997,7 @@ proc displayContents dir {
                   0 "Date Modified" left} \
         -expandcommand expandCmd -collapsecommand collapseCmd \
         -xscrollcommand [list $hsb set] -yscrollcommand [list $vsb set] \
-        -movablecolumns no -setgrid no -showseparators yes -height 20 -width 80
+        -movablecolumns no -setgrid no -showseparators yes -height 16 -width 80
     if {[$tbl cget -selectborderwidth] == 0} {
         $tbl configure -spacing 1
     }
@@ -2274,7 +2274,7 @@ displayContents ""
   the following figure:</p>
 
   <blockquote>
-    <img src="styles.png" alt="Styles" width="703" height="523">
+    <img src="styles.png" alt="Styles" width="623" height="565">
   </blockquote>
 
   <p>Here is the relevant code segment:</p>
@@ -2868,8 +2868,8 @@ $tbl embedcheckbuttons 1 updateCkbtn
   <code>active</code> state:</p>
 
   <blockquote>
-    <img src="embeddedWindows.png" alt="Embedded Windows" width="436" height=
-    "333">
+    <img src="embeddedWindows.png" alt="Embedded Windows" width="411" height=
+    "338">
   </blockquote>
 
   <p>First, we create and populate the tablelist widget:</p>
@@ -3316,8 +3316,8 @@ if {[tk windowingsystem] eq "x11" &&
   the details.&nbsp; Here is a screenshot of the resulting window:</p>
 
   <blockquote>
-    <img src="embeddedWindows_tile.png" alt="Embedded Windows" width="436"
-    height="334">
+    <img src="embeddedWindows_tile.png" alt="Embedded Windows" width="411"
+    height="339">
   </blockquote>
 
   <p>Finally, notice that the following tile-based demo-scripts provide

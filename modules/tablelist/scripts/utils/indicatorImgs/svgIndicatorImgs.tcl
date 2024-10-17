@@ -3,7 +3,7 @@
 # Checkbutton.image_ind and Radiobutton.image_ind of the alt, clam, and default
 # themes.
 #
-# Copyright (c) 2022-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2022-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #------------------------------------------------------------------------------

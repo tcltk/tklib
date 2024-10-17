@@ -8,7 +8,7 @@
 #   https://icons8.com/icon/RdCT0UIsKOIp/opened-folder
 #   https://icons8.com/icon/mEF_vyjYlnE3/file
 #
-# Copyright (c) 2010-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2010-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tk
@@ -54,7 +54,7 @@ proc displayContents dir {
 		  0 "Date Modified" left} \
 	-expandcommand expandCmd -collapsecommand collapseCmd \
 	-xscrollcommand [list $hsb set] -yscrollcommand [list $vsb set] \
-	-movablecolumns no -setgrid no -showseparators yes -height 18 -width 80
+	-movablecolumns no -setgrid no -showseparators yes -height 16 -width 80
     if {[$tbl cget -selectborderwidth] == 0} {
 	$tbl configure -spacing 1
     }
