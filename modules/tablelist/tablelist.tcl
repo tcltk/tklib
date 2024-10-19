@@ -4,7 +4,7 @@
 # Copyright (c) 2000-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require -exact tablelist::common 7.3.1
+package require -exact tablelist::common 7.4
 
 package provide tablelist $::tablelist::version
 package provide Tablelist $::tablelist::version

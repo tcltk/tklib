@@ -1,3 +1,28 @@
+2024-10-19 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 7.4.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/*.tcl: Made sure that the Migration Tool for Tcl 9 won't
+	  output any warnings or notes; eliminated a potential error message
+	  caused by the handling of <TouchpadScroll> events.
+
+	* scripts/utils/*.tcl: Made sure that the Migration Tool for Tcl 9
+	  won't output any warnings or notes; improvements in the themepatch
+	  package.
+
+	* scripts/utils/indicatorImgs/*.tcl: Improvements in the themepatch
+	  package, regarding the "default" theme.
+
+	* doc/*.png: Updated a series of screenshots.
+
+	* ../../examples/tablelist/*.tcl: Made sure that the Migration Tool for
+	  Tcl 9 won't output any warnings or notes.
+
 2024-09-04 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Tablelist 7.3.

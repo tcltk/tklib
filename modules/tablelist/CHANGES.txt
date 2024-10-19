@@ -1,5 +1,5 @@
-What is new in Tablelist 7.3.1?
--------------------------------
+What is new in Tablelist 7.4?
+-----------------------------
 
 1. Made sure that the Migration Tool for Tcl 9 won't output any
    warnings or notes.
