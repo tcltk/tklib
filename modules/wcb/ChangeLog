@@ -1,3 +1,15 @@
+2024-10-19  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 4.1.1.
+	* COPYRIGHT.txt:
+	* README.txt:
+	* doc/wcb.html:
+
+	* CHANGES.txt: Updated to reflect the changes.
+
+	* scripts/wcbEntry.tcl:     Made sure that the Migration Tool for Tcl 9
+	* ../../examples/wcb/*.tcl: won't output any warnings or notes.
+
 2024-09-04  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Wcb 4.1.
@@ -11,7 +23,7 @@
 	* CHANGES.txt: Updated to reflect the changes.
 	* doc/*.html:
 
-	* ./../examples/wcb/listboxtest1.tcl: Now expects bitmap files whose
+	* ../../examples/wcb/listboxtest1.tcl: Now expects bitmap files whose
 	  names have the suffix ".xbm", regardless of the Tk version; updated
 	  the copyright information.
 
