@@ -1,5 +1,5 @@
-What is new in Scrollutil 2.3.2?
---------------------------------
+What is new in Scrollutil 2.4?
+------------------------------
 
 1. Made sure that the Migration Tool for Tcl 9 won't output any
    warnings or notes.
