@@ -84,7 +84,7 @@ proc ::Plotchart::plotstyle {cmd {stylename default} args} {
     }
 }
 
-namespace eval ::Plotchart {
+proc ::Plotchart::InitConfig {} {
     variable config
 
     # FontMetrics --
@@ -309,6 +309,11 @@ namespace eval ::Plotchart {
     # load the style
     #
     plotstyle load default
+}
+
+namespace eval ::Plotchart {
+    InitConfig
+    rename InitConfig {}
 }
 
 # plotconfig --

@@ -1,3 +1,13 @@
+2024-10-20  Arjen Markus  <arjenmarkus@users,sourceforge.net>
+        * plotannot.tcl:   Introduce auxiliary initialisation function (change in semantics, Tcl 9)
+        * plotchart.tcl:   Remove commented out code, use -strict in [string is integer]
+        * plotconfig.tcl:  Introduce auxiliary initialisation function (change in semantics, Tcl 9)
+        * plotdendrogram.tcl: Introduce auxiliary initialisation function (change in semantics, Tcl 9)
+        * plotobject.tcl:  Introduce auxiliary initialisation function (change in semantics, Tcl 9)
+        * plotpriv.tcl:    Explicitly convert screen size to pixels (change in semantics, Tk 9, ticket 68d110104cc46b715811e4a877a7b5e47c6aa27b)
+        * plotscada.tcl:   Introduce auxiliary initialisation function (change in semantics, Tcl 9)
+        * pkgIndex.tcl:    Increase the version number to 2.7.0 (because of support for Tcl/Tk 9)
+
 2024-06-03  Arjen Markus  <arjenmarkus@users,sourceforge.net>
         * plotconfig.tcl:  Add missing elements for 3dribbon plots (ticket 3d35a07f665b17987c9773cfa604b07d6d9b0cb7)
         * plotpriv.tcl:    Let the timechart methods return the canvas item IDs (ticket e8bf5556a856e0f56bfd0e12674339f3d09356ab)

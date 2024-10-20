@@ -1327,8 +1327,6 @@ proc ::Plotchart::createIsometricPlot { c xscale yscale stepsize args } {
    } else {
       set pxmin 0
       set pymin 0
-      #set pxmax [$w cget -width]
-      #set pymax [$w cget -height]
       set pxmax [WidthCanvas $w]
       set pymax [HeightCanvas $w]
    }
@@ -2766,7 +2764,7 @@ proc ::Plotchart::createWindRose { c radius_data {sectors 16} args} {
     variable data_series
     variable scaling
 
-    if { ![string is integer $sectors] } {
+    if { ![string is integer -strict $sectors] } {
         set args [concat $sectors $args]
         set sectors 16
     }
@@ -3479,4 +3477,4 @@ source [file join [file dirname [info script]] "plotdendrogram.tcl"]
 
 # Announce our presence
 #
-package provide Plotchart 2.6.2
+package provide Plotchart 2.7.0

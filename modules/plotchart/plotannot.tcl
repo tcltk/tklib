@@ -10,7 +10,10 @@
 #
 # Static data
 #
-namespace eval ::Plotchart {
+proc ::Plotchart::InitAnnot {} {
+    variable BalloonDir
+    variable TextDir
+
     # Index, three pairs of scale factors to determine xy-coordinates
     set BalloonDir(north-west) {0  0  1 -2 -2  1  0}
     set BalloonDir(north)      {1 -1  0  0 -3  1  0}
@@ -40,6 +43,11 @@ namespace eval ::Plotchart {
     set TextDir(s)          s
     set TextDir(south-east) ew
     set TextDir(east)       e
+}
+
+namespace eval ::Plotchart {
+    InitAnnot
+    rename InitAnnot {}
 }
 
 # DefaultBalloon --

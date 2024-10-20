@@ -72,8 +72,8 @@ proc ::Plotchart::DrawDendrogram {w series treedata} {
 
     set dir $scaling($w,direction)
 
-    set canvaswidth  [$w cget -width]
-    set canvasheight [$w cget -height]
+    set canvaswidth  [WidthCanvas $w]
+    set canvasheight [HeightCanvas $w]
 
     set width  [expr {$canvaswidth  - 10}]
     set height [expr {$canvasheight - $scaling($w,pymin)}]

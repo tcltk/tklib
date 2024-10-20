@@ -35,10 +35,10 @@ proc ::Plotchart::WidthCanvas {w {useref 1}} {
         set width [winfo width $w]
 
         if { $width < 10 } {
-            set width [$w cget -width]
+            set width [winfo pixels $w [$w cget -width]]
         }
     }
-    incr width -[$w cget -borderwidth]
+    incr width -[winfo pixels $w [$w cget -borderwidth]]
 
     return $width
 }
@@ -65,10 +65,10 @@ proc ::Plotchart::HeightCanvas {w {useref 1}} {
     } else {
         set height [winfo height $w]
         if { $height < 10 } {
-            set height [$w cget -height]
+            set height [winfo pixels $w [$w cget -height]]
         }
     }
-    incr height -[$w cget -borderwidth]
+    incr height -[winfo pixels $w [$w cget -borderwidth]]
     return $height
 }
 
@@ -279,7 +279,7 @@ proc ::Plotchart::MarginsRectangle { w argv {notext 2.0} {text_width 8}} {
     if { $pxmin < $config($w,margin,left) } {
         set pxmin $config($w,margin,left)
     }
-    set pymin [expr {int($char_height*$notext) + [$w cget -borderwidth]}]
+    set pymin [expr {int($char_height*$notext) + [winfo pixels $c [$c cget -borderwidth]]}]
     if { $pymin < $config($w,margin,top) } {
         set pymin $config($w,margin,top)
     }
@@ -297,7 +297,7 @@ proc ::Plotchart::MarginsRectangle { w argv {notext 2.0} {text_width 8}} {
     if {[info exists options(-box)]} {
         foreach {offx offy width height} $options(-box) {break}
         if { $offy == 0 } {
-            set offy [$w cget -borderwidth]
+            set offy [winfo pixels $c [$c cget -borderwidth]]
         }
         set scaling($w,reference) $w
         set scaling($w,refx)      $offx
@@ -307,7 +307,7 @@ proc ::Plotchart::MarginsRectangle { w argv {notext 2.0} {text_width 8}} {
     } elseif {[info exists options(-axesbox)]} {
         foreach {offx offy width height} [DetermineFromAxesBox $options(-axesbox) $pxmin $pymin $margin_right $margin_bottom] {break}
         if { $offy == 0 } {
-            set offy [$w cget -borderwidth]
+            set offy [winfo pixels $c [$c cget -borderwidth]]
         }
         set ref_plot [lindex $options(-axesbox) 0]
         set pos      [string first _ $ref_plot]
@@ -316,7 +316,7 @@ proc ::Plotchart::MarginsRectangle { w argv {notext 2.0} {text_width 8}} {
     } else {
         set scaling($w,reference) $w
         set offx   0
-        set offy   [$w cget -borderwidth]
+        set offy   [winfo pixels $c [$c cget -borderwidth]]
         set width  [WidthCanvas $w]
         set height [HeightCanvas $w]
         set scaling($w,refx)      0
@@ -388,9 +388,15 @@ proc ::Plotchart::MarginsSquare { w {notext 2.0} {text_width 8}} {
     variable config
     variable scaling
 
+    if { [string match {[0-9]*} $w] } {
+        set c [string range $w 2 end]
+    } else {
+        set c $w
+    }
+
     set scaling($w,reference) $w
     set scaling($w,refx)      0
-    set scaling($w,refy)      [$w cget -borderwidth]
+    set scaling($w,refy)      [winfo pixels $c [$c cget -borderwidth]]
     set scaling($w,refwidth)  [WidthCanvas $w]
     set scaling($w,refheight) [HeightCanvas $w]
 
@@ -443,6 +449,12 @@ proc ::Plotchart::MarginsSquare { w {notext 2.0} {text_width 8}} {
 proc ::Plotchart::MarginsCircle { w args } {
    variable scaling
 
+   if { [string match {[0-9]*} $w] } {
+       set c [string range $w 2 end]
+   } else {
+       set c $w
+   }
+
    array set options $args
    if { [info exists options(-box)] } {
        set scaling($w,reference) $w
@@ -459,8 +471,6 @@ proc ::Plotchart::MarginsCircle { w args } {
    set pymin 30
    set pxmax [expr {[WidthCanvas $w]  - 80}]
    set pymax [expr {[HeightCanvas $w] - 30}]
-   #set pxmax [expr {[$w cget -width]  - 80}]
-   #set pymax [expr {[$w cget -height] - 30}]
 
    # width (dx) and height (dy) of plot region in pixels:
    if {[info exists options(-units)]} {
@@ -517,14 +527,14 @@ proc ::Plotchart::MarginsCircle { w args } {
         lassign $options(-box) pxmin pymin width height
         if {$height >= $width} {
             # place vertically in the middle of the -box
-            if { $pxmin == 0 } {set pxmin [$w cget -borderwidth]}
+            if { $pxmin == 0 } {set pxmin [winfo pixels $c [$c cget -borderwidth]]}
             set pymin [expr {$pymin + ($height-$width)/2.0}]
-            if { $pymin == 0 } {set pymin [$w cget -borderwidth]}
+            if { $pymin == 0 } {set pymin [winfo pixels $c [$c cget -borderwidth]]}
         } else {
             # place horizontally in the middle of the -box
-            if { $pymin == 0 } {set pymin [$w cget -borderwidth]}
+            if { $pymin == 0 } {set pymin [winfo pixels $c [$c cget -borderwidth]]}
             set pxmin [expr {$pxmin + ($width-$height)/2.0}]
-            if { $pxmin == 0 } {set pxmin [$w cget -borderwidth]}
+            if { $pxmin == 0 } {set pxmin [winfo pixels $c [$c cget -borderwidth]]}
         }
         # only take the smallest dimension to keep the pie a circle:
         if {$width < $height} {set height $width}
@@ -538,12 +548,12 @@ proc ::Plotchart::MarginsCircle { w args } {
         set scaling($w,refheight) [expr {$pymin + $height}]
    } else {
         set scaling($w,refx)      0
-        set scaling($w,refy)      [$w cget -borderwidth]
+        set scaling($w,refy)      [winfo pixels $c [$c cget -borderwidth]]
         set scaling($w,refwidth)  [WidthCanvas $w]
         set scaling($w,refheight) [HeightCanvas $w]
-   }
+    }
 
-   return [list $pxmin $pymin $pxmax $pymax]
+    return [list $pxmin $pymin $pxmax $pymax]
 }
 
 # Margins3DPlot --
@@ -554,39 +564,42 @@ proc ::Plotchart::MarginsCircle { w args } {
 #    List of four values
 #
 proc ::Plotchart::Margins3DPlot { w } {
-   variable scaling
+    variable scaling
 
-   set scaling($w,reference) $w
-   set scaling($w,refx)      0
-   set scaling($w,refy)      [$w cget -borderwidth]
-   set scaling($w,refwidth)  [WidthCanvas $w]
-   set scaling($w,refheight) [HeightCanvas $w]
+    if { [string match {[0-9]*} $w] } {
+        set c [string range $w 2 end]
+    } else {
+        set c $w
+    }
 
-   set yfract 0.33
-   set zfract 0.50
-   if { [info exists scaling($w,yfract)] } {
-      set yfract $scaling($w,yfract)
-   } else {
-      set scaling($w,yfract) $yfract
-   }
-   if { [info exists scaling($w,zfract)] } {
-      set zfract $scaling($w,zfract)
-   } else {
-      set scaling($w,zfract) $zfract
-   }
+    set scaling($w,reference) $w
+    set scaling($w,refx)      0
+    set scaling($w,refy)      [winfo pixels $c [$c cget -borderwidth]]
+    set scaling($w,refwidth)  [WidthCanvas $w]
+    set scaling($w,refheight) [HeightCanvas $w]
 
-   set yzwidth  [expr {(-120+[WidthCanvas $w])/(1.0+$yfract)}]
-   set yzheight [expr {(-60+[HeightCanvas $w])/(1.0+$zfract)}]
-   #set yzwidth  [expr {(-120+[$w cget -width])/(1.0+$yfract)}]
-   #set yzheight [expr {(-60+[$w cget -height])/(1.0+$zfract)}]
+    set yfract 0.33
+    set zfract 0.50
+    if { [info exists scaling($w,yfract)] } {
+        set yfract $scaling($w,yfract)
+    } else {
+        set scaling($w,yfract) $yfract
+    }
+    if { [info exists scaling($w,zfract)] } {
+        set zfract $scaling($w,zfract)
+    } else {
+        set scaling($w,zfract) $zfract
+    }
 
-   set pxmin    [expr {60+$yfract*$yzwidth}]
-   set pxmax    [expr {[WidthCanvas $w] - 60}]
-   #set pxmax    [expr {[$w cget -width] - 60}]
-   set pymin    30
-   set pymax    [expr {30+$yzheight}]
+    set yzwidth  [expr {(-120+[WidthCanvas $w])/(1.0+$yfract)}]
+    set yzheight [expr {(-60+[HeightCanvas $w])/(1.0+$zfract)}]
 
-   return [list $pxmin $pymin $pxmax $pymax]
+    set pxmin    [expr {60+$yfract*$yzwidth}]
+    set pxmax    [expr {[WidthCanvas $w] - 60}]
+    set pymin    30
+    set pymax    [expr {30+$yzheight}]
+
+    return [list $pxmin $pymin $pxmax $pymax]
 }
 
 # MarginsTernary --
@@ -972,11 +985,16 @@ proc ::Plotchart::DrawTitle { w title {position center}} {
     variable scaling
     variable config
 
+    if { [string match {[0-9]*} $w] } {
+        set c [string range $w 2 end]
+    } else {
+        set c $w
+    }
+
     set ref    $scaling($w,reference)
     set offx   $scaling($ref,refx)
     set offy   $scaling($ref,refy)
     set width  [WidthCanvas $w]
-    #set width  [$w cget -width]
     set pymin  $scaling($w,pymin)
 
     switch -- $position {
@@ -995,7 +1013,7 @@ proc ::Plotchart::DrawTitle { w title {position center}} {
     }
 
     $w delete "title_$anchor && $ref"
-    set obj [$w create text $tx [expr {$offy + 3 + [$w cget -borderwidth]}] -text $title \
+    set obj [$w create text $tx [expr {$offy + 3 + [winfo pixels $c [$c cget -borderwidth]]}] -text $title \
                 -tags [list title title_$anchor $ref] -font $config($w,title,font) \
                 -fill $config($w,title,textcolor) -anchor $anchor]
 
@@ -1025,6 +1043,12 @@ proc ::Plotchart::DrawSubtitle { w title } {
     variable scaling
     variable config
 
+    if { [string match {[0-9]*} $w] } {
+        set c [string range $w 2 end]
+    } else {
+        set c $w
+    }
+
     set ref    $scaling($w,reference)
     set offx   $scaling($ref,refx)
     set width  [WidthCanvas $w]
@@ -1037,7 +1061,7 @@ proc ::Plotchart::DrawSubtitle { w title } {
     }
 
     $w delete "subtitle && $ref"
-    set obj [$w create text $tx [expr {$offy + 3 + [$w cget -borderwidth]}] -text $title \
+    set obj [$w create text $tx [expr {$offy + 3 + [winfo pixels $c [$c cget -borderwidth]]}] -text $title \
                 -tags [list subtitle $ref] -font $config($w,subtitle,font) \
                 -fill $config($w,subtitle,textcolor) -anchor n]
 
@@ -4101,7 +4125,7 @@ proc ::Plotchart::DrawFunction { w series xargs function args } {
        if { [lindex $args end-1] != "-samples" } {
            return -code error "plotfunc: unknown option - [lindex $args end-1]"
        }
-       if { ! [string is integer [lindex $args end]] } {
+       if { ! [string is integer -strict [lindex $args end]] } {
            return -code error "plotfunc: number of samples must be an integer - is instead \"[lindex $args end]\""
        }
        set number [lindex $args end]
