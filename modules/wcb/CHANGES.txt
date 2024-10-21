@@ -1,8 +1,9 @@
 What is new in Wcb 4.1.1?
 -------------------------
 
-1. Made sure that the Migration Tool for Tcl 9 won't output any
-   warnings or notes.
+1. Made sure that the Migration Tool for Tcl 9 by Ashok Nadkarni won't
+   output any warnings or notes (thanks to Andreas Kupries for his
+   valuable input).
 
 What was new in Wcb 4.1?
 ------------------------
