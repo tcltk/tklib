@@ -5,10 +5,12 @@ What is new in Scrollutil 2.4?
    output any warnings or notes (thanks to Andreas Kupries for his
    valuable input).
 
-2. Improvements in the themepatch package, especially regarding the
+2. Minor improvements in the handling of the "closetab" style element.
+
+3. Improvements in the themepatch package, especially regarding the
    "default" theme.
 
-3. Eliminated a potential error message caused by the handling of
+4. Eliminated a potential error message caused by the handling of
    <TouchpadScroll> events (thanks to Paul Obermeier for his bug
    report).
 

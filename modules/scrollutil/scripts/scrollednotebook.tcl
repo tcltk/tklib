@@ -1301,15 +1301,14 @@ proc scrollutil::snb::onButton1 {nb x y} {
 	    [::scrollutil::closetabstate $nb $tabIdx] eq "normal"} {
 	    $nb state pressed
 	    set stateArr(closeIdx) $tabIdx
-
-	    #
-	    # The following trick activates the closetab element's
-	    # dark red background color corresponding to the
-	    # "pressed" state, which is necessary on some desktops
-	    # if the notebook's toplevel is not the topmost one:
-	    #
-	    event generate $nb <B1-Motion> -x $x -y $y
 	}
+
+	#
+	# The following trick activates the closetab element's
+	# dark red background color corresponding to the
+	# "pressed" state, which is necessary on some desktops:
+	#
+	event generate $nb <B1-Motion> -x $x -y $y
 	return ""
     }
 
