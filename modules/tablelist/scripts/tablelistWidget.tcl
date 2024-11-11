@@ -1756,6 +1756,10 @@ proc tablelist::collapseSubCmd {win argList} {
 	hdr_adjustElidedText $win
 	hdr_updateColors $win
 	adjustElidedText $win
+	update idletasks
+	if {[destroyed $win]} {
+	    return ""
+	}
 	redisplayVisibleItems $win
 	makeStripes $win
 	adjustSepsWhenIdle $win
@@ -2643,6 +2647,10 @@ proc tablelist::expandSubCmd {win argList} {
 	hdr_adjustElidedText $win
 	hdr_updateColors $win
 	adjustElidedText $win
+	update idletasks
+	if {[destroyed $win]} {
+	    return ""
+	}
 	redisplayVisibleItems $win
 	makeStripes $win
 	adjustSepsWhenIdle $win
