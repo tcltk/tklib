@@ -52,9 +52,9 @@ proc displayContents dir {
 	-columns {0 "Name"	    left
 		  0 "Size"	    right
 		  0 "Date Modified" left} \
-	-expandcommand expandCmd -collapsecommand collapseCmd \
-	-xscrollcommand [list $hsb set] -yscrollcommand [list $vsb set] \
-	-movablecolumns no -setgrid no -showseparators yes -height 16 -width 80
+	-height 16 -width 80 -movablecolumns no -setgrid no \
+	-showseparators yes -expandcommand expandCmd \
+	-xscrollcommand [list $hsb set] -yscrollcommand [list $vsb set]
     if {[$tbl cget -selectborderwidth] == 0} {
 	$tbl configure -spacing 1
     }
@@ -72,6 +72,8 @@ proc displayContents dir {
 	global pct					;# ""|100|125|...|200
 	$tbl configure -treestyle bicolor$pct
     }
+
+    bind $tbl <<TablelistYViewChanged>> [list addImages $tbl]
 
     #
     # Create a pop-up menu with one command entry; bind the script
@@ -204,15 +206,9 @@ proc putContents {dir tbl nodeIdx} {
     set itemList [$tbl applysorting $itemList]
     $tbl insertchildlist $nodeIdx end $itemList
 
-    #
-    # Insert an image into the first cell of each newly inserted row
-    #
     foreach item $itemList {
 	set name [lindex $item end]
-	if {$name eq ""} {					;# file
-	    $tbl cellconfigure $row,0 -image fileImg
-	} else {						;# directory
-	    $tbl cellconfigure $row,0 -image clsdFolderImg
+	if {$name ne ""} {					;# directory
 	    $tbl rowattrib $row pathName $name
 
 	    #
@@ -282,28 +278,31 @@ proc formatSize val {
 #
 # Outputs the content of the directory whose leaf name is displayed in the
 # first cell of the specified row of the tablelist widget tbl, as child items
-# of the one identified by row, and updates the image displayed in that cell.
+# of the one identified by row.
 #------------------------------------------------------------------------------
 proc expandCmd {tbl row} {
     if {[$tbl childcount $row] == 0} {
 	set dir [$tbl rowattrib $row pathName]
 	putContents $dir $tbl $row
     }
-
-    if {[$tbl childcount $row] != 0} {
-	$tbl cellconfigure $row,0 -image openFolderImg
-    }
 }
 
 #------------------------------------------------------------------------------
-# collapseCmd
+# addImages
 #
-# Updates the image displayed in the first cell of the specified row of the
-# tablelist widget tbl.
+# Inserts an image into the first cell of each row in the current view.
 #------------------------------------------------------------------------------
-proc collapseCmd {tbl row} {
-    if {[$tbl hasrowattrib $row pathName]} {		;# directory item
-	$tbl cellconfigure $row,0 -image clsdFolderImg
+proc addImages tbl {
+    set topRow [$tbl index top]
+    set btmRow [$tbl index bottom]
+    for {set row $topRow} {$row <= $btmRow} {incr row} {
+	if {[$tbl hasrowattrib $row pathName]} {	;# directory item
+	    set img [expr {[$tbl isexpanded $row] ?
+		    "openFolderImg" : "clsdFolderImg"}]
+	} else {					;# file item
+	    set img fileImg
+	}
+	$tbl cellconfigure $row,0 -image $img
     }
 }
 

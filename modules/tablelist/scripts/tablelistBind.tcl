@@ -2320,7 +2320,8 @@ proc tablelist::condShowTarget {win y} {
 	if {$data(targetChildIdx) == 0} {
 	    place $data(rowGap) -anchor w -y $gapY -height $lineHeight -width 6
 	} else {
-	    place $data(rowGap) -anchor w -y $gapY -height 4 \
+	    variable scaled4
+	    place $data(rowGap) -anchor w -y $gapY -height $scaled4 \
 				-width [winfo width $data(hdrTxtFrm)]
 	}
 	raise $data(rowGap)

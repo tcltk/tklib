@@ -1,3 +1,18 @@
+2024-11-18 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* CHANGES.txt:              Updated to reflect the changes.
+	* doc/tablelist.html:
+	* doc/tablelistWidget.html:
+
+	* scripts/*.tcl: The "-text" option at row and cell levels, as well as
+	  the "-image" cell configuraton option no longer perform a text/image
+	  update if the new option value equals the old one; minor improvement
+	  related to the "collapse" subcommand.
+
+	* ../../examples/tablelist/dirViewer*.tcl: Now also demonstrate how the
+	  virtual event <<TablelistYViewChanged>> can be used to embed images
+	  into the items contained in the current view.
+
 2024-10-19 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl:         Bumped the version number to 7.4.

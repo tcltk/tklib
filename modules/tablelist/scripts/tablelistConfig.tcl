@@ -2684,11 +2684,27 @@ proc tablelist::doRowConfig {row win opt val} {
 		displayItems $win
 	    }
 
+	    #
+	    # Return if the new item equals the old one
+	    #
+	    set newItem [adjustItem $val $data(colCount)]
+	    set oldItem [lindex $data(${p}itemList) $row]
+	    set equal 1
+	    set col 0
+	    foreach newText $newItem oldText $oldItem {
+		if {$newText ne $oldText && $col < $data(colCount)} {
+		    set equal 0
+		    break
+		}
+		incr col
+	    }
+	    if {$equal} {
+		return ""
+	    }
+
 	    set colWidthsChanged 0
 	    set colIdxList {}
-	    set oldItem [lindex $data(${p}itemList) $row]
 	    set key [lindex $oldItem end]
-	    set newItem [adjustItem $val $data(colCount)]
 	    if {$data(hasFmtCmds)} {
 		set displayedItem [formatItem $win $key $row $newItem]
 	    } else {
@@ -3134,11 +3150,19 @@ proc tablelist::doCellConfig {row col win opt val {skipParts 0}} {
 	    }
 
 	    #
-	    # Save the old image or window width
+	    # Return if the new image name equals the old one
 	    #
 	    set item [lindex $data(${p}itemList) $row]
 	    set key [lindex $item end]
 	    set name $key,$col$opt
+	    set hasImage [info exists data($name)]
+	    if {$hasImage && $val eq $data($name)} {
+		return ""
+	    }
+
+	    #
+	    # Save the old image or window width
+	    #
 	    getAuxData $win $key $col oldAuxType oldAuxWidth
 
 	    #
@@ -3146,7 +3170,7 @@ proc tablelist::doCellConfig {row col win opt val {skipParts 0}} {
 	    #
 	    set imgLabel $w.img_$key,$col
 	    if {$val eq ""} {
-		if {[info exists data($name)]} {
+		if {$hasImage} {
 		    unset data($name)
 		    if {$inBody} {
 			incr data(imgCount) -1
@@ -3158,7 +3182,7 @@ proc tablelist::doCellConfig {row col win opt val {skipParts 0}} {
 		    return -code error $result
 		}
 
-		if {$inBody && ![info exists data($name)]} {
+		if {$inBody && !$hasImage} {
 		    incr data(imgCount)
 		}
 		if {[winfo exists $imgLabel] && $val ne $data($name)} {
@@ -3300,11 +3324,19 @@ proc tablelist::doCellConfig {row col win opt val {skipParts 0}} {
 	    displayItems $win
 
 	    #
-	    # Save the old indentation width
+	    # Return if the new indentation name equals the old one
 	    #
 	    set item [lindex $data(itemList) $row]
 	    set key [lindex $item end]
 	    set name $key,$col$opt
+	    set hasIndent [info exists data($name)]
+	    if {$hasIndent && $val eq $data($name)} {
+		return ""
+	    }
+
+	    #
+	    # Save the old indentation width
+	    #
 	    getIndentData $win $key $col oldIndentWidth
 
 	    #
@@ -3312,13 +3344,13 @@ proc tablelist::doCellConfig {row col win opt val {skipParts 0}} {
 	    #
 	    set indentLabel $w.ind_$key,$col
 	    if {$val eq ""} {
-		if {[info exists data($name)]} {
+		if {$hasIndent} {
 		    unset data($name)
 		    incr data(indentCount) -1
 		    destroy $indentLabel
 		}
 	    } else {
-		if {![info exists data($name)]} {
+		if {!$hasIndent} {
 		    incr data(indentCount)
 		}
 		if {[winfo exists $indentLabel] && $val ne $data($name)} {
@@ -3560,10 +3592,18 @@ proc tablelist::doCellConfig {row col win opt val {skipParts 0}} {
 		displayItems $win
 	    }
 
+	    #
+	    # Return if the new text equals the old one
+	    #
+	    set oldItem [lindex $data(${p}itemList) $row]
+	    set oldText [lindex $oldItem $col]
+	    if {$val eq $oldText} {
+		return ""
+	    }
+
 	    set pixels [lindex $data(colList) [expr {2*$col}]]
 	    set workPixels $pixels
 	    set text $val
-	    set oldItem [lindex $data(${p}itemList) $row]
 	    set key [lindex $oldItem end]
 	    set fmtCmdFlag [lindex $data(fmtCmdFlagList) $col]
 	    if {$fmtCmdFlag} {
@@ -3672,7 +3712,6 @@ proc tablelist::doCellConfig {row col win opt val {skipParts 0}} {
 			adjustColumns $win {} 1
 		    }
 		} else {
-		    set oldText [lindex $oldItem $col]
 		    if {$fmtCmdFlag} {
 			set oldText [formatElem $win $key $row $col $oldText]
 		    }

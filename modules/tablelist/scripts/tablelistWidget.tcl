@@ -885,6 +885,8 @@ proc tablelist::tablelist args {
 	    y			 ""
 	    xView		 {-1 -1}
 	    yView		 {-1 -1}
+	    rightCol		-1
+	    btmRow		-1
 	}
 
 	#
@@ -1143,10 +1145,11 @@ proc tablelist::tablelist args {
     # Create two frames used to display a gap between two consecutive
     # rows/columns when moving a row/column interactively
     #
+    variable scaled4
     tk::frame $data(rowGap) -borderwidth 1 -container 0 -highlightthickness 0 \
-			    -relief sunken -takefocus 0 -height 4
+			    -relief sunken -takefocus 0 -height $scaled4
     tk::frame $data(colGap) -borderwidth 1 -container 0 -highlightthickness 0 \
-			    -relief sunken -takefocus 0 -width 4
+			    -relief sunken -takefocus 0 -width $scaled4
 
     #
     # Create an unmanaged listbox child, used to handle the -setgrid option
@@ -1753,13 +1756,14 @@ proc tablelist::collapseSubCmd {win argList} {
 	adjustRowIndex $win activeRow 1
 	set data(activeRow) $activeRow
 
-	hdr_adjustElidedText $win
-	hdr_updateColors $win
-	adjustElidedText $win
 	update idletasks
 	if {[destroyed $win]} {
 	    return ""
 	}
+
+	hdr_adjustElidedText $win
+	hdr_updateColors $win
+	adjustElidedText $win
 	redisplayVisibleItems $win
 	makeStripes $win
 	adjustSepsWhenIdle $win
@@ -2647,10 +2651,6 @@ proc tablelist::expandSubCmd {win argList} {
 	hdr_adjustElidedText $win
 	hdr_updateColors $win
 	adjustElidedText $win
-	update idletasks
-	if {[destroyed $win]} {
-	    return ""
-	}
 	redisplayVisibleItems $win
 	makeStripes $win
 	adjustSepsWhenIdle $win
@@ -6046,7 +6046,8 @@ proc tablelist::showtargetmarkSubCmd {win argList} {
 		set y [lindex $dlineinfo 1]
 	    }
 
-	    place $data(rowGap) -anchor w -y $y -height 4 \
+	    variable scaled4
+	    place $data(rowGap) -anchor w -y $y -height $scaled4 \
 				-width [winfo width $data(hdrTxtFrm)]
 	}
 

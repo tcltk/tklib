@@ -1995,9 +1995,9 @@ proc displayContents dir {
         -columns {0 "Name"          left
                   0 "Size"          right
                   0 "Date Modified" left} \
-        -expandcommand expandCmd -collapsecommand collapseCmd \
-        -xscrollcommand [list $hsb set] -yscrollcommand [list $vsb set] \
-        -movablecolumns no -setgrid no -showseparators yes -height 16 -width 80
+        -height 16 -width 80 -movablecolumns no -setgrid no \
+        -showseparators yes -expandcommand expandCmd \
+        -xscrollcommand [list $hsb set] -yscrollcommand [list $vsb set]
     if {[$tbl cget -selectborderwidth] == 0} {
         $tbl configure -spacing 1
     }
@@ -2015,6 +2015,8 @@ proc displayContents dir {
         global pct                                      ;<span class="cmt"># ""|100|125|...|200</span>
         $tbl configure -treestyle bicolor$pct
     }
+
+    bind $tbl &lt;&lt;TablelistYViewChanged&gt;&gt; [list addImages $tbl]
 
     . . .
 
@@ -2043,13 +2045,6 @@ option add *ScrollArea.Tablelist.highlightThickness     0
 </pre>
   </blockquote>
 
-  <p>The procedure specifies a value not only for the <code><a href=
-  "tablelistWidget.html#expandcommand">-expandcommand</a></code> option of the
-  tablelist it creates, but also for its <code><a href=
-  "tablelistWidget.html#collapsecommand">-collapsecommand</a></code>
-  option.&nbsp; The latter will merely restore the image shown in the first
-  column to the one displaying a closed folder (see below).</p>
-
   <p>In a scaling-aware application the value of the <code><a href=
   "tablelistWidget.html#treestyle">-treestyle</a></code> tablelist option
   should reflect the display's DPI scaling level.&nbsp; On Windows Vista, 7, 8,
@@ -2059,6 +2054,13 @@ option add *ScrollArea.Tablelist.highlightThickness     0
   <code>bicolor</code> in the presence of SVG support and to one of
   <code>bicolor100</code>, ..., <code>bicolor200</code> otherwise (depending on
   the value of the variable <code>tablelist::scalingpct</code>).</p>
+
+  <p>Whenever the vertical view in the tablelist's window changes, the widget
+  receives a <code><a href=
+  "tablelistWidget.html#virtual_events">&lt;&lt;TablelistYViewChanged&gt;&gt;</a></code>
+  virtual event.&nbsp; Our binding for this event invokes the
+  <code>addImages</code> procedure, which we show and discuss towards the end
+  of this section.</p>
 
   <p>Let's see how the script populates the tablelist with the content of the
   given directory:</p>
@@ -2125,15 +2127,9 @@ proc putContents {dir tbl nodeIdx} {
     set itemList [$tbl applysorting $itemList]
     $tbl insertchildlist $nodeIdx end $itemList
 
-    <span class="cmt">#
-    # Insert an image into the first cell of each newly inserted row
-    #</span>
     foreach item $itemList {
         set name [lindex $item end]
-        if {$name eq ""} {                                      ;<span class="cmt"># file</span>
-            $tbl cellconfigure $row,0 -image fileImg
-        } else {                                                ;<span class="cmt"># directory</span>
-            $tbl cellconfigure $row,0 -image clsdFolderImg
+        if {$name ne ""} {                                      ;<span class="cmt"># directory</span>
             $tbl rowattrib $row pathName $name
 
             <span class="cmt">#
@@ -2215,44 +2211,37 @@ proc formatSize val {
         return [format "%.1f GB" [expr {$val / 1073741824.0}]]
     }
 }
-</pre>
-  </blockquote>
 
-  <p>Besides its common task of inserting the children of the row to be
-  expanded, the <code>expandCmd</code> procedure shown below also changes the
-  image contained in the first column to the one displaying an open
-  folder.&nbsp; The <code>collapseCmd</code> procedure restores the image to
-  the one displaying a closed folder:</p>
-
-  <blockquote>
-    <pre>
 <span class="cmt">#------------------------------------------------------------------------------
 # expandCmd
 #
 # Outputs the content of the directory whose leaf name is displayed in the
 # first cell of the specified row of the tablelist widget tbl, as child items
-# of the one identified by row, and updates the image displayed in that cell.
+# of the one identified by row.
 #------------------------------------------------------------------------------</span>
 proc expandCmd {tbl row} {
     if {[$tbl childcount $row] == 0} {
         set dir [$tbl rowattrib $row pathName]
         putContents $dir $tbl $row
     }
-
-    if {[$tbl childcount $row] != 0} {
-        $tbl cellconfigure $row,0 -image openFolderImg
-    }
 }
 
 <span class="cmt">#------------------------------------------------------------------------------
-# collapseCmd
+# addImages
 #
-# Updates the image displayed in the first cell of the specified row of the
-# tablelist widget tbl.
+# Inserts an image into the first cell of each row in the current view.
 #------------------------------------------------------------------------------</span>
-proc collapseCmd {tbl row} {
-    if {[$tbl hasrowattrib $row pathName]} {            ;<span class="cmt"># directory item</span>
-        $tbl cellconfigure $row,0 -image clsdFolderImg
+proc addImages tbl {
+    set topRow [$tbl index top]
+    set btmRow [$tbl index bottom]
+    for {set row $topRow} {$row <= $btmRow} {incr row} {
+        if {[$tbl hasrowattrib $row pathName]} {        ;<span class="cmt">;# directory item</span>
+            set img [expr {[$tbl isexpanded $row] ?
+                    "openFolderImg" : "clsdFolderImg"}]
+        } else {                                        ;<span class="cmt">;# file item</span>
+            set img fileImg
+        }
+        $tbl cellconfigure $row,0 -image $img
     }
 }
 
@@ -2261,6 +2250,13 @@ proc collapseCmd {tbl row} {
 displayContents ""
 </pre>
   </blockquote>
+
+  <p>As already mentioned, the <code>addImages</code> procedure is invoked
+  whenever the vertical view in the tablelist's window changes.&nbsp; It
+  inserts an image representing an open or closed folder, or a file into the
+  first cell of each row in the current view.&nbsp; Unlike in the previous
+  example, here we add the images to the items contained in the current view
+  only, thus saving a significant amount of time and memory.</p>
 
   <p>The last line of the script invokes the procedure
   <code>displayContents</code> with an empty string as argument, i.e., displays

@@ -5,10 +5,20 @@ What is new in Tablelist 7.4?
    output any warnings or notes (thanks to Andreas Kupries for his
    valuable input).
 
-2. Improvements in the themepatch package, especially regarding the
+2. Optimization: The "-text" option at row and cell levels, as well as
+   the "-image" cell configuraton option no longer perform a text/image
+   update if the new option value equals the old one.
+
+3. Minor improvement related to the "collapse" subcommand.
+
+4. Improvements in the themepatch package, especially regarding the
    "default" theme.
 
-3. Eliminated a potential error message caused by the handling of
+5. The demo scripts "dirViewer.tcl" and "dirViewer_tile.tcl" now also
+   demonstrate how the virtual event <<TablelistYViewChanged>> can be
+   used to embed images into the items contained in the current view.
+
+6. Eliminated a potential error message caused by the handling of
    <TouchpadScroll> events (thanks to Paul Obermeier for his bug
    report).
 

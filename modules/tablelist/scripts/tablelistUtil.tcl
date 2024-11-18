@@ -4357,16 +4357,18 @@ proc tablelist::updateHScrlbar {win args} {
     set xView [expr {[llength $args] == 0 ? [xviewSubCmd $win {}] : $args}]
     foreach {frac1 frac2} $xView {}
     foreach {frac1Old frac2Old} $data(xView) {}
+    set leftCol  [columnindexSubCmd $win left]
+    set rightCol [columnindexSubCmd $win right]
     if {$frac1 != $frac1Old || $frac2 != $frac2Old} {
-	set data(xView) $xView
 	if {$data(-xscrollcommand) ne ""} {
 	    eval $data(-xscrollcommand) $frac1 $frac2
 	}
 
-	set leftCol  [columnindexSubCmd $win left]
-	set rightCol [columnindexSubCmd $win right]
+	genVirtualEvent $win <<TablelistXViewChanged>> [list $leftCol $rightCol]
+    } elseif {$frac1 == 0 && $frac2 == 1 && $rightCol != $data(rightCol)} {
 	genVirtualEvent $win <<TablelistXViewChanged>> [list $leftCol $rightCol]
     }
+    array set data [list xView $xView rightCol $rightCol]
 }
 
 #------------------------------------------------------------------------------
@@ -4403,16 +4405,18 @@ proc tablelist::updateVScrlbar win {
     set yView [yviewSubCmd $win {}]
     foreach {frac1 frac2} $yView {}
     foreach {frac1Old frac2Old} $data(yView) {}
+    set topRow [indexSubCmd $win top]
+    set btmRow [indexSubCmd $win bottom]
     if {$frac1 != $frac1Old || $frac2 != $frac2Old} {
-	set data(yView) $yView
 	if {$data(-yscrollcommand) ne ""} {
 	    eval $data(-yscrollcommand) $frac1 $frac2
 	}
 
-	set topRow [indexSubCmd $win top]
-	set btmRow [indexSubCmd $win bottom]
+	genVirtualEvent $win <<TablelistYViewChanged>> [list $topRow $btmRow]
+    } elseif {$frac1 == 0 && $frac2 == 1 && $btmRow != $data(btmRow)} {
 	genVirtualEvent $win <<TablelistYViewChanged>> [list $topRow $btmRow]
     }
+    array set data [list yView $yView btmRow $btmRow]
 
     if {[winfo viewable $win] && ![info exists data(colBeingResized)] &&
 	![info exists data(redrawId)]} {
