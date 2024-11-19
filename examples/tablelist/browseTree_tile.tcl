@@ -231,7 +231,7 @@ proc demo::putChildren {w tbl nodeIdx} {
 	$tbl insertchild $nodeIdx end $item
 
 	#
-	# Insert an image into the first cell of the row; mark the
+	# Embed an image into the first cell of the row; mark the
 	# row as collapsed if the child widget has children itself
 	#
 	if {[llength [winfo children $c]] == 0} {

@@ -198,7 +198,7 @@ proc demo::putChildren {w tbl} {
 	$tbl insert end $item
 
 	#
-	# Insert an image into the first cell of the row
+	# Embed an image into the first cell of the row
 	#
 	if {[llength [winfo children $c]] == 0} {
 	    $tbl cellconfigure end,0 -image $leafImg

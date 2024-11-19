@@ -290,7 +290,7 @@ proc expandCmd {tbl row} {
 #------------------------------------------------------------------------------
 # addImages
 #
-# Inserts an image into the first cell of each row in the current view.
+# Embeds an image into the first cell of each row in the current view.
 #------------------------------------------------------------------------------
 proc addImages tbl {
     set topRow [$tbl index top]

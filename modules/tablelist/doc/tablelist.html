@@ -1575,7 +1575,7 @@ proc demo::putChildren {w tbl nodeIdx} {
         $tbl insertchild $nodeIdx end $item
 
         <span class="cmt">#
-        # Insert an image into the first cell of the row; mark the
+        # Embed an image into the first cell of the row; mark the
         # row as collapsed if the child widget has children itself
         #</span>
         if {[llength [winfo children $c]] == 0} {
@@ -1624,7 +1624,7 @@ proc demo::putChildren {w tbl nodeIdx} {
   "tablelistWidget.html#cellconfigure">cellconfigure</a></code> tablelist
   operation to set the value of the <code>-image</code> option of the
   corresponding row's first cell, containing the leaf name of the child.&nbsp;
-  In this way, the procedure inserts the image <code>$leafImg</code> or
+  In this way, the procedure embeds the image <code>$leafImg</code> or
   <code>$compImg</code> into the first cell, depending on whether the child in
   question is a leaf or a composite widget.&nbsp; (Recall that both images were
   created outside this procedure, within the initialization of the
@@ -2229,7 +2229,7 @@ proc expandCmd {tbl row} {
 <span class="cmt">#------------------------------------------------------------------------------
 # addImages
 #
-# Inserts an image into the first cell of each row in the current view.
+# Embeds an image into the first cell of each row in the current view.
 #------------------------------------------------------------------------------</span>
 proc addImages tbl {
     set topRow [$tbl index top]
@@ -2252,11 +2252,11 @@ displayContents ""
   </blockquote>
 
   <p>As already mentioned, the <code>addImages</code> procedure is invoked
-  whenever the vertical view in the tablelist's window changes.&nbsp; It
-  inserts an image representing an open or closed folder, or a file into the
-  first cell of each row in the current view.&nbsp; Unlike in the previous
-  example, here we add the images to the items contained in the current view
-  only, thus saving a significant amount of time and memory.</p>
+  whenever the vertical view in the tablelist's window changes.&nbsp; It embeds
+  an image representing an open or closed folder, or a file into the first cell
+  of each row in the current view.&nbsp; Unlike in the previous example, here
+  we add the images to the items contained in the current view only, thus
+  saving a significant amount of time and memory.</p>
 
   <p>The last line of the script invokes the procedure
   <code>displayContents</code> with an empty string as argument, i.e., displays

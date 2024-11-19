@@ -9,7 +9,8 @@ What is new in Tablelist 7.4?
    the "-image" cell configuraton option no longer perform a text/image
    update if the new option value equals the old one.
 
-3. Minor improvement related to the "collapse" subcommand.
+3. Made the drop target indicator and the gaps displayed by the "move"
+   and "movecolumn" subcommands scaling-aware.
 
 4. Improvements in the themepatch package, especially regarding the
    "default" theme.
