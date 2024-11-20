@@ -3994,6 +3994,7 @@ proc tablelist::labelB1Motion {w X x y} {
 	    }
 
 	    place forget $data(colGap)
+	    lower $data(colGap)				;# necessary on aqua
 	} else {
 	    #
 	    # The following code is needed because the event
@@ -4054,6 +4055,7 @@ proc tablelist::labelB1Motion {w X x y} {
 		    configLabel $w -cursor $data(-cursor)
 		    $data(hdrTxtFrmCanv)$col configure -cursor $data(-cursor)
 		    place forget $data(colGap)
+		    lower $data(colGap)			;# necessary on aqua
 		} else {
 		    set data(targetCol) $targetCol
 		    set data(master) $master
@@ -4078,6 +4080,7 @@ proc tablelist::labelB1Motion {w X x y} {
 		    place $data(colGap) -in $master -anchor n \
 			-bordermode outside -height $height -relheight 1.0 \
 			-relx $relx -y $y
+		    raise $data(colGap)			;# necessary on aqua
 		}
 	    }
 	}
@@ -4255,6 +4258,7 @@ proc tablelist::labelB1Up {w X} {
 	    }
 	    bind $data(topWin) <Escape> $data(topEscBinding)
 	    place forget $data(colGap)
+	    lower $data(colGap)				;# necessary on aqua
 	}
 
 	if {$data(inClickedLabel)} {
@@ -4402,6 +4406,7 @@ proc tablelist::escape {win col} {
 	}
 	bind $data(topWin) <Escape> $data(topEscBinding)
 	place forget $data(colGap)
+	lower $data(colGap)				;# necessary on aqua
 	array unset data targetCol
 	if {[info exists data(X)]} {
 	    unset data(X)

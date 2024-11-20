@@ -26,6 +26,8 @@ What is new in Tablelist 7.4?
    <TouchpadScroll> events (thanks to Paul Obermeier for his bug
    report).
 
+8. Several further improvements and minor bug fixes.
+
 What was new in Tablelist 7.3?
 ------------------------------
 
