@@ -12,14 +12,17 @@ What is new in Tablelist 7.4?
 3. Made the drop target indicator and the gaps displayed by the "move"
    and "movecolumn" subcommands scaling-aware.
 
-4. Improvements in the themepatch package, especially regarding the
+4. Made the default value of the "-targetcolor" option in Tablelist_tile
+   theme-specific.
+
+5. Improvements in the themepatch package, especially regarding the
    "default" theme.
 
-5. The demo scripts "dirViewer.tcl" and "dirViewer_tile.tcl" now also
+6. The demo scripts "dirViewer.tcl" and "dirViewer_tile.tcl" now also
    demonstrate how the virtual event <<TablelistYViewChanged>> can be
    used to embed images into the items contained in the current view.
 
-6. Eliminated a potential error message caused by the handling of
+7. Eliminated a potential error message caused by the handling of
    <TouchpadScroll> events (thanks to Paul Obermeier for his bug
    report).
 

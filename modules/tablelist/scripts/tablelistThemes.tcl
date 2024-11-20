@@ -104,11 +104,14 @@ proc tablelist::setThemeDefaults {} {
 	set themeDefaults(-arrowdisabledcolor) $themeDefaults(-labeldisabledFg)
     }
 
+    set themeDefaults(-targetcolor) $themeDefaults(-foreground)
+
     variable configSpecs
     foreach opt {-background -foreground -disabledforeground -stripebackground
 		 -selectbackground -selectforeground -selectborderwidth -font
 		 -labelforeground -labelfont -labelborderwidth -labelpady
-		 -arrowcolor -arrowdisabledcolor -arrowstyle -treestyle} {
+		 -arrowcolor -arrowdisabledcolor -arrowstyle -treestyle
+		 -targetcolor} {
 	if {[llength $configSpecs($opt)] < 4} {
 	    lappend configSpecs($opt) $themeDefaults($opt)
 	} else {

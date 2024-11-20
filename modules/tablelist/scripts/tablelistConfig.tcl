@@ -66,7 +66,6 @@ proc tablelist::extendConfigSpecs {} {
     lappend configSpecs(-stripebackground)	{}
     lappend configSpecs(-stripeforeground)	{}
     lappend configSpecs(-stripeheight)		1
-    lappend configSpecs(-targetcolor)		black
     lappend configSpecs(-tight)			0
     lappend configSpecs(-titlecolumns)		0
     lappend configSpecs(-tooltipaddcommand)	{}
@@ -161,6 +160,8 @@ proc tablelist::extendConfigSpecs {} {
 	    }
 	}
     } else {
+	lappend configSpecs(-targetcolor) [lindex $configSpecs(-foreground) 3]
+
 	#
 	# Append the default values of some configuration options
 	# of an invisible label widget to the values of the

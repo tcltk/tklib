@@ -599,7 +599,7 @@ proc tablelist::updateConfiguration win {
 	foreach opt {-background -foreground -disabledforeground
 		     -stripebackground -selectbackground -selectforeground
 		     -selectborderwidth -font -labelforeground -labelfont
-		     -labelborderwidth -labelpady -treestyle} {
+		     -labelborderwidth -labelpady -treestyle -targetcolor} {
 	    if {$data($opt) eq $tmp($opt)} {
 		doConfig $win $opt $themeDefaults($opt)
 	    }
@@ -787,7 +787,8 @@ proc tablelist::updateAppearance win {
     #
     variable themeDefaults
     foreach opt {-background -foreground -disabledforeground -stripebackground
-		 -selectbackground -selectforeground -labelforeground} {
+		 -selectbackground -selectforeground -labelforeground
+		 -targetcolor} {
 	if {$data($opt) eq $tmp($opt)} {
 	    doConfig $win $opt $themeDefaults($opt)
 	}
