@@ -6,7 +6,7 @@ What is new in Tablelist 7.4?
    valuable input).
 
 2. Optimization: The "-text" option at row and cell levels, as well as
-   the "-image" cell configuraton option no longer perform a text/image
+   the "-image" cell configuration option no longer perform a text/image
    update if the new option value equals the old one.
 
 3. Made the drop target indicator and the gaps displayed by the "move"
