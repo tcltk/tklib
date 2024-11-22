@@ -7,10 +7,13 @@ What is new in Scrollutil 2.4?
 
 2. Minor improvements in the handling of the "closetab" style element.
 
-3. Improvements in the themepatch package, especially regarding the
+3. Improved the handling of out-of-bounds tab indices in the "tab"
+   subcommand of the plainnotebook widget.
+
+4. Improvements in the themepatch package, especially regarding the
    "default" theme.
 
-4. Eliminated a potential error message caused by the handling of
+5. Eliminated a potential error message caused by the handling of
    <TouchpadScroll> events (thanks to Paul Obermeier for his bug
    report).
 

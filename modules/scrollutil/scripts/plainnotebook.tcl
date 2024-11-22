@@ -1182,8 +1182,10 @@ proc scrollutil::pnb::plainnotebookWidgetCmd {win args} {
 	tab {
 	    if {[catch {::$win index [lindex $args 1]} tabIdx] == 0} {
 		set widget [lindex [$nb tabs] $tabIdx]
-		set tabPath [widgetToTab $win $widget]
-		set class [winfo class $tabPath]
+		if {$widget ne ""} {
+		    set tabPath [widgetToTab $win $widget]
+		    set tabClass [winfo class $tabPath]
+		}
 	    }
 	    if {[catch {eval [list $nb $cmd] $argList} result] != 0} {
 		return -code error $result
@@ -1192,7 +1194,7 @@ proc scrollutil::pnb::plainnotebookWidgetCmd {win args} {
 	    if {$argCount == 2} {
 		set idx [expr {[lsearch -exact $result "-state"] + 1}]
 		set state [lindex $result $idx]
-		if {$state eq "disabled" && $class ne "TRadiobutton"} {
+		if {$state eq "disabled" && $tabClass ne "TRadiobutton"} {
 		    set state [expr {[$tabPath instate disabled] ?
 				     "disabled" : "normal"}]
 		    set result [lreplace $result $idx $idx $state]
@@ -1200,12 +1202,12 @@ proc scrollutil::pnb::plainnotebookWidgetCmd {win args} {
 	    } elseif {$argCount == 3 &&
 		      [string match "-sta*" [lindex $args 2]]} {
 		set state [$nb tab $tabIdx -state]
-		if {$state eq "disabled" && $class ne "TRadiobutton"} {
+		if {$state eq "disabled" && $tabClass ne "TRadiobutton"} {
 		    set result [expr {[$tabPath instate disabled] ?
 				      "disabled" : "normal"}]
 		}
 	    } elseif {$argCount > 3} {
-		if {$class ne "TRadiobutton"} {
+		if {$tabClass ne "TRadiobutton"} {
 		    foreach {opt val} [lrange $args 2 end] {
 			if {[string match "-sta*" $opt]} {
 			    set state [mwutil::fullOpt "state" $val \
@@ -1316,19 +1318,19 @@ proc scrollutil::pnb::adjustsizeSubCmd win {
 # associated with a given page of the plainnotebook widget win.
 #------------------------------------------------------------------------------
 proc scrollutil::pnb::configTab {win tabIdx tabPath} {
-    set class [winfo class $tabPath]
+    set tabClass [winfo class $tabPath]
     foreach {opt val} [$win.nb tab $tabIdx] {
 	switch -- $opt {
 	    -compound -
 	    -image -
 	    -text {
-		if {$class ne "TSeparator"} {
+		if {$tabClass ne "TSeparator"} {
 		    $tabPath configure $opt $val
 		}
 	    }
 
 	    -underline {
-		if {$class eq "TRadiobutton"} {
+		if {$tabClass eq "TRadiobutton"} {
 		    $tabPath configure $opt $val
 		}
 	    }
@@ -1337,7 +1339,7 @@ proc scrollutil::pnb::configTab {win tabIdx tabPath} {
 		switch $val {
 		    hidden { grid remove $tabPath }
 		    normal {
-			if {$class eq "TRadiobutton"} {
+			if {$tabClass eq "TRadiobutton"} {
 			    $tabPath configure $opt $val
 			} else {
 			    $win.nb tab $tabIdx -state disabled
@@ -1345,7 +1347,7 @@ proc scrollutil::pnb::configTab {win tabIdx tabPath} {
 			grid $tabPath -sticky we
 		    }
 		    disabled {
-			if {$class eq "TRadiobutton"} {
+			if {$tabClass eq "TRadiobutton"} {
 			    $tabPath configure $opt $val
 			}
 			grid $tabPath -sticky we
