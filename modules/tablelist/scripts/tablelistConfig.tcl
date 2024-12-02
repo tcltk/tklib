@@ -3157,7 +3157,9 @@ proc tablelist::doCellConfig {row col win opt val {skipParts 0}} {
 	    set key [lindex $item end]
 	    set name $key,$col$opt
 	    set hasImage [info exists data($name)]
-	    if {$hasImage && $val eq $data($name)} {
+	    set callerProc [lindex [info level -1] 0]
+	    if {$hasImage && $val eq $data($name) &&
+		![string match "do*Editing" $callerProc]} {
 		return ""
 	    }
 
@@ -3598,7 +3600,8 @@ proc tablelist::doCellConfig {row col win opt val {skipParts 0}} {
 	    #
 	    set oldItem [lindex $data(${p}itemList) $row]
 	    set oldText [lindex $oldItem $col]
-	    if {$val eq $oldText} {
+	    set callerProc [lindex [info level -1] 0]
+	    if {$val eq $oldText && ![string match "do*Editing" $callerProc]} {
 		return ""
 	    }
 

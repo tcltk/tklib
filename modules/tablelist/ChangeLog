@@ -1,3 +1,16 @@
+2024-12-03 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:              Bumped the version number to 7.4.1.
+	* COPYRIGHT.txt:
+	* README.txt:
+	* doc/tablelist.html:
+
+	* CHANGES.txt: Updated to reflect the changes.
+
+	* scripts/tablelistConfig.tcl: Eliminated a negative side effect of the
+	  optimization of "cellconfigure -image|text" introduced in Tablelist
+	  7.4, related to interactive cell editing.
+
 2024-11-29 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Tablelist 7.4.

@@ -12,7 +12,7 @@ namespace eval ::tablelist {
     #
     # Public variables:
     #
-    variable version	7.4
+    variable version	7.4.1
     variable library	[file dirname [file normalize [info script]]]
 
     #
