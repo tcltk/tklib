@@ -3151,7 +3151,7 @@ proc tablelist::doCellConfig {row col win opt val {skipParts 0}} {
 	    }
 
 	    #
-	    # Return if the new image name equals the old one
+	    # Return if the new value equals the old one
 	    #
 	    set item [lindex $data(${p}itemList) $row]
 	    set key [lindex $item end]
@@ -3327,7 +3327,7 @@ proc tablelist::doCellConfig {row col win opt val {skipParts 0}} {
 	    displayItems $win
 
 	    #
-	    # Return if the new indentation name equals the old one
+	    # Return if the new value equals the old one
 	    #
 	    set item [lindex $data(itemList) $row]
 	    set key [lindex $item end]
@@ -3596,7 +3596,7 @@ proc tablelist::doCellConfig {row col win opt val {skipParts 0}} {
 	    }
 
 	    #
-	    # Return if the new text equals the old one
+	    # Return if the new value equals the old one
 	    #
 	    set oldItem [lindex $data(${p}itemList) $row]
 	    set oldText [lindex $oldItem $col]
@@ -3770,11 +3770,22 @@ proc tablelist::doCellConfig {row col win opt val {skipParts 0}} {
 	    }
 
 	    #
-	    # Save the old image or window width
+	    # Return if the new value equals the old one
 	    #
 	    set item [lindex $data(${p}itemList) $row]
 	    set key [lindex $item end]
 	    set name $key,$col$opt
+	    set hasWindow [info exists data($name)]
+	    set callerProc [lindex [info level -1] 0]
+	    if {$hasWindow && $val eq $data($name) &&
+		![string match "do*Editing" $callerProc] &&
+		$callerProc ne "tablelist::reconfigWindows"} {
+		return ""
+	    }
+
+	    #
+	    # Save the old image or window width
+	    #
 	    getAuxData $win $key $col oldAuxType oldAuxWidth
 	    getIndentData $win $key $col oldIndentWidth
 
@@ -3783,7 +3794,7 @@ proc tablelist::doCellConfig {row col win opt val {skipParts 0}} {
 	    #
 	    set aux $w.frm_$key,$col
 	    if {$val eq ""} {
-		if {[info exists data($name)]} {
+		if {$hasWindow} {
 		    unset data($name)
 		    unset data($key,$col-reqWidth)
 		    unset data($key,$col-reqHeight)
@@ -3803,10 +3814,10 @@ proc tablelist::doCellConfig {row col win opt val {skipParts 0}} {
 		    destroy $aux
 		}
 	    } else {
-		if {$inBody && ![info exists data($name)]} {
+		if {$inBody && !$hasWindow} {
 		    incr data(winCount)
 		}
-		if {[info exists data($name)] && $val ne $data($name)} {
+		if {$hasWindow && $val ne $data($name)} {
 		    destroy $aux
 		}
 		if {![winfo exists $aux]} {

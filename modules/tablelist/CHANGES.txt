@@ -1,9 +1,14 @@
 What is new in Tablelist 7.4.1?
 -------------------------------
 
-1. Eliminated a negative side effect of the optimization of
+1. Optimization: The "-window" cell configuration option no longer
+   performs a window update if the new option value equals the old one
+   (thanks to Nicolas Bats for his proposal).
+
+2. Eliminated a negative side effect of the optimization of
    "cellconfigure -image|text" introduced in Tablelist 7.4, related to
-   interactive cell editing (thanks to Nicolas Bats for his bug report).
+   interactive cell editing (thanks to Nicolas Bats and Alexandru
+   Dadalau for their bug reports).
 
 What was new in Tablelist 7.4?
 ------------------------------
