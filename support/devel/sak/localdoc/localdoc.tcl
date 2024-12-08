@@ -134,6 +134,8 @@ proc ::sak::localdoc::run-idoc-www {baseconfig toc nav cats mods apps} {
     set dst   [lindex [glob $base/*/files/modules] 0]
     set xbase [file dirname [file dirname $dst]]
 
+    puts \t@\t$xbase
+    
     foreach special [glob -nocomplain modules/*/doc/index.html] {
 	set src  [file dirname $special]
 	set mod  [file tail [file dirname $src]]
@@ -179,13 +181,13 @@ proc sak::localdoc::xdesc {path} {
 }
 
 proc sak::localdoc::basetoc {toc mod mdesc} {
-    regexp {^(.*>Widget</dt><dd>\n<table class="#doctools_toc">)(.*)(</table></dl>\n</dl>\n<dl><dt><a name='by_type'>.*)$} $toc -> h t f
+    regexp {^(.*>Widget</dt><dd>\n<table class="doctools_toc">)(.*)(</table></dl>\n</dl>\n<dl><dt><a name='by_type'>.*)$} $toc -> h t f
     set tn [xtable $t $mod $mdesc tklib/]
     return $h\n$tn$f
 }
 
 proc sak::localdoc::basetoc0 {toc mod mdesc} {
-    regexp {^(.*>Widget</dt><dd>\n<table class="#doctools_toc">)(.*)(</table>.*)$} $toc -> h t f
+    regexp {^(.*>Widget</dt><dd>\n<table class="doctools_toc">)(.*)(</table>.*)$} $toc -> h t f
     set tn [xtable $t $mod $mdesc tklib/]
     return $h\n$tn$f
 }
@@ -197,7 +199,7 @@ proc sak::localdoc::basetoc1 {toc mod mdesc} {
 }
 
 proc sak::localdoc::xbasetoc {toc mod mdesc} {
-    regexp {^(.*<table class="#doctools_toc">)(.*)(</table>.*)$} $toc -> h t f
+    regexp {^(.*<table class="doctools_toc">)(.*)(</table>.*)$} $toc -> h t f
     set tn [xtable $t $mod $mdesc]
     return $h\n$tn$f
 }
@@ -241,14 +243,14 @@ proc sak::localdoc::xtable {t mod mdesc {prefix {}}} {
 	if {$check && ([string compare $name $mod] > 0)} {
 	    # Insert before first entry just lexicographically after the new module.
 	    set check 0
-	    append tn "<tr class=\"#doctools_toc[expr {$even ? "even\"" : "odd\" "}] >" \n
-	    append tn "<td class=\"#doctools_tocleft\" ><a name='$mod'><a href=\"${prefix}files/modules/$mod/index.html\">$mod</a></td>" \n
-	    append tn "<td class=\"#doctools_tocright\">$mdesc</td>" \n
+	    append tn "<tr class=\"doctools_toc[expr {$even ? "even\"" : "odd\" "}] >" \n
+	    append tn "<td class=\"doctools_tocleft\" ><a name='$mod'><a href=\"${prefix}files/modules/$mod/index.html\">$mod</a></td>" \n
+	    append tn "<td class=\"doctools_tocright\">$mdesc</td>" \n
 	    append tn "</tr>" \n
 	    set even [expr {1-$even}]
 	}
 
-	append tn "<tr class=\"#doctools_toc[expr {$even ? "even\"" : "odd\" "}] >" \n
+	append tn "<tr class=\"doctools_toc[expr {$even ? "even\"" : "odd\" "}] >" \n
 	append tn $link \n
 	append tn $desc \n
 	append tn $post \n
