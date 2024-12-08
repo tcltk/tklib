@@ -277,13 +277,13 @@ Database Class:	\\fB\\$3\\fR
 .SH NAME
 controlwidget \- Collection of widgets for displaying and controlling numerical values
 .SH SYNOPSIS
-package require \fBTcl  ?8\&.5?\fR
+package require \fBTcl ?8\&.5?\fR
 .sp
-package require \fBTk  ?8\&.5?\fR
+package require \fBTk ?8\&.5?\fR
 .sp
-package require \fBsnit  ?2\&.0?\fR
+package require \fBsnit ?2\&.0?\fR
 .sp
-package require \fBcontrolwidget  ?0\&.1?\fR
+package require \fBcontrolwidget ?0\&.1?\fR
 .sp
 \fB::controlwidget::meter\fR \fIw\fR \fIargs\fR
 .sp

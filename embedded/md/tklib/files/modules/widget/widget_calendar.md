@@ -1,7 +1,7 @@
 
 [//000000001]: # (widget\_calendar \- Various megawidgets)
 [//000000002]: # (Generated from file 'widget\_calendar\.man' by tcllib/doctools with format 'markdown')
-[//000000003]: # (widget\_calendar\(n\) 1\.0\.1 tklib "Various megawidgets")
+[//000000003]: # (widget\_calendar\(n\) 1\.0\.2 tklib "Various megawidgets")
 
 <hr> [ <a href="../../../../toc.md">Main Table Of Contents</a> &#124; <a
 href="../../../toc.md">Table Of Contents</a> &#124; <a
@@ -41,7 +41,7 @@ widget\_calendar \- Calendar Megawidget
 package require Tcl 8\.4  
 package require Tk 8\.4  
 package require widget ?3\.0?  
-package require widget::calendar ?1\.0\.1?  
+package require widget::calendar ?1\.0\.2?  
 
 [__widget::calendar__ *pathname* ?options?](#1)  
 

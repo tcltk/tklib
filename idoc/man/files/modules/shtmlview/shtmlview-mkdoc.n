@@ -274,9 +274,9 @@ Database Class:	\\fB\\$3\\fR
 .SH NAME
 shtmlview_mkdoc \- shtmlview extension adding support for mkdoc markup
 .SH SYNOPSIS
-package require \fBmkdoc::mkdoc \fR
+package require \fBmkdoc::mkdoc\fR
 .sp
-package require \fBshtmlview::shtmlview \fR
+package require \fBshtmlview::shtmlview\fR
 .sp
 .BE
 .SH DESCRIPTION

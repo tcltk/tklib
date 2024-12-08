@@ -273,11 +273,11 @@ Database Class:	\\fB\\$3\\fR
 .SH NAME
 canvas::edit::points \- Editing a cloud of points on a canvas
 .SH SYNOPSIS
-package require \fBTcl  8\&.5\fR
+package require \fBTcl 8\&.5\fR
 .sp
-package require \fBTk  8\&.5\fR
+package require \fBTk 8\&.5\fR
 .sp
-package require \fBcanvas::edit::points  ?0\&.3?\fR
+package require \fBcanvas::edit::points ?0\&.3?\fR
 .sp
 \fB::canvas::edit\fR \fBpoints\fR \fIobjectName\fR \fIcanvas\fR \fIoptions\fR\&.\&.\&.
 .sp

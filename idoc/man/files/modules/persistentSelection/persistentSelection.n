@@ -273,11 +273,11 @@ Database Class:	\\fB\\$3\\fR
 .SH NAME
 persistentSelection \- Enhanced PRIMARY selection
 .SH SYNOPSIS
-package require \fBTcl  8\&.5\fR
+package require \fBTcl 8\&.5\fR
 .sp
-package require \fBTk  8\&.5\fR
+package require \fBTk 8\&.5\fR
 .sp
-package require \fBpersistentSelection  ?1\&.0?\fR
+package require \fBpersistentSelection ?1\&.0?\fR
 .sp
 \fBpersistentSelection::fixText\fR
 .sp

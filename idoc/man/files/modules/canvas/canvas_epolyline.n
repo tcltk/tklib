@@ -273,13 +273,13 @@ Database Class:	\\fB\\$3\\fR
 .SH NAME
 canvas::edit::polyline \- Editing a polyline on a canvas
 .SH SYNOPSIS
-package require \fBTcl  8\&.5\fR
+package require \fBTcl 8\&.5\fR
 .sp
-package require \fBTk  8\&.5\fR
+package require \fBTk 8\&.5\fR
 .sp
-package require \fBcanvas::edit::points  ?0\&.1?\fR
+package require \fBcanvas::edit::points ?0\&.1?\fR
 .sp
-package require \fBcanvas::edit::polyline  ?0\&.2?\fR
+package require \fBcanvas::edit::polyline ?0\&.2?\fR
 .sp
 \fB::canvas::edit\fR \fBpolyline\fR \fIobjectName\fR \fIcanvas\fR \fIoptions\fR\&.\&.\&.
 .sp

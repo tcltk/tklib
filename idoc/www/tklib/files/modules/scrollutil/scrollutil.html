@@ -14,7 +14,7 @@
   <div>
     <h1>Scrollutil Programmer's Guide</h1>
 
-    <h2>For Scrollutil Version 2.2</h2>
+    <h2>For Scrollutil Version 2.4</h2>
 
     <h3>by</h3>
 
@@ -55,6 +55,8 @@
     <li><a href="#ex_ScrolledTablelist">A Scrolled tablelist Widget</a></li>
 
     <li><a href="#ex_ScrolledText">A Scrolled text Widget</a></li>
+
+    <li><a href="#ex_ScrolledCanvas">A Scrolled canvas Widget</a></li>
 
     <li><a href="#ex_SyncListboxes">Synchronizing Two listbox Widgets</a></li>
 
@@ -317,8 +319,8 @@
     </address>
   </blockquote>
 
-  <p>The distribution file is <code>scrollutil2.2.tar.gz</code> for UNIX and
-  <code>scrollutil2_2.zip</code> for Windows.&nbsp; These files contain the
+  <p>The distribution file is <code>scrollutil2.4.tar.gz</code> for UNIX and
+  <code>scrollutil2_4.zip</code> for Windows.&nbsp; These files contain the
   same information, except for the additional carriage return character
   preceding the linefeed at the end of each line in the text files for
   Windows.</p>
@@ -342,11 +344,11 @@
 
   <p>To install Scrollutil <i>on UNIX</i>, <code>cd</code> to the desired
   directory and unpack the distribution file
-  <code>scrollutil2.2.tar.gz</code>:</p>
+  <code>scrollutil2.4.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c scrollutil2.2.tar.gz | tar -xf -
+gunzip -c scrollutil2.4.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
@@ -354,17 +356,17 @@ gunzip -c scrollutil2.2.tar.gz | tar -xf -
 
   <blockquote>
     <pre>
-tar -zxf scrollutil2.2.tar.gz
+tar -zxf scrollutil2.4.tar.gz
 </pre>
   </blockquote>
 
-  <p>Both commands will create a directory named <code>scrollutil2.2</code>,
+  <p>Both commands will create a directory named <code>scrollutil2.4</code>,
   with the subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>scrollutil2_2.zip</code> into the directory
-  <code>scrollutil2.2</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>scrollutil2_4.zip</code> into the directory
+  <code>scrollutil2.4</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>Notice that in tklib the Scrollutil <code>demos</code> directory is
@@ -863,8 +865,8 @@ themepatch::patch clam
   column area:</p>
 
   <blockquote>
-    <img src="ScrolledTablelist.png" alt="ScrolledTablelist" width="486"
-    height="345">
+    <img src="ScrolledTablelist.png" alt="ScrolledTablelist" width="495"
+    height="402">
   </blockquote>
 
   <p>The script achieves these requirements using traditional scrollbar
@@ -971,7 +973,7 @@ pack $f  -expand yes -fill both
   widgets.</p>
 
   <blockquote>
-    <img src="ScrolledText.png" alt="ScrolledText" width="407" height="346">
+    <img src="ScrolledText.png" alt="ScrolledText" width="457" height="374">
   </blockquote>
 
   <p>Here is the relevant code, in which the lines related to the scrollarea
@@ -1052,6 +1054,88 @@ after 100 [list $txt yview 14.0]
   scrollarea option to <code>10</code> (recall that the default value is
   <code>1</code>).</p>
 
+  <h3 id="ex_ScrolledCanvas">A Scrolled canvas Widget</h3>
+
+  <p>The script <code>ScrolledCanvas.tcl</code> in the <code>demos</code>
+  directory shows how to use the Scrollutil package for adding scrollbars as
+  well as mouse wheel and <code>&lt;TouchpadScroll&gt;</code> event support to
+  a canvas widget.</p>
+
+  <blockquote>
+    <img src="ScrolledCanvas.png" alt="ScrolledCanvas" width="383"
+    height="359">
+  </blockquote>
+
+  <p>Here is the relevant code, in which the lines related to the Scrollutil
+  package are shown in <span class="red">red</span> color:</p>
+
+  <blockquote>
+    <pre>
+<span class="red">package require scrollutil_tile</span>
+set dir [file dirname [info script]]
+source [file join $dir styleUtil.tcl]
+
+wm title . "Scrolled Canvas"
+
+set scaleFactor [expr {$scaleutil::scalingPct / 100.0}]
+set width  [expr {10 * 32 * $scaleFactor}]
+set height [expr { 7 * 32 * $scaleFactor}]
+set scrlIncr [expr {16 * $scaleFactor}]
+
+<span class="cmt">#
+# Create a canvas widget within a scrollarea
+#</span>
+set f  [ttk::frame .f]
+<span class="red">set sa [scrollutil::scrollarea $f.sa]</span>
+set c  [canvas $sa.c -background white -width $width -height $height \
+        -xscrollincrement $scrlIncr -yscrollincrement $scrlIncr]
+bind $c &lt;Configure&gt; { setScrollRegion %W %w %h }
+<span class="red">scrollutil::addMouseWheelSupport $c
+$sa setwidget $c</span>
+
+<span class="cmt">#
+# Populate the canvas and then rescale the coordinates
+# of all of the items by a factor of $scaleFactor
+#</span>
+for {set col 0; set x 32} {$col < 20} {incr col; incr x 96} {
+    for {set row 0; set y 32} {$row < 20} {incr row; incr y 96} {
+        $c create rectangle $x $y [expr {$x+63}] [expr {$y+63}] -fill gray95
+        $c create text [expr {$x+32}] [expr {$y+32}] -text "Box\n$row,$col" \
+            -anchor center -justify center
+    }
+}
+$c scale all 0 0 $scaleFactor $scaleFactor
+
+proc setScrollRegion {canv width height} {
+    set pixels [expr {(20*96 + 32) * $::scaleFactor}]
+    set rightX $pixels
+    set lowerY $pixels
+    if {$rightX < $width}  { set rightX $width }
+    if {$lowerY < $height} { set lowerY $height }
+    $canv configure -scrollregion [list 0 0 $rightX $lowerY]
+}
+
+. . .
+
+<span class="cmt">#
+# Manage the scrollarea
+#</span>
+pack $sa -expand yes -fill both -padx 7p -pady 7p
+pack $f  -expand yes -fill both
+</pre>
+  </blockquote>
+
+  <p>The script creates a canvas widget, populates it with 400
+  <code>rectangle</code> and <code>text</code> items, and adds mouse wheel and
+  <code>&lt;TouchpadScroll&gt;</code> event support to it by passing its name
+  to the <code><a href=
+  "wheelEvent.html#add">scrollutil::addMouseWheelSupport</a></code>
+  command.&nbsp; Note that in the canvas we work with pixels rather than
+  points, but make the GUI fully scaling-aware with the aid of a variable
+  <code>scaleFactor</code>, whose value (<code>1.0</code>, <code>1.25</code>,
+  <code>1.5</code>, etc.) is derived from that of the variable
+  <code>scaleutil::scalingPct</code>.</p>
+
   <h3 id="ex_SyncListboxes">Synchronizing Two listbox Widgets</h3>
 
   <p>The script <code>SyncListboxes.tcl</code> in the <code>demos</code>
@@ -1060,7 +1144,7 @@ after 100 [list $txt yview 14.0]
   <a href="scrollarea.html">scrollarea</a>.</p>
 
   <blockquote>
-    <img src="SyncListboxes.png" alt="SyncListboxes" width="326" height="313">
+    <img src="SyncListboxes.png" alt="SyncListboxes" width="327" height="362">
   </blockquote>
 
   <p>Here is the relevant code, in which the lines related to the scrollarea
@@ -1121,8 +1205,8 @@ pack $f  -expand yes -fill both
   <a href="scrollarea.html">scrollarea</a>.</p>
 
   <blockquote>
-    <img src="SyncTablelists.png" alt="SyncTablelists" width="554" height=
-    "334">
+    <img src="SyncTablelists.png" alt="SyncTablelists" width="555" height=
+    "387">
   </blockquote>
 
   <p>The relevant code is similar to the one shown in the <a href=
@@ -1223,8 +1307,8 @@ pack $f  -expand yes -fill both
   users, displaying the text "Resolve".</p>
 
   <blockquote>
-    <img src="ScrollableFrmDemo1.png" alt="ScrollableFrmDemo1" width="409"
-    height="370">
+    <img src="ScrollableFrmDemo1.png" alt="ScrollableFrmDemo1" width="419"
+    height="414">
   </blockquote>
 
   <p>Here is the relevant code:</p>
@@ -1515,8 +1599,8 @@ set cf [$sf childsite]
   <code>&lt;TouchpadScroll&gt;</code> event bindings.</p>
 
   <blockquote>
-    <img src="ScrollableFrmDemo2.png" alt="ScrollableFrmDemo2" width="609"
-    height="521">
+    <img src="ScrollableFrmDemo2.png" alt="ScrollableFrmDemo2" width="684"
+    height="577">
   </blockquote>
 
   <p>Here is the relevant code:</p>
@@ -1666,7 +1750,8 @@ grid $_sa ...
   lines rather than pixels, as done by the <code>Text</code> class bindings in
   Tk 8.5 and later; we achieve this by passing the path name <code>$txt</code>
   to the <code><a href=
-  "wheelEvent.html#add">scrollutil::addMouseWeelSupport</a></code> command.</p>
+  "wheelEvent.html#add">scrollutil::addMouseWheelSupport</a></code>
+  command.</p>
 
   <p>The file <code>SuScrollableFrmContent.tcl</code> implements just a minimal
   interaction between five of the already mentioned widgets within the content
@@ -1705,8 +1790,8 @@ grid $_sa ...
   scrollableframe changes as a result of resizing the toplevel window.</p>
 
   <blockquote>
-    <img src="TablelistConfig.png" alt="TablelistConfig" width="425"
-    height="400">
+    <img src="TablelistConfig.png" alt="TablelistConfig" width="431"
+    height="414">
   </blockquote>
 
   <h3 id="ex_BwScrollableFrameDemo2">A Script Using Two BWidget ScrollableFrame
@@ -1911,8 +1996,8 @@ source [file join $dir ScrolledFrmContent.tcl]
   tabs.</p>
 
   <blockquote>
-    <img src="ScrolledNotebookDemo.png" alt="ScrolledNotebookDemo" width="654"
-    height="530">
+    <img src="ScrolledNotebookDemo.png" alt="ScrolledNotebookDemo" width="735"
+    height="585">
   </blockquote>
 
   <p>Here is the relevant code:</p>
@@ -2141,8 +2226,8 @@ proc resizeNb nb {
   closing them.</p>
 
   <blockquote>
-    <img src="PlainNotebookDemo.png" alt="PlainNotebookDemo" width="819"
-    height="590">
+    <img src="PlainNotebookDemo.png" alt="PlainNotebookDemo" width="902"
+    height="654">
   </blockquote>
 
   <p>The relevant code is nearly identical to the one shown in the <a href=
@@ -2217,7 +2302,7 @@ proc restoreSel nb {
   <code>ttk</code>, respectively.</p>
 
   <blockquote>
-    <img src="PagesManDemo.png" alt="PagesManDemo" width="819" height="590">
+    <img src="PagesManDemo.png" alt="PagesManDemo" width="904" height="654">
   </blockquote>
 
   <p>The user can switch from the first page to the three other ones with the
@@ -2228,8 +2313,8 @@ proc restoreSel nb {
   top-left corner of the respective plainnotebook widget.</p>
 
   <blockquote>
-    <img src="PagesManDemoImages.png" alt="PagesManDemoImages" width="819"
-    height="590">
+    <img src="PagesManDemoImages.png" alt="PagesManDemoImages" width="904"
+    height="654">
   </blockquote>
 
   <p>Here is the relevant code:</p>
@@ -2270,14 +2355,13 @@ proc populateNotebook {nb sfx} {
         if {$sfx eq "gif"} {
             set canv [canvas $sa.canv -background #c0c0c0]
             set img [image create photo -file $fileName -format gif]
-            $canv create image 10 10 -anchor nw -image $img
+            $canv create image 15p 15p -anchor nw -image $img
             bind $canv &lt;Configure&gt; [list setScrollRegion %W %w %h $img]
             <span class="red">scrollutil::addMouseWheelSupport $canv
             $sa setwidget $canv</span>
         } else {
             <span class="red">$sa configure -lockinterval 10</span>
             . . .
-
         }
         <span class="red">$nb add $sa -text $fileName -image fileImg -compound left \
                     -padding $panePadding</span>
@@ -2338,11 +2422,15 @@ cd [expr {[info exists ttk::library] ? $ttk::library : $tile::library}]
 populateNotebook $nbTtk "tcl"
 
 proc setScrollRegion {canv canvWidth canvHeight img} {
-    set width  [expr {[image width  $img] + 20}]
-    set height [expr {[image height $img] + 20}]
-    if {$width  &lt; $canvWidth}  { set width  $canvWidth }
-    if {$height &lt; $canvHeight} { set height $canvHeight }
-    $canv configure -scrollregion [list 0 0 $width $height]
+    <span class="cmt">#
+    # Use a margin of 15p around the image
+    #</span>
+    set pixels [expr {30 * [tk scaling]}]
+    set rightX [expr {[image width  $img] + $pixels}]
+    set lowerY [expr {[image height $img] + $pixels}]
+    if {$rightX &lt; $canvWidth}  { set rightX $canvWidth }
+    if {$lowerY &lt; $canvHeight} { set lowerY $canvHeight }
+    $canv configure -scrollregion [list 0 0 $rightX $lowerY]
 }
 
 proc pmLeaveCmd {pm nb} {

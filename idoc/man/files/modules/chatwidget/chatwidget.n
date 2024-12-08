@@ -273,9 +273,9 @@ Database Class:	\\fB\\$3\\fR
 .SH NAME
 chatwidget \- Provides a multi-paned view suitable for display of chat room or irc channel information
 .SH SYNOPSIS
-package require \fBTk  8\&.5\fR
+package require \fBTk 8\&.5\fR
 .sp
-package require \fBchatwidget  ?1\&.1\&.4?\fR
+package require \fBchatwidget ?1\&.1\&.4?\fR
 .sp
 \fB::chatwidget::chatwidget\fR \fIpath\fR ?\fIoptions\fR?
 .sp

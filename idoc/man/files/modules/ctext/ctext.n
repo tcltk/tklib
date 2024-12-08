@@ -274,9 +274,9 @@ Database Class:	\\fB\\$3\\fR
 .SH NAME
 ctext \- Ctext a text widget with highlighting support
 .SH SYNOPSIS
-package require \fBTk \fR
+package require \fBTk\fR
 .sp
-package require \fBctext  ?3\&.3?\fR
+package require \fBctext ?3\&.3?\fR
 .sp
 \fBctext\fR \fIpathName\fR ?\fIoptions\fR?
 .sp

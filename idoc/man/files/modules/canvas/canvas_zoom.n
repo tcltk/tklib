@@ -273,15 +273,15 @@ Database Class:	\\fB\\$3\\fR
 .SH NAME
 canvas::zoom \- Zoom control for canvas::sqmap
 .SH SYNOPSIS
-package require \fBTcl  8\&.4\fR
+package require \fBTcl 8\&.4\fR
 .sp
-package require \fBTk  8\&.4\fR
+package require \fBTk 8\&.4\fR
 .sp
-package require \fBsnit \fR
+package require \fBsnit\fR
 .sp
-package require \fBuevent::onidle \fR
+package require \fBuevent::onidle\fR
 .sp
-package require \fBcanvas::zoom  ?0\&.2\&.1?\fR
+package require \fBcanvas::zoom ?0\&.2\&.1?\fR
 .sp
 \fB::canvas::zoom\fR \fIpathName\fR ?options?
 .sp

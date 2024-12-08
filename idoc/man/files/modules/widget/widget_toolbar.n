@@ -273,13 +273,13 @@ Database Class:	\\fB\\$3\\fR
 .SH NAME
 widget_toolbar \- Toolbar Megawidget
 .SH SYNOPSIS
-package require \fBTcl  8\&.4\fR
+package require \fBTcl 8\&.4\fR
 .sp
-package require \fBTk  8\&.4\fR
+package require \fBTk 8\&.4\fR
 .sp
-package require \fBwidget  ?3\&.0?\fR
+package require \fBwidget ?3\&.0?\fR
 .sp
-package require \fBwidget::toolbar  ?1\&.0?\fR
+package require \fBwidget::toolbar ?1\&.0?\fR
 .sp
 \fBwidget::toolbar\fR \fIpathname\fR ?options?
 .sp

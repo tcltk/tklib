@@ -274,11 +274,11 @@ Database Class:	\\fB\\$3\\fR
 .SH NAME
 pie \- 2D or 3D pie chart object in a canvas
 .SH SYNOPSIS
-package require \fBstooop  4\&.1\fR
+package require \fBstooop 4\&.1\fR
 .sp
-package require \fBswitched  2\&.2\fR
+package require \fBswitched 2\&.2\fR
 .sp
-package require \fBtkpiechart  6\&.6\fR
+package require \fBtkpiechart 6\&.6\fR
 .sp
 \fBstooop::new\fR \fBpie\fR \fIcanvas\fR \fIx\fR \fIy\fR ?options?
 .sp

@@ -277,11 +277,11 @@ Database Class:	\\fB\\$3\\fR
 .SH NAME
 canvas::gradient \- Canvas with a gradient background
 .SH SYNOPSIS
-package require \fBTcl  8\&.5\fR
+package require \fBTcl 8\&.5\fR
 .sp
-package require \fBTk  8\&.5\fR
+package require \fBTk 8\&.5\fR
 .sp
-package require \fBcanvas::gradient  ?0\&.2?\fR
+package require \fBcanvas::gradient ?0\&.2?\fR
 .sp
 \fB::canvas::gradient\fR \fIpathName\fR ?options?\&.\&.\&.
 .sp

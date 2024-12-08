@@ -273,17 +273,17 @@ Database Class:	\\fB\\$3\\fR
 .SH NAME
 canvas::sqmap \- Canvas with map background based on square tiles
 .SH SYNOPSIS
-package require \fBTcl  8\&.4\fR
+package require \fBTcl 8\&.4\fR
 .sp
-package require \fBTk  8\&.4\fR
+package require \fBTk 8\&.4\fR
 .sp
-package require \fBsnit \fR
+package require \fBsnit\fR
 .sp
-package require \fBuevent::onidle \fR
+package require \fBuevent::onidle\fR
 .sp
-package require \fBcache::async \fR
+package require \fBcache::async\fR
 .sp
-package require \fBcanvas::sqmap  ?0\&.3\&.1?\fR
+package require \fBcanvas::sqmap ?0\&.3\&.1?\fR
 .sp
 \fB::canvas::sqmap\fR \fIpathName\fR ?options?
 .sp

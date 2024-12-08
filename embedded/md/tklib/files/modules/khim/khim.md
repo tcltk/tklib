@@ -1,7 +1,7 @@
 
 [//000000001]: # (khim \- Kevin's Hacky Input Method)
 [//000000002]: # (Generated from file 'khim\.man' by tcllib/doctools with format 'markdown')
-[//000000003]: # (khim\(n\) 1\.0\.2 tklib "Kevin's Hacky Input Method")
+[//000000003]: # (khim\(n\) 1\.0\.3 tklib "Kevin's Hacky Input Method")
 
 <hr> [ <a href="../../../../toc.md">Main Table Of Contents</a> &#124; <a
 href="../../../toc.md">Table Of Contents</a> &#124; <a
@@ -36,7 +36,7 @@ that does not support them
 # <a name='synopsis'></a>SYNOPSIS
 
 package require Tcl  
-package require khim ?1\.0\.2?  
+package require khim ?1\.0\.3?  
 
 [__::khim::getOptions__ *path*](#1)  
 [__::khim::getConfig__](#2)  

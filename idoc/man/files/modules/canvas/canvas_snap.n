@@ -275,13 +275,13 @@ Database Class:	\\fB\\$3\\fR
 .SH NAME
 canvas::snap \- Canvas snapshot to Tk photo image
 .SH SYNOPSIS
-package require \fBTcl  8\&.5\fR
+package require \fBTcl 8\&.5\fR
 .sp
-package require \fBTk  8\&.5\fR
+package require \fBTk 8\&.5\fR
 .sp
-package require \fBcanvas::snap  ?1\&.0\&.1?\fR
+package require \fBcanvas::snap ?1\&.0\&.1?\fR
 .sp
-package require \fBimg::window \fR
+package require \fBimg::window\fR
 .sp
 \fB::canvas::snap\fR \fIpathName\fR
 .sp

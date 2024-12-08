@@ -274,9 +274,9 @@ Database Class:	\\fB\\$3\\fR
 .SH NAME
 shtmlview_doctools \- shtmlview extension adding support for doctools markup
 .SH SYNOPSIS
-package require \fBdtplite \fR
+package require \fBdtplite\fR
 .sp
-package require \fBshtmlview::shtmlview \fR
+package require \fBshtmlview::shtmlview\fR
 .sp
 .BE
 .SH DESCRIPTION

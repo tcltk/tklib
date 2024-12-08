@@ -273,9 +273,9 @@ Database Class:	\\fB\\$3\\fR
 .SH NAME
 getstring \- A string dialog
 .SH SYNOPSIS
-package require \fBTcl  8\&.4\fR
+package require \fBTcl 8\&.4\fR
 .sp
-package require \fBgetstring  ?0\&.1?\fR
+package require \fBgetstring ?0\&.1?\fR
 .sp
 \fB::getstring::tk_getString\fR \fIpathName\fR \fIvariable\fR \fItext\fR ?options?
 .sp

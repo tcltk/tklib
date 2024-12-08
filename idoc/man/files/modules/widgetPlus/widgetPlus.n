@@ -273,13 +273,13 @@ Database Class:	\\fB\\$3\\fR
 .SH NAME
 widgetPlus \- Enhanced Entry, Spinbox, and Combobox Widgets with Undo/Redo and other useful features
 .SH SYNOPSIS
-package require \fBTcl  8\&.5\fR
+package require \fBTcl 8\&.5\fR
 .sp
-package require \fBTk  8\&.5\fR
+package require \fBTk 8\&.5\fR
 .sp
-package require \fBsnit \fR
+package require \fBsnit\fR
 .sp
-package require \fBwidgetPlus  ?1\&.0?\fR
+package require \fBwidgetPlus ?1\&.0?\fR
 .sp
 \fBwidgetPlus::entryPlus\fR ?\fIcreate\fR? \fIpathName\fR
 .sp

@@ -1,5 +1,5 @@
 '\"
-'\" Generated from file 'map_overview\&.man~' by tcllib/doctools with format 'nroff'
+'\" Generated from file 'map_overview\&.man' by tcllib/doctools with format 'nroff'
 '\"
 .TH "map_overview" n 0\&.1 tklib "Map display support"
 .\" The -*- nroff -*- definitions below are for supplemental macros used
@@ -334,6 +334,8 @@ Geo Resource Tables
 \fBmap::area::table-display\fR
 .IP \(bu
 \fBmap::box::table-display\fR
+.IP \(bu
+\fBmap::point::table-display\fR
 .IP \(bu
 \fBmap::track::table-display\fR
 .RE

@@ -317,7 +317,7 @@ snit::widgetadaptor widget::dateentry {
     
     method CallCommand {} {
 	if {![llength $options(-command)]} return
-	uplevel \#0 $options(-command) $formattedDate $rawDate
+	uplevel \#0 $options(-command) [list $formattedDate] $rawDate
     }
     
     method UpdateEntry {} {
@@ -348,7 +348,7 @@ bind TDateEntry <ButtonRelease-1> { %W state !pressed }
 bind TDateEntryPopdown <Map> { ttk::globalGrab %W }
 bind TDateEntryPopdown <Unmap> { ttk::releaseGrab %W }
 
-package provide widget::dateentry 0.97
+package provide widget::dateentry 0.98
 
 ##############
 # TEST CODE ##

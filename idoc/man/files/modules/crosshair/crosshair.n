@@ -276,11 +276,11 @@ Database Class:	\\fB\\$3\\fR
 .SH NAME
 crosshair \- Crosshairs for Tk canvas
 .SH SYNOPSIS
-package require \fBTcl  ?8\&.4?\fR
+package require \fBTcl ?8\&.4?\fR
 .sp
-package require \fBTk  ?8\&.4?\fR
+package require \fBTk ?8\&.4?\fR
 .sp
-package require \fBcrosshair  ?1\&.2\&.1?\fR
+package require \fBcrosshair ?1\&.2\&.1?\fR
 .sp
 \fBcrosshair::crosshair\fR \fIw\fR ?\fIarg\fR\&.\&.\&.?
 .sp

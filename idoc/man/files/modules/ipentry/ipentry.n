@@ -1,7 +1,7 @@
 '\"
 '\" Generated from file 'ipentry\&.man' by tcllib/doctools with format 'nroff'
 '\"
-.TH "ipentry" n 0\&.3\&.1 tklib "An IP address entry widget"
+.TH "ipentry" n 0\&.3\&.2 tklib "An IP address entry widget"
 .\" The -*- nroff -*- definitions below are for supplemental macros used
 .\" in Tcl/Tk manual entries.
 .\"
@@ -273,11 +273,11 @@ Database Class:	\\fB\\$3\\fR
 .SH NAME
 ipentry \- An IP address entry widget
 .SH SYNOPSIS
-package require \fBTcl  8\&.4\fR
+package require \fBTcl 8\&.4\fR
 .sp
-package require \fBTk  8\&.4\fR
+package require \fBTk 8\&.4\fR
 .sp
-package require \fBipentry  ?0\&.3\&.1?\fR
+package require \fBipentry ?0\&.3\&.2?\fR
 .sp
 \fB::ipentry::ipentry\fR \fIpathName\fR ?\fIoption\fR \fIvalue\fR\&.\&.\&.?
 .sp

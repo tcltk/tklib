@@ -274,9 +274,9 @@ Database Class:	\\fB\\$3\\fR
 .SH NAME
 cursor \- Procedures to handle CURSOR data
 .SH SYNOPSIS
-package require \fBTk \fR
+package require \fBTk\fR
 .sp
-package require \fBcursor  ?0\&.3\&.1?\fR
+package require \fBcursor ?0\&.3\&.1?\fR
 .sp
 \fB::cursor::propagate\fR \fIwidget\fR \fIcursor\fR
 .sp

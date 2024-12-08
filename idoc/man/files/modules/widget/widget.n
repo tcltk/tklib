@@ -1,7 +1,7 @@
 '\"
 '\" Generated from file 'widget\&.man' by tcllib/doctools with format 'nroff'
 '\"
-.TH "widget" n 3\&.0 tklib "Various megawidgets"
+.TH "widget" n 3\&.2 tklib "Various megawidgets"
 .\" The -*- nroff -*- definitions below are for supplemental macros used
 .\" in Tcl/Tk manual entries.
 .\"
@@ -273,13 +273,13 @@ Database Class:	\\fB\\$3\\fR
 .SH NAME
 widget \- Megawidget bundle
 .SH SYNOPSIS
-package require \fBTcl  8\&.4\fR
+package require \fBTcl 8\&.4\fR
 .sp
-package require \fBTk  8\&.4\fR
+package require \fBTk 8\&.4\fR
 .sp
-package require \fBwidget  ?3\&.0?\fR
+package require \fBwidget ?3\&.2?\fR
 .sp
-package require \fBsnit \fR
+package require \fBsnit\fR
 .sp
 \fBwidget::validate\fR \fIas\fR ?options?
 .sp

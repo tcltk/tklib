@@ -1,7 +1,7 @@
 
 [//000000001]: # (ico \- Windows ICO handling)
 [//000000002]: # (Generated from file 'ico\.man' by tcllib/doctools with format 'markdown')
-[//000000003]: # (ico\(n\) 1\.1\.2 tklib "Windows ICO handling")
+[//000000003]: # (ico\(n\) 1\.1\.3 tklib "Windows ICO handling")
 
 <hr> [ <a href="../../../../toc.md">Main Table Of Contents</a> &#124; <a
 href="../../../toc.md">Table Of Contents</a> &#124; <a
@@ -35,7 +35,7 @@ ico \- Reading and writing windows icons
 # <a name='synopsis'></a>SYNOPSIS
 
 package require Tcl 8\.4  
-package require ico ?1\.1\.2?  
+package require ico ?1\.1\.3?  
 
 [__::ico::icons__ *file* ?*option* *value*\.\.\.?](#1)  
 [__::ico::iconMembers__ *file* *name* ?*option* *value*\.\.\.?](#2)  

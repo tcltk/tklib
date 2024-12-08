@@ -1,7 +1,7 @@
 '\"
 '\" Generated from file 'widget_dateentry\&.man' by tcllib/doctools with format 'nroff'
 '\"
-.TH "widget_dateentry" n 0\&.97 tklib "Various megawidgets"
+.TH "widget_dateentry" n 0\&.98 tklib "Various megawidgets"
 .\" The -*- nroff -*- definitions below are for supplemental macros used
 .\" in Tcl/Tk manual entries.
 .\"
@@ -273,13 +273,13 @@ Database Class:	\\fB\\$3\\fR
 .SH NAME
 widget_dateentry \- Date Entry Megawidget
 .SH SYNOPSIS
-package require \fBTcl  8\&.4\fR
+package require \fBTcl 8\&.4\fR
 .sp
-package require \fBTk  8\&.4\fR
+package require \fBTk 8\&.4\fR
 .sp
-package require \fBwidget  ?3\&.0?\fR
+package require \fBwidget ?3\&.0?\fR
 .sp
-package require \fBwidget::dateentry  ?0\&.97?\fR
+package require \fBwidget::dateentry ?0\&.98?\fR
 .sp
 \fBwidget::dateentry\fR \fIpathname\fR ?options?
 .sp

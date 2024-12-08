@@ -1,4 +1,6 @@
 <!DOCTYPE html><html><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>tooltip - Tooltip management</title>
 <style type="text/css"><!--
     HTML {
@@ -107,7 +109,7 @@
 &#124; <a href="../../../../toc2.html">Applications</a>
  ] <hr>
 <div class="doctools">
-<h1 class="doctools_title">tooltip(n) 1.8.2 tklib &quot;Tooltip management&quot;</h1>
+<h1 class="doctools_title">tooltip(n) 2.0.1 tklib &quot;Tooltip management&quot;</h1>
 <div id="name" class="doctools_section"><h2><a name="name">Name</a></h2>
 <p>tooltip - Tooltip management</p>
 </div>
@@ -118,7 +120,8 @@
 <li class="doctools_section"><a href="#section1">Description</a></li>
 <li class="doctools_section"><a href="#section2">COMMANDS</a></li>
 <li class="doctools_section"><a href="#section3">EXAMPLE</a></li>
-<li class="doctools_section"><a href="#section4">Bugs, Ideas, Feedback</a></li>
+<li class="doctools_section"><a href="#section4">Migration from Version 1</a></li>
+<li class="doctools_section"><a href="#section5">Bugs, Ideas, Feedback</a></li>
 <li class="doctools_section"><a href="#keywords">Keywords</a></li>
 <li class="doctools_section"><a href="#copyright">Copyright</a></li>
 </ul>
@@ -127,8 +130,7 @@
 <div class="doctools_synopsis">
 <ul class="doctools_requirements">
 <li>package require <b class="pkgname">Tcl 8.5</b></li>
-<li>package require <b class="pkgname">msgcat 1.3</b></li>
-<li>package require <b class="pkgname">tooltip <span class="opt">?1.8.2?</span></b></li>
+<li>package require <b class="pkgname">tooltip <span class="opt">?2.0.1?</span></b></li>
 </ul>
 <ul class="doctools_syntax">
 <li><a href="#1"><b class="cmd">::tooltip::tooltip</b> <i class="arg">command</i> <span class="opt">?<i class="arg">options</i>?</span></a></li>
@@ -175,13 +177,7 @@ disappearing.</p></dd>
 </dl></dd>
 <dt><a name="2"><b class="cmd">::tooltip::tooltip</b> <i class="arg">pathName</i> <span class="opt">?<i class="arg">option value</i>...?</span> <span class="opt">?<b class="const">--</b>?</span> <i class="arg">message</i></a></dt>
 <dd><p>This command arranges for widget <i class="arg">pathName</i> to display a tooltip with a
-<i class="arg">message</i>. The tooltip uses late-binding <b class="package">msgcat</b> calls to allow
-for on-the-fly language changes in an application. These calls are resolved
-by default in the namespace active where <b class="cmd">::tooltip::tooltip</b> is invoked.
-Using option <b class="option">-namespace</b> overwrites this default with a user-specified
-value. Furthermore, using the options <b class="option">-msgargs</b> and/or <b class="option">-infoargs</b>
-enables the passing of additional arguments to these calls for the message
-and info text respectively.</p>
+<i class="arg">message</i>.</p>
 <p>If the specified widget is a <b class="cmd"><a href="../../../../index.html#menu">menu</a></b>, <b class="cmd"><a href="../../../../index.html#canvas">canvas</a></b>, <b class="cmd"><a href="../../../../index.html#listbox">listbox</a></b>,
 <b class="cmd">ttk::treeview</b>, <b class="cmd">ttk::notebook</b> or <b class="cmd"><a href="../../../../index.html#text">text</a></b> widget then additional
 options are used to tie the tooltip to specific menu, canvas or listbox items,
@@ -273,7 +269,22 @@ tooltip::tooltip .txt -tag TIP-1 &quot;tooltip one text&quot;
 .txt insert end &quot;An example of a &quot; {} &quot;tooltip&quot; TIP-1 &quot; tag.\n&quot; {}
 </pre>
 </div>
-<div id="section4" class="doctools_section"><h2><a name="section4">Bugs, Ideas, Feedback</a></h2>
+<div id="section4" class="doctools_section"><h2><a name="section4">Migration from Version 1</a></h2>
+<p>Version 1.3 to 1.7 called <b class="cmd">msgcat::mc</b> before a tooltip was shown,
+using the tooltip namespace.
+<b class="cmd">msgcat::mc</b> requires the caller environment.
+Due to that, version 1.8 recorded the caller namespace and used this
+in the call.
+In version 2.0, any <b class="cmd">msgcat::mc</b> support was removed.
+The options <b class="option">-namespace</b>, <b class="option">-msgargs</b> and <b class="option">-infoargs</b>
+were removed.
+Starting with TCL 8.7, <b class="cmd">msgcat::mc</b> supports oo classes and oo methods.
+But the oo caller environment is not present when the <b class="cmd">msgcat::mc</b> was
+invoked on tooltip display, resulting in runtime errors.
+It was concluded as bad design to call <b class="cmd">msgcat::mc</b> late.
+The caller should reinstall the tooltips on eventual message change.</p>
+</div>
+<div id="section5" class="doctools_section"><h2><a name="section5">Bugs, Ideas, Feedback</a></h2>
 <p>This document, and the package it describes, will undoubtedly contain
 bugs and other problems.
 Please report such in the category <em>tooltip</em> of the

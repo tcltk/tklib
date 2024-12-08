@@ -1,6 +1,6 @@
 
 [//000000001]: # (map\_overview \- Map display support)
-[//000000002]: # (Generated from file 'map\_overview\.man~' by tcllib/doctools with format 'markdown')
+[//000000002]: # (Generated from file 'map\_overview\.man' by tcllib/doctools with format 'markdown')
 [//000000003]: # (map\_overview\(n\) 0\.1 tklib "Map display support")
 
 <hr> [ <a href="../../../../toc.md">Main Table Of Contents</a> &#124; <a
@@ -86,6 +86,8 @@ map\_overview \- Overview of the packages in the Map module
           + __[map::area::table\-display](area\-table\-display\.md)__
 
           + __[map::box::table\-display](box\-table\-display\.md)__
+
+          + __[map::point::table\-display](point\-table\-display\.md)__
 
           + __[map::track::table\-display](track\-table\-display\.md)__
 

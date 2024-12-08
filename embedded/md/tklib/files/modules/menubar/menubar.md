@@ -2,7 +2,7 @@
 [//000000001]: # (menubar \- Create and manipulate menubars)
 [//000000002]: # (Generated from file 'menubar\.man' by tcllib/doctools with format 'markdown')
 [//000000003]: # (Copyright &copy; 2009 Tom Krehbiel <krehbiel\.tom@gmail\.com> All rights reserved\.)
-[//000000004]: # (menubar\(n\) 0\.5 tklib "Create and manipulate menubars")
+[//000000004]: # (menubar\(n\) 0\.5\.1 tklib "Create and manipulate menubars")
 
 <hr> [ <a href="../../../../toc.md">Main Table Of Contents</a> &#124; <a
 href="../../../toc.md">Table Of Contents</a> &#124; <a
@@ -55,7 +55,7 @@ menubar \- Creates an instance of the *menubar* Class\.
 
 package require Tcl 8\.6  
 package require Tk 8\.6  
-package require menubar ?0\.5?  
+package require menubar ?0\.5\.1?  
 
 [__menubar new__ ?options?](#1)  
 [*mBarInst* __define__ *body*](#2)  

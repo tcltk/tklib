@@ -14,7 +14,7 @@
   <div>
     <h1>The <code><b>tablelist::tablelist</b></code> Command</h1>
 
-    <h2>For Tablelist Version 7.2</h2>
+    <h2>For Tablelist Version 7.4</h2>
 
     <h3>by</h3>
 
@@ -6537,8 +6537,8 @@ bind $tbl <a href="#label_bindings">&lt;&lt;TablelistColumnMoved&gt;&gt;</a> { c
         <dd>Specifies a list of strings to be displayed in the body cells of
         the given column, i.e., updates the elements contained in the column's
         body part.&nbsp; If the tablelist's <code><b><a href=
-        "#state">state</a></b></code> is <code><b>disabled</b></code> then this
-        option will be ignored.</dd>
+        "#state">state</a></b></code> is <code><b>disabled</b></code> then no
+        update is performed.</dd>
 
         <dt class="tm" id="col_title"><code><b>-title</b>
         <i>title</i></code></dt>
@@ -6790,7 +6790,8 @@ proc updateWindow {tbl row col w args} {
         <dd>Specifies a list of strings to be displayed in the cells of the
         given row, i.e., updates the item contained in the row.&nbsp; If the
         tablelist's <code><b><a href="#state">state</a></b></code> is
-        <code><b>disabled</b></code> then this option will be ignored.</dd>
+        <code><b>disabled</b></code> or the new item equals the old one then
+        no update is performed.</dd>
       </dl>
     </dd>
 
@@ -6856,8 +6857,8 @@ proc updateWindow {tbl row col w args} {
         <dd>Specifies a list of strings to be displayed in the cells of the
         given header row, i.e., updates the item contained in the header
         row.&nbsp; If the tablelist's <code><b><a href=
-        "#state">state</a></b></code> is <code><b>disabled</b></code> then this
-        option will be ignored.</dd>
+        "#state">state</a></b></code> is <code><b>disabled</b></code> or the
+        new item equals the old one then no update is performed.</dd>
       </dl>
     </dd>
 
@@ -6927,12 +6928,14 @@ proc updateWindow {tbl row col w args} {
         If the column containing the cell is right-aligned then the image will
         be displayed to the right of the cell's text, otherwise to its
         left.&nbsp; The text and the image are separated from each other by a
-        gap of 4 pixels.&nbsp; If for the same cell the <code><b><a href=
+        gap of 4 pixels, scaled according to the display's real scaling
+        percentage.&nbsp; If for the same cell the <code><b><a href=
         "#cell_window">-window</a></b></code> option was specified with a
         nonempty value then it overrides the <code><b>-image</b></code>
         option.&nbsp; If the tablelist's <code><b><a href=
-        "#state">state</a></b></code> is <code><b>disabled</b></code> then this
-        option will be ignored.</dd>
+        "#state">state</a></b></code> is <code><b>disabled</b></code> or the
+        new image name equals the old one then no update of the cell's image is
+        performed.</dd>
 
         <dd class="tm">To display an image in a cell, Tablelist makes use of an
         embedded label widget (which is created on demand).&nbsp; This has the
@@ -7013,7 +7016,8 @@ proc updateWindow {tbl row col w args} {
         <dd>Specifies the string to be displayed in the given cell, i.e.,
         updates the element contained in the cell.&nbsp; If the tablelist's
         <code><b><a href="#state">state</a></b></code> is
-        <code><b>disabled</b></code> then this option will be ignored.</dd>
+        <code><b>disabled</b></code> or the new cell text equals the old one
+        then no update is performed.</dd>
 
         <dt class="tm" id="cell_valign"><code><b>-valign</b>
         <i>verticalAlignment</i></code></dt>
@@ -7037,10 +7041,11 @@ proc updateWindow {tbl row col w args} {
         that no embedded window is to be displayed.&nbsp; If the column
         containing the cell is right-aligned then the window will be displayed
         to the right of the cell's text, otherwise to its left.&nbsp; The text
-        and the window are separated from each other by a gap of 4
-        pixels.&nbsp; If this option was specified with a nonempty value then
-        it overrides the <code><b><a href="#cell_image">-image</a></b></code>
-        cell configuration option.&nbsp; If the tablelist's <code><b><a href=
+        and the window are separated from each other by a gap of 4 pixels,
+        scaled according to the display's real scaling percentage.&nbsp; If
+        this option was specified with a nonempty value then it overrides the
+        <code><b><a href="#cell_image">-image</a></b></code> cell configuration
+        option.&nbsp; If the tablelist's <code><b><a href=
         "#state">state</a></b></code> is <code><b>disabled</b></code> then this
         option will be ignored.</dd>
 
@@ -7169,7 +7174,8 @@ proc updateWindow {tbl row col w args} {
         <dd>Specifies the string to be displayed in the given header cell,
         i.e., updates the element contained in the cell.&nbsp; If the
         tablelist's <code><b><a href="#state">state</a></b></code> is
-        <code><b>disabled</b></code> then this option will be ignored.</dd>
+        <code><b>disabled</b></code> or the new cell text equals the old one
+        then no update is performed.</dd>
 
         <dt class="tm" id="hdr_cell_valign"><code><b>-valign</b>
         <i>verticalAlignment</i></code></dt>
@@ -7869,6 +7875,27 @@ proc handleTblDrop {tbl data} {
           view (which, for performance reasons, is performed at idle
           time).</td>
           <td>Not used.</td>
+        </tr>
+
+        <tr valign="top">
+          <td><code><b>&lt;&lt;TablelistXViewChanged&gt;&gt;</b></code></td>
+          <td>Generated whenever the horizontal view in the tablelist widget's
+          window changes (and the horizontal scrollbar, if any, is
+          updated).</td>
+          <td>A list consisting of the numerical indices of the leftmost and
+          rightmost columns visible in the tablelist window, i.e., of the
+          numerical equivalents of the <a href="#col_indices">column
+          indices</a> <code><b>left</b></code> and <code><b>right</code>.</td>
+        </tr>
+
+        <tr valign="top">
+          <td><code><b>&lt;&lt;TablelistYViewChanged&gt;&gt;</b></code></td>
+          <td>Generated whenever the vertical view in the tablelist widget's
+          window changes (and the vertical scrollbar, if any, is updated).</td>
+          <td>A list consisting of the numerical indices of the topmost and
+          bottommost body items visible in the tablelist window, i.e., of
+          the numerical equivalents of the <a href="#row_indices">row
+          indices</a> <code><b>top</b></code> and <code><b>bottom</code>.</td>
         </tr>
       </table>
     </dd>
@@ -9259,8 +9286,8 @@ pack $frm -expand yes -fill both -padx 10 -pady 10
             the screenshot below (on Windows this is only valid for the
             horizontal scrollbar):</p>
 
-            <p><img src="scrollbars.png" alt="Scrollbars" width="459" height=
-            "272"></p>
+            <p><img src="scrollbars.png" alt="Scrollbars" width="420" height=
+            "274"></p>
           </blockquote>
         </dd>
 

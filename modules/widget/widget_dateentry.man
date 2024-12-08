@@ -1,5 +1,5 @@
 [comment {-*- tcl -*- doctools manpage}]
-[vset VERSION 0.97]
+[vset VERSION 0.98]
 [manpage_begin widget_dateentry n [vset VERSION]]
 [keywords date]
 [keywords dateentry]

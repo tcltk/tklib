@@ -1,7 +1,7 @@
 '\"
 '\" Generated from file 'tklib_history\&.man' by tcllib/doctools with format 'nroff'
 '\"
-.TH "history" n 0\&.2 tklib "Provides a history for Entry widgets"
+.TH "history" n 0\&.3 tklib "Provides a history for Entry widgets"
 .\" The -*- nroff -*- definitions below are for supplemental macros used
 .\" in Tcl/Tk manual entries.
 .\"
@@ -273,11 +273,11 @@ Database Class:	\\fB\\$3\\fR
 .SH NAME
 history \- Provides a history for Entry widgets
 .SH SYNOPSIS
-package require \fBTcl  8\&.4\fR
+package require \fBTcl 8\&.4\fR
 .sp
-package require \fBTk  8\&.4\fR
+package require \fBTk 8\&.4\fR
 .sp
-package require \fBhistory  ?0\&.2?\fR
+package require \fBhistory ?0\&.3?\fR
 .sp
 \fB::history::init\fR \fIpathName\fR ?length?
 .sp

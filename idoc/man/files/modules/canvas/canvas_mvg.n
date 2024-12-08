@@ -275,11 +275,11 @@ Database Class:	\\fB\\$3\\fR
 .SH NAME
 canvas::mvg \- Canvas to ImageMagick MVG vector format
 .SH SYNOPSIS
-package require \fBTcl  8\&.5\fR
+package require \fBTcl 8\&.5\fR
 .sp
-package require \fBTk  8\&.5\fR
+package require \fBTk 8\&.5\fR
 .sp
-package require \fBcanvas::mvg  ?1?\fR
+package require \fBcanvas::mvg ?1?\fR
 .sp
 \fB::canvas::mvg\fR \fIpathName\fR
 .sp

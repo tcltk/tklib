@@ -273,9 +273,9 @@ Database Class:	\\fB\\$3\\fR
 .SH NAME
 autoscroll \- Provides for a scrollbar to automatically mapped and unmapped as needed
 .SH SYNOPSIS
-package require \fBTcl \fR
+package require \fBTcl\fR
 .sp
-package require \fBautoscroll  ?1\&.1?\fR
+package require \fBautoscroll ?1\&.1?\fR
 .sp
 \fB::autoscroll::autoscroll\fR \fIscrollbar\fR
 .sp

@@ -273,21 +273,21 @@ Database Class:	\\fB\\$3\\fR
 .SH NAME
 map::provider::osm \- Tile provider using OpenStreetMap Mapnik as origin
 .SH SYNOPSIS
-package require \fBTcl  8\&.6-\fR
+package require \fBTcl 8\&.6-\fR
 .sp
-package require \fBdebug \fR
+package require \fBdebug\fR
 .sp
-package require \fBdebug::caller \fR
+package require \fBdebug::caller\fR
 .sp
-package require \fBmap::slippy  0\&.8\fR
+package require \fBmap::slippy 0\&.8\fR
 .sp
-package require \fBmap::slippy::cache \fR
+package require \fBmap::slippy::cache\fR
 .sp
-package require \fBmap::slippy::fetcher \fR
+package require \fBmap::slippy::fetcher\fR
 .sp
-package require \fBsnit \fR
+package require \fBsnit\fR
 .sp
-package require \fBmap::provider::osm  ?0\&.1?\fR
+package require \fBmap::provider::osm ?0\&.1?\fR
 .sp
 .BE
 .SH DESCRIPTION

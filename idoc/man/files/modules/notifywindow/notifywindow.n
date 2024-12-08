@@ -274,9 +274,9 @@ Database Class:	\\fB\\$3\\fR
 .SH NAME
 notifywindow \- Provides unobtrusive window for alerts/notifications from Tk applications
 .SH SYNOPSIS
-package require \fBtk \fR
+package require \fBtk\fR
 .sp
-package require \fBnotifywindow  ?1\&.0\&.1?\fR
+package require \fBnotifywindow ?1\&.0\&.1?\fR
 .sp
 \fB::notifywindow::notifywindow\fR \fImsg\fR \fIimg\fR
 .sp

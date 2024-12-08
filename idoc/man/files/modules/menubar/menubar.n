@@ -2,7 +2,7 @@
 '\" Generated from file 'menubar\&.man' by tcllib/doctools with format 'nroff'
 '\" Copyright (c) 2009 Tom Krehbiel <krehbiel\&.tom@gmail\&.com> All rights reserved\&.
 '\"
-.TH "menubar" n 0\&.5 tklib "Create and manipulate menubars"
+.TH "menubar" n 0\&.5\&.1 tklib "Create and manipulate menubars"
 .\" The -*- nroff -*- definitions below are for supplemental macros used
 .\" in Tcl/Tk manual entries.
 .\"
@@ -274,11 +274,11 @@ Database Class:	\\fB\\$3\\fR
 .SH NAME
 menubar \- Creates an instance of the \fImenubar\fR Class\&.
 .SH SYNOPSIS
-package require \fBTcl  8\&.6\fR
+package require \fBTcl 8\&.6\fR
 .sp
-package require \fBTk  8\&.6\fR
+package require \fBTk 8\&.6\fR
 .sp
-package require \fBmenubar  ?0\&.5?\fR
+package require \fBmenubar ?0\&.5\&.1?\fR
 .sp
 \fBmenubar new\fR ?options?
 .sp

@@ -273,11 +273,11 @@ Database Class:	\\fB\\$3\\fR
 .SH NAME
 canvas::track::lines \- Manage a group of rubber band lines
 .SH SYNOPSIS
-package require \fBTcl  8\&.5\fR
+package require \fBTcl 8\&.5\fR
 .sp
-package require \fBTk  8\&.5\fR
+package require \fBTk 8\&.5\fR
 .sp
-package require \fBcanvas::tag  ?0\&.1?\fR
+package require \fBcanvas::tag ?0\&.1?\fR
 .sp
 \fB::canvas::track\fR \fBlines\fR \fIobjectName\fR \fIcanvas\fR
 .sp

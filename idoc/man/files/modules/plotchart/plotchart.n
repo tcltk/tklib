@@ -274,11 +274,11 @@ Database Class:	\\fB\\$3\\fR
 .SH NAME
 Plotchart \- Simple plotting and charting package
 .SH SYNOPSIS
-package require \fBTcl  ?8\&.5?\fR
+package require \fBTcl ?8\&.5?\fR
 .sp
-package require \fBTk  ?8\&.5?\fR
+package require \fBTk ?8\&.5?\fR
 .sp
-package require \fBPlotchart  ?2\&.6\&.2?\fR
+package require \fBPlotchart ?2\&.6\&.2?\fR
 .sp
 \fB::Plotchart::createXYPlot\fR \fIw\fR \fIxaxis\fR \fIyaxis\fR \fIargs\fR
 .sp

@@ -277,15 +277,15 @@ Database Class:	\\fB\\$3\\fR
 .SH NAME
 shtmlview \- Extended Tcl/Tk text widget with basic support for rendering of HTML and Markdown
 .SH SYNOPSIS
-package require \fBTk \fR
+package require \fBTk\fR
 .sp
-package require \fBsnit \fR
+package require \fBsnit\fR
 .sp
-package require \fBMarkdown ;# optional Markdown support \fR
+package require \fBMarkdown ;# optional Markdown support\fR
 .sp
-package require \fBimg::jpeg ;# optional jpeg image support \fR
+package require \fBimg::jpeg ;# optional jpeg image support\fR
 .sp
-package require \fBshtmlview::shtmlview  ?1\&.1\&.2?\fR
+package require \fBshtmlview::shtmlview ?1\&.1\&.2?\fR
 .sp
 \fB::shtmlview::converter\fR \fIextension\fR \fIdescription\fR \fIcmdprefix\fR
 .sp

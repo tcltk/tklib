@@ -3,7 +3,7 @@
 '\" Copyright (c) 1996-2008, Jeffrey Hobbs
 '\" Copyright (c) 2024 Emmanuel Frecon
 '\"
-.TH "tooltip" n 1\&.8\&.2 tklib "Tooltip management"
+.TH "tooltip" n 2\&.0\&.1 tklib "Tooltip management"
 .\" The -*- nroff -*- definitions below are for supplemental macros used
 .\" in Tcl/Tk manual entries.
 .\"
@@ -275,11 +275,9 @@ Database Class:	\\fB\\$3\\fR
 .SH NAME
 tooltip \- Tooltip management
 .SH SYNOPSIS
-package require \fBTcl  8\&.5\fR
+package require \fBTcl 8\&.5\fR
 .sp
-package require \fBmsgcat  1\&.3\fR
-.sp
-package require \fBtooltip  ?1\&.8\&.2?\fR
+package require \fBtooltip ?2\&.0\&.1?\fR
 .sp
 \fB::tooltip::tooltip\fR \fIcommand\fR ?\fIoptions\fR?
 .sp
@@ -333,13 +331,7 @@ Enables tooltips for defined widgets\&.
 .TP
 \fB::tooltip::tooltip\fR \fIpathName\fR ?\fIoption value\fR\&.\&.\&.? ?\fB--\fR? \fImessage\fR
 This command arranges for widget \fIpathName\fR to display a tooltip with a
-\fImessage\fR\&. The tooltip uses late-binding \fBmsgcat\fR calls to allow
-for on-the-fly language changes in an application\&. These calls are resolved
-by default in the namespace active where \fB::tooltip::tooltip\fR is invoked\&.
-Using option \fB-namespace\fR overwrites this default with a user-specified
-value\&. Furthermore, using the options \fB-msgargs\fR and/or \fB-infoargs\fR
-enables the passing of additional arguments to these calls for the message
-and info text respectively\&.
+\fImessage\fR\&.
 .sp
 If the specified widget is a \fBmenu\fR, \fBcanvas\fR, \fBlistbox\fR,
 \fBttk::treeview\fR, \fBttk::notebook\fR or \fBtext\fR widget then additional
@@ -457,6 +449,20 @@ tooltip::tooltip \&.txt -tag TIP-1 "tooltip one text"
 \&.txt insert end "An example of a " {} "tooltip" TIP-1 " tag\&.\\n" {}
 
 .CE
+.SH "MIGRATION FROM VERSION 1"
+Version 1\&.3 to 1\&.7 called \fBmsgcat::mc\fR before a tooltip was shown,
+using the tooltip namespace\&.
+\fBmsgcat::mc\fR requires the caller environment\&.
+Due to that, version 1\&.8 recorded the caller namespace and used this
+in the call\&.
+In version 2\&.0, any \fBmsgcat::mc\fR support was removed\&.
+The options \fB-namespace\fR, \fB-msgargs\fR and \fB-infoargs\fR
+were removed\&.
+Starting with TCL 8\&.7, \fBmsgcat::mc\fR supports oo classes and oo methods\&.
+But the oo caller environment is not present when the \fBmsgcat::mc\fR was
+invoked on tooltip display, resulting in runtime errors\&.
+It was concluded as bad design to call \fBmsgcat::mc\fR late\&.
+The caller should reinstall the tooltips on eventual message change\&.
 .SH "BUGS, IDEAS, FEEDBACK"
 This document, and the package it describes, will undoubtedly contain
 bugs and other problems\&.

@@ -275,9 +275,9 @@ Database Class:	\\fB\\$3\\fR
 .SH NAME
 datefield \- Tk datefield widget
 .SH SYNOPSIS
-package require \fBTk \fR
+package require \fBTk\fR
 .sp
-package require \fBdatefield  ?0\&.3?\fR
+package require \fBdatefield ?0\&.3?\fR
 .sp
 \fB::datefield::datefield\fR \fIwidgetpath\fR ?\fIoptions\fR?
 .sp

@@ -273,13 +273,13 @@ Database Class:	\\fB\\$3\\fR
 .SH NAME
 canvas::edit::circle \- Editing a circle on a canvas
 .SH SYNOPSIS
-package require \fBTcl  8\&.5\fR
+package require \fBTcl 8\&.5\fR
 .sp
-package require \fBTk  8\&.5\fR
+package require \fBTk 8\&.5\fR
 .sp
-package require \fBcanvas::edit::points  ?0\&.1?\fR
+package require \fBcanvas::edit::points ?0\&.1?\fR
 .sp
-package require \fBcanvas::edit::circle  ?0\&.1?\fR
+package require \fBcanvas::edit::circle ?0\&.1?\fR
 .sp
 \fB::canvas::edit\fR \fBcircle\fR \fIobjectName\fR \fIcanvas\fR \fIoptions\fR\&.\&.\&.
 .sp

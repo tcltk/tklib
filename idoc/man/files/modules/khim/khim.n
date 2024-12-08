@@ -1,7 +1,7 @@
 '\"
 '\" Generated from file 'khim\&.man' by tcllib/doctools with format 'nroff'
 '\"
-.TH "khim" n 1\&.0\&.2 tklib "Kevin's Hacky Input Method"
+.TH "khim" n 1\&.0\&.3 tklib "Kevin's Hacky Input Method"
 .\" The -*- nroff -*- definitions below are for supplemental macros used
 .\" in Tcl/Tk manual entries.
 .\"
@@ -273,9 +273,9 @@ Database Class:	\\fB\\$3\\fR
 .SH NAME
 khim \- Provides key bindings for entering international characters on a keyboard that does not support them
 .SH SYNOPSIS
-package require \fBTcl \fR
+package require \fBTcl\fR
 .sp
-package require \fBkhim  ?1\&.0\&.2?\fR
+package require \fBkhim ?1\&.0\&.3?\fR
 .sp
 \fB::khim::getOptions\fR \fIpath\fR
 .sp

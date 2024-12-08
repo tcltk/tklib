@@ -3,7 +3,7 @@
 [//000000002]: # (Generated from file 'tooltip\.man' by tcllib/doctools with format 'markdown')
 [//000000003]: # (Copyright &copy; 1996\-2008, Jeffrey Hobbs)
 [//000000004]: # (Copyright &copy; 2024 Emmanuel Frecon)
-[//000000005]: # (tooltip\(n\) 1\.8\.2 tklib "Tooltip management")
+[//000000005]: # (tooltip\(n\) 2\.0\.1 tklib "Tooltip management")
 
 <hr> [ <a href="../../../../toc.md">Main Table Of Contents</a> &#124; <a
 href="../../../toc.md">Table Of Contents</a> &#124; <a
@@ -28,7 +28,9 @@ tooltip \- Tooltip management
 
   - [EXAMPLE](#section3)
 
-  - [Bugs, Ideas, Feedback](#section4)
+  - [Migration from Version 1](#section4)
+
+  - [Bugs, Ideas, Feedback](#section5)
 
   - [Keywords](#keywords)
 
@@ -37,8 +39,7 @@ tooltip \- Tooltip management
 # <a name='synopsis'></a>SYNOPSIS
 
 package require Tcl 8\.5  
-package require msgcat 1\.3  
-package require tooltip ?1\.8\.2?  
+package require tooltip ?2\.0\.1?  
 
 [__::tooltip::tooltip__ *command* ?*options*?](#1)  
 [__::tooltip::tooltip__ *pathName* ?*option value*\.\.\.? ?__\-\-__? *message*](#2)  
@@ -97,13 +98,7 @@ ttk::treeview item or column heading, ttk::notebook tab, or text widget tag\.
   - <a name='2'></a>__::tooltip::tooltip__ *pathName* ?*option value*\.\.\.? ?__\-\-__? *message*
 
     This command arranges for widget *pathName* to display a tooltip with a
-    *message*\. The tooltip uses late\-binding __msgcat__ calls to allow for
-    on\-the\-fly language changes in an application\. These calls are resolved by
-    default in the namespace active where __::tooltip::tooltip__ is invoked\.
-    Using option __\-namespace__ overwrites this default with a
-    user\-specified value\. Furthermore, using the options __\-msgargs__ and/or
-    __\-infoargs__ enables the passing of additional arguments to these calls
-    for the message and info text respectively\.
+    *message*\.
 
     If the specified widget is a __[menu](\.\./\.\./\.\./\.\./index\.md\#menu)__,
     __[canvas](\.\./\.\./\.\./\.\./index\.md\#canvas)__,
@@ -209,7 +204,20 @@ ttk::treeview item or column heading, ttk::notebook tab, or text widget tag\.
     tooltip::tooltip .txt -tag TIP-1 "tooltip one text"
     .txt insert end "An example of a " {} "tooltip" TIP-1 " tag.\n" {}
 
-# <a name='section4'></a>Bugs, Ideas, Feedback
+# <a name='section4'></a>Migration from Version 1
+
+Version 1\.3 to 1\.7 called __msgcat::mc__ before a tooltip was shown, using
+the tooltip namespace\. __msgcat::mc__ requires the caller environment\. Due
+to that, version 1\.8 recorded the caller namespace and used this in the call\. In
+version 2\.0, any __msgcat::mc__ support was removed\. The options
+__\-namespace__, __\-msgargs__ and __\-infoargs__ were removed\.
+Starting with TCL 8\.7, __msgcat::mc__ supports oo classes and oo methods\.
+But the oo caller environment is not present when the __msgcat::mc__ was
+invoked on tooltip display, resulting in runtime errors\. It was concluded as bad
+design to call __msgcat::mc__ late\. The caller should reinstall the tooltips
+on eventual message change\.
+
+# <a name='section5'></a>Bugs, Ideas, Feedback
 
 This document, and the package it describes, will undoubtedly contain bugs and
 other problems\. Please report such in the category *tooltip* of the [Tklib

@@ -273,23 +273,23 @@ Database Class:	\\fB\\$3\\fR
 .SH NAME
 widget_listentry \- widget::listentry widget
 .SH SYNOPSIS
-package require \fBTcl  8\&.5\fR
+package require \fBTcl 8\&.5\fR
 .sp
-package require \fBTk  8\&.5\fR
+package require \fBTk 8\&.5\fR
 .sp
-package require \fBwidget::listentry  ?0\&.1\&.2?\fR
+package require \fBwidget::listentry ?0\&.1\&.2?\fR
 .sp
-package require \fBwidget::validator  ?0\&.1?\fR
+package require \fBwidget::validator ?0\&.1?\fR
 .sp
-package require \fBwidget::scrolledwindow \fR
+package require \fBwidget::scrolledwindow\fR
 .sp
-package require \fBsnit \fR
+package require \fBsnit\fR
 .sp
-package require \fBtooltip \fR
+package require \fBtooltip\fR
 .sp
-package require \fBimg::png \fR
+package require \fBimg::png\fR
 .sp
-package require \fBmsgcat \fR
+package require \fBmsgcat\fR
 .sp
 \fBwidget::listentry\fR \fIpathname\fR ?options?
 .sp

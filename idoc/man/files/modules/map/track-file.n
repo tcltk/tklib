@@ -273,19 +273,19 @@ Database Class:	\\fB\\$3\\fR
 .SH NAME
 map::track::file \- Reading/writing tklib geo/track files
 .SH SYNOPSIS
-package require \fBTcl  8\&.6-\fR
+package require \fBTcl 8\&.6-\fR
 .sp
-package require \fBTcl 8\&.6- \fR
+package require \fBTcl 8\&.6-\fR
 .sp
-package require \fBdebug \fR
+package require \fBdebug\fR
 .sp
-package require \fBdebug::caller \fR
+package require \fBdebug::caller\fR
 .sp
-package require \fBmap::slippy  0\&.8\fR
+package require \fBmap::slippy 0\&.8\fR
 .sp
-package require \fBsnit \fR
+package require \fBsnit\fR
 .sp
-package require \fBmap::track::file  ?0\&.1?\fR
+package require \fBmap::track::file ?0\&.1?\fR
 .sp
 .BE
 .SH DESCRIPTION

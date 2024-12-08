@@ -273,11 +273,11 @@ Database Class:	\\fB\\$3\\fR
 .SH NAME
 canvas::drag \- Manage the dragging of canvas items or item groups
 .SH SYNOPSIS
-package require \fBTcl  8\&.5\fR
+package require \fBTcl 8\&.5\fR
 .sp
-package require \fBTk  8\&.5\fR
+package require \fBTk 8\&.5\fR
 .sp
-package require \fBcanvas::drag  ?0\&.1?\fR
+package require \fBcanvas::drag ?0\&.1?\fR
 .sp
 \fB::canvas::drag\fR \fBon\fR \fIcanvas\fR \fItagOrId\fR \fIcmd\fR \fIoption\fR\&.\&.\&.
 .sp
