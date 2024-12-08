@@ -4,7 +4,7 @@ Description: This package is intended to be a collection of
     Tcl packages that provide utility functions useful to a
     large collection of Tk programmers.
 Rights: BSD
-Version: 0.8
+Version: 0.9
 URL: http://core.tcl.tk/tklib/
 Architecture: tcl
 Contributor: 0.7 <andreas_kupries at users dot sourceforge dot net>
@@ -16,6 +16,7 @@ Contributor: Csaba Nemethi <csaba dot nemethi at t-online dot de>
 Contributor: David N. Welton <davidw at dedasys dot com>
 Contributor: Emiliano Gavilan <emilianogavilan at gmail dot com>
 Contributor: George Peter Staplin <georgeps at users dot sourceforge dot net>
+Contributor: Harald Oehlmann <harald dot oehlmann at elmicron dot de>
 Contributor: Jean-Luc Fontaine <jfontain at free dot fr>
 Contributor: Jeff Hobbs <jeffh at ActiveState dot com>
 Contributor: Keith Nash <kjnash at users dot sourceforge dot net>

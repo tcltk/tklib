@@ -22,7 +22,7 @@ A companion to Tcllib, for Tk related packages.
 The download links are on the referenced pages.
 
    * [Trunk Head](head.md)
-   * [Current Release](../../../technote/f6f9eed465b76f73fd066a65e4275b9552a664c7) __0.8 (Jul 6, 2024)__
+   * [Current Release](../../../technote/633a17aefa8ec07e8bd55fdf872dff704678346a) __0.9 (Dec 8, 2024)__
    * [Past Releases](../../../wiki?name=Releases)
    * [Development Snapshots](../../../wiki?name=Development+Snapshots)
    * [@ SourceForge](https://sourceforge.net/projects/tcllib/files/)
