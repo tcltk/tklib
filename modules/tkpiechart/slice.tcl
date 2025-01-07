@@ -143,7 +143,7 @@ proc slice::complete {this} {
             [$canvas create line 0 0 0 0 -tags slice($this)]
     }
     ##nagelfar ignore
-    set tfill $switched::($this,-topcolor)
+    set fill $switched::($this,-topcolor)
     set ($this,topArc) [$canvas create arc\
         -$xRadius -$yRadius $xRadius $yRadius\
         -fill $fill -tags slice($this)\
