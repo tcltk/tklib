@@ -282,11 +282,11 @@ proc ::persistentSelection::report {type w} {
         # In 8.5, <<Selection>> events are not handled one at a time; all the
         # superposed events are unwanted.
         Log "$i AE another event is active, ignore event on $w"
-    } elseif {$::tk_version ne {8.5-} && $selOwner eq $Stores($screenName)} {
+    } elseif {[package vsatisfies [package provide Tk] 8.6 9] && $selOwner eq $Stores($screenName)} {
         # In 8.6+, <<Selection>> events are handled one at a time; the unwanted
         # events are distinguished here ...
         Log "$i XX PS owns the selection, ignore event on $w"
-    } elseif {$::tk_version ne {8.5} && $selOwner ne $w} {
+    } elseif {[package vsatisfies [package provide Tk] 8.6 9] && $selOwner ne $w} {
         # ... and here.
         Log "$i YY $w does not own the selection, ignore event on $w"
     } else {
