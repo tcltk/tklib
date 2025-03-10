@@ -57,7 +57,7 @@ How to Install It?
 Install the package as a subdirectory of one of the directories given
 by the "auto_path" variable.  For example, you can install it as a
 subdirectory of the "lib" directory within your Tcl/Tk installation (at
-the same level as the tk8.7 or tk9.0 subdirectory).
+the same level as the tk8.X or tk9.X subdirectory).
 
 To install Tsw on UNIX, "cd" to the desired directory and unpack the
 distribution file "tsw1.0.tar.gz":
