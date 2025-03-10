@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tsw Programmer's Guide</title>
+
+  <meta name="Author" content="Csaba Nemethi">
+  <meta name="Keywords" content="toggleswitch, widget">
+
+  <link rel="stylesheet" type="text/css" href="stylesheet.css">
+</head>
+
+<body>
+  <div>
+    <h1>Tsw Programmer's Guide</h1>
+
+    <h2>For Tsw Version 1.0</h2>
+    
+    <h3>by</h3>
+    
+    <h2>Csaba Nemethi</h2>
+
+    <address>
+      <a href="mailto:csaba.nemethi@t-online.de">csaba.nemethi@t-online.de</a>
+    </address>
+  </div>
+  
+  <hr>
+
+  <h2 id="contents">Contents</h2>
+
+  <h4><a href="#overview">Overview</a></h4>
+
+  <ul>
+    <li><a href="#ov_what">What Is Tsw?</a></li>
+
+    <li><a href="#ov_get">How to Get It?</a></li>
+
+    <li><a href="#ov_install">How to Install It?</a></li>
+
+    <li><a href="#ov_use">How to Use It?</a></li>
+  </ul>
+
+  <h4><a href="#examples">Examples</a></h4>
+
+  <ul>
+    <li><a href="#ex_TswDemo">Tsw Demo</a></li>
+
+    <li><a href="#ex_EditingOpts">Tablelist Editing Options</a></li>
+  </ul>
+
+  <div>
+    <p><a href="index.html">Start page</a></p>
+  </div>
+
+  <hr>
+
+  <h2 id="overview">Overview</h2>
+
+  <h3 id="ov_what">What Is Tsw?</h3>
+
+  <p>Tsw stands for <b>T</b>oggle <b>sw</b>itch and is a library package for
+  Tcl/Tk versions 8.6 or higher.&nbsp; If the version is 8.6 then in addition
+  it is required that the tksvg extension can be loaded into the interpreter
+  (Tk versions 8.7 and 9.0 or higher have built-in SVG support).&nbsp; The
+  package is written in pure Tcl/Tk code and contains:</p>
+
+  <ul>
+    <li>the implementation of the <a href="toggleswitch.html">toggle switch
+    mega-widget <b>toggleswitch</b></a>, including a general utility module for
+    mega-widgets;</li>
+
+    <li>two richly commented demo scripts containing the typical steps needed
+    to create and handle toggleswitch widgets;</li>
+
+    <li>this tutorial;</li>
+
+    <li>a reference page in HTML format.</li>
+  </ul>
+
+  <p>A toggleswitch is a mega-widget consisting of a horizontal trough (a fully
+  rounded filled rectangle) and a slider (a filled circle contained in the
+  trunk).&nbsp; It can have one of two possible switch states: on or off.&nbsp;
+  In the on state the slider is placed at the end of the trough, and in the off
+  state at its beginning.&nbsp; The user can toggle between these two states
+  with the mouse or the space key.</p>
+
+  <p>You can use the <code><a href=
+  "toggleswitch.html#switchstate">switchstate</a></code> subcommand of the Tcl
+  command associated with a toggleswitch to change or query the widget's switch
+  state.&nbsp; By using the <code><a href=
+  "toggleswitch.html#command">-command</a></code> configuration option, you can
+  specify a script to execute whenever the switch state of the widget gets
+  toggled.</p>
+
+  <h3 id="ov_get">How to Get It?</h3>
+
+  <p>Tsw is available for free download from the Web page</p>
+
+  <blockquote>
+    <address>
+      <a href="https://www.nemethi.de">https://www.nemethi.de</a>
+    </address>
+  </blockquote>
+
+  <p>The distribution file is <code>tsw1.0.tar.gz</code> for UNIX and
+  <code>tsw1_0.zip</code> for Windows.&nbsp; These files contain the same
+  information, except for the additional carriage return character preceding
+  the linefeed at the end of each line in the text files for Windows.</p>
+
+  <p>Tsw is also included in tklib, which has the address</p>
+
+  <blockquote>
+    <address>
+      <a href="https://core.tcl.tk/tklib">https://core.tcl.tk/tklib</a>
+    </address>
+  </blockquote>
+
+  <h3 id="ov_install">How to Install It?</h3>
+
+  <p>Install the package as a subdirectory of one of the directories given by
+  the <code>auto_path</code> variable.&nbsp; For example, you can install it as
+  a subdirectory of the <code>lib</code> directory within your Tcl/Tk
+  installation (at the same level as the <code>tk8.7</code> or
+  <code>tk9.0</code> subdirectory).</p>
+
+  <p>To install Tsw <i>on UNIX</i>, <code>cd</code> to the desired directory
+  and unpack the distribution file <code>tsw1.0.tar.gz</code>:</p>
+  
+  <blockquote>
+    <pre>
+gunzip -c tsw1.0.tar.gz | tar -xf -
+</pre>
+  </blockquote>
+
+  <p>On most UNIX systems this can be replaced with</p>
+
+  <blockquote>
+    <pre>
+tar -zxf tsw1.0.tar.gz
+</pre>
+  </blockquote>
+
+  <p>Both commands will create a directory named <code>tsw1.0</code>, with the
+  subdirectories <code>demos</code>, <code>doc</code>, and
+  <code>scripts</code>.</p>
+
+  <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
+  the distribution file <code>tsw1_0.zip</code> into the directory
+  <code>tsw1.0</code>, with the subdirectories <code>demos</code>,
+  <code>doc</code>, and <code>scripts</code>.</p>
+
+  <p>Notice that in tklib the Tsw <code>demos</code> directory is replaced with
+  the subdirectory <code>tsw</code> of the <code>examples</code>
+  directory.&nbsp; Please take this into account when reading the <a href=
+  "#examples">examples</a> below.</p>
+
+  <h3 id="ov_use">How to Use It?</h3>
+
+  <p>To be able to access the commands and variables defined in the Tsw
+  package, your scripts must contain one of the lines</p>
+
+  <blockquote>
+    <pre>
+package require tsw ?<i>version</i>?
+package require Tsw ?<i>version</i>?
+</pre>
+  </blockquote>
+
+  <p>You can use either one of the two statements above because the file
+  <code>tsw.tcl</code> contains both lines</p>
+
+  <blockquote>
+    <pre>
+package provide tsw ...
+package provide Tsw ...
+</pre>
+  </blockquote>
+
+  <p>You are free to remove one of these two lines from <code>tsw.tcl</code> if
+  you want to prevent the package from making itself known under two different
+  names.&nbsp; Of course, by doing so you restrict the argument of&nbsp;
+  <code>package require</code>&nbsp; to a single name.</p>
+
+  <p>Since the Tsw package is implemented in its own namespace called
+  <code>tsw</code>, you must either invoke the</p>
+
+  <blockquote>
+    <pre>
+namespace import tsw::toggleswitch
+</pre>
+  </blockquote>
+
+  <p>command to import the only public <i>procedure</i> of the <code>tsw</code>
+  namespace, or use the qualified name <code>tsw::toggleswitch</code>.&nbsp; In
+  the examples below we have chosen the latter approach.</p>
+
+  <p>To access Tsw <i>variables</i>, you <i>must</i> use qualified names.&nbsp;
+  There are only two Tsw variables that are designed to be accessed outside the
+  <code>tsw</code> namespace:</p>
+
+  <ul>
+    <li>The variable <code>tsw::version</code> holds the current version number
+    of the Tsw package.</li>
+
+    <li>The variable <code>tsw::library</code> holds the location of the Tsw
+    installation directory.</li>
+  </ul>
+
+  <div align="center">
+    <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
+    "index.html">Start page</a></p>
+  </div>
+
+  <hr>
+
+  <h2 id="examples">Examples</h2>
+
+  <h3 id="ex_TswDemo">Tsw Demo</h3>
+
+  <p>The script <code>TswDemo.tcl</code> in the <code>demos</code> directory
+  creates four <a href="toggleswitch.html">toggleswitch</a> widgets and shows
+  how their appearance depends on the current theme, which can be selected with
+  the aid of the menu associated with a ttk::menubutton widget.&nbsp; In
+  addition, it demonstrates how to specify a script to execute whenever the
+  switch state of a toggleswitch gets toggled.</p>
+
+  <blockquote>
+    <table border="0" cellspacing="0" cellpadding="0">
+      <tr align="center" valign="top">
+        <td><img src="TswDemo_aqua_blue.png" alt="Tsw Demo" width="286" height=
+        "213"></td>
+        <td><img src="TswDemo_aqua_dark.png" alt="Tsw Demo" width="286" height=
+        "213"></td>
+        <td><img src="TswDemo_aqua_green.png" alt="Tsw Demo" width="286"
+        height="213"></td>
+      </tr>
+
+      <tr align="center" valign="top">
+        <td><img src="TswDemo_default.png" alt="Tsw Demo" width="295" height=
+        "227"></td>
+        <td><img src="TswDemo_clam.png" alt="Tsw Demo" width="297" height=
+        "234"></td>
+        <td><img src="TswDemo_vista.png" alt="Tsw Demo" width="272" height=
+        "220"></td>
+      </tr>
+    </table>
+  </blockquote>
+
+  <p>Here is the code that creates the four toggleswitch widgets:</p>
+
+  <blockquote>
+    <pre>
+package require Tk
+<span class="red">package require tsw</span>
+
+wm title . "Tsw Demo"
+
+ttk::frame .tf
+ttk::frame .bf
+
+<span class="cmt">#
+# Create 3 toggleswitch widgets having different values of the -size option
+#</span>
+set l1 [ttk::label .tf.l1 -text "Toggle switch of size 1"]
+<span class="red">set sw1 [tsw::toggleswitch .tf.sw1 -size 1]</span>
+set l2 [ttk::label .tf.l2 -text "Toggle switch of size 2"]
+<span class="red">set sw2 [tsw::toggleswitch .tf.sw2 -size 2]
+$sw2 switchstate 1</span>
+set l3 [ttk::label .tf.l3 -text "Toggle switch of size 3"]
+<span class="red">set sw3 [tsw::toggleswitch .tf.sw3 -size 3]</span>
+
+<span class="cmt">#
+# Create a toggleswitch widget of default size and set its -command option
+#</span>
+set l4 [ttk::label .tf.l4 -text "Enable/disable above widgets"]
+<span class="red">set sw4 [tsw::toggleswitch .tf.sw4]
+$sw4 switchstate 1
+$sw4 configure -command [list toggleWidgetsState $sw4]</span>
+</pre>
+  </blockquote>
+
+  <p>We create the toggleswitch widgets by invoking the <code><a href=
+  "toggleswitch.html#synopsis">tsw::toggleswitch</a></code> command.&nbsp; For
+  the first three toggleswitch widgets we also set the <code><a href=
+  "toggleswitch.html#size">-size</a></code> option to <code>1</code>,
+  <code>2</code>, and <code>3</code>, respectively.&nbsp; With the exception of
+  the themes <code>vista</code>, <code>winnative</code>, and
+  <code>xpnative</code>, this results in widgets of different physical
+  sizes.&nbsp; For the last toggleswitch we don't explicitly set this option,
+  hence it will have its default value <code>2</code>.&nbsp; As seen in the
+  screenshots, in the case of the <code>aqua</code> theme the colors used when
+  drawing the toggleswitch widgets also depend on the system appearance (light
+  mode or dark mode) and the accent color.</p>
+
+  <p>For two of the four toggleswitch widgets we change the switch state from
+  the initial value <code>0</code> (off) to <code>1</code> (on) by invoking the
+  <code><a href="toggleswitch.html#switchstate">switchstate</a></code>
+  subcommand of the associated Tcl command.&nbsp; In addition, for the last
+  toggleswitch we set the <code><a href=
+  "toggleswitch.html#command">-command</a></code> option to a script that will
+  be executed whenever the widget's switch state gets toggled.&nbsp; This
+  script invokes the procedure <code>toggleWidgetsState</code> implemented as
+  follows:</p>
+
+  <blockquote>
+    <pre>
+<span class="cmt">#------------------------------------------------------------------------------
+# toggleWidgetsState
+#
+# Enables/disables the widgets in the first 3 grid rows, depending on the
+# switch state of the specified toggleswitch widget.
+#------------------------------------------------------------------------------</span>
+proc toggleWidgetsState sw {
+    global l1 l2 l3 sw1 sw2 sw3
+    <span class="red">set stateSpec [expr {[$sw switchstate] ? "!disabled" : "disabled"}]</span>
+    foreach w [list $l1 $l2 $l3 $sw1 $sw2 $sw3] {
+        $w state $stateSpec
+    }
+}
+</pre>
+  </blockquote>
+
+  <p>This time the <code>switchstate</code> subcommand is invoked without the
+  optional argument, hence it returns the toggleswitch widget's current switch
+  state.</p>
+
+  <p>For the <code>default</code> theme, after changing the switch state of the
+  last toggleswitch from on to off, the window will look as shown in the
+  screenshot below:</p>
+
+  <blockquote>
+    <img src="TswDemo_default_2.png" alt="Tsw Demo" width="295" height="227">
+  </blockquote>
+
+  <p>The rest of the code is not Tsw-specific and for this reason is not shown
+  here.</p>
+
+  <h3 id="ex_EditingOpts">Tablelist Editing Options</h3>
+
+  <p>The script <code>EditingOpts.tcl</code> in the <code>demos</code>
+  directory is a slightly adapted version of the Tablelist demo script
+  <code>tileWidgets.tcl</code>, which demonstrates the interactive tablelist
+  cell editing with the aid of various Ttk widgets.&nbsp; The additional
+  functionality in this version is implemented in the procedures
+  <code>configEditing</code> and <code>applySwitchState</code>.&nbsp; The first
+  one, triggered by the "Configure Editing" button, opens a toplevel window
+  containing <a href="toggleswitch.html">toggleswitch</a> widgets for
+  configuring the editing-related tablelist options having boolean values,
+  proposed over the years by Tablelist users.&nbsp; This is a comfortable way
+  to test the effect of setting/clearing these boolean options.</p>
+
+  <blockquote>
+    <table border="0" cellspacing="0" cellpadding="0">
+      <tr valign="top">
+        <td><img src="SerialLineConfig.png" alt="Serial Line Configuration"
+        width="686" height="503"></td>
+        <td><img src="EditingOpts.png" alt="Editing Options" width="285"
+        height="318"></td>
+      </tr>
+    </table>
+  </blockquote>
+
+  <p>The <code>configEditing</code> procedure is shown below:</p>
+
+  <blockquote>
+    <pre>
+package require Tk
+<span class="red">package require tsw</span>
+package require tablelist_tile
+
+. . .
+
+<span class="cmt">#------------------------------------------------------------------------------
+# configEditing
+#
+# Configures the editing-related tablelist options having boolean values with
+# the aid of toggleswitch widgets.
+#------------------------------------------------------------------------------</span>
+proc configEditing tbl {
+    set top .top
+    if {[winfo exists $top]} {
+        raise $top
+        focus $top
+        return ""
+    }
+
+    toplevel $top
+    wm title $top "Editing Options"
+
+    set tf [ttk::frame $top.tf]
+    set bf [ttk::frame $top.bf]
+
+    <span class="cmt">#
+    # Create the widgets corresponding to the
+    # editing-related options with boolean values
+    #</span>
+    set row 0
+    foreach opt {
+        -autofinishediting
+        -editendonfocusout
+        -editendonmodclick
+        -editselectedonly
+        -forceeditendcommand
+        -instanttoggle
+        -showeditcursor
+    } {
+        lassign [$tbl configure $opt] option dbName dbClass default current
+        set defaultStr [expr {$default ? "on" : "off"}]
+
+        set l [ttk::label $tf.l$row -text "$opt ($defaultStr)"]
+        if {$current != $default} {
+            $l configure -foreground red3
+        }
+        grid $l -row $row -column 0 -sticky w -padx 9p -pady {0 3p}
+
+        <span class="red">set sw [tsw::toggleswitch $tf.sw$row]
+        $sw switchstate $current</span>        ;<span class="cmt"># sets the switch state to $current</span>
+        <span class="red">$sw attrib default $default</span>     ;<span class="cmt"># saves $default as attribute value</span>
+        <span class="red">$sw configure -command [list applySwitchState $sw $l $tbl $opt]</span>
+        grid $sw -row $row -column 1 -sticky w -padx {0 9p} -pady {0 3p}
+
+        incr row
+    }
+
+    . . .
+}
+</pre>
+  </blockquote>
+
+  <p>For each of the 7 editing-related options with boolean values, the
+  procedure displays the option's name and default value in a ttk::label, and
+  sets the <a href="toggleswitch.html#switchstate">switch state</a> of the
+  corresponding toggleswitch widget to the option's current value.&nbsp; In
+  addition, it invokes the <code><a href=
+  "toggleswitch.html#attrib">attrib</a></code> subcommand of the Tcl command
+  associated with the toggleswitch to save the default as the value of the
+  widget's attribute of name <code>default</code>.&nbsp; In this way, the
+  widget "remembers" the default value in an object-oriented manner and can
+  retrieve it later without needing any external resources.&nbsp; For increased
+  user-friendliness, the label is displayed in the <code>red3</code> foreground
+  color if the option's current value is different from the default one.</p>
+
+  <p>Whenever the toggleswitch widget's switch state gets toggled, the script
+  specified as the value of its <code><a href=
+  "toggleswitch.html#command">-command</a></code> option invokes the
+  <code>applySwitchState</code> procedure shown below:</p>
+
+  <blockquote>
+    <pre>
+<span class="cmt">#------------------------------------------------------------------------------
+# applySwitchState
+#
+# Sets the configuration option opt of the tablelist tbl and the foreground
+# color of the ttk::label l according to the switch state of the toggleswitch
+# widget sw.
+#------------------------------------------------------------------------------</span>
+proc applySwitchState {sw l tbl opt} {
+    <span class="red">set switchState [$sw switchstate]</span>
+    $tbl configure $opt $switchState
+
+    <span class="red">set fgColor [expr {$switchState == [$sw attrib default] ? "" : "red3"}]</span>
+    $l configure -foreground $fgColor
+}
+</pre>
+  </blockquote>
+
+  <p>We set the specified tablelist option to the toggleswitch widget's switch
+  state, and also the label's foreground color, depending on the switch state
+  and the option's default value, which we retrieve by using the
+  <code>attrib</code> toggleswitch subcommand.</p>
+
+  <div align="center">
+    <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
+    "index.html">Start page</a></p>
+  </div>
+</body>
+</html>

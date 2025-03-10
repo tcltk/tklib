@@ -61,6 +61,7 @@ Module text          _tcl  _null _null
 Module tkpiechart    _tcl  _man  _exa
 Module tooltip       _tcl  _man  _null
 Module treeview      _tcl  _null _null
+Module tsw           _tab  _null _exa
 Module wcb           _tab  _null _exa
 Module widget        _tcl  _man  _exa
 Module widgetPlus    _tcl  _man  _exa

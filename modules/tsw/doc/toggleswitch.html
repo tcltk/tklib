@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>The tsw::toggleswitch Command</title>
+  
+  <meta name="Author" content="Csaba Nemethi">
+  <meta name="Keywords" content="toggleswitch, widget">
+    
+  <link rel="stylesheet" type="text/css" href="stylesheet.css">
+</head>
+    
+<body>
+  <div>
+    <h1>The <code><b>tsw::toggleswitch</b></code> Command</h1>
+
+    <h2>For Tsw Version 1.0</h2>
+
+    <h3>by</h3>
+    
+    <h2>Csaba Nemethi</h2>
+
+    <address>
+      <a href="mailto:csaba.nemethi@t-online.de">csaba.nemethi@t-online.de</a>
+    </address>
+  </div>
+
+  <hr>
+    
+  <h2 id="contents">Contents</h2>
+
+  <ul>
+    <li><a href="#quick_ref">Quick Reference</a></li>
+    
+    <li><a href="#detailed_ref">Detailed Reference</a></li>
+  </ul>
+
+  <div>
+    <p><a href="index.html">Start page</a></p>
+  </div>
+
+  <hr>
+
+  <h2 id="quick_ref">Quick Reference</h2>
+
+  <dl>
+    <dt><a href="#name">NAME</a></dt>
+
+    <dd><code>tsw::toggleswitch</code> &ndash; Create and manipulate toggle
+    switch widgets</dd>
+
+    <dt class="tm"><a href="#synopsis">SYNOPSIS</a></dt>
+
+    <dd>
+      <pre>
+<b>tsw::toggleswitch</b> <i>pathName</i> ?<i>options</i>?
+</pre>
+    </dd>
+
+    <dt><a href="#description">DESCRIPTION</a></dt>
+
+    <dt class="tm"><a href="#std_options">STANDARD OPTIONS</a></dt>
+
+    <dd>
+      <pre>
+<b>-cursor</b>
+</pre>
+    </dd>
+
+    <dt><a href="#widget_options">WIDGET-SPECIFIC OPTIONS</a></dt>
+
+    <dd><code><b><a href="#command">-command</a></b> <i>command</i></code></dd>
+
+    <dd><code><b><a href="#size">-size</a></b>
+    <b>1</b>|<b>2</b>|<b>3</b></code></dd>
+
+    <dd><code><b><a href="#takefocus">-takefocus</a></b>
+    <b>0</b>|<b>1</b>|<b>""</b>|<i>command</i></code></dd>
+
+    <dt class="tm"><a href="#widget_command">WIDGET COMMAND</a></dt>
+
+    <dd><code><i>pathName</i> <b><a href="#attrib">attrib</a></b> ?<i>name</i>
+    ?<i>value</i> <i>name</i> <i>value</i> ...??</code></dd>
+
+    <dd><code><i>pathName</i> <b><a href="#cget">cget</a></b>
+    <i>option</i></code></dd>
+
+    <dd><code><i>pathName</i> <b><a href="#configure">configure</a></b>
+    ?<i>option</i> ?<i>value</i> <i>option</i> <i>value</i> ...??</code></dd>
+
+    <dd><code><i>pathName</i> <b><a href="#hasattrib">hasattrib</a></b>
+    <i>name</i></code></dd>
+
+    <dd><code><i>pathName</i> <b><a href="#identify">identify</a></b>
+    ?<b>element</b>? <i>x</i> <i>y</i></code></dd>
+
+    <dd><code><i>pathName</i> <b><a href="#instate">instate</a></b>
+    <i>stateSpec</i> ?<i>script</i>?</code></dd>
+
+    <dd><code><i>pathName</i> <b><a href="#state">state</a></b>
+    ?<i>stateSpec</i>?</code></dd>
+
+    <dd><code><i>pathName</i> <b><a href="#style">style</a></b></code></dd>
+
+    <dd><code><i>pathName</i> <b><a href="#switchstate">switchstate</a></b>
+    ?<i>boolean</i>?</code></dd>
+
+    <dd><code><i>pathName</i> <b><a href="#toggle">toggle</a></b></code></dd>
+
+    <dd><code><i>pathName</i> <b><a href="#unsetattrib">unsetattrib</a></b>
+    <i>name</i></code></dd>
+
+    <dt class="tm"><a href="#bindings">DEFAULT BINDINGS</a></dt>
+
+    <dt class="tm"><a href="#keywords">KEYWORDS</a></dt>
+
+    <dd>toggleswitch, widget</dd>
+  </dl>
+
+  <div>
+    <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
+    "index.html">Start page</a></p>
+  </div>
+
+  <hr>
+
+  <h2 id="detailed_ref">Detailed Reference</h2>
+
+  <dl>
+    <dt id="name"><b>NAME</b></dt>
+
+    <dd><code>tsw::toggleswitch</code> &ndash; Create and manipulate toggle
+    switch widgets</dd>
+
+    <dt class="tm" id="synopsis"><b>SYNOPSIS</b></dt>
+
+    <dd>
+      <pre>
+<b>tsw::toggleswitch</b> <i>pathName</i> ?<i>options</i>?
+</pre>
+    </dd>
+
+    <dt id="description"><b>DESCRIPTION</b></dt>
+
+    <dd>The <code><b>tsw::toggleswitch</b></code> command creates a new window
+    named <code><i>pathName</i></code> and of the class
+    <code><b>Toggleswitch</b></code>, and makes it into a <b>toggleswitch</b>
+    widget.&nbsp; Additional options, described below, may be specified on the
+    command line or in the option database to configure aspects of the
+    toggleswitch widget, such as its size and the Tcl script to execute
+    whenever the switch state of the widget is toggled.&nbsp; The
+    <code><b>tsw::toggleswitch</b></code> command returns its
+    <code><i>pathName</i></code> argument.&nbsp; At the time this command is
+    invoked, there must not exist a window named <code><i>pathName</i></code>,
+    but <code><i>pathName</i></code>'s parent must exist.</dd>
+
+    <dd class="tm">A toggleswitch is a mega-widget consisting of a horizontal
+    <b>trough</b> and a <b>slider</b>, just like a ttk::scale widget.&nbsp;
+    Actually, these elements belong to a ttk::scale contained in the
+    widget.&nbsp; The trough is a fully rounded filled rectangle, and the
+    slider is a filled circle contained in the trunk.&nbsp; Both elements are
+    rendered using scaling-aware SVG images.&nbsp; Their dimensions depend on
+    the display's scaling level, the current theme, and the value of the
+    <code><b><a href="#size">-size</a></b></code> configuration option.</dd>
+
+    <dd class="tm">Just like a light switch, a toggleswitch widget can have one
+    of two possible <b>switch state</b>s: on or off.&nbsp; In the on state the
+    slider is placed at the end of the trough, and in the off state at its
+    beginning.&nbsp; As described in the <a href="#bindings">DEFAULT
+    BINDINGS</a> section below, the user can toggle between these two states
+    with the mouse or the <code>space</code> key.</dd>
+
+    <dd class="tm">The Tcl command associated with a toggleswitch widget has a
+    very simple API.&nbsp; You can use the <code><b><a href=
+    "#switchstate">switchstate</a></b></code> subcommand to change or query
+    the widget's switch state.&nbsp; By using the <code><b><a href=
+    "#command">-command</a></b></code> configuration option, you can specify a
+    script to execute whenever this subcommand or the convenience one named
+    <code><b><a href="#toggle">toggle</a></b></code> causes the widget's switch
+    state to get toggled.</dd>
+
+    <dd class="tm">The colors used when drawing the trough and the slider in
+    the various widget states (such as <code><b>active</b></code>,
+    <code><b>background</b></code>, <code><b>disabled</b></code>,
+    <code><b>pressed</b></code>, and <code><b>selected</b></code>) depend on
+    the current theme.&nbsp; The implementation contains procedures that create
+    these elements for the themes <code><b>aqua</b></code>,
+    <code><b>clam</b></code>, <code><b>default</b></code>, and
+    <code><b>vista</b></code>.&nbsp; The trough and slider specific to the
+    <code><b>vista</b></code> theme are also used for the themes
+    <code><b>winnative</b></code> and <code><b>xpnative</b></code>.&nbsp;
+    Likewise, the elements specific to the <code><b>default</b></code> theme
+    are also used for all the other themes not mentioned above (including the
+    third-party ones), except that in dark themes the colors of these elements
+    are adapted to the dark background.&nbsp; If the theme is
+    <code><b>aqua</b></code> then the colors also depend on the system
+    appearance (light mode or dark mode) and the accent color, and are
+    automatically adapted whenever one of these global system preferences
+    changes.</dd>
+
+    <dt class="tm" id="std_options"><b>STANDARD OPTIONS</b></dt>
+
+    <dd>
+      <pre>
+<b>-cursor</b>
+</pre>
+    </dd>
+
+    <dd>See the <b>ttk_widget</b> manual entry for details on the above
+    standard option.&nbsp; Its default value is an empty string.</dd>
+
+    <dt class="tm" id="widget_options"><b>WIDGET-SPECIFIC OPTIONS</b></dt>
+
+    <dd id="command">
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td>Command-Line Name:&nbsp;</td>
+          <td><code><b>-command</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Name:</td>
+          <td><code><b>&nbsp;command</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Class:</td>
+          <td><code><b>&nbsp;Command</b></code></td>
+        </tr>
+      </table>
+
+      <blockquote>
+        <p>Specifies a Tcl script to execute whenever the switch state of the
+        widget is toggled (programmatically or interactively).&nbsp; The
+        default is an empty string.</p>
+      </blockquote>
+    </dd>
+
+    <dd id="size">
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td>Command-Line Name:&nbsp;</td>
+          <td><code><b>-size</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Name:</td>
+          <td><code><b>&nbsp;size</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Class:</td>
+          <td><code><b>&nbsp;Size</b></code></td>
+        </tr>
+      </table>
+
+      <blockquote>
+        <p>Specifies the size identifier of the toggleswitch widget.&nbsp; The
+        supported values are the strings <code><b>1</b></code>,
+        <code><b>2</b></code>, and <code><b>3</b></code>.&nbsp; If the current
+        theme is <code><b>aqua</b></code> then the value <code><b>1</b></code>
+        stands for the trough size of 26 x 15 pixels, the value
+        <code><b>2</b></code> for the trough size of 32 x 18 pixels, and the
+        value <code><b>3</b></code> identifies the trough size of 38 x 22
+        pixels.&nbsp; For all the other themes, on an unscaled screen the value
+        <code><b>1</b></code> stands for the trough size of 32 x 16 pixels, the
+        value <code><b>2</b></code> for the trough size of 40 x 20 pixels, and
+        the value <code><b>3</b></code> identifies the trough size of 48 x 24
+        pixels, except that on Windows 10 and earlier, for the themes
+        <code><b>vista</b></code>, <code><b>winnative</b></code>, and
+        <code><b>xpnative</b></code> the unscaled trough width is 35, 44, and
+        53 pixels, respectively (for compatibility with the native toggle
+        switch).&nbsp; The default is <code><b>2</b></code> (for all
+        themes).</p>
+      </blockquote>
+    </dd>
+
+    <dd id="takefocus">
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td>Command-Line Name:&nbsp;</td>
+          <td><code><b>-takefocus</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Name:</td>
+          <td><code><b>&nbsp;takeFocus</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Class:</td>
+          <td><code><b>&nbsp;TakeFocus</b></code></td>
+        </tr>
+      </table>
+
+      <blockquote>
+        <p>This option determines whether the toggleswitch widget accepts the
+        focus during keyboard traversal.&nbsp; It is almost identical to the
+        standard option of the same name (see the <b>options</b> manual entry
+        for details).&nbsp; The only difference is that not the toggleswitch
+        itself but the ttk::scale widget contained in it will receive the focus
+        during keyboard traversal with the standard keys (<code>Tab</code> and
+        <code>Shift-Tab</code>).&nbsp; The default is
+        <code>"ttk::takefocus"</code> (just like for most Tk themed
+        widgets).</p>
+      </blockquote>
+    </dd>
+
+    <dt class="tm" id="widget_command"><b>WIDGET COMMAND</b></dt>
+
+    <dd>
+      The <code><b>tsw::toggleswitch</b></code> command creates a new Tcl
+      command whose name is <code><i>pathName</i></code>.&nbsp; This command
+      may be used to invoke various operations on the widget.&nbsp; It has the
+      following general form:
+
+      <blockquote>
+        <pre>
+<i>pathName</i> <i>option</i> ?<i>arg</i> <i>arg</i> ...?
+</pre>
+      </blockquote>
+    </dd>
+
+    <dd><code><i>option</i></code> and the <code><i>arg</i></code>s determine
+    the exact behavior of the command.&nbsp; The following commands are
+    possible for toggleswitch widgets:</dd>
+
+    <dd>
+      <dl>
+        <dt class="tm" id="attrib"><code><i>pathName</i> <b>attrib</b>
+        ?<i>name</i> ?<i>value</i> <i>name</i> <i>value</i> ...??</code></dt>
+
+        <dd>Queries or modifies the attributes of the widget.&nbsp; If no
+        <code><i>name</i></code> is specified, the command returns a list of
+        pairs, each of which contains the name and the value of an attribute
+        for <code><i>pathName</i></code>.&nbsp; If <code><i>name</i></code> is
+        specified with no <code><i>value</i></code>, then the command returns
+        the value of the one named attribute, or an empty string if no
+        corresponding value exists (you can use the <code><b><a href=
+        "#hasattrib">hasattrib</a></b></code> subcommand to distinguish this
+        case from the one that the value of an <i>existing</i> attribute is an
+        empty string).&nbsp; If one or more
+        <code><i>name</i></code>-<code><i>value</i></code> pairs are specified,
+        then the command sets the given widget attribute(s) to the given
+        value(s); in this case the return value is an empty string.&nbsp;
+        <code><i>name</i></code> may be an arbitrary string.</dd>
+
+        <dt class="tm" id="cget"><code><i>pathName</i> <b>cget</b>
+        <i>option</i></code></dt>
+
+        <dd>Returns the current value of the configuration option given by
+        <code><i>option</i></code>, which may have any of the values accepted
+        by the <code><b>tsw::toggleswitch</b></code> command.</dd>
+
+        <dt class="tm" id="configure"><code><i>pathName</i> <b>configure</b>
+        ?<i>option</i> ?<i>value</i> <i>option</i> <i>value</i>
+        ...??</code></dt>
+
+        <dd>Queries or modifies the configuration options of the widget.&nbsp;
+        If no <code><i>option</i></code> is specified, the command returns a
+        list describing all of the available options for
+        <code><i>pathName</i></code> (see <code><b>Tk_ConfigureInfo</b></code>
+        for information on the format of this list).&nbsp; If
+        <code><i>option</i></code> is specified with no
+        <code><i>value</i></code>, then the command returns a list describing
+        the one named option (this list will be identical to the corresponding
+        sublist of the value returned if no <code><i>option</i></code> is
+        specified).&nbsp; If one or more
+        <code><i>option</i></code>-<code><i>value</i></code> pairs are
+        specified, then the command modifies the given widget option(s) to have
+        the given value(s); in this case the return value is an empty
+        string.&nbsp; <code><i>option</i></code> may have any of the values
+        accepted by the <code><b>tsw::toggleswitch</b></code> command.</dd>
+
+        <dt class="tm" id="hasattrib"><code><i>pathName</i> <b>hasattrib</b>
+        <i>name</i></code></dt>
+
+        <dd>Returns <code>1</code> if the attribute <code><i>name</i></code>
+        exists and <code>0</code> otherwise.</dd>
+
+        <dt class="tm" id="identify"><code><i>pathName</i> <b>identify</b>
+        ?<b>element</b>? <i>x</i> <i>y</i></code></dt>
+
+        <dd>See the <b>ttk_widget</b> manual entry.</dd>
+
+        <dt class="tm" id="instate"><code><i>pathName</i> <b>instate</b>
+        <i>stateSpec</i> ?<i>script</i>?</code></dt>
+
+        <dd>See the <b>ttk_widget</b> manual entry.</dd>
+
+        <dt class="tm" id="state"><code><i>pathName</i> <b>state</b>
+        ?<i>stateSpec</i>?</code></dt>
+
+        <dd>See the <b>ttk_widget</b> manual entry.</dd>
+
+        <dt class="tm" id="style"><code><i>pathName</i>
+        <b>style</b></code></dt>
+
+        <dd>Returns the style used by the ttk::scale widget contained in the
+        toggleswitch.&nbsp; This can be one of
+        <code><b>Toggleswitch1</b></code>, <code><b>Toggleswitch2</b></code>,
+        or <code><b>Toggleswitch3</b></code>, depending on the value of the
+        <code><b><a href="#size">-size</a></b></code> option.&nbsp; For Tk
+        themed widgets this subcommand was introduced in Tk 8.7a4, but the
+        toggleswitch widget provides it for all supported Tk versions.</dd>
+
+        <dt class="tm" id="switchstate"><code><i>pathName</i>
+        <b>switchstate</b> ?<i>boolean</i>?</code></dt>
+
+        <dd>Modifies or inquires the widget's switch state.&nbsp; If the
+        optional argument is present then it must be a boolean (a numeric
+        value, where 0 is false and anything else is true, or a string such as
+        <code><b>true</b>/<b>yes</b>/<b>on</b></code> or
+        <code><b>false</b>/<b>no</b>/<b>off</b></code>).&nbsp; If it is true
+        then the command sets the <code><b>selected</b></code> flag of the
+        underlying ttk::scale widget and moves the slider to the end of the
+        trough, otherwise it clears the <code><b>selected</b></code> flag
+        and moves the slider to the beginning of the trough.&nbsp; If the
+        argument's value causes the widget's switch state to get toggled and
+        the script specified as the value of the <code><b><a href=
+        "#command">-command</a></b></code> option is a nonempty string then the
+        command evaluates that script at global scope and returns its result;
+        otherwise the return value is an empty string.&nbsp; If the optional
+        argument is not present then the command returns the widget's current
+        switch state as <code>0</code> or <code>1</code>.&nbsp; When a
+        toggleswitch widget is created, its switch state is initialized with
+        <code>0</code>.</dd>
+
+        <dt class="tm" id="toggle"><code><i>pathName</i>
+        <b>toggle</b></code></dt>
+
+        <dd>
+          This convenience subcommand toggles the widget's switch state.&nbsp;
+          It is logically equivalent to:
+
+          <blockquote>
+            <pre>
+if {[<i>pathName</i> switchstate]} {
+    return [<i>pathName</i> switchstate 0]
+} else {
+    return [<i>pathName</i> switchstate 1]
+}
+</pre>
+          </blockquote>
+        </dd>
+
+        <dt class="tm" id="unsetattrib"><code><i>pathName</i>
+        <b>unsetattrib</b> <i>name</i></code></dt>
+
+        <dd>Unsets the attribute <code><i>name</i></code>.&nbsp; Returns an
+        empty string.</dd>
+      </dl>
+    </dd>
+
+    <dt class="tm" id="bindings"><b>DEFAULT BINDINGS</b></dt>
+
+    <dd>The Tsw package replaces the default bindings of the ttk::scale
+    contained in a toggleswitch widget with its own bindings as follows:</dd>
+
+    <dd class="tm">
+      If the current theme is <code><b>aqua</b></code>:
+
+      <ol>
+        <li class="tm">By pressing mouse button 1 over the slider and then
+        dragging the mouse with button 1 down until the pointer enters the
+        trough, the slider moves smoothly to the opposite edge of the trough
+        and the widget's switch state gets toggled.&nbsp; The same happens if
+        mouse button 1 is pressed outside the slider and then the pointer
+        leaves the widget horizontally with button 1 down.</li>
+
+        <li class="tm">By pressing mouse button 1 anywhere within the widget
+        and then releasing it over the widget without previously moving the
+        slider, the latter moves smoothly to the opposite edge of the trough
+        and the widget's switch state gets toggled.</li>
+
+        <li class="tm">When the widget has the input focus, the
+        <code>space</code> key causes its switch state to get toggled.</li>
+      </ol>
+    </dd>
+
+    <dd class="tm">
+      If the current theme is different from <code><b>aqua</b></code>:
+
+      <ol>
+        <li class="tm">By pressing mouse button 1 anywhere within the widget
+        and then dragging the mouse with button 1 down, the slider moves in the
+        same (horizontal) direction as the pointer.&nbsp; By releasing the
+        button, the switch state is set to <code>0</code> or <code>1</code>,
+        depending on the slider's position relative to the middle of the
+        widget.</li>
+
+        <li class="tm">By pressing mouse button 1 anywhere within the widget
+        and then releasing it over the widget without previously dragging the
+        mouse horizontally, the widget's switch state gets toggled.</li>
+
+        <li class="tm">When the widget has the input focus, the
+        <code>space</code> key causes its switch state to get toggled.</li>
+      </ol>
+    </dd>
+
+    <dd class="tm">If the widget's <code><b>disabled</b></code> state flag is
+    set then none of the above actions occur.</dd>
+        
+    <dt class="tm" id="keywords"><b>KEYWORDS</b></dt>
+
+    <dd>toggleswitch, widget</dd>
+  </dl> 
+        
+  <div> 
+    <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
+    "index.html">Start page</a></p>
+  </div>
+</body> 
+</html>
+
