@@ -519,7 +519,7 @@ proc tsw::onButton1 {w x y} {
 # tsw::onB1Motion
 #------------------------------------------------------------------------------
 proc tsw::onB1Motion {w x y} {
-    $w instate disabled {
+    if {[$w instate disabled] || [$w instate !pressed]} {
 	return ""
     }
 
@@ -564,7 +564,7 @@ proc tsw::onB1Motion {w x y} {
 # tsw::onButtonRel1
 #------------------------------------------------------------------------------
 proc tsw::onButtonRel1 w {
-    $w instate disabled {
+    if {[$w instate disabled] || [$w instate !pressed]} {
 	return ""
     }
 

@@ -12,6 +12,15 @@ package require Tk
 package require tsw
 package require tablelist_tile
 
+if {[tk windowingsystem] eq "x11" &&
+    ($tk_version < 8.7 || [package vcompare $::tk_patchLevel "8.7a5"] <= 0)} {
+    #
+    # Patch the default theme's styles TCheckbutton and TRadiobutton
+    #
+    package require themepatch
+    themepatch::patch default
+}
+
 wm title . "Serial Line Configuration"
 
 #
