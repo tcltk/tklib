@@ -266,8 +266,8 @@
 
       <blockquote>
         <p>The value to store in the associated <a href=
-	"#variable">variable</a> when the widget's switch state is set to
-	off.&nbsp; Defaults to <code>0</code>.</p>
+        "#variable">variable</a> when the widget's switch state is set to
+        off.&nbsp; Defaults to <code>0</code>.</p>
       </blockquote>
     </dd>
 
@@ -291,8 +291,8 @@
 
       <blockquote>
         <p>The value to store in the associated <a href=
-	"#variable">variable</a> when the widget's switch state is set to
-	on.&nbsp; Defaults to <code>1</code>.</p>
+        "#variable">variable</a> when the widget's switch state is set to
+        on.&nbsp; Defaults to <code>1</code>.</p>
       </blockquote>
     </dd>
 
@@ -386,10 +386,10 @@
 
       <blockquote>
         <p>The name of a global variable whose value is linked to the
-	toggleswitch.&nbsp; The widget's switch state changes to on when this
-	variable is set to the value specified by the <code><b><a href=
-	"#onvalue">-onvalue</a></b></code> option and to off otherwise.&nbsp;
-	Defaults to the widget's pathname if not specified.</p>
+        toggleswitch.&nbsp; The widget's switch state changes to on when this
+        variable is set to the value specified by the <code><b><a href=
+        "#onvalue">-onvalue</a></b></code> option and to off otherwise.&nbsp;
+        Defaults to the widget's pathname if not specified.</p>
       </blockquote>
     </dd>
 
@@ -484,9 +484,9 @@
         <b>style</b></code></dt>
 
         <dd>Returns the style used by the underlying ttk::scale widget.&nbsp;
-	This can be one of <code><b>Toggleswitch1</b></code>,
-	<code><b>Toggleswitch2</b></code>, or
-	<code><b>Toggleswitch3</b></code>, depending on the value of the
+        This can be one of <code><b>Toggleswitch1</b></code>,
+        <code><b>Toggleswitch2</b></code>, or
+        <code><b>Toggleswitch3</b></code>, depending on the value of the
         <code><b><a href="#size">-size</a></b></code> option.&nbsp; For Tk
         themed widgets this subcommand was introduced in Tk 8.7a4, but the
         toggleswitch widget provides it for all supported Tk versions.</dd>
@@ -502,18 +502,18 @@
         then the command sets the <code><b>selected</b></code> flag of the
         underlying ttk::scale widget, moves the slider to the end of the
         trough, and sets the associated <a href="#variable">variable</a> to the
-	value specified by the <code><b><a href=
+        value specified by the <code><b><a href=
         "#onvalue">-onvalue</a></b></code> option; otherwise it clears the
-	<code><b>selected</b></code> flag, moves the slider to the beginning of
-	the trough, and sets the associated variable to the value specified by
-	the <code><b><a href="#offvalue">-offvalue</a></b></code> option.&nbsp;
-	If the argument's value causes the widget's switch state to get toggled
-	and the script specified as the value of the <code><b><a href=
+        <code><b>selected</b></code> flag, moves the slider to the beginning of
+        the trough, and sets the associated variable to the value specified by
+        the <code><b><a href="#offvalue">-offvalue</a></b></code> option.&nbsp;
+        If the argument's value causes the widget's switch state to get toggled
+        and the script specified as the value of the <code><b><a href=
         "#command">-command</a></b></code> option is a nonempty string then the
         subcommand evaluates that script at global scope and returns its
-	result; otherwise the return value is an empty string.&nbsp; If the
-	optional argument is not present then the command returns the widget's
-	current switch state as <code>0</code> or <code>1</code>.&nbsp; When a
+        result; otherwise the return value is an empty string.&nbsp; If the
+        optional argument is not present then the command returns the widget's
+        current switch state as <code>0</code> or <code>1</code>.&nbsp; When a
         toggleswitch widget is created, its switch state is initialized with
         <code>0</code>.</dd>
 
