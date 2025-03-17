@@ -35,8 +35,11 @@ namespace eval tsw {
     array set configSpecs {
 	-command		{command	Command		w}
 	-cursor			{cursor		Cursor		f}
+	-offvalue		{offValue	OffValue	w}
+	-onvalue		{onValue	OnValue		w}
 	-size			{size		Size		w}
 	-takefocus		{takeFocus	TakeFocus	f}
+	-variable		{variable	Variable	w}
     }
 
     #
@@ -44,8 +47,11 @@ namespace eval tsw {
     #
     lappend configSpecs(-command)	""
     lappend configSpecs(-cursor)	""
+    lappend configSpecs(-offvalue)	0
+    lappend configSpecs(-onvalue)	1
     lappend configSpecs(-size)		2
     lappend configSpecs(-takefocus)	"ttk::takefocus"
+    lappend configSpecs(-variable)	""
 
     variable configOpts [lsort [array names configSpecs]]
 
@@ -178,11 +184,8 @@ proc tsw::createBindings {} {
 	    focus %W.scl
 	}
     }
-    bind Toggleswitch <Destroy> {
-	namespace delete tsw::ns%W
-	catch {rename %W ""}
-    }
-    bind Toggleswitch <<ThemeChanged>> { tsw::onThemeChanged %W }
+    bind Toggleswitch <Destroy>		{ tsw::onDestroy %W }
+    bind Toggleswitch <<ThemeChanged>>	{ tsw::onThemeChanged %W }
 
     bindtags . [linsert [bindtags .] 1 TswMain]
     foreach event {<<ThemeChanged>> <<LightAqua>> <<DarkAqua>>} {
@@ -262,6 +265,7 @@ proc tsw::toggleswitch args {
     foreach opt $configOpts {
 	set data($opt) [lindex $configSpecs($opt) 3]
     }
+    set data(varTraceCmd) [list tsw::varTrace $win]
 
     #
     # Create a ttk::scale child widget of a special style
@@ -276,6 +280,10 @@ proc tsw::toggleswitch args {
     # Configure the widget according to the command-line
     # arguments and to the available database options
     #
+    upvar #0 $win var
+    if {![array exists var]} {
+	set args [linsert $args 1 -variable $win]
+    }
     if {[catch {
 	mwutil::configureWidget $win configSpecs tsw::doConfig tsw::doCget \
 	    [lrange $args 1 end] 1
@@ -329,13 +337,153 @@ proc tsw::doConfig {win opt val} {
 	w {
 	    switch -- $opt {
 		-command { set data($opt) $val }
+
+		-offvalue -
+		-onvalue {
+		    if {[array exists $val]} {
+			return -code error "value \"$val\" is array"
+		    }
+
+		    if {$data(-variable) ne ""} {
+			#
+			# Conditionally update the variable
+			#
+			set selected [$win.scl instate selected]
+			if {($opt eq "-offvalue" && !$selected) ||
+			    ($opt eq "-onvalue" && $selected)} {
+			    upvar #0 $data(-variable) var
+			    trace remove variable var {write unset} \
+				$data(varTraceCmd)
+			    set var $val
+			    trace add variable var {write unset} \
+				$data(varTraceCmd)
+			}
+		    }
+
+		    set data($opt) $val
+		}
+
 		-size {
 		    set val [mwutil::fullOpt "size" $val {1 2 3}]
 		    $win.scl configure -style Toggleswitch$val
 
 		    set data($opt) $val
 		}
+
+		-variable {
+		    makeVariable $win $val
+		    set data($opt) $val
+		}
 	    }
+	}
+    }
+}
+
+#------------------------------------------------------------------------------
+# tsw::makeVariable
+#
+# Arranges for the global variable specified by varName to become the variable
+# associated with the toggleswitch widget win.
+#------------------------------------------------------------------------------
+proc tsw::makeVariable {win varName} {
+    upvar ::tsw::ns${win}::data data
+    if {$varName eq ""} {
+	#
+	# If there is an old variable associated with the
+	# widget then remove the trace set on this variable
+	#
+	if {$data(-variable) ne ""} {
+	    upvar #0 $data(-variable) oldVar
+	    trace remove variable oldVar {write unset} $data(varTraceCmd)
+	}
+	return ""
+    }
+
+    #
+    # The variable may be an array element but must not be an array
+    #
+    upvar #0 $varName var
+    if {![regexp {^(.*)\((.*)\)$} $varName dummy name1 name2]} {
+	if {[array exists var]} {
+	    return -code error "variable \"$varName\" is array"
+	}
+
+	set name1 $varName
+	set name2 ""
+    }
+
+    #
+    # If there is an old variable associated with the
+    # widget then remove the trace set on this variable
+    #
+    if {$data(-variable) ne ""} {
+	upvar #0 $data(-variable) oldVar
+	trace remove variable oldVar {write unset} $data(varTraceCmd)
+    }
+
+    if {[info exists var]} {
+	#
+	# Invoke the trace procedure associated with the new variable
+	#
+	varTrace $win $name1 $name2 write
+    } else {
+	#
+	# Set $varName according to the widget's switch state
+	#
+	set selected [$win.scl instate selected]
+	set var [expr {$selected ? $data(-onvalue) : $data(-offvalue)}]
+    }
+
+    #
+    # Set a trace on the new variable
+    #
+    trace add variable var {write unset} $data(varTraceCmd)
+}
+
+#------------------------------------------------------------------------------
+# tsw::varTrace
+#
+# This procedure is executed whenever the global variable specified by varName
+# and arrIndex is written or unset.  It makes sure that the widget's switch
+# state is synchronized with the value of the variable, and that the variable
+# is recreated if it was unset.
+#------------------------------------------------------------------------------
+proc tsw::varTrace {win varName arrIndex op} {
+    if {$arrIndex ne ""} {
+	set varName ${varName}($arrIndex)
+    }
+    upvar #0 $varName var
+
+    set scl $win.scl
+    upvar ::tsw::ns${win}::data data
+    switch $op {
+	write {
+	    #
+	    # Synchronize the widget's switch state with the variable's value
+	    #
+	    set oldSelState [$scl instate selected]
+	    set newSelState [expr {$var eq $data(-onvalue) ? 1 : 0}]
+	    if {$newSelState} {
+		$scl state selected
+		$scl set [$scl cget -to]
+	    } else {
+		$scl state !selected
+		$scl set 0
+	    }
+
+	    if {$newSelState != $oldSelState && $data(-command) ne ""} {
+		uplevel #0 $data(-command)
+	    }
+	}
+
+	unset {
+	    #
+	    # Recreate the variable $varName by setting it according to
+	    # the widget's switch state, and set the trace on it again
+	    #
+	    set selected [$scl instate selected]
+	    set var [expr {$selected ? $data(-onvalue) : $data(-offvalue)}]
+	    trace add variable var {write unset} $data(varTraceCmd)
 	}
     }
 }
@@ -445,8 +593,14 @@ proc tsw::toggleswitchWidgetCmd {win args} {
 	    }
 
 	    if {$argCount == 1} {
+		#
+		# Return the widget's current switch state
+		#
 		return [$scl instate selected]
 	    } else {
+		#
+		# Update the widget's switch state
+		#
 		set oldSelState [$scl instate selected]
 		set newSelState [expr {[lindex $args 1] ? 1 : 0}]
 		if {$newSelState} {
@@ -458,6 +612,17 @@ proc tsw::toggleswitchWidgetCmd {win args} {
 		}
 
 		upvar ::tsw::ns${win}::data data
+		if {$data(-variable) ne ""} {
+		    #
+		    # Update the associated variable
+		    #
+		    upvar #0 $data(-variable) var
+		    trace remove variable var {write unset} $data(varTraceCmd)
+		    set var [expr {$newSelState ?
+				   $data(-onvalue) : $data(-offvalue)}]
+		    trace add variable var {write unset} $data(varTraceCmd)
+		}
+
 		if {$newSelState == $oldSelState || $data(-command) eq ""} {
 		    return ""
 		} else {
@@ -481,6 +646,20 @@ proc tsw::toggleswitchWidgetCmd {win args} {
 # Private procedures used in bindings
 # ===================================
 #
+
+#------------------------------------------------------------------------------
+# tsw::onDestroy
+#------------------------------------------------------------------------------
+proc tsw::onDestroy win {
+    upvar ::tsw::ns${win}::data data
+    if {$data(-variable) ne ""} {
+	upvar #0 $data(-variable) var
+	trace remove variable var {write unset} $data(varTraceCmd)
+    }
+
+    namespace delete ::tsw::ns$win
+    catch {rename ::$win ""}
+}
 
 #------------------------------------------------------------------------------
 # tsw::onThemeChanged

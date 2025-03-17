@@ -33,7 +33,9 @@ two states with the mouse or the space key.
 You can use the "switchstate" subcommand of the Tcl command associated
 with a toggleswitch to change or query the widget's switch state.  By
 using the "-command" configuration option, you can specify a script to
-execute whenever the switch state of the widget gets toggled.
+execute whenever the switch state of the widget gets toggled.  For
+compatibility with the ttk::checkbutton, toggleswitch widgets also
+support the "-offvalue", "-onvalue", and "-variable" options.
 
 How to Get It?
 --------------

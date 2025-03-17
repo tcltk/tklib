@@ -70,11 +70,18 @@
 
     <dd><code><b><a href="#command">-command</a></b> <i>command</i></code></dd>
 
+    <dd><code><b><a href="#offvalue">-offvalue</a></b> <i>value</i></code></dd>
+
+    <dd><code><b><a href="#onvalue">-onvalue</a></b> <i>value</i></code></dd>
+
     <dd><code><b><a href="#size">-size</a></b>
     <b>1</b>|<b>2</b>|<b>3</b></code></dd>
 
     <dd><code><b><a href="#takefocus">-takefocus</a></b>
     <b>0</b>|<b>1</b>|<b>""</b>|<i>command</i></code></dd>
+
+    <dd><code><b><a href="#variable">-variable</a></b>
+    <i>variable</i></code></dd>
 
     <dt class="tm"><a href="#widget_command">WIDGET COMMAND</a></dt>
 
@@ -157,7 +164,7 @@
     <b>trough</b> and a <b>slider</b>, just like a ttk::scale widget.&nbsp;
     Actually, these elements belong to a ttk::scale contained in the
     widget.&nbsp; The trough is a fully rounded filled rectangle, and the
-    slider is a filled circle contained in the trunk.&nbsp; Both elements are
+    slider is a filled circle contained in the trough.&nbsp; Both elements are
     rendered using scaling-aware SVG images.&nbsp; Their dimensions depend on
     the display's scaling level, the current theme, and the value of the
     <code><b><a href="#size">-size</a></b></code> configuration option.</dd>
@@ -176,7 +183,11 @@
     "#command">-command</a></b></code> configuration option, you can specify a
     script to execute whenever this subcommand or the convenience one named
     <code><b><a href="#toggle">toggle</a></b></code> causes the widget's switch
-    state to get toggled.</dd>
+    state to get toggled.&nbsp; For compatibility with the ttk::checkbutton,
+    toggleswitch widgets also support the <code><b><a href=
+    "#offvalue">-offvalue</a></b></code>, <code><b><a href=
+    "#onvalue">-onvalue</a></b></code>, and <code><b><a href=
+    "#variable">-variable</a></b></code> options.</dd>
 
     <dd class="tm">The colors used when drawing the trough and the slider in
     the various widget states (such as <code><b>active</b></code>,
@@ -232,6 +243,56 @@
         <p>Specifies a Tcl script to execute whenever the switch state of the
         widget is toggled (programmatically or interactively).&nbsp; The
         default is an empty string.</p>
+      </blockquote>
+    </dd>
+
+    <dd id="offvalue">
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td>Command-Line Name:&nbsp;</td>
+          <td><code><b>-offvalue</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Name:</td>
+          <td><code><b>&nbsp;offValue</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Class:</td>
+          <td><code><b>&nbsp;OffValue</b></code></td>
+        </tr>
+      </table>
+
+      <blockquote>
+        <p>The value to store in the associated <a href=
+	"#variable">variable</a> when the widget's switch state is set to
+	off.&nbsp; Defaults to <code>0</code>.</p>
+      </blockquote>
+    </dd>
+
+    <dd id="onvalue">
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td>Command-Line Name:&nbsp;</td>
+          <td><code><b>-onvalue</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Name:</td>
+          <td><code><b>&nbsp;onValue</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Class:</td>
+          <td><code><b>&nbsp;OnValue</b></code></td>
+        </tr>
+      </table>
+
+      <blockquote>
+        <p>The value to store in the associated <a href=
+	"#variable">variable</a> when the widget's switch state is set to
+	on.&nbsp; Defaults to <code>1</code>.</p>
       </blockquote>
     </dd>
 
@@ -302,6 +363,33 @@
         <code>Shift-Tab</code>).&nbsp; The default is
         <code>"ttk::takefocus"</code> (just like for most Tk themed
         widgets).</p>
+      </blockquote>
+    </dd>
+
+    <dd id="variable">
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td>Command-Line Name:&nbsp;</td>
+          <td><code><b>-variable</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Name:</td>
+          <td><code><b>&nbsp;variable</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Class:</td>
+          <td><code><b>&nbsp;Variable</b></code></td>
+        </tr>
+      </table>
+
+      <blockquote>
+        <p>The name of a global variable whose value is linked to the
+	toggleswitch.&nbsp; The widget's switch state changes to on when this
+	variable is set to the value specified by the <code><b><a href=
+	"#onvalue">-onvalue</a></b></code> option and to off otherwise.&nbsp;
+	Defaults to the widget's pathname if not specified.</p>
       </blockquote>
     </dd>
 
@@ -395,10 +483,10 @@
         <dt class="tm" id="style"><code><i>pathName</i>
         <b>style</b></code></dt>
 
-        <dd>Returns the style used by the ttk::scale widget contained in the
-        toggleswitch.&nbsp; This can be one of
-        <code><b>Toggleswitch1</b></code>, <code><b>Toggleswitch2</b></code>,
-        or <code><b>Toggleswitch3</b></code>, depending on the value of the
+        <dd>Returns the style used by the underlying ttk::scale widget.&nbsp;
+	This can be one of <code><b>Toggleswitch1</b></code>,
+	<code><b>Toggleswitch2</b></code>, or
+	<code><b>Toggleswitch3</b></code>, depending on the value of the
         <code><b><a href="#size">-size</a></b></code> option.&nbsp; For Tk
         themed widgets this subcommand was introduced in Tk 8.7a4, but the
         toggleswitch widget provides it for all supported Tk versions.</dd>
@@ -412,16 +500,20 @@
         <code><b>true</b>/<b>yes</b>/<b>on</b></code> or
         <code><b>false</b>/<b>no</b>/<b>off</b></code>).&nbsp; If it is true
         then the command sets the <code><b>selected</b></code> flag of the
-        underlying ttk::scale widget and moves the slider to the end of the
-        trough, otherwise it clears the <code><b>selected</b></code> flag
-        and moves the slider to the beginning of the trough.&nbsp; If the
-        argument's value causes the widget's switch state to get toggled and
-        the script specified as the value of the <code><b><a href=
+        underlying ttk::scale widget, moves the slider to the end of the
+        trough, and sets the associated <a href="#variable">variable</a> to the
+	value specified by the <code><b><a href=
+        "#onvalue">-onvalue</a></b></code> option; otherwise it clears the
+	<code><b>selected</b></code> flag, moves the slider to the beginning of
+	the trough, and sets the associated variable to the value specified by
+	the <code><b><a href="#offvalue">-offvalue</a></b></code> option.&nbsp;
+	If the argument's value causes the widget's switch state to get toggled
+	and the script specified as the value of the <code><b><a href=
         "#command">-command</a></b></code> option is a nonempty string then the
-        command evaluates that script at global scope and returns its result;
-        otherwise the return value is an empty string.&nbsp; If the optional
-        argument is not present then the command returns the widget's current
-        switch state as <code>0</code> or <code>1</code>.&nbsp; When a
+        subcommand evaluates that script at global scope and returns its
+	result; otherwise the return value is an empty string.&nbsp; If the
+	optional argument is not present then the command returns the widget's
+	current switch state as <code>0</code> or <code>1</code>.&nbsp; When a
         toggleswitch widget is created, its switch state is initialized with
         <code>0</code>.</dd>
 

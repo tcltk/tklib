@@ -1,4 +1,6 @@
 What is new in Tsw 1.0?
 -----------------------
 
-This is the first release.
+This is the first release.  Thanks to Nicolas Bats for his early
+testing and proposing the support for the "-variable" toggleswitch
+option.
