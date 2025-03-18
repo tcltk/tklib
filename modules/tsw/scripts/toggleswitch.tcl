@@ -392,8 +392,8 @@ proc tsw::makeVariable {win varName} {
 	# If there is an old variable associated with the
 	# widget then remove the trace set on this variable
 	#
-	if {$data(-variable) ne ""} {
-	    upvar #0 $data(-variable) oldVar
+	if {$data(-variable) ne "" &&
+	    [catch {upvar #0 $data(-variable) oldVar}] == 0} {
 	    trace remove variable oldVar {write unset} $data(varTraceCmd)
 	}
 	return ""
@@ -416,8 +416,8 @@ proc tsw::makeVariable {win varName} {
     # If there is an old variable associated with the
     # widget then remove the trace set on this variable
     #
-    if {$data(-variable) ne ""} {
-	upvar #0 $data(-variable) oldVar
+    if {$data(-variable) ne "" &&
+	[catch {upvar #0 $data(-variable) oldVar}] == 0} {
 	trace remove variable oldVar {write unset} $data(varTraceCmd)
     }
 
@@ -652,8 +652,8 @@ proc tsw::toggleswitchWidgetCmd {win args} {
 #------------------------------------------------------------------------------
 proc tsw::onDestroy win {
     upvar ::tsw::ns${win}::data data
-    if {$data(-variable) ne ""} {
-	upvar #0 $data(-variable) var
+    if {$data(-variable) ne "" &&
+	[catch {upvar #0 $data(-variable) var}] == 0} {
 	trace remove variable var {write unset} $data(varTraceCmd)
     }
 
