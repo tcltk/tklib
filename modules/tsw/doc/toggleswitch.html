@@ -181,12 +181,10 @@
     "#switchstate">switchstate</a></b></code> subcommand to change or query
     the widget's switch state.&nbsp; By using the <code><b><a href=
     "#command">-command</a></b></code> configuration option, you can specify a
-    script to execute whenever this subcommand or the convenience one named
-    <code><b><a href="#toggle">toggle</a></b></code> causes the widget's switch
-    state to get toggled.&nbsp; For compatibility with the ttk::checkbutton,
-    toggleswitch widgets also support the <code><b><a href=
-    "#offvalue">-offvalue</a></b></code>, <code><b><a href=
-    "#onvalue">-onvalue</a></b></code>, and <code><b><a href=
+    script to execute whenever the widget's switch state gets toggled.&nbsp;
+    For compatibility with the (ttk::)checkbutton, toggleswitch widgets also
+    support the <code><b><a href="#offvalue">-offvalue</a></b></code>,
+    <code><b><a href="#onvalue">-onvalue</a></b></code>, and <code><b><a href=
     "#variable">-variable</a></b></code> options.</dd>
 
     <dd class="tm">The colors used when drawing the trough and the slider in
@@ -240,9 +238,9 @@
       </table>
 
       <blockquote>
-        <p>Specifies a Tcl script to execute whenever the switch state of the
-        widget is toggled (programmatically or interactively).&nbsp; The
-        default is an empty string.</p>
+        <p>Specifies a Tcl script to be evaluated at global scope whenever the
+        switch state of the widget is toggled (programmatically or
+        interactively).&nbsp; The default is an empty string.</p>
       </blockquote>
     </dd>
 
