@@ -1,7 +1,7 @@
 #==============================================================================
 # Contains the implementation of the tablelist move and movecolumn subcommands.
 #
-# Copyright (c) 2003-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2003-2025  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #------------------------------------------------------------------------------
@@ -289,8 +289,7 @@ proc tablelist::moveNode {win source targetParentKey targetChildIdx \
     #
     # Update the list variable if present
     #
-    if {$data(hasListVar) &&
-	[uplevel #0 [list info exists $data(-listvariable)]]} {
+    if {$data(hasListVar)} {
 	upvar #0 $data(-listvariable) var
 	trace remove variable var {write unset} $data(listVarTraceCmd)
 	set var [lreplace $var $source $source]

@@ -14,7 +14,7 @@
   <div>
     <h1>Tablelist Programmer's Guide</h1>
 
-    <h2>For Tablelist Version 7.4</h2>
+    <h2>For Tablelist Version 7.5</h2>
 
     <h3>by</h3>
 
@@ -106,9 +106,9 @@
     <li>a demo script showing several ways to improve the appearance of a
     tablelist widget;</li>
 
-    <li>four further demo scripts, illustrating the interactive cell editing
+    <li>five further demo scripts, illustrating the interactive cell editing
     with the aid of various widgets from the Tk core and from the packages
-    tile, BWidget, Iwidgets, combobox (by Bryan Oakley), and Mentry;</li>
+    tile, BWidget, Iwidgets, combobox (by Bryan Oakley), Mentry, and Tsw;</li>
 
     <li>one further demo script, with a tablelist widget containing embedded
     windows;</li>
@@ -179,11 +179,10 @@
   <h3 id="ov_get">How to Get It?</h3>
 
   <p>Tablelist is available for free download from the same URL as Wcb.&nbsp;
-  The distribution file is <code>tablelist7.4.1.tar.gz</code> for UNIX and
-  <code>tablelist7_4_1.zip</code> for Windows.&nbsp; These files contain the
-  same information, except for the additional carriage return character
-  preceding the linefeed at the end of each line in the text files for
-  Windows.</p>
+  The distribution file is <code>tablelist7.5.tar.gz</code> for UNIX and
+  <code>tablelist7_5.zip</code> for Windows.&nbsp; These files contain the same
+  information, except for the additional carriage return character preceding
+  the linefeed at the end of each line in the text files for Windows.</p>
 
   <p>Tablelist is also included in tklib, which has the address</p>
 
@@ -197,18 +196,16 @@
 
   <p>Install the package as a subdirectory of one of the directories given by
   the <code>auto_path</code> variable.&nbsp; For example, you can install it as
-  a directory at the same level as the Tcl and Tk script libraries.&nbsp; The
-  locations of these library directories are given by the
-  <code>tcl_library</code> and <code>tk_library</code> variables,
-  respectively.</p>
+  a subdirectory of the <code>lib</code> directory within your Tcl/Tk
+  installation.</p>
 
   <p>To install Tablelist <i>on UNIX</i>, <code>cd</code> to the desired
   directory and unpack the distribution file
-  <code>tablelist7.4.1.tar.gz</code>:</p>
+  <code>tablelist7.5.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c tablelist7.4.1.tar.gz | tar -xf -
+gunzip -c tablelist7.5.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
@@ -216,17 +213,17 @@ gunzip -c tablelist7.4.1.tar.gz | tar -xf -
 
   <blockquote>
     <pre>
-tar -zxf tablelist7.4.1.tar.gz
+tar -zxf tablelist7.5.tar.gz
 </pre>
   </blockquote>
 
-  <p>Both commands will create a directory named <code>tablelist7.4.1</code>,
+  <p>Both commands will create a directory named <code>tablelist7.5</code>,
   with the subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>tablelist7_4_1.zip</code> into the directory
-  <code>tablelist7.4.1</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>tablelist7_5.zip</code> into the directory
+  <code>tablelist7.5</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>The file <code>tablelistEdit.tcl</code> in the <code>scripts</code>
@@ -235,7 +232,7 @@ tar -zxf tablelist7.4.1.tar.gz
   directory is only required for scripts invoking the <code>move</code> or
   <code>movecolumn</code> command.&nbsp; Finally, the file
   <code>tablelistThemes.tcl</code> is only needed for applications using the
-  package Tablelist_tile (see next section).</p>
+  Tablelist_tile package (see next section).</p>
 
   <p>Notice that in tklib the Tablelist <code>demos</code> directory is
   replaced with the subdirectory <code>tablelist</code> of the
@@ -252,8 +249,8 @@ tar -zxf tablelist7.4.1.tar.gz
   implemented in the same <code>tablelist</code> namespace and provide
   identical commands.</p>
 
-  <p>To be able to access the commands and variables defined in the package
-  Tablelist, your scripts must contain one of the lines</p>
+  <p>To be able to access the commands and variables defined in the Tablelist
+  package, your scripts must contain one of the lines</p>
 
   <blockquote>
     <pre>
@@ -273,7 +270,7 @@ package provide Tablelist ...
   </blockquote>
 
   <p>Likewise, to be able to access the commands and variables defined in the
-  package Tablelist_tile, your scripts must contain one of the lines</p>
+  Tablelist_tile package, your scripts must contain one of the lines</p>
 
   <blockquote>
     <pre>
@@ -325,7 +322,7 @@ namespace import tablelist::<i>pattern</i> ?tablelist::<i>pattern ...</i>?
     Tablelist installation directory.</li>
 
     <li>The read-only variable <code>tablelist::scalingpct</code> is set when
-    loading the package Tablelist or Tablelist_tile via&nbsp; <code>package
+    loading the Tablelist or Tablelist_tile package via&nbsp; <code>package
     require</code>&nbsp; to the scaling percentage corresponding to the
     display's DPI scaling level.&nbsp; Tablelist adapts, among others, the
     default sort arrow style on X11 and Windows Vista, 7, 8, and 10+, as well
@@ -352,7 +349,7 @@ namespace import tablelist::<i>pattern</i> ?tablelist::<i>pattern ...</i>?
     the default bindings.</li>
 
     <li>The read-only boolean variable <code>tablelist::usingTile</code> has
-    the value <code>0</code> in the package Tablelist and the value
+    the value <code>0</code> in the Tablelist package and the value
     <code>1</code> in Tablelist_tile.</li>
 
     <li>In Tablelist_tile the array <code>tablelist::themeDefaults</code> holds
@@ -538,7 +535,7 @@ namespace eval ::scaleutil { set keepTkScaling 1 }
     <code>default</code>, some styling options of the ttk::scrollbar,
     ttk::scale, ttk::progressbar, ttk::combobox, ttk::spinbox, ttk::button,
     toolbutton, ttk::menubutton, ttk::checkbutton, ttk::radiobutton,
-    ttk::notebook, and ttk::treeview widgets;</li>
+    ttk::notebook, ttk::panedwindow, and ttk::treeview widgets;</li>
 
     <li class="tm">for the built-in theme <code>clam</code>, some styling
     options of the ttk::scrollbar, ttk::scale, ttk::progressbar, ttk::combobox,
@@ -554,18 +551,18 @@ namespace eval ::scaleutil { set keepTkScaling 1 }
 
     <li class="tm">for the built-in theme <code>vista</code>, some styling
     options of the ttk::combobox, ttk::button, toolbutton, ttk::menubutton,
-    ttk::checkbutton, ttk::radiobutton, ttk::notebook, and ttk::treeview
-    widgets;</li>
+    ttk::checkbutton, ttk::radiobutton, ttk::notebook, ttk::panedwindow, and
+    ttk::treeview widgets;</li>
 
     <li class="tm">for the built-in theme <code>winnative</code>, some styling
     options of the ttk::scale, ttk::progressbar, ttk::combobox, ttk::spinbox,
     toolbutton, ttk::menubutton, ttk::checkbutton, ttk::radiobutton, 
-    ttk::notebook, and ttk::treeview widgets;</li>
+    ttk::notebook, ttk::panedwindow, and ttk::treeview widgets;</li>
 
     <li class="tm">for the built-in theme <code>xpnative</code>, some styling
     options of the ttk::combobox, ttk::spinbox, ttk::button, toolbutton,
-    ttk::menubutton, ttk::checkbutton, ttk::radiobutton, ttk::notebook, and
-    ttk::treeview widgets.</li>
+    ttk::menubutton, ttk::checkbutton, ttk::radiobutton, ttk::notebook,
+    ttk::panedwindow, and ttk::treeview widgets.</li>
   </ul>
 
   <p>In addition, the procedure <code>scaleutil::scalingPercentage</code> makes
@@ -627,7 +624,7 @@ namespace eval ::scaleutil { set keepTkScaling 1 }
   currently not possible to replace all Tk widgets making up a tablelist with
   their tile counterparts.</p>
 
-  <p>From the above it follows that <b>the package Tablelist_tile will only
+  <p>From the above it follows that <b>the Tablelist_tile package will only
   work as expected if the Tk <code>frame</code> and <code>label</code> commands
   haven't been overridden by using&nbsp; <code>namespace import -force
   ttk::*</code>&nbsp; at global scope</b>.&nbsp; While earlier tile releases
@@ -646,7 +643,7 @@ namespace eval ::scaleutil { set keepTkScaling 1 }
   <p>Another restriction to be taken into account is due to the fact that in
   earlier tile versions the&nbsp; <code>(ttk::)style theme use</code>&nbsp;
   command could only be used to set the current theme, but not to retrieve
-  it.&nbsp; For this reason, if the package Tablelist_tile cannot get the
+  it.&nbsp; For this reason, if the Tablelist_tile package cannot get the
   current theme with the aid of&nbsp; <code>ttk::style theme use</code>&nbsp;
   then it makes use of the variable <code>ttk::currentTheme</code> or
   <code>tile::currentTheme</code> (depending on the tile version), which is set
@@ -2798,10 +2795,9 @@ proc editEndCmd {tbl row col text} {
 </pre>
   </blockquote>
 
-  <p>Instead of making the <code>"Available"</code> column editable via a
-  <i>temporary</i> checkbutton and displaying the images
-  <code>"checkedImg"</code> and <code>"uncheckedImg"</code> in its cells, we
-  can use the <code><a href=
+  <p>Instead of making the "Available" column editable via a <i>temporary</i>
+  checkbutton and displaying the images <code>"checkedImg"</code> and
+  <code>"uncheckedImg"</code> in its cells, we can use the <code><a href=
   "tablelistWidget.html#embedcheckbuttons">embedcheckbuttons</a></code>
   subcommand to populate the column with <i>persistently</i> embedded
   checkbuttons.&nbsp; The necessary changes are as follows:</p>
@@ -3291,7 +3287,7 @@ option add *selectBorderWidth     $tablelist::themeDefaults(-selectborderwidth)
   <blockquote>
     <pre>
 if {[tk windowingsystem] eq "x11" &&
-    ($tk_version &lt; 8.7 || [package vcompare $::tk_patchLevel "8.7a5"] &lt;= 0)} {
+    ($::tk_version &lt; 8.7 || [package vcompare $::tk_patchLevel "8.7a5"] &lt;= 0)} {
     #
     # Patch the default theme's styles TCheckbutton and TRadiobutton
     #
@@ -3304,6 +3300,16 @@ if {[tk windowingsystem] eq "x11" &&
   <p>Due to this (optional) step, the scalable ttk::checkbutton widgets used in
   the colum "Available" have a modern look and behavior, just like the ones of
   the themes <code>aqua</code> and <code>vista</code>.</p>
+
+  <p>The demo script <code>tileWidgets2.tcl</code> differs from
+  <code>tileWidgets.tcl</code> mainly in the fact that it uses the toggleswitch
+  widget from the Tsw package rather than the ttk::checkbutton for editing the
+  elements of the "Available" column:</p>
+
+  <blockquote>
+    <img src="tileWidgets2.png" alt="Serial Line Configuration" width="801"
+    height="449">
+  </blockquote>
 
   <p>The tile-based version of the demo script <code><a href=
   "#ex_windows">embeddedWindows.tcl</a></code> contains a bit more changes, but

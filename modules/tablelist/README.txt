@@ -26,10 +26,10 @@ written in pure Tcl/Tk code.  It contains:
     used as multi-column tree widget;
   - a demo script showing several ways to improve the appearance of a
     tablelist widget;
-  - four further demo scripts, illustrating the interactive cell
+  - five further demo scripts, illustrating the interactive cell
     editing with the aid of various widgets from the Tk core and from
     the packages tile, BWidget, Iwidgets, combobox (by Bryan Oakley),
-    and Mentry;
+    Mentry, and Tsw;
   - one further demo script, with a tablelist widget containing
     embedded windows;
   - tile-based counterparts of the above-mentioned demo scripts;
@@ -56,10 +56,10 @@ hierarchy with the aid of indentations and expand/collapse controls.
 Interactive editing of the elements of a tablelist widget can be
 enabled for individual cells and for entire columns.  A great variety
 of widgets from the Tk core and from the packages tile, BWidget,
-Iwidgets, combobox, ctext, and Mentry (or Mentry_tile) is supported for
-being used as embedded edit window.  In addition, a rich set of keyboard
-bindings is provided for a comfortable navigation between the editable
-cells.
+Iwidgets, combobox, ctext, Mentry (or Mentry_tile), and Tsw is supported
+for being used as embedded edit window.  In addition, a rich set of
+keyboard bindings is provided for a comfortable navigation between the
+editable cells.
 
 The Tcl command corresponding to a tablelist widget is very similar to
 the one associated with a normal listbox.  There are column-, row-, and
@@ -88,8 +88,8 @@ How to Get It?
 --------------
 
 Tablelist is available for free download from the same URL as Wcb.  The
-distribution file is "tablelist7.4.1.tar.gz" for UNIX and
-"tablelist7_4_1.zip" for Windows.  These files contain the same
+distribution file is "tablelist7.5.tar.gz" for UNIX and
+"tablelist7_5.zip" for Windows.  These files contain the same
 information, except for the additional carriage return character
 preceding the linefeed at the end of each line in the text files for
 Windows.
@@ -103,32 +103,30 @@ How to Install It?
 
 Install the package as a subdirectory of one of the directories given
 by the "auto_path" variable.  For example, you can install it as a
-directory at the same level as the Tcl and Tk script libraries.  The
-locations of these library directories are given by the "tcl_library"
-and "tk_library" variables, respectively.
+subdirectory of the "lib" directory within your Tcl/Tk installation.
 
 To install Tablelist on UNIX, "cd" to the desired directory and unpack
-the distribution file "tablelist7.4.1.tar.gz":
+the distribution file "tablelist7.5.tar.gz":
 
-    gunzip -c tablelist7.4.1.tar.gz | tar -xf -
+    gunzip -c tablelist7.5.tar.gz | tar -xf -
 
 On most UNIX systems this can be replaced with
 
-    tar -zxf tablelist7.4.1.tar.gz
+    tar -zxf tablelist7.5.tar.gz
 
-Both commands will create a directory named "tablelist7.4.1 with the
+Both commands will create a directory named "tablelist7.5 with the
 subdirectories "demos", "doc", and "scripts".
 
 On Windows, use WinZip or some other program capable of unpacking the
-distribution file "tablelist7_4_1.zip" into the directory
-"tablelist7.4.1", with the subdirectories "demos", "doc", and "scripts".
+distribution file "tablelist7_5.zip" into the directory "tablelist7.5",
+with the subdirectories "demos", "doc", and "scripts".
 
 The file "tablelistEdit.tcl" in the "scripts" directory is only needed
 for applications making use of interactive cell editing.  Similarly, the
 file "tablelistMove.tcl" in the same directory is only required for
 scripts invoking the "move" or "movecolumn" tablelist command.  Finally,
 the file "tablelistThemes.tcl" is only needed for applications using
-the package Tablelist_tile (see next section).
+the Tablelist_tile package (see next section).
 
 How to Use It?
 --------------
@@ -141,14 +139,14 @@ possible to use both packages in one and the same application, because
 both are implemented in the same "tablelist" namespace and provide
 identical commands.
 
-To be able to use the commands and variables implemented in the package
-Tablelist, your scripts must contain one of the lines
+To be able to use the commands and variables implemented in the
+Tablelist package, your scripts must contain one of the lines
 
     package require tablelist ?version?
     package require Tablelist ?version?
 
 Likewise, to be able to use the commands and variables implemented in
-the package Tablelist_tile, your scripts must contain one of the lines
+the Tablelist_tile package, your scripts must contain one of the lines
 
     package require tablelist_tile ?version?
     package require Tablelist_tile ?version?

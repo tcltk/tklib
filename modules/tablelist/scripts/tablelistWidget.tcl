@@ -8,7 +8,7 @@
 #   - Private procedures implementing the tablelist widget command
 #   - Private callback procedures
 #
-# Copyright (c) 2000-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2025  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -2538,8 +2538,8 @@ proc tablelist::entrypathSubCmd {win argList} {
 
     upvar ::tablelist::ns${win}::data data
     if {[winfo exists $data(bodyFrmEd)]} {
-	set class [winfo class $data(bodyFrmEd)]
-	if {[regexp {^(Mentry|T?Checkbutton|T?Menubutton)$} $class]} {
+	if {[regexp {^(Mentry|Toggleswitch|T?Checkbutton|T?Menubutton)$} \
+	     [winfo class $data(bodyFrmEd)]]} {
 	    return ""
 	} else {
 	    return $data(editFocus)
@@ -7487,8 +7487,7 @@ proc tablelist::deleteRows {win first last updateListVar} {
     #
     # Delete the given items from the list variable if needed
     #
-    if {$updateListVar &&
-	[uplevel #0 [list info exists $data(-listvariable)]]} {
+    if {$updateListVar} {
 	upvar #0 $data(-listvariable) var
 	trace remove variable var {write unset} $data(listVarTraceCmd)
 	set var [lreplace $var $first $last]
@@ -7814,8 +7813,6 @@ proc tablelist::insertRows {win index argList updateListVar parentKey \
 	set childIdx $childCount
     }
 
-    set updateListVar [expr {$updateListVar &&
-	[uplevel #0 [list info exists $data(-listvariable)]]}]
     if {$updateListVar} {
 	upvar #0 $data(-listvariable) var
 	trace remove variable var {write unset} $data(listVarTraceCmd)
@@ -9352,9 +9349,9 @@ proc tablelist::activeTrace {win varName arrIndex op} {
 # tablelist::listVarTrace
 #
 # This procedure is executed whenever the global variable specified by varName
-# is written or unset.  It makes sure that the content of the widget will be
-# synchronized with the value of the variable at idle time, and that the
-# variable is recreated if it was unset.
+# and arrIndex is written or unset.  It makes sure that the content of the
+# widget will be synchronized with the value of the variable at idle time, and
+# that the variable is recreated if it was unset.
 #------------------------------------------------------------------------------
 proc tablelist::listVarTrace {win varName arrIndex op} {
     upvar ::tablelist::ns${win}::data data

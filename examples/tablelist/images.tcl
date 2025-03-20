@@ -1,13 +1,13 @@
 #==============================================================================
 # Creates some images.
 #
-# Copyright (c) 2011-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2011-2025  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
 # Create two images, to be displayed in tablelist cells with boolean values
 #
-if {$tk_version >= 8.7 || [catch {package require tksvg}] == 0} {
+if {$::tk_version >= 8.7 || [catch {package require tksvg}] == 0} {
     set fmt $tablelist::svgfmt
     image create photo checkedImg   -file [file join $dir checked.svg] \
 	-format $fmt

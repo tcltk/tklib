@@ -1,13 +1,14 @@
 #! /usr/bin/env tclsh
 
 #==============================================================================
-# Demonstrates the interactive tablelist cell editing with the aid of some
-# widgets from the tile package.
+# Demonstrates the interactive tablelist cell editing with the aid of some Ttk
+# widgets and of the toggleswitch widget.
 #
 # Copyright (c) 2005-2025  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tk
+package require tsw
 package require tablelist_tile
 
 if {[tk windowingsystem] eq "x11" &&
@@ -26,8 +27,6 @@ wm title . "Serial Line Configuration"
 #
 set dir [file dirname [info script]]
 source [file join $dir option_tile.tcl]
-option add *Tablelist*Spinbox.background		white
-option add *Tablelist*Spinbox.readonlyBackground	white
 
 foreach theme {alt clam classic default} {
     #
@@ -46,14 +45,15 @@ unset theme
 source [file join $dir images.tcl]
 
 #
+# Register the toggleswitch widget for interactive cell editing
+#
+tablelist::addToggleswitch
+
+#
 # Improve the window's appearance by using a tile
 # frame as a container for the other widgets
 #
-if {$::argc == 0} {
-    set f [ttk::frame .f]
-} else {
-    set f [lindex $::argv 0]	;# provided by the awthemes script "demottk.tcl"
-}
+set f [ttk::frame .f]
 
 #
 # Create a tablelist widget with editable columns (except the first one)
@@ -81,17 +81,13 @@ if {[$tbl cget -selectborderwidth] == 0} {
 }
 $tbl columnconfigure 0 -sortmode integer
 $tbl columnconfigure 1 -name available -editable yes \
-    -editwindow ttk::checkbutton -formatcommand emptyStr \
+    -editwindow toggleswitch -formatcommand emptyStr \
     -labelwindow ttk::checkbutton
 $tbl columnconfigure 2 -name lineName  -editable yes -editwindow ttk::entry \
     -allowduplicates 0 -sortmode dictionary
 $tbl columnconfigure 3 -name baudRate  -editable yes -editwindow ttk::combobox \
     -sortmode integer
-if {[info commands ttk::spinbox] eq ""} {
-    $tbl columnconfigure 4 -name dataBits -editable yes -editwindow spinbox
-} else {
-    $tbl columnconfigure 4 -name dataBits -editable yes -editwindow ttk::spinbox
-}
+$tbl columnconfigure 4 -name dataBits  -editable yes -editwindow ttk::spinbox
 $tbl columnconfigure 5 -name parity    -editable yes -editwindow ttk::combobox
 $tbl columnconfigure 6 -name stopBits  -editable yes -editwindow ttk::combobox
 $tbl columnconfigure 7 -name handshake -editable yes -editwindow ttk::combobox
@@ -112,22 +108,14 @@ proc formatTime val { return [clock format $val -format "%H:%M:%S"] }
 #
 source [file join $dir serialParams.tcl]
 
-if {$::argc == 0} {
-    set btn [ttk::button $f.btn -text "Close" -command exit]
-}
+set btn [ttk::button $f.btn -text "Close" -command exit]
 
 #
 # Manage the widgets
 #
-if {$::argc == 0} {
-    pack $btn -side bottom -pady 7p
-    pack $tbl -side top -expand yes -fill both
-    pack $f -expand yes -fill both
-} else {
-    $tbl configure -stretch all
-    foreach col {8 9} { $tbl columnconfigure $col -hide yes }
-    pack $tbl -side top -expand yes -fill both -padx 3p -pady {0 3p}
-}
+pack $btn -side bottom -pady 7p
+pack $tbl -side top -expand yes -fill both
+pack $f -expand yes -fill both
 
 #------------------------------------------------------------------------------
 # editStartCmd

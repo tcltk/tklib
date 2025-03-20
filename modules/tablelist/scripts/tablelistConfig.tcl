@@ -1,7 +1,7 @@
 #==============================================================================
 # Contains private configuration procedures for tablelist widgets.
 #
-# Copyright (c) 2000-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2025  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #------------------------------------------------------------------------------
@@ -227,18 +227,18 @@ proc tablelist::extendConfigSpecs {} {
 		    set treeStyle		winnative
 
 		} elseif {$::tcl_platform(osVersion) == 5.1} {	;# Win XP
-		    switch [winfo rgb . SystemHighlight] {
-			"12593 27242 50629" {			;# Win XP Blue
+		    switch [mwutil::normalizeColor SystemHighlight] {
+			#316ac5 {				;# Win XP Blue
 			    set arrowColor	#aca899
 			    set arrowStyle	flat9x5
 			    set treeStyle	winxpBlue
 			}
-			"37779 41120 28784" {			;# Win XP Olive
+			#93a070 {				;# Win XP Olive
 			    set arrowColor	#aca899
 			    set arrowStyle	flat9x5
 			    set treeStyle	winxpOlive
 			}
-			"45746 46260 49087" {			;# Win XP Silver
+			#b2b4bf {				;# Win XP Silver
 			    set arrowColor	#aca899
 			    set arrowStyle	flat9x5
 			    set treeStyle	winxpSilver
@@ -252,8 +252,8 @@ proc tablelist::extendConfigSpecs {} {
 		    set arrowDisabledColor	SystemDisabledText
 
 		} elseif {$::tcl_platform(osVersion) == 6.0} {	;# Win Vista
-		    switch [winfo rgb . SystemHighlight] {
-			"13107 39321 65535" {			;# Vista Aero
+		    switch [mwutil::normalizeColor SystemHighlight] {
+			#3399ff {				;# Vista Aero
 			    set arrowColor	#569bc0
 			    set arrowStyle	photo[defaultWinArrowSize]
 			    set treeStyle	vistaAero
@@ -267,8 +267,8 @@ proc tablelist::extendConfigSpecs {} {
 		    set arrowDisabledColor	SystemDisabledText
 
 		} elseif {$::tcl_platform(osVersion) < 10.0} {	;# Win 7/8
-		    switch [winfo rgb . SystemHighlight] {
-			"13107 39321 65535" {			;# Win 7/8 Aero
+		    switch [mwutil::normalizeColor SystemHighlight] {
+			#3399ff" {				;# Win 7/8 Aero
 			    set arrowColor	#569bc0
 			    set arrowStyle	photo[defaultWinArrowSize]
 			    set treeStyle	win7Aero
@@ -351,8 +351,8 @@ proc tablelist::extendConfigSpecs {} {
     if {$winSys eq "win32" &&
 	($::tcl_platform(osVersion) >= 10.0 ||
 	 ($::tcl_platform(osVersion) >= 6.0 &&
-	  [winfo rgb . SystemHighlight] eq \
-	  "13107 39321 65535"))} {			;# Win 10 or 7/8 Aero
+	  [mwutil::normalizeColor SystemHighlight] eq \
+	  "#3399ff"))} {				;# Win 10 or 7/8 Aero
 	set centerArrows 1
     }
 }
@@ -2828,8 +2828,7 @@ proc tablelist::doRowConfig {row win opt val} {
 	    #
 	    # Replace the row's content in the list variable if present
 	    #
-	    if {$inBody && $data(hasListVar) &&
-		[uplevel #0 [list info exists $data(-listvariable)]]} {
+	    if {$inBody && $data(hasListVar)} {
 		upvar #0 $data(-listvariable) var
 		trace remove variable var {write unset} $data(listVarTraceCmd)
 		set var [lreplace $var $row $row $newItem]
@@ -3689,8 +3688,7 @@ proc tablelist::doCellConfig {row col win opt val {skipParts 0}} {
 	    #
 	    # Replace the cell's content in the list variable if present
 	    #
-	    if {$inBody && $data(hasListVar) &&
-		[uplevel #0 [list info exists $data(-listvariable)]]} {
+	    if {$inBody && $data(hasListVar)} {
 		upvar #0 $data(-listvariable) var
 		trace remove variable var {write unset} $data(listVarTraceCmd)
 		set var [lreplace $var $row $row \
@@ -4079,9 +4077,8 @@ proc tablelist::makeListVar {win varName} {
 	# widget then remove the trace set on this variable
 	#
 	if {$data(hasListVar) &&
-	    [uplevel #0 [list info exists $data(-listvariable)]]} {
+	    [catch {upvar #0 $data(-listvariable) oldVar}] == 0} {
 	    synchronize $win
-	    upvar #0 $data(-listvariable) oldVar
 	    trace remove variable oldVar {write unset} $data(listVarTraceCmd)
 	}
 	return ""
@@ -4115,9 +4112,8 @@ proc tablelist::makeListVar {win varName} {
     # widget then remove the trace set on this variable
     #
     if {$data(hasListVar) &&
-	[uplevel #0 [list info exists $data(-listvariable)]]} {
+	[catch {upvar #0 $data(-listvariable) oldVar}] == 0} {
 	synchronize $win
-	upvar #0 $data(-listvariable) oldVar
 	trace remove variable oldVar {write unset} $data(listVarTraceCmd)
     }
 
@@ -4125,7 +4121,7 @@ proc tablelist::makeListVar {win varName} {
 	#
 	# Invoke the trace procedure associated with the new list variable
 	#
-	listVarTrace $win $name2 $name2 write
+	listVarTrace $win $name1 $name2 write
     } else {
 	#
 	# Set $varName according to the value of data(itemList)

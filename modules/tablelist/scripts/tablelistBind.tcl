@@ -10,7 +10,7 @@
 #   - Binding tag TablelistHeader
 #   - Binding tags TablelistLabel, TablelistSubLabel, and TablelistArrow
 #
-# Copyright (c) 2000-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2025  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -351,8 +351,7 @@ proc tablelist::cleanup win {
     # widget then remove the trace set on this variable
     #
     if {$data(hasListVar) &&
-	[uplevel #0 [list info exists $data(-listvariable)]]} {
-	upvar #0 $data(-listvariable) var
+	[catch {upvar #0 $data(-listvariable) var}] == 0} {
 	trace remove variable var {write unset} $data(listVarTraceCmd)
     }
 
@@ -2456,7 +2455,7 @@ proc tablelist::moveOrActivate {win row col inside} {
 # This procedure is invoked when mouse button 1 is released in the body of a
 # tablelist widget win or in one of its separators.  If interactive cell
 # editing is in progress in a column whose associated edit window has an invoke
-# command that hasn't yet been called in the current edit session, then the
+# command that hasn't yet been called in the current editing session, then the
 # procedure evaluates that command.
 #------------------------------------------------------------------------------
 proc tablelist::condEvalInvokeCmd win {
@@ -2488,16 +2487,12 @@ proc tablelist::condEvalInvokeCmd win {
     }
 
     #
-    # Check whether the edit window is a checkbutton,
-    # and return if it is an editable combobox widget
+    # Return if the edit window is an editable combobox widget
     #
-    set isCheckbtn 0
     set w $data(bodyFrmEd)
+    set isCheckbtn 0
+    set isTogglesw 0
     switch [winfo class $w] {
-	Checkbutton -
-	TCheckbutton {
-	    set isCheckbtn 1
-	}
 	TCombobox {
 	    if {[$w cget -state] eq "normal"} {
 		return ""
@@ -2509,6 +2504,13 @@ proc tablelist::condEvalInvokeCmd win {
 		return ""
 	    }
 	}
+	Checkbutton -
+	TCheckbutton {
+	    set isCheckbtn 1
+	}
+	Toggleswitch {
+	    set isTogglesw 1
+	}
     }
 
     #
@@ -2518,10 +2520,10 @@ proc tablelist::condEvalInvokeCmd win {
     set data(invoked) 1
 
     #
-    # If the edit window is a checkbutton and the value of the
-    # -instanttoggle option is true then finish the editing
+    # If the edit window is a checkbutton or toggleswitch and the value
+    # of the -instanttoggle option is true then finish the editing
     #
-    if {$isCheckbtn && $data(-instanttoggle)} {
+    if {($isCheckbtn || $isTogglesw) && $data(-instanttoggle)} {
 	doFinishEditing $win
     }
 }

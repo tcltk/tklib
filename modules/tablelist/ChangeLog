@@ -1,3 +1,31 @@
+2025-03-20 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 7.5.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/*.tcl: Added support for interactive cell editing with the
+	  aid of the new toggleswitch widget; improvements related to the use
+	  of various system colors on aqua and win32; made the retrieval of the
+	  row index corresponding to a given viewable row offset more robust;
+	  fixed a bug related to the "-allowduplicates" column configuration
+	  option and the "-forceeditendcommand" global option.
+
+	* scripts/tclIndex: Newly generated.
+
+	* scripts/utils/*.tcl: Extensions in the packages mwutil and scaleutil.
+
+	* doc/tileWidgets2.png: Added screenshot.
+
+	* ../../examples/tablelist/images.tcl:      Minor improvements.
+	* ../../examples/tablelist/tileWidgets.tcl:
+
+	* ../../examples/tablelist/tileWidgets2.tcl: Added demo script using
+	  the new toggleswitch widget.
+
 2024-12-03 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Tablelist 7.4.1.

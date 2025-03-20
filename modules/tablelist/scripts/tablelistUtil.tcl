@@ -5,7 +5,7 @@
 #   - Namespace initialization
 #   - Private utility procedures
 #
-# Copyright (c) 2000-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2025  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -1049,8 +1049,7 @@ proc tablelist::moveColSelStates {oldArrName newArrName oldCol newCol} {
 #------------------------------------------------------------------------------
 proc tablelist::condUpdateListVar win {
     upvar ::tablelist::ns${win}::data data
-    if {$data(hasListVar) &&
-	[uplevel #0 [list info exists $data(-listvariable)]]} {
+    if {$data(hasListVar)} {
 	upvar #0 $data(-listvariable) var
 	trace remove variable var {write unset} $data(listVarTraceCmd)
 	set var {}
@@ -6641,10 +6640,9 @@ proc tablelist::viewableRowOffsetToRowIndex {win offset} {
 
 	if {$offset >= [llength $data(viewableRowList)]} {
 	    return $data(itemCount)			;# this is out of range
+	} elseif {$offset < 0} {
+	    return 0
 	} else {
-	    if {$offset < 0} {
-		set offset 0
-	    }
 	    return [lindex $data(viewableRowList) $offset]
 	}
     }

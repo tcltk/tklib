@@ -7,7 +7,7 @@
 #   - Private procedures implementing the interactive cell editing
 #   - Private procedures used in bindings related to interactive cell editing
 #
-# Copyright (c) 2003-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2003-2025  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -1075,6 +1075,38 @@ proc tablelist::addIPv6AddrMentry {{name ipv6AddrMentry}} {
     return $name
 }
 
+#------------------------------------------------------------------------------
+# tablelist::addToggleswitch
+#
+# Registers the toggleswitch widget from the Tsw package for interactive cell
+# editing.
+#------------------------------------------------------------------------------
+proc tablelist::addToggleswitch {{name toggleswitch}} {
+    checkEditWinName $name
+
+    variable editWin
+    array set editWin [list \
+	$name-creationCmd	"createToggleswitch %W" \
+	$name-putValueCmd	"%W switchstate %T" \
+	$name-getValueCmd	"%W switchstate" \
+	$name-putTextCmd	"" \
+	$name-getTextCmd	"%W switchstate" \
+	$name-putListCmd	"" \
+	$name-getListCmd	"" \
+	$name-selectCmd		"" \
+	$name-invokeCmd		{%W instate !pressed {%W toggle}} \
+	$name-fontOpt		"" \
+	$name-useFormat		0 \
+	$name-useReqWidth	1 \
+	$name-usePadX		0 \
+	$name-isEntryLike	0 \
+	$name-focusWin		%W.scl \
+	$name-reservedKeys	{} \
+    ]
+
+    return $name
+}
+
 #
 # Private procedures implementing the interactive cell editing
 # ============================================================
@@ -1234,12 +1266,12 @@ proc tablelist::createTileEntry {w args} {
 	}
 
 	xpnative {
-	    switch [winfo rgb . SystemHighlight] {
-		"12593 27242 50629" -
-		"37779 41120 28784" -
-		"45746 46260 49087" -
-		"13107 39321 65535"	{ set padding 2 }
-		default			{ set padding 1 }
+	    switch [mwutil::normalizeColor SystemHighlight] {
+		#316ac5 -
+		#93a070 -
+		#b2b4bf -
+		#3399ff	{ set padding 2 }
+		default	{ set padding 1 }
 	    }
 	}
 
@@ -1286,19 +1318,19 @@ proc tablelist::createTileSpinbox {w args} {
 	}
 
 	vista {
-	    switch [winfo rgb . SystemHighlight] {
-		"13107 39321 65535"	{ set padding 0 }
-		default			{ set padding 1 }
+	    switch [mwutil::normalizeColor SystemHighlight] {
+		#3399ff	{ set padding 0 }
+		default	{ set padding 1 }
 	    }
 	}
 
 	xpnative {
-	    switch [winfo rgb . SystemHighlight] {
-		"12593 27242 50629" -
-		"37779 41120 28784" -
-		"45746 46260 49087" -
-		"13107 39321 65535"	{ set padding 2 }
-		default			{ set padding 1 }
+	    switch [mwutil::normalizeColor SystemHighlight] {
+		#316ac5 -
+		#93a070 -
+		#b2b4bf -
+		#3399ff	{ set padding 2 }
+		default	{ set padding 1 }
 	    }
 	}
 
@@ -1536,6 +1568,24 @@ proc tablelist::createOakleyCombobox {w args} {
 }
 
 #------------------------------------------------------------------------------
+# tablelist::createToggleswitch
+#
+# Creates a toggleswitch widget of the given path name for interactive cell
+# editing in a tablelist widget.
+#------------------------------------------------------------------------------
+proc tablelist::createToggleswitch {w args} {
+    package require tsw
+    tsw::toggleswitch $w -size 1
+
+    set frm [winfo parent $w]
+    set width [winfo reqwidth $w.scl]
+    set height [winfo reqheight $w.scl]
+    $frm configure -width $width -height $height
+
+    place $w -x 0
+}
+
+#------------------------------------------------------------------------------
 # tablelist::doEditCell
 #
 # Processes the tablelist editcell subcommand.  cmd may be an empty string,
@@ -1596,9 +1646,10 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
     set class [winfo class $w]
     set isCheckbtn [string match "*Checkbutton" $class]
     set isMenubtn  [string match "*Menubutton" $class]
-    set isText	   [expr {$class eq "Text" || $class eq "Ctext"}]
+    set isTogglesw [expr {$class eq "Toggleswitch"}]
+    set isText     [expr {$class eq "Text" || $class eq "Ctext"}]
     set isMentry   [expr {$class eq "Mentry"}]
-    if {!$isCheckbtn && !$isMenubtn} {
+    if {!$isCheckbtn && !$isMenubtn && !$isTogglesw} {
 	catch {$w configure -relief ridge}
 	catch {$w configure -borderwidth 2}
     }
@@ -1654,7 +1705,7 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
 	$b mark set editIndentMark [$b index $tabIdx1+1$pu]
 	set textIdx [$b index $tabIdx1+2$pu]
     }
-    if {$isCheckbtn} {
+    if {$isCheckbtn || $isTogglesw} {
 	set editIdx $textIdx
 	$b delete $editIdx $tabIdx2
     } else {
@@ -1872,7 +1923,7 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
 	    wcb::cbappend $w after insert tablelist::adjustTextHeight
 	    wcb::cbappend $w after delete tablelist::adjustTextHeight
 	}
-    } elseif {!$isCheckbtn} {
+    } elseif {!$isCheckbtn && !$isTogglesw} {
 	update idletasks
 	if {[destroyed $win]} {
 	    return ""
@@ -1883,7 +1934,7 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
     #
     # Adjust the frame's width and paddings
     #
-    if {!$isCheckbtn} {
+    if {!$isCheckbtn && !$isTogglesw} {
 	place $w -relwidth 1.0 -relheight 1.0
 	adjustEditWindow $win $pixels
 	update idletasks
@@ -1994,7 +2045,8 @@ proc tablelist::doFinishEditing {win {destroy 1}} {
 	}
 
 	if {!$data(rejected) && !$data($col-allowduplicates) &&
-	    [lsearch -exact [getcolumnsSubCmd $win $col] $text] >= 0} {
+	    [set i [lsearch -exact [getcolumnsSubCmd $win $col] $text]] >= 0 &&
+	    $i != $row} {
 	    bell
 	    set data(rejected) 1
 

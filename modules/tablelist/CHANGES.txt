@@ -1,5 +1,27 @@
-What is new in Tablelist 7.4.1?
--------------------------------
+What is new in Tablelist 7.5?
+-----------------------------
+
+1. Support for interactive cell editing with the aid of the new
+   toggleswitch widget.
+
+2. Improvements related to the use of various system colors on aqua and
+   win32.
+
+3. The scaleutil package now also scales the "-sashthickness" and
+   "-gripsize" options of the "Sash" style.
+
+4. New demo script "tileWidgets2.tcl", in which toggleswitch rather than
+   ttk::checkbutton widgets are used for the editing of boolean values.
+
+5. Made the retrieval of the row index corresponding to a given viewable
+   row offset more robust (thanks to Alexandru Dadalau for his bug
+   report).
+
+6. Fixed a bug related to the "-allowduplicates" column configuration
+   option and the "-forceeditendcommand" global option.
+
+What was new in Tablelist 7.4.1?
+--------------------------------
 
 1. Optimization: The "-window" cell configuration option no longer
    performs a window update if the new option value equals the old one

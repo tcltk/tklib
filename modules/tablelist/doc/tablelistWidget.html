@@ -14,7 +14,7 @@
   <div>
     <h1>The <code><b>tablelist::tablelist</b></code> Command</h1>
 
-    <h2>For Tablelist Version 7.4</h2>
+    <h2>For Tablelist Version 7.5</h2>
 
     <h3>by</h3>
 
@@ -1545,7 +1545,7 @@
     widget, thus making sure that all the validation facilities available for
     entry widgets can be used during the editing process.&nbsp; A great variety
     of widgets from the packages BWidget, Iwidgets, combobox (by Bryan Oakley),
-    ctext, and Mentry (or Mentry_tile), as well as Tk core text, spinbox,
+    ctext, Mentry (or Mentry_tile), and Tsw, as well as Tk core text, spinbox,
     checkbutton, and menubutton widgets, along with tile entry, spinbox,
     combobox, checkbutton, and menubutton widgets are also supported as
     temporary embedded widgets used for cell editing.&nbsp; In addition, a rich
@@ -2811,13 +2811,14 @@ proc expandCmd {tbl row} {
 
       <blockquote>
         <p>Specifies a boolean value that controls whether the interactive cell
-        editing with the aid of a Tk or tile checkbutton widget, if started
-        with the left mouse button, will be finished immediately after
-        automatically toggling the check state of the temporary embedded
-        checkbutton.&nbsp; The default value is <code>0</code>, meaning that a
-        mouse click into the cell will only start the editing session (and
-        automatically toggle the checkbutton's check state), but not also
-        finish it.</p>
+        editing with the aid of a Tk or tile checkbutton or a toggleswitch
+        widget, if started with the left mouse button, will be finished
+        immediately after automatically toggling the check state of the
+        temporary embedded checkbutton or the switch state of the temporary
+        embedded toggleswitch.&nbsp; The default value is <code>0</code>,
+        meaning that a mouse click into the cell will only start the editing
+        session (and automatically toggle the checkbutton's check state or the
+        toggleswitch widget's switch state), but not also finish it.</p>
       </blockquote>
     </dd>
 
@@ -5980,11 +5981,11 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
         "tablelistBWidget.html">BWidget</a>, <a href=
         "tablelistIwidgets.html">Iwidgets</a>, <a href=
         "tablelistCombobox.html">combobox</a> (by Bryan Oakley), <a href=
-        "tablelistCtext.html">ctext</a>, and <a href=
-        "tablelistMentry.html">Mentry (or Mentry_tile)</a>.&nbsp; For example,
-        you can use&nbsp; <code><b>-editwindow ComboBox</b></code>&nbsp;
-        <i>after</i> registering the ComboBox widget for interactive cell
-        editing with the aid of the <code><b><a href=
+        "tablelistCtext.html">ctext</a>, <a href="tablelistMentry.html">Mentry
+        (or Mentry_tile)</a>, and <a href="tablelistTsw.html">Tsw</a>.&nbsp;
+        For example, you can use&nbsp; <code><b>-editwindow
+        ComboBox</b></code>&nbsp; <i>after</i> registering the ComboBox widget
+        for interactive cell editing with the aid of the <code><b><a href=
         "tablelistBWidget.html#ComboBox">tablelist::addBWidgetComboBox</a></b></code>
         command.&nbsp; Similarly, you can use&nbsp; <code><b>-editwindow
         combobox</b></code>&nbsp; <i>after</i> registering Bryan Oakley's
@@ -7320,17 +7321,17 @@ proc updateWindow {tbl row col w args} {
     <a href="#cell_editwindow">cell</a> configuration option to specify another
     widget instead of an entry, like a Tk core text, spinbox, checkbutton, or
     menubutton widget, or a tile entry, spinbox, combobox, checkbutton, or
-    menubutton, or one of the 19 currently supported widgets from the packages
+    menubutton, or one of the 20 currently supported widgets from the packages
     <a href="tablelistBWidget.html">BWidget</a>, <a href=
     "tablelistIwidgets.html">Iwidgets</a>, <a href=
     "tablelistCombobox.html">combobox</a> (by Bryan Oakley), <a href=
-    "tablelistCtext.html">ctext</a>, and <a href="tablelistMentry.html">Mentry
-    (or Mentry_tile)</a>.&nbsp; Before specifying a widget from one of these
-    library packages as the value of the <code><b>-editwindow</b></code> column
-    or cell configuration option, you must register it for interactive cell
-    editing by invoking the corresponding <code><b>tablelist::add*</b></code>
-    command.&nbsp; The above-mentioned Tk core and tile widgets are
-    automatically registered for cell editing.</dd>
+    "tablelistCtext.html">ctext</a>, <a href="tablelistMentry.html">Mentry (or
+    Mentry_tile)</a>, and <a href="tablelistTsw.html">Tsw</a>.&nbsp; Before
+    specifying a widget from one of these library packages as the value of the
+    <code><b>-editwindow</b></code> column or cell configuration option, you
+    must register it for interactive cell editing by invoking the corresponding
+    <code><b>tablelist::add*</b></code> command.&nbsp; The above-mentioned Tk
+    core and tile widgets are automatically registered for cell editing.</dd>
 
     <dd class="tm">In the simplest case, the text automatically inserted into
     the temporary embedded widget is the same as the text displayed in the
@@ -7395,12 +7396,13 @@ proc updateWindow {tbl row col w args} {
     with the left mouse button anywhere in the tablelist's body, outside the
     cell just being edited, or moving into another editable cell by using
     keyboard navigation.&nbsp; If the editing was started with the left mouse
-    button, the edit window is a Tk or tile checkbutton, and the value of the
-    <code><b><a href="#instanttoggle">-instanttoggle</a></b></code> option is
-    true, then the normal termination of the editing will take place
-    automatically, without any user interaction.&nbsp; Similarly, if the edit
-    window is one of the four combobox widgets supported by Tablelist or a
-    menubutton widget, and the value of the <code><b><a href=
+    button, the edit window is a Tk or tile checkbutton or a toggleswitch
+    widget, and the value of the <code><b><a href=
+    "#instanttoggle">-instanttoggle</a></b></code> option is true, then the
+    normal termination of the editing will take place automatically, without
+    any user interaction.&nbsp; Similarly, if the edit window is one of the
+    four combobox widgets supported by Tablelist or a (ttk::)menubutton widget,
+    and the value of the <code><b><a href=
     "#autofinishediting">-autofinishediting</a></b></code> option is true, then
     selecting a combobox or menu entry will automatically terminate the editing
     session.&nbsp; Finally, if the value of the <code><b><a href=
@@ -9538,8 +9540,9 @@ pack $sa -expand yes -fill both -padx 10 -pady 10
         components of the temporary embedded widget used for interactive cell
         editing.&nbsp; These components depend on the edit window: the widget
         itself in case of a Tk or tile checkbutton or menubutton; the edit
-        window's entry children in case of a mentry widget; the only entry or
-        entry-like component of the edit window in all other cases (see also
+        window's entry children in case of a mentry widget; the ttk::scale
+        widget contained in a toggleswitch used as edit window; the only entry
+        or entry-like component of the edit window in all other cases (see also
         the <code><b><a href="#entrypath">entrypath</a></b></code>
         subcommand).&nbsp; This binding tag precedes the tag <code><b><a href=
         "#edit_bindings">TablelistEdit</a></b></code> in the list of binding
@@ -9630,14 +9633,14 @@ bind [.tbl <span class="red">editwintag</span>] &lt;Return&gt; "[bind <a href=
         the <code><b><a href="#editcell">editcell</a></b></code>
         subcommand.&nbsp; If no cell is currently being edited or the editing
         is taking place with the aid of a Tk or tile checkbutton, Tk or tile
-        menubutton, or mentry widget, then the return value is an empty string;
-        otherwise it is the path name of a Tk or tile entry, text or ctext, Tk
-        or tile spinbox, or BWidget Entry widget, which can be the edit window
-        itself or one of its descendants.&nbsp; This subcommand enables you to
-        access the entry or entry-like component of the temporary embedded
-        widget from within the commands specified by the <code><b><a href=
-        "#editstartcommand">-editstartcommand</a></b></code> and
-        <code><b><a href="#editendcommand">-editendcommand</a></b></code>
+        menubutton, mentry, or toggleswitch widget, then the return value is an
+        empty string; otherwise it is the path name of a Tk or tile entry, text
+        or ctext, Tk or tile spinbox, or BWidget Entry widget, which can be the
+        edit window itself or one of its descendants.&nbsp; This subcommand
+        enables you to access the entry or entry-like component of the
+        temporary embedded widget from within the commands specified by the
+        <code><b><a href="#editstartcommand">-editstartcommand</a></b></code>
+        and <code><b><a href="#editendcommand">-editendcommand</a></b></code>
         configuration options.</dd>
 
         <dt class="tm" id="expand"><code><i>pathName</i> <b>expand</b>
@@ -9774,12 +9777,12 @@ bind [.tbl <span class="red">editwintag</span>] &lt;Return&gt; "[bind <a href=
         the tablelist's body, outside the cell just being edited, or moving
         into another editable cell by using keyboard navigation.&nbsp; If the
         editing was started with the left mouse button, the edit window is a Tk
-        or tile checkbutton, and the value of the <code><b><a href=
-        "#instanttoggle">-instanttoggle</a></b></code> option is true, then
-        this subcommand will be invoked automatically, without any user
-        interaction.&nbsp; Similarly, if the edit window is one of the four
-        combobox widgets supported by Tablelist or a menubutton widget, and the
-        value of the <code><b><a href=
+        or tile checkbutton or a toggleswitch widget, and the value of the
+        <code><b><a href= "#instanttoggle">-instanttoggle</a></b></code> option
+        is true, then this subcommand will be invoked automatically, without
+        any user interaction.&nbsp; Similarly, if the edit window is one of the
+        four combobox widgets supported by Tablelist or a (ttk::)menubutton
+        widget, and the value of the <code><b><a href=
         "#autofinishediting">-autofinishediting</a></b></code> option is true,
         then selecting a combobox or menu entry will automatically invoke this
         subcommand and thus terminate the editing session.&nbsp; Finally, if
@@ -12308,7 +12311,7 @@ proc printClickedCell {w x y} {
           <p><b>REMARK 1:</b>&nbsp; The default widget bindings in current Tk
           versions on Windows already support <code>Control-a</code> as an
           alternative to <code>Control-slash</code>.&nbsp; In Tablelist this is
-          now valid on X11, too.</p>
+          valid on X11, too.</p>
 
           <p><b>REMARK 2:</b>&nbsp; On Mac OS X/11+, the default widget
           bindings in current Tk versions use the key sequence
@@ -12319,7 +12322,7 @@ proc printClickedCell {w x y} {
         <li class="tm">
           <code>Shift-Control-A</code> behaves the same as
           <code>Control-backslash</code>, i.e., it deselects everything in the
-          widget, except in <code><b>browse</b></code> mode where it has no
+          widget, except in <code><b>browse</b></code> mode, where it has no
           effect.
 
           <p><b>REMARK 1:</b>&nbsp; This shortcut comes in handy on Windows
@@ -12748,7 +12751,8 @@ bind [.tbl <a href="#labeltag">labeltag</a>] &lt;Button-3&gt; {
     <dd class="tm">The affected components of the temporary embedded widget
     depend on the edit window: the widget itself in case of a Tk or tile
     checkbutton or menubutton; the edit window's entry children in case of a
-    mentry widget; the only entry or entry-like component of the edit window in
+    mentry widget; the ttk::scale widget contained in a toggleswitch used as
+    edit window; the only entry or entry-like component of the edit window in
     all other cases (see also the <code><b><a href=
     "#entrypath">entrypath</a></b></code> subcommand).&nbsp; The list of
     binding tags of these edit window components contains two addditional tags,
@@ -12858,8 +12862,9 @@ bind [.tbl <a href="#labeltag">labeltag</a>] &lt;Button-3&gt; {
         a text or ctext widget then <code>Meta-b</code> and <code>Meta-f</code>
         behave the same as <code>Alt-Left</code> and <code>Alt-Right</code>,
         respectively.&nbsp; If the edit window is a Tk or tile checkbutton or
-        menubutton widget then <code>Left</code>/<code>Right</code> has the
-        same effect as <code>Alt-Left</code>/<code>Alt-Right</code>.</li>
+        menubutton, or a toggleswitch widget, then
+        <code>Left</code>/<code>Right</code> has the same effect as
+        <code>Alt-Left</code>/<code>Alt-Right</code>.</li>
 
         <li class="tm">When editing a cell that is not the first/last editable
         cell within its column, <code>Alt-Up</code>/<code>Alt-Down</code>
@@ -12876,10 +12881,10 @@ bind [.tbl <a href="#labeltag">labeltag</a>] &lt;Button-3&gt; {
         <code>Control-p</code> and <code>Control-n</code> behave the same as
         <code>Alt-Up</code> and <code>Alt-Down</code>, respectively.&nbsp; If
         the edit window is a Tk or tile entry, Tk or tile checkbutton, Tk or
-        tile menubutton, BWidget Entry, Iwidgets entryfield/spinner/spinint, or
-        a mentry widget of type <code>"FixedPoint"</code>, then
-        <code>Up</code>/<code>Down</code> has the same effect as
-        <code>Alt-Up</code>/<code>Alt-Down</code>.</li>
+        tile menubutton, toggleswitch, BWidget Entry, Iwidgets
+        entryfield/spinner/spinint, or a mentry widget of type
+        <code>"FixedPoint"</code>, then <code>Up</code>/<code>Down</code> has
+        the same effect as <code>Alt-Up</code>/<code>Alt-Down</code>.</li>
 
         <li class="tm">When editing a cell that is not the first/last editable
         cell within its column, <code>Alt-Prior</code>/<code>Alt-Next</code>

@@ -7,7 +7,7 @@
 #   - Private procedures related to tile themes
 #   - Private procedures related to global KDE configuration options
 #
-# Copyright (c) 2005-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2005-2025  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -263,13 +263,12 @@ proc tablelist::aquaTheme {} {
 	set arrowColor		#777777
     }
 
-    switch [winfo rgb . systemMenuActive] {
-	"13621 29041 52685" -
-	"32256 44288 55552" {				;# Blue Cocoa/Carbon
+    switch [mwutil::normalizeColor systemMenuActive] {
+	#3571cd - #7eadd9 {				;# Blue Cocoa/Carbon
 	    if {$majorOSVersion >= 14} {		;# OS X 10.10 or later
 		if {$newAquaSupport} {
 		    if {$darkMode} {
-			set stripeBg			#292929
+			set stripeBg			#282828
 			set labelselectedBg		#323232
 			set labelselectedpressedBg	#323232
 		    } else {
@@ -293,12 +292,11 @@ proc tablelist::aquaTheme {} {
 	    }
 	}
 
-	"24415 27499 31354" -
-	"39680 43776 48384" {				;# Graphite Cocoa/Carbon
+	#5f6b7a - #9babbd {				;# Graphite Cocoa/Carbon
 	    if {$majorOSVersion >= 14} {		;# OS X 10.10 or later
 		if {$newAquaSupport} {
 		    if {$darkMode} {
-			set stripeBg			#292929
+			set stripeBg			#282828
 			set labelselectedBg		#323232
 			set labelselectedpressedBg	#323232
 		    } else {
@@ -330,52 +328,60 @@ proc tablelist::aquaTheme {} {
 	if {$newAquaSupport} {
 	    variable channel
 	    if {[info exists channel]} {	;# see proc condOpenPipeline
-		set rgb [gets $channel]
+		set input [gets $channel]
 
 		puts $channel "exit"
 		flush $channel
 		close $channel
 		unset channel
+
+		lassign $input r g b
+		set rgb [format "#%02x%02x%02x" \
+			 [expr {$r >> 8}] [expr {$g >> 8}] [expr {$b >> 8}]]
 	    } else {
-		set rgb [winfo rgb . systemSelectedTextBackgroundColor]
+		set rgb [mwutil::normalizeColor \
+			 systemSelectedTextBackgroundColor]
 	    }
 
-	    if {$darkMode} {
+	    if {[catch {winfo rgb . systemSelectedContentBackgroundColor}]
+		== 0} {
+		set selectBg systemSelectedContentBackgroundColor
+	    } elseif {$darkMode} {
 		switch $rgb {
-		    "16191 25443 35723"	{ set selectBg #0258d0 }
-		    "28784 22102 28784"	{ set selectBg #7f3280 }
-		    "34952 22102 28270"	{ set selectBg #c83179 }
-		    "35723 22359 22616"	{ set selectBg #d03439 }
-		    "34952 25957 18247"	{ set selectBg #c86003 }
-		    "35466 30069 19018"	{ set selectBg #cd8f0e }
-		    "23644 30326 21331"	{ set selectBg #42912a }
-		    "65535 65535 65535"	{ set selectBg #686868 }
+		    #3f638b		{ set selectBg #0059d1	;# blue }
+		    #705771 - #705670	{ set selectBg #803482	;# purple }
+		    #89576e - #88566e	{ set selectBg #c93379	;# pink }
+		    #8b5759 - #8b5758	{ set selectBg #d13539	;# red }
+		    #896647 - #886547	{ set selectBg #c96003	;# orange }
+		    #8b7a3f - #8a754a	{ set selectBg #d19e00	;# yellow }
+		    #5c7654 - #5c7653	{ set selectBg #43932a	;# green }
+		    #ffffff		{ set selectBg #696969	;# graphite }
 		    default	{ set selectBg systemHighlightAlternate }
 		}
 	    } else {
 		switch $rgb {
-		    "46003 55255 65535"	{ set selectBg #0363e1 }
-		    "57311 50629 57311"	{ set selectBg #7d2a7e }
-		    "64764 51914 58082"	{ set selectBg #d93b85 }
-		    "62965 50115 50629"	{ set selectBg #c3252b }
-		    "64764 55769 48059"	{ set selectBg #d96b0a }
-		    "65278 59881 48830"	{ set selectBg #de9e15 }
-		    "53456 60138 51143"	{ set selectBg #4da032 }
-		    "57568 57568 57568"	{ set selectBg #808080 }
+		    #b3d7ff		{ set selectBg #0064e1	;# blue }
+		    #dfc5e0 - #dfc5df	{ set selectBg #7d2a7e	;# purple }
+		    #fdcbe2 - #fccae2	{ set selectBg #d93b86	;# pink }
+		    #f6c4c5 - #f5c3c5	{ set selectBg #c4262b	;# red }
+		    #fddabb - #fcd9bb	{ set selectBg #d96b0a	;# orange }
+		    #ffeebe - #fee9be	{ set selectBg #e1ac15	;# yellow }
+		    #d0eac8 - #d0eac7	{ set selectBg #4da033	;# green }
+		    #e0e0e0		{ set selectBg #808080	;# graphite }
 		    default	{ set selectBg systemHighlightAlternate }
 		}
 	    }
 	} else {
-	    switch [winfo rgb . systemHighlight] {
-		"45746 55246 65535"	{ set selectBg #0363e1 }
-		"63478 54484 65535"	{ set selectBg #7d2a7e }
-		"65535 49087 53969"	{ set selectBg #d93b85 }
-		"65535 48058 47288"	{ set selectBg #c3252b }
-		"65535 57311 46003"	{ set selectBg #d96b0a }
-		"65535 61423 45231"	{ set selectBg #de9e15 }
-		"49343 63222 44460"	{ set selectBg #4da032 }
-		"55512 55512 56539"	{ set selectBg #808080 }
-		default		{ set selectBg systemHighlightAlternate }
+	    switch [mwutil::normalizeColor systemHighlight] {
+		#b2d7ff	{ set selectBg #0064e1	;# blue }
+		#f7d4ff	{ set selectBg #7d2a7e	;# purple }
+		#ffbfd2	{ set selectBg #d93b86	;# pink }
+		#ffbbb8	{ set selectBg #c4262b	;# red }
+		#ffdfb3	{ set selectBg #d96b0a	;# orange }
+		#ffefb0	{ set selectBg #e1ac15	;# yellow }
+		#c0f6ad	{ set selectBg #4da033	;# green }
+		#d8d8dc	{ set selectBg #808080	;# graphite }
+		default	{ set selectBg systemHighlightAlternate }
 	    }
 	}
     } else {
@@ -1827,8 +1833,8 @@ proc tablelist::vistaTheme {} {
 	set arrowStyle	flatAngle[defaultWinArrowSize]
 	set treeStyle	win10
 
-    } elseif {[winfo rgb . SystemHighlight] eq
-	      "13107 39321 65535"} {				;# Aero
+    } elseif {[mwutil::normalizeColor SystemHighlight] eq
+	      "#3399ff"} {					;# Aero
 	set selectFg	SystemWindowText
 	set labelBd	4
 	set labelPadY	4
@@ -1980,8 +1986,8 @@ proc tablelist::xpnativeTheme {} {
 	set treeStyle	win10
 
     } else {
-	switch [winfo rgb . SystemHighlight] {
-	    "12593 27242 50629" {				;# Win XP Blue
+	switch [mwutil::normalizeColor SystemHighlight] {
+	    #316ac5 {						;# Win XP Blue
 		set xpStyle	1
 		set selectBg	SystemHighlight
 		set selectFg	SystemHighlightText
@@ -2000,7 +2006,7 @@ proc tablelist::xpnativeTheme {} {
 		}
 	    }
 
-	    "37779 41120 28784" {				;# Win XP Olive
+	    #93a070 {						;# Win XP Olive
 		set xpStyle	1
 		set selectBg	SystemHighlight
 		set selectFg	SystemHighlightText
@@ -2019,7 +2025,7 @@ proc tablelist::xpnativeTheme {} {
 		}
 	    }
 
-	    "45746 46260 49087" {				;# Win XP Silver
+	    #b2b4bf {						;# Win XP Silver
 		set xpStyle	1
 		set selectBg	SystemHighlight
 		set selectFg	SystemHighlightText
@@ -2038,7 +2044,7 @@ proc tablelist::xpnativeTheme {} {
 		}
 	    }
 
-	    "13107 39321 65535" {				;# Aero
+	    #3399ff {						;# Aero
 		set xpStyle	0
 		set selectFg	SystemWindowText
 		set labelBd	4

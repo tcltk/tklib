@@ -6,7 +6,7 @@
 #   - Public utility procedures
 #   - Private helper procedures
 #
-# Copyright (c) 2020-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2020-2025  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 if {[catch {package require Tk 8.4-}]} {
@@ -22,7 +22,7 @@ namespace eval scaleutil {
     #
     # Public variables:
     #
-    variable version	1.14.1
+    variable version	1.15
     variable library	[file dirname [file normalize [info script]]]
 
     #
@@ -464,8 +464,11 @@ proc scaleutil::scaleStyles_alt pct {
 	    -padding [list [scale 4 $pct] [scale 2 $pct]]
 	ttk::style map TNotebook.Tab -expand [list selected $margins]
 
+	ttk::style configure Sash -sashthickness [scale 5 $pct] \
+	    -gripsize [scale 20 $pct]
+
 	#
-	# -diameter will be replaced with -size in Tk 9.
+	# -diameter was replaced with -size in Tk 9.
 	#
 	set l [scale 2 $pct]; set t $l; set r [scale 4 $pct]; set b $l
 	set indMargins [list $l $t $r $b]			;# {2 2 4 2}
@@ -483,7 +486,7 @@ proc scaleutil::scaleStyles_alt pct {
 proc scaleutil::scaleStyles_clam pct {
     ttk::style theme settings clam {
 	#
-	# -gripcount will be replaced with -gripsize in Tk 9.
+	# -gripcount was replaced with -gripsize in Tk 9.
 	#
 	set gripCount [scale 5 $pct]
 	set gripSize [scale 10 $pct]
@@ -511,7 +514,7 @@ proc scaleutil::scaleStyles_clam pct {
 	    -arrowpadding [scale 3 $pct] -padding [scale 5 $pct]
 
 	#
-	# The -indicatorsize option will be removed in Tk 8.7b1/9.
+	# The -indicatorsize option was removed in Tk 8.7b1/9.
 	#
 	set l [scale 1 $pct]; set t $l; set r [scale 4 $pct]; set b $l
 	set indMargin [list $l $t $r $b]			;# {1 1 4 1}
@@ -528,7 +531,7 @@ proc scaleutil::scaleStyles_clam pct {
 	    -padding [list selected [list $l $t $r $b]]		;# {6 4 6 2}
 
 	#
-	# -gripcount will be replaced with -gripsize in Tk 9.
+	# -gripcount was replaced with -gripsize in Tk 9.
 	#
 	ttk::style configure Sash -sashthickness [scale 6 $pct] \
 	    -gripcount [scale 10 $pct] -gripsize [scale 20 $pct]
@@ -583,7 +586,7 @@ proc scaleutil::scaleStyles_classic pct {
 	set indMargin [list 0 $t $r $b]				;# {0 2 4 2}
 	foreach style {TCheckbutton TRadiobutton} {
 	    #
-	    # -indicatordiameter will be renamed to -indicatorsize in Tk 9.
+	    # -indicatordiameter was renamed to -indicatorsize in Tk 9.
 	    #
 	    ttk::style configure $style -indicatordiameter [scale 12 $pct] \
 		-indicatorsize [scale 12 $pct] -indicatormargin $indMargin
@@ -637,7 +640,7 @@ proc scaleutil::scaleStyles_default pct {
 	ttk::style configure Toolbutton -padding [scale 2 $pct]
 
 	#
-	# -indicatormargin will be replaced with
+	# -indicatormargin was replaced with
 	# -arrowsize and -arrowpadding in Tk 8.7b1/9.
 	#
 	ttk::style configure TMenubutton \
@@ -649,7 +652,7 @@ proc scaleutil::scaleStyles_default pct {
 	set indMargin [list 0 $t $r $b]				;# {0 2 4 2}
 	foreach style {TCheckbutton TRadiobutton} {
 	    #
-	    # -indicatordiameter will be removed in Tk 8.7b1/9.
+	    # -indicatordiameter was removed in Tk 8.7b1/9.
 	    #
 	    ttk::style configure $style -indicatordiameter [scale 10 $pct] \
 		-indicatormargin $indMargin -padding [scale 1 $pct]
@@ -657,6 +660,9 @@ proc scaleutil::scaleStyles_default pct {
 
 	ttk::style configure TNotebook.Tab \
 	    -padding [list [scale 4 $pct] [scale 2 $pct]]
+
+	ttk::style configure Sash -sashthickness [scale 5 $pct] \
+	    -gripsize [scale 20 $pct]
 
 	set l [scale 2 $pct]; set t $l; set r [scale 4 $pct]; set b $l
 	set indMargins [list $l $t $r $b]			;# {2 2 4 2}
@@ -684,6 +690,9 @@ proc scaleutil::scaleStyles_vista pct {
 	foreach style {TCheckbutton TRadiobutton} {
 	    ttk::style configure $style -padding [scale 2 $pct]
 	}
+
+	ttk::style configure Sash -sashthickness [scale 5 $pct] \
+	    -gripsize [scale 20 $pct]
 
 	set padding [list [scale 4 $pct] 0 0 0]			;# {4 0 0 0}
 	ttk::style configure Item -padding $padding
@@ -723,8 +732,11 @@ proc scaleutil::scaleStyles_winnative pct {
 	ttk::style configure TNotebook.Tab \
 	    -padding [list [scale 3 $pct] [scale 1 $pct]]
 
+	ttk::style configure Sash -sashthickness [scale 5 $pct] \
+	    -gripsize [scale 20 $pct]
+
 	#
-	# -diameter will be replaced with -size in Tk 9.
+	# -diameter was replaced with -size in Tk 9.
 	#
 	set l [scale 2 $pct]; set t $l; set r [scale 4 $pct]; set b $l
 	set indMargins [list $l $t $r $b]			;# {2 2 4 2}
@@ -756,8 +768,11 @@ proc scaleutil::scaleStyles_xpnative pct {
 	    ttk::style configure $style -padding [scale 2 $pct]
 	}
 
+	ttk::style configure Sash -sashthickness [scale 5 $pct] \
+	    -gripsize [scale 20 $pct]
+
 	#
-	# -diameter will be replaced with -size in Tk 9.
+	# -diameter was replaced with -size in Tk 9.
 	#
 	set l [scale 2 $pct]; set t $l; set r [scale 4 $pct]; set b $l
 	set indMargins [list $l $t $r $b]			;# {2 2 4 2}
