@@ -11,7 +11,7 @@
 #   - Private procedures used in bindings
 #   - Private utility procedures
 #
-# Copyright (c) 2021-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2021-2025  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -135,11 +135,10 @@ namespace eval scrollutil::snb {
 #------------------------------------------------------------------------------
 proc scrollutil::snb::createBindings {} {
     bind Scrollednotebook <KeyPress> continue
-    bind Scrollednotebook <FocusIn> {
-	if {[focus -lastfor %W] eq "%W"} {
-            focus [%W.sf contentframe].nb
-        }
+    bind Scrollednotebook <<TraverseIn>> {
+	set scrollutil::ns%W::data(traversedIn) 1
     }
+    bind Scrollednotebook <FocusIn> { scrollutil::snb::onFocusIn %W %d }
     bind Scrollednotebook <Map> {
 	after 100 [list scrollutil::snb::onScrollednotebookMap %W]
     }
@@ -246,7 +245,7 @@ proc scrollutil::scrollednotebook args {
     }
 
     #
-    # Create a frame of the class Scrollednotebook
+    # Create a ttk::frame of the class Scrollednotebook
     #
     set win [lindex $args 0]
     if {[catch {
@@ -296,7 +295,7 @@ proc scrollutil::scrollednotebook args {
     $sf autofillx 1	;# sets/clears the -fitcontentwidth option dynamically
     pack $sf -expand 1 -fill both
     set cf [$sf contentframe]
-    set nb [ttk::notebook $cf.nb -height 0 -width 0]
+    set nb [ttk::notebook $cf.nb -height 0 -width 0 -takefocus 0]
     pack $nb -expand 1 -fill both
 
     bindtags $nb [linsert [bindtags $nb] 1 SnbNb]
@@ -320,6 +319,7 @@ proc scrollutil::scrollednotebook args {
     lower $f
 
     array set data [list \
+	traversedIn 0 \
 	sf	    $sf \
 	cf	    $cf \
 	nb	    $nb \
@@ -624,6 +624,7 @@ proc scrollutil::snb::scrollednotebookWidgetCmd {win args} {
 
     upvar ::scrollutil::ns${win}::data data
     set nb $data(nb)
+    set mapping [list $nb $win]
 
     variable cmdOpts
     set cmd [mwutil::fullOpt "command" [lindex $args 0] $cmdOpts]
@@ -634,7 +635,7 @@ proc scrollutil::snb::scrollednotebookWidgetCmd {win args} {
 	    set widget [lindex $args 1]
 	    set isNew [expr {[lsearch -exact [$nb tabs] $widget] < 0}]
 	    if {[catch {eval [list $nb $cmd] $argList} result] != 0} {
-		return -code error $result
+		return -code error [string map $mapping $result]
 	    }
 
 	    if {$isNew || [lsearch -glob $args "-p*"] >= 2} {
@@ -703,7 +704,7 @@ proc scrollutil::snb::scrollednotebookWidgetCmd {win args} {
 	    }
 
 	    if {[catch {$nb $cmd $nbTabId} result] != 0} {
-		return -code error $result
+		return -code error [string map $mapping $result]
 	    }
 
 	    upvar ::scrollutil::ns${win}::attribs attribs
@@ -732,7 +733,7 @@ proc scrollutil::snb::scrollednotebookWidgetCmd {win args} {
 	    set tabId [lindex $args 1]
 	    set nbTabId [snbTabIdToNbTabId $win $tabId]
 	    if {[catch {$nb index $nbTabId} tabIdx] != 0} {
-		return -code error $tabIdx
+		return -code error [string map $mapping $tabIdx]
 	    } elseif {$tabIdx < 0 || $tabIdx >= [$nb index end]} {
 		return -code error "tab index $tabId out of bounds"
 	    }
@@ -751,13 +752,16 @@ proc scrollutil::snb::scrollednotebookWidgetCmd {win args} {
 
 	    set tabId [lindex $args 1]
 	    set nbTabId [snbTabIdToNbTabId $win $tabId]
-	    set code [catch {$nb $cmd $nbTabId} result]
-	    return -code $code $result
+	    if {[catch {$nb $cmd $nbTabId} result] != 0} {
+		return -code error [string map $mapping $result]
+	    }
+
+	    return $result
 	}
 
 	identify {
 	    if {[catch {eval [list $nb $cmd] $argList} result] != 0} {
-		return -code error $result
+		return -code error [string map $mapping $result]
 	    }
 
 	    set xIdx [expr {$argCount - 3}]
@@ -776,15 +780,18 @@ proc scrollutil::snb::scrollednotebookWidgetCmd {win args} {
 
 	    set tabId [lindex $args 1]
 	    set nbTabId [snbTabIdToNbTabId $win $tabId]
-	    set code [catch {$nb $cmd $nbTabId} result]
-	    return -code $code $result
+	    if {[catch {$nb $cmd $nbTabId} result] != 0} {
+		return -code error [string map $mapping $result]
+	    }
+
+	    return $result
 	}
 
 	insert {
 	    set widget [lindex $args 2]
 	    set isNew [expr {[lsearch -exact [$nb tabs] $widget] < 0}]
 	    if {[catch {eval [list $nb $cmd] $argList} result] != 0} {
-		return -code error $result
+		return -code error [string map $mapping $result]
 	    }
 
 	    if {$isNew || [lsearch -glob $args "-p*"] >= 3} {
@@ -806,7 +813,8 @@ proc scrollutil::snb::scrollednotebookWidgetCmd {win args} {
 	    if {$argCount == 2} {
 		return [$nb instate $stateSpec]
 	    } elseif {[$nb instate $stateSpec]} {
-		return -code [catch {uplevel 1 [lindex $args 2]}] ""
+		set code [catch {uplevel 1 [lindex $args 2]} result]
+		return -code $code $result
 	    } else {
 		return ""
 	    }
@@ -828,7 +836,7 @@ proc scrollutil::snb::scrollednotebookWidgetCmd {win args} {
 	    set tabId [lindex $args 1]
 	    set nbTabId [snbTabIdToNbTabId $win $tabId]
 	    if {[catch {$nb index $nbTabId} tabIdx] != 0} {
-		return -code error $tabIdx
+		return -code error [string map $mapping $tabIdx]
 	    } elseif {$tabIdx < 0 || $tabIdx >= [$nb index end]} {
 		return -code error "tab index $tabId out of bounds"
 	    }
@@ -843,7 +851,7 @@ proc scrollutil::snb::scrollednotebookWidgetCmd {win args} {
 		    set tabId [lindex $args 1]
 		    set nbTabId [snbTabIdToNbTabId $win $tabId]
 		    if {[catch {$nb index $nbTabId} tabIdx] != 0} {
-			return -code error $tabIdx
+			return -code error [string map $mapping $tabIdx]
 		    } elseif {$tabIdx < 0 || $tabIdx >= [$nb index end]} {
 			return -code error "tab index $tabId out of bounds"
 		    }
@@ -870,7 +878,7 @@ proc scrollutil::snb::scrollednotebookWidgetCmd {win args} {
 
 	state {
 	    if {[catch {eval [list $nb $cmd] $argList} result] != 0} {
-		return -code error $result
+		return -code error [string map $mapping $result]
 	    }
 
 	    if {$argCount > 1} {
@@ -904,7 +912,7 @@ proc scrollutil::snb::scrollednotebookWidgetCmd {win args} {
 	    set nbTabId [snbTabIdToNbTabId $win $tabId]
 	    set argList [lreplace $argList 0 0 $nbTabId]
 	    if {[catch {eval [list $nb $cmd] $argList} result] != 0} {
-		return -code error $result
+		return -code error [string map $mapping $result]
 	    }
 
 	    set tabIdx [$nb index $nbTabId]
@@ -931,7 +939,7 @@ proc scrollutil::snb::scrollednotebookWidgetCmd {win args} {
 	    set tabId [lindex $args 1]
 	    set nbTabId [snbTabIdToNbTabId $win $tabId]
 	    if {[catch {$nb index $nbTabId} tabIdx] != 0} {
-		return -code error $tabIdx
+		return -code error [string map $mapping $tabIdx]
 	    } elseif {$tabIdx < 0 || $tabIdx >= [$nb index end]} {
 		return -code error "tab index $tabId out of bounds"
 	    }
@@ -942,8 +950,11 @@ proc scrollutil::snb::scrollednotebookWidgetCmd {win args} {
 	}
 
 	tabs {
-	    set code [catch {eval [list $nb $cmd] $argList} result]
-	    return -code $code $result
+	    if {[catch {eval [list $nb $cmd] $argList} result] != 0} {
+		return -code error [string map $mapping $result]
+	    }
+
+	    return $result
 	}
     }
 }
@@ -1142,6 +1153,25 @@ proc scrollutil::snb::adjustXPad {win tabIdx first last} {
 # Private procedures used in bindings
 # ===================================
 #
+
+#------------------------------------------------------------------------------
+# scrollutil::snb::onFocusIn
+#------------------------------------------------------------------------------
+proc scrollutil::snb::onFocusIn {win detail} {
+    upvar ::scrollutil::ns${win}::data data
+
+    if {[focus -lastfor $win] eq $win} {
+	if {$detail eq "NotifyInferior"} {
+	    if {$data(traversedIn)} {
+		event generate $win <Shift-Tab>
+	    }
+	} else {
+	    focus $data(nb)
+	}
+    }
+
+    set data(traversedIn) 0
+}
 
 #------------------------------------------------------------------------------
 # scrollutil::snb::onScrollednotebookMap
@@ -1517,6 +1547,10 @@ proc scrollutil::snb::postMenu {menu rootX rootY} {
 	[$menu index end] eq "none"} {
 	return ""
     }
+
+    set bg [ttk::style lookup . -background]
+    set fg [ttk::style lookup . -foreground]
+    $menu configure -background $bg -foreground $fg
 
     #
     # For awthemes:

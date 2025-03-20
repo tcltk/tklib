@@ -10,7 +10,7 @@
 #   - Private procedures used in bindings
 #   - Private utility procedures
 #
-# Copyright (c) 2021-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2021-2025  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -281,12 +281,11 @@ namespace eval scrollutil::pnb {
 #------------------------------------------------------------------------------
 proc scrollutil::pnb::createBindings {} {
     bind Plainnotebook <KeyPress> continue
-    bind Plainnotebook <FocusIn> {
-	if {[focus -lastfor %W] eq "%W"} {
-            focus %W.frm.sa.sf
-        }
+    bind Plainnotebook <<TraverseIn>> {
+	set scrollutil::ns%W::data(traversedIn) 1
     }
-    bind Plainnotebook <Map> { scrollutil::pnb::onPlainnotebookMap %W }
+    bind Plainnotebook <FocusIn> { scrollutil::pnb::onFocusIn %W %d }
+    bind Plainnotebook <Map>	 { scrollutil::pnb::onPlainnotebookMap %W }
     bind Plainnotebook <Destroy> {
 	namespace delete scrollutil::ns%W
 	catch {rename %W ""}
@@ -429,7 +428,7 @@ proc scrollutil::plainnotebook args {
     }
 
     #
-    # Create a frame of the class Plainnotebook
+    # Create a ttk::frame of the class Plainnotebook
     #
     set win [lindex $args 0]
     if {[catch {
@@ -467,7 +466,7 @@ proc scrollutil::plainnotebook args {
     # Create a frame with the ascend toolbutton,
     # the title label, and a separator as children
     #
-    set frm [ttk::frame $win.frm -padding 0]
+    set frm [ttk::frame $win.frm -padding 0 -takefocus 0]
     pnb::configFrame $win.frm
     if {[lsearch -exact [image names] "scrollutil_ascendImg"] < 0} {
 	createAscendImage
@@ -485,8 +484,8 @@ proc scrollutil::plainnotebook args {
     set charWidth [font measure TkDefaultFont -displayof $win "0"]
     set sf [scrollableframe $sa.sf -borderwidth 0 -contentheight 0 \
 	    -contentwidth 0 -fitcontentheight 0 -fitcontentwidth 0 -height 0 \
-	    -relief flat -xscrollincrement $charWidth -yscrollincrement 0 \
-	    -width 0]
+	    -relief flat -takefocus 0 -xscrollincrement $charWidth \
+	    -yscrollincrement 0 -width 0]
     $sa setwidget $sf
 
     if {$::tcl_platform(platform) ne "windows" || ($::tk_version >= 8.6 &&
@@ -507,7 +506,7 @@ proc scrollutil::plainnotebook args {
     # Create a plain ttk::notebook widget and deactivate
     # the TNotebook keyboard bindings for it
     #
-    set nb [ttk::notebook $win.nb -style Plainnotebook.TNotebook]
+    set nb [ttk::notebook $win.nb -style Plainnotebook.TNotebook -takefocus 0]
     foreach event {<Right> <Left> <Control-Tab> <Control-Shift-Tab>} {
 	bind $nb $event break
     }
@@ -517,6 +516,7 @@ proc scrollutil::plainnotebook args {
     pack $nb  -side left -expand 1 -fill both
 
     array set data [list \
+	traversedIn 0 \
 	sf	    $sf \
 	cf	    [$sf contentframe] \
 	cfWidth	    0 \
@@ -729,6 +729,7 @@ proc scrollutil::pnb::plainnotebookWidgetCmd {win args} {
 
     upvar ::scrollutil::ns${win}::data data
     set nb $win.nb
+    set mapping [list $nb $win]
 
     variable cmdOpts
     set cmd [mwutil::fullOpt "command" [lindex $args 0] $cmdOpts]
@@ -742,7 +743,7 @@ proc scrollutil::pnb::plainnotebookWidgetCmd {win args} {
 		set tabIdx [$nb index end]
 	    }
 	    if {[catch {eval [list $nb $cmd] $argList} result] != 0} {
-		return -code error $result
+		return -code error [string map $mapping $result]
 	    }
 
 	    if {$isNew} {
@@ -830,6 +831,14 @@ proc scrollutil::pnb::plainnotebookWidgetCmd {win args} {
 	    return $aux
 	}
 
+	adjustsize {
+	    if {$argCount != 1} {
+		mwutil::wrongNumArgs "$win $cmd"
+	    }
+
+	    return [adjustsizeSubCmd $win]
+	}
+
 	attrib {
 	    return [::scrollutil::attribSubCmd $win "widget" $argList]
 	}
@@ -900,7 +909,7 @@ proc scrollutil::pnb::plainnotebookWidgetCmd {win args} {
 	    }
 
 	    if {[catch {eval [list $nb $cmd] $argList} result] != 0} {
-		return -code error $result
+		return -code error [string map $mapping $result]
 	    }
 
 	    upvar ::scrollutil::ns${win}::attribs attribs
@@ -946,7 +955,7 @@ proc scrollutil::pnb::plainnotebookWidgetCmd {win args} {
 		set tabPath [widgetToTab $win $widget]
 	    }
 	    if {[catch {eval [list $nb $cmd] $argList} result] != 0} {
-		return -code error $result
+		return -code error [string map $mapping $result]
 	    }
 
 	    grid remove $tabPath
@@ -983,8 +992,11 @@ proc scrollutil::pnb::plainnotebookWidgetCmd {win args} {
 
 		return ""
 	    } else {
-		set code [catch {$nb $cmd $tabId} result]
-		return -code $code $result
+		if {[catch {$nb $cmd $tabId} result] != 0} {
+		    return -code error [string map $mapping $result]
+		}
+
+		return $result
 	    }
 	}
 
@@ -992,7 +1004,7 @@ proc scrollutil::pnb::plainnotebookWidgetCmd {win args} {
 	    set widget [lindex $args 2]
 	    set isNew [expr {[lsearch -exact [$nb tabs] $widget] < 0}]
 	    if {[catch {eval [list $nb $cmd] $argList} result] != 0} {
-		return -code error $result
+		return -code error [string map $mapping $result]
 	    }
 
 	    if {$isNew} {
@@ -1115,18 +1127,11 @@ proc scrollutil::pnb::plainnotebookWidgetCmd {win args} {
 	    if {$argCount == 2} {
 		return [$nb instate $stateSpec]
 	    } elseif {[$nb instate $stateSpec]} {
-		return -code [catch {uplevel 1 [lindex $args 2]}] ""
+		set code [catch {uplevel 1 [lindex $args 2]} result]
+		return -code $code $result
 	    } else {
 		return ""
 	    }
-	}
-
-	adjustsize {
-	    if {$argCount != 1} {
-		mwutil::wrongNumArgs "$win $cmd"
-	    }
-
-	    return [adjustsizeSubCmd $win]
 	}
 
 	see {
@@ -1149,13 +1154,16 @@ proc scrollutil::pnb::plainnotebookWidgetCmd {win args} {
 
 	select -
 	tabs {
-	    set code [catch {eval [list $nb $cmd] $argList} result]
-	    return -code $code $result
+	    if {[catch {eval [list $nb $cmd] $argList} result] != 0} {
+		return -code error [string map $mapping $result]
+	    }
+
+	    return $result
 	}
 
 	state {
 	    if {[catch {eval [list $nb $cmd] $argList} result] != 0} {
-		return -code error $result
+		return -code error [string map $mapping $result]
 	    }
 
 	    if {$argCount > 1} {
@@ -1188,7 +1196,7 @@ proc scrollutil::pnb::plainnotebookWidgetCmd {win args} {
 		}
 	    }
 	    if {[catch {eval [list $nb $cmd] $argList} result] != 0} {
-		return -code error $result
+		return -code error [string map $mapping $result]
 	    }
 
 	    if {$argCount == 2} {
@@ -1382,6 +1390,25 @@ proc scrollutil::pnb::reorderTabs win {
 # Private procedures used in bindings
 # ===================================
 #
+
+#------------------------------------------------------------------------------
+# scrollutil::pnb::onFocusIn
+#------------------------------------------------------------------------------
+proc scrollutil::pnb::onFocusIn {win detail} {
+    upvar ::scrollutil::ns${win}::data data
+
+    if {[focus -lastfor $win] eq $win} {
+	if {$detail eq "NotifyInferior"} {
+	    if {$data(traversedIn)} {
+		event generate $win <Shift-Tab>
+	    }
+	} else {
+	    focus $data(cf)
+	}
+    }
+
+    set data(traversedIn) 0
+}
 
 #------------------------------------------------------------------------------
 # scrollutil::pnb::onPlainnotebookMap
@@ -1742,6 +1769,10 @@ proc scrollutil::pnb::postMenu {menu rootX rootY} {
 	[$menu index end] eq "none"} {
 	return ""
     }
+
+    set bg [ttk::style lookup . -background]
+    set fg [ttk::style lookup . -foreground]
+    $menu configure -background $bg -foreground $fg
 
     #
     # For awthemes:

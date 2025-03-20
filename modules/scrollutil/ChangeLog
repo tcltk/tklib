@@ -1,3 +1,30 @@
+2025-03-20  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 2.5.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/*.tcl: Improvements in the error handling for the
+	  scrollednotebook and plainnotebook widgets; improved the keyboard
+	  traversal via "Shift-Tab" for all scrollutil::* widgets by refining
+	  the handling of the <FocusIn> event when the detail field is
+	  "NotifyInferior".
+
+	* scripts/tclIndex: Newly generated.
+
+	* scripts/utils/*.tcl: Extensions in the packages mwutil and scaleutil.
+
+	* doc/ScrollableFrmDemo2.png: Updated screenshot.
+
+	* doc/TablelistConfig2.png: Added screenshot.
+
+	* ../../examples/scrollutil/*FrmContent.tcl: These scripts now use
+	  toggleswitch widgets rather than checkbuttons if they can load the
+	  Tsw package.
+
 2024-11-29  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Scrollutil 2.4.

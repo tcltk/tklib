@@ -9,7 +9,7 @@
 #   - Private procedures implementing the scrollableframe widget command
 #   - Private procedures used in bindings
 #
-# Copyright (c) 2019-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2019-2025  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -133,11 +133,10 @@ namespace eval scrollutil::sf {
 #------------------------------------------------------------------------------
 proc scrollutil::sf::createBindings {} {
     bind Scrollableframe <KeyPress> continue
-    bind Scrollableframe <FocusIn> {
-	if {[focus -lastfor %W] eq "%W"} {
-            focus [%W contentframe]
-        }
+    bind Scrollableframe <<TraverseIn>> {
+	set scrollutil::ns%W::data(traversedIn) 1
     }
+    bind Scrollableframe <FocusIn> { scrollutil::sf::onFocusIn %W %d }
     bind Scrollableframe <Map> {
 	scrollutil::sf::updateHorizPlaceOpts %W
 	scrollutil::sf::updateVertPlaceOpts  %W
@@ -211,6 +210,7 @@ proc scrollutil::scrollableframe args {
 	#
 	variable data
 	array set data {
+	    traversedIn	0
 	    autoFillX	0
 	    autoFillY	0
 	    xOffset	0
@@ -1077,6 +1077,25 @@ proc scrollutil::sf::applyOffset {win axis offset force} {
 # Private procedures used in bindings
 # ===================================
 #
+
+#------------------------------------------------------------------------------
+# scrollutil::sf::onFocusIn
+#------------------------------------------------------------------------------
+proc scrollutil::sf::onFocusIn {win detail} {
+    upvar ::scrollutil::ns${win}::data data
+
+    if {[focus -lastfor $win] eq $win} {
+	if {$detail eq "NotifyInferior"} {
+	    if {$data(traversedIn)} {
+		event generate $win <Shift-Tab>
+	    }
+	} else {
+	    focus $data(cf)
+	}
+    }
+
+    set data(traversedIn) 0
+}
 
 #------------------------------------------------------------------------------
 # scrollutil::sf::onScrollableframeMfConfigure

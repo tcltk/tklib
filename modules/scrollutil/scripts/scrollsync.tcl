@@ -11,7 +11,7 @@
 #   - Private procedures used in bindings
 #   - Private utility procedures
 #
-# Copyright (c) 2019-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2019-2025  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -104,11 +104,10 @@ namespace eval scrollutil::ss {
 #------------------------------------------------------------------------------
 proc scrollutil::ss::createBindings {} {
     bind Scrollsync <KeyPress> continue
-    bind Scrollsync <FocusIn> {
-	if {[focus -lastfor %W] eq "%W"} {
-            focus [lindex [%W widgets] 0]
-        }
+    bind Scrollsync <<TraverseIn>> {
+	set scrollutil::ns%W::data(traversedIn) 1
     }
+    bind Scrollsync <FocusIn> { scrollutil::ss::onFocusIn %W %d }
     bind Scrollsync <Configure> {
 	after 50 [list scrollutil::ss::updateMasterWidgets %W]
     }
@@ -168,6 +167,7 @@ proc scrollutil::scrollsync args {
 	#
 	variable data
 	array set data {
+	    traversedIn		0
 	    xView		{-1 -1}
 	    yView		{-1 -1}
 	    xViewLocked		0
@@ -304,11 +304,11 @@ proc scrollutil::ss::scrollsyncWidgetCmd {win args} {
 
     variable cmdOpts
     set cmd [mwutil::fullOpt "option" [lindex $args 0] $cmdOpts]
+    set argList [lrange $args 1 end]
 
     switch $cmd {
 	attrib {
-	    return [::scrollutil::attribSubCmd $win "widget" \
-		    [lrange $args 1 end]]
+	    return [::scrollutil::attribSubCmd $win "widget" $argList]
 	}
 
 	cget {
@@ -328,8 +328,7 @@ proc scrollutil::ss::scrollsyncWidgetCmd {win args} {
 	configure {
 	    variable configSpecs
 	    return [mwutil::configureSubCmd $win configSpecs \
-		    scrollutil::ss::doConfig scrollutil::ss::doCget \
-		    [lrange $args 1 end]]
+		    scrollutil::ss::doConfig scrollutil::ss::doCget $argList]
 	}
 
 	hasattrib -
@@ -358,9 +357,9 @@ proc scrollutil::ss::scrollsyncWidgetCmd {win args} {
 	    return $data(widgetList)
 	}
 
-	xview { return [viewSubCmd $win x [lrange $args 1 end]] }
+	xview { return [viewSubCmd $win x $argList] }
 
-	yview { return [viewSubCmd $win y [lrange $args 1 end]] }
+	yview { return [viewSubCmd $win y $argList] }
     }
 }
 
@@ -529,6 +528,25 @@ proc scrollutil::ss::scrollCmd {win widget axis first last} {
 # Private procedures used in bindings
 # ===================================
 #
+
+#------------------------------------------------------------------------------
+# scrollutil::ss::onFocusIn
+#------------------------------------------------------------------------------
+proc scrollutil::ss::onFocusIn {win detail} {
+    upvar ::scrollutil::ns${win}::data data
+
+    if {[focus -lastfor $win] eq $win} {
+	if {$detail eq "NotifyInferior"} {
+	    if {$data(traversedIn)} {
+		event generate $win <Shift-Tab>
+	    }
+	} else {
+	    focus [lindex $data(widgetList) 0]
+	}
+    }
+
+    set data(traversedIn) 0
+}
 
 #------------------------------------------------------------------------------
 # scrollutil::ss::updateMasterWidgets

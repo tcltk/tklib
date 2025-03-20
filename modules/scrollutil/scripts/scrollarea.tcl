@@ -11,7 +11,7 @@
 #   - Private procedures used in bindings
 #   - Private utility procedures
 #
-# Copyright (c) 2019-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2019-2025  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -175,16 +175,15 @@ namespace eval scrollutil::sa {
 #------------------------------------------------------------------------------
 proc scrollutil::sa::createBindings {} {
     bind Scrollarea <KeyPress> continue
-    bind Scrollarea <FocusIn> {
-	if {[focus -lastfor %W] eq "%W"} {
-            focus [%W widget]
-        }
+    bind Scrollarea <<TraverseIn>> {
+	set scrollutil::ns%W::data(traversedIn) 1
     }
+    bind Scrollarea <FocusIn>	{ scrollutil::sa::onFocusIn %W %d }
     bind Scrollarea <Configure>	{
 	scrollutil::sa::onScrollareaConfigure %W %w %h
     }
-    bind Scrollarea <Enter>	 { scrollutil::sa::onScrollareaEnter %W }
-    bind Scrollarea <Leave>	 { scrollutil::sa::onScrollareaLeave %W }
+    bind Scrollarea <Enter>	{ scrollutil::sa::onScrollareaEnter %W }
+    bind Scrollarea <Leave>	{ scrollutil::sa::onScrollareaLeave %W }
     bind Scrollarea <Destroy> {
 	namespace delete scrollutil::ns%W
 	catch {rename %W ""}
@@ -269,6 +268,7 @@ proc scrollutil::scrollarea args {
 	#
 	variable data
 	array set data {
+	    traversedIn	 0
 	    height	 1
 	    width	 1
 	    hsbManaged	 0
@@ -569,11 +569,11 @@ proc scrollutil::sa::scrollareaWidgetCmd {win args} {
 
     variable cmdOpts
     set cmd [mwutil::fullOpt "option" [lindex $args 0] $cmdOpts]
+    set argList [lrange $args 1 end]
 
     switch $cmd {
 	attrib {
-	    return [::scrollutil::attribSubCmd $win "widget" \
-		    [lrange $args 1 end]]
+	    return [::scrollutil::attribSubCmd $win "widget" $argList]
 	}
 
 	cget {
@@ -593,8 +593,7 @@ proc scrollutil::sa::scrollareaWidgetCmd {win args} {
 	configure {
 	    variable configSpecs
 	    return [mwutil::configureSubCmd $win configSpecs \
-		    scrollutil::sa::doConfig scrollutil::sa::doCget \
-		    [lrange $args 1 end]]
+		    scrollutil::sa::doConfig scrollutil::sa::doCget $argList]
 	}
 
 	hasattrib -
@@ -806,6 +805,25 @@ proc scrollutil::sa::setVScrollbar {win first last} {
 # Private procedures used in bindings
 # ===================================
 #
+
+#------------------------------------------------------------------------------
+# scrollutil::sa::onFocusIn
+#------------------------------------------------------------------------------
+proc scrollutil::sa::onFocusIn {win detail} {
+    upvar ::scrollutil::ns${win}::data data
+
+    if {[focus -lastfor $win] eq $win} {
+	if {$detail eq "NotifyInferior"} {
+	    if {$data(traversedIn)} {
+		event generate $win <Shift-Tab>
+	    }
+	} else {
+	    focus $data(widget)
+	}
+    }
+
+    set data(traversedIn) 0
+}
 
 #------------------------------------------------------------------------------
 # scrollutil::sa::onScrollareaConfigure

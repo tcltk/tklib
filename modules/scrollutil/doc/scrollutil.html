@@ -14,7 +14,7 @@
   <div>
     <h1>Scrollutil Programmer's Guide</h1>
 
-    <h2>For Scrollutil Version 2.4</h2>
+    <h2>For Scrollutil Version 2.5</h2>
 
     <h3>by</h3>
 
@@ -319,8 +319,8 @@
     </address>
   </blockquote>
 
-  <p>The distribution file is <code>scrollutil2.4.tar.gz</code> for UNIX and
-  <code>scrollutil2_4.zip</code> for Windows.&nbsp; These files contain the
+  <p>The distribution file is <code>scrollutil2.5.tar.gz</code> for UNIX and
+  <code>scrollutil2_5.zip</code> for Windows.&nbsp; These files contain the
   same information, except for the additional carriage return character
   preceding the linefeed at the end of each line in the text files for
   Windows.</p>
@@ -337,18 +337,16 @@
 
   <p>Install the package as a subdirectory of one of the directories given by
   the <code>auto_path</code> variable.&nbsp; For example, you can install it as
-  a directory at the same level as the Tcl and Tk script libraries.&nbsp; The
-  locations of these library directories are given by the
-  <code>tcl_library</code> and <code>tk_library</code> variables,
-  respectively.</p>
+  a subdirectory of the <code>lib</code> directory within your Tcl/Tk
+  installation.</p>
 
   <p>To install Scrollutil <i>on UNIX</i>, <code>cd</code> to the desired
   directory and unpack the distribution file
-  <code>scrollutil2.4.tar.gz</code>:</p>
+  <code>scrollutil2.5.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c scrollutil2.4.tar.gz | tar -xf -
+gunzip -c scrollutil2.5.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
@@ -356,17 +354,17 @@ gunzip -c scrollutil2.4.tar.gz | tar -xf -
 
   <blockquote>
     <pre>
-tar -zxf scrollutil2.4.tar.gz
+tar -zxf scrollutil2.5.tar.gz
 </pre>
   </blockquote>
 
-  <p>Both commands will create a directory named <code>scrollutil2.4</code>,
+  <p>Both commands will create a directory named <code>scrollutil2.5</code>,
   with the subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>scrollutil2_4.zip</code> into the directory
-  <code>scrollutil2.4</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>scrollutil2_5.zip</code> into the directory
+  <code>scrollutil2.5</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>Notice that in tklib the Scrollutil <code>demos</code> directory is
@@ -390,8 +388,8 @@ tar -zxf scrollutil2.4.tar.gz
   <code>scrollutil::closetabstate</code>, which are provided by the
   Scrollutil_tile package only).</p>
 
-  <p>To be able to access the commands and variables defined in the package
-  Scrollutil, your scripts must contain one of the lines</p>
+  <p>To be able to access the commands and variables defined in the Scrollutil
+  package, your scripts must contain one of the lines</p>
 
   <blockquote>
     <pre>
@@ -411,7 +409,7 @@ package provide Scrollutil ...
   </blockquote>
 
   <p>Likewise, to be able to access the commands and variables defined in the
-  package Scrollutil_tile, your scripts must contain one of the lines</p>
+  Scrollutil_tile package, your scripts must contain one of the lines</p>
 
   <blockquote>
     <pre>
@@ -462,7 +460,7 @@ namespace import scrollutil::<i>pattern</i> ?scrollutil::<i>pattern ...</i>?
     Scrollutil installation directory.</li>
 
     <li>The read-only variable <code>scrollutil::scalingpct</code> is set when
-    loading the package Scrollutil or Scrollutil_tile via&nbsp; <code>package
+    loading the Scrollutil or Scrollutil_tile package via&nbsp; <code>package
     require</code>&nbsp; to the scaling percentage corresponding to the
     display's DPI scaling level.&nbsp; Scrollutil adapts, among others, the
     default width of the Tk core scrollbars on X11 and that of the
@@ -485,7 +483,7 @@ namespace import scrollutil::<i>pattern</i> ?scrollutil::<i>pattern ...</i>?
     properly scaled.</li>
 
     <li>The read-only variable <code>scrollutil::usingTile</code> has the value
-    <code>0</code> in the package Scrollutil and the value <code>1</code> in
+    <code>0</code> in the Scrollutil package and the value <code>1</code> in
     Scrollutil_tile.</li>
   </ul>
 
@@ -683,7 +681,7 @@ namespace eval ::scaleutil { set keepTkScaling 1 }
     <code>default</code>, some styling options of the ttk::scrollbar,
     ttk::scale, ttk::progressbar, ttk::combobox, ttk::spinbox, ttk::button,
     toolbutton, ttk::menubutton, ttk::checkbutton, ttk::radiobutton,
-    ttk::notebook, and ttk::treeview widgets;</li>
+    ttk::notebook, ttk::panedwindow, and ttk::treeview widgets;</li>
 
     <li class="tm">for the built-in theme <code>clam</code>, some styling
     options of the ttk::scrollbar, ttk::scale, ttk::progressbar, ttk::combobox,
@@ -699,18 +697,18 @@ namespace eval ::scaleutil { set keepTkScaling 1 }
 
     <li class="tm">for the built-in theme <code>vista</code>, some styling
     options of the ttk::combobox, ttk::button, toolbutton, ttk::menubutton,
-    ttk::checkbutton, ttk::radiobutton, ttk::notebook, and ttk::treeview
-    widgets;</li>
+    ttk::checkbutton, ttk::radiobutton, ttk::notebook, ttk::panedwindow, and
+    ttk::treeview widgets;</li>
 
     <li class="tm">for the built-in theme <code>winnative</code>, some styling
     options of the ttk::scale, ttk::progressbar, ttk::combobox, ttk::spinbox,
     toolbutton, ttk::menubutton, ttk::checkbutton, ttk::radiobutton, 
-    ttk::notebook, and ttk::treeview widgets;</li>
+    ttk::notebook, ttk::panedwindow, and ttk::treeview widgets;</li>
 
     <li class="tm">for the built-in theme <code>xpnative</code>, some styling
     options of the ttk::combobox, ttk::spinbox, ttk::button, toolbutton,
-    ttk::menubutton, ttk::checkbutton, ttk::radiobutton, ttk::notebook, and
-    ttk::treeview widgets.</li>
+    ttk::menubutton, ttk::checkbutton, ttk::radiobutton, ttk::notebook,
+    ttk::panedwindow, and ttk::treeview widgets.</li>
   </ul>
 
   <p>In addition, the procedure <code>scaleutil::scalingPercentage</code> makes
@@ -1772,12 +1770,15 @@ grid $_sa ...
   "scrollableframe.html#fitcontentwidth">-fitcontentwidth</a> yes</code>&nbsp;
   setting within a <a href="scrollarea.html">scrollarea</a>.&nbsp; After that
   it populates the content frame of the scrollableframe with ttk::label,
-  ttk::combobox, ttk::spinbox, ttk::entry, and ttk::checkbutton widgets used to
-  display and edit the configuration options of the tablelist widget.&nbsp; The
-  procedure handles the <code>&lt;&lt;TraverseIn&gt;&gt;</code> virtual event
-  sent to one of these widgets with the aid of the scrollableframe's
-  <code><a href="scrollableframe.html#see">see</a></code> subcommand.&nbsp;
-  Whenever a ttk::combobox or ttk::spinbox is created, the <code><a href=
+  ttk::combobox, ttk::spinbox, ttk::entry, and ttk::checkbutton or
+  tsw::toggleswitch widgets used to display and edit the configuration options
+  of the tablelist widget.&nbsp; If the toggle switch widget package Tsw can be
+  loaded into the interpreter then we use toggleswitch widgets rather than
+  checkbuttons.&nbsp; The procedure handles the
+  <code>&lt;&lt;TraverseIn&gt;&gt;</code> virtual event sent to one of these
+  widgets with the aid of the scrollableframe's <code><a href=
+  "scrollableframe.html#see">see</a></code> subcommand.&nbsp; Whenever a
+  ttk::combobox or ttk::spinbox is created, the <code><a href=
   "wheelEvent.html#adapt">scrollutil::adaptWheelEventHandling</a></code>
   command is invoked for it, being that these widgets have built-in bindings
   for the mouse wheel and <code>&lt;TouchpadScroll&gt;</code> events.</p>
@@ -1790,8 +1791,14 @@ grid $_sa ...
   scrollableframe changes as a result of resizing the toplevel window.</p>
 
   <blockquote>
-    <img src="TablelistConfig.png" alt="TablelistConfig" width="431"
-    height="414">
+    <table border="0" cellspacing="0" cellpadding="0">
+      <tr valign="top">
+        <td><img src="TablelistConfig.png" alt="TablelistConfig" width="431"
+        height="414"></td>
+        <td><img src="TablelistConfig2.png" alt="TablelistConfig2" width="431"
+        height="414"></td>
+      </tr>
+    </table>
   </blockquote>
 
   <h3 id="ex_BwScrollableFrameDemo2">A Script Using Two BWidget ScrollableFrame

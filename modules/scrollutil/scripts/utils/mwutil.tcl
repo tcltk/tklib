@@ -5,7 +5,7 @@
 #   - Namespace initialization
 #   - Public utility procedures
 #
-# Copyright (c) 2000-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2025  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 if {[catch {package require Tk 8.4-}]} {
@@ -21,7 +21,7 @@ namespace eval mwutil {
     #
     # Public variables:
     #
-    variable version	2.23
+    variable version	2.24
     variable library	[file dirname [file normalize [info script]]]
 
     #
@@ -30,7 +30,8 @@ namespace eval mwutil {
     namespace export	wrongNumArgs getAncestorByClass convEventFields \
 			defineKeyNav processTraversal focusNext focusPrev \
 			configureWidget fullConfigOpt fullOpt enumOpts \
-			configureSubCmd attribSubCmd hasattribSubCmd \
+			configureSubCmd attribSubCmdEx attribSubCmd \
+			hasattribSubCmdEx hasattribSubCmd unsetattribSubCmdEx \
 			unsetattribSubCmd getScrollInfo getScrollInfo2 \
 			isScrollable scrollByUnits genMouseWheelEvent \
 			containsPointer hasFocus windowingSystem currentTheme \
@@ -146,9 +147,6 @@ proc mwutil::defineKeyNav class {
 	bind ${class}KeyNav $event \
 	     [list mwutil::processTraversal %W $class $event]
     }
-
-    bind Entry   <<TraverseIn>> { %W selection range 0 end; %W icursor end }
-    bind Spinbox <<TraverseIn>> { %W selection range 0 end; %W icursor end }
 }
 
 #------------------------------------------------------------------------------
@@ -349,6 +347,7 @@ proc mwutil::enumOpts optList {
     set optCount [llength $optList]
     set n 1
     foreach opt $optList {
+	set opt [list $opt]
 	if {$n == 1} {
 	    set str $opt
 	} elseif {$n < $optCount} {
@@ -411,13 +410,12 @@ proc mwutil::configureSubCmd {win configSpecsName configCmd cgetCmd argList} {
 }
 
 #------------------------------------------------------------------------------
-# mwutil::attribSubCmd
+# mwutil::attribSubCmdEx
 #
 # This procedure is invoked to process *attrib subcommands.
 #------------------------------------------------------------------------------
-proc mwutil::attribSubCmd {win prefix argList} {
-    set classNs [string tolower [winfo class $win]]
-    upvar ::${classNs}::ns${win}::attribs attribs
+proc mwutil::attribSubCmdEx {rootNs win prefix argList} {
+    upvar ::${rootNs}::ns${win}::attribs attribs
 
     set argCount [llength $argList]
     if {$argCount > 1} {
@@ -457,15 +455,50 @@ proc mwutil::attribSubCmd {win prefix argList} {
 }
 
 #------------------------------------------------------------------------------
+# mwutil::attribSubCmd
+#
+# This procedure is invoked to process *attrib subcommands.
+#------------------------------------------------------------------------------
+proc mwutil::attribSubCmd {win prefix argList} {
+    set rootNs [string tolower [winfo class $win]]
+    return [attribSubCmdEx $rootNs $win $prefix $argList]
+}
+
+#------------------------------------------------------------------------------
+# mwutil::hasattribSubCmdEx
+#
+# This procedure is invoked to process has*attrib subcommands.
+#------------------------------------------------------------------------------
+proc mwutil::hasattribSubCmdEx {rootNs win prefix attr} {
+    upvar ::${rootNs}::ns${win}::attribs attribs
+
+    return [info exists attribs($prefix-$attr)]
+}
+
+#------------------------------------------------------------------------------
 # mwutil::hasattribSubCmd
 #
 # This procedure is invoked to process has*attrib subcommands.
 #------------------------------------------------------------------------------
 proc mwutil::hasattribSubCmd {win prefix attr} {
-    set classNs [string tolower [winfo class $win]]
-    upvar ::${classNs}::ns${win}::attribs attribs
+    set rootNs [string tolower [winfo class $win]]
+    return [hasattribSubCmdEx $rootNs $win $prefix $attr]
+}
 
-    return [info exists attribs($prefix-$attr)]
+#------------------------------------------------------------------------------
+# mwutil::unsetattribSubCmdEx
+#
+# This procedure is invoked to process unset*attrib subcommands.
+#------------------------------------------------------------------------------
+proc mwutil::unsetattribSubCmdEx {rootNs win prefix attr} {
+    upvar ::${rootNs}::ns${win}::attribs attribs
+
+    set name $prefix-$attr
+    if {[info exists attribs($name)]} {
+	unset attribs($name)
+    }
+
+    return ""
 }
 
 #------------------------------------------------------------------------------
@@ -474,15 +507,8 @@ proc mwutil::hasattribSubCmd {win prefix attr} {
 # This procedure is invoked to process unset*attrib subcommands.
 #------------------------------------------------------------------------------
 proc mwutil::unsetattribSubCmd {win prefix attr} {
-    set classNs [string tolower [winfo class $win]]
-    upvar ::${classNs}::ns${win}::attribs attribs
-
-    set name $prefix-$attr
-    if {[info exists attribs($name)]} {
-	unset attribs($name)
-    }
-
-    return ""
+    set rootNs [string tolower [winfo class $win]]
+    return [unsetattribSubCmdEx $rootNs $win $prefix $attr]
 }
 
 #------------------------------------------------------------------------------

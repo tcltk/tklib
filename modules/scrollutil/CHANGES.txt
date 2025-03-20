@@ -1,5 +1,23 @@
-What is new in Scrollutil 2.4?
+What is new in Scrollutil 2.5?
 ------------------------------
+
+1. Improvements in the error handling for the scrollednotebook and
+   plainnotebook widgets.
+
+2. Improved the keyboard traversal via "Shift-Tab" for all scrollutil::*
+   widgets by refining the handling of the <FocusIn> event when the
+   detail field is "NotifyInferior" (whose support was introduced in Tk
+   8.6.15, 8.7b1, and 9.0.0).
+
+3. The scaleutil package now also scales the "-sashthickness" and
+   "-gripsize" options of the "Sash" style.
+
+4. The demo scripts "BwScrollableFrmDemo2.tcl", "ScrolledFrmDemo2.tcl",
+   and "SuScrollableFrmDemo2.tcl" now use toggleswitch widgets rather
+   than checkbuttons if they can load the Tsw package.
+
+What was new in Scrollutil 2.4?
+-------------------------------
 
 1. Made sure that the Migration Tool for Tcl 9 by Ashok Nadkarni won't
    output any warnings or notes (thanks to Andreas Kupries for his

@@ -9,7 +9,7 @@
 #   - Private procedures implementing the pagesman widget command
 #   - Private procedures used in bindings
 #
-# Copyright (c) 2021-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2021-2025  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -127,14 +127,11 @@ namespace eval scrollutil::pm {
 #------------------------------------------------------------------------------
 proc scrollutil::pm::createBindings {} {
     bind Pagesman <KeyPress> continue
-    bind Pagesman <FocusIn> {
-	if {[focus -lastfor %W] eq "%W"} {
-	    if {[%W select] ne ""} {
-		focus [%W select]
-	    }
-        }
+    bind Pagesman <<TraverseIn>> {
+	set scrollutil::ns%W::data(traversedIn) 1
     }
-    bind Pagesman <Map> { scrollutil::pm::resizeWidgetDelayed %W 100 }
+    bind Pagesman <FocusIn> { scrollutil::pm::onFocusIn %W %d }
+    bind Pagesman <Map>	    { scrollutil::pm::resizeWidgetDelayed %W 100 }
     bind Pagesman <Destroy> {
 	namespace delete scrollutil::ns%W
 	catch {rename %W ""}
@@ -190,6 +187,7 @@ proc scrollutil::pagesman args {
 	#
 	variable data
 	array set data {
+	    traversedIn	0
 	    pageList	{}
 	    paddingList	{}
 	    stickyList	{}
@@ -359,6 +357,7 @@ proc scrollutil::pm::pagesmanWidgetCmd {win args} {
 
     variable cmdOpts
     set cmd [mwutil::fullOpt "command" [lindex $args 0] $cmdOpts]
+    set argList [lrange $args 1 end]
 
     switch $cmd {
 	add {
@@ -413,8 +412,7 @@ proc scrollutil::pm::pagesmanWidgetCmd {win args} {
 	}
 
 	attrib {
-	    return [::scrollutil::attribSubCmd $win "widget" \
-		    [lrange $args 1 end]]
+	    return [::scrollutil::attribSubCmd $win "widget" $argList]
 	}
 
 	cget {
@@ -433,8 +431,7 @@ proc scrollutil::pm::pagesmanWidgetCmd {win args} {
 	configure {
 	    variable configSpecs
 	    return [mwutil::configureSubCmd $win configSpecs \
-		    scrollutil::pm::doConfig scrollutil::pm::doCget \
-		    [lrange $args 1 end]]
+		    scrollutil::pm::doConfig scrollutil::pm::doCget $argList]
 	}
 
 	forget {
@@ -462,9 +459,7 @@ proc scrollutil::pm::pagesmanWidgetCmd {win args} {
 	    incr data(pageCount) -1
 
 	    upvar ::scrollutil::ns${win}::attribs attribs
-	    foreach name [array names attribs $widget-*] {
-		unset attribs($name)
-	    }
+	    array unset attribs $widget-*
 
 	    if {$widget eq $data(currentPage)} {
 		#
@@ -756,6 +751,25 @@ proc scrollutil::pm::getPageOpts {win optValPairs paddingName stickyName} {
 # Private procedures used in bindings
 # ===================================
 #
+
+#------------------------------------------------------------------------------
+# scrollutil::pm::onFocusIn
+#------------------------------------------------------------------------------
+proc scrollutil::pm::onFocusIn {win detail} {
+    upvar ::scrollutil::ns${win}::data data
+
+    if {[focus -lastfor $win] eq $win} {
+	if {$detail eq "NotifyInferior"} {
+	    if {$data(traversedIn)} {
+		event generate $win <Shift-Tab>
+	    }
+	} else {
+	    focus $data(currentPage)
+	}
+    }
+
+    set data(traversedIn) 0
+}
 
 #------------------------------------------------------------------------------
 # scrollutil::pm::resizeWidgetDelayed

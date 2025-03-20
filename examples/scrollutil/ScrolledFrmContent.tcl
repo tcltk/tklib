@@ -2,7 +2,7 @@
 # Populates the content frame of the iwidgets::scrolledframe widget created in
 # the demo script ScrolledFrmDemo2.tcl.
 #
-# Copyright (c) 2019-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2019-2025  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -248,7 +248,7 @@ pack $sf -expand yes -fill both -padx 7p -pady 7p
 #
 set bf [ttk::frame .bf]
 set b1 [ttk::button $bf.b1 -text "Configure Tablelist Widget" \
-        -command configTablelist]
+        -command [list configTablelist $tbl]]
 set b2 [ttk::button $bf.b2 -text "Close" -command exit]
 pack $b2 -side right -padx 7p -pady {0 7p}
 pack $b1 -side left -padx 7p -pady {0 7p}
@@ -300,7 +300,7 @@ proc configMainSf {sf cf lb} {
 
 #------------------------------------------------------------------------------
 
-proc configTablelist {} {
+proc configTablelist tbl {
     set top .top
     if {[winfo exists $top]} {
 	raise $top
@@ -344,7 +344,8 @@ proc configTablelist {} {
     # Create some widgets in the content frame, corresponding
     # to the configuration options of the tablelist widget
     #
-    global tbl
+    global tswLoaded
+    set tswLoaded [expr {[catch {package require tsw}] == 0}]
     set row 0
     foreach configSet [$tbl configure] {
 	if {[llength $configSet] != 5} {
@@ -388,7 +389,7 @@ proc configTablelist {} {
 
 		$w configure -values $values
 		$w set [$tbl cget $opt]
-		bind $w <<ComboboxSelected>> [list applyValue %W $opt]
+		bind $w <<ComboboxSelected>> [list applyValue %W $tbl $opt]
 		grid $w -row $row -column 1 -sticky w -padx 3p -pady {3p 0}
 
 		#
@@ -422,18 +423,22 @@ proc configTablelist {} {
 	    -showlabels -
 	    -showseparators -
 	    -tight {
-		ttk::checkbutton $w -command [list applyBoolean $w $opt]
-		global $w
-		set $w [$tbl cget $opt]
-		$w configure -text [expr {[set $w] ? "on": "off"}]
+		if {$tswLoaded} {
+		    tsw::toggleswitch $w
+		    $w switchstate [$tbl cget $opt]
+		} else {
+		    ttk::checkbutton $w
+		    upvar #0 $w var
+		    set var [$tbl cget $opt]
+		    $w configure -text [expr {$var ? "on": "off"}]
+		}
+		$w configure -command [list applyBoolean $w $tbl $opt]
 		grid $w -row $row -column 1 -sticky w -padx 3p -pady {3p 0}
 	    }
 
 	    -borderwidth -
 	    -height -
-	    -highlightthickness -
 	    -labelborderwidth -
-	    -labelheight -
 	    -labelpady -
 	    -selectborderwidth -
 	    -spacing -
@@ -442,13 +447,13 @@ proc configTablelist {} {
 	    -treecolumn -
 	    -width {
 		ttk::spinbox $w -from 0 -to 999 -width 4 -command \
-		    [list applyValue $w $opt]
+		    [list applyValue $w $tbl $opt]
 		$w set [$tbl cget $opt]
 		$w configure -invalidcommand bell -validate key \
 		    -validatecommand \
 		    {expr {[string length %P] <= 3 && [regexp {^[0-9]*$} %S]}}
 		foreach event {<Return> <KP_Enter> <FocusOut>} {
-		    bind $w $event [list applyValue %W $opt]
+		    bind $w $event [list applyValue %W $tbl $opt]
 		}
 		grid $w -row $row -column 1 -sticky w -padx 3p -pady {3p 0}
 
@@ -463,7 +468,7 @@ proc configTablelist {} {
 		ttk::entry $w -width 25
 		$w insert 0 [$tbl cget $opt]
 		foreach event {<Return> <KP_Enter> <FocusOut>} {
-		    bind $w $event [list applyValue %W $opt]
+		    bind $w $event [list applyValue %W $tbl $opt]
 		}
 		grid $w -row $row -column 1 -sticky we -padx 3p -pady {3p 0}
 	    }
@@ -492,8 +497,7 @@ proc configTablelist {} {
 
 #------------------------------------------------------------------------------
 
-proc applyValue {w opt} {
-    global tbl
+proc applyValue {w tbl opt} {
     if {[catch {$tbl configure $opt [$w get]} result] != 0} {
 	bell
 	tk_messageBox -title "Error" -icon error -message $result \
@@ -505,11 +509,15 @@ proc applyValue {w opt} {
 
 #------------------------------------------------------------------------------
 
-proc applyBoolean {w opt} {
-    global tbl
-    upvar #0 $w var
-    $tbl configure $opt $var
-    $w configure -text [expr {$var ? "on" : "off"}]
+proc applyBoolean {w tbl opt} {
+    global tswLoaded
+    if {$tswLoaded} {
+	$tbl configure $opt [$w switchstate]
+    } else {
+	upvar #0 $w var
+	$w configure -text [expr {$var ? "on" : "off"}]
+	$tbl configure $opt $var
+    }
 }
 
 #------------------------------------------------------------------------------
