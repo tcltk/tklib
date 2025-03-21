@@ -7,12 +7,16 @@ What is new in Scrollutil 2.5?
 2. Improved the keyboard traversal via "Shift-Tab" for all scrollutil::*
    widgets by refining the handling of the <FocusIn> event when the
    detail field is "NotifyInferior" (whose support was introduced in Tk
-   8.6.15, 8.7b1, and 9.0.0).
+   8.6.15 and 9.0.0).
 
-3. The scaleutil package now also scales the "-sashthickness" and
+3. Removed the file attrib.tcl, which is no longer needed because the
+   "*attrib" subcommands of all scrollutil::* widgets now make use of
+   extended attributes-related procedures of the latest mwutil version.
+
+4. The scaleutil package now also scales the "-sashthickness" and
    "-gripsize" options of the "Sash" style.
 
-4. The demo scripts "BwScrollableFrmDemo2.tcl", "ScrolledFrmDemo2.tcl",
+5. The demo scripts "BwScrollableFrmDemo2.tcl", "ScrolledFrmDemo2.tcl",
    and "SuScrollableFrmDemo2.tcl" now use toggleswitch widgets rather
    than checkbuttons if they can load the Tsw package.
 
