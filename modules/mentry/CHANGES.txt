@@ -1,5 +1,13 @@
-What is new in Mentry 4.3.1?
-----------------------------
+What is new in Mentry 4.4?
+--------------------------
+
+1. Included the same version 2.24 of the mega-widget utility package
+   mwutil as in the most recent Tablelist, Scrollutil, and Tsw releases.
+
+2. Minor improvements in the documentation.
+
+What was new in Mentry 4.3.1?
+-----------------------------
 
 1. Made sure that the Migration Tool for Tcl 9 by Ashok Nadkarni won't
    output any warnings or notes (thanks to Andreas Kupries for his

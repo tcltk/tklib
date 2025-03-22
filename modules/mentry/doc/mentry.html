@@ -13,7 +13,7 @@
   <div>
     <h1>Mentry Programmer's Guide</h1>
 
-    <h2>For Mentry Version 4.3</h2>
+    <h2>For Mentry Version 4.4</h2>
 
     <h3>by</h3>
 
@@ -148,8 +148,8 @@ foreach w [.me entries] {
   <h3 id="ov_get">How to Get It?</h3>
 
   <p>Mentry is available for free download from the same URL as Wcb.&nbsp; The
-  distribution file is <code>mentry4.3.1.tar.gz</code> for UNIX and
-  <code>mentry4_3_1.zip</code> for Windows.&nbsp; These files contain the same
+  distribution file is <code>mentry4.4.tar.gz</code> for UNIX and
+  <code>mentry4_4.zip</code> for Windows.&nbsp; These files contain the same
   information, except for the additional carriage return character preceding
   the linefeed at the end of each line in the text files for Windows.</p>
 
@@ -165,17 +165,15 @@ foreach w [.me entries] {
 
   <p>Install the package as a subdirectory of one of the directories given by
   the <code>auto_path</code> variable.&nbsp; For example, you can install it as
-  a directory at the same level as the Tcl and Tk script libraries.&nbsp; The
-  locations of these library directories are given by the
-  <code>tcl_library</code> and <code>tk_library</code> variables,
-  respectively.</p>
+  a subdirectory of the <code>lib</code> directory within your Tcl/Tk
+  installation.</p>
 
   <p>To install Mentry <i>on UNIX</i>, <code>cd</code> to the desired directory
-  and unpack the distribution file <code>mentry4.3.1.tar.gz</code>:</p>
+  and unpack the distribution file <code>mentry4.4.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c mentry4.3.1.tar.gz | tar -xf -
+gunzip -c mentry4.4.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
@@ -183,21 +181,21 @@ gunzip -c mentry4.3.1.tar.gz | tar -xf -
 
   <blockquote>
     <pre>
-tar -zxf mentry4.3.1.tar.gz
+tar -zxf mentry4.4.tar.gz
 </pre>
   </blockquote>
 
-  <p>Both commands will create a directory named <code>mentry4.3.1</code>, with
+  <p>Both commands will create a directory named <code>mentry4.4</code>, with
   the subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>mentry4_3_1.zip</code> into the directory
-  <code>mentry4.3.1</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>mentry4_4.zip</code> into the directory
+  <code>mentry4.4</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>The file <code>mentryThemes.tcl</code> in the <code>scripts</code>
-  directory is only needed for applications using the package Mentry_tile (see
+  directory is only needed for applications using the Mentry_tile package (see
   next section).</p>
 
   <p>Notice that in tklib the Mentry <code>demos</code> directory is replaced
@@ -215,8 +213,8 @@ tar -zxf mentry4.3.1.tar.gz
   implemented in the same <code>mentry</code> namespace and provide identical
   commands.</p>
 
-  <p>To be able to access the commands and variables defined in the package
-  Mentry, your scripts must contain one of the lines</p>
+  <p>To be able to access the commands and variables of the Mentry package,
+  your scripts must contain one of the lines</p>
 
   <blockquote>
     <pre>
@@ -235,8 +233,8 @@ package provide Mentry ...
 </pre>
   </blockquote>
 
-  <p>Likewise, to be able to access the commands and variables defined in the
-  package Mentry_tile, your scripts must contain one of the lines</p>
+  <p>Likewise, to be able to access the commands and variables of the
+  Mentry_tile package, your scripts must contain one of the lines</p>
 
   <blockquote>
     <pre>
@@ -287,7 +285,7 @@ namespace import mentry::<i>pattern</i> ?mentry::<i>pattern ...</i>?
     Mentry installation directory.</li>
 
     <li>The read-only variable <code>mentry::usingTile</code> has the value
-    <code>0</code> in the package Mentry and the value <code>1</code> in
+    <code>0</code> in the Mentry package and the value <code>1</code> in
     Mentry_tile.</li>
 
     <li>In Mentry_tile the array <code>mentry::themeDefaults</code> holds the
@@ -309,7 +307,7 @@ namespace import mentry::<i>pattern</i> ?mentry::<i>pattern ...</i>?
   in several themes it is not possible to draw flat, borderless tile enty
   widgets.</p>
 
-  <p>From the above it follows that <b>the package Mentry_tile will only work
+  <p>From the above it follows that <b>the Mentry_tile package will only work
   as expected if the Tk <code>frame</code> and <code>label</code> commands
   haven't been overridden by using&nbsp; <code>namespace import -force
   ttk::*</code>&nbsp; at global scope</b>.&nbsp; While earlier tile releases
@@ -322,7 +320,7 @@ namespace import mentry::<i>pattern</i> ?mentry::<i>pattern ...</i>?
   <p>Another restriction to be taken into account is due to the fact that in
   earlier tile versions the&nbsp; <code>(ttk::)style theme use</code>&nbsp;
   command could only be used to set the current theme, but not to retrieve
-  it.&nbsp; For this reason, if the package Mentry_tile cannot get the current
+  it.&nbsp; For this reason, if the Mentry_tile package cannot get the current
   theme with the aid of&nbsp; <code>ttk::style theme use</code>&nbsp; then it
   makes use of the variable <code>ttk::currentTheme</code> or
   <code>tile::currentTheme</code> (depending on the tile version), which is set

@@ -1,10 +1,10 @@
 #==============================================================================
 # Main Mentry and Mentry_tile package module.
 #
-# Copyright (c) 1999-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 1999-2025  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-namespace eval ::mentry {
+namespace eval mentry {
     proc - {} { return [expr {$::tcl_version >= 8.5 ? "-" : ""}] }
 
     package require Tk 8.4[-]
@@ -22,7 +22,7 @@ namespace eval ::mentry {
     #
     # Public variables:
     #
-    variable version	4.3.1
+    variable version	4.4
     variable library	[file dirname [file normalize [info script]]]
 
     #
@@ -52,25 +52,25 @@ namespace eval ::mentry {
     namespace export	ipv6AddrMentry putIPv6Addr getIPv6Addr
 }
 
-package provide mentry::common $::mentry::version
+package provide mentry::common $mentry::version
 
 #
 # The following procedure, invoked in "mentry.tcl" and
-# "mentry_tile.tcl", sets the variable ::mentry::usingTile
+# "mentry_tile.tcl", sets the variable mentry::usingTile
 # to the given value and sets a trace on this variable.
 #
-proc ::mentry::useTile {bool} {
+proc mentry::useTile {bool} {
     variable usingTile $bool
     trace add variable usingTile {write unset} \
-	[list ::mentry::restoreUsingTile $bool]
+	[list mentry::restoreUsingTile $bool]
 }
 
 #
 # The following trace procedure is executed whenever the variable
-# ::mentry::usingTile is written or unset.  It restores the
+# mentry::usingTile is written or unset.  It restores the
 # variable to its original value, given by the first argument.
 #
-proc ::mentry::restoreUsingTile {origVal varName index op} {
+proc mentry::restoreUsingTile {origVal varName index op} {
     variable usingTile $origVal
     switch $op {
 	write {
@@ -79,35 +79,35 @@ proc ::mentry::restoreUsingTile {origVal varName index op} {
 	}
 	unset {
 	    trace add variable usingTile {write unset} \
-		[list ::mentry::restoreUsingTile $origVal]
+		[list mentry::restoreUsingTile $origVal]
 	}
     }
 }
 
-proc ::mentry::createTkAliases {} {
+proc mentry::createTkAliases {} {
     foreach cmd {frame entry label} {
 	if {[llength [info commands ::tk::$cmd]] == 0} {
-	    interp alias {} ::tk::$cmd {} ::$cmd
+	    interp alias {} tk::$cmd {} $cmd
 	}
     }
 }
-::mentry::createTkAliases
+mentry::createTkAliases
 
 #
 # Everything else needed is lazily loaded on demand, via the dispatcher
 # set up in the subdirectory "scripts" (see the file "tclIndex").
 #
-lappend auto_path [file join $::mentry::library scripts]
+lappend auto_path [file join $mentry::library scripts]
 
 #
-# Load the package mwutil from the directory "scripts/mwutil".  Take
-# into account that it is also included in Scrollutil and Tablelist.
+# Load the package mwutil from the directory "scripts/mwutil".  Take into
+# account that it is also included in Scrollutil, Tablelist, and Tsw.
 #
-proc ::mentry::loadUtil {} {
+proc mentry::loadUtil {} {
     if {[catch {package present mwutil} version] == 0 &&
-	[package vcompare $version 2.23] < 0} {
+	[package vcompare $version 2.24] < 0} {
 	package forget mwutil
     }
-    package require mwutil 2.23[-]
+    package require mwutil 2.24[-]
 }
-::mentry::loadUtil
+mentry::loadUtil

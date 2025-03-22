@@ -54,8 +54,8 @@ How to Get It?
 --------------
 
 Mentry is available for free download from the same URL as Wcb.  The
-distribution file is "mentry4.3.1.tar.gz" for UNIX and "mentry4_3_1.zip"
-for Windows.  These files contain the same information, except for the
+distribution file is "mentry4.4.tar.gz" for UNIX and "mentry4_4.zip" for
+Windows.  These files contain the same information, except for the
 additional carriage return character preceding the linefeed at the end
 of each line in the text files for Windows.
 
@@ -68,28 +68,26 @@ How to Install It?
 
 Install the package as a subdirectory of one of the directories given
 by the "auto_path" variable.  For example, you can install it as a
-directory at the same level as the Tcl and Tk script libraries.  The
-locations of these library directories are given by the "tcl_library"
-and "tk_library" variables, respectively.
+subdirectory of the "lib" directory within your Tcl/Tk installation.
 
 To install Mentry on UNIX, "cd" to the desired directory and unpack the
-distribution file "mentry4.3.1.tar.gz":
+distribution file "mentry4.4.tar.gz":
 
-    gunzip -c mentry4.3.1.tar.gz | tar -xf -
+    gunzip -c mentry4.4.tar.gz | tar -xf -
 
 On most UNIX systems this can be replaced with
 
-    tar -zxf mentry4.3.1.tar.gz
+    tar -zxf mentry4.4.tar.gz
 
-Both commands will create a directory named "mentry4.3.1", with the
+Both commands will create a directory named "mentry4.4", with the
 subdirectories "demos", "doc", and "scripts".
 
 On Windows, use WinZip or some other program capable of unpacking the
-distribution file "mentry4_3_1.zip" into the directory "mentry4.3.1",
-with the subdirectories "demos", "doc", and "scripts".
+distribution file "mentry4_4.zip" into the directory "mentry4.4", with
+the subdirectories "demos", "doc", and "scripts".
 
 The file "mentryThemes.tcl" in the "scripts" directory is only needed
-for applications using the package Mentry_tile (see next section).
+for applications using the Mentry_tile package (see next section).
 
 How to Use It?
 --------------
@@ -102,14 +100,14 @@ both packages in one and the same application, because both are
 implemented in the same "mentry" namespace and provide identical
 commands.
 
-To be able to use the commands and variables implemented in the package
-Mentry, your scripts must contain one of the lines
+To be able to use the commands and variables of the Mentry package, your
+scripts must contain one of the lines
 
     package require mentry ?version?
     package require Mentry ?version?
 
-Likewise, to be able to use the commands and variables implemented in
-the package Mentry_tile, your scripts must contain one of the lines
+Likewise, to be able to use the commands and variables of the
+Mentry_tile package, your scripts must contain one of the lines
 
     package require mentry_tile ?version?
     package require Mentry_tile ?version?
