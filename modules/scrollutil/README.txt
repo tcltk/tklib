@@ -94,14 +94,14 @@ commands "scrollutil::scrollednotebook", "scrollutil::plainnotebook",
 "scrollutil::closetabstate", which are provided by the Scrollutil_tile
 package only).
 
-To be able to use the commands and variables implemented in the
-Scrollutil package, your scripts must contain one of the lines
+To be able to access the commands and variables of the Scrollutil
+package, your scripts must contain one of the lines
 
     package require scrollutil ?version?
     package require Scrollutil ?version?
 
-Likewise, to be able to use the commands and variables implemented in
-the Scrollutil_tile package, your scripts must contain one of the lines
+Likewise, to be able to access the commands and variables of the
+Scrollutil_tile package, your scripts must contain one of the lines
 
     package require scrollutil_tile ?version?
     package require Scrollutil_tile ?version?

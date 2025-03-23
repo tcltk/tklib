@@ -80,8 +80,8 @@ subdirectories "demos", "doc", and "scripts".
 How to Use It?
 --------------
 
-To be able to use the commands and variables defined in the Tsw
-package, your scripts must contain one of the lines
+To be able to access the commands and variables of the Tsw package, your
+scripts must contain one of the lines
 
     package require tsw ?version?
     package require Tsw ?version?

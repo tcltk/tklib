@@ -100,13 +100,13 @@ both packages in one and the same application, because both are
 implemented in the same "mentry" namespace and provide identical
 commands.
 
-To be able to use the commands and variables of the Mentry package, your
-scripts must contain one of the lines
+To be able to access the commands and variables of the Mentry package,
+your scripts must contain one of the lines
 
     package require mentry ?version?
     package require Mentry ?version?
 
-Likewise, to be able to use the commands and variables of the
+Likewise, to be able to access the commands and variables of the
 Mentry_tile package, your scripts must contain one of the lines
 
     package require mentry_tile ?version?

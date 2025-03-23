@@ -139,14 +139,14 @@ possible to use both packages in one and the same application, because
 both are implemented in the same "tablelist" namespace and provide
 identical commands.
 
-To be able to use the commands and variables implemented in the
-Tablelist package, your scripts must contain one of the lines
+To be able to access the commands and variables of the Tablelist
+package, your scripts must contain one of the lines
 
     package require tablelist ?version?
     package require Tablelist ?version?
 
-Likewise, to be able to use the commands and variables implemented in
-the Tablelist_tile package, your scripts must contain one of the lines
+Likewise, to be able to access the commands and variables of the
+Tablelist_tile package, your scripts must contain one of the lines
 
     package require tablelist_tile ?version?
     package require Tablelist_tile ?version?
