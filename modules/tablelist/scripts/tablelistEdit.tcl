@@ -1207,7 +1207,7 @@ proc tablelist::postMenuCmd w {
     variable winSys
     if {$winSys eq "x11"} {
 	set last [$menu index last]
-	if {$last ne "none"} {
+	if {$last ne "" && $last ne "none"} {
 	    set text [$w cget -text]
 	    for {set idx 0} {$idx <= $last} {incr idx} {
 		if {[$menu type $idx] eq "radiobutton" &&
@@ -1806,7 +1806,7 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
 	if {$isMenubtn} {
 	    set menu [$w cget -menu]
 	    set last [$menu index last]
-	    if {$last ne "none"} {
+	    if {$last ne "" && $last ne "none"} {
 		set varName [$w cget -textvariable]
 		for {set idx 0} {$idx <= $last} {incr idx} {
 		    if {[$menu type $idx] eq "radiobutton"} {
@@ -2284,7 +2284,7 @@ proc tablelist::configAutoFinishEditing {win w} {
 	TMenubutton {
 	    set menu [$w cget -menu]
 	    set last [$menu index last]
-	    if {$last ne "none"} {
+	    if {$last ne "" && $last ne "none"} {
 		for {set idx 0} {$idx <= $last} {incr idx} {
 		    if {[regexp {^(command|checkbutton|radiobutton)$} \
 			 [$menu type $idx]]} {
@@ -2499,7 +2499,7 @@ proc tablelist::saveEditConfigOpts w {
 	set last [$menu index last]
 	set types {}
 
-	if {$last ne "none"} {
+	if {$last ne "" && $last ne "none"} {
 	    for {set idx 0} {$idx <= $last} {incr idx} {
 		lappend types [$menu type $idx]
 		foreach configSet [$menu entryconfigure $idx] {

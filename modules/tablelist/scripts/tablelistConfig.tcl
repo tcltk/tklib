@@ -2406,6 +2406,7 @@ proc tablelist::doRowConfig {row win opt val} {
 		    set msgScript [list ::tablelist::displayText $win $key \
 				   $col [join $list "\n"] $cellFont \
 				   $maxTextWidth $alignment]
+		    set msgScript [string map {"%" "%%"} $msgScript]
 		} else {
 		    adjustElem $win text auxWidth indentWidth $cellFont \
 			       $workPixels $snipSide $data(-snipstring)
@@ -2759,6 +2760,7 @@ proc tablelist::doRowConfig {row win opt val} {
 		    set msgScript [list ::tablelist::displayText $win $key \
 				   $col [join $list "\n"] $cellFont \
 				   $maxTextWidth $alignment]
+		    set msgScript [string map {"%" "%%"} $msgScript]
 		} else {
 		    adjustElem $win text auxWidth indentWidth $cellFont \
 			       $workPixels $snipSide $data(-snipstring)
@@ -3075,6 +3077,7 @@ proc tablelist::doCellConfig {row col win opt val {skipParts 0}} {
 		set msgScript [list ::tablelist::displayText $win $key \
 			       $col [join $list "\n"] $cellFont \
 			       $maxTextWidth $alignment]
+		set msgScript [string map {"%" "%%"} $msgScript]
 	    } else {
 		adjustElem $win text auxWidth indentWidth $cellFont \
 			   $workPixels $snipSide $data(-snipstring)
@@ -3244,6 +3247,7 @@ proc tablelist::doCellConfig {row col win opt val {skipParts 0}} {
 		set msgScript [list ::tablelist::displayText $win $key \
 			       $col [join $list "\n"] $cellFont \
 			       $maxTextWidth $alignment]
+		set msgScript [string map {"%" "%%"} $msgScript]
 	    } else {
 		adjustElem $win text auxWidth indentWidth $cellFont \
 			   $workPixels $snipSide $data(-snipstring)
@@ -3412,6 +3416,7 @@ proc tablelist::doCellConfig {row col win opt val {skipParts 0}} {
 		set msgScript [list ::tablelist::displayText $win $key \
 			       $col [join $list "\n"] $cellFont \
 			       $maxTextWidth $alignment]
+		set msgScript [string map {"%" "%%"} $msgScript]
 	    } else {
 		adjustElem $win text auxWidth indentWidth $cellFont \
 			   $workPixels $snipSide $data(-snipstring)
@@ -3565,6 +3570,7 @@ proc tablelist::doCellConfig {row col win opt val {skipParts 0}} {
 		set msgScript [list ::tablelist::displayText $win $key $row \
 			       [join $list "\n"] $cellFont \
 			       $maxTextWidth $alignment]
+		set msgScript [string map {"%" "%%"} $msgScript]
 	    } else {
 		adjustElem $win text auxWidth indentWidth $cellFont \
 			   $pixels $snipSide $data(-snipstring)
@@ -3657,6 +3663,7 @@ proc tablelist::doCellConfig {row col win opt val {skipParts 0}} {
 		set msgScript [list ::tablelist::displayText $win $key \
 			       $col [join $list "\n"] $cellFont \
 			       $maxTextWidth $alignment]
+		set msgScript [string map {"%" "%%"} $msgScript]
 	    } else {
 		adjustElem $win text auxWidth indentWidth $cellFont \
 			   $workPixels $snipSide $data(-snipstring)
@@ -3906,6 +3913,7 @@ proc tablelist::doCellConfig {row col win opt val {skipParts 0}} {
 		set msgScript [list ::tablelist::displayText $win $key \
 			       $col [join $list "\n"] $cellFont \
 			       $maxTextWidth $alignment]
+		set msgScript [string map {"%" "%%"} $msgScript]
 	    } else {
 		adjustElem $win text auxWidth indentWidth $cellFont \
 			   $workPixels $snipSide $data(-snipstring)

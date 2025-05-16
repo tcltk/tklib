@@ -928,7 +928,6 @@ proc tablelist::tablelist args {
     set data(body)		$win.body
     set data(bodyFrm)		$data(body).f
     set data(bodyFrmEd)		$data(bodyFrm).e
-    set data(rowGap)		$data(body).g
     set data(hdr)		$win.hdr
     set data(hdrTxt)		$data(hdr).t
     set data(hdrTxtFrm)		$data(hdrTxt).f
@@ -939,6 +938,7 @@ proc tablelist::tablelist args {
     set data(hdrFrmFrm)		$data(hdrFrm).f		;# for the aqua theme
     set data(hdrFrmLbl)		$data(hdrFrm).l
     set data(colGap)		$data(hdr).g
+    set data(rowGap)		$win.g
     set data(lb)		$win.lb
     set data(vsep)		$win.vsep
     set data(hsep)		$win.hsep
@@ -1354,16 +1354,17 @@ proc tablelist::autoscrolltargetSubCmd {win argList} {
     incr prevY -$wY					;# relative to the body
 
     variable scaled4
-    set minX [expr {[minScrollableX $win] + $scaled4}]	;# relative to the body
-    set minY $scaled4					;# relative to the body
-    set maxX [expr {[winfo width  $w] - 1 - $scaled4}]	;# relative to the body
-    set maxY [expr {[winfo height $w] - 1 - $scaled4}]	;# relative to the body
+    set margin [expr {3 * $scaled4}]
+    set minX [expr {[minScrollableX $win] + $margin}]	;# relative to the body
+    set minY $margin					;# relative to the body
+    set maxX [expr {[winfo width  $w] - 1 - $margin}]	;# relative to the body
+    set maxY [expr {[winfo height $w] - 1 - $margin}]	;# relative to the body
 
     if {($y > $maxY && $prevY <= $maxY) ||
 	($y < $minY && $prevY >= $minY) ||
 	($x > $maxX && $prevX <= $maxX) ||
 	($x < $minX && $prevX >= $minX)} {
-	autoScan2 $win 0
+	autoScan2 $win $margin 0
     } elseif {($y <= $maxY && $prevY > $maxY) ||
 	      ($y >= $minY && $prevY < $minY) ||
 	      ($x <= $maxX && $prevX > $maxX) ||
@@ -2376,9 +2377,9 @@ proc tablelist::dumptostringSubCmd {win argList} {
     }
 
     set str ""
-    append str [string map {\n \\n} [::$win cget -columntitles]] \n
+    append str [string map {"\n" "\\n"} [::$win cget -columntitles]] \n
     append str [list [::$win sortcolumnlist] [::$win sortorderlist]] \n
-    append str [string map {\n \\n} $hdr_itemList] \n
+    append str [string map {"\n" "\\n"} $hdr_itemList] \n
     append str $parentList \n
     append str $itemList
     return $str
@@ -4771,7 +4772,14 @@ proc tablelist::hidetargetmarkSubCmd {win argList} {
     }
 
     upvar ::tablelist::ns${win}::data data
-    place forget $data(rowGap)
+    if {[winfo ismapped $data(rowGap)]} {
+	lower $data(rowGap)
+	place forget $data(rowGap)
+
+	place $data(rowGap) -in $data(body) -anchor w -height 1 -width 1
+	tkwait visibility $data(rowGap)		;# instead of invoking update
+    }
+
     return ""
 }
 
@@ -5251,7 +5259,7 @@ proc tablelist::loadfromstringSubCmd {win argList} {
 
     set idx [string first \n $str]
     set line [string range $str 0 [expr {$idx - 1}]]
-    set columnTitles [string map {\\n \n} $line]
+    set columnTitles [string map {"\\n" "\n"} $line]
     if {$columnTitles ne [::$win cget -columntitles]} {
 	return -code error \
 	    "the specified string is not compatible with this tablelist widget"
@@ -5265,7 +5273,7 @@ proc tablelist::loadfromstringSubCmd {win argList} {
     set startIdx [incr idx]
     set idx [string first \n $str $startIdx]
     set line [string range $str $startIdx [expr {$idx - 1}]]
-    set hdr_itemList [string map {\\n \n} $line]
+    set hdr_itemList [string map {"\\n" "\n"} $line]
 
     set startIdx [incr idx]
     set idx [string first \n $str $startIdx]
@@ -6018,7 +6026,9 @@ proc tablelist::showtargetmarkSubCmd {win argList} {
     set index [lindex $argList 1]
 
     upvar ::tablelist::ns${win}::data data
+    place forget $data(rowGap)
     set w $data(body)
+    variable scaled4
 
     switch $opt {
 	before {
@@ -6046,8 +6056,7 @@ proc tablelist::showtargetmarkSubCmd {win argList} {
 		set y [lindex $dlineinfo 1]
 	    }
 
-	    variable scaled4
-	    place $data(rowGap) -anchor w -y $y -height $scaled4 \
+	    place $data(rowGap) -in $w -anchor w -y $y -height $scaled4 \
 				-width [winfo width $data(hdrTxtFrm)]
 	}
 
@@ -6062,11 +6071,18 @@ proc tablelist::showtargetmarkSubCmd {win argList} {
 	    set lineHeight [lindex $dlineinfo 3]
 	    set y [expr {$lineY + $lineHeight/2}]
 
-	    place $data(rowGap) -anchor w -y $y -height $lineHeight -width 6
+	    place $data(rowGap) -in $w -anchor w -y $y -height $lineHeight \
+				-width $scaled4
 	}
     }
 
     raise $data(rowGap)
+    variable winSys
+    if {$winSys eq "aqua"} {
+	update idletasks
+    } else {
+	tkwait visibility $data(rowGap)		;# instead of invoking update
+    }
     return ""
 }
 
@@ -8077,6 +8093,7 @@ proc tablelist::hdr_insertRows {win index argList} {
 	findTabs $win $w $line $col $col tabIdx1 tabIdx2
 	set msgScript [list ::tablelist::displayText $win $key $col $text \
 		       $font $pixels $alignment]
+	set msgScript [string map {"%" "%%"} $msgScript]
 	$w window create $tabIdx2 -pady $padY -create $msgScript
     }
 
@@ -8352,6 +8369,7 @@ proc tablelist::displayItems win {
 	    findTabs $win $w $line $col $col tabIdx1 tabIdx2
 	    set msgScript [list ::tablelist::displayText $win $key $col $text \
 			   $font $pixels $alignment]
+	    set msgScript [string map {"%" "%%"} $msgScript]
 	    $w window create $tabIdx2 -pady $padY -create $msgScript
 	    $w tag add elidedWin $tabIdx2
 	}

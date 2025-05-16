@@ -1929,6 +1929,7 @@ proc tablelist::updateMlCell {w index1 index2 msgScript aux auxType auxWidth
 
 	    set path [lindex [$w dump -window $index1] 1]
 	    if {$path ne "" && [winfo class $path] eq "Message"} {
+		set msgScript [string map {"%%" "%"} $msgScript]
 		eval $msgScript
 	    }
 	} else {
@@ -2020,6 +2021,7 @@ proc tablelist::updateMlCell {w index1 index2 msgScript aux auxType auxWidth
 
 		set path [lindex [$w dump -window $msgIdx] 1]
 		if {$path ne "" && [winfo class $path] eq "Message"} {
+		    set msgScript [string map {"%%" "%"} $msgScript]
 		    eval $msgScript
 		}
 	    } elseif {$alignment eq "right"} {
@@ -2141,6 +2143,7 @@ proc tablelist::appendComplexElem {win key row col text pixels alignment
 		     $snipSide $snipStr
 	set msgScript [list ::tablelist::displayText $win $key $col \
 		       [join $list "\n"] $cellFont $maxTextWidth $alignment]
+	set msgScript [string map {"%" "%%"} $msgScript]
     } else {
 	adjustElem $win text auxWidth indentWidth $cellFont $pixels \
 		   $snipSide $snipStr
@@ -4998,6 +5001,7 @@ proc tablelist::redisplay win {
 		if {[findTabs $win $w $line $col $col tabIdx1 tabIdx2]} {
 		    set msgScript [list ::tablelist::displayText $win $key \
 				   $col $text $font $pixels $alignment]
+		    set msgScript [string map {"%" "%%"} $msgScript]
 		    $w window create $tabIdx2 -pady $padY -create $msgScript
 		    $w tag add elidedWin $tabIdx2
 		}
@@ -5352,6 +5356,7 @@ proc tablelist::redisplayCol {win col first last {inBody 1}} {
 			 $pixels $snipSide2 $snipStr
 	    set msgScript [list ::tablelist::displayText $win $key $col \
 			   [join $list "\n"] $cellFont $maxTextWidth $alignment]
+	    set msgScript [string map {"%" "%%"} $msgScript]
 	} else {
 	    adjustElem $win text auxWidth indentWidth $cellFont \
 		       $pixels $snipSide $snipStr
@@ -5458,6 +5463,7 @@ proc tablelist::redisplayCol {win col first last {inBody 1}} {
 			 $pixels $snipSide2 $snipStr
 	    set msgScript [list ::tablelist::displayText $win $key $col \
 			   [join $list "\n"] $cellFont $maxTextWidth $alignment]
+	    set msgScript [string map {"%" "%%"} $msgScript]
 	} else {
 	    adjustElem $win text auxWidth indentWidth $cellFont \
 		       $pixels $snipSide $snipStr

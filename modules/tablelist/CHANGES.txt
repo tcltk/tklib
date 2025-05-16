@@ -1,5 +1,30 @@
-What is new in Tablelist 7.5?
+What is new in Tablelist 7.6?
 -----------------------------
+
+1. The implementation of the interactive cell editing with the aid of a
+   (ttk::)menubutton now takes into acount that in Tk 9 the menu index
+   "none" was replaced with the empty string.
+
+2. Eliminated a few artifacts related to the "showtargetmark" subcommand
+   when using TkDND on Windows or macOS Aqua (thanks to Nicolas Bats for
+   his bug report).
+
+3. Made sure that the "autoscrolltarget" subcommand works as expected
+   (again, thanks to Nicolas Bats for reporting that on Windows and
+   macOS Aqua this was not always the case).
+
+4. Made sure that in multi-line cell texts the substring "%W" won't be
+   substituted by the path name of the tablelist's body (thanks to
+   Harald Oehlmann for his bug report).
+
+5. Minor improvements in the demo scripts related to interactive cell
+   editing.
+
+6. Improved the documentation by extending the CSS stylesheet used in
+   the HTML files.
+
+What was new in Tablelist 7.5?
+------------------------------
 
 1. Support for interactive cell editing with the aid of the new
    toggleswitch widget.

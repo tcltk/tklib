@@ -1,3 +1,24 @@
+2025-05-16 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 7.6.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/*.tcl: Eliminated a few artifacts related to the
+	  "showtargetmark" subcommand when using TkDND on Windows or macOS
+	  Aqua; made sure that the "autoscrolltarget" subcommand works as
+	  expected; made sure that in multi-line cell texts the substring "%W"
+	  won't be substituted by the path name of the tablelist's body; the
+	  implementation of the interactive cell editing with the aid of a
+	  (ttk::)menubutton now takes into acount that in Tk 9 the menu index
+	  "none" was replaced with the empty string.
+
+	* ../../examples/tablelist/*.tcl: Minor improvements related to
+	  interactive cell editing.
+
 2025-03-24 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Tablelist 7.5.

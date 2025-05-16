@@ -7,7 +7,7 @@
 #   - Public procedures related to sorting
 #   - Private procedures implementing the sorting
 #
-# Copyright (c) 2000-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2025  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -491,6 +491,7 @@ proc tablelist::sortItems {win parentKey sortColList sortOrderList} {
 		findTabs $win $w $line $col $col tabIdx1 tabIdx2
 		set msgScript [list ::tablelist::displayText $win $key \
 			       $col $text $font $pixels $alignment]
+		set msgScript [string map {"%" "%%"} $msgScript]
 		$w window create $tabIdx2 -pady $padY -create $msgScript
 		$w tag add elidedWin $tabIdx2
 	    }

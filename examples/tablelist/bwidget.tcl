@@ -199,7 +199,7 @@ proc editEndCmd {tbl row col text} {
 	    #
 	    set img [expr {$text ? "checkedImg" : "uncheckedImg"}]
 	    $tbl cellconfigure $row,$col -image $img
-	    after idle [list updateCkbtn $tbl $row $col]
+	    after idle [list updateHdrCkbtn $tbl $col]
 	}
 
 	baudRate {

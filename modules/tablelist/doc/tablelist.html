@@ -14,7 +14,7 @@
   <div>
     <h1>Tablelist Programmer's Guide</h1>
 
-    <h2>For Tablelist Version 7.5</h2>
+    <h2>For Tablelist Version 7.6</h2>
 
     <h3>by</h3>
 
@@ -179,8 +179,8 @@
   <h3 id="ov_get">How to Get It?</h3>
 
   <p>Tablelist is available for free download from the same URL as Wcb.&nbsp;
-  The distribution file is <code>tablelist7.5.tar.gz</code> for UNIX and
-  <code>tablelist7_5.zip</code> for Windows.&nbsp; These files contain the same
+  The distribution file is <code>tablelist7.6.tar.gz</code> for UNIX and
+  <code>tablelist7_6.zip</code> for Windows.&nbsp; These files contain the same
   information, except for the additional carriage return character preceding
   the linefeed at the end of each line in the text files for Windows.</p>
 
@@ -201,11 +201,11 @@
 
   <p>To install Tablelist <i>on UNIX</i>, <code>cd</code> to the desired
   directory and unpack the distribution file
-  <code>tablelist7.5.tar.gz</code>:</p>
+  <code>tablelist7.6.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c tablelist7.5.tar.gz | tar -xf -
+gunzip -c tablelist7.6.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
@@ -213,17 +213,17 @@ gunzip -c tablelist7.5.tar.gz | tar -xf -
 
   <blockquote>
     <pre>
-tar -zxf tablelist7.5.tar.gz
+tar -zxf tablelist7.6.tar.gz
 </pre>
   </blockquote>
 
-  <p>Both commands will create a directory named <code>tablelist7.5</code>,
+  <p>Both commands will create a directory named <code>tablelist7.6</code>,
   with the subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>tablelist7_5.zip</code> into the directory
-  <code>tablelist7.5</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>tablelist7_6.zip</code> into the directory
+  <code>tablelist7.6</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>The file <code>tablelistEdit.tcl</code> in the <code>scripts</code>
@@ -2580,7 +2580,7 @@ if {[winfo class $ckbtn] eq "Checkbutton"} {
 # Selects/deselects the checkbutton embedded into the header label
 # of the specified column or sets it into the tri-state mode.
 #</span>
-proc updateCkbtn {tbl row col} {
+proc updateHdrCkbtn {tbl col} {
     set lst [$tbl getcolumns $col]
     set ckbtn [$tbl labelwindowpath $col]
     upvar #0 [$ckbtn cget -variable] var
@@ -2612,7 +2612,7 @@ proc afterCopyCmd {tbl col} {
                 set img [expr {$text ? "checkedImg" : "uncheckedImg"}]
                 $tbl cellconfigure $row,$col -image $img
             }
-            updateCkbtn $tbl 0 $col
+            updateHdrCkbtn $tbl $col
         }</span>
 
         color {
@@ -2736,7 +2736,7 @@ proc editEndCmd {tbl row col text} {
             #</span>
             set img [expr {$text ? "checkedImg" : "uncheckedImg"}]
             $tbl cellconfigure $row,$col -image $img
-            after idle [list updateCkbtn $tbl $row $col]
+            after idle [list updateHdrCkbtn $tbl $col]
         }</span>
 
         baudRate {
@@ -2807,11 +2807,21 @@ proc editEndCmd {tbl row col text} {
     <span class="red">red</span> color.</li>
 
     <li class="tm">
+      Implement the procedure <code>ckbtnCmd</code> as follows:
+
+      <blockquote>
+        <pre>
+proc ckbtnCmd {tbl row col} { return [updateHdrCkbtn $tbl $col] }
+</pre>
+      </blockquote>
+    </li>
+
+    <li class="tm">
       After populating the tablelist widget, invoke
 
       <blockquote>
         <pre>
-$tbl embedcheckbuttons 1 updateCkbtn
+$tbl embedcheckbuttons 1 ckbtnCmd
 </pre>
       </blockquote>
     </li>

@@ -12,7 +12,7 @@ namespace eval tablelist {
     #
     # Public variables:
     #
-    variable version	7.5
+    variable version	7.6
     variable library	[file dirname [file normalize [info script]]]
 
     #
@@ -96,10 +96,10 @@ lappend auto_path [file join $tablelist::library scripts]
 #
 proc tablelist::loadUtils {} {
     if {[catch {package present mwutil} version] == 0 &&
-	[package vcompare $version 2.24] < 0} {
+	[package vcompare $version 2.25] < 0} {
 	package forget mwutil
     }
-    package require mwutil 2.24[-]
+    package require mwutil 2.25[-]
 
     if {[catch {package present scaleutil} version] == 0 &&
 	[package vcompare $version 1.15] < 0} {

@@ -2014,7 +2014,7 @@ proc tablelist::minScrollableX win {
 # continues to scroll until the mouse moves back into that area or no more
 # scrolling in that direction is possible.
 #------------------------------------------------------------------------------
-proc tablelist::autoScan2 {win seqNum} {
+proc tablelist::autoScan2 {win margin seqNum} {
     if {[destroyed $win]} {
 	return ""
     }
@@ -2036,11 +2036,10 @@ proc tablelist::autoScan2 {win seqNum} {
     set x [expr {$data(x) - [winfo x $w]}]		;# relative to the body
     set y [expr {$data(y) - [winfo y $w]}]		;# relative to the body
 
-    variable scaled4
-    set minX [expr {[minScrollableX $win] + $scaled4}]	;# relative to the body
-    set minY $scaled4					;# relative to the body
-    set maxX [expr {[winfo width  $w] - 1 - $scaled4}]	;# relative to the body
-    set maxY [expr {[winfo height $w] - 1 - $scaled4}]	;# relative to the body
+    set minX [expr {[minScrollableX $win] + $margin}]	;# relative to the body
+    set minY $margin					;# relative to the body
+    set maxX [expr {[winfo width  $w] - 1 - $margin}]	;# relative to the body
+    set maxY [expr {[winfo height $w] - 1 - $margin}]	;# relative to the body
 
     if {$y > $maxY} {
 	foreach {first last} [::$win yview] {}
@@ -2085,7 +2084,9 @@ proc tablelist::autoScan2 {win seqNum} {
     }
 
     incr seqNum
-    set data(afterId2) [after $ms [list tablelist::autoScan2 $win $seqNum]]
+    set data(afterId2) \
+	[after $ms [list tablelist::autoScan2 $win $margin $seqNum]]
+    update
 }
 
 #------------------------------------------------------------------------------
@@ -2317,11 +2318,12 @@ proc tablelist::condShowTarget {win y} {
 	place forget $data(rowGap)
     } else {
 	$w configure -cursor $data(-movecursor)
+	variable scaled4
 	if {$data(targetChildIdx) == 0} {
-	    place $data(rowGap) -anchor w -y $gapY -height $lineHeight -width 6
+	    place $data(rowGap) -in $w -anchor w -y $gapY -height $lineHeight \
+				-width $scaled4
 	} else {
-	    variable scaled4
-	    place $data(rowGap) -anchor w -y $gapY -height $scaled4 \
+	    place $data(rowGap) -in $w -anchor w -y $gapY -height $scaled4 \
 				-width [winfo width $data(hdrTxtFrm)]
 	}
 	raise $data(rowGap)
