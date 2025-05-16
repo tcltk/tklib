@@ -13,7 +13,7 @@
 #   - Public procedures
 #   - Private procedures
 #
-# Copyright (c) 2019-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2019-2025  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -34,10 +34,6 @@ namespace eval scrollutil {
 
     variable touchpadScrollSupport [expr {
 	[llength [info commands ::tk::PreciseScrollDeltas]] != 0}]
-
-    variable scrollByUnitsProc [expr {
-	[llength [info commands ::tk::ScrollByUnits]] == 0 ?
-	"tkScrollByUnits" : "tk::ScrollByUnits"}]
 }
 
 #
@@ -70,61 +66,61 @@ proc scrollutil::createBindings {} {
     }
     if {$uniformWheelSupport} {
 	bind Scrollbar <MouseWheel> {
-	    scrollutil::condScrollByUnits %W vh %D -40.0
+	    scrollutil::scrollByUnits %W vh %D -40.0
 	}
 	bind Scrollbar <Option-MouseWheel> {
-	    scrollutil::condScrollByUnits %W vh %D -12.0
+	    scrollutil::scrollByUnits %W vh %D -12.0
 	}
 	bind Scrollbar <Shift-MouseWheel> {
-	    scrollutil::condScrollByUnits %W hv %D -40.0
+	    scrollutil::scrollByUnits %W hv %D -40.0
 	}
 	bind Scrollbar <Shift-Option-MouseWheel> {
-	    scrollutil::condScrollByUnits %W hv %D -12.0
+	    scrollutil::scrollByUnits %W hv %D -12.0
 	}
     } else {
 	if {$winSys eq "aqua"} {
 	    bind Scrollbar <MouseWheel> {
-		scrollutil::condScrollByUnits %W vh [expr {-(%D)}]
+		scrollutil::scrollByUnits %W vh [expr {-(%D)}]
 	    }
 	    bind Scrollbar <Option-MouseWheel> {
-		scrollutil::condScrollByUnits %W vh [expr {-10 * (%D)}]
+		scrollutil::scrollByUnits %W vh [expr {-10 * (%D)}]
 	    }
 	    bind Scrollbar <Shift-MouseWheel> {
-		scrollutil::condScrollByUnits %W hv [expr {-(%D)}]
+		scrollutil::scrollByUnits %W hv [expr {-(%D)}]
 	    }
 	    bind Scrollbar <Shift-Option-MouseWheel> {
-		scrollutil::condScrollByUnits %W hv [expr {-10 * (%D)}]
+		scrollutil::scrollByUnits %W hv [expr {-10 * (%D)}]
 	    }
 	} else {
 	    bind Scrollbar <MouseWheel> {
-		scrollutil::condScrollByUnits %W vh \
+		scrollutil::scrollByUnits %W vh \
 		    [expr {%D >= 0 ? (-%D) / 30 : (-(%D) + 29) / 30}]
 	    }
 	    bind Scrollbar <Shift-MouseWheel> {
-		scrollutil::condScrollByUnits %W hv \
+		scrollutil::scrollByUnits %W hv \
 		    [expr {%D >= 0 ? (-%D) / 30 : (-(%D) + 29) / 30}]
 	    }
 
 	    if {$winSys eq "x11"} {
 		bind Scrollbar <Button-4> {
-		    scrollutil::condScrollByUnits %W vh -5
+		    scrollutil::scrollByUnits %W vh -5
 		}
 		bind Scrollbar <Button-5> {
-		    scrollutil::condScrollByUnits %W vh  5
+		    scrollutil::scrollByUnits %W vh  5
 		}
 		bind Scrollbar <Shift-Button-4> {
-		    scrollutil::condScrollByUnits %W hv -5
+		    scrollutil::scrollByUnits %W hv -5
 		}
 		bind Scrollbar <Shift-Button-5> {
-		    scrollutil::condScrollByUnits %W hv  5
+		    scrollutil::scrollByUnits %W hv  5
 		}
 
 		if {$::tk_patchLevel eq "8.7a3"} {
 		    bind Scrollbar <Button-6> {
-			scrollutil::condScrollByUnits %W hv -5
+			scrollutil::scrollByUnits %W hv -5
 		    }
 		    bind Scrollbar <Button-7> {
-			scrollutil::condScrollByUnits %W hv  5
+			scrollutil::scrollByUnits %W hv  5
 		    }
 		}
 	    }
@@ -240,88 +236,153 @@ proc scrollutil::createBindings {} {
 # axes, which must be "xy" (the default), "x", or "y".
 #------------------------------------------------------------------------------
 proc scrollutil::addMouseWheelSupport {tag {axes "xy"}} {
+    if {$axes ne "xy" && $axes ne "x" && $axes ne "y"} {
+	return -code error "bad axes \"$axes\": must be xy, x, or y"
+    }
+
     set isWindow [string match .* $tag]
     if {$isWindow} {
 	if {![winfo exists $tag]} {
 	    return -code error "bad window path name \"$tag\""
 	}
-    }
 
-    if {$axes ne "xy" && $axes ne "x" && $axes ne "y"} {
-	return -code error "bad axes \"$axes\": must be xy, x, or y"
-    }
+	set isMenubtn	 [expr {[winfo class $tag] eq "Menubutton"}]
+	set isTtkMenubtn [expr {[winfo class $tag] eq "TMenubutton"}]
 
-    if {$isWindow} {
-	if {[string first "x" $axes] >= 0 &&
-	    [catch {$tag xview scroll 0 units}] != 0} {
-	    return -code error \
-		"widget $tag fails to support horizontal scrolling by units"
-	}
+	set isScale	[expr {[winfo class $tag] eq "Scale"}]
+	set isTtkScale	[expr {[winfo class $tag] eq "TScale"}]
 
-	if {[string first "y" $axes] >= 0 &&
-	    [catch {$tag yview scroll 0 units}] != 0} {
-	    return -code error \
-		"widget $tag fails to support vertical scrolling by units"
+	if {!($isMenubtn || $isTtkMenubtn || $isScale || $isTtkScale)} {
+	    if {[string first "x" $axes] >= 0 &&
+		[catch {$tag xview scroll 0 units}] != 0} {
+		return -code error \
+		    "widget $tag fails to support horizontal scrolling by units"
+	    }
+
+	    if {[string first "y" $axes] >= 0 &&
+		[catch {$tag yview scroll 0 units}] != 0} {
+		return -code error \
+		    "widget $tag fails to support vertical scrolling by units"
+	    }
 	}
 
 	set tail "; break"
     } else {
+	set isMenubtn	 [expr {$tag eq "Menubutton"}]
+	set isTtkMenubtn [expr {$tag eq "TMenubutton"}]
+
+	set isScale	[expr {$tag eq "Scale"}]
+	set isTtkScale	[expr {$tag eq "TScale"}]
+
 	set tail ""
     }
 
-    variable winSys
-    variable uniformWheelSupport
+    if {$isMenubtn} {
+	set script {
+	    if {[%W cget -state] eq "disabled"} continue
+	    scrollutil::cycleMenuEntry1 %W}
+	bindMouseWheel $tag $script $tail
+    } elseif {$isTtkMenubtn} {
+	set script {
+	    %W instate disabled continue
+	    scrollutil::cycleMenuEntry1 %W}
+	bindMouseWheel $tag $script $tail
+    } elseif {$isScale} {
+	bind $tag <Enter> {
+	    set scrollutil::xWheelEvents 0; set scrollutil::yWheelEvents 0
+	}
 
-    if {[string first "y" $axes] >= 0} {
-	if {$uniformWheelSupport} {
-	    bind $tag <MouseWheel> \
-		[format {mwutil::scrollByUnits %%W y %%D -40.0%s} $tail]
-	    bind $tag <Option-MouseWheel> \
-		[format {mwutil::scrollByUnits %%W y %%D -12.0%s} $tail]
-	} elseif {$winSys eq "aqua"} {
-	    bind $tag <MouseWheel> \
-		[format {mwutil::scrollByUnits %%W y %%D  -1.0%s} $tail]
-	    bind $tag <Option-MouseWheel> \
-		[format {mwutil::scrollByUnits %%W y %%D  -0.1%s} $tail]
+	set script {
+	    if {[%W cget -state] eq "disabled"} continue
+	    scrollutil::scaleIncrement1 %W}
+	bindMouseWheel $tag $script $tail
+    } elseif {$isTtkScale} {
+	bind $tag <Enter> {
+	    set scrollutil::xWheelEvents 0; set scrollutil::yWheelEvents 0
+	}
+
+	set script {
+	    %W instate disabled continue
+	    scrollutil::ttkScaleIncrement1 %W}
+	bindMouseWheel $tag $script $tail
+    } else {
+	variable winSys
+	variable uniformWheelSupport
+
+	if {[string first "y" $axes] >= 0} {
+	    if {$uniformWheelSupport} {
+		bind $tag <MouseWheel> \
+		    "mwutil::scrollByUnits %W y %D -40.0 $tail"
+		bind $tag <Option-MouseWheel> \
+		    "mwutil::scrollByUnits %W y %D -12.0 $tail"
+	    } elseif {$winSys eq "aqua"} {
+		bind $tag <MouseWheel> \
+		    "mwutil::scrollByUnits %W y %D  -1.0 $tail"
+		bind $tag <Option-MouseWheel> \
+		    "mwutil::scrollByUnits %W y %D  -0.1 $tail"
+	    } else {
+		bind $tag <MouseWheel> \
+		    "mwutil::scrollByUnits %W y %D -30.0 $tail"
+
+		if {$winSys eq "x11"} {
+		    bind $tag <Button-4> "%W yview scroll -5 units $tail"
+		    bind $tag <Button-5> "%W yview scroll  5 units $tail"
+		}
+	    }
 	} else {
-	    bind $tag <MouseWheel> \
-		[format {mwutil::scrollByUnits %%W y %%D -30.0%s} $tail]
+	    if {$uniformWheelSupport || $winSys eq "aqua"} {
+		bind $tag <MouseWheel>		{ # nothing }
+		bind $tag <Option-MouseWheel>	{ # nothing }
+	    } else {
+		bind $tag <MouseWheel>		{ # nothing }
 
-	    if {$winSys eq "x11"} {
-		bind $tag <Button-4> \
-		    [format {%%W yview scroll -5 units%s} $tail]
-		bind $tag <Button-5> \
-		    [format {%%W yview scroll  5 units%s} $tail]
+		if {$winSys eq "x11"} {
+		    bind $tag <Button-4>	{ # nothing }
+		    bind $tag <Button-5>	{ # nothing }
+		}
 	    }
 	}
-    }
 
-    if {[string first "x" $axes] >= 0} {
-	if {$uniformWheelSupport} {
-	    bind $tag <Shift-MouseWheel> \
-		[format {mwutil::scrollByUnits %%W x %%D -40.0%s} $tail]
-	    bind $tag <Shift-Option-MouseWheel> \
-		[format {mwutil::scrollByUnits %%W x %%D -12.0%s} $tail]
-	} elseif {$winSys eq "aqua"} {
-	    bind $tag <Shift-MouseWheel> \
-		[format {mwutil::scrollByUnits %%W x %%D  -1.0%s} $tail]
-	    bind $tag <Shift-Option-MouseWheel> \
-		[format {mwutil::scrollByUnits %%W x %%D  -0.1%s} $tail]
+	if {[string first "x" $axes] >= 0} {
+	    if {$uniformWheelSupport} {
+		bind $tag <Shift-MouseWheel> \
+		    "mwutil::scrollByUnits %W x %D -40.0 $tail"
+		bind $tag <Shift-Option-MouseWheel> \
+		    "mwutil::scrollByUnits %W x %D -12.0 $tail"
+	    } elseif {$winSys eq "aqua"} {
+		bind $tag <Shift-MouseWheel> \
+		    "mwutil::scrollByUnits %W x %D  -1.0 $tail"
+		bind $tag <Shift-Option-MouseWheel> \
+		    "mwutil::scrollByUnits %W x %D  -0.1 $tail"
+	    } else {
+		bind $tag <Shift-MouseWheel> \
+		    "mwutil::scrollByUnits %W x %D -30.0 $tail"
+
+		if {$winSys eq "x11"} {
+		    bind $tag <Shift-Button-4> "%W xview scroll -5 units $tail"
+		    bind $tag <Shift-Button-5> "%W xview scroll  5 units $tail"
+
+		    if {$::tk_patchLevel eq "8.7a3"} {
+			bind $tag <Button-6> "%W xview scroll -5 units $tail"
+			bind $tag <Button-7> "%W xview scroll  5 units $tail"
+		    }
+		}
+	    }
 	} else {
-	    bind $tag <Shift-MouseWheel> \
-		[format {mwutil::scrollByUnits %%W x %%D -30.0%s} $tail]
+	    if {$uniformWheelSupport || $winSys eq "aqua"} {
+		bind $tag <Shift-MouseWheel>		{ # nothing }
+		bind $tag <Shift-Option-MouseWheel>	{ # nothing }
+	    } else {
+		bind $tag <Shift-MouseWheel>	{ # nothing }
 
-	    if {$winSys eq "x11"} {
-		bind $tag <Shift-Button-4> \
-		    [format {%%W xview scroll -5 units%s} $tail]
-		bind $tag <Shift-Button-5> \
-		    [format {%%W xview scroll  5 units%s} $tail]
+		if {$winSys eq "x11"} {
+		    bind $tag <Shift-Button-4>	{ # nothing }
+		    bind $tag <Shift-Button-5>	{ # nothing }
 
-		if {$::tk_patchLevel eq "8.7a3"} {
-		    bind $tag <Button-6> \
-			[format {%%W xview scroll -5 units%s} $tail]
-		    bind $tag <Button-7> \
-			[format {%%W xview scroll  5 units%s} $tail]
+		    if {$::tk_patchLevel eq "8.7a3"} {
+			bind $tag <Button-6>	{ # nothing }
+			bind $tag <Button-7>	{ # nothing }
+		    }
 		}
 	    }
 	}
@@ -332,37 +393,68 @@ proc scrollutil::addMouseWheelSupport {tag {axes "xy"}} {
 	return ""
     }
 
-    set script "if {%# %% 5 != 0} "
-    append script [expr {$isWindow ? "break" : "return"}]
-    append script {
-	lassign [tk::PreciseScrollDeltas %D] scrollutil::dX scrollutil::dY
+    if {$isMenubtn} {
+	set script {
+	    if {[%W cget -state] eq "disabled"} continue
+	    if {%# %% 15 == 0} {
+		scrollutil::cycleMenuEntry2 %W %D
+	    }
+	}
+    } elseif {$isTtkMenubtn} {
+	set script {
+	    %W instate disabled continue
+	    if {%# %% 15 == 0} {
+		scrollutil::cycleMenuEntry2 %W %D
+	    }
+	}
+    } elseif {$isScale} {
+	set script {
+	    if {[%W cget -state] eq "disabled"} continue
+	    if {%# %% 15 == 0} {
+		scrollutil::scaleIncrement2 %W %D
+	    }
+	}
+    } elseif {$isTtkScale} {
+	set script {
+	    %W instate disabled continue
+	    if {%# %% 15 == 0} {
+		scrollutil::ttkScaleIncrement2 %W %D
+	    }
+	}
+    } else {
+	set script "if {%# %% 5 != 0} "
+	append script [expr {$isWindow ? "break" : "return"}]
+	append script {
+	    lassign [tk::PreciseScrollDeltas %D] scrollutil::dX scrollutil::dY
+	}
+	switch $axes {
+	    xy {
+		append script {
+		    if {$scrollutil::dX != 0} {
+			%W xview scroll [expr {-$scrollutil::dX}] units
+		    }
+		    if {$scrollutil::dY != 0} {
+			%W yview scroll [expr {-$scrollutil::dY}] units
+		    }
+		}
+	    }
+	    x {
+		append script {
+		    if {$scrollutil::dX != 0} {
+			%W xview scroll [expr {-$scrollutil::dX}] units
+		    }
+		}
+	    }
+	    y {
+		append script {
+		    if {$scrollutil::dY != 0} {
+			%W yview scroll [expr {-$scrollutil::dY}] units
+		    }
+		}
+	    }
+	}
     }
-    switch $axes {
-	xy {
-	    append script {
-		if {$scrollutil::dX != 0} {
-		    %W xview scroll [expr {-$scrollutil::dX}] units
-		}
-		if {$scrollutil::dY != 0} {
-		    %W yview scroll [expr {-$scrollutil::dY}] units
-		}
-	    }
-	}
-	x {
-	    append script {
-		if {$scrollutil::dX != 0} {
-		    %W xview scroll [expr {-$scrollutil::dX}] units
-		}
-	    }
-	}
-	y {
-	    append script {
-		if {$scrollutil::dY != 0} {
-		    %W yview scroll [expr {-$scrollutil::dY}] units
-		}
-	    }
-	}
-    }
+
     if {$isWindow} {
 	append script break
     }
@@ -770,10 +862,10 @@ proc scrollutil::focusCheckWindow w {
 # Usage: scrollutil::bindMouseWheel tag command
 #
 # Our own version of the ttk::bindMouseWheel procedure, which was not present
-# in tile before Dec. 2008.  Adds basic mouse wheel support to the specified
-# binding tag.
+# in tile before Dec. 2008 and doesn't distinguish between the two axes.  Adds
+# basic mouse wheel support to the specified binding tag.
 #------------------------------------------------------------------------------
-proc scrollutil::bindMouseWheel {tag cmd} {
+proc scrollutil::bindMouseWheel {tag cmd {tail ""}} {
     variable winSys
     variable uniformWheelSupport
 
@@ -806,30 +898,30 @@ proc scrollutil::bindMouseWheel {tag cmd} {
 	}
     } else {
 	if {$uniformWheelSupport} {
-	    bind $tag <MouseWheel>		"$cmd y %D -120.0"
-	    bind $tag <Option-MouseWheel>	"$cmd y %D -12.0"
-	    bind $tag <Shift-MouseWheel>	"$cmd x %D -120.0"
-	    bind $tag <Shift-Option-MouseWheel>	"$cmd x %D -12.0"
+	    bind $tag <MouseWheel>		"$cmd y %D -120.0 $tail"
+	    bind $tag <Option-MouseWheel>	"$cmd y %D -12.0 $tail"
+	    bind $tag <Shift-MouseWheel>	"$cmd x %D -120.0 $tail"
+	    bind $tag <Shift-Option-MouseWheel>	"$cmd x %D -12.0 $tail"
 	} elseif {$winSys eq "aqua"} {
-	    bind $tag <MouseWheel>		"$cmd y \[expr {-%D}\]"
-	    bind $tag <Option-MouseWheel>	"$cmd y \[expr {-10 * %D}\]"
-	    bind $tag <Shift-MouseWheel>	"$cmd x \[expr {-%D}\]"
-	    bind $tag <Shift-Option-MouseWheel>	"$cmd x \[expr {-10 * %D}\]"
+	    bind $tag <MouseWheel>		"$cmd y \[expr {-%D}\] $tail"
+	    bind $tag <Option-MouseWheel>	"$cmd y \[expr {-10*%D}\] $tail"
+	    bind $tag <Shift-MouseWheel>	"$cmd x \[expr {-%D}\] $tail"
+	    bind $tag <Shift-Option-MouseWheel>	"$cmd x \[expr {-10*%D}\] $tail"
 	} else {
 	    bind $tag <MouseWheel> \
-		"$cmd y \[expr {%D >= 0 ? -%D / 120 : (-%D + 119) / 120}\]"
+		"$cmd y \[expr {%D >= 0 ? -%D/120 : (-%D + 119)/120}\] $tail"
 	    bind $tag <Shift-MouseWheel> \
-		"$cmd x \[expr {%D >= 0 ? -%D / 120 : (-%D + 119) / 120}\]"
+		"$cmd x \[expr {%D >= 0 ? -%D/120 : (-%D + 119)/120}\] $tail"
 
 	    if {$winSys eq "x11"} {
-		bind $tag <Button-4>		"$cmd y -1"
-		bind $tag <Button-5>		"$cmd y +1"
-		bind $tag <Shift-Button-4>	"$cmd x -1"
-		bind $tag <Shift-Button-5>	"$cmd x +1"
+		bind $tag <Button-4>		"$cmd y -1 $tail"
+		bind $tag <Button-5>		"$cmd y +1 $tail"
+		bind $tag <Shift-Button-4>	"$cmd x -1 $tail"
+		bind $tag <Shift-Button-5>	"$cmd x +1 $tail"
 
 		if {$::tk_patchLevel eq "8.7a3"} {
-		    bind $tag <Button-6>	"$cmd x -1"
-		    bind $tag <Button-7>	"$cmd x +1"
+		    bind $tag <Button-6>	"$cmd x -1 $tail"
+		    bind $tag <Button-7>	"$cmd x +1 $tail"
 		}
 	    }
 	}
@@ -842,9 +934,9 @@ proc scrollutil::bindMouseWheel {tag cmd} {
 #
 
 #------------------------------------------------------------------------------
-# scrollutil::condScrollByUnits
+# scrollutil::scrollByUnits
 #------------------------------------------------------------------------------
-proc scrollutil::condScrollByUnits {w orient amount {divisor 1.0}} {
+proc scrollutil::scrollByUnits {w orient amount {divisor 1.0}} {
     if {![info exists ::tk::Priv(xEvents)]} {
 	#
 	# Count both the <MouseWheel> and <Shift-MouseWheel>
@@ -862,11 +954,10 @@ proc scrollutil::condScrollByUnits {w orient amount {divisor 1.0}} {
     }
 
     variable uniformWheelSupport
-    variable scrollByUnitsProc
     if {$uniformWheelSupport} {
-	$scrollByUnitsProc $w $orient $amount $divisor
+	tk::ScrollByUnits $w $orient $amount $divisor
     } else {						
-	$scrollByUnitsProc $w $orient $amount
+	tk::ScrollByUnits $w $orient $amount
     }
 }
 
@@ -908,6 +999,120 @@ proc scrollutil::isCompatible {event w} {
 	set idx [lsearch -exact $tagList "WheeleventRedir"]
 	set tag [lindex $tagList [incr idx]]
 	return [expr {[bind $tag $event] ne ""}]
+    }
+}
+
+#------------------------------------------------------------------------------
+# scrollutil::cycleMenuEntry1
+#------------------------------------------------------------------------------
+proc scrollutil::cycleMenuEntry1 {w axis delta {divisor 1.0}} {
+    set menu [$w cget -menu]
+    if {$menu eq "" || $axis eq "x"} {
+	return ""
+    }
+ 
+    set d [expr {$delta/$divisor}]
+    set d [expr {int($d > 0 ? ceil($d) : floor($d))}]
+    tk::MenuNextEntry $menu $d
+
+    set entryType [$menu type active]
+    if {$entryType ne "cascade" && $entryType ne "tearoff"} {
+	uplevel #0 [list $menu invoke active]
+    }
+}
+
+#------------------------------------------------------------------------------
+# scrollutil::cycleMenuEntry2
+#------------------------------------------------------------------------------
+proc scrollutil::cycleMenuEntry2 {w dxdy} {
+    set menu [$w cget -menu]
+    if {$menu eq ""} {
+	return ""
+    }
+
+    lassign [tk::PreciseScrollDeltas $dxdy] deltaX deltaY
+    if {$deltaY != 0} {
+	tk::MenuNextEntry $menu [expr {$deltaY > 0 ? -1 : 1}]
+
+	set entryType [$menu type active]
+	if {$entryType ne "cascade" && $entryType ne "tearoff"} {
+	    uplevel #0 [list $menu invoke active]
+	}
+    }
+}
+
+#------------------------------------------------------------------------------
+# scrollutil::scaleIncrement1
+#------------------------------------------------------------------------------
+proc scrollutil::scaleIncrement1 {w axis delta {divisor 1.0}} {
+    #
+    # Count both the <MouseWheel> and <Shift-MouseWheel>
+    # events, and ignore the non-dominant ones
+    #
+    variable ::scrollutil::xWheelEvents
+    variable ::scrollutil::yWheelEvents
+    incr ${axis}WheelEvents
+    if {($xWheelEvents + $yWheelEvents > 10) &&
+	($axis eq "x" && $xWheelEvents < $yWheelEvents ||
+	 $axis eq "y" && $yWheelEvents < $xWheelEvents)} {
+	return ""
+    }
+
+    set d [expr {$delta/$divisor}]
+    set dir [expr {$d < 0 ? "up" : "down"}]
+    set size [expr {abs($d) < 10 ? "little" : "big"}]
+    tk::ScaleIncrement $w $dir $size noRepeat
+}
+
+#------------------------------------------------------------------------------
+# scrollutil::ttkScaleIncrement1
+#------------------------------------------------------------------------------
+proc scrollutil::ttkScaleIncrement1 {w axis delta {divisor 1.0}} {
+    #
+    # Count both the <MouseWheel> and <Shift-MouseWheel>
+    # events, and ignore the non-dominant ones
+    #
+    variable ::scrollutil::xWheelEvents
+    variable ::scrollutil::yWheelEvents
+    incr ${axis}WheelEvents
+    if {($xWheelEvents + $yWheelEvents > 10) &&
+	($axis eq "x" && $xWheelEvents < $yWheelEvents ||
+	 $axis eq "y" && $yWheelEvents < $xWheelEvents)} {
+	return ""
+    }
+
+    set d [expr {$delta/$divisor}]
+    set d [expr {int($d > 0 ? ceil($d) : floor($d))}]
+    ttk::scale::Increment $w $d
+}
+
+#------------------------------------------------------------------------------
+# scrollutil::scaleIncrement2
+#------------------------------------------------------------------------------
+proc scrollutil::scaleIncrement2 {w dxdy} {
+    set orient [$w cget -orient]
+    lassign [tk::PreciseScrollDeltas $dxdy] deltaX deltaY
+
+    if {$orient eq "horizontal" && $deltaX != 0} {
+	set dir [expr {$deltaX > 0 ? "up" : "down"}]
+	tk::ScaleIncrement $w $dir little noRepeat
+    } elseif {$orient eq "vertical" && $deltaY != 0} {
+	set dir [expr {$deltaY > 0 ? "up" : "down"}]
+	tk::ScaleIncrement $w $dir little noRepeat
+    }
+}
+
+#------------------------------------------------------------------------------
+# scrollutil::ttkScaleIncrement2
+#------------------------------------------------------------------------------
+proc scrollutil::ttkScaleIncrement2 {w dxdy} {
+    set orient [$w cget -orient]
+    lassign [tk::PreciseScrollDeltas $dxdy] deltaX deltaY
+
+    if {$orient eq "horizontal" && $deltaX != 0} {
+	ttk::scale::Increment $w [expr {$deltaX > 0 ? -1 : 1}]
+    } elseif {$orient eq "vertical" && $deltaY != 0} {
+	ttk::scale::Increment $w [expr {$deltaY > 0 ? -1 : 1}]
     }
 }
 

@@ -1,3 +1,29 @@
+2025-05-16  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 2.6.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/*.tcl: The "scrollutil::addMouseWheelSupport" command now
+	  accepts also the path name of a (ttk::)menubutton widget or the class
+	  name "(T)Menubutton", as well as the path name of a (ttk::)scale
+	  widget or the class name "(T)Scale" as argument.
+
+	* scripts/tclIndex: Newly generated.
+
+	* scripts/utils/*.tcl: Extended the mwutil package.
+
+	* doc/ScrollableFrmDemo2.png: Updated screenshots.
+	* doc/ScrolledCanvas.png:
+
+	* doc/stylesheet.css: Extended the CSS stylesheet.
+
+	 * ../../examples/scrollutil/ScrolledCanvas.tcl: Added mouse wheel and
+	 <TouchpadScroll> event support to two ttk::scale widgets.
+
 2025-03-24  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Scrollutil 2.5.

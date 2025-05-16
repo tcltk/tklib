@@ -347,9 +347,10 @@ proc scrollutil::pnb::createBindings {} {
     }
 
     #
-    # Implement the navigation between the selectable plainnotebook tabs via
-    # the mouse wheel (TIP 591).  Use our own bindMouseWheel procedure rather
-    # than ttk::bindMouseWheel, which was not present in tile before Dec. 2008.
+    # Implement the navigation between the selectable plainnotebook tabs
+    # via the mouse wheel (TIP 591).  Use our own bindMouseWheel procedure
+    # rather than ttk::bindMouseWheel, which was not present in tile
+    # before Dec. 2008 and doesn't distinguish between the two axes.
     #
     bind PnbMiddleFrame <Enter> {
 	set scrollutil::xWheelEvents 0; set scrollutil::yWheelEvents 0

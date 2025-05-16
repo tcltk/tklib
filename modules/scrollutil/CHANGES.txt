@@ -1,5 +1,29 @@
-What is new in Scrollutil 2.5?
+What is new in Scrollutil 2.6?
 ------------------------------
+
+1. The "scrollutil::addMouseWheelSupport" command now accepts also the
+   path name of a (ttk::)menubutton widget or the class name
+   "(T)Menubutton" as argument, in which case the binding scripts
+   created by this command for the mouse wheel and <TouchpadScroll>
+   events will activate the cyclically next or previous entry of the
+   menu associated with the widget and invoke the action of that menu
+   entry.
+
+2. The "scrollutil::addMouseWheelSupport" command now accepts also the
+   path name of a (ttk::)scale widget or the class name "(T)Scale" as
+   argument, in which case the binding scripts created by this command
+   for the mouse wheel and <TouchpadScroll> events will increment or
+   decrement the widget's value and move the slider accordingly.
+
+3. The demo script "ScrolledCanvas.tcl" now adds mouse wheel and
+   <TouchpadScroll> event support not only to the canvas but also to two
+   ttk::scale widgets.
+
+4. Improved the documentation by extending the CSS stylesheet used in
+   the HTML files.
+
+What was new in Scrollutil 2.5?
+-------------------------------
 
 1. Improvements in the error handling for the scrollednotebook and
    plainnotebook widgets.
@@ -59,7 +83,7 @@ What was new in Scrollutil 2.3?
    pollute the global namespace (thanks to Rolf Ade for drawing my
    attention to this issue).
 
-3. Added the demo script ScrolledCanvas.tcl; improvements in several
+3. Added the demo script "ScrolledCanvas.tcl"; improvements in several
    other demo scripts.
 
 4. Fixed a bug that under some circumstances caused the dynamic

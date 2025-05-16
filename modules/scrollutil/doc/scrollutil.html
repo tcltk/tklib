@@ -14,7 +14,7 @@
   <div>
     <h1>Scrollutil Programmer's Guide</h1>
 
-    <h2>For Scrollutil Version 2.5</h2>
+    <h2>For Scrollutil Version 2.6</h2>
 
     <h3>by</h3>
 
@@ -245,8 +245,8 @@
   the pointer.</p>
 
   <p>To make use of the user-friendly mouse wheel and
-  <code>&lt;TouchpadScroll&gt;</code> event handling via the Scrollutil
-  package, follow the steps below:</p>
+  <code>&lt;TouchpadScroll&gt;</code> event handling in scrollable widget
+  containers via the Scrollutil package, follow the steps below:</p>
 
   <ul>
     <li>Create mouse wheel and <code>&lt;TouchpadScroll&gt;</code> event
@@ -319,8 +319,8 @@
     </address>
   </blockquote>
 
-  <p>The distribution file is <code>scrollutil2.5.tar.gz</code> for UNIX and
-  <code>scrollutil2_5.zip</code> for Windows.&nbsp; These files contain the
+  <p>The distribution file is <code>scrollutil2.6.tar.gz</code> for UNIX and
+  <code>scrollutil2_6.zip</code> for Windows.&nbsp; These files contain the
   same information, except for the additional carriage return character
   preceding the linefeed at the end of each line in the text files for
   Windows.</p>
@@ -342,11 +342,11 @@
 
   <p>To install Scrollutil <i>on UNIX</i>, <code>cd</code> to the desired
   directory and unpack the distribution file
-  <code>scrollutil2.5.tar.gz</code>:</p>
+  <code>scrollutil2.6.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c scrollutil2.5.tar.gz | tar -xf -
+gunzip -c scrollutil2.6.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
@@ -354,17 +354,17 @@ gunzip -c scrollutil2.5.tar.gz | tar -xf -
 
   <blockquote>
     <pre>
-tar -zxf scrollutil2.5.tar.gz
+tar -zxf scrollutil2.6.tar.gz
 </pre>
   </blockquote>
 
-  <p>Both commands will create a directory named <code>scrollutil2.5</code>,
+  <p>Both commands will create a directory named <code>scrollutil2.6</code>,
   with the subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>scrollutil2_5.zip</code> into the directory
-  <code>scrollutil2.5</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>scrollutil2_6.zip</code> into the directory
+  <code>scrollutil2.6</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>Notice that in tklib the Scrollutil <code>demos</code> directory is
@@ -1057,11 +1057,12 @@ after 100 [list $txt yview 14.0]
   <p>The script <code>ScrolledCanvas.tcl</code> in the <code>demos</code>
   directory shows how to use the Scrollutil package for adding scrollbars as
   well as mouse wheel and <code>&lt;TouchpadScroll&gt;</code> event support to
-  a canvas widget.</p>
+  a canvas widget.&nbsp; Further, it shows how to add mouse wheel and
+  <code>&lt;TouchpadScroll&gt;</code> event support to ttk::scale widgets.</p>
 
   <blockquote>
-    <img src="ScrolledCanvas.png" alt="ScrolledCanvas" width="383"
-    height="359">
+    <img src="ScrolledCanvas.png" alt="ScrolledCanvas" width="479"
+    height="487">
   </blockquote>
 
   <p>Here is the relevant code, in which the lines related to the Scrollutil
@@ -1076,12 +1077,12 @@ source [file join $dir styleUtil.tcl]
 wm title . "Scrolled Canvas"
 
 set scaleFactor [expr {$scaleutil::scalingPct / 100.0}]
-set width  [expr {10 * 32 * $scaleFactor}]
-set height [expr { 7 * 32 * $scaleFactor}]
+set width  [expr {13 * 32 * $scaleFactor}]
+set height [expr {10 * 32 * $scaleFactor}]
 set scrlIncr [expr {16 * $scaleFactor}]
 
 <span class="cmt">#
-# Create a canvas widget within a scrollarea
+# Create a canvas widget within a scrollarea and add mouse wheel support to it
 #</span>
 set f  [ttk::frame .f]
 <span class="red">set sa [scrollutil::scrollarea $f.sa]</span>
@@ -1091,23 +1092,37 @@ bind $c &lt;Configure&gt; { setScrollRegion %W %w %h }
 <span class="red">scrollutil::addMouseWheelSupport $c
 $sa setwidget $c</span>
 
+set rows 20
+set cols 20
+
 <span class="cmt">#
 # Populate the canvas and then rescale the coordinates
 # of all of the items by a factor of $scaleFactor
 #</span>
-for {set col 0; set x 32} {$col < 20} {incr col; incr x 96} {
-    for {set row 0; set y 32} {$row < 20} {incr row; incr y 96} {
-        $c create rectangle $x $y [expr {$x+63}] [expr {$y+63}] -fill gray95
-        $c create text [expr {$x+32}] [expr {$y+32}] -text "Box\n$row,$col" \
-            -anchor center -justify center
-    }
-}
-$c scale all 0 0 $scaleFactor $scaleFactor
+proc populate canv {
+    $canv delete all
+    global rows cols scaleFactor
 
+    for {set row 0; set y 32} {$row < $rows} {incr row; incr y 96} {
+        for {set col 0; set x 32} {$col < $cols} {incr col; incr x 96} {
+            $canv create rectangle $x $y [expr {$x+63}] [expr {$y+63}] \
+                -fill gray95
+            $canv create text [expr {$x+32}] [expr {$y+32}] \
+                -text "Box\n$row,$col" -anchor center -justify center
+        }
+    }
+
+    $canv scale all 0 0 $scaleFactor $scaleFactor
+}
+populate $c
+
+<span class="cmt">#
+# Sets the scroll region of the canvas.
+#</span>
 proc setScrollRegion {canv width height} {
-    set pixels [expr {(20*96 + 32) * $::scaleFactor}]
-    set rightX $pixels
-    set lowerY $pixels
+    global cols rows scaleFactor
+    set rightX [expr {($cols*96 + 32) * $scaleFactor}]
+    set lowerY [expr {($rows*96 + 32) * $scaleFactor}]
     if {$rightX < $width}  { set rightX $width }
     if {$lowerY < $height} { set lowerY $height }
     $canv configure -scrollregion [list 0 0 $rightX $lowerY]
@@ -1116,14 +1131,40 @@ proc setScrollRegion {canv width height} {
 . . .
 
 <span class="cmt">#
-# Manage the scrollarea
+# Create a ttk::scale widget for setting the number of box rows
 #</span>
-pack $sa -expand yes -fill both -padx 7p -pady 7p
-pack $f  -expand yes -fill both
+set fRows [ttk::frame $f.fRows]
+pack [ttk::label $fRows.l1 -text "Rows:"] -side left -padx {0 3p}
+pack [ttk::label $fRows.l2 -textvariable rows] -side left -padx {0 3p}
+pack [ttk::scale $fRows.scl -from 5 -to 50 -value $rows -command \
+      [list setBoxRows $fRows.scl]] -side left -expand yes -fill x
+
+proc setBoxRows {scl val} {
+    global rows c
+    set val [expr {round($val)}]
+    if {$val != $rows} {
+        set rows $val
+        populate $c
+        setScrollRegion $c [winfo width $c] [winfo height $c]
+    }
+}
+
+<span class="cmt">#
+# Create a ttk::scale widget for setting the number of box columns
+#</span>
+
+. . .
+
+<span class="cmt">#
+# Add mouse wheel support to the ttk::scale widgets
+#</span>
+<span class="red">scrollutil::addMouseWheelSupport TScale</span>
+
+. . .
 </pre>
   </blockquote>
 
-  <p>The script creates a canvas widget, populates it with 400
+  <p>The script creates a canvas widget, populates it with
   <code>rectangle</code> and <code>text</code> items, and adds mouse wheel and
   <code>&lt;TouchpadScroll&gt;</code> event support to it by passing its name
   to the <code><a href=
@@ -1133,6 +1174,12 @@ pack $f  -expand yes -fill both
   <code>scaleFactor</code>, whose value (<code>1.0</code>, <code>1.25</code>,
   <code>1.5</code>, etc.) is derived from that of the variable
   <code>scaleutil::scalingPct</code>.</p>
+
+  <p>The script also creates two ttk::scale widgets, used for setting the
+  numbers of box rows and columns in the canvas, and adds mouse wheel and
+  <code>&lt;TouchpadScroll&gt;</code> event support to the ttk::scale widgets
+  by passing the widget class <code>TScale</code> to the
+  <code>scrollutil::addMouseWheelSupport</code> command.</p>
 
   <h3 id="ex_SyncListboxes">Synchronizing Two listbox Widgets</h3>
 
