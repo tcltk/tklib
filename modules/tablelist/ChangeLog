@@ -16,6 +16,10 @@
 	  (ttk::)menubutton now takes into acount that in Tk 9 the menu index
 	  "none" was replaced with the empty string.
 
+	* scripts/utils/*.tcl: Extended the mwutil package.
+
+	* doc/stylesheet.css: Extended the CSS stylesheet.
+
 	* ../../examples/tablelist/*.tcl: Minor improvements related to
 	  interactive cell editing.
 
