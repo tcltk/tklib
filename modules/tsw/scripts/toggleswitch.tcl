@@ -88,7 +88,7 @@ namespace eval tsw {
 
 	if {$theme == "default"} {
 	    set fg [ttk::style lookup . -foreground]
-	    if {[mwutil::normalizeColor $fg] eq "#ffffff"} {
+	    if {[mwutil::isColorLight $fg]} {
 		set themeMod default-dark
 		set mod "Dark"
 	    }
@@ -116,7 +116,7 @@ namespace eval tsw {
 	    }
 	    default {
 		set fg [ttk::style lookup . -foreground]
-		if {[mwutil::normalizeColor $fg] eq "#ffffff" ||
+		if {[mwutil::isColorLight $fg] ||
 		    [string match -nocase *dark* $theme]} {
 		    set createCmd createElements_default-dark
 		    set mod "Dark"
@@ -246,10 +246,7 @@ proc tsw::toggleswitch args {
 	# The following array holds various data for this widget
 	#
 	variable data
-	array set data {
-	    moving 0
-	    moved  0
-	}
+	set data(moveState) idle		;# other values: moving, moved
 
 	#
 	# The following array is used to hold arbitrary
@@ -461,19 +458,15 @@ proc tsw::varTrace {win varName arrIndex op} {
 	    #
 	    # Synchronize the widget's switch state with the variable's value
 	    #
-	    set oldSelState [$scl instate selected]
-	    set newSelState [expr {$var eq $data(-onvalue) ? 1 : 0}]
-	    if {$newSelState} {
+	    set stateSpec [$scl state !disabled]	;# needed for $scl set
+	    if {$var eq $data(-onvalue)} {
 		$scl state selected
 		$scl set [$scl cget -to]
 	    } else {
 		$scl state !selected
-		$scl set 0
+		$scl set [$scl cget -from]
 	    }
-
-	    if {$newSelState != $oldSelState && $data(-command) ne ""} {
-		uplevel #0 $data(-command)
-	    }
+	    $scl state $stateSpec
 	}
 
 	unset {
@@ -603,12 +596,15 @@ proc tsw::toggleswitchWidgetCmd {win args} {
 		#
 		set oldSelState [$scl instate selected]
 		set newSelState [expr {[lindex $args 1] ? 1 : 0}]
+		$scl instate disabled {
+		    return ""
+		}
 		if {$newSelState} {
 		    $scl state selected
 		    $scl set [$scl cget -to]
 		} else {
 		    $scl state !selected
-		    $scl set 0
+		    $scl set [$scl cget -from]
 		}
 
 		upvar ::tsw::ns${win}::data data
@@ -671,7 +667,10 @@ proc tsw::onThemeChanged w {
 	condMakeLayouts
     } else {
 	set scl $w.scl
-	$scl set [expr {[$scl instate selected] ? [$scl cget -to] : 0}]
+	set stateSpec [$scl state !disabled]		;# needed for $scl set
+	$scl set [expr {[$scl instate selected] ?
+			[$scl cget -to] : [$scl cget -from]}]
+	$scl state $stateSpec
     }
 }
 
@@ -690,8 +689,7 @@ proc tsw::onButton1 {w x y} {
 			prevElem [$w identify element $x $y]]
 
     upvar ::tsw::ns[winfo parent $w]::data data
-    set data(moving) 0
-    set data(moved) 0
+    set data(moveState) idle
 }
 
 #------------------------------------------------------------------------------
@@ -707,7 +705,7 @@ proc tsw::onB1Motion {w x y} {
 
     if {$theme eq "aqua"} {
 	upvar ::tsw::ns[winfo parent $w]::data data
-	if {$data(moving)} {
+	if {$data(moveState) eq "moving"} {
 	    return ""
 	}
 
@@ -756,7 +754,7 @@ proc tsw::onButtonRel1 w {
 	variable theme
 	if {$theme eq "aqua"} {
 	    upvar ::tsw::ns${win}::data data
-	    if {!$data(moving) && !$data(moved)} {
+	    if {$data(moveState) eq "idle"} {
 		startToggling $w
 	    }
 	} else {
@@ -784,10 +782,10 @@ proc tsw::onSpace w {
 # tsw::startToggling
 #------------------------------------------------------------------------------
 proc tsw::startToggling w {
-    if {[$w get] == 0} {
-	startMovingRight $w
-    } else {
+    if {[$w get] == [$w cget -to]} {
 	startMovingLeft $w
+    } else {
+	startMovingRight $w
     }
 }
 
@@ -795,12 +793,12 @@ proc tsw::startToggling w {
 # tsw::startMovingLeft
 #------------------------------------------------------------------------------
 proc tsw::startMovingLeft w {
-    if {[$w get] == 0} {
+    if {[$w get] == [$w cget -from]} {
 	return ""
     }
 
     upvar ::tsw::ns[winfo parent $w]::data data
-    set data(moving) 1
+    set data(moveState) moving
     $w state !selected		;# will be undone before invoking switchstate
     moveLeft $w [$w cget -to]
 }
@@ -816,7 +814,7 @@ proc tsw::moveLeft {w val} {
     set val [expr {$val - 1}]
     $w set $val
 
-    if {$val > 0} {
+    if {$val > [$w cget -from]} {
 	after 10 [list tsw::moveLeft $w $val]
     } else {
 	$w state selected	;# restores the original selected state flag
@@ -824,8 +822,7 @@ proc tsw::moveLeft {w val} {
 	::$win switchstate 0
 
 	upvar ::tsw::ns${win}::data data
-	set data(moving) 0
-	set data(moved) 1
+	set data(moveState) moved
     }
 }
 
@@ -838,9 +835,9 @@ proc tsw::startMovingRight w {
     }
 
     upvar ::tsw::ns[winfo parent $w]::data data
-    set data(moving) 1
+    set data(moveState) moving
     $w state selected		;# will be undone before invoking switchstate
-    moveRight $w 0
+    moveRight $w [$w cget -from]
 }
 
 #------------------------------------------------------------------------------
@@ -862,8 +859,7 @@ proc tsw::moveRight {w val} {
 	::$win switchstate 1
 
 	upvar ::tsw::ns${win}::data data
-	set data(moving) 0
-	set data(moved) 1
+	set data(moveState) moved
     }
 }
 

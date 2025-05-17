@@ -13,7 +13,7 @@
   <div>
     <h1>Tsw Programmer's Guide</h1>
 
-    <h2>For Tsw Version 1.0</h2>
+    <h2>For Tsw Version 1.1</h2>
     
     <h3>by</h3>
     
@@ -106,8 +106,8 @@
     </address>
   </blockquote>
 
-  <p>The distribution file is <code>tsw1.0.tar.gz</code> for UNIX and
-  <code>tsw1_0.zip</code> for Windows.&nbsp; These files contain the same
+  <p>The distribution file is <code>tsw1.1.tar.gz</code> for UNIX and
+  <code>tsw1_1.zip</code> for Windows.&nbsp; These files contain the same
   information, except for the additional carriage return character preceding
   the linefeed at the end of each line in the text files for Windows.</p>
 
@@ -128,11 +128,11 @@
   <code>tk9.X</code> subdirectory).</p>
 
   <p>To install Tsw <i>on UNIX</i>, <code>cd</code> to the desired directory
-  and unpack the distribution file <code>tsw1.0.tar.gz</code>:</p>
+  and unpack the distribution file <code>tsw1.1.tar.gz</code>:</p>
   
   <blockquote>
     <pre>
-gunzip -c tsw1.0.tar.gz | tar -xf -
+gunzip -c tsw1.1.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
@@ -140,17 +140,17 @@ gunzip -c tsw1.0.tar.gz | tar -xf -
 
   <blockquote>
     <pre>
-tar -zxf tsw1.0.tar.gz
+tar -zxf tsw1.1.tar.gz
 </pre>
   </blockquote>
 
-  <p>Both commands will create a directory named <code>tsw1.0</code>, with the
+  <p>Both commands will create a directory named <code>tsw1.1</code>, with the
   subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>tsw1_0.zip</code> into the directory
-  <code>tsw1.0</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>tsw1_1.zip</code> into the directory
+  <code>tsw1.1</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>Notice that in tklib the Tsw <code>demos</code> directory is replaced with
@@ -287,17 +287,15 @@ $sw4 configure -command [list toggleWidgetsState $sw4]</span>
   "toggleswitch.html#synopsis">tsw::toggleswitch</a></code> command.&nbsp; For
   the first three toggleswitch widgets we also set the <code><a href=
   "toggleswitch.html#size">-size</a></code> option to <code>1</code>,
-  <code>2</code>, and <code>3</code>, respectively.&nbsp; With the exception of
-  the themes <code>vista</code>, <code>winnative</code>, and
-  <code>xpnative</code>, this results in widgets of different physical
-  sizes.&nbsp; For the last toggleswitch we don't explicitly set this option,
-  hence it will have its default value <code>2</code>.&nbsp; As seen in the
-  screenshots, in the case of the <code>aqua</code> theme the colors used when
-  drawing the toggleswitch widgets also depend on the system appearance (light
-  mode or dark mode) and the accent color.</p>
+  <code>2</code>, and <code>3</code>, respectively.&nbsp; For the last
+  toggleswitch we don't explicitly set this option, hence it will have its
+  default value <code>2</code>.&nbsp; As seen in the screenshots, in the case
+  of the <code>aqua</code> theme the colors used when drawing the toggleswitch
+  widgets also depend on the system appearance (light mode or dark mode) and
+  the accent color.</p>
 
   <p>For two of the four toggleswitch widgets we change the switch state from
-  the initial value <code>0</code> (off) to <code>1</code> (on) by invoking the
+  the default value <code>0</code> (off) to <code>1</code> (on) by invoking the
   <code><a href="toggleswitch.html#switchstate">switchstate</a></code>
   subcommand of the associated Tcl command.&nbsp; In addition, for the last
   toggleswitch we set the <code><a href=
@@ -343,15 +341,16 @@ proc toggleWidgetsState sw {
 
   <p>The script <code>EditingOpts.tcl</code> in the <code>demos</code>
   directory is a slightly adapted version of the Tablelist demo script
-  <code>tileWidgets.tcl</code>, which demonstrates the interactive tablelist
-  cell editing with the aid of various Ttk widgets.&nbsp; The additional
-  functionality in this version is implemented in the procedures
-  <code>configEditing</code> and <code>applySwitchState</code>.&nbsp; The first
-  one, triggered by the "Configure Editing" button, opens a toplevel window
-  containing <a href="toggleswitch.html">toggleswitch</a> widgets for
-  configuring the editing-related tablelist options having boolean values,
-  proposed over the years by Tablelist users.&nbsp; This is a comfortable way
-  to test the effect of setting/clearing these boolean options.</p>
+  <code>tileWidgets2.tcl</code>, which demonstrates the interactive tablelist
+  cell editing with the aid of various Ttk widgets and the toggleswitch
+  widget.&nbsp; The additional functionality in this version is implemented in
+  the procedures <code>configEditing</code> and
+  <code>applySwitchState</code>.&nbsp; The first one, triggered by the
+  "Configure Editing" button, opens a toplevel window containing <a href=
+  "toggleswitch.html">toggleswitch</a> widgets for configuring the
+  editing-related tablelist options having boolean values, proposed over the
+  years by Tablelist users.&nbsp; This is a comfortable way to test the effect
+  of setting/clearing these boolean options.</p>
 
   <blockquote>
     <table border="0" cellspacing="0" cellpadding="0">
@@ -420,7 +419,7 @@ proc configEditing tbl {
         <span class="red">set sw [tsw::toggleswitch $tf.sw$row]
         $sw switchstate $current</span>        ;<span class="cmt"># sets the switch state to $current</span>
         <span class="red">$sw attrib default $default</span>     ;<span class="cmt"># saves $default as attribute value</span>
-        <span class="red">$sw configure -command [list applySwitchState $sw $l $tbl $opt]</span>
+        <span class="red">$sw configure -command [list applySwitchState $sw $tbl $opt $l]</span>
         grid $sw -row $row -column 1 -sticky w -padx {0 9p} -pady {0 3p}
 
         incr row
@@ -458,7 +457,7 @@ proc configEditing tbl {
 # color of the ttk::label l according to the switch state of the toggleswitch
 # widget sw.
 #------------------------------------------------------------------------------</span>
-proc applySwitchState {sw l tbl opt} {
+proc applySwitchState {sw tbl opt l} {
     <span class="red">set switchState [$sw switchstate]</span>
     $tbl configure $opt $switchState
 

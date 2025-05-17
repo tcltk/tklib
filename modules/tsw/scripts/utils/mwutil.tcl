@@ -21,7 +21,7 @@ namespace eval mwutil {
     #
     # Public variables:
     #
-    variable version	2.24
+    variable version	2.25
     variable library	[file dirname [file normalize [info script]]]
 
     #
@@ -35,7 +35,7 @@ namespace eval mwutil {
 			unsetattribSubCmd getScrollInfo getScrollInfo2 \
 			isScrollable scrollByUnits genMouseWheelEvent \
 			containsPointer hasFocus windowingSystem currentTheme \
-			normalizeColor parsePadding
+			isColorLight normalizeColor parsePadding
 
     #
     # Make modified versions of the procedures tk_focusNext and
@@ -706,6 +706,19 @@ proc mwutil::currentTheme {} {
     } else {
 	return ""
     }
+}
+
+#------------------------------------------------------------------------------
+# mwutil::isColorLight
+#
+# A quick & dirty method to check whether a given color can be classified as
+# light.  Inspired by article "Support Dark and Light themes in Win32 apps"
+# (see https://learn.microsoft.com/en-us/windows/apps/desktop/modernize/ui/
+# apply-windows-themes).
+#------------------------------------------------------------------------------
+proc mwutil::isColorLight color {
+    foreach {r g b} [winfo rgb . $color] {}
+    return [expr {5 * ($g >> 8) + 2 * ($r >> 8) + ($b >> 8) > 8 * 128}]
 }
 
 #------------------------------------------------------------------------------

@@ -44,7 +44,7 @@ Tsw is available for free download from the Web page
 
     https://www.nemethi.de
 
-The distribution file is "tsw1.0.tar.gz" for UNIX and "tsw1_0.zip" for
+The distribution file is "tsw1.1.tar.gz" for UNIX and "tsw1_1.zip" for
 Windows.  These files contain the same information, except for the
 additional carriage return character preceding the linefeed at the end
 of each line in the text files for Windows.
@@ -62,19 +62,19 @@ subdirectory of the "lib" directory within your Tcl/Tk installation (at
 the same level as the tk8.X or tk9.X subdirectory).
 
 To install Tsw on UNIX, "cd" to the desired directory and unpack the
-distribution file "tsw1.0.tar.gz":
+distribution file "tsw1.1.tar.gz":
 
-    gunzip -c tsw1.0.tar.gz | tar -xf -
+    gunzip -c tsw1.1.tar.gz | tar -xf -
 
 On most UNIX systems this can be replaced with
 
-    tar -zxf tsw1.0.tar.gz
+    tar -zxf tsw1.1.tar.gz
 
-Both commands will create a directory named "tsw1.0", with the
+Both commands will create a directory named "tsw1.1", with the
 subdirectories "demos", "doc", and "scripts".
 
 On Windows, use WinZip or some other program capable of unpacking the
-distribution file "tsw1_0.zip" into the directory "tsw1.0", with the
+distribution file "tsw1_1.zip" into the directory "tsw1.1", with the
 subdirectories "demos", "doc", and "scripts".
 
 How to Use It?

@@ -1,3 +1,28 @@
+2025-05-17  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 1.1.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/toggleswitch.tcl: Toggling the widget's switch state by
+	  changing the value of the variable specified by the "-variable"
+	  option will no longer cause the script specified by the "-command"
+	  option to get executed; invoking the "switchstate" subcommand with
+	  the optional argument now has no effect if the widget's "disabled"
+	  state flag is set; several further improvements.
+
+	* scripts/utils/*.tcl: Extended the mwutil package.
+
+	* doc/SerialLineConfig.png: Updated screenshot.
+
+	* doc/stylesheet.css: Extended the CSS stylesheet.
+
+	* ../../examples/tsw/EditingOpts.tcl:  Improvements in the demo script
+	* ../../examples/tsw/serialParams.tcl: "EditingOpts.tcl".
+
 2025-03-24  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Tsw 1.0.

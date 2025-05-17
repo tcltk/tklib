@@ -1,7 +1,7 @@
 #==============================================================================
 # Populates a tablelist widget with the parameters of 16 serial lines,
 # configures the checkbutton embedded into the header label of the column
-# "available", and implements the procedures updateCkbtn and afterCopyCmd.
+# "available", and implements the procedures updateHdrCkbtn and afterCopyCmd.
 #
 # Copyright (c) 2021-2025  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
@@ -47,7 +47,7 @@ unset $varName
 # Selects/deselects the checkbutton embedded into the header label
 # of the specified column or sets it into the tri-state mode.
 #
-proc updateCkbtn {tbl row col} {
+proc updateHdrCkbtn {tbl col} {
     set lst [$tbl getcolumns $col]
     set ckbtn [$tbl labelwindowpath $col]
     upvar #0 [$ckbtn cget -variable] var
@@ -77,7 +77,7 @@ proc afterCopyCmd {tbl col} {
 		set img [expr {$text ? "checkedImg" : "uncheckedImg"}]
 		$tbl cellconfigure $row,$col -image $img
 	    }
-	    updateCkbtn $tbl 0 $col
+	    updateHdrCkbtn $tbl $col
 	}
 
 	color {

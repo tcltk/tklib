@@ -16,7 +16,7 @@ namespace eval tsw {
     #
     # Public variables:
     #
-    variable version    1.0
+    variable version    1.1
     variable library    [file dirname [file normalize [info script]]]
 
     #
@@ -42,10 +42,10 @@ lappend auto_path [file join $tsw::library scripts]
 #
 proc tsw::loadUtils {} {
     if {[catch {package present mwutil} version] == 0 &&
-        [package vcompare $version 2.24] < 0} {
+        [package vcompare $version 2.25] < 0} {
         package forget mwutil
     }
-    package require mwutil 2.24[-]
+    package require mwutil 2.25[-]
 
     if {[info exists ::tk::svgFmt]} {			;# Tk 8.7b1/9 or later
 	return ""

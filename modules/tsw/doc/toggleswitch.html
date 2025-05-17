@@ -13,7 +13,7 @@
   <div>
     <h1>The <code><b>tsw::toggleswitch</b></code> Command</h1>
 
-    <h2>For Tsw Version 1.0</h2>
+    <h2>For Tsw Version 1.1</h2>
 
     <h3>by</h3>
     
@@ -239,7 +239,9 @@
 
       <blockquote>
         <p>Specifies a Tcl script to be evaluated at global scope whenever the
-        switch state of the widget is toggled (programmatically or
+        switch state of the widget is toggled (programmatically, by invoking
+        the <code><b><a href="#switchstate">switchstate</a></b></code> or
+        <code><b><a href="#toggle">toggle</a></b></code> subcommand, or
         interactively).&nbsp; The default is an empty string.</p>
       </blockquote>
     </dd>
@@ -388,6 +390,11 @@
         variable is set to the value specified by the <code><b><a href=
         "#onvalue">-onvalue</a></b></code> option and to off otherwise.&nbsp;
         Defaults to the widget's pathname if not specified.</p>
+
+	<p>Note that for compatibility with the (ttk::)checkbutton, toggling
+	the widget's switch state by changing the value of this variable will
+	<i>not</i> cause the script specified by the <code><b><a href=
+	"#command">-command</a></b></code> option to get executed.</p>
       </blockquote>
     </dd>
 
@@ -496,24 +503,28 @@
         optional argument is present then it must be a boolean (a numeric
         value, where 0 is false and anything else is true, or a string such as
         <code><b>true</b>/<b>yes</b>/<b>on</b></code> or
-        <code><b>false</b>/<b>no</b>/<b>off</b></code>).&nbsp; If it is true
-        then the command sets the <code><b>selected</b></code> flag of the
-        underlying ttk::scale widget, moves the slider to the end of the
-        trough, and sets the associated <a href="#variable">variable</a> to the
-        value specified by the <code><b><a href=
-        "#onvalue">-onvalue</a></b></code> option; otherwise it clears the
-        <code><b>selected</b></code> flag, moves the slider to the beginning of
-        the trough, and sets the associated variable to the value specified by
-        the <code><b><a href="#offvalue">-offvalue</a></b></code> option.&nbsp;
-        If the argument's value causes the widget's switch state to get toggled
-        and the script specified as the value of the <code><b><a href=
-        "#command">-command</a></b></code> option is a nonempty string then the
-        subcommand evaluates that script at global scope and returns its
-        result; otherwise the return value is an empty string.&nbsp; If the
-        optional argument is not present then the command returns the widget's
-        current switch state as <code>0</code> or <code>1</code>.&nbsp; When a
-        toggleswitch widget is created, its switch state is initialized with
-        <code>0</code>.</dd>
+        <code><b>false</b>/<b>no</b>/<b>off</b></code>).&nbsp; If the widget's
+        <code><b>disabled</b></code> state flag is set then the command returns
+        an empty string immediately after checking the argument.&nbsp;
+        Otherwise, if the argument is true then the command sets the widget's
+        switch state to on by setting the underlying ttk::scale widget's
+        <code><b>selected</b></code> flag, moving the slider to the end of the
+        trough, and setting the associated <a href="#variable">variable</a> to
+        the value specified by the <code><b><a href=
+        "#onvalue">-onvalue</a></b></code> option; if the argument is false
+        then the command sets the widget's switch state to off by clearing the
+        <code><b>selected</b></code> flag, moving the slider to the beginning
+        of the trough, and setting the associated variable to the value
+        specified by the <code><b><a href="#offvalue">-offvalue</a></b></code>
+        option.&nbsp; If the argument's value causes the widget's switch state
+        to get toggled and the script specified as the value of the
+        <code><b><a href="#command">-command</a></b></code> option is a
+        nonempty string then the command evaluates that script at global scope
+        and returns its result; otherwise the return value is an empty
+        string.&nbsp; If the optional argument is not present then the command
+        returns the widget's current switch state as <code>0</code> (off) or
+        <code>1</code> (on).&nbsp; When a toggleswitch widget is created, its
+        switch state is initialized with <code>0</code>.</dd>
 
         <dt class="tm" id="toggle"><code><i>pathName</i>
         <b>toggle</b></code></dt>

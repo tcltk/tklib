@@ -1,5 +1,23 @@
-What is new in Tsw 1.0?
+What is new in Tsw 1.1?
 -----------------------
+
+1. For compatibility with the (ttk::)checkbutton, toggling the widget's
+   switch state by changing the value of the variable specified by the
+   "-variable" option will no longer cause the script specified by the
+   "-command" option to get executed.
+
+2. For further compatibility with the (ttk::)checkbutton, invoking the
+   "switchstate" subcommand with the optional argument now has no effect
+   if the widget's "disabled" state flag is set.
+
+3. Several further improvements in the code and the demo script
+   "EditingOpts.tcl".
+
+4. Improved the documentation by extending the CSS stylesheet used in
+   the HTML files.
+
+What was new in Tsw 1.0?
+------------------------
 
 This is the first release.  Thanks to Nicolas Bats for his early
 testing and proposing the support for the "-variable" toggleswitch

@@ -46,6 +46,15 @@ unset theme
 source [file join $dir images.tcl]
 
 #
+# Register the toggleswitch widget for interactive cell editing if supported
+#
+if {[catch {tablelist::addToggleswitch}] == 0} {	;# Tablelist 7.5+
+    set editWin toggleswitch
+} else {
+    set editWin ttk::checkbutton
+}
+
+#
 # Improve the window's appearance by using a tile
 # frame as a container for the other widgets
 #
@@ -76,9 +85,8 @@ if {[$tbl cget -selectborderwidth] == 0} {
     $tbl configure -spacing 1
 }
 $tbl columnconfigure 0 -sortmode integer
-$tbl columnconfigure 1 -name available -editable yes \
-    -editwindow ttk::checkbutton -formatcommand emptyStr \
-    -labelwindow ttk::checkbutton
+$tbl columnconfigure 1 -name available -editable yes -editwindow $editWin \
+    -formatcommand emptyStr -labelwindow ttk::checkbutton
 $tbl columnconfigure 2 -name lineName  -editable yes -editwindow ttk::entry \
     -allowduplicates 0 -sortmode dictionary
 $tbl columnconfigure 3 -name baudRate  -editable yes -editwindow ttk::combobox \
@@ -202,7 +210,7 @@ proc editEndCmd {tbl row col text} {
 	    #
 	    set img [expr {$text ? "checkedImg" : "uncheckedImg"}]
 	    $tbl cellconfigure $row,$col -image $img
-	    after idle [list updateCkbtn $tbl $row $col]
+	    after idle [list updateHdrCkbtn $tbl $col]
 	}
 
 	baudRate {
@@ -274,7 +282,7 @@ proc configEditing tbl {
 	set sw [tsw::toggleswitch $tf.sw$row]
 	$sw switchstate $current	;# sets the switch state to $current
 	$sw attrib default $default	;# saves $default as attribute value
-	$sw configure -command [list applySwitchState $sw $l $tbl $opt]
+	$sw configure -command [list applySwitchState $sw $tbl $opt $l]
 	grid $sw -row $row -column 1 -sticky w -padx {0 9p} -pady {0 3p}
 
 	incr row
@@ -300,7 +308,7 @@ proc configEditing tbl {
 # color of the ttk::label l according to the switch state of the toggleswitch
 # widget sw.
 #------------------------------------------------------------------------------
-proc applySwitchState {sw l tbl opt} {
+proc applySwitchState {sw tbl opt l} {
     set switchState [$sw switchstate]
     $tbl configure $opt $switchState
 
