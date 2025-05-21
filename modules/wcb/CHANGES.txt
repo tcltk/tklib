@@ -1,5 +1,11 @@
-What is new in Wcb 4.1.1?
--------------------------
+What is new in Wcb 4.2?
+-----------------------
+
+1. Improved the documentation, mainly by extending the CSS stylesheet
+   used in the HTML files.
+
+What was new in Wcb 4.1.1?
+--------------------------
 
 1. Made sure that the Migration Tool for Tcl 9 by Ashok Nadkarni won't
    output any warnings or notes (thanks to Andreas Kupries for his
