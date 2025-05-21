@@ -4,7 +4,7 @@
 # Copyright (c) 1999-2025  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require -exact mentry::common 4.4
+package require -exact mentry::common 4.5
 
 if {$::tk_version < 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
     package require tile 0.6[mentry::-]

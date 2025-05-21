@@ -1,5 +1,21 @@
-What is new in Mentry 4.4?
+What is new in Mentry 4.5?
 --------------------------
+
+1. Included the same version 2.25 of the mega-widget utility package
+   mwutil as in the most recent Tablelist, Scrollutil, and Tsw releases.
+
+2. Added a new demo script (and its tile-based version) implementing a
+   multi-entry widget for 20-character Franking IDs used by the German
+   postal service (thanks to Ralf Richard Goebel for his proposal).
+
+3. Included a description of the new demo script in the Mentry
+   Programmer's Guide.
+
+4. Improved the documentation, mainly by extending the CSS stylesheet
+   used in the HTML files.
+
+What was new in Mentry 4.4?
+---------------------------
 
 1. Included the same version 2.24 of the mega-widget utility package
    mwutil as in the most recent Tablelist, Scrollutil, and Tsw releases.
@@ -172,7 +188,7 @@ What was new in Mentry 3.11?
    theme be done using the "ttk::setTheme" command instead of
    "ttk::style theme use", which was necessary for older tile versions.
 
-6. Made the demo-scripts scaling-aware.  In addition, with Tk 8.6.10 or
+6. Made the demo scripts scaling-aware.  In addition, with Tk 8.6.10 or
    later, they now fully support the Dark Mode appearance on Mac OS
    10.14 and later.
 
@@ -217,7 +233,7 @@ What was new in Mentry 3.8?
 3. Included the same version of the general mega-widget utility module
    "mwutil.tcl" as in the most recent Tablelist release 6.3.
 
-4. Updated the demo-scripts and the documentation.
+4. Updated the demo scripts and the documentation.
 
 5. Several code improvements and minor bug fixes.
 

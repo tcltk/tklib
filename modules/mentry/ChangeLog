@@ -1,3 +1,23 @@
+2025-05-21  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 4.5.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/mwutil/*.tcl: Extended the mwutil package.
+
+	* doc/frankingid.png: Added new screenshot.
+
+	* doc/stylesheet.css: Extended the CSS stylesheet.
+
+	* doc/wcbRef.html: Updated to the version included in Wcb 4.2.
+
+	* ../../examples/mentry/frankingid.tcl:      Added new demo scripts.
+	* ../../examples/mentry/frankingid_tile.tcl:
+
 2025-03-24  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Mentry 4.4.

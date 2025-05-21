@@ -22,7 +22,7 @@ namespace eval mentry {
     #
     # Public variables:
     #
-    variable version	4.4
+    variable version	4.5
     variable library	[file dirname [file normalize [info script]]]
 
     #
@@ -105,9 +105,9 @@ lappend auto_path [file join $mentry::library scripts]
 #
 proc mentry::loadUtil {} {
     if {[catch {package present mwutil} version] == 0 &&
-	[package vcompare $version 2.24] < 0} {
+	[package vcompare $version 2.25] < 0} {
 	package forget mwutil
     }
-    package require mwutil 2.24[-]
+    package require mwutil 2.25[-]
 }
 mentry::loadUtil

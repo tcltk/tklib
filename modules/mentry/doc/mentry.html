@@ -13,7 +13,7 @@
   <div>
     <h1>Mentry Programmer's Guide</h1>
 
-    <h2>For Mentry Version 4.4</h2>
+    <h2>For Mentry Version 4.5</h2>
 
     <h3>by</h3>
 
@@ -50,6 +50,8 @@
     <li><a href="#ex_ethernetAddr">A mentry Widget for Ethernet
     Addresses</a></li>
 
+    <li><a href="#ex_frankingId">A mentry Widget for Franking IDs</a></li>
+
     <li><a href="#ex_dateTime">Using mentry Widgets for Date and Time</a></li>
 
     <li><a href="#ex_tile">Tile-Based Demo Scripts</a></li>
@@ -79,7 +81,7 @@
     fixed-point format</a>, as well as <a href="mentryIPAddr.html">IP(v4)
     addresses</a> and <a href="mentryIPv6Addr.html">IPv6 addresses</a>;</li>
 
-    <li>two richly commented demo scripts containing the typical steps needed
+    <li>three richly commented demo scripts containing the typical steps needed
     to create and handle a mentry widget for a particular purpose;</li>
 
     <li>two demo scripts that show how to use the date- and time-related
@@ -148,8 +150,8 @@ foreach w [.me entries] {
   <h3 id="ov_get">How to Get It?</h3>
 
   <p>Mentry is available for free download from the same URL as Wcb.&nbsp; The
-  distribution file is <code>mentry4.4.tar.gz</code> for UNIX and
-  <code>mentry4_4.zip</code> for Windows.&nbsp; These files contain the same
+  distribution file is <code>mentry4.5.tar.gz</code> for UNIX and
+  <code>mentry4_5.zip</code> for Windows.&nbsp; These files contain the same
   information, except for the additional carriage return character preceding
   the linefeed at the end of each line in the text files for Windows.</p>
 
@@ -169,11 +171,11 @@ foreach w [.me entries] {
   installation.</p>
 
   <p>To install Mentry <i>on UNIX</i>, <code>cd</code> to the desired directory
-  and unpack the distribution file <code>mentry4.4.tar.gz</code>:</p>
+  and unpack the distribution file <code>mentry4.5.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c mentry4.4.tar.gz | tar -xf -
+gunzip -c mentry4.5.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
@@ -181,17 +183,17 @@ gunzip -c mentry4.4.tar.gz | tar -xf -
 
   <blockquote>
     <pre>
-tar -zxf mentry4.4.tar.gz
+tar -zxf mentry4.5.tar.gz
 </pre>
   </blockquote>
 
-  <p>Both commands will create a directory named <code>mentry4.4</code>, with
+  <p>Both commands will create a directory named <code>mentry4.5</code>, with
   the subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>mentry4_4.zip</code> into the directory
-  <code>mentry4.4</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>mentry4_5.zip</code> into the directory
+  <code>mentry4.5</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>The file <code>mentryThemes.tcl</code> in the <code>scripts</code>
@@ -621,12 +623,12 @@ proc checkIfPhoneNumberMentry win {
 
   <blockquote>
     <pre>
-bind MentryPhoneNumber <<Paste>> { pastePhoneNumber %W }
+bind MentryPhoneNumber &lt;&lt;Paste&gt;&gt; { pastePhoneNumber %W }
 
 <span class="cmt">#------------------------------------------------------------------------------
 # pastePhoneNumber
 #
-# Handles <<Paste>> events in the entry component w of a mentry widget for
+# Handles &lt;&lt;Paste&gt;&gt; events in the entry component w of a mentry widget for
 # 10-digit phone numbers by pasting the current contents of the clipboard into
 # the mentry if it is a valid 10-digit phone number.
 #------------------------------------------------------------------------------</span>
@@ -857,11 +859,182 @@ proc getEthernetAddr win {
 
   <p>We will not show the rest of the code here, because it is very similar to
   the one presented in the preceding section.&nbsp; The mentry widget for
-  Ethernet addresses looks like in the following figure:</p>
+  Ethernet addresses looks like in the following screenshot:</p>
 
   <blockquote>
     <img src="ethernetaddr.png" alt="Ethernet Address" width="303"
     height="272">
+  </blockquote>
+
+  <h3 id="ex_frankingId">A mentry Widget for Franking IDs</h3>
+
+  <p>The German postal service (Deutsche Post) uses 20-character Franking IDs
+  for tracking and sorting mail pieces.&nbsp; Franking IDs are usually written
+  as strings of the form <code>"XX XXXX XXXX XX XXXX XXXX"</code>, where each
+  <code>"X"</code> is an uppercase hexadecimal digit and the last one is a CRC
+  checksum of type CCITT (CRC-4).&nbsp; The file <code>frankingid.tcl</code> in
+  the <code>demos</code> directory contains the steps needed to create and use
+  a multi-entry widget for displaying and editing Franking IDs.&nbsp; It
+  implements the main procedures <code>frankingIdMentry</code>,
+  <code>putFrankingId</code>, and <code>getFrankingId</code>, along with the
+  helper ones <code>checkIfFrankingIdMentry</code>, <code>crc4</code>, and
+  <code>pasteFrankingId</code>.</p>
+
+  <p>The procedure <code>frankingIdMentry</code>, which creates a mentry widget
+  for Franking IDs, is implemented as follows:</p>
+
+  <blockquote>
+    <pre>
+<span class="cmt">#------------------------------------------------------------------------------
+# frankingIdMentry
+#
+# Creates a new mentry widget win that allows to display and edit 20-character
+# Franking IDs.  Sets the type attribute of the widget to FrankingId and
+# returns the name of the newly created widget.
+#------------------------------------------------------------------------------</span>
+proc frankingIdMentry {win args} {
+    <span class="cmt">#
+    # Create a mentry widget consisting of 6 entries of widths 2, 4, 4, 2, 4,
+    # and 4, separated by " " characters, and set its type to FrankingId
+    #</span>
+    eval [list mentry::mentry $win] $args
+    $win configure -body {2 " " 4 " " 4 " " 2 " " 4 " " 4}
+    $win attrib type FrankingId
+
+    <span class="cmt">#
+    # Install automatic uppercase conversion and allow only hexadecimal
+    # digits in all entry components; use wcb::cbappend (or wcb::cbprepend)
+    # instead of wcb::callback in order to keep the wcb::checkEntryLen
+    # callback, registered by mentry::mentry for all entry components
+    #</span>
+    for {set n 0} {$n < 6} {incr n} {
+        set w [$win entrypath $n]
+        wcb::cbappend $w before insert wcb::convStrToUpper \
+                      {wcb::checkStrForRegExp {^[0-9A-F]*$}}
+        $win adjustentry $n "0123456789ABCDEF"
+        bindtags $w [linsert [bindtags $w] 1 MentryFrankingId]
+    }
+
+    return $win
+}
+</pre>
+  </blockquote>
+
+  <p>The procedure <code>putFrankingId</code> accepts as its first argument
+  both an unformatted (20-character) Franking ID and one of the form
+  <code>"XX XXXX XXXX XX XXXX XXXX"</code>:</p>
+
+  <blockquote>
+    <pre>
+<span class="cmt">#------------------------------------------------------------------------------
+# putFrankingId
+#
+# Outputs the Franking ID id to the mentry widget win of type FrankingId.  The
+# Franking ID must be either a string consisting of 20 uppercase hexadecimal
+# digits, or a string of the form "XX XXXX XXXX XX XXXX XXXX", where each X is
+# an uppercase hexadecimal digit.
+#------------------------------------------------------------------------------</span>
+proc putFrankingId {id win} {
+    <span class="cmt">#
+    # Check the syntax of num
+    #</span>
+    set expr1 {^[0-9A-F]{20}$}
+    set expr2 {^[0-9A-F]{2} [0-9A-F]{4} [0-9A-F]{4} [0-9A-F]{2} [0-9A-F]{4}\
+                [0-9A-F]{4}$}
+    if {[regexp $expr1 $id]} {
+        set isFormatted 0
+    } elseif {[regexp $expr2 $id]} {
+        set isFormatted 1
+    } else {
+        return -code error "expected a Franking ID but got \"$id\""
+    }
+
+    <span class="cmt">#
+    # Check the widget and display the properly formatted Franking ID
+    #</span>
+    checkIfFrankingIdMentry $win
+    if {$isFormatted} {
+        foreach {str0 str1 str2 str3 str4 str5} [split $id " "] {}
+        $win put 0 $str0 $str1 $str2 $str3 $str4 $str5
+    } else {
+        $win put 0 [string range $id 0 1] [string range $id 2 5] \
+                   [string range $id 6 9] [string range $id 10 11] \
+                   [string range $id 12 15] [string range $id 16 19]
+    }
+}
+</pre>
+  </blockquote>
+
+  <p>Likewise, the Franking ID returned by the procedure
+  <code>getFrankingId</code> can be a formatted or unformatted one, depending
+  on the boolean value of its optional argument:</p>
+
+  <blockquote>
+    <pre>
+<span class="cmt">#------------------------------------------------------------------------------
+# getFrankingId
+#
+# Returns the Franking ID contained in the mentry widget win of type
+# FrankingId, per default formatted as a string of the form
+# "XX XXXX XXXX XX XXXX XXXX", where each X is an uppercase hexadecimal digit.
+#------------------------------------------------------------------------------</span>
+proc getFrankingId {win {formatted 1}} {
+    <span class="cmt">#
+    # Check the widget
+    #</span>
+    checkIfFrankingIdMentry $win
+
+    <span class="cmt">#
+    # Generate an error if any entry component is empty or incomplete.
+    # "Incomplete" means in case of the last entry that it has less than
+    # 3 characters, and in case of the other entries that it is not full.
+    #</span>
+    for {set n 0} {$n < 6} {incr n} {
+        if {[$win isempty $n]} {
+            focus [$win entrypath $n]
+            return -code error EMPTY
+        }
+
+        if {$n == 5} {
+            set w [$win entrypath $n]
+            if {[string length [$w get]] < 3} {
+                focus $w
+                return -code error INCOMPL
+            }
+        } elseif {![$win isfull $n]} {
+            focus [$win entrypath $n]
+            return -code error INCOMPL
+        }
+    }
+
+    <span class="cmt">#
+    # Return the Franking ID built from the values contained in
+    # the entry components and extended by the checksum if needed
+    #</span>
+    set id [$win getstring]
+    if {[string length $id] == 24} {  ;<span class="cmt"># i.e., last entry contains 3 characters</span>
+        append id [crc4 $id]
+    } elseif {[string index $id end] ne [crc4 [string range $id 0 end-1]]} {
+        focus $w
+        return -code error BAD_CRC
+    }
+    return [expr {$formatted ? $id : [string map {" " ""} $id]}]
+}
+</pre>
+  </blockquote>
+
+  <p>As seen in the code above, if the last entry contains 3 characters only
+  then the procedure computes the checksum and appends it to the result.&nbsp;
+  Otherwise it checks whether the last character equals the checksum built from
+  the first 24 characters (of which only 19 are significant), and raises an
+  error if this is not the case.&nbsp; (Note that the checksum algorithm
+  ignores the space characters.)</p>
+
+  <p>Again, we will not show the rest of the code here.&nbsp; The mentry widget
+  for Franking IDs looks like in the following screenshot:</p>
+
+  <blockquote>
+    <img src="frankingid.png" alt="Franking ID" width="283" height="272">
   </blockquote>
 
   <h3 id="ex_dateTime">Using mentry Widgets for Date and Time</h3>

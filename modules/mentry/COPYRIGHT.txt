@@ -1,4 +1,4 @@
-Multi-entry widget package Mentry, version 4.4
+Multi-entry widget package Mentry, version 4.5
 Copyright (c) 1999-2025  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 
 This library is free software; you can use, modify, and redistribute it
