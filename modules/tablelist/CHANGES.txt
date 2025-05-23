@@ -17,10 +17,13 @@ What is new in Tablelist 7.6?
    substituted by the path name of the tablelist's body (thanks to
    Harald Oehlmann for his bug report).
 
-5. Minor improvements in the demo scripts related to interactive cell
+5. Made the column deletion by orders of magnitude faster (thanks to
+   Alexandru Dadalau for his bug report).
+
+6. Minor improvements in the demo scripts related to interactive cell
    editing.
 
-6. Improved the documentation by extending the CSS stylesheet used in
+7. Improved the documentation by extending the CSS stylesheet used in
    the HTML files.
 
 What was new in Tablelist 7.5?

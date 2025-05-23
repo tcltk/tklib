@@ -7765,7 +7765,6 @@ proc tablelist::deleteCols {win first last} {
     makeColFontAndTagLists $win
     makeSortAndArrowColLists $win
     adjustColumns $win {} 1
-    updateViewWhenIdle $win
 
     #
     # Update the list variable if present

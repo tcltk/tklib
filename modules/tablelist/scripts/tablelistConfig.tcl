@@ -1538,6 +1538,10 @@ proc tablelist::doColConfig {col win opt val} {
 
 	-labelalign {
 	    if {$val eq ""} {
+		if {![info exists data($col$opt)]} {
+		    return ""
+		}
+
 		#
 		# Unset data($col$opt)
 		#
@@ -1575,6 +1579,10 @@ proc tablelist::doColConfig {col win opt val} {
 	    set w $data(hdrTxtFrmLbl)$col
 	    set optTail [string range $opt 6 end]	;# remove the -label
 	    if {$val eq ""} {
+		if {![info exists data($col$opt)]} {
+		    return ""
+		}
+
 		#
 		# Apply the value of the corresponding widget
 		# configuration option to the col'th label and
@@ -1603,6 +1611,10 @@ proc tablelist::doColConfig {col win opt val} {
 	    set w $data(hdrTxtFrmLbl)$col
 	    set optTail [string range $opt 6 end]	;# remove the -label
 	    if {$val eq ""} {
+		if {![info exists data($col$opt)]} {
+		    return ""
+		}
+
 		#
 		# Apply the value of the corresponding widget configuration
 		# option to the col'th label and unset data($col$opt)
@@ -1641,6 +1653,10 @@ proc tablelist::doColConfig {col win opt val} {
 	    set w $data(hdrTxtFrmLbl)$col
 	    set optTail [string range $opt 6 end]	;# remove the -label
 	    if {$val eq ""} {
+		if {![info exists data($col$opt)]} {
+		    return ""
+		}
+
 		#
 		# Apply the value of the corresponding widget
 		# configuration option to the col'th label and
@@ -1670,6 +1686,10 @@ proc tablelist::doColConfig {col win opt val} {
 	    set w $data(hdrTxtFrmLbl)$col
 	    set optTail [string range $opt 6 end]	;# remove the -label
 	    if {$val eq ""} {
+		if {![info exists data($col$opt)]} {
+		    return ""
+		}
+
 		#
 		# Apply the value of the corresponding widget configuration
 		# option to the col'th label and unset data($col$opt)
@@ -1718,6 +1738,10 @@ proc tablelist::doColConfig {col win opt val} {
 	-labelimage {
 	    set w $data(hdrTxtFrmLbl)$col
 	    if {$val eq ""} {
+		if {![info exists data($col$opt)]} {
+		    return ""
+		}
+
 		if {![info exists data($col-labelwindow)]} {
 		    foreach l [getSublabels $w] {
 			destroy $l
@@ -1751,6 +1775,10 @@ proc tablelist::doColConfig {col win opt val} {
 	    set w $data(hdrTxtFrmLbl)$col
 	    set optTail [string range $opt 6 end]	;# remove the -label
 	    if {$val eq ""} {
+		if {![info exists data($col$opt)]} {
+		    return ""
+		}
+
 		#
 		# Apply the value of the corresponding widget configuration
 		# option to the col'th label and unset data($col$opt)
@@ -1796,6 +1824,10 @@ proc tablelist::doColConfig {col win opt val} {
 	-labelwindow {
 	    set w $data(hdrTxtFrmLbl)$col
 	    if {$val eq ""} {
+		if {![info exists data($col$opt)]} {
+		    return ""
+		}
+
 		foreach l [getSublabels $w] {
 		    destroy $l
 		}
