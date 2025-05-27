@@ -2,13 +2,13 @@
 <html>
 <head>
   <title>The tsw::toggleswitch Command</title>
-  
+
   <meta name="Author" content="Csaba Nemethi">
-  <meta name="Keywords" content="toggleswitch, widget">
-    
+  <meta name="Keywords" content="toggleswitch, checkbutton, widget">
+
   <link rel="stylesheet" type="text/css" href="stylesheet.css">
 </head>
-    
+
 <body>
   <div>
     <h1>The <code><b>tsw::toggleswitch</b></code> Command</h1>
@@ -16,7 +16,7 @@
     <h2>For Tsw Version 1.1</h2>
 
     <h3>by</h3>
-    
+
     <h2>Csaba Nemethi</h2>
 
     <address>
@@ -25,13 +25,16 @@
   </div>
 
   <hr>
-    
+
   <h2 id="contents">Contents</h2>
 
   <ul>
     <li><a href="#quick_ref">Quick Reference</a></li>
-    
+
     <li><a href="#detailed_ref">Detailed Reference</a></li>
+
+    <li><a href="#choosing">Choosing between toggleswitch and
+    (ttk::)checkbutton</a></li>
   </ul>
 
   <div>
@@ -600,16 +603,52 @@ if {[<i>pathName</i> switchstate]} {
 
     <dd class="tm">If the widget's <code><b>disabled</b></code> state flag is
     set then none of the above actions occur.</dd>
-        
+
     <dt class="tm" id="keywords"><b>KEYWORDS</b></dt>
 
     <dd>toggleswitch, widget</dd>
   </dl> 
-        
+
+  <div> 
+    <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
+    "index.html">Start page</a></p>
+  </div>
+
+  <hr>
+
+  <h2 id="choosing">Choosing between toggleswitch and (ttk::)checkbutton</h2>
+
+  <p>This section is based on the Microsoft Learn article <i><a href=
+  "https://learn.microsoft.com/en-us/windows/apps/design/controls/toggles">
+  Toggle switches</a></i>.</p>
+
+  <p>For some actions, either a toggleswitch or a checkbutton might work.&nbsp;
+  To decide which control would work better, follow these tips:</p>
+
+  <ul>
+    <li class="tm">
+      Use a toggleswitch for binary settings that work like actions by taking
+      effect immediately after the user flips the switch.
+
+      <p>In the following example, for turning the kitchen lights on, you
+      should use a toggleswitch rather than a checkbutton.</p>
+
+      <p><img src="compare.png" alt="compare" width="164" height="97"></p>
+    </li>
+
+    <li class="tm">For optional ("nice to have") items use checkbuttons.</li>
+
+    <li class="tm">Use checkbuttons when the user can select multiple items
+    that are related to a single setting or feature.</li>
+
+    <li class="tm">Use a checkbutton when the user has to perform extra steps
+    for changes to be effective.&nbsp; For example, if the user must click a
+    "Submit" or "Next" button to apply changes, use a checkbutton.</li>
+  </ul>
+
   <div> 
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
     "index.html">Start page</a></p>
   </div>
 </body> 
 </html>
-

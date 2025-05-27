@@ -13,7 +13,10 @@ What is new in Tsw 1.1?
 3. Several further improvements in the code and the demo script
    "EditingOpts.tcl".
 
-4. Improved the documentation by extending the CSS stylesheet used in
+4. Extended the reference manual by a section about choosing between
+   toggleswitch and (ttk::)checkbutton widgets.
+
+5. Improved the documentation by extending the CSS stylesheet used in
    the HTML files.
 
 What was new in Tsw 1.0?
