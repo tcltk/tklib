@@ -166,6 +166,7 @@ namespace eval tablelist {
 	-bg			 -background
 	-borderwidth		 {borderWidth		  BorderWidth	      f}
 	-bd			 -borderwidth
+	-button2window		 {button2Window		  Button2Window	      w}
 	-collapsecommand	 {collapseCommand	  CollapseCommand     w}
 	-colorizecommand	 {colorizeCommand	  ColorizeCommand     w}
 	-columns		 {columns		  Columns	      w}

@@ -242,6 +242,9 @@ namespace eval tablelist {
     if {[llength [package versions tile]] > 0} {
 	addTileWidgets
     }
+
+    variable uniformWheelSupport [expr {$::tk_version >= 8.7 &&
+	[package vcompare $::tk_patchLevel "8.7a4"] >= 0}]
 }
 
 #
@@ -2836,9 +2839,54 @@ proc tablelist::defineTablelistEdit {} {
     }
 
     #
-    # Define some bindings for the binding tag TablelistEdit that
-    # redirect the mouse wheel events to the containing scrollable
-    # frame (if any) or propagate them to the tablelist's body
+    # Define some bindings for the binding tag TablelistEdit
+    # that redirect the mouse button 2 events to the containing
+    # toplevel or propagate them to the tablelist's body
+    #
+    bind TablelistEdit <Button-2> {
+	set tablelist::W [tablelist::getTablelistPath %W]
+	if {[tablelist::hasMouseBtn2Bindings %W]} {
+	    set tablelist::w [$tablelist::W cget -button2window]
+	    if {[winfo exists $tablelist::w] &&
+		![mwutil::hasFocus $tablelist::W]} {
+		event generate $tablelist::w <Button-2> -rootx %X -rooty %Y
+		break
+	    }
+	} else {
+	    event generate [$tablelist::W bodypath] <Button-2> -x %x -y %y
+	}
+    }
+    bind TablelistEdit <B2-Motion> {
+	set tablelist::W [tablelist::getTablelistPath %W]
+	if {[tablelist::hasMouseBtn2Bindings %W]} {
+	    set tablelist::w [$tablelist::W cget -button2window]
+	    if {[winfo exists $tablelist::w] &&
+		![mwutil::hasFocus $tablelist::W]} {
+		event generate $tablelist::w <B2-Motion> -rootx %X -rooty %Y
+		break
+	    }
+	} else {
+	    event generate [$tablelist::W bodypath] <B2-Motion> -x %x -y %y
+	}
+    }
+    bind TablelistEdit <ButtonRelease-2> {
+	set tablelist::W [tablelist::getTablelistPath %W]
+	if {[tablelist::hasMouseBtn2Bindings %W]} {
+	    set tablelist::w [$tablelist::W cget -button2window]
+	    if {[winfo exists $tablelist::w] &&
+		![mwutil::hasFocus $tablelist::W]} {
+		event generate $tablelist::w <ButtonRelease-2>
+		break
+	    }
+	} else {
+	    event generate [$tablelist::W bodypath] <ButtonRelease-2>
+	}
+    }
+
+    #
+    # Define some bindings for the binding tag TablelistEdit
+    # that redirect the mouse wheel events to the containing
+    # toplevel or propagate them to the tablelist's body
     #
     catch {
 	bind TablelistEdit <MouseWheel> {
@@ -3341,26 +3389,65 @@ proc tablelist::isKeyReserved {w keySym} {
 }
 
 #------------------------------------------------------------------------------
+# tablelist::hasMouseBtn2Bindings
+#
+# Checks whether the given widget, which is assumed to be the edit window or
+# one of its descendants, has mouse button 2 bindings.
+#------------------------------------------------------------------------------
+proc tablelist::hasMouseBtn2Bindings w {
+    set win [getTablelistPath $w]
+    upvar ::tablelist::ns${win}::data data
+    set wTop [winfo toplevel $w]
+
+    foreach tag [bindtags $w] {
+	if {$tag eq $data(editwinTag) || $tag eq "TablelistEdit" ||
+	    $tag eq "TablelistEditBreak" || $tag eq $wTop || $tag eq "all"} {
+	    continue
+	}
+
+	if {[bind $tag <Button-2>] ne "" && [bind $tag <B2-Motion>] ne ""} {
+	    return 1
+	}
+    }
+
+    return 0
+}
+
+#------------------------------------------------------------------------------
 # tablelist::hasMouseWheelBindings
 #
 # Checks whether the given widget, which is assumed to be the edit window or
 # one of its descendants, has mouse wheel bindings for the given axis (x or y).
 #------------------------------------------------------------------------------
 proc tablelist::hasMouseWheelBindings {w axis} {
-    if {$axis eq "x"} {
-	return [regexp {^(Text|Ctext)$} [winfo class $w]]
-    } else {
-	if {[regexp {^(Text|Ctext|TCombobox|TSpinbox)$} [winfo class $w]]} {
-	    return 1
+    variable winSys
+    variable uniformWheelSupport
+
+    set win [getTablelistPath $w]
+    upvar ::tablelist::ns${win}::data data
+    set wTop [winfo toplevel $w]
+
+    foreach tag [bindtags $w] {
+	if {$tag eq $data(editwinTag) || $tag eq "TablelistEdit" ||
+	    $tag eq "TablelistEditBreak" || $tag eq $wTop || $tag eq "all"} {
+	    continue
+	}
+
+	if {$winSys ne "x11" || $uniformWheelSupport} {
+	    if {($axis eq "y" && [bind $tag <MouseWheel>] ne "") ||
+		($axis eq "x" && [bind $tag <Shift-MouseWheel>] ne "") ||
+		[bind $tag <TouchpadScroll>] ne ""} {
+		return 1
+	    }
 	} else {
-	    set bindTags [bindtags $w]
-	    return [expr {([lsearch -exact $bindTags "MentryDateTime"] >= 0 ||
-			   [lsearch -exact $bindTags "MentryMeridian"] >= 0 ||
-			   [lsearch -exact $bindTags "MentryIPAddr"] >= 0 ||
-			   [lsearch -exact $bindTags "MentryIPv6Addr"] >= 0) &&
-			  ($::mentry::version >= 3.2)}]
+	    if {($axis eq "y" && [bind $tag <Button-4>] ne "") ||
+		($axis eq "x" && [bind $tag <Shift-Button-4>] ne "")} {
+		return 1
+	    }
 	}
     }
+
+    return 0
 }
 
 #------------------------------------------------------------------------------

@@ -24,6 +24,7 @@ proc tablelist::extendConfigSpecs {} {
     lappend configSpecs(-aftercopycommand)	{}
     lappend configSpecs(-autofinishediting)	0
     lappend configSpecs(-autoscan)		1
+    lappend configSpecs(-button2window)		{}
     lappend configSpecs(-collapsecommand)	{}
     lappend configSpecs(-colorizecommand)	{}
     lappend configSpecs(-columns)		{}
@@ -682,6 +683,15 @@ proc tablelist::doConfig {win opt val} {
 		    #
 		    set data($opt) [expr {$val ? 1 : 0}]
 		}
+		-button2window -
+		-xmousewheelwindow -
+		-ymousewheelwindow {
+		    if {$val eq "" || [winfo exists $val]} {
+			set data($opt) $val
+		    } else {
+			return -code error "bad window path name \"$val\""
+		    }
+		}
 		-columns {
 		    #
 		    # Set up and adjust the columns, rebuild
@@ -1266,14 +1276,6 @@ proc tablelist::doConfig {win opt val} {
 		    }
 		    set data($opt) $val
 		    updateListboxSetgridOpt $win
-		}
-		-xmousewheelwindow -
-		-ymousewheelwindow {
-		    if {$val eq "" || [winfo exists $val]} {
-			set data($opt) $val
-		    } else {
-			return -code error "bad window path name \"$val\""
-		    }
 		}
 		-xscrollcommand {
 		    set data($opt) $val

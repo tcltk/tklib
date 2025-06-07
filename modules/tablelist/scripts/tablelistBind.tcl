@@ -1053,6 +1053,15 @@ proc tablelist::defineTablelistBody {} {
 	    [$tablelist::W nearestcolumn $tablelist::x]
 	tablelist::condFinishEditing $tablelist::W $tablelist::x $tablelist::y
     }
+    bind TablelistBody <Button-2> {
+	tablelist::handleBtn2Event <Button-2> %W %x %y %X %Y
+    }
+    bind TablelistBody <B2-Motion> {
+	tablelist::handleBtn2Event <B2-Motion> %W %x %y %X %Y
+    }
+    bind TablelistBody <ButtonRelease-2> {
+	tablelist::handleBtn2Event <ButtonRelease-2> %W %x %y %X %Y
+    }
 
     foreach event {<Return> <KP_Enter> <F2>} {
 	bind TablelistBody $event {
@@ -1327,8 +1336,7 @@ proc tablelist::defineTablelistBody {} {
     }
 
     foreach event {<Control-Left> <<PrevWord>> <Control-Right> <<NextWord>>
-		   <Control-Prior> <Control-Next> <<Copy>>
-		   <Button-2> <B2-Motion>} {
+		   <Control-Prior> <Control-Next> <<Copy>>} {
 	set script [string map {
 	    "%W" "$tablelist::W"  "%x" "$tablelist::x"  "%y" "$tablelist::y"
 	} [bind Listbox $event]]
@@ -3426,6 +3434,35 @@ proc tablelist::genTablelistSelectEvent win {
 }
 
 #------------------------------------------------------------------------------
+# tablelist::handleBtn2Event
+#
+# Handles a mouse button 2 event with the given widget and root coordinates on
+# the widget W.
+#------------------------------------------------------------------------------
+proc tablelist::handleBtn2Event {event W x y X Y} {
+    foreach {win _x _y} [convEventFields $W $x $y] {}
+    set w [::$win cget -button2window]
+
+    if {[winfo exists $w]} {
+	if {[mwutil::hasFocus $win]} {
+	    switch $event {
+		<Button-2>  { ::$win scan mark   $_x $_y }
+		<B2-Motion> { ::$win scan dragto $_x $_y }
+	    }
+	} else {
+	    event generate $w $event -rootx $X -rooty $Y
+	}
+    } else {
+	switch $event {
+	    <Button-2>  { ::$win scan mark   $_x $_y }
+	    <B2-Motion> { ::$win scan dragto $_x $_y }
+	}
+    }
+
+    return -code break ""
+}
+
+#------------------------------------------------------------------------------
 # tablelist::handleWheelEvent
 #
 # Handles a mouse wheel event with the given root coordinates and delta on the
@@ -3445,7 +3482,6 @@ proc tablelist::handleWheelEvent {event axis W X Y delta divisor} {
 		}
 	    }
 	    mwutil::scrollByUnits $win $axis $delta $divisor
-	    return -code break ""
 	} elseif {[string match "<*MouseWheel>" $event]} {
 	    mwutil::genMouseWheelEvent $w $event $X $Y $delta
 	} else {
@@ -3459,8 +3495,9 @@ proc tablelist::handleWheelEvent {event axis W X Y delta divisor} {
 	    }
 	}
 	mwutil::scrollByUnits $win $axis $delta $divisor
-	return -code break ""
     }
+
+    return -code break ""
 }
 
 #

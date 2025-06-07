@@ -140,6 +140,9 @@
     <dd><code><b><a href="#autoscan">-autoscan</a></b>
     <i>boolean</i></code></dd>
 
+    <dd><code><b><a href="#button2window">-button2window</a></b>
+    <i>window</i></code></dd>
+
     <dd><code><b><a href="#collapsecommand">-collapsecommand</a></b>
     <i>command</i></code></dd>
 
@@ -2147,6 +2150,68 @@ proc acceptDropCmd {tbl targetRow sourceRow} {
         tablelist's <code><b><a href=
         "#customdragsource">-customdragsource</a></b></code> option was set to
         true.</p>
+      </blockquote>
+    </dd>
+
+    <dd id="button2window">
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td>Command-Line Name:&nbsp;</td>
+          <td><code><b>-button2window</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Name:</td>
+          <td><code><b>&nbsp;button2Window</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Class:</td>
+          <td><code><b>&nbsp;Button2Window</b></code></td>
+        </tr>
+      </table>
+
+      <blockquote>
+        <p>Specifies the path name of the window to which the default bindings
+        for the binding tags <code><b><a href=
+        "#body_bindings">TablelistBody</a></b></code> and <code><b><a href=
+        "#edit_bindings">TablelistEdit</a></b></code> should redirect the
+        <code><b>&lt;Button-2&gt;</b></code>,
+        <code><b>&lt;B2-Motion&gt;</b></code>, and
+        <code><b>&lt;ButtonRelease-2&gt;</b></code> events via&nbsp;
+        <code><b>event generate</b></code>&nbsp; if the focus window on the
+        display containing the tablelist widget is outside the tablelist.&nbsp;
+        The default is an empty string, meaning that the mouse button 2 events
+        received by a widget having one of the two above-mentioned binding tags
+        will give rise to scanning within the tablelist or its edit window,
+        regardless of whether the focus is inside or outside the tablelist
+        widget.</p>
+
+        <p><b>REMARK 1:</b>&nbsp; If the tablelist is contained in a <a href=
+        "https://www.nemethi.de/scrollutil/scrollableframe.html">scrollutil::scrollableframe</a>
+        and you set this option to the path name of the containing toplevel
+        widget, then the above-mentioned mouse button 2 events over the
+        tablelist's body will be handled as follows:</p>
+
+        <ul>
+          <li class="tm">If the focus is inside the tablelist widget then the
+          events will trigger a scanning of the content of the tablelist or its
+          edit window and no further processing of the events will take
+          place.</li>
+
+          <li class="tm">If the focus is outside the tablelist widget then no
+          scanning within the tablelist's body or edit window will happen.&nbsp;
+          Instead, the event will be redirected to the toplevel widget with the
+          aid of the&nbsp; <code><b>event generate</b></code>&nbsp;
+          command.&nbsp; This in turn will give rise to scanning of the
+          scrollableframe's content.</li>
+        </ul>
+
+        <p><b>REMARK 2:</b>&nbsp; If you pass the tablelist widget to the
+        <code><b><a href=
+        "https://www.nemethi.de/scrollutil/scrollableframe.html#adapt">scrollutil::adaptBtn2EventHandling</a></b></code>
+        command then that command will set this option to the path name of the
+        containing toplevel window.</p>
       </blockquote>
     </dd>
 
@@ -5815,10 +5880,9 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
         widget container like a <a href=
         "https://www.nemethi.de/scrollutil/scrollableframe.html">scrollutil::scrollableframe</a>,
         BWidget ScrollableFrame, or iwidgets::scrolledframe, and you set this
-        option to the path name of that container window or that of the
-        containing toplevel widget, then a horizontal mouse wheel or
-        <code><b>&lt;TouchpadScroll&gt;</b></code> event over the tablelist's
-        body will be handled as follows:</p>
+        option to the path name of the containing toplevel widget, then a
+        horizontal mouse wheel or <code><b>&lt;TouchpadScroll&gt;</b></code>
+        event over the tablelist's body will be handled as follows:</p>
 
         <ul>
           <li class="tm">If the focus is inside the tablelist widget then the
@@ -5827,13 +5891,12 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
 
           <li class="tm">If the focus is outside the tablelist widget then no
           scrolling of the tablelist's body or edit window will happen.&nbsp;
-          Instead, the event will be redirected to the widget container or the
-          toplevel widget with the aid of the&nbsp; <code><b>event
-          generate</b></code>&nbsp; command.&nbsp; This in turn will give rise
-          to horizontal scrolling of the widget container, provided that the
-          containing toplevel widget or the binding tag <code><b>all</b></code>
-          has the necessary mouse wheel or
-          <code><b>&lt;TouchpadScroll&gt;</b></code> event bindings.</li>
+          Instead, the event will be redirected to the toplevel widget with the
+          aid of the&nbsp; <code><b>event generate</b></code>&nbsp;
+          command.&nbsp; This in turn will give rise to horizontal scrolling of
+          the widget container, provided that the containing toplevel widget or
+          the binding tag <code><b>all</b></code> has the necessary mouse wheel
+          or <code><b>&lt;TouchpadScroll&gt;</b></code> event bindings.</li>
         </ul>
 
         <p><b>REMARK 3:</b>&nbsp; If you pass the tablelist widget to the
@@ -5917,10 +5980,9 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
         widget container like a <a href=
         "https://www.nemethi.de/scrollutil/scrollableframe.html">scrollutil::scrollableframe</a>,
         BWidget ScrollableFrame, or iwidgets::scrolledframe, and you set this
-        option to the path name of that container window or that of the
-        containing toplevel widget, then a vertical mouse wheel or
-        <code><b>&lt;TouchpadScroll&gt;</b></code> event over the tablelist's
-        body will be handled as follows:</p>
+        option to the path name of the containing toplevel widget, then a
+        vertical mouse wheel or <code><b>&lt;TouchpadScroll&gt;</b></code>
+        event over the tablelist's body will be handled as follows:</p>
 
         <ul>
           <li class="tm">If the focus is inside the tablelist widget then the
@@ -5929,13 +5991,12 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
 
           <li class="tm">If the focus is outside the tablelist widget then no
           scrolling of the tablelist's body or edit window will happen.&nbsp;
-          Instead, the event will be redirected to the widget container or the
-          toplevel widget with the aid of the&nbsp; <code><b>event
-          generate</b></code>&nbsp; command.&nbsp; This in turn will give rise
-          to vertical scrolling of the widget container, provided that the
-          containing toplevel widget or the binding tag <code><b>all</b></code>
-          has the necessary mouse wheel or
-          <code><b>&lt;TouchpadScroll&gt;</b></code> event bindings.</li>
+          Instead, the event will be redirected to the toplevel widget with the
+          aid of the&nbsp; <code><b>event generate</b></code>&nbsp;
+          command.&nbsp; This in turn will give rise to vertical scrolling of
+          the widget container, provided that the containing toplevel widget or
+          the binding tag <code><b>all</b></code> has the necessary mouse wheel
+          or <code><b>&lt;TouchpadScroll&gt;</b></code> event bindings.</li>
         </ul>
 
         <p><b>REMARK 3:</b>&nbsp; If you pass the tablelist widget to the
