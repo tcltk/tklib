@@ -1,3 +1,32 @@
+2025-06-07  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* README.txt:  Updated to reflect the changes.
+	* CHANGES.txt:
+	* doc/*.html:
+
+	* scripts/scrollableframe.tcl: The scanning is now supported with mouse
+	  button 2 rather than 1; added the
+	  "scrollutil::adaptBtn2EventHandling" command; added the "preparescan"
+	  and "preparescroll" scrollableframe subcommands.
+
+	* scripts/wheelEvent.tcl: Added the
+	  "scrollutil::prepareScrollingByWheel" command.
+
+	* scripts/tclIndex: Newly generated.
+
+	* doc/ScrollableFrmDemo2.png: Updated screenshots.
+	* doc/TablelistConfig.png:
+	* doc/TablelistConfig2.png:
+
+	* ../../examples/scrollutil/ScrolledCanvas.tcl: Scanning now with
+	  mouse button 2 rather than 1.
+
+	* ../../examples/scrollutil/BwScrollableFrmDemo2.tcl:   Updated to
+	* ../../examples/scrollutil/ScrolledFrmDemo2.tcl:       use the new
+	* ../../examples/scrollutil/SuScrollableFrmContent.tcl: commands.
+	* ../../examples/scrollutil/SuScrollableFrmDemo1.tcl:
+	* ../../examples/scrollutil/SuScrollableFrmDemo2.tcl:
+
 2025-05-16  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl:         Bumped the version number to 2.6.

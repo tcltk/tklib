@@ -4,7 +4,7 @@
 # Structure of the module:
 #   - Namespace initialization
 #   - Private procedure creating the default bindings
-#   - Public procedure creating a new scrollableframe widget
+#   - Public procedures
 #   - Private configuration procedures
 #   - Private procedures implementing the scrollableframe widget command
 #   - Private procedures used in bindings
@@ -103,21 +103,28 @@ namespace eval scrollutil::sf {
     # of various options and corner values
     #
     variable cmdOpts	[list attrib autofillx autofilly autosize cget \
-			 configure contentframe hasattrib scan see seerect \
-			 unsetattrib xview yview]
+			 configure contentframe hasattrib preparescan \
+			 preparescroll scan see seerect unsetattrib xview \
+			 yview]
     variable scanOpts	[list mark dragto]
     variable dimensions	[list w h wh]
     variable corners	[list nw ne sw se]
 
     #
-    # Variables used in scan-related binding scripts:
+    # Variable used in scan-related binding scripts:
     #
-    variable btn1Pressed 0
     variable scanCursor
     switch [tk windowingsystem] {
 	aqua	{ set scanCursor pointinghand }
 	default	{ set scanCursor hand2 }
     }
+
+    #
+    # The list of all scrollableframe widgets
+    #
+    variable sfList {}
+
+    variable onAndroid [expr {[info exists ::tk::android] && $::tk::android}]
 }
 
 #
@@ -129,7 +136,8 @@ namespace eval scrollutil::sf {
 # scrollutil::sf::createBindings
 #
 # Creates the default bindings for the binding tags Scrollableframe,
-# ScrollableframeMf, and ScrollableframeCf.
+# ScrollableframeMf, ScrollableframeCf, Btn2EventRedir, Btn2EventBreak, and
+# all.
 #------------------------------------------------------------------------------
 proc scrollutil::sf::createBindings {} {
     bind Scrollableframe <KeyPress> continue
@@ -141,30 +149,37 @@ proc scrollutil::sf::createBindings {} {
 	scrollutil::sf::updateHorizPlaceOpts %W
 	scrollutil::sf::updateVertPlaceOpts  %W
     }
-    bind Scrollableframe <Destroy> {
-	namespace delete scrollutil::ns%W
-	catch {rename %W ""}
+    bind Scrollableframe <Destroy> { scrollutil::sf::onDestroy %W }
+
+    bind ScrollableframeCf <<NoManagedChild>> {
+	scrollutil::sf::onNoManagedChild %W
     }
 
     foreach class {ScrollableframeMf ScrollableframeCf} isCf {0 1} {
 	bind $class <Configure> \
 	    [list scrollutil::sf::on${class}Configure %W %w %h]
-	bind $class <Button-1> \
-	    [list scrollutil::sf::onButton1  %W %x %y $isCf]
-	bind $class <B1-Motion> \
-	    [list scrollutil::sf::onB1Motion %W %x %y $isCf]
-	bind $class <ButtonRelease-1> \
-	    [list scrollutil::sf::onButtonRelease1 %W $isCf]
     }
 
-    bind ScrollableframeCf <<NoManagedChild>> {
-	scrollutil::sf::onNoManagedChild %W
+    ##nagelfar ignore
+    foreach event {<Button-2> <B2-Motion> <ButtonRelease-2>} {
+	bind Btn2EventRedir $event [format {
+	    if {![scrollutil::hasFocus %%W]} {
+		event generate [winfo toplevel %%W] %s -rootx %%X -rooty %%Y
+		break
+	    }
+	} $event]
+
+	bind Btn2EventBreak $event { break }
     }
+
+    bind all <Button-2>		{+ scrollutil::sf::onButton2  %W %X %Y }
+    bind all <B2-Motion>	{+ scrollutil::sf::onB2Motion %W %X %Y }
+    bind all <ButtonRelease-2>	{+ scrollutil::sf::onButtonRelease2 %W }
 }
 
 #
-# Public procedure creating a new scrollableframe widget
-# ======================================================
+# Public procedures
+# =================
 #
 
 #------------------------------------------------------------------------------
@@ -283,6 +298,12 @@ proc scrollutil::scrollableframe args {
     interp alias {} ::$win {} scrollutil::sf::scrollableframeWidgetCmd $win
 
     #
+    # Add the scrollableframe widget to the list of all scrollableframe widgets
+    #
+    lappend sf::sfList $win
+    set sf::sfList [lsort -command comparePaths $sf::sfList]
+
+    #
     # Register the scrollableframe widget for scrolling by the mouse wheel
     #
     if {$::tcl_platform(platform) eq "windows"} {
@@ -295,6 +316,81 @@ proc scrollutil::scrollableframe args {
     }
 
     return $win
+}
+
+#------------------------------------------------------------------------------
+# scrollutil::adaptBtn2EventHandling
+#
+# Usage: scrollutil::adaptBtn2EventHandling ?widget widget ...?
+#
+# For each widget argument, the command performs the following actions:
+#
+#   * If $widget is a tablelist then it sets the latter's -button2window option
+#     to the path name of the containing toplevel window (for Tablelist
+#     versions 7.6 and later).
+#
+#   * Otherwise it locates the (first) binding tag that has mouse button 2
+#     event bindings and is different from both the path name of the containing
+#     toplevel window and "all".  If the search for this tag was successful
+#     then the command modifies the widget's list of binding tags by prepending
+#     the tag "Btn2EventRedir" and appending the tag "Btn2EventBreak" to this
+#     binding tag.  As a result, a <Button-2>, <B2-Motion>, or
+#     <ButtonRelease-2> event sent to this widget will be handled as follows:
+#
+#       - If the focus is on or inside the window [focusCheckWindow $widget]
+#         then the event will be handled by the binding script associated with
+#         this tag and no further processing of the event will take place.
+#
+#       - If the focus is outside the window [focusCheckWindow $widget] then
+#         the event will be redirected to the containing toplevel window via
+#         event generate rather than being handled by the binding script
+#         associated with the above-mentioned tag.
+#------------------------------------------------------------------------------
+proc scrollutil::adaptBtn2EventHandling args {
+    foreach w $args {
+	if {![winfo exists $w]} {
+	    return -code error "bad window path name \"$w\""
+	}
+
+	set class [winfo class $w]
+	set wTop [winfo toplevel $w]
+	if {$class eq "Tablelist"} {
+	    if {[package vcompare $::tablelist::version "7.6"] >= 0} {
+		$w configure -button2window $wTop
+	    }
+	} else {
+	    set w2 [expr {$class eq "Ctext" ? "$w.t" : $w}]
+	    set tagList [bindtags $w2]
+	    foreach tag {Btn2EventRedir Btn2EventBreak} {
+		if {[set idx [lsearch -exact $tagList $tag]] >= 0} {
+		    set tagList [lreplace $tagList $idx $idx]
+		}
+	    }
+
+	    set idx 0
+	    foreach tag $tagList {
+		if {$tag eq $wTop || $tag eq "all" ||
+		    [bind $tag <Button-2>] eq "" ||
+		    [bind $tag <B2-Motion>] eq ""} {
+		    incr idx
+		    continue
+		}
+
+		bindtags $w2 [lreplace $tagList $idx $idx \
+			      Btn2EventRedir $tag Btn2EventBreak]
+		break
+	    }
+	}
+
+	#
+	# If $w is embedded into a scrollarea then invoke this
+	# procedure for the scrollbars of that scrollarea, too
+	#
+	if {[set sa [getscrollarea $w]] ne "" && ([info level] == 1 ||
+	    [lindex [info level -1] 0] ne "preparescanSubCmd")} {
+	    adaptBtn2EventHandling $sa.hsb $sa.vsb
+	}
+    }
 }
 
 #
@@ -497,15 +593,25 @@ proc scrollutil::sf::scrollableframeWidgetCmd {win args} {
 	    return [::scrollutil::${cmd}SubCmd $win "widget" [lindex $args 1]]
 	}
 
-	scan	{ return [scanSubCmd    $win $argList] }
+	preparescan { return [preparescanSubCmd $win $argList] }
 
-	see	{ return [seeSubCmd     $win $argList] }
+	preparescroll {
+	    if {$argCount != 1} {
+		mwutil::wrongNumArgs "$win $cmd"
+	    }
 
-	seerect	{ return [seerectSubCmd $win $argList] }
+	    return [::scrollutil::prepareScrollingByWheel $win]
+	}
 
-	xview	{ return [xviewSubCmd   $win $argList] }
+	scan	{ return [scanSubCmd	$win $argList] }
 
-	yview	{ return [yviewSubCmd   $win $argList] }
+	see	{ return [seeSubCmd	$win $argList] }
+
+	seerect	{ return [seerectSubCmd	$win $argList] }
+
+	xview	{ return [xviewSubCmd	$win $argList] }
+
+	yview	{ return [yviewSubCmd	$win $argList] }
     }
 }
 
@@ -617,6 +723,42 @@ proc scrollutil::sf::autosizeSubCmd {win argList} {
 }
 
 #------------------------------------------------------------------------------
+# scrollutil::sf::preparescanSubCmd
+#
+# Processes the scrollableframe preparescan subcommmand.
+#------------------------------------------------------------------------------
+proc scrollutil::sf::preparescanSubCmd {win argList} {
+    if {[llength $argList] != 0} {
+	mwutil::wrongNumArgs "$win preparescan"
+    }
+
+    set widgetList {}
+    upvar ::scrollutil::ns${win}::data data
+    set winTop [winfo toplevel $win]
+
+    #
+    # Level-order traversal
+    #
+    set lst1 [winfo children $data(cf)]
+    while {[llength $lst1] != 0} {
+	set lst2 {}
+	foreach w $lst1 {
+	    if {[winfo toplevel $w] eq $winTop &&
+		([winfo class $w] eq "Tablelist" || [hasBtn2Bindings $w])} {
+		lappend widgetList $w
+	    }
+	    foreach child [winfo children $w] {
+		lappend lst2 $child
+	    }
+	}
+	set lst1 $lst2
+    }
+
+    eval scrollutil::adaptBtn2EventHandling $widgetList
+    return ""
+}
+
+#------------------------------------------------------------------------------
 # scrollutil::sf::scanSubCmd
 #
 # Processes the scrollableframe scan subcommmand.
@@ -646,7 +788,8 @@ proc scrollutil::sf::scanSubCmd {win argList} {
 	set data(scanYOffset) $data(yOffset)
     } else {
 	if {$argCount == 3} {
-	    set gain 10
+	    variable onAndroid
+	    set gain [expr {$onAndroid ? 2 : 10}]
 	} elseif {$argCount == 4} {
 	    ##nagelfar ignore
 	    set gain [format "%d" [lindex $argList 3]]
@@ -994,6 +1137,24 @@ proc scrollutil::sf::doAutosize {win dimList} {
 }
 
 #------------------------------------------------------------------------------
+# scrollutil::sf::hasBtn2Bindings
+#------------------------------------------------------------------------------
+proc scrollutil::sf::hasBtn2Bindings w {
+    set wTop [winfo toplevel $w]
+    foreach tag [bindtags $w] {
+	if {$tag eq $wTop || $tag eq "all"} {
+	    continue
+	}
+
+	if {[bind $tag <Button-2>] ne "" && [bind $tag <B2-Motion>] ne ""} {
+	    return 1
+	}
+    }
+
+    return 0
+}
+
+#------------------------------------------------------------------------------
 # scrollutil::sf::roundUp
 #------------------------------------------------------------------------------
 proc scrollutil::sf::roundUp {pixelsName scrlIncr} {
@@ -1098,6 +1259,36 @@ proc scrollutil::sf::onFocusIn {win detail} {
 }
 
 #------------------------------------------------------------------------------
+# scrollutil::sf::onDestroy
+#------------------------------------------------------------------------------
+proc scrollutil::sf::onDestroy win {
+    variable sfList
+    set idx [lsearch -exact $sfList $win]
+    set sfList [lreplace $sfList $idx $idx]
+
+    namespace delete ::scrollutil::ns$win
+    catch {rename ::$win ""}
+}
+
+#------------------------------------------------------------------------------
+# scrollutil::sf::onNoManagedChild
+#------------------------------------------------------------------------------
+proc scrollutil::sf::onNoManagedChild cf {
+    set win [winfo parent [winfo parent $cf]]
+    upvar ::scrollutil::ns${win}::data data
+
+    if {!$data(-fitcontentwidth) && $data(-contentwidth) <= 0} {
+	$cf configure -width 1
+	$cf configure -width $data(-contentwidth)
+    }
+
+    if {!$data(-fitcontentheight) && $data(-contentheight) <= 0} {
+	$cf configure -height 1
+	$cf configure -height $data(-contentheight)
+    }
+}
+
+#------------------------------------------------------------------------------
 # scrollutil::sf::onScrollableframeMfConfigure
 #------------------------------------------------------------------------------
 proc scrollutil::sf::onScrollableframeMfConfigure {mf mfWidth mfHeight} {
@@ -1164,81 +1355,86 @@ proc scrollutil::sf::onScrollableframeCfConfigure {cf cfWidth cfHeight} {
 }
 
 #------------------------------------------------------------------------------
-# scrollutil::sf::onButton1
+# scrollutil::sf::onButton2
 #------------------------------------------------------------------------------
-proc scrollutil::sf::onButton1 {w x y isCf} {
-    if {$isCf} {
-	set win [winfo parent [winfo parent $w]]
-	upvar ::scrollutil::ns${win}::data data
-	incr x -$data(xOffset)
-	incr y -$data(yOffset)
-    } else {
-	set win [winfo parent $w]
-    }
-
-    ::$win scan mark $x $y
-
-    variable btn1Pressed 1
-    variable origCursor [::$win cget -cursor]
-    variable scanCursor
-    ::$win configure -cursor $scanCursor
-}
-
-#------------------------------------------------------------------------------
-# scrollutil::sf::onB1Motion
-#------------------------------------------------------------------------------
-proc scrollutil::sf::onB1Motion {w x y isCf} {
-    variable btn1Pressed
-    if {!$btn1Pressed} {
+proc scrollutil::sf::onButton2 {w rootX rootY} {
+    if {[hasBtn2Bindings $w]} {
 	return ""
     }
 
-    if {$isCf} {
-	set win [winfo parent [winfo parent $w]]
-	upvar ::scrollutil::ns${win}::data data
-	incr x -$data(xOffset)
-	incr y -$data(yOffset)
-    } else {
-	set win [winfo parent $w]
-    }
+    variable sfList
+    variable btn2Win [winfo containing -displayof $w $rootX $rootY]
+    foreach win $sfList {
+	if {[mayScan $win $btn2Win]} {
+	    set x [expr {$rootX - [winfo x $win]}]
+	    set y [expr {$rootY - [winfo y $win]}]
+	    ::$win scan mark $x $y
 
-    ::$win scan dragto $x $y
+	    variable origCursor [::$win cget -cursor]
+	    variable scanCursor
+	    ::$win configure -cursor $scanCursor
+	    catch {$btn2Win configure -cursor $scanCursor}
+
+	    return ""
+	}
+    }
 }
 
 #------------------------------------------------------------------------------
-# scrollutil::sf::onButtonRelease1
+# scrollutil::sf::onB2Motion
 #------------------------------------------------------------------------------
-proc scrollutil::sf::onButtonRelease1 {w isCf} {
-    variable btn1Pressed
-    if {!$btn1Pressed} {
+proc scrollutil::sf::onB2Motion {w rootX rootY} {
+    if {[hasBtn2Bindings $w]} {
 	return ""
     }
 
-    set btn1Pressed 0
+    variable sfList
+    variable btn2Win
+    foreach win $sfList {
+	if {[mayScan $win $btn2Win]} {
+	    set x [expr {$rootX - [winfo x $win]}]
+	    set y [expr {$rootY - [winfo y $win]}]
+	    ::$win scan dragto $x $y
 
-    if {$isCf} {
-	set win [winfo parent [winfo parent $w]]
-    } else {
-	set win [winfo parent $w]
+	    return ""
+	}
     }
-    variable origCursor
-    ::$win configure -cursor $origCursor
 }
 
 #------------------------------------------------------------------------------
-# scrollutil::sf::onNoManagedChild
+# scrollutil::sf::onButtonRelease2
 #------------------------------------------------------------------------------
-proc scrollutil::sf::onNoManagedChild cf {
-    set win [winfo parent [winfo parent $cf]]
-    upvar ::scrollutil::ns${win}::data data
-
-    if {!$data(-fitcontentwidth) && $data(-contentwidth) <= 0} {
-	$cf configure -width 1
-	$cf configure -width $data(-contentwidth)
+proc scrollutil::sf::onButtonRelease2 w {
+    if {[hasBtn2Bindings $w]} {
+	return ""
     }
 
-    if {!$data(-fitcontentheight) && $data(-contentheight) <= 0} {
-	$cf configure -height 1
-	$cf configure -height $data(-contentheight)
+    variable sfList
+    variable btn2Win
+    foreach win $sfList {
+	if {[mayScan $win $btn2Win]} {
+	    variable origCursor
+	    ::$win configure -cursor $origCursor
+	    catch {$btn2Win configure -cursor $origCursor}
+
+	    return ""
+	}
     }
+}
+
+#------------------------------------------------------------------------------
+# scrollutil::sf::mayScan
+#------------------------------------------------------------------------------
+proc scrollutil::sf::mayScan {sf w} {
+    if {[string first $sf. $w.] != 0} {    ;# $w is not (a descendant of) $sf
+	return 0
+    }
+
+    set sfTop [winfo toplevel $sf]
+    set wTop [winfo toplevel $w]
+    if {$sfTop ne $wTop} {		;# $sf and $w have different toplevels
+	return 0
+    }
+
+    return 1
 }

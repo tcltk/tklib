@@ -25,6 +25,8 @@ written in pure Tcl/Tk code.  It contains:
     ScrollableFrame, and iwidgets::scrolledframe.  These commands
     require Tcl/Tk versions 8.4 or higher on X11 and Mac OS X and Tk
     8.6b2 or later on Windows;
+  - commands for user-friendly mouse button 2 event handling in
+    scrollutil::scrollableframe widgets;
   - demo scripts illustrating the use of the Scrollutil package in
     connection with various scrollable widgets and the above-mentioned
     scrollable widget containers;

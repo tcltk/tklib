@@ -79,9 +79,11 @@ foreach country $countryList {
     bind $w <<TraverseIn>> [list $sf see %W]
 
     #
-    # Adapt the handling of the mouse wheel events for the ttk::combobox widget
+    # Adapt the handling of the mouse wheel and mouse
+    # button 2 events for the ttk::combobox widget
     #
     scrollutil::adaptWheelEventHandling $w
+    scrollutil::adaptBtn2EventHandling $w
 
     set b [styleutil::createToolbutton $cf.b$row -text "Resolve" \
 	   -command [list setCapital $w $country]]

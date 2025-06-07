@@ -44,7 +44,15 @@ proc seeScrollarea {sf w} { $sf see [scrollutil::getscrollarea $w] }
 
 #
 # Additional stuff related to the mouse wheel events:
+# ---------------------------------------------------
 #
+
+#
+# For the entry components of the mentry widget
+# set the "focus check window" to the mentry
+#
+set entryList [$me entries]
+scrollutil::setFocusCheckWindow {*}$entryList $me
 
 #
 # Create mouse wheel event bindings for the binding tag "all"
@@ -56,11 +64,18 @@ scrollutil::createWheelEventBindings all
 # ttk::combobox, ttk::spinbox, tablelist, and ttk::treeview widgets, as
 # well as for the entry components of the mentry widget of type "Date"
 #
-set entryList [$me entries]
-scrollutil::adaptWheelEventHandling $txt $lb $cb $sb $tbl $tv {*}$entryList
+### scrollutil::adaptWheelEventHandling $txt $lb $cb $sb {*}$entryList $tbl $tv
+$sf preparescroll
 
 #
-# For the entry components of the mentry widget
-# set the "focus check window" to the mentry
+# Additional stuff related to the mouse button 2 events:
+# ------------------------------------------------------
 #
-scrollutil::setFocusCheckWindow {*}$entryList $me
+
+#
+# Adapt the handling of the mouse button 2 events for the text, listbox,
+# ttk::combobox, ttk::spinbox, ttk::entry, and tablelist widgets, as
+# well as for the entry components of the mentry widget of type "Date"
+#
+### scrollutil::adaptBtn2EventHandling $txt $lb $cb $sb $e {*}$entryList $tbl
+$sf preparescan

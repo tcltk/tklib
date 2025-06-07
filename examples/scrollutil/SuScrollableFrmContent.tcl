@@ -374,10 +374,11 @@ proc configTablelist tbl {
 		grid $w -row $row -column 1 -sticky w -padx 3p -pady {3p 0}
 
 		#
-		# Adapt the handling of the mouse wheel
-		# events for the ttk::combobox widget
+		# Adapt the handling of the mouse wheel and mouse
+		# button 2 events for the ttk::combobox widget
 		#
 		scrollutil::adaptWheelEventHandling $w
+		scrollutil::adaptBtn2EventHandling $w
 	    }
 
 	    -autofinishediting -
@@ -439,10 +440,11 @@ proc configTablelist tbl {
 		grid $w -row $row -column 1 -sticky w -padx 3p -pady {3p 0}
 
 		#
-		# Adapt the handling of the mouse wheel
-		# events for the ttk::spinbox widget
+		# Adapt the handling of the mouse wheel and mouse
+		# button 2 events for the ttk::spinbox widget
 		#
 		scrollutil::adaptWheelEventHandling $w
+		scrollutil::adaptBtn2EventHandling $w
 	    }
 
 	    default {
@@ -452,6 +454,12 @@ proc configTablelist tbl {
 		    bind $w $event [list applyValue %W $tbl $opt]
 		}
 		grid $w -row $row -column 1 -sticky we -padx 3p -pady {3p 0}
+
+		#
+		# Adapt the handling of the mouse button
+		# 2 events for the ttk::entry widget
+		#
+		scrollutil::adaptBtn2EventHandling $w
 	    }
 	}
 

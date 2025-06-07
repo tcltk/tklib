@@ -9,7 +9,7 @@
 #
 # Structure of the module:
 #   - Namespace initialization
-#   - Private procedure creating mouse wheel event and <Destroy> bindings
+#   - Private procedure creating mouse wheel and <Destroy> event bindings
 #   - Public procedures
 #   - Private procedures
 #
@@ -37,7 +37,7 @@ namespace eval scrollutil {
 }
 
 #
-# Private procedure creating mouse wheel event and <Destroy> bindings
+# Private procedure creating mouse wheel and <Destroy> event bindings
 # ===================================================================
 #
 
@@ -45,7 +45,7 @@ namespace eval scrollutil {
 # scrollutil::createBindings
 #
 # Creates mouse wheel event bindings for the binding tags Scrollbar,
-# TScrollbar, WheeleventRedir, and WheeleventBreak, as well as <Destroy>
+# TScrollbar, WheeleventRedir, and WheeleventBreak, as well as <Destroy> event
 # bindings for the binding tags ScrlWidgetCont and WheeleventWidget.
 #------------------------------------------------------------------------------
 proc scrollutil::createBindings {} {
@@ -66,61 +66,61 @@ proc scrollutil::createBindings {} {
     }
     if {$uniformWheelSupport} {
 	bind Scrollbar <MouseWheel> {
-	    scrollutil::scrollByUnits %W vh %D -40.0
+	    scrollutil::condScrollByUnits %W vh %D -40.0
 	}
 	bind Scrollbar <Option-MouseWheel> {
-	    scrollutil::scrollByUnits %W vh %D -12.0
+	    scrollutil::condScrollByUnits %W vh %D -12.0
 	}
 	bind Scrollbar <Shift-MouseWheel> {
-	    scrollutil::scrollByUnits %W hv %D -40.0
+	    scrollutil::condScrollByUnits %W hv %D -40.0
 	}
 	bind Scrollbar <Shift-Option-MouseWheel> {
-	    scrollutil::scrollByUnits %W hv %D -12.0
+	    scrollutil::condScrollByUnits %W hv %D -12.0
 	}
     } else {
 	if {$winSys eq "aqua"} {
 	    bind Scrollbar <MouseWheel> {
-		scrollutil::scrollByUnits %W vh [expr {-(%D)}]
+		scrollutil::condScrollByUnits %W vh [expr {-(%D)}]
 	    }
 	    bind Scrollbar <Option-MouseWheel> {
-		scrollutil::scrollByUnits %W vh [expr {-10 * (%D)}]
+		scrollutil::condScrollByUnits %W vh [expr {-10 * (%D)}]
 	    }
 	    bind Scrollbar <Shift-MouseWheel> {
-		scrollutil::scrollByUnits %W hv [expr {-(%D)}]
+		scrollutil::condScrollByUnits %W hv [expr {-(%D)}]
 	    }
 	    bind Scrollbar <Shift-Option-MouseWheel> {
-		scrollutil::scrollByUnits %W hv [expr {-10 * (%D)}]
+		scrollutil::condScrollByUnits %W hv [expr {-10 * (%D)}]
 	    }
 	} else {
 	    bind Scrollbar <MouseWheel> {
-		scrollutil::scrollByUnits %W vh \
+		scrollutil::condScrollByUnits %W vh \
 		    [expr {%D >= 0 ? (-%D) / 30 : (-(%D) + 29) / 30}]
 	    }
 	    bind Scrollbar <Shift-MouseWheel> {
-		scrollutil::scrollByUnits %W hv \
+		scrollutil::condScrollByUnits %W hv \
 		    [expr {%D >= 0 ? (-%D) / 30 : (-(%D) + 29) / 30}]
 	    }
 
 	    if {$winSys eq "x11"} {
 		bind Scrollbar <Button-4> {
-		    scrollutil::scrollByUnits %W vh -5
+		    scrollutil::condScrollByUnits %W vh -5
 		}
 		bind Scrollbar <Button-5> {
-		    scrollutil::scrollByUnits %W vh  5
+		    scrollutil::condScrollByUnits %W vh  5
 		}
 		bind Scrollbar <Shift-Button-4> {
-		    scrollutil::scrollByUnits %W hv -5
+		    scrollutil::condScrollByUnits %W hv -5
 		}
 		bind Scrollbar <Shift-Button-5> {
-		    scrollutil::scrollByUnits %W hv  5
+		    scrollutil::condScrollByUnits %W hv  5
 		}
 
 		if {$::tk_patchLevel eq "8.7a3"} {
 		    bind Scrollbar <Button-6> {
-			scrollutil::scrollByUnits %W hv -5
+			scrollutil::condScrollByUnits %W hv -5
 		    }
 		    bind Scrollbar <Button-7> {
-			scrollutil::scrollByUnits %W hv  5
+			scrollutil::condScrollByUnits %W hv  5
 		    }
 		}
 	    }
@@ -739,19 +739,25 @@ proc scrollutil::adaptWheelEventHandling args {
 		}
 	    }
 
+	    set idx 0
 	    foreach tag $tagList {
-		if {$winSys eq "x11" && !$uniformWheelSupport} {
-		    set hasWheelBindings [expr {[bind $tag <Button-4>] ne ""}]
-		} else {
-		    set hasWheelBindings [expr {
-			[bind $tag <MouseWheel>] ne "" ||
-			[bind $tag <TouchpadScroll>] ne ""}]
-		}
-		if {$tag eq $wTop || $tag eq "all" || !$hasWheelBindings} {
+		if {$tag eq $wTop || $tag eq "all"} {
+		    incr idx
 		    continue
 		}
 
-		set idx [lsearch -exact $tagList $tag]
+		if {$winSys ne "x11" || $uniformWheelSupport} {
+		    set hasWheelBindings [expr {
+			[bind $tag <MouseWheel>] ne "" ||
+			[bind $tag <TouchpadScroll>] ne ""}]
+		} else {
+		    set hasWheelBindings [expr {[bind $tag <Button-4>] ne ""}]
+		}
+		if {!$hasWheelBindings} {
+		    incr idx
+		    continue
+		}
+
 		if {$ignoreFocus} {
 		    bindtags $w2 [lreplace $tagList $idx $idx \
 				  $tag WheeleventBreak]
@@ -760,6 +766,7 @@ proc scrollutil::adaptWheelEventHandling args {
 				  WheeleventRedir $tag WheeleventBreak]
 		}
 		break
+
 	    }
 	}
 
@@ -767,13 +774,82 @@ proc scrollutil::adaptWheelEventHandling args {
 	# If $w is embedded into a scrollarea then invoke this
 	# procedure for the scrollbars of that scrollarea, too
 	#
-	set sa [getscrollarea $w]
-	if {$sa ne ""} {
+	if {[set sa [getscrollarea $w]] ne "" && ([info level] == 1 ||
+	    [lindex [info level -1] 0] ne
+	    "scrollutil::prepareScrollingByWheel")} {
 	    if {$ignoreFocus} {
 		adaptWheelEventHandling -ignorefocus $sa.hsb $sa.vsb
 	    } else {
 		adaptWheelEventHandling $sa.hsb $sa.vsb
 	    }
+	}
+    }
+}
+
+#------------------------------------------------------------------------------
+# scrollutil::prepareScrollingByWheel
+#
+# Usage: scrollutil::prepareScrollingByWheel ?-ignorefocus?
+#	 ?scrlWidgetCont scrlWidgetCont ...?
+#
+# For each scrollable widget container specified as argument, this command
+# passes its descendants located in the same toplevel and having bindings for
+# mouse wheel or <TouchpadScroll> events to scrollutil::adaptWheelEventHandling.
+#------------------------------------------------------------------------------
+proc scrollutil::prepareScrollingByWheel args {
+    variable winSys
+    if {$winSys eq "win32"} {
+	package require Tk 8.6b2-
+    }
+
+    set ignoreFocus 0
+    set arg0 [lindex $args 0]
+    if {[string length $arg0] > 1 && [string first $arg0 "-ignorefocus"] == 0} {
+	set ignoreFocus 1
+	set args [lrange $args 1 end]
+    }
+
+    foreach swc $args {
+	if {![winfo exists $swc]} {
+	    return -code error "bad window path name \"$swc\""
+	}
+
+	if {[catch {$swc xview scroll 0 units}] != 0} {
+	    return -code error \
+		"widget $swc fails to support horizontal scrolling by units"
+	}
+
+	if {[catch {$swc yview scroll 0 units}] != 0} {
+	    return -code error \
+		"widget $swc fails to support vertical scrolling by units"
+	}
+
+	set widgetList {}
+	set swcTop [winfo toplevel $swc]
+
+	#
+	# Level-order traversal
+	#
+	set lst1 [winfo children $swc]
+	while {[llength $lst1] != 0} {
+	    set lst2 {}
+	    foreach w $lst1 {
+		if {[winfo toplevel $w] eq $swcTop &&
+		    ([winfo class $w] eq "Tablelist" ||
+		     [hasWheelBindings $w])} {
+		    lappend widgetList $w
+		}
+		foreach child [winfo children $w] {
+		    lappend lst2 $child
+		}
+	    }
+	    set lst1 $lst2
+	}
+
+	if {$ignoreFocus} {
+	    eval adaptWheelEventHandling -ignorefocus $widgetList
+	} else {
+	    eval adaptWheelEventHandling $widgetList
 	}
     }
 }
@@ -789,11 +865,6 @@ proc scrollutil::adaptWheelEventHandling args {
 # be an ancestor of or identical to widget.
 #------------------------------------------------------------------------------
 proc scrollutil::setFocusCheckWindow args {
-    variable winSys
-    if {$winSys eq "win32"} {
-	package require Tk 8.6b2-
-    }
-
     set argCount [llength $args]
     if {$argCount < 2} {
 	return -code error "wrong # args: should be\
@@ -842,11 +913,6 @@ proc scrollutil::setFocusCheckWindow args {
 # invoked for widget then the return value is widget itself.
 #------------------------------------------------------------------------------
 proc scrollutil::focusCheckWindow w {
-    variable winSys
-    if {$winSys eq "win32"} {
-	package require Tk 8.6b2-
-    }
-
     if {![winfo exists $w]} {
 	return -code error "bad window path name \"$w\""
     }
@@ -934,9 +1000,9 @@ proc scrollutil::bindMouseWheel {tag cmd {tail ""}} {
 #
 
 #------------------------------------------------------------------------------
-# scrollutil::scrollByUnits
+# scrollutil::condScrollByUnits
 #------------------------------------------------------------------------------
-proc scrollutil::scrollByUnits {w orient amount {divisor 1.0}} {
+proc scrollutil::condScrollByUnits {w orient amount {divisor 1.0}} {
     if {![info exists ::tk::Priv(xEvents)]} {
 	#
 	# Count both the <MouseWheel> and <Shift-MouseWheel>
@@ -998,6 +1064,9 @@ proc scrollutil::isCompatible {event w} {
 	set tagList [bindtags $w]
 	set idx [lsearch -exact $tagList "WheeleventRedir"]
 	set tag [lindex $tagList [incr idx]]
+	if {$tag eq "Btn2EventRedir"} {
+	    set tag [lindex $tagList [incr idx]]
+	}
 	return [expr {[bind $tag $event] ne ""}]
     }
 }
@@ -1133,6 +1202,10 @@ proc scrollutil::comparePaths {w1 w2} {
 # scrollutil::scrollByUnits
 #------------------------------------------------------------------------------
 proc scrollutil::scrollByUnits {w rootX rootY axis delta divisor} {
+    if {[hasWheelBindings $w]} {
+	return ""
+    }
+
     set w [winfo containing -displayof $w $rootX $rootY]
     variable scrlWidgetContList
     foreach swc $scrlWidgetContList {
@@ -1144,6 +1217,34 @@ proc scrollutil::scrollByUnits {w rootX rootY axis delta divisor} {
 	    return -code break ""
 	}
     }
+}
+
+#------------------------------------------------------------------------------
+# scrollutil::hasWheelBindings
+#------------------------------------------------------------------------------
+proc scrollutil::hasWheelBindings w {
+    variable winSys
+    variable uniformWheelSupport
+
+    set wTop [winfo toplevel $w]
+    foreach tag [bindtags $w] {
+	if {$tag eq $wTop || $tag eq "all"} {
+	    continue
+	}
+
+	if {$winSys ne "x11" || $uniformWheelSupport} {
+	    if {[bind $tag <MouseWheel>] ne "" ||
+		[bind $tag <TouchpadScroll>] ne ""} {
+		return 1
+	    }
+	} else {
+	    if {[bind $tag <Button-4>] ne ""} {
+		return 1
+	    }
+	}
+    }
+
+    return 0
 }
 
 #------------------------------------------------------------------------------
@@ -1167,7 +1268,7 @@ proc scrollutil::mayScroll {swc w} {
     }
 
     #
-    # Don't scroll the window $swc if the toplevel window of any
+    # Don't scroll the widget $swc if the toplevel window of any
     # combobox widget contained in it is currently popped down
     #
     set toplevelList [wm stackorder $swcTop]

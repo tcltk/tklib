@@ -74,9 +74,9 @@ set origCursor [$c cget -cursor]
 set scanCursor \
     [expr {[tk windowingsystem] eq "aqua" ? "pointinghand" : "hand2"}]
 
-bind $c <Button-1>  { %W scan mark %x %y; %W configure -cursor $scanCursor }
-bind $c <B1-Motion> { %W scan dragto %x %y }
-bind $c <ButtonRelease-1> { %W configure -cursor $origCursor }
+bind $c <Button-2>  { %W scan mark %x %y; %W configure -cursor $scanCursor }
+bind $c <B2-Motion> { %W scan dragto %x %y }
+bind $c <ButtonRelease-2> { %W configure -cursor $origCursor }
 
 #
 # Create a ttk::scale widget for setting the number of box rows

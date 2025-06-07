@@ -124,6 +124,9 @@
     require Tcl/Tk versions 8.4 or higher on X11 and Mac OS X/11+ and Tk 8.6b2
     or later on Windows;</li>
 
+    <li>commands for <i>user-friendly</i> mouse button 2 event handling in
+    scrollutil::scrollableframe widgets;</li>
+
     <li>demo scripts illustrating the use of the Scrollutil package in
     connection with various scrollable widgets and the above-mentioned
     scrollable widget containers;</li>
@@ -268,23 +271,16 @@
     "wheelEvent.html#adapt">scrollutil::adaptWheelEventHandling</a></code>
     command for those widgets contained in registered scrollable widget
     containers that have mouse wheel or <code>&lt;TouchpadScroll&gt;</code>
-    event (class) bindings.&nbsp; This step eliminates the annoying and often
-    dangerous double-handling effect, by modifying the mouse wheel and
+    event (class) bindings.&nbsp; This step modifies the mouse wheel and
     <code>&lt;TouchpadScroll&gt;</code> event handling as follows:&nbsp; If the
     focus is on the widget under the pointer then the above-mentioned events
     will be handled by the (class bindings of the) widget only, otherwise by
     the bindings created with the
-    <code>scrollutil::createWheelEventBindings</code> command.&nbsp; Without
-    this step the mouse wheel and <code>&lt;TouchpadScroll&gt;</code> events
-    would scroll both the listbox, text, ttk::treeview, or tablelist widget
-    under the pointer <i>and</i> the widget container to whose descendants the
-    latter belongs, or they would select the next/previous value in the
-    ttk::combobox or ttk::spinbox under the pointer <i>in addition to</i>
-    scrolling the widget container.&nbsp; Note that this command accepts as
-    optional argument the <code>-ignorefocus</code> switch, which specifies
-    that the above-mentioned events are to be handled by the widget under the
-    pointer (only), ragardless of whether that widget has the focus or
-    not.</li>
+    <code>scrollutil::createWheelEventBindings</code> command.&nbsp; Note that
+    this command accepts as optional argument the <code>-ignorefocus</code>
+    switch, which specifies that the above-mentioned events are to be handled
+    by the widget under the pointer (only), ragardless of whether that widget
+    has the focus or not.</li>
 
     <li class="tm">For some widgets it can be desirable to make the focus check
     within this modified event handling less restrictive.&nbsp; For example, if
@@ -308,6 +304,25 @@
   implemented by Paul Walton.&nbsp; For details on these commands (which
   provide further implementations of scrollable widget containers) see the
   above-mentioned wiki page.</p>
+
+  <p><b>The comands related to mouse button 2 event handling</b> are restricted
+  to the scrollutil::scrollableframe widget, which provides scan support via
+  the&nbsp; <code>scan mark</code>&nbsp; and&nbsp; <code>scan
+  dragto</code>&nbsp; commands.&nbsp; The mouse button 2 event bindings for the
+  binding tag <code>"all"</code>, created automatically by Scrollutil, handle
+  the <code>&lt;Button-2&gt;</code>, <code>&lt;B2-Motion&gt;</code>, and
+  <code>&lt;ButtonRelease-2&gt;</code> events by scanning the content of the
+  (innermost) scrollableframe widget that is an ascendant of the clicked widget
+  and is contained in the latter's toplevel.&nbsp; By invoking the
+  <code><a href=
+  "scrollableframe.html#adapt">scrollutil::adaptBtn2EventHandling</a></code>
+  command for the widgets that are contained in a scrollableframe  and have
+  mouse button 2 (class) bindings, the handling of these events will be
+  modified as follows:&nbsp; If the focus is on the clicked widget then the
+  events will be handled by the (class bindings of the) widget only, otherwise
+  by the bindings created for the <code>"all"</code> tag.&nbsp; This comes in
+  handy especially on Android, where it provides user-friendly scan support for
+  scrollableframe widgets via one-finger gestures.</p>
 
   <h3 id="ov_get">How to Get It?</h3>
 
@@ -1414,9 +1429,11 @@ foreach country $countryList {
     bind $w &lt;&lt;TraverseIn&gt;&gt; [list <span class="red">$sf see %W</span>]
 
     <span class="cmt">#
-    # Adapt the handling of the mouse wheel events for the ttk::combobox widget
+    # Adapt the handling of the mouse wheel and mouse
+    # button 2 events for the ttk::combobox widget
     #</span>
-    <span class="red">scrollutil::adaptWheelEventHandling $w</span>
+    <span class="red">scrollutil::adaptWheelEventHandling $w
+    scrollutil::adaptBtn2EventHandling $w</span>
 
     . . .
 
@@ -1439,13 +1456,16 @@ foreach country $countryList {
   wheel and <code>&lt;TouchpadScroll&gt;</code> events.&nbsp; Due to this
   command, these events over one of the ttk::combobox widgets will only select
   the next/previous capital city if the widget has the focus, otherwise they
-  will scroll the scrollableframe.</p>
+  will scroll the scrollableframe.&nbsp; For every ttk::combobox widget, we
+  also invoke the <code><a href=
+  "scrollableframe.html#adapt">scrollutil::adaptBtn2EventHandling</a></code>
+  command, thus making sure that the mouse button 2 events sent to the widget
+  will only be handled by the widget itself if it has the focus, otherwise they
+  will result in scanning the scrollableframe's content.</p>
 
-  <p>With this script you can also test the scanning in the
-  scrollableframe:&nbsp; If you press mouse button 1 over a free space of the
-  scrollableframe window then the cursor will take on the shape of a pointing
-  hand, and by draggging the mouse, the content frame will drag at high speed
-  through the window, in the direction the mouse moves.</p>
+  <p>During the scan with mouse button 2, the cursor will take on the shape of
+  a pointing hand, and by draggging the mouse, the content frame will drag at
+  high speed through the window, in the direction the mouse moves.</p>
 
   <h3 id="ex_BwScrollableFrameDemo1">A Script Using a BWidget ScrollableFrame
   Widget</h3>
@@ -1596,7 +1616,7 @@ scrollutil::enableScrollingByWheel $sf</span>
 set cf [$sf childsite]
 . . .
 
-<i>&lt;exactly as in the two previous examples, except the stuff related to keyboard navigation&gt;</i>
+<i>&lt;exactly as in the previous example, except the stuff related to keyboard navigation&gt;</i>
 
 . . .
 </pre>
@@ -1641,7 +1661,9 @@ set cf [$sf childsite]
 
   <p>With the exception of ttk::label, ttk::entry, and ttk::separator, all
   these widgets have bult-in mouse wheel and
-  <code>&lt;TouchpadScroll&gt;</code> event bindings.</p>
+  <code>&lt;TouchpadScroll&gt;</code> event bindings.&nbsp; And with the
+  exception of ttk::label, ttk::separator, and ttk::treeview, all these
+  widgets have bult-in mouse button 2 event bindings.</p>
 
   <blockquote>
     <img src="ScrollableFrmDemo2.png" alt="ScrollableFrmDemo2" width="684"
@@ -1711,6 +1733,13 @@ proc seeScrollarea {sf w} { <span class="red">$sf see [scrollutil::getscrollarea
   <blockquote>
     <pre>
 <span class="cmt">#
+# For the entry components of the mentry widget
+# set the "focus check window" to the mentry
+#</span>
+set entryList [$me entries]
+<span class="red">scrollutil::setFocusCheckWindow {*}$entryList $me</span>
+
+<span class="cmt">#
 # Create mouse wheel event bindings for the binding tag "all"
 #</span>
 <span class="red">scrollutil::createWheelEventBindings all</span>
@@ -1719,28 +1748,39 @@ proc seeScrollarea {sf w} { <span class="red">$sf see [scrollutil::getscrollarea
 # Adapt the handling of the mouse wheel events for the text, listbox,
 # ttk::combobox, ttk::spinbox, tablelist, and ttk::treeview widgets, as
 # well as for the entry components of the mentry widget of type "Date"
-#</span>
-set entryList [$me entries]
-<span class="red">scrollutil::adaptWheelEventHandling $txt $lb $cb $sb $tbl $tv {*}$entryList</span>
-
-<span class="cmt">#
-# For the entry components of the mentry widget
-# set the "focus check window" to the mentry
-#</span>
-<span class="red">scrollutil::setFocusCheckWindow {*}$entryList $me</span>
+#
+### scrollutil::adaptWheelEventHandling $txt $lb $cb $sb {*}$entryList $tbl $tv</span>
+<span class="red">$sf preparescroll</span>
 </pre>
   </blockquote>
 
-  <p>Notice that we have passed, among others, the tablelist widget to the
-  <code><a href=
+  <p>Notice that the invocation of the <code><a href=
   "wheelEvent.html#adapt">scrollutil::adaptWheelEventHandling</a></code>
-  command.&nbsp; This will only work for Tablelist versions 6.4 and later,
-  because the command handles tablelist widgets by setting their
-  <code>-xmousewheelwindow</code> and <code>-ymousewheelwindow</code> options
-  to the path name of the containing toplevel window, and these options were
-  introduced in Tablelist version 6.4.&nbsp; (For earlier Tablelist versions
-  the command silently ignores any tablelist widget passed to it as
-  argument.)</p>
+  command is commented out and replaced with the much simpler and safer
+  invocation of the <code><a href=
+  "scrollableframe.html#preparescroll">preparescroll</a></code> scrollableframe
+  subcommand.</p>
+
+  <p>We also have additional stuff related to the mouse button 2 events:</p>
+
+  <blockquote>
+    <pre>
+<span class="cmt">#
+# Adapt the handling of the mouse wheel events for the text, listbox,
+# ttk::combobox, ttk::spinbox, tablelist, and ttk::treeview widgets, as
+# well as for the entry components of the mentry widget of type "Date"
+#
+### scrollutil::adaptWheelEventHandling $txt $lb $cb $sb {*}$entryList $tbl $tv</span>
+<span class="red">$sf preparescan</span>
+</pre>
+  </blockquote>
+
+  <p>Again, the invocation of the <code><a href=
+  "scrollableframe.html#adapt">scrollutil::adaptBtn2EventHandling</a></code>
+  command is commented out and replaced with the much simpler and safer
+  invocation of the <code><a href=
+  "scrollableframe.html#preparescan">preparescan</a></code> scrollableframe
+  subcommand.</p>
 
   <p>As already mentioned, in the file <code>SuScrollableFrmContent.tcl</code>
   the scrolled text, listbox, tablelist, and ttk::treeview widgets are created
@@ -1828,7 +1868,12 @@ grid $_sa ...
   ttk::combobox or ttk::spinbox is created, the <code><a href=
   "wheelEvent.html#adapt">scrollutil::adaptWheelEventHandling</a></code>
   command is invoked for it, being that these widgets have built-in bindings
-  for the mouse wheel and <code>&lt;TouchpadScroll&gt;</code> events.</p>
+  for the mouse wheel and <code>&lt;TouchpadScroll&gt;</code> events.&nbsp;
+  Similarly, we pass the ttk::combobox, ttk::spinbox, and ttk::entry widgets
+  to the <code><a href=
+  "scrollableframe.html#adapt">scrollutil::adaptBtn2EventHandling</a></code>
+  command, because these widgets have built-in bindings for the mouse button 2
+  events.</p>
 
   <p>The widgets populating the content frame are managed using
   <code>grid</code>.&nbsp; In case of the ttk::entry widgets we invoke
@@ -1912,10 +1957,14 @@ proc seeScrollarea {sf w} { $sf see [<span class="red">scrollutil::getscrollarea
   <code>&lt;TouchpadScroll&gt;</code> events contains the same Scrollutil
   command invocations as the one in the previous example, except that in
   addition it registers the ScrollableFrame for scrolling with the mouse wheel
-  and touchpad:</p>
+  and touchpad, and invokes the <code><a href=
+  "wheelEvent.html#prepare">scrollutil::prepareScrollingByWheel</a></code>
+  command:</p>
 
   <blockquote>
     <pre>
+. . .
+
 <span class="cmt">#
 # Create mouse wheel event bindings for the binding tag "all" and
 # register the ScrollableFrame for scrolling by these bindings
@@ -1923,7 +1972,13 @@ proc seeScrollarea {sf w} { $sf see [<span class="red">scrollutil::getscrollarea
 <span class="red">scrollutil::createWheelEventBindings all
 scrollutil::enableScrollingByWheel $sf</span>
 
-. . .
+<span class="cmt">#
+# Adapt the handling of the mouse wheel events for the text, listbox,
+# ttk::combobox, ttk::spinbox, tablelist, and ttk::treeview widgets, as
+# well as for the entry components of the mentry widget of type "Date"
+#
+### scrollutil::adaptWheelEventHandling $txt $lb $cb $sb {*}$entryList $tbl $tv</span>
+<span class="red">scrollutil::prepareScrollingByWheel $sf</span>
 </pre>
   </blockquote>
 
@@ -1939,16 +1994,16 @@ scrollutil::enableScrollingByWheel $sf</span>
   by the already created mouse wheel and <code>&lt;TouchpadScroll&gt;</code>
   event bindings for the binding tag <code>"all"</code>.&nbsp; After that it
   populates the content frame of the ScrollableFrame with ttk::label,
-  ttk::combobox, ttk::spinbox, ttk::entry, and ttk::checkbutton widgets used to
-  display and edit the configuration options of the tablelist widget.&nbsp; The
-  procedure handles the <code>&lt;&lt;TraverseIn&gt;&gt;</code> virtual event
-  sent to one of these widgets with the aid of the ScrollableFrame's
-  <code>see</code> subcommand.&nbsp; Whenever a ttk::combobox or ttk::spinbox
-  is created, the <code><a href=
+  ttk::combobox, ttk::spinbox, ttk::entry, and ttk::checkbutton or
+  tsw::toggleswitch widgets used to display and edit the configuration options
+  of the tablelist widget.&nbsp; The procedure handles the
+  <code>&lt;&lt;TraverseIn&gt;&gt;</code> virtual event sent to one of these
+  widgets with the aid of the ScrollableFrame's <code>see</code>
+  subcommand.&nbsp; Whenever a ttk::combobox or ttk::spinbox is created, the
+  <code><a href=
   "wheelEvent.html#adapt">scrollutil::adaptWheelEventHandling</a></code>
   command is invoked for it, being that these widgets have built-in bindings
-  for the mouse wheel and <code>&lt;TouchpadScroll&gt;</code>
-  events.</p>
+  for the mouse wheel and <code>&lt;TouchpadScroll&gt;</code> events.</p>
 
   <p>Again, all this is nearly identical to what we did in the previous
   example.</p>
@@ -2026,9 +2081,9 @@ source [file join $dir ScrolledFrmContent.tcl]
   <code>&lt;TouchpadScroll&gt;</code> event bindings for the binding tag
   <code>"all"</code>.&nbsp; After that it populates the content frame of the
   scrolledframe with ttk::label, ttk::combobox, ttk::spinbox, ttk::entry, and
-  ttk::checkbutton widgets used to display and edit the configuration options
-  of the tablelist widget.&nbsp; Whenever a ttk::combobox or ttk::spinbox is
-  created, the <code><a href=
+  ttk::checkbutton or tsw::toggleswitch widgets used to display and edit the
+  configuration options of the tablelist widget.&nbsp; Whenever a
+  ttk::combobox or ttk::spinbox is created, the <code><a href=
   "wheelEvent.html#adapt">scrollutil::adaptWheelEventHandling</a></code>
   command is invoked for it, being that these widgets have built-in bindings
   for the mouse wheel and <code>&lt;TouchpadScroll&gt;</code>

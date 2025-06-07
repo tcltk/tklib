@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>The scrollutil::scrollableframe Command</title>
+  <title>The scrollutil::scrollableframe and scrollutil::adaptBtn2EventHandling
+  Commands</title>
 
   <meta name="Author" content="Csaba Nemethi">
   <meta name="Keywords" content="scrollableframe, widget, frame, scrollable">
@@ -11,7 +12,8 @@
 
 <body>
   <div>
-    <h1>The <code><b>scrollutil::scrollableframe</b></code> Command</h1>
+    <h1>The <code><b>scrollutil::scrollableframe</b></code> and<br>
+    <code><b>scrollutil::adaptBtn2EventHandling</b></code> Commands</h1>
 
     <h2>For Scrollutil Version 2.6</h2>
 
@@ -29,9 +31,16 @@
   <h2 id="contents">Contents</h2>
 
   <ul>
-    <li><a href="#quick_ref">Quick Reference</a></li>
+    <li><a href="#quick_ref">The
+    <code><b>scrollutil::scrollableframe</b></code> Command &ndash; Quick
+    Reference</a></li>
 
-    <li><a href="#detailed_ref">Detailed Reference</a></li>
+    <li><a href="#detailed_ref">The
+    <code><b>scrollutil::scrollableframe</b></code> Command &ndash; Detailed
+    Reference</a></li>
+
+    <li><a href="#adapt">The
+    <code><b>scrollutil::adaptBtn2EventHandling</b></code> Command</a></li>
 
     <li><a href="#comparison">Comparison with BWidget ScrollableFrame and
     iwidgets::scrolledframe</a></li>
@@ -43,7 +52,8 @@
 
   <hr>
 
-  <h2 id="quick_ref">Quick Reference</h2>
+  <h2 id="quick_ref">The <code><b>scrollutil::scrollableframe</b></code>
+  Command &ndash; Quick Reference</h2>
 
   <dl>
     <dt><a href="#name">NAME</a></dt>
@@ -126,6 +136,12 @@
     <dd><code><i>pathName</i> <b><a href="#hasattrib">hasattrib</a></b>
     <i>name</i></code></dd>
 
+    <dd><code><i>pathName</i> <b><a href=
+    "#preparescan">preparescan</a></b></code></dd>
+
+    <dd><code><i>pathName</i> <b><a href=
+    "#preparescroll">preparescroll</a></b></code></dd>
+
     <dd>
       <code><i>pathName</i> <b><a href="#scan">scan</a></b> <i>option
       args</i></code>
@@ -196,7 +212,8 @@
 
   <hr>
 
-  <h2 id="detailed_ref">Detailed Reference</h2>
+  <h2 id="detailed_ref">The <code><b>scrollutil::scrollableframe</b></code>
+  Command &ndash; Detailed Reference</h2>
 
   <dl>
     <dt id="name"><b>NAME</b></dt>
@@ -722,6 +739,39 @@ pack $sa -expand yes -fill both
         <dd>Returns <code>1</code> if the attribute <code><i>name</i></code>
         exists and <code>0</code> otherwise.</dd>
 
+        <dt class="tm" id="preparescan"><code><i>pathName</i>
+        <b>preparescan</b></code></dt>
+
+        <dd>Prepares the scrollableframe for scanning, by passing its
+        descendants located in the same toplevel and having bindings for mouse
+        button 2 events to the <code><b><a href=
+        "#adapt">scrollutil::adaptBtn2EventHandling</a></b></code>
+        command.</dd>
+
+        <dd class="tm"><b>REMARK:</b>&nbsp; If the scrollableframe has many
+        descendants then it is much safer to invoke this subcommand than to
+        manually pass a lot of widgets to
+        <code><b>scrollutil::adaptBtn2EventHandling</b></code>, because
+        deciding which descendants to process can become tedious and
+        error-prone.</dd>
+
+        <dt class="tm" id="preparescroll"><code><i>pathName</i>
+        <b>preparescroll</b></code></dt>
+
+        <dd>Prepares the scrollableframe for scrolling with the mouse wheel and
+        touchpad, by passing its descendants located in the same toplevel and
+        having bindings for mouse wheel or
+        <code><b>&lt;TouchpadScroll&gt;</b></code> events to the
+        <code><b><a href=
+        "wheelEvent.html#adapt">scrollutil::adaptWheelEventHandling</a></b></code>
+        command.</dd>
+
+        <dd class="tm"><b>REMARK:</b>&nbsp; Invoking this subcommand is just a
+        shortcut for passing <code><i>pathName</i></code> to the
+        <code><b><a href=
+        "wheelEvent.html#prepare">scrollutil::prepareScrollingByWheel</a></b></code>
+        command.</dd>
+
         <dt class="tm" id="scan"><code><i>pathName</i> <b>scan</b> <i>option
         args</i></code></dt>
 
@@ -752,10 +802,12 @@ pack $sa -expand yes -fill both
             <b>mark</b></code>&nbsp; command for the widget.&nbsp; It then
             adjusts the view by <code><i>gain</i></code> times the difference
             in coordinates, where <code><i>gain</i></code> defaults to
-            <code>10</code>.&nbsp; This command is typically associated with
-            mouse motion events in the widget, to produce the effect of
-            dragging the content frame at high speed through the window.&nbsp;
-            The return value is an empty string.</dd>
+            <code>10</code>, except on Android, where the default is
+            <code>2</code>, being that this value suits better the emulation of
+            mouse button 2 events with one-finger gestures.&nbsp; This command
+            is typically associated with mouse motion events in the widget, to
+            produce the effect of dragging the content frame at high speed
+            through the window.&nbsp; The return value is an empty string.</dd>
           </dl>
         </dd>
 
@@ -964,14 +1016,160 @@ proc seeScrollarea {sf w} { $sf <span class="red">see</span> [<b><a href=
 
     <dt class="tm" id="bindings"><b>BINDINGS</b></dt>
 
-    <dd>Mouse button 1 may be used for scanning.&nbsp; If it is pressed and
-    dragged over the scrollableframe window, the content frame drags at high
-    speed in the direction the mouse moves.&nbsp; For the duration of the scan
-    the cursor is set to one having the shape of a pointing hand.</dd>
+    <dd>Mouse button 2 may be used for scanning.&nbsp; If it is pressed and
+    dragged over a free area of the scrollableframe window, the content frame
+    drags at high speed in the direction the mouse moves.&nbsp; The same
+    happens if a descendant was clicked that either has no bindings for mouse
+    button 2 events, or was passed to the <code><b><a href=
+    "#adapt">scrollutil::adaptBtn2EventHandling</a></b></code> command, and the
+    focus is outside the window&nbsp; <code>[<b><a href=
+    "wheelEvent.html#focusCkWin">focusCheckWindow</a></b>
+    <i>descendant</i>]</code>.</dd>
+
+    <dd class="tm"><b>REMARK:</b>&nbsp; On Android, the support for scanning
+    with mouse button 2 implies scan support via one-finger gestures, because
+    fast wipes with one finger are translated by AndroWish to
+    <code><b>&lt;Button-2&gt;</b></code>,
+    <code><b>&lt;B2-Motion&gt;</b></code>, and
+    <code><b>&lt;ButtonRelease-2&gt;</b></code> events.</dd>
 
     <dt class="tm" id="keywords"><b>KEYWORDS</b></dt>
 
     <dd>scrollableframe, widget, frame, scrollable</dd>
+  </dl>
+
+  <div>
+    <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
+    "index.html">Start page</a></p>
+  </div>
+
+  <hr>
+
+  <h2 id="adapt">The <code><b>scrollutil::adaptBtn2EventHandling</b></code>
+  Command</h2>
+
+  <dl>
+    <dt><b>NAME</b></dt>
+
+    <dd><code>scrollutil::adaptBtn2EventHandling</code> &ndash; Adapt mouse
+    button 2 event handling</dd>
+
+    <dt class="tm"><b>SYNOPSIS</b></dt>
+
+    <dd>
+      <pre>
+<b>scrollutil::adaptBtn2EventHandling</b> ?<i>widget</i> <i>widget</i> ...?
+</pre>
+    </dd>
+
+    <dt><b>DESCRIPTION</b></dt>
+
+    <dd>For each <code><i>widget</i></code> argument, the command performs the
+    following actions:</dd>
+
+    <dd class="tm">
+      <ul>
+        <li>
+          If <code><i>widget</i></code> is the path name of a <a href=
+          "https://www.nemethi.de/tablelist/">tablelist</a> widget then it sets
+          the latter's <code><b>-button2window</b></code> option to the path
+          name of the containing toplevel window, provided that the Tablelist
+          version is 7.6 or later (for earlier Tablelist versions the command
+          silently ignores any tablelist widget passed to it as
+          argument).&nbsp; As a result, a <code><b>&lt;Button-2&gt;</b></code>,
+          <code><b>&lt;B2-Motion&gt;</b></code>, or
+          <code><b>&lt;ButtonRelease-2&gt;</b></code> event sent to the
+          tablelist's body or edit window (more precisely, a mouse button 2
+          event sent to any component of the tablelist having the binding tag
+          <code><b>TablelistBody</b></code> or
+          <code><b>TablelistEdit</b></code>) will be handled as follows:
+
+          <ul class="tm">
+            <li>If the focus is inside the tablelist widget then the event will
+            will trigger a scanning of the content of the tablelist or its edit
+            window and no further processing of the event will take place.</li>
+
+            <li class="tm">If the focus is outside the tablelist widget then no
+            scanning within the tablelist's body or edit window will
+            happen.&nbsp; Instead, the event will be redirected to the
+            containing toplevel window via&nbsp; <code><b>event
+            generate</b></code>.&nbsp; This in turn will trigger a scanning of
+            the content of the (innermost) scrollableframe that is an ancestor
+            of <code><i>widget</i></code> and has the same toplevel (if there
+            is such a scrollableframe widget).</li>
+          </ul>
+        </li>
+
+        <li class="tm">
+          Otherwise it locates the (first) binding tag that has mouse button 2
+          event bindings and is different from both the path name of the
+          containing toplevel window and <code><b>all</b></code>.&nbsp; If the
+          search for this tag was successful then the command modifies the
+          widget's list of binding tags by prepending the tag
+          <code><b>Btn2EventRedir</b></code> and appending the tag
+          <code><b>Btn2EventBreak</b></code> to this binding tag.&nbsp; As a
+          result, a <code><b>&lt;Button-2&gt;</b></code>,
+          <code><b>&lt;B2-Motion&gt;</b></code>, or
+          <code><b>&lt;ButtonRelease-2&gt;</b></code> event sent to this widget
+          will be handled as follows:
+
+          <ul class="tm">
+            <li>If the focus is on or inside the window&nbsp;
+            <code>[<b><a href=
+            "wheelEvent.html#focusCkWin">focusCheckWindow</a></b>
+            <i>widget</i>]</code>&nbsp; then the event will be handled by the
+            binding script associated with this tag and no further processing
+            of the event will take place.</li>
+
+            <li class="tm">If the focus is outside the window&nbsp;
+            <code>[<b>focusCheckWindow</b> <i>widget</i>]</code>&nbsp; then the
+            event will be redirected to the containing toplevel window
+            via&nbsp; <code><b>event generate</b></code>&nbsp; rather than
+            being handled by the binding script associated with the
+            above-mentioned tag.&nbsp; This in turn will trigger a scanning of
+            the content of the (innermost) scrollableframe that is an ancestor
+            of <code><i>widget</i></code> and has the same toplevel (if there
+            is such a scrollableframe widget).</li>
+          </ul>
+        </li>
+      </ul>
+    </dd>
+
+    <dd class="tm"><b>REMARK 1:</b>&nbsp; This command is designed to be
+    invoked for widgets that have mouse button 2 event bindings and are
+    descendants of a scrollableframe.&nbsp; The Tk and tile widgets
+    having class bindings for mouse button 2 events area: Tk core entry,
+    ttk::entry, ttk::combobox, listbox, panedwindow, Tk core scale, ttk::scale,
+    Tk core spinbox, ttk::spinbox, Tk core scrollbar, ttk::scrollbar, and
+    text.&nbsp; Examples of widgets with binding tags other than their class
+    names that have mouse button 2 event bindings are ctext and tablelist
+    widgets.&nbsp; (In case of a ctext widget <code><i>w</i></code>, the
+    binding tags mentioned in the description above refer to the widget's main
+    text widget child <code><i>w</i>.t</code> rather than to the widget
+    itself.)</dd>
+
+    <dd class="tm"><b>REMARK 2:</b>&nbsp; As mentioned above, Tk core scrollbar
+    and ttk::scrollbar widgets have class bindings for mouse button 2 events,
+    hence this command should be invoked for them in case they are descendants
+    of a scrollableframe widget.&nbsp; Since this task can become tedious,
+    Scrollutil makes sure that if you pass a widget to this command and that
+    widget is embedded into a <a href="scrollarea.html">scrollarea</a> via the
+    latter's <code><b><a href=
+    "scrollarea.html#setwidget">setwidget</a></b></code> subcommand, then this
+    command will automatically be invoked for the scrollbars of that
+    scrollarea, too.</dd>
+
+    <dd class="tm"><b>REMARK 3:</b>&nbsp; When handling a mouse button 2 event
+    sent to a Tk core or tile scrollbar whose path name was passed to this
+    command, if the focus is on or inside the associated widget then the event
+    will be processed by the scrollbar rather than being redirected to the
+    containing toplevel, just as if the focus were on the scrollbar
+    itself.</dd>
+
+    <dt class="tm"><b>KEYWORDS</b></dt>
+
+    <dd>mouse button 2 event, binding, event handling, scanning,
+    scrollableframe, focus</dd>
   </dl>
 
   <div>
@@ -1170,6 +1368,18 @@ proc seeScrollarea {sf w} { $sf <span class="red">see</span> [<b><a href=
 
     <tr>
       <td><code><b>hasattrib</b></code></td>
+      <td bgcolor="#e0e0e0"></td>
+      <td bgcolor="#e0e0e0"></td>
+    </tr>
+
+    <tr>
+      <td><code><b>preparescan</b></code></td>
+      <td bgcolor="#e0e0e0"></td>
+      <td bgcolor="#e0e0e0"></td>
+    </tr>
+
+    <tr>
+      <td><code><b>preparescroll</b></code></td>
       <td bgcolor="#e0e0e0"></td>
       <td bgcolor="#e0e0e0"></td>
     </tr>

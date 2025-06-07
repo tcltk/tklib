@@ -1,25 +1,44 @@
 What is new in Scrollutil 2.6?
 ------------------------------
 
-1. The "scrollutil::addMouseWheelSupport" command now accepts also the
+1. The scanning in scrollableframe widgets is now supported with mouse
+   button 2 rather than 1.  On Android this adds scan support via one-
+   finger gestures (thanks to Christian Werner for his proposal).
+
+2. Added the "scrollutil::adaptBtn2EventHandling" command, for user-
+   friendly mouse button 2 event handling in scrollableframe widgets,
+   which on Android means user-friendly support for scanning via one-
+   finger gestures (thanks to Michael Nieren and Christian Werner for
+   discussions on this subject).
+
+3. Added the "preparescan" scrollableframe subcommand, designed to
+   automate the invocations of scrollutil::adaptBtn2EventHandling".
+
+4. Added the "scrollutil::prepareScrollingByWheel" command, designed to
+   automate the invocations of "scrollutil::adaptWheelEventHandling" in
+   scrollable widget containers.
+
+5. Added the "preparescroll" scrollableframe subcommand, as a shortcut
+   for the "scrollutil::prepareScrollingByWheel" command.
+
+6. The "scrollutil::addMouseWheelSupport" command now accepts also the
    path name of a (ttk::)menubutton widget or the class name
-   "(T)Menubutton" as argument, in which case the binding scripts
-   created by this command for the mouse wheel and <TouchpadScroll>
-   events will activate the cyclically next or previous entry of the
-   menu associated with the widget and invoke the action of that menu
-   entry.
+   "(T)Menubutton" as argument, in which case the binding scripts for
+   the mouse wheel and <TouchpadScroll> events will activate the
+   cyclically next or previous entry of the menu associated with the
+   widget and invoke the action of that menu entry.
 
-2. The "scrollutil::addMouseWheelSupport" command now accepts also the
+7. The "scrollutil::addMouseWheelSupport" command now accepts also the
    path name of a (ttk::)scale widget or the class name "(T)Scale" as
-   argument, in which case the binding scripts created by this command
-   for the mouse wheel and <TouchpadScroll> events will increment or
-   decrement the widget's value and move the slider accordingly.
+   argument, in which case the binding scripts for the mouse wheel and
+   <TouchpadScroll> events will increment or decrement the widget's
+   value and move the slider accordingly.
 
-3. The demo script "ScrolledCanvas.tcl" now adds mouse wheel and
+8. The demo script "ScrolledCanvas.tcl" now adds mouse wheel and
    <TouchpadScroll> event support not only to the canvas but also to two
    ttk::scale widgets.
 
-4. Improved the documentation by extending the CSS stylesheet used in
+9. Improved the documentation by extending the CSS stylesheet used in
    the HTML files.
 
 What was new in Scrollutil 2.5?
