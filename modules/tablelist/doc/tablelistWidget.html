@@ -741,7 +741,7 @@
 
     <dd><code><i>pathName</i> <b><a href=
     "#autoscrolltarget">autoscrolltarget</a></b> <i>event</i>
-    <i>x</i></code> <i>y</i></code></dd>
+    <i>x</i> <i>y</i></code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#bbox">bbox</a></b>
     <i>index</i></code></dd>
@@ -5048,7 +5048,6 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
               <th><code>classic200</code></th>
             </tr>
           </tbody>
-          </tbody>
         </table>
 
         <p>If the tree style is <code><b>gtk</b></code>,
@@ -8008,7 +8007,8 @@ proc handleTblDrop {tbl data} {
           <td>A list consisting of the numerical indices of the leftmost and
           rightmost columns visible in the tablelist window, i.e., of the
           numerical equivalents of the <a href="#col_indices">column
-          indices</a> <code><b>left</b></code> and <code><b>right</code>.</td>
+          indices</a> <code><b>left</b></code> and
+	  <code><b>right</b></code>.</td>
         </tr>
 
         <tr valign="top">
@@ -8018,7 +8018,8 @@ proc handleTblDrop {tbl data} {
           <td>A list consisting of the numerical indices of the topmost and
           bottommost body items visible in the tablelist window, i.e., of
           the numerical equivalents of the <a href="#row_indices">row
-          indices</a> <code><b>top</b></code> and <code><b>bottom</code>.</td>
+          indices</a> <code><b>top</b></code> and
+	  <code><b>bottom</b></code>.</td>
         </tr>
       </table>
     </dd>
@@ -10735,7 +10736,7 @@ upvar #0 [.tbl <span class="red">itemlistvar</span>] itemList
             after that it collapses all rows of the tablelist by invoking&nbsp;
             <code><b><a href="#collapseall">collapseall</a>
             -fully</b></code>.</li>
-          <ul>
+          </ul>
         </dd>
 
         <dd class="tm"><b>REMARK 1:</b>&nbsp; Invoking this subcommand with the

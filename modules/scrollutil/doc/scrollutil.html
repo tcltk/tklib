@@ -558,7 +558,7 @@ if {$::tk_version &lt; 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
     <i>Fonts</i> tab of the <i>Appearance</i> dialog or (on Linux Lite 5+) via
     the <i>HiDPI Settings</i> dialog.</li>
 
-    <li class="tm">On MATE</i>, the display scaling mode, called <i>window
+    <li class="tm">On <i>MATE</i>, the display scaling mode, called <i>window
     scaling factor</i>, can be "Auto-detect", "Regular", or "HiDPI", and can be
     selected in the <i>MATE Tweak</i> dialog.&nbsp; The same effect can be
     achieved by using the <i>Monitor Preferences</i> dialog and selecting one
@@ -1456,16 +1456,16 @@ foreach country $countryList {
   wheel and <code>&lt;TouchpadScroll&gt;</code> events.&nbsp; Due to this
   command, these events over one of the ttk::combobox widgets will only select
   the next/previous capital city if the widget has the focus, otherwise they
-  will scroll the scrollableframe.&nbsp; For every ttk::combobox widget, we
-  also invoke the <code><a href=
+  will scroll the scrollableframe.</p>
+
+  <p>For every ttk::combobox widget, we also invoke the <code><a href=
   "scrollableframe.html#adapt">scrollutil::adaptBtn2EventHandling</a></code>
   command, thus making sure that the mouse button 2 events sent to the widget
   will only be handled by the widget itself if it has the focus, otherwise they
-  will result in scanning the scrollableframe's content.</p>
-
-  <p>During the scan with mouse button 2, the cursor will take on the shape of
-  a pointing hand, and by draggging the mouse, the content frame will drag at
-  high speed through the window, in the direction the mouse moves.</p>
+  will result in scanning the scrollableframe's content.&nbsp; During the scan
+  the cursor will take on the shape of a pointing hand, and by draggging the
+  mouse, the content frame will drag at high speed through the window, in the
+  direction the mouse moves.</p>
 
   <h3 id="ex_BwScrollableFrameDemo1">A Script Using a BWidget ScrollableFrame
   Widget</h3>
@@ -2379,7 +2379,7 @@ proc saveSel {nb widget} {
 
 <span class="cmt">#
 # Create bindings for moving and closing the tabs interactively,
-# as well as for the virtual event <<NotebookTabChanged>>
+# as well as for the virtual event &lt;&lt;NotebookTabChanged&gt;&gt;
 #</span>
 <span class="red">bind $nb &lt;&lt;MenuItemsRequested&gt;&gt; { populateMenu %W %d }
 bind $nb &lt;&lt;NotebookTabChanged&gt;&gt; { restoreSel %W }</span>
