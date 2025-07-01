@@ -8,7 +8,7 @@
 #   https://icons8.com/icon/RdCT0UIsKOIp/opened-folder
 #   https://icons8.com/icon/mEF_vyjYlnE3/file
 #
-# Copyright (c) 2010-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2010-2025  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tk
@@ -31,6 +31,19 @@ if {$tk_version >= 8.7 || [catch {package require tksvg}] == 0} {
 foreach name {clsdFolder openFolder file} {
     set imgFile $name$pct.$sfx		;# e.g., "file.svg" or "file150.gif"
     image create photo ${name}Img -file [file join $dir $imgFile] -format $fmt
+}
+
+#
+# Helper procedures needed to work around the fact that
+# on Android the directory "/" is normally not readable
+#
+set onAndroid [expr {[info exists ::tk::android] && $::tk::android}]
+proc isReadable name {
+    return [expr {$::onAndroid && $name eq "/" ? 1 : [file readable $name]}]
+}
+proc dirContent dir {
+    return [expr {$::onAndroid && $dir eq "/" ? [list /sdcard] :
+	    [glob -nocomplain -types {d f} -directory $dir *]}]
 }
 
 #------------------------------------------------------------------------------
@@ -73,7 +86,7 @@ proc displayContents dir {
 	$tbl configure -treestyle bicolor$pct
     }
 
-    bind $tbl <<TablelistYViewChanged>> [list addImages $tbl]
+    bind $tbl <<TablelistYViewChanged>> { addImages %W }
 
     #
     # Create a pop-up menu with one command entry; bind the script
@@ -87,7 +100,7 @@ proc displayContents dir {
     bind $bodyTag <<Button3>>  [bind TablelistBody <Button-1>]
     bind $bodyTag <<Button3>> +[bind TablelistBody <ButtonRelease-1>]
     bind $bodyTag <<Button3>> +[list postPopupMenu %X %Y]
-    bind $bodyTag <Double-1>   [list putContentsOfSelFolder $tbl]
+    bind $bodyTag <Double-1>   [list putContentsOfSelFolder %W]
 
     #
     # Create three buttons within a frame child of the main widget
@@ -136,7 +149,7 @@ proc putContents {dir tbl nodeIdx} {
     # The following check is necessary because this procedure
     # is also invoked by the "Refresh" and "Parent" buttons
     #
-    if {$dir ne "" && (![file isdirectory $dir] || ![file readable $dir])} {
+    if {$dir ne "" && (![file isdirectory $dir] || ![isReadable $dir])} {
 	bell
 	if {$nodeIdx eq "root"} {
 	    set choice [tk_messageBox -title "Error" -icon warning -message \
@@ -144,7 +157,7 @@ proc putContents {dir tbl nodeIdx} {
 			-- replacing it with nearest existent ancestor" \
 			-type okcancel -default ok]
 	    if {$choice eq "ok"} {
-		while {![file isdirectory $dir] || ![file readable $dir]} {
+		while {![file isdirectory $dir] || ![isReadable $dir]} {
 		    set dir [file dirname $dir]
 		}
 	    } else {
@@ -184,7 +197,7 @@ proc putContents {dir tbl nodeIdx} {
 	    lappend itemList [list D[file nativename $volume] -1 D $volume]
 	}
     } else {
-	foreach entry [glob -nocomplain -types {d f} -directory $dir *] {
+	foreach entry [dirContent $dir] {
 	    if {[catch {file mtime $entry} modTime] != 0} {
 		continue
 	    }
@@ -214,14 +227,15 @@ proc putContents {dir tbl nodeIdx} {
 	    #
 	    # Mark the row as collapsed if the directory is non-empty
 	    #
-	    if {[file readable $name] && [llength \
-		[glob -nocomplain -types {d f} -directory $name *]] != 0} {
+	    if {[isReadable $name] && [llength [dirContent $name]] != 0} {
 		$tbl collapse $row
 	    }
 	}
 
 	incr row
     }
+
+    addImages $tbl
 
     if {$nodeIdx eq "root"} {
 	#
@@ -309,15 +323,21 @@ proc addImages tbl {
 #------------------------------------------------------------------------------
 # putContentsOfSelFolder
 #
-# Outputs the content of the selected folder into the tablelist widget tbl.
+# Outputs the content of the selected folder into the tablelist given by or
+# containing the specified widget.
 #------------------------------------------------------------------------------
-proc putContentsOfSelFolder tbl {
+proc putContentsOfSelFolder w {
+    if {[winfo class $w] eq "Tablelist"} {
+	set tbl $w
+    } else {
+	set tbl [tablelist::getTablelistPath $w]
+    }
+
     set row [$tbl curselection]
     if {[$tbl hasrowattrib $row pathName]} {		;# directory item
 	set dir [$tbl rowattrib $row pathName]
-	if {[file isdirectory $dir] && [file readable $dir]} {
-	    if {[llength [glob -nocomplain -types {d f} -directory $dir *]]
-		== 0} {
+	if {[file isdirectory $dir] && [isReadable $dir]} {
+	    if {[llength [dirContent $dir]] == 0} {
 		bell
 	    } else {
 		putContents $dir $tbl root
@@ -346,9 +366,8 @@ proc postPopupMenu {rootX rootY} {
     set menu .menu
     if {[$tbl hasrowattrib $row pathName]} {		;# directory item
 	set dir [$tbl rowattrib $row pathName]
-	if {[file isdirectory $dir] && [file readable $dir]} {
-	    if {[llength [glob -nocomplain -types {d f} -directory $dir *]]
-		== 0} {
+	if {[file isdirectory $dir] && [isReadable $dir]} {
+	    if {[llength [dirContent $dir]] == 0} {
 		$menu entryconfigure 0 -state disabled
 	    } else {
 		$menu entryconfigure 0 -state normal

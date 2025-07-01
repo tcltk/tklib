@@ -1,5 +1,21 @@
-What is new in Tablelist 7.6?
+What is new in Tablelist 7.7?
 -----------------------------
+
+1. Added explicit support for the "droid" theme, which is the default in
+   AndroWish.
+
+2. Improvements related to the themes provided by the awthemes package
+   and the ones that are not explicitly supported by Tablelist.
+
+3. Improved the interactive cell editing with the aid of the
+   toggleswitch widget.
+
+4. The demo scripts "dirViewer.tcl" and "dirViewer_tile.tcl" now work
+   around the fact that on Android the directory "/" is normally not
+   readable.
+
+What was new in Tablelist 7.6?
+------------------------------
 
 1. Added the "-button2window" configuration option, which makes it
    possible to redirect the mouse button 2 events of the tablelist's

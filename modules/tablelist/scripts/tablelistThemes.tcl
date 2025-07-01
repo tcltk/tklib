@@ -51,6 +51,11 @@ proc tablelist::setThemeDefaults {} {
 	defaultTheme
 	array set themeDefaults [styleConfig .]
 
+	set themeDefaults(-background) white
+	if {[set bg [styleConfig . -fieldbackground]] ne ""} {
+	    set themeDefaults(-background) $bg
+	}
+
 	if {[set bg [styleConfig . -background]] ne ""} {
 	    array set themeDefaults [list \
 		-labelbackground	$bg \
@@ -129,15 +134,36 @@ proc tablelist::setThemeDefaults {} {
 # tablelist::awTheme
 #------------------------------------------------------------------------------
 proc tablelist::awTheme theme {
-    set bg		[styleConfig . -background]
+    if {$theme eq "awblack" || $theme eq "black"} {
+	set bg		"#000000"
+	set selectBg	"#4a6984"
+    } else {
+	set bg		[styleConfig . -fieldbackground]
+	set selectBg	[styleConfig . -selectbackground]
+    }
     set fg		[styleConfig . -foreground]
     set disabledFg	[lindex [style map . -foreground] 1]
     set labelBg		[styleConfig Heading -background]
     set labelactiveBg	[styleConfig Heading -lightcolor]
 
-    scan $bg "#%2x%2x%2x" r g b
-    incr r -15; incr g -15; incr b -15
-    set stripeBg [format "#%2x%2x%2x" $r $g $b]
+    switch $theme {
+	awblack - black { set stripeBg "#262626" }
+	awclearlooks - clearlooks -
+	awwinxpblue - winxpblue {
+	    scan [styleConfig . -background] "#%2x%2x%2x" r g b
+	    incr r 8; incr g 8; incr b 8
+	    set stripeBg [format "#%02x%02x%02x" $r $g $b]
+	}
+	default {
+	    scan $bg "#%2x%2x%2x" r g b
+	    if {[mwutil::isColorLight $bg]} {
+		incr r -15; incr g -15; incr b -15
+	    } else {
+		incr r 15; incr g 15; incr b 15
+	    }
+	    set stripeBg [format "#%02x%02x%02x" $r $g $b]
+	}
+    }
 
     variable svgSupported
     variable scalingpct
@@ -161,7 +187,7 @@ proc tablelist::awTheme theme {
 	-foreground		$fg \
 	-disabledforeground	$disabledFg \
 	-stripebackground	$stripeBg \
-	-selectbackground	[styleConfig . -selectbackground] \
+	-selectbackground	$selectBg \
 	-selectforeground	[styleConfig . -selectforeground] \
 	-selectborderwidth	[styleConfig . -selectborderwidth] \
 	-labelbackground	$labelBg \
@@ -272,12 +298,12 @@ proc tablelist::aquaTheme {} {
 			set labelselectedBg		#323232
 			set labelselectedpressedBg	#323232
 		    } else {
-			set stripeBg			#f5f5f5
+			set stripeBg			#f4f5f5
 			set labelselectedBg		#eeeeee
 			set labelselectedpressedBg	#eeeeee
 		    }
 		} else {
-		    set stripeBg		#f5f5f5
+		    set stripeBg		#f4f5f5
 		    set labelselectedBg		#f6f6f6
 		    set labelselectedpressedBg	#e9e9e9
 		}
@@ -300,12 +326,12 @@ proc tablelist::aquaTheme {} {
 			set labelselectedBg		#323232
 			set labelselectedpressedBg	#323232
 		    } else {
-			set stripeBg			#f5f5f5
+			set stripeBg			#f4f5f5
 			set labelselectedBg		#eeeeee
 			set labelselectedpressedBg	#eeeeee
 		    }
 		} else {
-		    set stripeBg		#f5f5f5
+		    set stripeBg		#f4f5f5
 		    set labelselectedBg		#f6f6f6
 		    set labelselectedpressedBg	#e9e9e9
 		}
@@ -500,10 +526,11 @@ proc tablelist::aquativoTheme {} {
 # tablelist::ArcTheme
 #------------------------------------------------------------------------------
 proc tablelist::ArcTheme {} {
-    variable themeDefaults
     variable svgSupported
     variable scalingpct
     set pct [expr {$svgSupported ? "" : $scalingpct}]
+
+    variable themeDefaults
     array set themeDefaults [list \
 	-foreground		#5c616c \
 	-disabledforeground	#a9acb2 \
@@ -532,10 +559,11 @@ proc tablelist::ArcTheme {} {
 # tablelist::blackTheme
 #------------------------------------------------------------------------------
 proc tablelist::blackTheme {} {
-    variable themeDefaults
     variable svgSupported
     variable scalingpct
     set pct [expr {$svgSupported ? "" : $scalingpct}]
+
+    variable themeDefaults
     array set themeDefaults [list \
 	-background		#000000 \
 	-foreground		#ffffff \
@@ -591,10 +619,11 @@ proc tablelist::blueTheme {} {
 # tablelist::BreezeTheme, tablelist::breezeTheme
 #------------------------------------------------------------------------------
 proc tablelist::BreezeTheme {} {
-    variable themeDefaults
     variable svgSupported
     variable scalingpct
     set pct [expr {$svgSupported ? "" : $scalingpct}]
+
+    variable themeDefaults
     array set themeDefaults [list \
 	-background		#eff0f1 \
 	-foreground		#31363b \
@@ -627,10 +656,11 @@ proc tablelist::breezeTheme {} {
 # tablelist::breeze-darkTheme
 #------------------------------------------------------------------------------
 proc tablelist::breeze-darkTheme {} {
-    variable themeDefaults
     variable svgSupported
     variable scalingpct
     set pct [expr {$svgSupported ? "" : $scalingpct}]
+
+    variable themeDefaults
     array set themeDefaults [list \
 	-background		#31363b \
 	-foreground		#eff0f1 \
@@ -771,6 +801,34 @@ proc tablelist::defaultTheme {} {
 }
 
 #------------------------------------------------------------------------------
+# tablelist::droidTheme
+#------------------------------------------------------------------------------
+proc tablelist::droidTheme {} {
+    variable svgSupported
+    variable scalingpct
+    set pct [expr {$svgSupported ? "" : $scalingpct}]
+
+    variable themeDefaults
+    array set themeDefaults [list \
+	-disabledforeground	#aaaaaa \
+	-stripebackground	#e8e8e8 \
+	-selectbackground	#657a9e \
+	-selectforeground	#ffffff \
+	-selectborderwidth	0 \
+	-labelbackground	#dcdde3 \
+	-labeldeactivatedBg	#dcdde3 \
+	-labeldisabledBg	#dcdde3 \
+	-labelactiveBg		#dcdde3 \
+	-labelpressedBg		#b9bcc0 \
+	-labeldisabledFg	#aaaaaa \
+	-labelborderwidth	0 \
+	-labelpady		1 \
+	-arrowstyle		[defaultX11ArrowStyle] \
+	-treestyle		classic$pct \
+    ]
+}
+
+#------------------------------------------------------------------------------
 # tablelist::keramikTheme
 #------------------------------------------------------------------------------
 proc tablelist::keramikTheme {} {
@@ -851,7 +909,7 @@ proc tablelist::plastikTheme {} {
     variable themeDefaults
     array set themeDefaults [list \
 	-disabledforeground	#aaaaaa \
-	-stripebackground	"" \
+	-stripebackground	#e8e8e8 \
 	-selectbackground	#657a9e \
 	-selectforeground	#ffffff \
 	-selectborderwidth	0 \
@@ -863,7 +921,7 @@ proc tablelist::plastikTheme {} {
 	-labeldisabledFg	#aaaaaa \
 	-labelborderwidth	0 \
 	-labelpady		1 \
-	-arrowstyle		flat7x4 \
+	-arrowstyle		[defaultX11ArrowStyle] \
 	-treestyle		plastik \
     ]
 }
@@ -946,10 +1004,11 @@ proc tablelist::stepTheme {} {
 # tablelist::sun-valley-lightTheme
 #------------------------------------------------------------------------------
 proc tablelist::sun-valley-lightTheme {} {
-    variable themeDefaults
     variable svgSupported
     variable scalingpct
     set pct [expr {$svgSupported ? "" : $scalingpct}]
+
+    variable themeDefaults
     array set themeDefaults [list \
 	-background		#fafafa \
 	-foreground		#1c1c1c \
@@ -979,10 +1038,11 @@ proc tablelist::sun-valley-lightTheme {} {
 # tablelist::sun-valley-darkTheme
 #------------------------------------------------------------------------------
 proc tablelist::sun-valley-darkTheme {} {
-    variable themeDefaults
     variable svgSupported
     variable scalingpct
     set pct [expr {$svgSupported ? "" : $scalingpct}]
+
+    variable themeDefaults
     array set themeDefaults [list \
 	-background		#1c1c1c \
 	-foreground		#fafafa \

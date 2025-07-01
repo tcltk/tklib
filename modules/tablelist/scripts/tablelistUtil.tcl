@@ -6937,6 +6937,33 @@ proc tablelist::makeTtkCkbtn w {
 	    return {14 14}
 	}
 
+	droid {
+	    switch $::ttk::theme::droid::dpi {
+		120 {
+		    set width 18; set height 19
+		    place $w -x -4
+		}
+		160 {
+		    set width 25; set height 25
+		    place $w -x -5
+		}
+		240 {
+		    set width 37; set height 38
+		    place $w -x -8
+		}
+		320 {
+		    set width 50; set height 50
+		    place $w -x -10
+		}
+		400 {
+		    set width 61; set height 62
+		    place $w -x -13
+		}
+	    }
+	    $frm configure -width $width -height $height
+	    return [list $width $height]
+	}
+
 	clearlooks {
 	    $frm configure -width 13 -height 13
 	    place $w -x -2 -y -2

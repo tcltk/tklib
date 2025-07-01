@@ -7,21 +7,21 @@
 #
 # Regular packages:
 #
-package ifneeded tablelist         7.6 \
+package ifneeded tablelist         7.7 \
 	[list source [file join $dir tablelist.tcl]]
-package ifneeded tablelist_tile    7.6 \
+package ifneeded tablelist_tile    7.7 \
 	[list source [file join $dir tablelist_tile.tcl]]
 
 #
 # Aliases:
 #
-package ifneeded Tablelist         7.6 \
-	[list package require -exact tablelist	    7.6]
-package ifneeded Tablelist_tile    7.6 \
-	[list package require -exact tablelist_tile 7.6]
+package ifneeded Tablelist         7.7 \
+	[list package require -exact tablelist	    7.7]
+package ifneeded Tablelist_tile    7.7 \
+	[list package require -exact tablelist_tile 7.7]
 
 #
 # Code common to all packages:
 #
-package ifneeded tablelist::common 7.6 \
+package ifneeded tablelist::common 7.7 \
 	[list source [file join $dir tablelistCommon.tcl]]

@@ -1926,7 +1926,7 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
 	    wcb::cbappend $w after insert tablelist::adjustTextHeight
 	    wcb::cbappend $w after delete tablelist::adjustTextHeight
 	}
-    } elseif {!$isCheckbtn && !$isTogglesw} {
+    } elseif {!$isCheckbtn} {
 	update idletasks
 	if {[destroyed $win]} {
 	    return ""

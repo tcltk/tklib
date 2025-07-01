@@ -1,3 +1,25 @@
+2025-07-01 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 7.7.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/tablelistEdit.tcl: Improved the interactive cell editing with
+	  the aid of the toggleswitch widget.
+
+	* scripts/tablelistThemes.tcl: Added explicit support for the "droid"
+	* scripts/tablelistUtil.tcl:   theme; improvements related to the
+	  themes provided by the awthemes package and the ones that are not
+	  explicitly supported by Tablelist.
+
+	* scripts/tclIndex: Newly generated.
+
+	* ../../examples/tablelist/dirViewer*.tcl: Now work around the fact
+	  that on Android the directory "/" is normally not readable.
+
 2025-06-10 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Tablelist 7.6.
