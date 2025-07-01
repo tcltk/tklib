@@ -1,3 +1,25 @@
+2025-07-01  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 1.2.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/*.tcl: Added explicit support for the themes "awarc",
+	  "awbreeze", "awbreezedark", "awdark", "awlight", "droid", and
+	  "plastik"; made sure that on Android the widget's behavior is adapted
+	  to the touchscreen as input device; improved the support for older
+	  macOS versions.
+
+	* scripts/tclIndex: Newly generated.
+
+	* doc/EditingOpts.png: Updated screenshot.
+
+	* ../../examples/tsw/EditingOpts.tcl: Improvements in the demo scripts.
+	* ../../examples/tsw/TswDemo.tcl:
+
 2025-06-10  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Tsw 1.1.

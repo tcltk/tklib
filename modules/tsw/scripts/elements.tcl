@@ -50,6 +50,7 @@ proc tsw::createElements_default {} {
  <circle cx="12" cy="10" r="10" fill="#ffffff"/>
 </svg>}
 
+    variable onAndroid
     foreach n {1 2 3} {
 	# troughOffImg
 	set imgData $troughData($n)
@@ -58,7 +59,8 @@ proc tsw::createElements_default {} {
 
 	# troughOffActiveImg
 	set imgData $troughData($n)
-	append imgData "fill='#b3b3b3'/>\n</svg>"
+	set fill [expr {$onAndroid ? "#c3c3c3" : "#b3b3b3"}]
+	append imgData "fill='$fill'/>\n</svg>"
 	set troughOffActiveImg [createSvgImg -data $imgData]
 
 	# troughOffPressedImg
@@ -78,7 +80,8 @@ proc tsw::createElements_default {} {
 
 	# troughOnActiveImg
 	set imgData $troughData($n)
-	append imgData "fill='#587d9e'/>\n</svg>"
+	set fill [expr {$onAndroid ? "#4a6984" : "#587d9e"}]
+	append imgData "fill='$fill'/>\n</svg>"
 	set troughOnActiveImg [createSvgImg -data $imgData]
 
 	# troughOnPressedImg
@@ -88,7 +91,7 @@ proc tsw::createElements_default {} {
 
 	# troughOnDisabledImg
 	set imgData $troughData($n)
-	append imgData "fill='#abd8ff'/>\n</svg>"
+	append imgData "fill='#a9d7ff'/>\n</svg>"
 	set troughOnDisabledImg [createSvgImg -data $imgData]
 
 	ttk::style element create Switch$n.trough image [list $troughOffImg \
@@ -105,6 +108,16 @@ proc tsw::createElements_default {} {
 	set sliderImg [createSvgImg -data $sliderData($n)]
 
 	ttk::style element create Switch$n.slider image $sliderImg
+
+	ttk::style layout Toggleswitch$n [list \
+	    Switch.focus -sticky nswe -children [list \
+		Switch.padding -sticky nswe -children [list \
+		    Switch$n.trough -sticky {} -children [list \
+			Switch$n.slider -side left -sticky {}
+		    ]
+		]
+	    ]
+	]
     }
 
     set elemInfoArr(default) 1
@@ -139,6 +152,7 @@ proc tsw::createElements_default-dark {} {
 <svg width="24" height="20" version="1.1" xmlns="http://www.w3.org/2000/svg">
  <circle cx="12" cy="10" r="10" }
 
+    variable onAndroid
     foreach n {1 2 3} {
 	# troughOffImg
 	set imgData $troughData($n)
@@ -147,7 +161,8 @@ proc tsw::createElements_default-dark {} {
 
 	# troughOffActiveImg
 	set imgData $troughData($n)
-	append imgData "fill='#676767'/>\n</svg>"
+	set fill [expr {$onAndroid ? "#585858" : "#676767"}]
+	append imgData "fill='$fill'/>\n</svg>"
 	set troughOffActiveImg [createSvgImg -data $imgData]
 
 	# troughOffPressedImg
@@ -162,22 +177,23 @@ proc tsw::createElements_default-dark {} {
 
 	# troughOnImg
 	set imgData $troughData($n)
-	append imgData "fill='#6792b7'/>\n</svg>"
+	append imgData "fill='#4a6984'/>\n</svg>"
 	set troughOnImg [createSvgImg -data $imgData]
 
 	# troughOnActiveImg
 	set imgData $troughData($n)
-	append imgData "fill='#587d9e'/>\n</svg>"
+	set fill [expr {$onAndroid ? "#4a6984" : "#587d9e"}]
+	append imgData "fill='$fill'/>\n</svg>"
 	set troughOnActiveImg [createSvgImg -data $imgData]
 
 	# troughOnPressedImg
 	set imgData $troughData($n)
-	append imgData "fill='#4a6984'/>\n</svg>"
+	append imgData "fill='#6792b7'/>\n</svg>"
 	set troughOnPressedImg [createSvgImg -data $imgData]
 
 	# troughOnDisabledImg
 	set imgData $troughData($n)
-	append imgData "fill='#435f78'/>\n</svg>"
+	append imgData "fill='#3c556b'/>\n</svg>"
 	set troughOnDisabledImg [createSvgImg -data $imgData]
 
 	ttk::style element create DarkSwitch$n.trough image [list \
@@ -251,6 +267,7 @@ proc tsw::createElements_clam {} {
  <circle cx="12" cy="10" r="10" fill="#ffffff"/>
 </svg>}
 
+    variable onAndroid
     foreach n {1 2 3} {
 	# troughOffImg
 	set imgData $troughData($n)
@@ -259,7 +276,8 @@ proc tsw::createElements_clam {} {
 
 	# troughOffActiveImg
 	set imgData $troughData($n)
-	append imgData "fill='#aca79e'/>\n</svg>"
+	set fill [expr {$onAndroid ? "#bab5ab" : "#aca79e"}]
+	append imgData "fill='$fill'/>\n</svg>"
 	set troughOffActiveImg [createSvgImg -data $imgData]
 
 	# troughOffPressedImg
@@ -269,7 +287,7 @@ proc tsw::createElements_clam {} {
 
 	# troughOffDisabledImg
 	set imgData $troughData($n)
-	append imgData "fill='#cbc8c0'/>\n</svg>"
+	append imgData "fill='#cfc9be'/>\n</svg>"
 	set troughOffDisabledImg [createSvgImg -data $imgData]
 
 	# troughOnImg
@@ -279,7 +297,8 @@ proc tsw::createElements_clam {} {
 
 	# troughOnActiveImg
 	set imgData $troughData($n)
-	append imgData "fill='#587d9e'/>\n</svg>"
+	set fill [expr {$onAndroid ? "#4a6984" : "#587d9e"}]
+	append imgData "fill='$fill'/>\n</svg>"
 	set troughOnActiveImg [createSvgImg -data $imgData]
 
 	# troughOnPressedImg
@@ -289,7 +308,7 @@ proc tsw::createElements_clam {} {
 
 	# troughOnDisabledImg
 	set imgData $troughData($n)
-	append imgData "fill='#abd8ff'/>\n</svg>"
+	append imgData "fill='#a9d7ff'/>\n</svg>"
 	set troughOnDisabledImg [createSvgImg -data $imgData]
 
 	ttk::style element create Switch$n.trough image [list $troughOffImg \
@@ -310,6 +329,632 @@ proc tsw::createElements_clam {} {
 }
 
 #------------------------------------------------------------------------------
+# tsw::createElements_droid
+#------------------------------------------------------------------------------
+proc tsw::createElements_droid {} {
+    set troughData(1) {
+<svg width="32" height="16" version="1.1" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="32" height="16" rx="8" }
+    set troughData(2) {
+<svg width="40" height="20" version="1.1" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="40" height="20" rx="10" }
+    set troughData(3) {
+<svg width="48" height="24" version="1.1" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="48" height="24" rx="12" }
+
+    set sliderData(1) {
+<svg width="16" height="12" version="1.1" xmlns="http://www.w3.org/2000/svg">
+ <circle cx="8" cy="6" r="6" fill="#ffffff"/>
+</svg>}
+    set sliderData(2) {
+<svg width="20" height="16" version="1.1" xmlns="http://www.w3.org/2000/svg">
+ <circle cx="10" cy="8" r="8" fill="#ffffff"/>
+</svg>}
+    set sliderData(3) {
+<svg width="24" height="20" version="1.1" xmlns="http://www.w3.org/2000/svg">
+ <circle cx="12" cy="10" r="10" fill="#ffffff"/>
+</svg>}
+
+    foreach n {1 2 3} {
+	# troughOffImg
+	set imgData $troughData($n)
+	append imgData "fill='#c3c3c3'/>\n</svg>"
+	set troughOffImg [createSvgImg -data $imgData]
+
+	# troughOffPressedImg
+	set imgData $troughData($n)
+	append imgData "fill='#a3a3a3'/>\n</svg>"
+	set troughOffPressedImg [createSvgImg -data $imgData]
+
+	# troughOffDisabledImg
+	set imgData $troughData($n)
+	append imgData "fill='#cecece'/>\n</svg>"
+	set troughOffDisabledImg [createSvgImg -data $imgData]
+
+	# troughOnImg
+	set imgData $troughData($n)
+	append imgData "fill='#657a9e'/>\n</svg>"
+	set troughOnImg [createSvgImg -data $imgData]
+
+	# troughOnPressedImg
+	set imgData $troughData($n)
+	append imgData "fill='#86a1d1'/>\n</svg>"
+	set troughOnPressedImg [createSvgImg -data $imgData]
+
+	# troughOnDisabledImg
+	set imgData $troughData($n)
+	append imgData "fill='#bcd5ff'/>\n</svg>"
+	set troughOnDisabledImg [createSvgImg -data $imgData]
+
+	ttk::style element create Switch$n.trough image [list $troughOffImg \
+	    {selected disabled}	$troughOnDisabledImg \
+	    {selected pressed}	$troughOnPressedImg \
+	    selected		$troughOnImg \
+	    disabled		$troughOffDisabledImg \
+	    pressed		$troughOffPressedImg \
+	]
+
+	# sliderImg
+	set sliderImg [createSvgImg -data $sliderData($n)]
+
+	ttk::style element create Switch$n.slider image $sliderImg
+    }
+}
+
+#------------------------------------------------------------------------------
+# tsw::createElements_plastik
+#------------------------------------------------------------------------------
+proc tsw::createElements_plastik {} {
+    set troughData(1) {
+<svg width="32" height="16" version="1.1" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="32" height="16" rx="8" }
+    set troughData(2) {
+<svg width="40" height="20" version="1.1" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="40" height="20" rx="10" }
+    set troughData(3) {
+<svg width="48" height="24" version="1.1" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="48" height="24" rx="12" }
+
+    set sliderData(1) {
+<svg width="16" height="12" version="1.1" xmlns="http://www.w3.org/2000/svg">
+ <circle cx="8" cy="6" r="6" fill="#ffffff"/>
+</svg>}
+    set sliderData(2) {
+<svg width="20" height="16" version="1.1" xmlns="http://www.w3.org/2000/svg">
+ <circle cx="10" cy="8" r="8" fill="#ffffff"/>
+</svg>}
+    set sliderData(3) {
+<svg width="24" height="20" version="1.1" xmlns="http://www.w3.org/2000/svg">
+ <circle cx="12" cy="10" r="10" fill="#ffffff"/>
+</svg>}
+
+    foreach n {1 2 3} {
+	# troughOffImg
+	set imgData $troughData($n)
+	append imgData "fill='#d7d7d7'/>\n</svg>"
+	set troughOffImg [createSvgImg -data $imgData]
+
+	# troughOffPressedImg
+	set imgData $troughData($n)
+	append imgData "fill='#b7b7b7'/>\n</svg>"
+	set troughOffPressedImg [createSvgImg -data $imgData]
+
+	# troughOffDisabledImg
+	set imgData $troughData($n)
+	append imgData "fill='#e2e2e2'/>\n</svg>"
+	set troughOffDisabledImg [createSvgImg -data $imgData]
+
+	# troughOnImg
+	set imgData $troughData($n)
+	append imgData "fill='#657a9e'/>\n</svg>"
+	set troughOnImg [createSvgImg -data $imgData]
+
+	# troughOnPressedImg
+	set imgData $troughData($n)
+	append imgData "fill='#86a1d1'/>\n</svg>"
+	set troughOnPressedImg [createSvgImg -data $imgData]
+
+	# troughOnDisabledImg
+	set imgData $troughData($n)
+	append imgData "fill='#bcd5ff'/>\n</svg>"
+	set troughOnDisabledImg [createSvgImg -data $imgData]
+
+	ttk::style element create Switch$n.trough image [list $troughOffImg \
+	    {selected disabled}	$troughOnDisabledImg \
+	    {selected pressed}	$troughOnPressedImg \
+	    selected		$troughOnImg \
+	    disabled		$troughOffDisabledImg \
+	    pressed		$troughOffPressedImg \
+	]
+
+	# sliderImg
+	set sliderImg [createSvgImg -data $sliderData($n)]
+
+	ttk::style element create Switch$n.slider image $sliderImg
+    }
+}
+
+#------------------------------------------------------------------------------
+# tsw::createElements_awarc
+#------------------------------------------------------------------------------
+proc tsw::createElements_awarc {} {
+    set troughData(1) {
+<svg width="32" height="16" version="1.1" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="32" height="16" rx="8" }
+    set troughData(2) {
+<svg width="40" height="20" version="1.1" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="40" height="20" rx="10" }
+    set troughData(3) {
+<svg width="48" height="24" version="1.1" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="48" height="24" rx="12" }
+
+    set sliderData(1) {
+<svg width="16" height="12" version="1.1" xmlns="http://www.w3.org/2000/svg">
+ <circle cx="8" cy="6" r="6" fill="#ffffff"/>
+</svg>}
+    set sliderData(2) {
+<svg width="20" height="16" version="1.1" xmlns="http://www.w3.org/2000/svg">
+ <circle cx="10" cy="8" r="8" fill="#ffffff"/>
+</svg>}
+    set sliderData(3) {
+<svg width="24" height="20" version="1.1" xmlns="http://www.w3.org/2000/svg">
+ <circle cx="12" cy="10" r="10" fill="#ffffff"/>
+</svg>}
+
+    variable onAndroid
+    foreach n {1 2 3} {
+	# troughOffImg
+	set imgData $troughData($n)
+	append imgData "fill='#d7d7d7'/>\n</svg>"
+	set troughOffImg [createSvgImg -data $imgData]
+
+	# troughOffActiveImg
+	set imgData $troughData($n)
+	set fill [expr {$onAndroid ? "#d7d7d7" : "#c7c7c7"}]
+	append imgData "fill='$fill'/>\n</svg>"
+	set troughOffActiveImg [createSvgImg -data $imgData]
+
+	# troughOffPressedImg
+	set imgData $troughData($n)
+	append imgData "fill='#b7b7b7'/>\n</svg>"
+	set troughOffPressedImg [createSvgImg -data $imgData]
+
+	# troughOffDisabledImg
+	set imgData $troughData($n)
+	append imgData "fill='#e2e2e2'/>\n</svg>"
+	set troughOffDisabledImg [createSvgImg -data $imgData]
+
+	# troughOnImg
+	set imgData $troughData($n)
+	append imgData "fill='#5294e2'/>\n</svg>"
+	set troughOnImg [createSvgImg -data $imgData]
+
+	# troughOnActiveImg
+	set imgData $troughData($n)
+	set fill [expr {$onAndroid ? "#5294e2" : "#4982c8"}]
+	append imgData "fill='$fill'/>\n</svg>"
+	set troughOnActiveImg [createSvgImg -data $imgData]
+
+	# troughOnPressedImg
+	set imgData $troughData($n)
+	append imgData "fill='#3f72af'/>\n</svg>"
+	set troughOnPressedImg [createSvgImg -data $imgData]
+
+	# troughOnDisabledImg
+	set imgData $troughData($n)
+	append imgData "fill='#a9d0ff'/>\n</svg>"
+	set troughOnDisabledImg [createSvgImg -data $imgData]
+
+	ttk::style element create Switch$n.trough image [list $troughOffImg \
+	    {selected disabled}	$troughOnDisabledImg \
+	    {selected pressed}	$troughOnPressedImg \
+	    {selected active}	$troughOnActiveImg \
+	    selected		$troughOnImg \
+	    disabled		$troughOffDisabledImg \
+	    pressed		$troughOffPressedImg \
+	    active		$troughOffActiveImg \
+	]
+
+	# sliderImg
+	set sliderImg [createSvgImg -data $sliderData($n)]
+
+	ttk::style element create Switch$n.slider image $sliderImg
+    }
+}
+
+#------------------------------------------------------------------------------
+# tsw::createElements_awbreeze
+#------------------------------------------------------------------------------
+proc tsw::createElements_awbreeze {} {
+    set troughData(1) {
+<svg width="32" height="16" version="1.1" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="32" height="16" rx="8" }
+    set troughData(2) {
+<svg width="40" height="20" version="1.1" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="40" height="20" rx="10" }
+    set troughData(3) {
+<svg width="48" height="24" version="1.1" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="48" height="24" rx="12" }
+
+    set sliderData(1) {
+<svg width="16" height="12" version="1.1" xmlns="http://www.w3.org/2000/svg">
+ <circle cx="8" cy="6" r="6" fill="#ffffff"/>
+</svg>}
+    set sliderData(2) {
+<svg width="20" height="16" version="1.1" xmlns="http://www.w3.org/2000/svg">
+ <circle cx="10" cy="8" r="8" fill="#ffffff"/>
+</svg>}
+    set sliderData(3) {
+<svg width="24" height="20" version="1.1" xmlns="http://www.w3.org/2000/svg">
+ <circle cx="12" cy="10" r="10" fill="#ffffff"/>
+</svg>}
+
+    variable onAndroid
+    foreach n {1 2 3} {
+	# troughOffImg
+	set imgData $troughData($n)
+	append imgData "fill='#d7d7d7'/>\n</svg>"
+	set troughOffImg [createSvgImg -data $imgData]
+
+	# troughOffActiveImg
+	set imgData $troughData($n)
+	set fill [expr {$onAndroid ? "#d7d7d7" : "#c7c7c7"}]
+	append imgData "fill='$fill'/>\n</svg>"
+	set troughOffActiveImg [createSvgImg -data $imgData]
+
+	# troughOffPressedImg
+	set imgData $troughData($n)
+	append imgData "fill='#b7b7b7'/>\n</svg>"
+	set troughOffPressedImg [createSvgImg -data $imgData]
+
+	# troughOffDisabledImg
+	set imgData $troughData($n)
+	append imgData "fill='#e2e2e2'/>\n</svg>"
+	set troughOffDisabledImg [createSvgImg -data $imgData]
+
+	# troughOnImg
+	set imgData $troughData($n)
+	append imgData "fill='#3daee9'/>\n</svg>"
+	set troughOnImg [createSvgImg -data $imgData]
+
+	# troughOnActiveImg
+	set imgData $troughData($n)
+	set fill [expr {$onAndroid ? "#3daee9" : "#369ad0"}]
+	append imgData "fill='$fill'/>\n</svg>"
+	set troughOnActiveImg [createSvgImg -data $imgData]
+
+	# troughOnPressedImg
+	set imgData $troughData($n)
+	append imgData "fill='#3087b6'/>\n</svg>"
+	set troughOnPressedImg [createSvgImg -data $imgData]
+
+	# troughOnDisabledImg
+	set imgData $troughData($n)
+	append imgData "fill='#a9e1ff'/>\n</svg>"
+	set troughOnDisabledImg [createSvgImg -data $imgData]
+
+	ttk::style element create Switch$n.trough image [list $troughOffImg \
+	    {selected disabled}	$troughOnDisabledImg \
+	    {selected pressed}	$troughOnPressedImg \
+	    {selected active}	$troughOnActiveImg \
+	    selected		$troughOnImg \
+	    disabled		$troughOffDisabledImg \
+	    pressed		$troughOffPressedImg \
+	    active		$troughOffActiveImg \
+	]
+
+	# sliderImg
+	set sliderImg [createSvgImg -data $sliderData($n)]
+
+	ttk::style element create Switch$n.slider image $sliderImg
+    }
+}
+
+#------------------------------------------------------------------------------
+# tsw::createElements_awbreezedark
+#------------------------------------------------------------------------------
+proc tsw::createElements_awbreezedark {} {
+    set troughData(1) {
+<svg width="32" height="16" version="1.1" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="32" height="16" rx="8" }
+    set troughData(2) {
+<svg width="40" height="20" version="1.1" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="40" height="20" rx="10" }
+    set troughData(3) {
+<svg width="48" height="24" version="1.1" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="48" height="24" rx="12" }
+
+    set sliderData(1) {
+<svg width="16" height="12" version="1.1" xmlns="http://www.w3.org/2000/svg">
+ <circle cx="8" cy="6" r="6" }
+    set sliderData(2) {
+<svg width="20" height="16" version="1.1" xmlns="http://www.w3.org/2000/svg">
+ <circle cx="10" cy="8" r="8" }
+    set sliderData(3) {
+<svg width="24" height="20" version="1.1" xmlns="http://www.w3.org/2000/svg">
+ <circle cx="12" cy="10" r="10" }
+
+    variable onAndroid
+    foreach n {1 2 3} {
+	# troughOffImg
+	set imgData $troughData($n)
+	append imgData "fill='#585858'/>\n</svg>"
+	set troughOffImg [createSvgImg -data $imgData]
+
+	# troughOffActiveImg
+	set imgData $troughData($n)
+	set fill [expr {$onAndroid ? "#585858" : "#676767"}]
+	append imgData "fill='$fill'/>\n</svg>"
+	set troughOffActiveImg [createSvgImg -data $imgData]
+
+	# troughOffPressedImg
+	set imgData $troughData($n)
+	append imgData "fill='#787878'/>\n</svg>"
+	set troughOffPressedImg [createSvgImg -data $imgData]
+
+	# troughOffDisabledImg
+	set imgData $troughData($n)
+	append imgData "fill='#4a4a4a'/>\n</svg>"
+	set troughOffDisabledImg [createSvgImg -data $imgData]
+
+	# troughOnImg
+	set imgData $troughData($n)
+	append imgData "fill='#3984ac'/>\n</svg>"
+	set troughOnImg [createSvgImg -data $imgData]
+
+	# troughOnActiveImg
+	set imgData $troughData($n)
+	set fill [expr {$onAndroid ? "#3984ac" : "#4197c6"}]
+	append imgData "fill='$fill'/>\n</svg>"
+	set troughOnActiveImg [createSvgImg -data $imgData]
+
+	# troughOnPressedImg
+	set imgData $troughData($n)
+	append imgData "fill='#4aabdf'/>\n</svg>"
+	set troughOnPressedImg [createSvgImg -data $imgData]
+
+	# troughOnDisabledImg
+	set imgData $troughData($n)
+	append imgData "fill='#317093'/>\n</svg>"
+	set troughOnDisabledImg [createSvgImg -data $imgData]
+
+	ttk::style element create Switch$n.trough image [list $troughOffImg \
+	    {selected disabled}	$troughOnDisabledImg \
+	    {selected pressed}	$troughOnPressedImg \
+	    {selected active}	$troughOnActiveImg \
+	    selected		$troughOnImg \
+	    disabled		$troughOffDisabledImg \
+	    pressed		$troughOffPressedImg \
+	    active		$troughOffActiveImg \
+	]
+
+	# sliderOffImg
+	set imgData $sliderData($n)
+	append imgData "fill='#d3d3d3'/>\n</svg>"
+	set sliderOffImg [createSvgImg -data $imgData]
+
+	# sliderOffDisabledImg
+	set imgData $sliderData($n)
+	append imgData "fill='#888888'/>\n</svg>"
+	set sliderOffDisabledImg [createSvgImg -data $imgData]
+
+	# sliderOnDisabledImg
+	set imgData $sliderData($n)
+	append imgData "fill='#9f9f9f'/>\n</svg>"
+	set sliderOnDisabledImg [createSvgImg -data $imgData]
+
+	# sliderImg
+	set imgData $sliderData($n)
+	append imgData "fill='#ffffff'/>\n</svg>"
+	set sliderImg [createSvgImg -data $imgData]
+
+	ttk::style element create Switch$n.slider image [list $sliderOffImg \
+	    {selected disabled}	$sliderOnDisabledImg \
+	    selected		$sliderImg \
+	    disabled		$sliderOffDisabledImg \
+	    pressed		$sliderImg \
+	    active		$sliderImg \
+	]
+    }
+}
+
+#------------------------------------------------------------------------------
+# tsw::createElements_awlight
+#------------------------------------------------------------------------------
+proc tsw::createElements_awlight {} {
+    set troughData(1) {
+<svg width="32" height="16" version="1.1" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="32" height="16" rx="8" }
+    set troughData(2) {
+<svg width="40" height="20" version="1.1" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="40" height="20" rx="10" }
+    set troughData(3) {
+<svg width="48" height="24" version="1.1" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="48" height="24" rx="12" }
+
+    set sliderData(1) {
+<svg width="16" height="12" version="1.1" xmlns="http://www.w3.org/2000/svg">
+ <circle cx="8" cy="6" r="6" fill="#ffffff"/>
+</svg>}
+    set sliderData(2) {
+<svg width="20" height="16" version="1.1" xmlns="http://www.w3.org/2000/svg">
+ <circle cx="10" cy="8" r="8" fill="#ffffff"/>
+</svg>}
+    set sliderData(3) {
+<svg width="24" height="20" version="1.1" xmlns="http://www.w3.org/2000/svg">
+ <circle cx="12" cy="10" r="10" fill="#ffffff"/>
+</svg>}
+
+    variable onAndroid
+    foreach n {1 2 3} {
+	# troughOffImg
+	set imgData $troughData($n)
+	append imgData "fill='#d7d7d7'/>\n</svg>"
+	set troughOffImg [createSvgImg -data $imgData]
+
+	# troughOffActiveImg
+	set imgData $troughData($n)
+	set fill [expr {$onAndroid ? "#d7d7d7" : "#c7c7c7"}]
+	append imgData "fill='$fill'/>\n</svg>"
+	set troughOffActiveImg [createSvgImg -data $imgData]
+
+	# troughOffPressedImg
+	set imgData $troughData($n)
+	append imgData "fill='#b7b7b7'/>\n</svg>"
+	set troughOffPressedImg [createSvgImg -data $imgData]
+
+	# troughOffDisabledImg
+	set imgData $troughData($n)
+	append imgData "fill='#e2e2e2'/>\n</svg>"
+	set troughOffDisabledImg [createSvgImg -data $imgData]
+
+	# troughOnImg
+	set imgData $troughData($n)
+	append imgData "fill='#1a497c'/>\n</svg>"
+	set troughOnImg [createSvgImg -data $imgData]
+
+	# troughOnActiveImg
+	set imgData $troughData($n)
+	set fill [expr {$onAndroid ? "#1a497c" : "#1f5895"}]
+	append imgData "fill='$fill'/>\n</svg>"
+	set troughOnActiveImg [createSvgImg -data $imgData]
+
+	# troughOnPressedImg
+	set imgData $troughData($n)
+	append imgData "fill='#2568af'/>\n</svg>"
+	set troughOnPressedImg [createSvgImg -data $imgData]
+
+	# troughOnDisabledImg
+	set imgData $troughData($n)
+	append imgData "fill='#b5d9ff'/>\n</svg>"
+	set troughOnDisabledImg [createSvgImg -data $imgData]
+
+	ttk::style element create Switch$n.trough image [list $troughOffImg \
+	    {selected disabled}	$troughOnDisabledImg \
+	    {selected pressed}	$troughOnPressedImg \
+	    {selected active}	$troughOnActiveImg \
+	    selected		$troughOnImg \
+	    disabled		$troughOffDisabledImg \
+	    pressed		$troughOffPressedImg \
+	    active		$troughOffActiveImg \
+	]
+
+	# sliderImg
+	set sliderImg [createSvgImg -data $sliderData($n)]
+
+	ttk::style element create Switch$n.slider image $sliderImg
+    }
+}
+
+#------------------------------------------------------------------------------
+# tsw::createElements_awdark
+#------------------------------------------------------------------------------
+proc tsw::createElements_awdark {} {
+    set troughData(1) {
+<svg width="32" height="16" version="1.1" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="32" height="16" rx="8" }
+    set troughData(2) {
+<svg width="40" height="20" version="1.1" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="40" height="20" rx="10" }
+    set troughData(3) {
+<svg width="48" height="24" version="1.1" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="48" height="24" rx="12" }
+
+    set sliderData(1) {
+<svg width="16" height="12" version="1.1" xmlns="http://www.w3.org/2000/svg">
+ <circle cx="8" cy="6" r="6" }
+    set sliderData(2) {
+<svg width="20" height="16" version="1.1" xmlns="http://www.w3.org/2000/svg">
+ <circle cx="10" cy="8" r="8" }
+    set sliderData(3) {
+<svg width="24" height="20" version="1.1" xmlns="http://www.w3.org/2000/svg">
+ <circle cx="12" cy="10" r="10" }
+
+    variable onAndroid
+    foreach n {1 2 3} {
+	# troughOffImg
+	set imgData $troughData($n)
+	append imgData "fill='#585858'/>\n</svg>"
+	set troughOffImg [createSvgImg -data $imgData]
+
+	# troughOffActiveImg
+	set imgData $troughData($n)
+	set fill [expr {$onAndroid ? "#585858" : "#676767"}]
+	append imgData "fill='$fill'/>\n</svg>"
+	set troughOffActiveImg [createSvgImg -data $imgData]
+
+	# troughOffPressedImg
+	set imgData $troughData($n)
+	append imgData "fill='#787878'/>\n</svg>"
+	set troughOffPressedImg [createSvgImg -data $imgData]
+
+	# troughOffDisabledImg
+	set imgData $troughData($n)
+	append imgData "fill='#4a4a4a'/>\n</svg>"
+	set troughOffDisabledImg [createSvgImg -data $imgData]
+
+	# troughOnImg
+	set imgData $troughData($n)
+	append imgData "fill='#215d9c'/>\n</svg>"
+	set troughOnImg [createSvgImg -data $imgData]
+
+	# troughOnActiveImg
+	set imgData $troughData($n)
+	set fill [expr {$onAndroid ? "#215d9c" : "#266cb6"}]
+	append imgData "fill='$fill'/>\n</svg>"
+	set troughOnActiveImg [createSvgImg -data $imgData]
+
+	# troughOnPressedImg
+	set imgData $troughData($n)
+	append imgData "fill='#2c7bcf'/>\n</svg>"
+	set troughOnPressedImg [createSvgImg -data $imgData]
+
+	# troughOnDisabledImg
+	set imgData $troughData($n)
+	append imgData "fill='#1c4d83'/>\n</svg>"
+	set troughOnDisabledImg [createSvgImg -data $imgData]
+
+	ttk::style element create Switch$n.trough image [list $troughOffImg \
+	    {selected disabled}	$troughOnDisabledImg \
+	    {selected pressed}	$troughOnPressedImg \
+	    {selected active}	$troughOnActiveImg \
+	    selected		$troughOnImg \
+	    disabled		$troughOffDisabledImg \
+	    pressed		$troughOffPressedImg \
+	    active		$troughOffActiveImg \
+	]
+
+	# sliderOffImg
+	set imgData $sliderData($n)
+	append imgData "fill='#d3d3d3'/>\n</svg>"
+	set sliderOffImg [createSvgImg -data $imgData]
+
+	# sliderOffDisabledImg
+	set imgData $sliderData($n)
+	append imgData "fill='#888888'/>\n</svg>"
+	set sliderOffDisabledImg [createSvgImg -data $imgData]
+
+	# sliderOnDisabledImg
+	set imgData $sliderData($n)
+	append imgData "fill='#9f9f9f'/>\n</svg>"
+	set sliderOnDisabledImg [createSvgImg -data $imgData]
+
+	# sliderImg
+	set imgData $sliderData($n)
+	append imgData "fill='#ffffff'/>\n</svg>"
+	set sliderImg [createSvgImg -data $imgData]
+
+	ttk::style element create Switch$n.slider image [list $sliderOffImg \
+	    {selected disabled}	$sliderOnDisabledImg \
+	    selected		$sliderImg \
+	    disabled		$sliderOffDisabledImg \
+	    pressed		$sliderImg \
+	    active		$sliderImg \
+	]
+    }
+}
+
+#------------------------------------------------------------------------------
 # tsw::createElements_vista
 #------------------------------------------------------------------------------
 proc tsw::createElements_vista {} {
@@ -322,6 +967,18 @@ proc tsw::createElements_vista {} {
 	createElements_win11
     } else {							;# Win 10-
 	createElements_win10
+    }
+
+    foreach n {1 2 3} {
+	ttk::style layout Toggleswitch$n [list \
+	    Switch.focus -sticky nswe -children [list \
+		Switch.padding -sticky nswe -children [list \
+		    Switch$n.trough -sticky {} -children [list \
+			Switch$n.slider -side left -sticky {}
+		    ]
+		]
+	    ]
+	]
     }
 
     set elemInfoArr(vista) 1
@@ -747,6 +1404,10 @@ proc tsw::updateElements_aqua {} {
 		#0059d1 #0064e1  #803482 #7d2a7e  #c93379 #d93b86
 		#d13539 #c4262b  #c96003 #d96b0a  #d19e00 #e1ac15
 		#43932a #4da033  #696969 #808080
+
+		#0058d0 #007aff  #7f3280 #953d96  #c83179 #f74f9e
+		#d03439 #e0383e  #c86003 #f7821b  #cd8f0e #fcb827
+		#42912a #62ba46  #686868 #989898
 	    }
 	    if {[info exists tmpArr($fill)]} { set fill $tmpArr($fill) }
 	    array unset tmpArr
@@ -765,6 +1426,9 @@ proc tsw::updateElements_aqua {} {
 	    array set tmpArr {
 		#a550a7 #953d96  #ff5257 #e0383e
 		#ffc600 #ffc726  #8c8c8c #989898
+
+		#a550a7 #7d2a7e  #f74f9e #d93b85
+		#fcb827 #de9e15  #8c8c8c #808080
 	    }
 	    if {[info exists tmpArr($fill)]} { set fill $tmpArr($fill) }
 	    array unset tmpArr

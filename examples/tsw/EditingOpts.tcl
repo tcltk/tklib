@@ -275,7 +275,7 @@ proc configEditing tbl {
 
 	set l [ttk::label $tf.l$row -text "$opt ($defaultStr)"]
 	if {$current != $default} {
-	    $l configure -foreground red3
+	    $l configure -foreground red2
 	}
 	grid $l -row $row -column 0 -sticky w -padx 9p -pady {0 3p}
 
@@ -312,6 +312,6 @@ proc applySwitchState {sw tbl opt l} {
     set switchState [$sw switchstate]
     $tbl configure $opt $switchState
 
-    set fgColor [expr {$switchState == [$sw attrib default] ? "" : "red3"}]
+    set fgColor [expr {$switchState == [$sw attrib default] ? "" : "red2"}]
     $l configure -foreground $fgColor
 }

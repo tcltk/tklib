@@ -13,7 +13,7 @@
   <div>
     <h1>Tsw Programmer's Guide</h1>
 
-    <h2>For Tsw Version 1.1</h2>
+    <h2>For Tsw Version 1.2</h2>
 
     <h3>by</h3>
 
@@ -106,8 +106,8 @@
     </address>
   </blockquote>
 
-  <p>The distribution file is <code>tsw1.1.tar.gz</code> for UNIX and
-  <code>tsw1_1.zip</code> for Windows.&nbsp; These files contain the same
+  <p>The distribution file is <code>tsw1.2.tar.gz</code> for UNIX and
+  <code>tsw1_2.zip</code> for Windows.&nbsp; These files contain the same
   information, except for the additional carriage return character preceding
   the linefeed at the end of each line in the text files for Windows.</p>
 
@@ -128,11 +128,11 @@
   <code>tk9.X</code> subdirectory).</p>
 
   <p>To install Tsw <i>on UNIX</i>, <code>cd</code> to the desired directory
-  and unpack the distribution file <code>tsw1.1.tar.gz</code>:</p>
+  and unpack the distribution file <code>tsw1.2.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c tsw1.1.tar.gz | tar -xf -
+gunzip -c tsw1.2.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
@@ -140,17 +140,17 @@ gunzip -c tsw1.1.tar.gz | tar -xf -
 
   <blockquote>
     <pre>
-tar -zxf tsw1.1.tar.gz
+tar -zxf tsw1.2.tar.gz
 </pre>
   </blockquote>
 
-  <p>Both commands will create a directory named <code>tsw1.1</code>, with the
+  <p>Both commands will create a directory named <code>tsw1.2</code>, with the
   subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>tsw1_1.zip</code> into the directory
-  <code>tsw1.1</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>tsw1_2.zip</code> into the directory
+  <code>tsw1.2</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>Notice that in tklib the Tsw <code>demos</code> directory is replaced with
@@ -412,7 +412,7 @@ proc configEditing tbl {
 
         set l [ttk::label $tf.l$row -text "$opt ($defaultStr)"]
         if {$current != $default} {
-            $l configure -foreground red3
+            $l configure -foreground red2
         }
         grid $l -row $row -column 0 -sticky w -padx 9p -pady {0 3p}
 
@@ -440,7 +440,7 @@ proc configEditing tbl {
   widget's attribute of name <code>default</code>.&nbsp; In this way, the
   widget "remembers" the default value in an object-oriented manner and can
   retrieve it later without needing any external resources.&nbsp; For increased
-  user-friendliness, the label is displayed in the <code>red3</code> foreground
+  user-friendliness, the label is displayed in the <code>red2</code> foreground
   color if the option's current value is different from the default one.</p>
 
   <p>Whenever the toggleswitch widget's switch state gets toggled, the script
@@ -461,7 +461,7 @@ proc applySwitchState {sw tbl opt l} {
     <span class="red">set switchState [$sw switchstate]</span>
     $tbl configure $opt $switchState
 
-    <span class="red">set fgColor [expr {$switchState == [$sw attrib default] ? "" : "red3"}]</span>
+    <span class="red">set fgColor [expr {$switchState == [$sw attrib default] ? "" : "red2"}]</span>
     $l configure -foreground $fgColor
 }
 </pre>

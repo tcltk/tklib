@@ -78,6 +78,8 @@ namespace eval tsw {
 	set scaled4 [tk::ScaleNum 4]
     }
 
+    variable onAndroid [expr {[info exists ::tk::android] && $::tk::android}]
+
     #
     # Make the layouts
     #
@@ -86,7 +88,7 @@ namespace eval tsw {
 	set themeMod $theme
 	set mod ""
 
-	if {$theme == "default"} {
+	if {$theme eq "default"} {
 	    set fg [ttk::style lookup . -foreground]
 	    if {[mwutil::isColorLight $fg]} {
 		set themeMod default-dark
@@ -104,7 +106,8 @@ namespace eval tsw {
 	}
 
 	switch $themeMod {
-	    default - default-dark - clam - vista - aqua {
+	    default - default-dark - clam - droid - plastik - awarc -
+	    awbreeze - awbreezedark - awlight - awdark - vista - aqua {
 		createElements_$themeMod
 	    }
 	    winnative - xpnative {
@@ -115,7 +118,7 @@ namespace eval tsw {
 		}
 	    }
 	    default {
-		set fg [ttk::style lookup . -foreground]
+		set fg [ttk::style lookup . -foreground {} black]
 		if {[mwutil::isColorLight $fg] ||
 		    [string match -nocase *dark* $theme]} {
 		    set createCmd createElements_default-dark
@@ -123,6 +126,7 @@ namespace eval tsw {
 		} else {
 		    set createCmd createElements_default
 		}
+
 		ttk::style theme settings default { $createCmd }
 		foreach n {1 2 3} {
 		    ttk::style element create ${mod}Switch$n.trough from default
@@ -197,8 +201,11 @@ proc tsw::createBindings {} {
     #
     mwutil::defineKeyNav Toggleswitch
 
-    bind TswScale <Enter>	    { %W instate !disabled {%W state active} }
-    bind TswScale <Leave>	    { %W state !active }
+    variable onAndroid
+    if {!$onAndroid} {
+	bind TswScale <Enter>	    { %W instate !disabled {%W state active} }
+	bind TswScale <Leave>	    { %W state !active }
+    }
     bind TswScale <B1-Leave>	    { # Preserves the "active" state. }
     bind TswScale <Button-1>	    { tsw::onButton1	%W %x %y }
     bind TswScale <B1-Motion>	    { tsw::onB1Motion	%W %x %y }

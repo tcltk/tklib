@@ -76,11 +76,11 @@ proc setTheme theme {
     $mb configure -text $theme
 
     set bg [ttk::style lookup . -background]
-    set fg [ttk::style lookup . -foreground]
+    set fg [ttk::style lookup . -foreground {} black]
     $mb.m configure -background $bg -foreground $fg
 
     foreach opt {-activebackground -activeborderwidth -activeforeground
-		 -borderwidth -relief -selectcolor} {
+		 -borderwidth -relief} {
 	set defaultVal [lindex [$mb.m configure $opt] 3]
 	$mb.m configure $opt $defaultVal
     }

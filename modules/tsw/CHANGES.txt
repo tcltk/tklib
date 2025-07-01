@@ -1,5 +1,18 @@
-What is new in Tsw 1.1?
+What is new in Tsw 1.2?
 -----------------------
+
+1. Added explicit support for the "droid" theme, which is the default
+   in AndroWish, as well as for the themes "awarc", "awbreeze",
+   "awbreezedark", "awdark", "awlight", and "plastik" (which "droid" is
+   derived from).
+
+2. Made sure that on Android the widget's behavior is adapted to the
+   touchscreen as input device.
+
+3. Improved the support for older macOS versions.
+
+What was new in Tsw 1.1?
+------------------------
 
 1. For compatibility with the (ttk::)checkbutton, toggling the widget's
    switch state by changing the value of the variable specified by the
