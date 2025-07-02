@@ -147,7 +147,7 @@ proc tablelist::awTheme theme {
     set labelactiveBg	[styleConfig Heading -lightcolor]
 
     switch $theme {
-	awblack - black { set stripeBg "#262626" }
+	awblack - black { set stripeBg "#2e2e2e" }
 	awclearlooks - clearlooks -
 	awwinxpblue - winxpblue {
 	    scan [styleConfig . -background] "#%2x%2x%2x" r g b
@@ -159,7 +159,7 @@ proc tablelist::awTheme theme {
 	    if {[mwutil::isColorLight $bg]} {
 		incr r -15; incr g -15; incr b -15
 	    } else {
-		incr r 15; incr g 15; incr b 15
+		incr r 23; incr g 23; incr b 23
 	    }
 	    set stripeBg [format "#%02x%02x%02x" $r $g $b]
 	}
