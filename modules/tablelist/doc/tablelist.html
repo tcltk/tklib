@@ -1946,6 +1946,19 @@ foreach name {clsdFolder openFolder file} {
     set imgFile $name$pct.$sfx          ;<span class="cmt"># e.g., "file.svg" or "file150.gif"</span>
     image create photo ${name}Img -file [file join $dir $imgFile] -format $fmt
 }
+
+<span class="cmt">#
+# Helper procedures needed to work around the fact that
+# on Android the directory "/" is normally not readable
+#</span>
+set onAndroid [expr {[info exists ::tk::android] && $::tk::android}]
+proc isReadable name {
+    return [expr {$::onAndroid && $name eq "/" ? 1 : [file readable $name]}]
+}
+proc dirContent dir {
+    return [expr {$::onAndroid && $dir eq "/" ? [list /sdcard] :
+            [glob -nocomplain -types {d f} -directory $dir *]}]
+}
 </pre>
   </blockquote>
 
@@ -2102,7 +2115,7 @@ proc putContents {dir tbl nodeIdx} {
             lappend itemList [list D[file nativename $volume] -1 D $volume]
         }
     } else {
-        foreach entry [glob -nocomplain -types {d f} -directory $dir *] {
+        foreach entry [dirContent $dir] {
             if {[catch {file mtime $entry} modTime] != 0} {
                 continue
             }
@@ -2132,8 +2145,7 @@ proc putContents {dir tbl nodeIdx} {
             <span class="cmt">#
             # Mark the row as collapsed if the directory is non-empty
             #</span>
-            if {[file readable $name] && [llength \
-                [glob -nocomplain -types {d f} -directory $name *]] != 0} {
+            if {[isReadable $name] && [llength [dirContent $name]] != 0} {
                 $tbl collapse $row
             }
         }
