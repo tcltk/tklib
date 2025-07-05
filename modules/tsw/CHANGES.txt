@@ -11,6 +11,10 @@ What is new in Tsw 1.2?
 
 3. Improved the support for older macOS versions.
 
+4. Worked around the fact that for some third-party themes, the
+   retrieval of the root style's foreground color returns an empty
+   string.
+
 What was new in Tsw 1.1?
 ------------------------
 
