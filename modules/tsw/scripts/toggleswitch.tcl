@@ -736,9 +736,17 @@ proc tsw::onB1Motion {w x y} {
 	    return ""
 	}
 
-	lassign [$w coords] curX curY
-	set newX [expr {$curX + $x - $stateArr(prevX)}]
-	$w set [$w get $newX $curY]
+	#
+	# Guard against a bug in the ttk::scale widget's
+	# "get x y" command (open as of July 2025)
+	#
+	lassign [$w coords [$w cget -from]] fromX fromY
+	lassign [$w coords [$w cget -to]] toX toY
+	if {$fromX < $toX} {
+	    lassign [$w coords] curX curY
+	    set newX [expr {$curX + $x - $stateArr(prevX)}]
+	    $w set [$w get $newX $curY]
+	}
 
 	set stateArr(prevX) $x
     }

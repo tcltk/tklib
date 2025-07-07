@@ -15,6 +15,8 @@ What is new in Tsw 1.2?
    retrieval of the root style's foreground color returns an empty
    string.
 
+5. Guarded against a bug in the ttk::scale widget's "get x y" command.
+
 What was new in Tsw 1.1?
 ------------------------
 
