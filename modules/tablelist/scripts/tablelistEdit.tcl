@@ -1092,7 +1092,7 @@ proc tablelist::addToggleswitch {{name toggleswitch}} {
 	$name-creationCmd	"createToggleswitch %W" \
 	$name-putValueCmd	"%W switchstate %T" \
 	$name-getValueCmd	"%W switchstate" \
-	$name-putTextCmd	"" \
+	$name-putTextCmd	"%W switchstate %T" \
 	$name-getTextCmd	"%W switchstate" \
 	$name-putListCmd	"" \
 	$name-getListCmd	"" \
@@ -1937,7 +1937,7 @@ proc tablelist::doEditCell {win row col restore {cmd ""} {charPos -1}} {
     #
     # Adjust the frame's width and paddings
     #
-    if {!$isCheckbtn && !$isTogglesw} {
+    if {!$isCheckbtn} {
 	place $w -relwidth 1.0 -relheight 1.0
 	adjustEditWindow $win $pixels
 	update idletasks
