@@ -1,0 +1,332 @@
+[comment {-*- tcl -*- textForSvg manpage}]
+[manpage_begin textForSvg n 1.0]
+[moddesc   {Implement Text Elements For Some SVG Images}]
+[titledesc {Implement Text Elements For Some SVG Images}]
+[require Tcl 8.6-]
+[require Tk 8.6-]
+[require htmlparse]
+[require img::window]
+[require tdom 0.9-]
+[require tksvg 0.14-]
+
+[require textForSvg [opt 1.0]]
+[description]
+
+In [package Tk] 8.6 and above, the command [cmd {image create photo}] can create a [package Tk] image from data in SVG format, but it does not render SVG text elements.
+[para]
+
+Command [cmd textForSvg::addText] extracts the text elements from the SVG data, and renders them as text items on a canvas.  Module [package textForSvg] is not a complete implementation of SVG text elements, but aims to render a [sectref {Subset of SVG} {large enough subset}] to be useful in drawing the SVG emitted by diagramming tools such as [cmd pikchr], which is available from [uri https://pikchr.org/].
+[para]
+
+Command [cmd textForSvg::imageCreatePhoto] generates a pure [package Tk] PNG image rather than a canvas widget.
+[para]
+
+Package [package textForSvg]'s functions and variables are contained entirely in the [var ::textForSvg] namespace.
+
+[comment {use emph instead of term, because term creates a hyperlink, and [emph canvas] occurs in almost every sentence: the page would be covered with the same hyperlinks many times}]
+[para]
+
+The compatibility package [package tksvg] is needed only for [package Tk] 8.6.  Package [package img::window] (part of package [package Img]) is needed only for command [cmd textForSvg::imageCreatePhoto].
+[para]
+
+If the values for the default font family and its height are unsuitable, they can be changed by the commands [cmd textForSvg::setDefaultFontFamily] and [cmd textForSvg::setDefaultFontHeightInPixels] respectively.  The corresponding commands for monospace fonts are [cmd textForSvg::setMonospaceFontFamily] and [cmd textForSvg::setMonospaceFontHeightInPixels] respectively.
+
+[section COMMANDS]
+
+[subsection {Principal Commands}]
+
+[list_begin definitions]
+
+[call [cmd textForSvg::addText]               [arg xmlData] [arg canv] [opt "[arg imX] [arg imY] [arg binary]"]]
+
+Command to render the text elements of a SVG image as text items on a canvas.  Before this command is called, typically the [cmd {image create photo}] command has been used to render the SVG image without text, and the image has been added to the canvas as an image item.
+
+[list_begin arguments]
+[arg_def {} xmlData]
+
+String containing the SVG data for an image.  This may be either a Tcl binary string with UTF-8 encoding (the default) or an ordinary Tcl string.  In the latter case, the optional argument [arg binary] must be set to boolean false.
+
+[arg_def {} canv]
+
+[package Tk] window path for an existing canvas.
+
+[arg_def {} imX]
+
+The canvas x-coordinate of the top-left corner of the SVG image item.
+
+[arg_def {} imY]
+
+The canvas y-coordinate of the top-left corner of the SVG image item.
+
+[arg_def {} binary]
+
+(boolean) true if argument [arg xmlData] is a Tcl binary string with UTF-8 encoding (the default).  False if [arg xmlData] is a standard Tcl string.
+
+[list_end]
+
+
+[call [cmd textForSvg::imageCreatePhoto]      [opt [arg name]] [opt "[arg option] [arg value]..."]]
+
+Command to create a [package Tk] photo image in PNG raster format (or a data string that represents this image) from a SVG image specified by option [option -data] or option [option -file].
+[para]
+Use this command if you need a pure image, or its string representation, rather than a [package Tk] canvas
+with multiple items, which would be the result of calling [cmd textForSvg::addText].
+[para]
+
+The return value is the name of the image or, if the argument [arg name] is "--", the rasterized PNG image as a binary data string.
+[para]
+
+The command is a substitute for [cmd {image create photo}] that takes SVG image data and creates a complete
+[package Tk] photo image including any SVG text elements.
+The command draws a transient canvas window on the screen and uses [package img::window] to convert it to a raster image.  It replaces transparent pixels with a background color specified by option [option -transcolor].
+[para]
+
+NOTE: The command is a [emph substitute] for [cmd {image create photo}] but not an
+[emph equivalent].  Image instance commands such as [emph name] [cmd {configure|read|write}] relate to the generated PNG image and not to the SVG source data.
+[para]
+
+If the default duration of the transient display is too brief for the canvas to be copied to a PNG image, the PNG may be incomplete or may be plain black or white. If so, the duration can be changed by the command [cmd textForSvg::setCreateDelay].
+
+[list_begin arguments]
+[arg_def {} name]
+
+    If specified and not "--", is the name used for the image.[para]
+    If not specified, [package Tk] assigns the image name.[para]
+    If specified as "--", a [package Tk] image is not created, and the return
+    value is the PNG image data as a binary string, not an image name.[para]
+
+[list_end]
+
+[list_begin options]
+[opt_def -binary value]
+    [emph (optional)] boolean value.  If the value of [option -binary] is true (the default) then any value supplied to [option -data] must be a binary string encoded as UTF-8.  This allows drop-in replacement for the [package Tk] command
+    [cmd {image create photo}] which requires binary data.  If the value of [option -binary] is false, then any value supplied to [option -data] must be a Tcl string.   Option [option -binary] does not apply to images read using option [option -file].  The binary string differs from the Tcl string
+    if non-ASCII characters are included, for example in the SVG text elements.
+    (The option is defined for this command only - it has no counterpart in [cmd {image create photo}].)
+[opt_def -data value]
+    Specifies the contents of the SVG image as a string holding SVG data.  The value can be either a binary string encoded as UTF-8 (the default), or a standard Tcl string: in the latter case, option [option -binary] must be set to boolean false.
+    [para]
+    Either option [option -data] or option [option -file] must be specified.  If both
+    options are specified, the [option -file] option is used.
+    (Cf. [cmd {image create photo}] option [option -data])
+[opt_def -format value]
+    [emph (optional)] Ignored. (Cf. [cmd {image create photo}] option [option -format])
+[opt_def -file value]
+    The name of an image file to read.  The file format must be SVG.
+    (Cf. [cmd {image create photo}] option [option -file])
+[opt_def -gamma value]
+    [emph (optional)] Ignored. (Cf. [cmd {image create photo}] option [option -gamma])
+[opt_def -height value]
+    [emph (optional)] Specifies the height of the image, in pixels.  This option is
+    useful primarily in situations where the user wishes to build up
+    the contents of the image piece by piece.  A value of "0" (the
+    default) allows the image to expand or shrink vertically to
+    fit the data stored in it. (Cf. [cmd {image create photo}] option [option -height])
+[opt_def -metadata value]
+    [emph (optional)] Ignored. (Cf. [cmd {image create photo}] option [option -metadata])
+[opt_def -palette value]
+    [emph (optional)] Ignored. (Cf. [cmd {image create photo}] option [option -palette])
+[opt_def -scale value]
+    [emph (optional)] scale factor, a positive number.  Default value is "1.0".  (The option is defined for this command only - it has no counterpart in [cmd {image create photo}].)
+[opt_def -toplev value]
+    [emph (optional)] [package Tk] window path of the transient toplevel that will be created for the
+    operation.  Must not already exist.  The
+    toplevel name must begin with a lower-case letter.  (The option is defined for this command only - it has no counterpart in [cmd {image create photo}].)
+[opt_def -transcolor value]
+    [emph (optional)] background color to be shown where the image is
+    transparent.  Default value is "#ffffff".  Transparency is not preserved.  (The option is defined for this command only - it has no counterpart in [cmd {image create photo}].)
+[opt_def -width value]
+    [emph (optional)] Specifies the width of the image, in pixels.  This option is
+    useful primarily in situations where the user wishes to build up
+    the contents of the image piece by piece.  A value of "0" (the
+    default) allows the image to expand or shrink vertically to
+    fit the data stored in it. (Cf. [cmd {image create photo}] option [option -width])
+
+[list_end]
+[list_end]
+
+
+
+
+[subsection {Configuration Commands}]
+
+[list_begin definitions]
+
+[call [cmd textForSvg::cget]              [arg option]]
+
+Returns the current value of the configuration option given by [arg option]. [arg Option] may have any of the values accepted by the [cmd textForSvg::configure] command.
+
+[call [cmd textForSvg::configure]  [opt "[arg option]  [opt "[arg value] [opt "[arg option] [arg value] ..."]"]"]   ]
+
+Query or modify the configuration options of the module. If no [arg option] is specified, returns a list describing all of the available options (see Tk_ConfigureInfo for information on the format of this list). If [arg option] is specified with no [arg value], then the command returns a list describing the one named option (this list will be identical to the corresponding sublist of the value returned if no [arg option] is specified). If one or more [arg option]-[arg value] pairs are specified, then the command modifies the given option(s) to have the given value(s); in this case the command returns an empty string. [arg Option] may have any of the values listed below.
+
+[list_begin options]
+[opt_def -delay]
+
+The time interval in ms used by command [cmd textForSvg::imageCreatePhoto] between mapping of the SVG image and reading it back as a PNG raster image.  When [package textForSvg] is loaded, the initial value is "100".
+
+[opt_def -defaultfont]
+
+The font family used for non-monospace SVG text elements.  The initial value when [package textForSvg] is loaded is the first font family found from the list Arial, Liberation Sans, Nimbus Sans, FreeSans, Droid Sans; if none is found, the font family used by [cmd TkDefaultFont] is chosen.
+
+[opt_def -defaultheight]
+
+The height in pixels of the font used for non-monospace SVG text elements.  A positive integer or floating-point number.  The initial value when [package textForSvg] is loaded is "16".  This value is suitable for the font family "Arial".  For other font families, a slightly different value may be more suitable.
+
+[opt_def -monofont]
+
+The font family used for monospace SVG text elements.  The initial value when [package textForSvg] is loaded is the first font family found from the list Andale Mono, DejaVu Sans Mono, Source Code Pro, Liberation Mono, Nimbus Mono PS, FreeMono; if none is found, the font family that Tk represents with the symbolic name "Courier" is used.
+
+[opt_def -monoheight]
+
+The height in pixels of the font used for monospace SVG text elements.  A positive integer or floating-point number.  The initial value when [package textForSvg] is loaded is "13".  This value is suitable for the font family "Andale Mono".  For other font families, a slightly different value may be more suitable.
+
+[list_end]
+
+[list_end]
+
+
+[subsection {Auxiliary Commands}]
+[list_begin definitions]
+
+
+[call [cmd textForSvg::chooseFontFamily]    [arg fontList] [arg fallback]]
+
+Returns the name of a font family.  Selects the first font family from the list [arg fontList] that is available to [package Tk]. If none of the fonts in [arg fontList] is available, the command returns the font family that corresponds to the argument [arg fallback].
+
+[list_begin arguments]
+[arg_def {} fontList]
+A list of font families, in order of preference.
+[arg_def {} fallback]
+Description of a font that is guaranteed to exist: either one of the [package Tk] standard named fonts (TkDefaultFont, TkTextFont, TkFixedFont, TkMenuFont, TkHeadingFont, TkCaptionFont, TkSmallCaptionFont, TkIconFont, or TkTooltipFont), or one of the placeholder family names used by [package Tk] (Courier, Times, or Helvetica).  If the command uses argument [arg fallback] it returns the actual font family to which [arg fallback] corresponds.
+[list_end]
+
+
+[call [cmd textForSvg::strictConvertFrom]   [arg binString] [arg encoding]]
+
+A wrapper for command [cmd {encoding convertfrom}].
+Converts a binary string that has a particular character encoding to a Tcl string.
+The command handles conversion errors strictly, whether running on Tcl 8 or Tcl 9.
+A conversion error causes the command to return with error status.
+[para]
+The command is used in [package textForSvg] with [arg encoding] utf-8.
+
+[list_begin arguments]
+[arg_def {} binString]
+A binary string with character encoding given by argument [arg encoding].
+[arg_def {} encoding]
+A valid character encoding.
+[list_end]
+
+
+[call [cmd textForSvg::strictConvertTo]   [arg tclString] [arg encoding]]
+
+A wrapper for command [cmd {encoding convertto}].
+Converts a Tcl string to a binary string that has a particular character encoding.
+The command handles conversion errors strictly, whether running on Tcl 8 or Tcl 9.
+A conversion error causes the command to return with error status.
+[para]
+The command is used in [package textForSvg] with [arg encoding] utf-8.
+
+[list_begin arguments]
+[arg_def {} tclString]
+A Tcl string.
+[arg_def {} encoding]
+A valid character encoding.
+
+[list_end]
+
+
+[call [cmd textForSvg::fontIsPresent]   [arg family]]
+
+Returns a boolean value, true if and only if the font family [arg family] is available to [package Tk].
+
+[list_begin arguments]
+[arg_def {} family]
+The name of a font family, e.g. Arial, Times New Roman, Liberation Sans.
+[list_end]
+
+
+[call [cmd textForSvg::getDefaultFontFamily]   [arg style]]
+
+Command to return the font family chosen by package [package textForSvg] as the default for style [arg style].
+
+[list_begin arguments]
+[arg_def {} style]
+
+The style of font whose default font family is requested: one of Sans, Serif, or Mono.
+
+[list_end]
+
+
+[call [cmd textForSvg::scaleSvg]   [arg xmlData] [arg fac]]
+
+Command to scale the SVG image held in a data string.  This is a pure text-processing command that does not use [package Tk].  The command returns a string containing the scaled SVG image data.
+
+[list_begin arguments]
+[arg_def {} xmlData]
+
+String containing the SVG data for an image.
+
+[arg_def {} fac]
+
+The required scale factor, a positive number.
+
+[list_end]
+
+
+[list_end]
+
+[section {Subset of SVG}]
+
+The specification for Scalable Vector Graphics (SVG) is comprehensive, and this includes its tags for describing text.  [package textForSvg] implements only the small subset that is used in the SVG images emitted by [package pikchr].  Other features may be added as needed for [package pikchr] and other diagramming tools. [package textForSvg] is not intended to grow into a full implementation of SVG text rendering.
+[para]
+In addition to the contents of each [package <text>] node, [package textForSvg] reads and uses only the following SVG tags and attributes:
+
+[list_begin itemized]
+[item] [package <svg>] attributes [emph height], [emph width] (numbers only, no units or %)
+[item] [package <svg>] attribute [emph viewBox]
+[item] [package <text>] attributes [emph text-anchor], [emph font-style]
+[item] [package <text>] attributes [emph x], [emph y] (numbers only, no units or %)
+[item] [package <text>] attribute [emph transform] (rotations only)
+[item] [package <text>] attribute [emph font-size] (% values only)
+[item] [package <text>] attribute [emph font-family] (if present, value "monospace" only)
+[item] [package <text>] attribute [emph font-weight] (mapping "bolder" to "bold", "lighter" to "normal", and ignoring numerical values)
+[item] [package <text>] attribute [emph fill] (24-bit RGB color values only)
+[list_end]
+[para]
+[package textForSvg] does not read [package <tspan>] or [package <textPath>] tags.
+
+
+[section BUGS]
+
+This version of [package textForSvg] is intended to be compatible with all releases of [package Tk] 8.6 and above, and with the corresponding development branches in the source code repository for [package Tk].  Any incompatibility with any of these versions, for any [package Tk] windowing system, should be reported as a bug. Please report such in the category [package textForSvg] of the [uri https://core.tcl-lang.org/tklib/reportlist {Tklib Trackers}].
+
+[section EXAMPLE]
+
+To map a SVG image held in binary string [emph xmlData]:
+[example {
+package require textForSvg
+canvas .c -bg white
+image create photo img1 -data $xmlData
+.c create image 0.0 0.0 -image img1 -anchor nw
+textForSvg::addText $xmlData .c
+pack .c
+}]
+
+
+To create a raster image [emph img2] from a SVG image held in binary string [emph xmlData], and use it in a label .lab:
+[example {
+package require textForSvg
+package require img::window
+textForSvg::imageCreatePhoto img2 -data $xmlData
+label .lab -image img2
+pack .lab
+}]
+
+
+A demonstration script in the [emph examples/textForSvg] directory has several images drawn from SVG data generated by [package pikchr].  The [package textForSvg] commands successfully draw all examples (without modification or omission) from the documentation for [package pikchr].
+
+[see_also canvas image photo]
+[keywords canvas image photo png svg]
+[manpage_end]

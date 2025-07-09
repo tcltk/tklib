@@ -557,6 +557,8 @@
 [manpage modules/getstring/tk_getString.man getstring]
 [key superframe]
 [manpage modules/widget/widget.man widget]
+[key svg]
+[manpage modules/textForSvg/textForSvg.man textForSvg]
 [key {syntax highlighting}]
 [manpage modules/ctext/ctext.man ctext]
 [key {tabular, area display}]

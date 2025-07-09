@@ -70,6 +70,7 @@ modules/shtmlview/shtmlview-doctools.man
 modules/shtmlview/shtmlview-mkdoc.man
 modules/shtmlview/shtmlview.man
 modules/swaplist/swaplist.man
+modules/textForSvg/textForSvg.man
 modules/tkpiechart/canvaslabel.man
 modules/tkpiechart/pie.man
 modules/tkpiechart/pieboxlabeler.man

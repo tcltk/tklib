@@ -105,6 +105,7 @@ tablelist                   7.4.1
 tablelist::common           7.4.1
 tablelist_tile              7.4.1
 tachometer                  0.2
+textForSvg                  1.0b1
 tipstack                    1.0.1
 tkpiechart                  6.6.1
 tooltip                     2.0.1

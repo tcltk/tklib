@@ -1,10 +1,11 @@
 Overview
 ========
 
+    1   new packages                in 1  modules
     22  changed packages            in 16 modules
     29  internally changed packages in 2  modules
     65  unchanged packages          in 24 modules
-    123 packages, total             in 35 modules, total
+    124 packages, total             in 36 modules, total
 
 Legend
 ======
@@ -20,6 +21,14 @@ Legend
     None     T         Testsuite changes
              D         Documentation updates
     -------- --------- ----------------------------------
+
+New in Tklib 0.9
+================
+
+    Module      Package                     New Version   Comments
+    ----------- --------------------------- ------------- ----------
+    textForSvg  textForSvg                  1.0b1
+    ----------- --------------------------- ------------- ----------
 
 Changes from Tklib 0.8 to 0.9
 =============================

@@ -58,6 +58,7 @@ Module style         _tcl  _man  _null
 Module swaplist      _tcl  _man  _null
 Module tablelist     _tab  _null _exa
 Module text          _tcl  _null _null
+Module textForSvg    _tcl  _man  _exa
 Module tkpiechart    _tcl  _man  _exa
 Module tooltip       _tcl  _man  _null
 Module treeview      _tcl  _null _null

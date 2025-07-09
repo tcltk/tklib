@@ -82,6 +82,7 @@
 [item modules/shtmlview/shtmlview.man                     shtmlview                   {Extended Tcl/Tk text widget with basic support for rendering of HTML and Markdown}]
 [item modules/shtmlview/shtmlview-doctools.man            shtmlview_doctools          {shtmlview extension adding support for doctools markup}]
 [item modules/shtmlview/shtmlview-mkdoc.man               shtmlview_mkdoc             {shtmlview extension adding support for mkdoc markup}]
+[item modules/textForSvg/textForSvg.man                   textForSvg                  {Render Text In SVG Images}]
 [item modules/tooltip/tipstack.man                        tipstack                    {Stacked tooltips}]
 [item modules/tooltip/tooltip.man                         tooltip                     {Tooltip management}]
 [item modules/widgetl/widget_listentry.man                widget_listentry            {widget::listentry widget}]
