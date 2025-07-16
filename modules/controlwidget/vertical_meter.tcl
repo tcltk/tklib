@@ -62,7 +62,8 @@
 #    -log         - True if should be log scale                         (dynamic).
 #
 # Methods:
-#    set value    - Set the meter to a specific value (if -variable is defined it is modified).
+#    set value    - Set the meter to a specific value 
+#                   (if -variable is defined it is modified).
 #    get          - Returns the current value of the meter.
 
 package provide meter 1.0
@@ -630,8 +631,9 @@ snit::widget controlwidget::meter {
         set needleLeft   [expr $options(-width) - $needleWidth]
 
         set needleId [$win.c create line $needleLeft $needleHeight      \
-                                         $options(-width) $needleHeight -tags {needle arrow} \
-                                        -arrow first -fill $options(-arrowcolor) -width $options(-arrowthickness)]]
+                    $options(-width) $needleHeight -tags {needle arrow} \
+                    -arrow first -fill $options(-arrowcolor) \
+		    -width $options(-arrowthickness)]
 
         set needleHalo [$win.c create rectangle $needleLeft [expr {$needleHeight-3}]      \
                                                 $options(-width) [expr {$needleHeight+3}] -fill $options(-background) \
