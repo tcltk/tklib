@@ -473,7 +473,7 @@ proc tsw::varTrace {win varName arrIndex op} {
 		$scl state !selected
 		$scl set [$scl cget -from]
 	    }
-	    $scl state $stateSpec
+	    $scl state $stateSpec			;# restores the state
 	}
 
 	unset {
@@ -677,7 +677,7 @@ proc tsw::onThemeChanged w {
 	set stateSpec [$scl state !disabled]		;# needed for $scl set
 	$scl set [expr {[$scl instate selected] ?
 			[$scl cget -to] : [$scl cget -from]}]
-	$scl state $stateSpec
+	$scl state $stateSpec				;# restores the state
     }
 }
 
@@ -737,8 +737,8 @@ proc tsw::onB1Motion {w x y} {
 	}
 
 	#
-	# Guard against a bug in the ttk::scale widget's
-	# "get x y" command (open as of July 2025)
+	# Guard against a bug in the ttk::scale widget's "get x y"
+	# command (fixed in July 2025 for Tk 9.1a0, 9.0.3, and 8.6.17)
 	#
 	lassign [$w coords [$w cget -from]] fromX fromY
 	lassign [$w coords [$w cget -to]] toX toY
