@@ -124,7 +124,7 @@ namespace eval tsw {
 		    set mod "Dark"
 		}
 
-		ttk::style theme settings default { CreateElements_default$mod }
+		ttk::style theme settings default { createElements_default$mod }
 		foreach n {1 2 3} {
 		    ttk::style element create ${mod}Switch$n.trough from default
 		    ttk::style element create ${mod}Switch$n.slider from default
