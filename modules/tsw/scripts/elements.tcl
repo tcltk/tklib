@@ -124,11 +124,11 @@ proc tsw::createElements_default {} {
 }
 
 #------------------------------------------------------------------------------
-# tsw::createElements_default-dark
+# tsw::createElements_defaultDark
 #------------------------------------------------------------------------------
-proc tsw::createElements_default-dark {} {
+proc tsw::createElements_defaultDark {} {
     variable elemInfoArr
-    if {[info exists elemInfoArr(default-dark)]} {
+    if {[info exists elemInfoArr(defaultDark)]} {
 	return ""
     }
 
@@ -237,7 +237,7 @@ proc tsw::createElements_default-dark {} {
 	]
     }
 
-    set elemInfoArr(default-dark) 1
+    set elemInfoArr(defaultDark) 1
 }
 
 #------------------------------------------------------------------------------

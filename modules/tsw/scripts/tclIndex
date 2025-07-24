@@ -8,7 +8,7 @@
 
 set auto_index(::tsw::svgFormat) [list source [file join $dir elements.tcl]]
 set auto_index(::tsw::createElements_default) [list source [file join $dir elements.tcl]]
-set auto_index(::tsw::createElements_default-dark) [list source [file join $dir elements.tcl]]
+set auto_index(::tsw::createElements_defaultDark) [list source [file join $dir elements.tcl]]
 set auto_index(::tsw::createElements_clam) [list source [file join $dir elements.tcl]]
 set auto_index(::tsw::createElements_droid) [list source [file join $dir elements.tcl]]
 set auto_index(::tsw::createElements_plastik) [list source [file join $dir elements.tcl]]

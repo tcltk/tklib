@@ -91,7 +91,7 @@ namespace eval tsw {
 	if {$theme eq "default"} {
 	    set fg [ttk::style lookup . -foreground]
 	    if {[mwutil::isColorLight $fg]} {
-		set themeMod default-dark
+		set themeMod defaultDark
 		set mod "Dark"
 	    }
 	}
@@ -106,7 +106,7 @@ namespace eval tsw {
 	}
 
 	switch $themeMod {
-	    default - default-dark - clam - droid - plastik - awarc -
+	    default - defaultDark - clam - droid - plastik - awarc -
 	    awbreeze - awbreezedark - awlight - awdark - vista - aqua {
 		createElements_$themeMod
 	    }
@@ -121,13 +121,10 @@ namespace eval tsw {
 		set fg [ttk::style lookup . -foreground {} black]
 		if {[mwutil::isColorLight $fg] ||
 		    [string match -nocase *dark* $theme]} {
-		    set createCmd createElements_default-dark
 		    set mod "Dark"
-		} else {
-		    set createCmd createElements_default
 		}
 
-		ttk::style theme settings default { $createCmd }
+		ttk::style theme settings default { CreateElements_default$mod }
 		foreach n {1 2 3} {
 		    ttk::style element create ${mod}Switch$n.trough from default
 		    ttk::style element create ${mod}Switch$n.slider from default
@@ -188,8 +185,7 @@ proc tsw::createBindings {} {
 	    focus %W.scl
 	}
     }
-    bind Toggleswitch <Destroy>		{ tsw::onDestroy %W }
-    bind Toggleswitch <<ThemeChanged>>	{ tsw::onThemeChanged %W }
+    bind Toggleswitch <Destroy>     { tsw::onDestroy %W }
 
     bindtags . [linsert [bindtags .] 1 TswMain]
     foreach event {<<ThemeChanged>> <<LightAqua>> <<DarkAqua>>} {
@@ -200,6 +196,8 @@ proc tsw::createBindings {} {
     # Define the binding tag ToggleswitchKeyNav
     #
     mwutil::defineKeyNav Toggleswitch
+
+    bind TswScale <<ThemeChanged>>  { tsw::onThemeChanged %W }
 
     variable onAndroid
     if {!$onAndroid} {
@@ -673,11 +671,9 @@ proc tsw::onThemeChanged w {
     if {$w eq "."} {
 	condMakeLayouts
     } else {
-	set scl $w.scl
-	set stateSpec [$scl state !disabled]		;# needed for $scl set
-	$scl set [expr {[$scl instate selected] ?
-			[$scl cget -to] : [$scl cget -from]}]
-	$scl state $stateSpec				;# restores the state
+	set stateSpec [$w state !disabled]		;# needed for $w set
+	$w set [expr {[$w instate selected] ? [$w cget -to] : [$w cget -from]}]
+	$w state $stateSpec				;# restores the state
     }
 }
 
