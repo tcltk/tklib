@@ -80,91 +80,7 @@ namespace eval tsw {
 
     variable onAndroid [expr {[info exists ::tk::android] && $::tk::android}]
 
-    #
-    # Make the layouts
-    #
-    proc condMakeLayouts {} {
-	variable theme
-	set themeMod $theme
-	set mod ""
-
-	if {$theme eq "default"} {
-	    set fg [ttk::style lookup . -foreground]
-	    if {[mwutil::isColorLight $fg]} {
-		set themeMod defaultDark
-		set mod "Dark"
-	    }
-	}
-
-	variable elemInfoArr
-	if {[info exists elemInfoArr($themeMod)]} {
-	    if {$theme eq "aqua"} {
-		updateElements_$theme
-	    }
-
-	    return ""
-	}
-
-	switch $themeMod {
-	    default - defaultDark - clam - droid - plastik - awarc -
-	    awbreeze - awbreezedark - awlight - awdark - vista - aqua {
-		createElements_$themeMod
-	    }
-	    winnative - xpnative {
-		ttk::style theme settings vista { createElements_vista }
-		foreach n {1 2 3} {
-		    ttk::style element create Switch$n.trough from vista
-		    ttk::style element create Switch$n.slider from vista
-		}
-	    }
-	    default {
-		set fg [ttk::style lookup . -foreground {} black]
-		if {[mwutil::isColorLight $fg] ||
-		    [string match -nocase *dark* $theme]} {
-		    set mod "Dark"
-		}
-
-		ttk::style theme settings default { createElements_default$mod }
-		foreach n {1 2 3} {
-		    ttk::style element create ${mod}Switch$n.trough from default
-		    ttk::style element create ${mod}Switch$n.slider from default
-		}
-	    }
-	}
-	set elemInfoArr($themeMod) 1
-
-	if {$theme eq "aqua"} {
-	    foreach n {1 2 3} {
-		ttk::style layout Toggleswitch$n [list \
-		    Switch.padding -sticky nswe -children [list \
-			Switch$n.trough -sticky {} -children [list \
-			    Switch$n.slider -side left -sticky {} \
-			]
-		    ]
-		]
-
-		ttk::style configure Toggleswitch$n -padding 1.5p
-	    }
-	} else {
-	    foreach n {1 2 3} {
-		ttk::style layout Toggleswitch$n [list \
-		    Switch.focus -sticky nswe -children [list \
-			Switch.padding -sticky nswe -children [list \
-			    ${mod}Switch$n.trough -sticky {} -children [list \
-				${mod}Switch$n.slider -side left -sticky {}
-			    ]
-			]
-		    ]
-		]
-
-		ttk::style configure Toggleswitch$n -padding 0.75p
-		if {$theme eq "classic"} {
-		    ttk::style configure Toggleswitch$n -focussolid 1
-		}
-	    }
-	}
-    }
-    condMakeLayouts
+    variable madeElements 0
 }
 
 #
@@ -272,6 +188,11 @@ proc tsw::toggleswitch args {
     #
     # Create a ttk::scale child widget of a special style
     #
+    variable madeElements
+    if {!$madeElements} {
+	createElements					;# (see elements.tcl)
+	set madeElements 1
+    }
     set size [lindex $configSpecs(-size) end]
     set scl [ttk::scale $win.scl -class TswScale -style Toggleswitch$size \
 	     -takefocus 0 -length 0 -from 0 -to 20]
@@ -669,7 +590,10 @@ proc tsw::onThemeChanged w {
     variable theme [ttk::style theme use]
 
     if {$w eq "."} {
-	condMakeLayouts
+	variable madeElements
+	if {$madeElements} {	;# for some theme (see proc tsw::toggleswitch)
+	    createElements	;# for the new theme (see elements.tcl)
+	}
     } else {
 	set stateSpec [$w state !disabled]		;# needed for $w set
 	$w set [expr {[$w instate selected] ? [$w cget -to] : [$w cget -from]}]

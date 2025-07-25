@@ -1,5 +1,5 @@
 #==============================================================================
-# Contains procedures that create the Switch*.trough and Switch*.slider
+# Contains procedures that create the *Switch*.trough and *Switch*.slider
 # elements for the Toggleswitch* styles.
 #
 # Copyright (c) 2025  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
@@ -1500,5 +1500,90 @@ proc tsw::updateElements_aqua {} {
 		]
 	    ]
 	]
+    }
+}
+
+#------------------------------------------------------------------------------
+# tsw::createElements
+#------------------------------------------------------------------------------
+proc tsw::createElements {} {
+    variable theme
+    set themeMod $theme
+    set mod ""
+
+    if {$theme eq "default"} {
+	set fg [ttk::style lookup . -foreground]
+	if {[mwutil::isColorLight $fg]} {
+	    set themeMod defaultDark
+	    set mod "Dark"
+	}
+    }
+
+    variable elemInfoArr
+    if {[info exists elemInfoArr($themeMod)]} {
+	if {$theme eq "aqua"} {
+	    updateElements_$theme
+	}
+
+	return ""
+    }
+
+    switch $themeMod {
+	default - defaultDark - clam - droid - plastik - awarc -
+	awbreeze - awbreezedark - awlight - awdark - vista - aqua {
+	    createElements_$themeMod
+	}
+	winnative - xpnative {
+	    ttk::style theme settings vista { createElements_vista }
+	    foreach n {1 2 3} {
+		ttk::style element create Switch$n.trough from vista
+		ttk::style element create Switch$n.slider from vista
+	    }
+	}
+	default {
+	    set fg [ttk::style lookup . -foreground {} black]
+	    if {[mwutil::isColorLight $fg] ||
+		[string match -nocase *dark* $theme]} {
+		set mod "Dark"
+	    }
+
+	    ttk::style theme settings default { createElements_default$mod }
+	    foreach n {1 2 3} {
+		ttk::style element create ${mod}Switch$n.trough from default
+		ttk::style element create ${mod}Switch$n.slider from default
+	    }
+	}
+    }
+    set elemInfoArr($themeMod) 1
+
+    if {$theme eq "aqua"} {
+	foreach n {1 2 3} {
+	    ttk::style layout Toggleswitch$n [list \
+		Switch.padding -sticky nswe -children [list \
+		    Switch$n.trough -sticky {} -children [list \
+			Switch$n.slider -side left -sticky {} \
+		    ]
+		]
+	    ]
+
+	    ttk::style configure Toggleswitch$n -padding 1.5p
+	}
+    } else {
+	foreach n {1 2 3} {
+	    ttk::style layout Toggleswitch$n [list \
+		Switch.focus -sticky nswe -children [list \
+		    Switch.padding -sticky nswe -children [list \
+			${mod}Switch$n.trough -sticky {} -children [list \
+			    ${mod}Switch$n.slider -side left -sticky {}
+			]
+		    ]
+		]
+	    ]
+
+	    ttk::style configure Toggleswitch$n -padding 0.75p
+	    if {$theme eq "classic"} {
+		ttk::style configure Toggleswitch$n -focussolid 1
+	    }
+	}
     }
 }
