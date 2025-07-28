@@ -120,7 +120,7 @@ proc tsw::createBindings {} {
 	bind TswScale <Enter>	    { %W instate !disabled {%W state active} }
 	bind TswScale <Leave>	    { %W state !active }
     }
-    bind TswScale <B1-Leave>	    { # Preserves the "active" state. }
+    bind TswScale <B1-Leave>	    { # Preserves the active state. }
     bind TswScale <Button-1>	    { tsw::onButton1	%W %x %y }
     bind TswScale <B1-Motion>	    { tsw::onB1Motion	%W %x %y }
     bind TswScale <ButtonRelease-1> { tsw::onButtonRel1	%W }
@@ -640,9 +640,9 @@ proc tsw::onB1Motion {w x y} {
 	if {[string match "*.slider" $stateArr(prevElem)] &&
 	    [string match "*.trough" $curElem]} {
 	    startToggling $w
-	} elseif {$x < [winfo x $w]} {
+	} elseif {$x < 0} {
 	    startMovingLeft $w
-	} elseif {$x >= [winfo x $w] + [winfo width $w]} {
+	} elseif {$x >= [winfo width $w]} {
 	    startMovingRight $w
 	}
 
@@ -752,7 +752,7 @@ proc tsw::moveLeft {w val} {
     if {$val > [$w cget -from]} {
 	after 10 [list tsw::moveLeft $w $val]
     } else {
-	$w state selected	;# restores the original selected state flag
+	$w state selected	;# restores the original selected state
 	set win [winfo parent $w]
 	::$win switchstate 0
 
@@ -789,7 +789,7 @@ proc tsw::moveRight {w val} {
     if {$val < [$w cget -to]} {
 	after 10 [list tsw::moveRight $w $val]
     } else {
-	$w state !selected	;# restores the original !selected state flag
+	$w state !selected	;# restores the original !selected state
 	set win [winfo parent $w]
 	::$win switchstate 1
 
