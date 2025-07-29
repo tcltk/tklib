@@ -65,7 +65,8 @@ namespace eval tsw {
     # Array variable used in binding scripts for the widget class TswScale
     #
     variable stateArr
-    set stateArr(dragging) 0
+    set stateArr(dragging)  0
+    set stateArr(moveState) idle		;# other values: moving, moved
 
     variable scaled4
     if {[llength [info procs ::tk::ScaleNum]] == 0} {
@@ -97,7 +98,7 @@ namespace eval tsw {
 proc tsw::createBindings {} {
     bind Toggleswitch <KeyPress> continue
     bind Toggleswitch <FocusIn> {
-	if {[focus -lastfor %W] eq "%W"} {
+	if {[focus -lastfor %W] eq "%W" && [winfo exists %W.scl]} {
 	    focus %W.scl
 	}
     }
@@ -167,7 +168,6 @@ proc tsw::toggleswitch args {
 	# The following array holds various data for this widget
 	#
 	variable data
-	set data(moveState) idle		;# other values: moving, moved
 
 	#
 	# The following array is used to hold arbitrary
@@ -573,6 +573,10 @@ proc tsw::toggleswitchWidgetCmd {win args} {
 # tsw::onDestroy
 #------------------------------------------------------------------------------
 proc tsw::onDestroy win {
+    if {![namespace exists ::tsw::ns$win]} {
+	return ""    ;# the widget was not created by the tsw::toggleswitch cmd
+    }
+
     upvar ::tsw::ns${win}::data data
     if {$data(-variable) ne "" &&
 	[catch {upvar #0 $data(-variable) var}] == 0} {
@@ -612,11 +616,8 @@ proc tsw::onButton1 {w x y} {
     $w state pressed
 
     variable stateArr
-    array set stateArr [list  dragging 0  startX $x  prevX $x \
+    array set stateArr [list  dragging 0  moveState idle  startX $x  prevX $x \
 			prevElem [$w identify element $x $y]]
-
-    upvar ::tsw::ns[winfo parent $w]::data data
-    set data(moveState) idle
 }
 
 #------------------------------------------------------------------------------
@@ -631,8 +632,7 @@ proc tsw::onB1Motion {w x y} {
     variable stateArr
 
     if {$theme eq "aqua"} {
-	upvar ::tsw::ns[winfo parent $w]::data data
-	if {$data(moveState) eq "moving"} {
+	if {$stateArr(moveState) eq "moving"} {
 	    return ""
 	}
 
@@ -688,8 +688,7 @@ proc tsw::onButtonRel1 w {
     } elseif {[$w instate hover]} {
 	variable theme
 	if {$theme eq "aqua"} {
-	    upvar ::tsw::ns${win}::data data
-	    if {$data(moveState) eq "idle"} {
+	    if {$stateArr(moveState) eq "idle"} {
 		startToggling $w
 	    }
 	} else {
@@ -732,8 +731,8 @@ proc tsw::startMovingLeft w {
 	return ""
     }
 
-    upvar ::tsw::ns[winfo parent $w]::data data
-    set data(moveState) moving
+    variable stateArr
+    set stateArr(moveState) moving
     $w state !selected		;# will be undone before invoking switchstate
     moveLeft $w [$w cget -to]
 }
@@ -756,8 +755,8 @@ proc tsw::moveLeft {w val} {
 	set win [winfo parent $w]
 	::$win switchstate 0
 
-	upvar ::tsw::ns${win}::data data
-	set data(moveState) moved
+	variable stateArr
+	set stateArr(moveState) moved
     }
 }
 
@@ -769,8 +768,8 @@ proc tsw::startMovingRight w {
 	return ""
     }
 
-    upvar ::tsw::ns[winfo parent $w]::data data
-    set data(moveState) moving
+    variable stateArr
+    set stateArr(moveState) moving
     $w state selected		;# will be undone before invoking switchstate
     moveRight $w [$w cget -from]
 }
@@ -793,8 +792,8 @@ proc tsw::moveRight {w val} {
 	set win [winfo parent $w]
 	::$win switchstate 1
 
-	upvar ::tsw::ns${win}::data data
-	set data(moveState) moved
+	variable stateArr
+	set stateArr(moveState) moved
     }
 }
 
