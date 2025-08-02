@@ -1,3 +1,11 @@
+2025-08-02  Csaba Nemethi  <csaba.nemethi@t-online.de>
+
+	* pkgIndex.tcl:	Bumped the tooltip version number to 2.0.2.
+
+	* tooltip.tcl: Ignore <Leave> events with detail field "NotifyInferior"
+	  (patch by Ralf Fassel). See ticket
+	  [https://core.tcl-lang.org/tklib/tktview/9924aee881].
+
 2024-07-18 Harald Oehlmann <harald.oehlmann@elmicron.de>
 
 	* pkgIndex.tcl:	Bumped the tooltip version number to 2.0.0.

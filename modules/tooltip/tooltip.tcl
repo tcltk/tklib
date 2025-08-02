@@ -129,7 +129,7 @@ namespace eval ::tooltip {
     }]
 
     bind Menu <<MenuSelect>>	[namespace code { menuMotion %W }]
-    bind Tooltip <Leave>	[namespace code [list hide 1]] ; # fade ok
+    bind Tooltip <Leave>	[namespace code [list hide 1 %d]] ; # fade ok
     bind Tooltip <Any-KeyPress>	[namespace code hide]
     bind Tooltip <Any-Button>	[namespace code hide]
 }
@@ -548,8 +548,13 @@ proc ::tooltip::menuMotion {w} {
     }
 }
 
-proc ::tooltip::hide {{fadeOk 0}} {
+proc ::tooltip::hide {{fadeOk 0} {detail ""}} {
     variable G
+
+    if {$detail eq "NotifyInferior"} {
+	# ignore moving to child
+	return
+    }
 
     after cancel $G(AFTERID)
     after cancel $G(FADEID)
@@ -752,4 +757,4 @@ proc ::tooltip::conditionally-hide {w tag} {
     hide 1
 }
 
-package provide tooltip 2.0.1
+package provide tooltip 2.0.2
