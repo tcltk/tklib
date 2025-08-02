@@ -1,16 +1,21 @@
 What is new in Tablelist 7.7?
 -----------------------------
 
-1. Added explicit support for the "droid" theme, which is the default in
+1. Added bindings that invoke "expand|collapse ... -fully" for the
+   events <Control-Button-1> (over an expand/collapse control),
+   <Control-Right|plus|KP_Add>, and <Control-Left|minus|KP_Subtract>
+   (thanks to Torsten Berg for his proposal).
+
+2. Added explicit support for the "droid" theme, which is the default in
    AndroWish.
 
-2. Improvements related to the themes provided by the awthemes package
+3. Improvements related to the themes provided by the awthemes package
    and the ones that are not explicitly supported by Tablelist.
 
-3. Improved the interactive cell editing with the aid of the
+4. Improved the interactive cell editing with the aid of the
    toggleswitch widget.
 
-4. The demo scripts "dirViewer.tcl" and "dirViewer_tile.tcl" now work
+5. The demo scripts "dirViewer.tcl" and "dirViewer_tile.tcl" now work
    around the fact that on Android the directory "/" is normally not
    readable.
 

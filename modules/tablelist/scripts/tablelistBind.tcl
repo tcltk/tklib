@@ -949,7 +949,7 @@ proc tablelist::defineTablelistBody {} {
 		[$tablelist::W cget -state] eq "normal"} {
 		focus [$tablelist::W bodypath]
 	    }
-	    if {[tablelist::wasExpCollCtrlClicked %W %x %y]} {
+	    if {[tablelist::wasExpCollCtrlClicked %W %x %y <Button-1>]} {
 		set tablelist::priv(clickedExpCollCtrl) 1
 		tablelist::doFinishEditing $tablelist::W
 	    } else {
@@ -1048,10 +1048,15 @@ proc tablelist::defineTablelistBody {} {
 	    continue		;# on a vertical separator, outside the body
 	}
 
-	tablelist::beginToggle $tablelist::W \
-	    [$tablelist::W nearest       $tablelist::y] \
-	    [$tablelist::W nearestcolumn $tablelist::x]
-	tablelist::condFinishEditing $tablelist::W $tablelist::x $tablelist::y
+	if {[tablelist::wasExpCollCtrlClicked %W %x %y <Control-Button-1>]} {
+	    set tablelist::priv(clickedExpCollCtrl) 1
+	    tablelist::condFinishEditing $tablelist::W \
+		$tablelist::x $tablelist::y
+	} else {
+	    tablelist::beginToggle $tablelist::W \
+		[$tablelist::W nearest       $tablelist::y] \
+		[$tablelist::W nearestcolumn $tablelist::x]
+	}
     }
     bind TablelistBody <Button-2> {
 	tablelist::handleBtn2Event <Button-2> %W %x %y %X %Y
@@ -1078,16 +1083,28 @@ proc tablelist::defineTablelistBody {} {
 	tablelist::nextPrevCell [tablelist::getTablelistPath %W] -1
     }
     bind TablelistBody <plus> {
-	tablelist::plusMinus [tablelist::getTablelistPath %W] plus
-    }
-    bind TablelistBody <minus> {
-	tablelist::plusMinus [tablelist::getTablelistPath %W] minus
+	tablelist::plusMinus [tablelist::getTablelistPath %W] <plus>
     }
     bind TablelistBody <KP_Add> {
-	tablelist::plusMinus [tablelist::getTablelistPath %W] plus
+	tablelist::plusMinus [tablelist::getTablelistPath %W] <plus>
+    }
+    bind TablelistBody <minus> {
+	tablelist::plusMinus [tablelist::getTablelistPath %W] <minus>
     }
     bind TablelistBody <KP_Subtract> {
-	tablelist::plusMinus [tablelist::getTablelistPath %W] minus
+	tablelist::plusMinus [tablelist::getTablelistPath %W] <minus>
+    }
+    bind TablelistBody <Control-plus> {
+	tablelist::plusMinus [tablelist::getTablelistPath %W] <Control-plus>
+    }
+    bind TablelistBody <Control-KP_Add> {
+	tablelist::plusMinus [tablelist::getTablelistPath %W] <Control-plus>
+    }
+    bind TablelistBody <Control-minus> {
+	tablelist::plusMinus [tablelist::getTablelistPath %W] <Control-minus>
+    }
+    bind TablelistBody <Control-KP_Subtract> {
+	tablelist::plusMinus [tablelist::getTablelistPath %W] <Control-minus>
     }
 
     foreach {virtual event} {
@@ -1114,10 +1131,16 @@ proc tablelist::defineTablelistBody {} {
 	tablelist::upDown [tablelist::getTablelistPath %W] 1
     }
     bind TablelistBody $eventArr(PrevChar) {
-	tablelist::leftRight [tablelist::getTablelistPath %W] -1
+	tablelist::leftRight [tablelist::getTablelistPath %W] <Left>
     }
     bind TablelistBody $eventArr(NextChar) {
-	tablelist::leftRight [tablelist::getTablelistPath %W] 1
+	tablelist::leftRight [tablelist::getTablelistPath %W] <Right>
+    }
+    bind TablelistBody $eventArr(PrevWord) {
+	tablelist::leftRight [tablelist::getTablelistPath %W] <Control-Left>
+    }
+    bind TablelistBody $eventArr(NextWord) {
+	tablelist::leftRight [tablelist::getTablelistPath %W] <Control-Right>
     }
     bind TablelistBody <Prior> {
 	tablelist::priorNext [tablelist::getTablelistPath %W] -1
@@ -1335,8 +1358,7 @@ proc tablelist::defineTablelistBody {} {
 	}
     }
 
-    foreach event {<Control-Left> <<PrevWord>> <Control-Right> <<NextWord>>
-		   <Control-Prior> <Control-Next> <<Copy>>} {
+    foreach event {<Control-Prior> <Control-Next> <<Copy>>} {
 	set script [string map {
 	    "%W" "$tablelist::W"  "%x" "$tablelist::x"  "%y" "$tablelist::y"
 	} [bind Listbox $event]]
@@ -1666,9 +1688,10 @@ proc tablelist::makeEditCursor {} {
 #
 # This procedure is invoked when mouse button 1 is pressed in the body of a
 # tablelist widget or in one of its separators.  It checks whether the mouse
-# click occurred inside an expand/collapse control.
+# click occurred inside an expand/collapse control, and if this was the case
+# then it partially or fully expands or collapses the corresponding row.
 #------------------------------------------------------------------------------
-proc tablelist::wasExpCollCtrlClicked {w x y} {
+proc tablelist::wasExpCollCtrlClicked {w x y event} {
     foreach {win _x _y} [convEventFields $w $x $y] {}
     set row [containingRow $win $_y]
     set col [containingCol $win $_x]
@@ -1719,12 +1742,10 @@ proc tablelist::wasExpCollCtrlClicked {w x y} {
     #
     # Toggle the state of the expand/collapse control
     #
+    set op  [expr {$mode eq "collapsed" ? "expand" : "collapse"}]
+    set how [expr {$event eq "<Button-1>" ? "-partly" : "-fully"}]
     if {[::$win cget -showbusycursor]} { ::$win setbusycursor }
-    if {$mode eq "collapsed"} {
-	::$win expand $row -partly			;# can take long
-    } else {
-	::$win collapse $row -partly			;# can take long
-    }
+    ::$win $op $row $how				;# can take long
     ::$win restorecursor
 
     return 1
@@ -2684,9 +2705,9 @@ proc tablelist::condEditActiveCell win {
 #------------------------------------------------------------------------------
 # tablelist::plusMinus
 #
-# Partially expands or collapses the active row if possible.
+# Partially or fully expands or collapses the active row if possible.
 #------------------------------------------------------------------------------
-proc tablelist::plusMinus {win keysym} {
+proc tablelist::plusMinus {win event} {
     upvar ::tablelist::ns${win}::data data
     if {$data(isDisabled)} {
 	return ""
@@ -2702,9 +2723,9 @@ proc tablelist::plusMinus {win keysym} {
 	set imgName [$indentLabel cget -image]
 	if {[regexp {^tablelist_(.+)_(collapsed|expanded).*Img$} \
 		     $imgName dummy treeStyle mode]} {
-	    if {$keysym eq "plus" && $mode eq "collapsed"} {
+	    if {[string match "*plus>" $event] && $mode eq "collapsed"} {
 		set op "expand"
-	    } elseif {$keysym eq "minus" && $mode eq "expanded"} {
+	    } elseif {[string match "*minus>" $event] && $mode eq "expanded"} {
 		set op "collapse"
 	    }
 	}
@@ -2714,8 +2735,10 @@ proc tablelist::plusMinus {win keysym} {
 	#
 	# Toggle the state of the expand/collapse control
 	#
+	set how [expr {[string match "<Control-*>" $event] ?
+		       "-fully" : "-partly"}]
 	if {[::$win cget -showbusycursor]} { ::$win setbusycursor }
-	::$win $op $row -partly				;# can take long
+	::$win $op $row $how				;# can take long
 	::$win restorecursor
     }
 }
@@ -2809,13 +2832,12 @@ proc tablelist::upDown {win amount} {
 #------------------------------------------------------------------------------
 # tablelist::leftRight
 #
-# Partially expands or collapses the active row if possible.  Otherwise, if the
-# tablelist widget's selection type is "row" then this procedure scrolls the
-# widget's view left or right by the width of the character "0".  Otherwise it
-# moves the location cursor (active element) left or right by one column, and
-# changes the selection if we are in browse or extended selection mode.
+# Partially or fully expands or collapses the active row if possible.
+# Otherwise, the procedure scrolls the widget horizontally by one unit or page,
+# or moves the active element left or right by one column and changes the
+# selection if we are in browse or extended selection mode.
 #------------------------------------------------------------------------------
-proc tablelist::leftRight {win amount} {
+proc tablelist::leftRight {win event} {
     upvar ::tablelist::ns${win}::data data
     set row $data(activeRow)
     set col $data(treeCol)
@@ -2827,33 +2849,39 @@ proc tablelist::leftRight {win amount} {
 	set imgName [$indentLabel cget -image]
 	if {[regexp {^tablelist_(.+)_(collapsed|expanded).*Img$} \
 		     $imgName dummy treeStyle mode]} {
-	    if {$amount > 0 && $mode eq "collapsed"} {
+	    if {[string match "*Right>" $event] && $mode eq "collapsed"} {
 		set op "expand"
-	    } elseif {$amount < 0 && $mode eq "expanded"} {
+	    } elseif {[string match "*Left>" $event] && $mode eq "expanded"} {
 		set op "collapse"
 	    }
 	}
     }
 
     if {$op eq ""} {
-	switch $data(-selecttype) {
-	    row {
-		::$win xview scroll $amount units
-	    }
+	set amount [expr {[string match "*Right>" $event] ? 1 : -1}]
 
-	    cell {
-		if {$data(editRow) >= 0} {
-		    return ""
+	if {[string match "<Control-*>" $event]} {
+	    ::$win xview scroll $amount pages
+	} else {
+	    switch $data(-selecttype) {
+		row {
+		    ::$win xview scroll $amount units
 		}
 
-		set col $data(activeCol)
-		while 1 {
-		    incr col $amount
-		    if {$col < 0 || $col > $data(lastCol)} {
+		cell {
+		    if {$data(editRow) >= 0} {
 			return ""
-		    } elseif {!$data($col-hide)} {
-			condChangeSelection $win $row $col
-			return ""
+		    }
+
+		    set col $data(activeCol)
+		    while 1 {
+			incr col $amount
+			if {$col < 0 || $col > $data(lastCol)} {
+			    return ""
+			} elseif {!$data($col-hide)} {
+			    condChangeSelection $win $row $col
+			    return ""
+			}
 		    }
 		}
 	    }
@@ -2862,8 +2890,10 @@ proc tablelist::leftRight {win amount} {
 	#
 	# Toggle the state of the expand/collapse control
 	#
+	set how [expr {[string match "<Control-*>" $event] ?
+		       "-fully" : "-partly"}]
 	if {[::$win cget -showbusycursor]} { ::$win setbusycursor }
-	::$win $op $row -partly				;# can take long
+	::$win $op $row $how				;# can take long
 	::$win restorecursor
     }
 }

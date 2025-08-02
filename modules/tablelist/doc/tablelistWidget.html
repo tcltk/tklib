@@ -8942,12 +8942,12 @@ registerDragSrc [$tbl bodypath]
         will be collapsed, so that a subsequent invocation of the non-recursive
         version of the <code><b><a href="#expand">expand(all)</a></b></code>
         subcommand will only display their children but no further descendants
-        of them.&nbsp; The <code><b>-partly</b></code> option (which is used by
-        the default bindings) restricts the operation to just one hierarchy
-        level, implying that by a subsequent invocation of the non-recursive
-        version of the <code><b>expand(all)</b></code> subcommand exactly the
-        same descendants will be displayed again that were visible prior to
-        collapsing the rows.</dd>
+        of them.&nbsp; The <code><b>-partly</b></code> option restricts the
+        operation to just one hierarchy level, implying that by a subsequent
+        invocation of the non-recursive version of the
+        <code><b>expand(all)</b></code> subcommand exactly the same descendants
+        will be displayed again that were visible prior to collapsing the
+        rows.</dd>
 
         <dd class="tm">Before hiding the descendants of a row, the command
         specified as the value of the <code><b><a href=
@@ -9773,11 +9773,10 @@ bind [.tbl <span class="red">editwintag</span>] &lt;Return&gt; "[bind <a href=
         argument <code><b>-fully</b></code> (which is the default) indicates
         that the command will be performed recursively, i.e., all of the
         descendants of the nodes specified by <code><i>indexList</i></code>
-        will be displayed.&nbsp; The <code><b>-partly</b></code> option (which
-        is used by the default bindings) restricts the operation to just one
-        hierarchy level, indicating that only the children of the specified
-        nodes will be displayed, without changing the expanded/collapsed state
-        of the child nodes.</dd>
+        will be displayed.&nbsp; The <code><b>-partly</b></code> option
+        restricts the operation to just one hierarchy level, indicating that
+        only the children of the specified nodes will be displayed, without
+        changing the expanded/collapsed state of the child nodes.</dd>
 
         <dd class="tm">Before displaying the children of a row, the command
         specified as the value of the <code><b><a href=
@@ -12615,19 +12614,34 @@ proc printClickedCell {w x y} {
     <dd>
       <ol>
         <li class="tm">Pressing mouse button 1 over an expand/collapse control
-        toggles the expanded/collapsed state of the corresponding row.</li>
+        toggles the expanded/collapsed state of the corresponding row by
+        invoking the non-recursive version of the <code><b><a href=
+        "#expand">expand</a></b></code> or <code><b><a href=
+        "#collapse">collapse</a></b></code> subcommand (the one with the
+        <code><b>-partly</b></code> argument).&nbsp; Pressing mouse button 1
+        over an expand/collapse control with the <code>Control</code> key down
+        toggles the expanded/collapsed state of the corresponding row with the
+        aid of the <code><b>expand</b></code> or <code><b>collapse</b></code>
+        subcommand's recursive version (the one with the
+        <code><b>-fully</b></code> argument).</li>
 
         <li class="tm">If the current active row contains an expand/collapse
         control in collapsed state then the <code>Right</code>,
-        <code>plus</code>, and <code>KP_Add</code> keys expand the
-        corresponding row by invoking the non-recursive version of the
-        <code><b><a href="#expand">expand</a></b></code> subcommand.</li>
+        <code>plus</code>, and <code>KP_Add</code> keys expand that row by
+        invoking the non-recursive version of the <code><b>expand</b></code>
+        subcommand, while <code>Control-Right</code>,
+        <code>Control-plus</code>, and <code>Control-KP_Add</code> expand the
+        row with the aid of the <code><b>expand</b></code> subcommand's
+        recursive version.</li>
 
         <li class="tm">If the current active row contains an expand/collapse
         control in expanded state then the <code>Left</code>,
-        <code>minus</code>, and <code>KP_Subtract</code> keys collapse the
-        corresponding row by invoking the non-recursive version of the
-        <code><b><a href="#collapse">collapse</a></b></code> subcommand.</li>
+        <code>minus</code>, and <code>KP_Subtract</code> keys collapse that row
+        by invoking the non-recursive version of the
+        <code><b>collapse</b></code> subcommand, while
+        <code>Control-Left</code>, <code>Control-minus</code>, and
+        <code>Control-KP_Subtract</code> collapse the row with the aid of the
+        <code><b>collapse</b></code> subcommand's recursive version.</li>
       </ol>
     </dd>
 
