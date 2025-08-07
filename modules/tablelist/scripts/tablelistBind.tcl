@@ -899,6 +899,7 @@ proc tablelist::cleanupWindow aux {
 # Defines the bindings for the binding tag TablelistBody.
 #------------------------------------------------------------------------------
 proc tablelist::defineTablelistBody {} {
+    variable winSys
     variable priv
     array set priv {
 	x			""
@@ -1048,16 +1049,23 @@ proc tablelist::defineTablelistBody {} {
 	    continue		;# on a vertical separator, outside the body
 	}
 
-	if {[tablelist::wasExpCollCtrlClicked %W %x %y <Control-Button-1>]} {
-	    set tablelist::priv(clickedExpCollCtrl) 1
-	    tablelist::condFinishEditing $tablelist::W \
-		$tablelist::x $tablelist::y
-	} else {
-	    tablelist::beginToggle $tablelist::W \
-		[$tablelist::W nearest       $tablelist::y] \
-		[$tablelist::W nearestcolumn $tablelist::x]
-	}
+	tablelist::beginToggle $tablelist::W \
+	    [$tablelist::W nearest       $tablelist::y] \
+	    [$tablelist::W nearestcolumn $tablelist::x]
+	tablelist::condFinishEditing $tablelist::W $tablelist::x $tablelist::y
     }
+    set modifier [expr {$winSys eq "aqua" ? "Command" : "Alt"}]
+    bind TablelistBody <$modifier-Button-1> [format {
+	foreach {tablelist::W tablelist::x tablelist::y} \
+	    [tablelist::convEventFields %%W %%x %%y] {}
+	if {$tablelist::y < [winfo y [$tablelist::W bodypath]]} {
+	    continue		;# on a vertical separator, outside the body
+	}
+
+	if {[tablelist::wasExpCollCtrlClicked %%W %%x %%y <%s-Button-1>]} {
+	    set tablelist::priv(clickedExpCollCtrl) 1
+	}
+    } $modifier]
     bind TablelistBody <Button-2> {
 	tablelist::handleBtn2Event <Button-2> %W %x %y %X %Y
     }
@@ -1094,18 +1102,18 @@ proc tablelist::defineTablelistBody {} {
     bind TablelistBody <KP_Subtract> {
 	tablelist::plusMinus [tablelist::getTablelistPath %W] <minus>
     }
-    bind TablelistBody <Control-plus> {
-	tablelist::plusMinus [tablelist::getTablelistPath %W] <Control-plus>
-    }
-    bind TablelistBody <Control-KP_Add> {
-	tablelist::plusMinus [tablelist::getTablelistPath %W] <Control-plus>
-    }
-    bind TablelistBody <Control-minus> {
-	tablelist::plusMinus [tablelist::getTablelistPath %W] <Control-minus>
-    }
-    bind TablelistBody <Control-KP_Subtract> {
-	tablelist::plusMinus [tablelist::getTablelistPath %W] <Control-minus>
-    }
+    bind TablelistBody <$modifier-plus> [format {
+	tablelist::plusMinus [tablelist::getTablelistPath %%W] <%s-plus>
+    } $modifier]
+    bind TablelistBody <$modifier-KP_Add> [format {
+	tablelist::plusMinus [tablelist::getTablelistPath %%W] <%s-plus>
+    } $modifier]
+    bind TablelistBody <$modifier-minus> [format {
+	tablelist::plusMinus [tablelist::getTablelistPath %%W] <%s-minus>
+    } $modifier]
+    bind TablelistBody <$modifier-KP_Subtract> [format {
+	tablelist::plusMinus [tablelist::getTablelistPath %%W] <%s-minus>
+    } $modifier]
 
     foreach {virtual event} {
 	PrevLine <Up>		 NextLine <Down>
@@ -1136,12 +1144,13 @@ proc tablelist::defineTablelistBody {} {
     bind TablelistBody $eventArr(NextChar) {
 	tablelist::leftRight [tablelist::getTablelistPath %W] <Right>
     }
-    bind TablelistBody $eventArr(PrevWord) {
-	tablelist::leftRight [tablelist::getTablelistPath %W] <Control-Left>
-    }
-    bind TablelistBody $eventArr(NextWord) {
-	tablelist::leftRight [tablelist::getTablelistPath %W] <Control-Right>
-    }
+    set tag [expr {$winSys eq "aqua" ? "TablelistBody2" : "TablelistBody"}]
+    bind $tag <$modifier-Left> [format {
+	tablelist::leftRight [tablelist::getTablelistPath %%W] <%s-Left>
+    } $modifier]
+    bind $tag <$modifier-Right> [format {
+	tablelist::leftRight [tablelist::getTablelistPath %%W] <%s-Right>
+    } $modifier]
     bind TablelistBody <Prior> {
 	tablelist::priorNext [tablelist::getTablelistPath %W] -1
     }
@@ -1231,7 +1240,6 @@ proc tablelist::defineTablelistBody {} {
 	}
     }
 
-    variable winSys
     if {$::tk_version >= 8.7 &&
 	[package vcompare $::tk_patchLevel "8.7a4"] >= 0} {
 	bind TablelistBody <MouseWheel> {
@@ -1358,21 +1366,24 @@ proc tablelist::defineTablelistBody {} {
 	}
     }
 
-    foreach event {<Control-Prior> <Control-Next> <<Copy>>} {
+    foreach event {<Control-Left> <<PrevWord>> <Control-Right> <<NextWord>>
+		   <Control-Prior> <Control-Next> <<Copy>>} {
+	if {[set script [bind Listbox $event]] eq ""} {
+	    continue
+	}
+
 	set script [string map {
 	    "%W" "$tablelist::W"  "%x" "$tablelist::x"  "%y" "$tablelist::y"
-	} [bind Listbox $event]]
+	} $script]
 
-	if {$script ne ""} {
-	    ##nagelfar ignore
-	    bind TablelistBody $event [format {
-		if {[winfo exists %%W]} {
-		    foreach {tablelist::W tablelist::x tablelist::y} \
-			[tablelist::convEventFields %%W %%x %%y] {}
-		    %s
-		}
-	    } $script]
-	}
+	##nagelfar ignore
+	bind TablelistBody $event [format {
+	    if {[winfo exists %%W]} {
+		foreach {tablelist::W tablelist::x tablelist::y} \
+		    [tablelist::convEventFields %%W %%x %%y] {}
+		%s
+	    }
+	} $script]
     }
 }
 
@@ -2735,8 +2746,8 @@ proc tablelist::plusMinus {win event} {
 	#
 	# Toggle the state of the expand/collapse control
 	#
-	set how [expr {[string match "<Control-*>" $event] ?
-		       "-fully" : "-partly"}]
+	set how [expr {$event eq "<plus>" || $event eq "<minus>" ?
+		       "-partly" : "-fully"}]
 	if {[::$win cget -showbusycursor]} { ::$win setbusycursor }
 	::$win $op $row $how				;# can take long
 	::$win restorecursor
@@ -2859,29 +2870,24 @@ proc tablelist::leftRight {win event} {
 
     if {$op eq ""} {
 	set amount [expr {[string match "*Right>" $event] ? 1 : -1}]
+	switch $data(-selecttype) {
+	    row {
+		::$win xview scroll $amount units
+	    }
 
-	if {[string match "<Control-*>" $event]} {
-	    ::$win xview scroll $amount pages
-	} else {
-	    switch $data(-selecttype) {
-		row {
-		    ::$win xview scroll $amount units
+	    cell {
+		if {$data(editRow) >= 0} {
+		    return ""
 		}
 
-		cell {
-		    if {$data(editRow) >= 0} {
+		set col $data(activeCol)
+		while 1 {
+		    incr col $amount
+		    if {$col < 0 || $col > $data(lastCol)} {
 			return ""
-		    }
-
-		    set col $data(activeCol)
-		    while 1 {
-			incr col $amount
-			if {$col < 0 || $col > $data(lastCol)} {
-			    return ""
-			} elseif {!$data($col-hide)} {
-			    condChangeSelection $win $row $col
-			    return ""
-			}
+		    } elseif {!$data($col-hide)} {
+			condChangeSelection $win $row $col
+			return ""
 		    }
 		}
 	    }
@@ -2890,8 +2896,8 @@ proc tablelist::leftRight {win event} {
 	#
 	# Toggle the state of the expand/collapse control
 	#
-	set how [expr {[string match "<Control-*>" $event] ?
-		       "-fully" : "-partly"}]
+	set how [expr {$event eq "<Left>" || $event eq "<Right>" ?
+		       "-partly" : "-fully"}]
 	if {[::$win cget -showbusycursor]} { ::$win setbusycursor }
 	::$win $op $row $how				;# can take long
 	::$win restorecursor

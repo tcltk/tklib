@@ -1109,7 +1109,10 @@ proc tablelist::tablelist args {
     }
 
     #
-    # Create the body text widget within the main frame
+    # Create the body text widget within the main frame and replace the
+    # binding tag Text with $data(bodyTag), TablelistBody, and
+    # TablelistBody2 in the list of its binding tags.  TablelistBody2
+    # is needed on the Mac to work around some binding-related problems.
     #
     set w $data(body)
     text $w -borderwidth 0 -exportselection 0 -highlightthickness 0 \
@@ -1117,8 +1120,8 @@ proc tablelist::tablelist args {
     catch {$w configure -undo 0};  # because of a text widget issue in Tk 8.6.6
     bind $w <Configure> { tablelist::bodyConfigure %W %w %h }
     pack $w -expand 1 -fill both
-    bindtags $w [list $w $data(bodyTag) TablelistBody $data(topWin) \
-		 TablelistKeyNav all]
+    bindtags $w [list $w $data(bodyTag) TablelistBody TablelistBody2 \
+		 $data(topWin) TablelistKeyNav all]
 
     #
     # Create the "stripe", "select", "curRow", "active", "disabled", "redraw",

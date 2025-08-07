@@ -1,10 +1,10 @@
 What is new in Tablelist 7.7?
 -----------------------------
 
-1. Added bindings that invoke "expand|collapse ... -fully" for the
-   events <Control-Button-1> (over an expand/collapse control),
-   <Control-Right|plus|KP_Add>, and <Control-Left|minus|KP_Subtract>
-   (thanks to Torsten Berg for his proposal).
+1. Added mouse and keyboard event bindings that invoke the "expand" and
+   "collapse" subcommands with the "-fully" option.  See the updated
+   subsection "TREE WIDGET BINDINGS:" in the reference manual for
+   details (thanks to Torsten Berg for his proposal and testing).
 
 2. Added explicit support for the "droid" theme, which is the default in
    AndroWish.

@@ -8008,7 +8008,7 @@ proc handleTblDrop {tbl data} {
           rightmost columns visible in the tablelist window, i.e., of the
           numerical equivalents of the <a href="#col_indices">column
           indices</a> <code><b>left</b></code> and
-	  <code><b>right</b></code>.</td>
+          <code><b>right</b></code>.</td>
         </tr>
 
         <tr valign="top">
@@ -8019,7 +8019,7 @@ proc handleTblDrop {tbl data} {
           bottommost body items visible in the tablelist window, i.e., of
           the numerical equivalents of the <a href="#row_indices">row
           indices</a> <code><b>top</b></code> and
-	  <code><b>bottom</b></code>.</td>
+          <code><b>bottom</b></code>.</td>
         </tr>
       </table>
     </dd>
@@ -12619,29 +12619,33 @@ proc printClickedCell {w x y} {
         "#expand">expand</a></b></code> or <code><b><a href=
         "#collapse">collapse</a></b></code> subcommand (the one with the
         <code><b>-partly</b></code> argument).&nbsp; Pressing mouse button 1
-        over an expand/collapse control with the <code>Control</code> key down
+        over an expand/collapse control with the <code>Alt</code> key down
         toggles the expanded/collapsed state of the corresponding row with the
         aid of the <code><b>expand</b></code> or <code><b>collapse</b></code>
         subcommand's recursive version (the one with the
-        <code><b>-fully</b></code> argument).</li>
+        <code><b>-fully</b></code> argument).&nbsp; On Mac OS X/11+ Aqua the
+        <code>Command</code> key is used instead of <code>Alt</code>.</li>
 
         <li class="tm">If the current active row contains an expand/collapse
         control in collapsed state then the <code>Right</code>,
         <code>plus</code>, and <code>KP_Add</code> keys expand that row by
         invoking the non-recursive version of the <code><b>expand</b></code>
-        subcommand, while <code>Control-Right</code>,
-        <code>Control-plus</code>, and <code>Control-KP_Add</code> expand the
-        row with the aid of the <code><b>expand</b></code> subcommand's
-        recursive version.</li>
+        subcommand, while <code>Alt-Right</code>, <code>Alt-plus</code>, and
+        <code>Alt-KP_Add</code> (<code>Command-Right</code>,
+        <code>Command-plus</code>, and <code>Command-KP_Add</code> on Mac OS
+        X/11+ Aqua) expand the row with the aid of the
+        <code><b>expand</b></code> subcommand's recursive version.</li>
 
         <li class="tm">If the current active row contains an expand/collapse
         control in expanded state then the <code>Left</code>,
         <code>minus</code>, and <code>KP_Subtract</code> keys collapse that row
         by invoking the non-recursive version of the
-        <code><b>collapse</b></code> subcommand, while
-        <code>Control-Left</code>, <code>Control-minus</code>, and
-        <code>Control-KP_Subtract</code> collapse the row with the aid of the
-        <code><b>collapse</b></code> subcommand's recursive version.</li>
+        <code><b>collapse</b></code> subcommand, while <code>Alt-Left</code>,
+        <code>Alt-minus</code>, and <code>Alt-KP_Subtract</code>
+        (<code>Command-Left</code>, <code>Command-minus</code>, and
+        <code>Command-KP_Subtract</code> on Mac OS X/11+ Aqua) collapse the row
+        with the aid of the <code><b>collapse</b></code> subcommand's recursive
+        version.</li>
       </ol>
     </dd>
 
