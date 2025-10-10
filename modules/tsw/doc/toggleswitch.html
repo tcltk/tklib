@@ -4,7 +4,7 @@
   <title>The tsw::toggleswitch Command</title>
 
   <meta name="Author" content="Csaba Nemethi">
-  <meta name="Keywords" content="toggleswitch, checkbutton, widget">
+  <meta name="Keywords" content="toggleswitch, trough, slider, widget">
 
   <link rel="stylesheet" type="text/css" href="stylesheet.css">
 </head>
@@ -13,7 +13,7 @@
   <div>
     <h1>The <code><b>tsw::toggleswitch</b></code> Command</h1>
 
-    <h2>For Tsw Version 1.2</h2>
+    <h2>For Tsw Version 1.3</h2>
 
     <h3>by</h3>
 
@@ -65,7 +65,7 @@
 
     <dd>
       <pre>
-<b>-cursor</b>
+<b>-class  -cursor  -style</b>
 </pre>
     </dd>
 
@@ -121,9 +121,13 @@
 
     <dt class="tm"><a href="#bindings">DEFAULT BINDINGS</a></dt>
 
+    <dt class="tm"><a href="#states">WIDGET STATES</a></dt>
+
+    <dt class="tm"><a href="#styling_opts">STYLING OPTIONS</a></dt>
+
     <dt class="tm"><a href="#keywords">KEYWORDS</a></dt>
 
-    <dd>toggleswitch, widget</dd>
+    <dd>toggleswitch, trough, slider, widget</dd>
   </dl>
 
   <div>
@@ -152,8 +156,7 @@
     <dt id="description"><b>DESCRIPTION</b></dt>
 
     <dd>The <code><b>tsw::toggleswitch</b></code> command creates a new window
-    named <code><i>pathName</i></code> and of the class
-    <code><b>Toggleswitch</b></code>, and makes it into a <b>toggleswitch</b>
+    named <code><i>pathName</i></code> and makes it into a <b>toggleswitch</b>
     widget.&nbsp; Additional options, described below, may be specified on the
     command line or in the option database to configure aspects of the
     toggleswitch widget, such as its size and the Tcl script to execute
@@ -185,45 +188,37 @@
     the widget's switch state.&nbsp; By using the <code><b><a href=
     "#command">-command</a></b></code> configuration option, you can specify a
     script to execute whenever the widget's switch state gets toggled.&nbsp;
-    For compatibility with the (ttk::)checkbutton, toggleswitch widgets also
-    support the <code><b><a href="#offvalue">-offvalue</a></b></code>,
+    Just like the (ttk::)checkbutton, toggleswitch widgets also support the
+    <code><b><a href="#offvalue">-offvalue</a></b></code>,
     <code><b><a href="#onvalue">-onvalue</a></b></code>, and <code><b><a href=
     "#variable">-variable</a></b></code> options.</dd>
 
-    <dd class="tm">The colors used when drawing the trough and the slider in
-    the various widget states (such as <code><b>active</b></code>,
+    <dd class="tm">The colors used when drawing the trough and slider in the
+    various widget states (such as <code><b>active</b></code>,
     <code><b>background</b></code>, <code><b>disabled</b></code>,
     <code><b>pressed</b></code>, and <code><b>selected</b></code>) depend on
-    the current theme.&nbsp; The implementation contains procedures that create
-    these elements for the themes <code><b>aqua</b></code>,
-    <code><b>awarc</b></code>, <code><b>awbreeze</b></code>,
-    <code><b>awbreezedark</b></code>, <code><b>awdark</b></code>,
-    <code><b>awlight</b></code>, <code><b>clam</b></code>,
-    <code><b>default</b></code>, <code><b>droid</b></code> (which is the
-    default in AndroWish), <code><b>plastik</b></code> (which
-    <code><b>droid</b></code> is derived from), and
-    <code><b>vista</b></code>.&nbsp; The trough and slider specific to the
-    <code><b>vista</b></code> theme are also used for the themes
-    <code><b>winnative</b></code> and <code><b>xpnative</b></code>.&nbsp;
-    Likewise, the elements specific to the <code><b>default</b></code> theme
-    are also used for all the other themes not mentioned above (including the
-    third-party ones), except that in dark themes the colors of these elements
-    are adapted to the dark background.&nbsp; If the theme is
-    <code><b>aqua</b></code> then the colors also depend on the system
-    appearance (light mode or dark mode) and the accent color, and are
-    automatically adapted whenever one of these global system preferences
-    changes.</dd>
+    the current theme.&nbsp; The implementation creates these elements when
+    needed with the aid of generic procedures for arbitrary themes and
+    theme-specific ones for a few built-in themes.&nbsp; Applications can add
+    <i>explicit</i> support for any theme <code><i>theme</i></code> by
+    providing an appropriate command of the name
+    <code><b>tsw::createElements_</b><i>theme</i></code>.</dd>
 
     <dt class="tm" id="std_options"><b>STANDARD OPTIONS</b></dt>
 
     <dd>
       <pre>
-<b>-cursor</b>
+<b>-class  -cursor  -style</b>
 </pre>
     </dd>
 
-    <dd>See the <b>ttk_widget</b> manual entry for details on the above
-    standard option.&nbsp; Its default value is an empty string.</dd>
+    <dd>See the <b>ttk_widget</b> manual entry for details on the standard
+    options.&nbsp; The default value of the <code><b>-class</b></code> option
+    is <code><b>Toggleswitch</b></code> and that of <code><b>-cursor</b></code>
+    an empty string.&nbsp; The value of the <code><b>-style</b></code> option
+    defaults to <code><b>Toggleswitch2</b></code>, corresponding to the
+    <code><b><a href="#size">-size</a></b></code> option's default value
+    <code><b>2</b></code>.</dd>
 
     <dt class="tm" id="widget_options"><b>WIDGET-SPECIFIC OPTIONS</b></dt>
 
@@ -325,8 +320,10 @@
       <blockquote>
         <p>Specifies the size identifier of the toggleswitch widget.&nbsp; The
         supported values are the strings <code><b>1</b></code>,
-        <code><b>2</b></code>, and <code><b>3</b></code>.&nbsp; If the current
-        theme is <code><b>aqua</b></code> then the value <code><b>1</b></code>
+        <code><b>2</b></code> (the default), and <code><b>3</b></code>.&nbsp;
+        If the current theme is <code><b>aqua</b></code> then these size IDs
+        correspond to the control sizes "mini", "small", and "large" of the
+        native toggle switches on macOS.&nbsp; The value <code><b>1</b></code>
         stands for the trough size of 26 x 15 pixels, the value
         <code><b>2</b></code> for the trough size of 32 x 18 pixels, and the
         value <code><b>3</b></code> identifies the trough size of 38 x 22
@@ -338,8 +335,64 @@
         <code><b>vista</b></code>, <code><b>winnative</b></code>, and
         <code><b>xpnative</b></code> the unscaled trough width is 35, 44, and
         53 pixels, respectively (for compatibility with the native toggle
-        switch).&nbsp; The default is <code><b>2</b></code> (for all
-        themes).</p>
+        switch).</p>
+
+        <p>Note that by setting this option to a value
+        <code><i>size</i></code>, the <code><b><a href=
+        "#std_options">-style</a></b></code> option's value will automatically
+        change to <code><b>Toggleswitch</b><i>size</i></code> if its previous
+        or requested value was <code><b>Toggleswitch1</b></code>,
+        <code><b>Toggleswitch2</b></code>, or
+        <code><b>Toggleswitch3</b></code>, and to
+        <code><i>prefix</i>.<b>Toggleswitch</b><i>size</i></code> if its
+        previous or requested value was
+        <code><i>prefix</i>.<b>Toggleswitch1</b></code>,
+        <code><i>prefix</i>.<b>Toggleswitch2</b></code>, or
+        <code><i>prefix</i>.<b>Toggleswitch3</b></code>.&nbsp; Conversely, by
+        setting the <code><b>-style</b></code> option to a value of the form
+        <code><b>Toggleswitch</b><i>size</i></code> or
+        <code><i>prefix</i>.<b>Toggleswitch</b><i>size</i></code> (where
+        <code><i>size</i></code> is one of <code><b>1</b></code>,
+        <code><b>2</b></code>, or <code><b>3</b></code>), the
+        <code><b>-size</b></code> option will automatically be set to
+        <code><i>size</i></code>.&nbsp; When configuring both options
+        <code><b>-size</b></code> and <code><b>-style</b></code>, the former
+        will take precedence over the latter, regardless of the order in which
+        they were specified.</p>
+
+        <p>For example, if you create the widget with</p>
+
+        <blockquote>
+          <pre>
+tsw::toggleswitch <i>pathName</i> -size 3 -style My.Toggleswitch3
+</pre>
+        </blockquote>
+
+        <p>or invoke</p>
+
+        <blockquote>
+          <pre>
+<i>pathName</i> configure -style My.Toggleswitch3
+</pre>
+        </blockquote>
+
+        <p>then the <code><b>-style</b></code> option will be set to
+        <code>My.<b>Toggleswitch3</b></code> (and the <code><b>-size</b></code>
+        option will have the value <code><b>3</b></code>).&nbsp; On the other
+        hand, if you create the widget with</p>
+
+        <blockquote>
+          <pre>
+tsw::toggleswitch <i>pathName</i> -style My.Toggleswitch3
+</pre>
+        </blockquote>
+
+        <p>then the <code><b>-style</b></code> option will have the value
+        <code>My.<b>Toggleswitch2</b></code> rather than
+        <code>My.<b>Toggleswitch3</b></code>, because the widget creation
+        triggers the default&nbsp; <code><b>-size 2</b></code>&nbsp; setting,
+        which takes precedence over&nbsp; <code><b>-style</b>
+        My.<b>Toggleswitch3</b></code>.</p>
       </blockquote>
     </dd>
 
@@ -399,10 +452,10 @@
         "#onvalue">-onvalue</a></b></code> option and to off otherwise.&nbsp;
         Defaults to the widget's pathname if not specified.</p>
 
-	<p>Note that for compatibility with the (ttk::)checkbutton, toggling
-	the widget's switch state by changing the value of this variable will
-	<i>not</i> cause the script specified by the <code><b><a href=
-	"#command">-command</a></b></code> option to get executed.</p>
+        <p>Note that, just like in the case of the (ttk::)checkbutton, toggling
+        the widget's switch state by changing the value of this variable will
+        <i>not</i> cause the script specified by the <code><b><a href=
+        "#command">-command</a></b></code> option to get executed.</p>
       </blockquote>
     </dd>
 
@@ -497,20 +550,16 @@
         <b>style</b></code></dt>
 
         <dd>Returns the style used by the underlying ttk::scale widget.&nbsp;
-        This can be one of <code><b>Toggleswitch1</b></code>,
-        <code><b>Toggleswitch2</b></code>, or
-        <code><b>Toggleswitch3</b></code>, depending on the value of the
-        <code><b><a href="#size">-size</a></b></code> option.&nbsp; For Tk
-        themed widgets this subcommand was introduced in Tk 8.7a4, but the
-        toggleswitch widget provides it for all supported Tk versions.</dd>
+        For Tk themed widgets this subcommand was introduced in Tk 8.7a4, but
+        the toggleswitch widget provides it for all supported Tk versions.</dd>
 
         <dt class="tm" id="switchstate"><code><i>pathName</i>
         <b>switchstate</b> ?<i>boolean</i>?</code></dt>
 
         <dd>Modifies or inquires the widget's switch state.&nbsp; If the
         optional argument is present then it must be a boolean (a numeric
-        value, where 0 is false and anything else is true, or a string such as
-        <code><b>true</b>/<b>yes</b>/<b>on</b></code> or
+        value, where <code>0</code> is false and anything else is true, or a
+        string such as <code><b>true</b>/<b>yes</b>/<b>on</b></code> or
         <code><b>false</b>/<b>no</b>/<b>off</b></code>).&nbsp; If the widget's
         <code><b>disabled</b></code> state flag is set then the command returns
         an empty string immediately after checking the argument.&nbsp;
@@ -524,12 +573,16 @@
         <code><b>selected</b></code> flag, moving the slider to the beginning
         of the trough, and setting the associated variable to the value
         specified by the <code><b><a href="#offvalue">-offvalue</a></b></code>
-        option.&nbsp; If the argument's value causes the widget's switch state
+        option.</dd>
+
+        <dd class="tm">If the argument's value causes the widget's switch state
         to get toggled and the script specified as the value of the
         <code><b><a href="#command">-command</a></b></code> option is a
         nonempty string then the command evaluates that script at global scope
         and returns its result; otherwise the return value is an empty
-        string.&nbsp; If the optional argument is not present then the command
+        string.</dd>
+
+        <dd class="tm">If the optional argument is not present then the command
         returns the widget's current switch state as <code>0</code> (off) or
         <code>1</code> (on).&nbsp; When a toggleswitch widget is created, its
         switch state is initialized with <code>0</code>.</dd>
@@ -537,20 +590,11 @@
         <dt class="tm" id="toggle"><code><i>pathName</i>
         <b>toggle</b></code></dt>
 
-        <dd>
-          This convenience subcommand toggles the widget's switch state.&nbsp;
-          It is logically equivalent to:
-
-          <blockquote>
-            <pre>
-if {[<i>pathName</i> switchstate]} {
-    return [<i>pathName</i> switchstate 0]
-} else {
-    return [<i>pathName</i> switchstate 1]
-}
-</pre>
-          </blockquote>
-        </dd>
+        <dd>This convenience subcommand toggles the widget's switch
+        state.&nbsp; It is logically equivalent to invoking the
+        <code><b><a href="#switchstate">switchstate</a></b></code> command with
+        the argument <code>0</code> if the current switch state is on and with
+        the argument <code>1</code> otherwise.</dd>
 
         <dt class="tm" id="unsetattrib"><code><i>pathName</i>
         <b>unsetattrib</b> <i>name</i></code></dt>
@@ -593,9 +637,8 @@ if {[<i>pathName</i> switchstate]} {
         <li class="tm">By pressing mouse button 1 anywhere within the widget
         and then dragging the mouse with button 1 down, the slider moves in the
         same (horizontal) direction as the pointer.&nbsp; By releasing the
-        button, the switch state is set to <code>0</code> or <code>1</code>,
-        depending on the slider's position relative to the middle of the
-        widget.</li>
+        button, the switch state is set to off or on, depending on the slider's
+        position relative to the middle of the widget.</li>
 
         <li class="tm">By pressing mouse button 1 anywhere within the widget
         and then releasing it over the widget without previously dragging the
@@ -609,9 +652,62 @@ if {[<i>pathName</i> switchstate]} {
     <dd class="tm">If the widget's <code><b>disabled</b></code> state flag is
     set then none of the above actions occur.</dd>
 
+    <dt class="tm" id="states"><b>WIDGET STATES</b></dt>
+
+    <dd>The widget sets the <code><b>selected</b></code> state whenever the
+    switch state changes to on and clears it otherwise.&nbsp; The default
+    bindings set and clear the <code><b>active</b></code> and
+    <code><b>pressed</b></code> state flags.</dd>
+
+    <dt class="tm" id="styling_opts"><b>STYLING OPTIONS</b></dt>
+
+    <dd>The default class name for a <code><b>tsw::toggleswitch</b></code> is
+    <code><b>Toggleswitch</b></code>.</dd>
+
+    <dd class="tm">Dynamic states: <code><b>active</b></code>,
+    <code><b>background</b></code>, <code><b>disabled</b></code>,
+    <code><b>pressed</b></code>, <code><b>selected</b></code>.</dd>
+
+    <dd class="tm">
+      <code><b>Toggleswitch1</b></code>, <code><b>Toggleswitch2</b></code>, and
+      <code><b>Toggleswitch3</b></code> styling options configurable with
+      <code><b>ttk::style</b></code> are:
+
+      <blockquote>
+        <dt><code><b>-focuscolor</b> <i>color</i></code></dt>
+
+        <dd>The default is theme-specific.</dd>
+
+        <dt><code><b>-focussolid</b> <i>boolean</i></code></dt>
+
+        <dd>Defaults to true for the <code><b>classic</b></code> theme and
+        false for all the others.&nbsp; This option was introduced in Tk
+        8.6.15; in earlier Tk versions it has no effect.</dd>
+
+        <dt><code><b>-focusthickness</b> <i>amount</i></code></dt>
+
+        <dd>The default is <code>1</code>.&nbsp; The value may have any of the
+        forms acceptable to <code><b>Tk_GetPixels</b></code>.
+
+        <dt><code><b>-padding</b> <i>padding</i></code></dt>
+
+        <dd>Defaults to <code>1.5p</code> for the <code><b>aqua</b></code>
+        theme (for which the three above-mentioned styles have no
+        <code><b>focus</b></code> element) and <code>0.75p</code> for all the
+        other themes.</dd>
+      </blockquote>
+    </dd>
+
+    <dd class="tm">For the <code><b>aqua</b></code> theme only the
+    <code><b>-padding</b></code> option is available, the others are simply
+    ignored.</dd>
+
+    <dd class="tm">See the <b>ttk_style</b> manual page for information on how
+    to configure ttk styles.
+
     <dt class="tm" id="keywords"><b>KEYWORDS</b></dt>
 
-    <dd>toggleswitch, widget</dd>
+    <dd>toggleswitch, trough, slider, widget</dd>
   </dl> 
 
   <div> 

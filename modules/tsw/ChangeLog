@@ -1,3 +1,24 @@
+2025-10-10  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 1.3.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/*.tcl: Tsw now creates the trough and slider elements with
+	  the aid of generic procedures for arbitrary themes and theme-specific
+	  ones for a few built-in themes; applications can now add explicit
+	  support for any theme by providing an appropriate command of the name
+	  "tsw::createElements_$theme"; added support for the "-class" and
+	  "-style" configuration options.
+
+	* scripts/tclIndex: Newly generated.
+
+	* scripts/utils/mwutil.tcl:   Corrected a few comments.
+	* scripts/utils/pkgIndex.tcl:
+
 2025-08-11  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Tsw 1.2.

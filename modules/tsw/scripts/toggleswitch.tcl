@@ -33,11 +33,13 @@ namespace eval tsw {
     #
     variable configSpecs
     array set configSpecs {
+	-class			{""		""		f}
 	-command		{command	Command		w}
 	-cursor			{cursor		Cursor		f}
 	-offvalue		{offValue	OffValue	w}
 	-onvalue		{onValue	OnValue		w}
 	-size			{size		Size		w}
+	-style			{style		Style		w}
 	-takefocus		{takeFocus	TakeFocus	f}
 	-variable		{variable	Variable	w}
     }
@@ -45,11 +47,13 @@ namespace eval tsw {
     #
     # Extend the elements of the array configSpecs
     #
+    lappend configSpecs(-class)		"Toggleswitch"
     lappend configSpecs(-command)	""
     lappend configSpecs(-cursor)	""
     lappend configSpecs(-offvalue)	0
     lappend configSpecs(-onvalue)	1
     lappend configSpecs(-size)		2
+    lappend configSpecs(-style)		"Toggleswitch2"
     lappend configSpecs(-takefocus)	"ttk::takefocus"
     lappend configSpecs(-variable)	""
 
@@ -75,12 +79,11 @@ namespace eval tsw {
 	#
 	scaleutil::scalingPercentage [tk windowingsystem]
 	set scaled4 [scaleutil::scale 4 $::scaleutil::scalingPct]
-    } else {						;# Tk 8.7b1/9 or later
+    } else {						;# Tk 9 or later
 	set scaled4 [tk::ScaleNum 4]
     }
 
-    variable onAndroid [expr {[info exists ::tk::android] && $::tk::android}]
-
+    variable onAndroid	  [expr {[info exists ::tk::android] && $::tk::android}]
     variable madeElements 0
 }
 
@@ -145,16 +148,28 @@ proc tsw::toggleswitch args {
     variable configSpecs
     variable configOpts
 
-    if {[llength $args] == 0} {
+    set argCount [llength $args]
+    if {$argCount == 0 || $argCount % 2 == 0} {
 	mwutil::wrongNumArgs "tsw::toggleswitch pathName ?options?"
     }
 
     #
-    # Create a ttk::frame of the class Toggleswitch
+    # Get the value of the last "-class" option if present
+    #
+    set className "Toggleswitch"
+    for {set n [expr {$argCount - 2}]} {$n > 1} {incr n -2} {
+	if {[lindex $args $n] eq "-class"} {
+	    set className [lindex $args [expr {$n + 1}]]
+	    break
+	}
+    }
+
+    #
+    # Create a ttk::frame of the class $className
     #
     set win [lindex $args 0]
     if {[catch {
-	ttk::frame $win -class Toggleswitch -borderwidth 0 -relief flat \
+	ttk::frame $win -class $className -borderwidth 0 -relief flat \
 			-height 0 -width 0 -padding 0
     } result] != 0} {
 	return -code error $result
@@ -183,6 +198,7 @@ proc tsw::toggleswitch args {
     foreach opt $configOpts {
 	set data($opt) [lindex $configSpecs($opt) 3]
     }
+    set data(-class) $className
     set data(varTraceCmd) [list tsw::varTrace $win]
 
     #
@@ -215,6 +231,8 @@ proc tsw::toggleswitch args {
 	return -code error $result
     }
 
+    updateStyle $win
+
     #
     # Move the original widget command into the current namespace
     # and build a new widget procedure in the global one
@@ -245,6 +263,14 @@ proc tsw::doConfig {win opt val} {
     #
     switch [lindex $configSpecs($opt) 2] {
 	f {
+	    if {$opt eq "-class"} {
+		if {[lindex [info level -2] 0] eq "mwutil::configureSubCmd"} {
+		    return -code error "attempt to change read-only option"
+		} else {
+		    return ""
+		}
+	    }
+
 	    #
 	    # Apply the value to the frame and save the
 	    # properly formatted value of val in data($opt)
@@ -288,8 +314,11 @@ proc tsw::doConfig {win opt val} {
 
 		-size {
 		    set val [mwutil::fullOpt "size" $val {1 2 3}]
-		    $win.scl configure -style Toggleswitch$val
+		    set data($opt) $val
+		}
 
+		-style {
+		    $win.scl configure -style $val
 		    set data($opt) $val
 		}
 
@@ -299,6 +328,48 @@ proc tsw::doConfig {win opt val} {
 		}
 	    }
 	}
+    }
+}
+
+#------------------------------------------------------------------------------
+# tsw::updateStyle
+#
+# Sets the "-style" option to "(*.)Toggleswitch{1|2|3}", depending on the size,
+# if the option's previous value was of the same form.
+#------------------------------------------------------------------------------
+proc tsw::updateStyle win {
+    upvar ::tsw::ns${win}::data data
+    set size $data(-size);
+    set style $data(-style)
+    set idx [string last "." $style]
+    set styleTail [expr {$idx < 0 ?
+			 $style : [string range $style [incr idx] end]}]
+    if {$styleTail eq "Toggleswitch1" || $styleTail eq "Toggleswitch2" ||
+	$styleTail eq "Toggleswitch3"} {
+	set style [string replace $style end end $size]
+
+	$win.scl configure -style $style
+	set data(-style) $style
+    }
+}
+
+#------------------------------------------------------------------------------
+# tsw::updateSize
+#
+# Sets the "-size" option to "1|2|3" if the style is "(*.)Toggleswitch{1|2|3}".
+#------------------------------------------------------------------------------
+proc tsw::updateSize win {
+    upvar ::tsw::ns${win}::data data
+    set style $data(-style)
+    set idx [string last "." $style]
+    set styleTail [expr {$idx < 0 ?
+		   $style : [string range $style [incr idx] end]}]
+    if {$styleTail eq "Toggleswitch1"} {
+	set data(-size) 1
+    } elseif {$styleTail eq "Toggleswitch2"} {
+	set data(-size) 2
+    } elseif {$styleTail eq "Toggleswitch3"} {
+	set data(-size) 3
     }
 }
 
@@ -460,8 +531,25 @@ proc tsw::toggleswitchWidgetCmd {win args} {
 
 	configure {
 	    variable configSpecs
-	    return [mwutil::configureSubCmd $win configSpecs \
-		    tsw::doConfig tsw::doCget $argList]
+	    set result [mwutil::configureSubCmd $win configSpecs \
+			tsw::doConfig tsw::doCget $argList]
+
+	    if {[llength $argList] > 1} {
+		foreach {opt val} $argList {
+		    if {$opt eq "-size"} {
+			updateStyle $win
+			return $result
+		    }
+		}
+		foreach {opt val} $argList {
+		    if {$opt eq "-style"} {
+			updateSize $win
+			break
+		    }
+		}
+	    }
+
+	    return $result
 	}
 
 	hasattrib -

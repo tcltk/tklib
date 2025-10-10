@@ -16,7 +16,7 @@ namespace eval tsw {
     #
     # Public variables:
     #
-    variable version    1.2
+    variable version    1.3
     variable library    [file dirname [file normalize [info script]]]
 
     #
@@ -47,7 +47,7 @@ proc tsw::loadUtils {} {
     }
     package require mwutil 2.25[-]
 
-    if {[info exists ::tk::svgFmt]} {			;# Tk 8.7b1/9 or later
+    if {[info exists ::tk::svgFmt]} {			;# Tk 9 or later
 	return ""
     }
 

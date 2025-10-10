@@ -1,5 +1,5 @@
 #==============================================================================
-# mwutil package index file.
+# mwutil and scaleutil package index file.
 #
 # Copyright (c) 2025  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
