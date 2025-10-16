@@ -13,7 +13,7 @@
   <div>
     <h1>The <code><b>scrollutil::plainnotebook</b></code> Command</h1>
 
-    <h2>For Scrollutil Version 2.6</h2>
+    <h2>For Scrollutil Version 2.7</h2>
 
     <h3>by</h3>
 
@@ -63,7 +63,7 @@ package require scrollutil_tile
 
     <dd>
       <pre>
-<b>-cursor</b>
+<b>-class  -cursor  -style</b>
 </pre>
     </dd>
 
@@ -236,15 +236,15 @@ package require scrollutil_tile
     <dt class="tm" id="description"><b>DESCRIPTION</b></dt>
 
     <dd>The <code><b>scrollutil::plainnotebook</b></code> command creates a new
-    window named <code><i>pathName</i></code> and of the class
-    <code><b>Plainnotebook</b></code>, and makes it into a <b>plainnotebook</b>
-    widget.&nbsp; Additional options, described below, may be specified on the
-    command line or in the option database to configure aspects of the
-    plainnotebook widget such as its width, height, and side.&nbsp; The
-    <code><b>scrollutil::plainnotebook</b></code> command returns its
-    <code><i>pathName</i></code> argument.&nbsp; At the time this command is
-    invoked, there must not exist a window named <code><i>pathName</i></code>,
-    but <code><i>pathName</i></code>'s parent must exist.</dd>
+    window named <code><i>pathName</i></code> and makes it into a
+    <b>plainnotebook</b> widget.&nbsp; Additional options, described below, may
+    be specified on the command line or in the option database to configure
+    aspects of the plainnotebook widget such as its width, height, and
+    side.&nbsp; The <code><b>scrollutil::plainnotebook</b></code> command
+    returns its <code><i>pathName</i></code> argument.&nbsp; At the time this
+    command is invoked, there must not exist a window named
+    <code><i>pathName</i></code>, but <code><i>pathName</i></code>'s parent
+    must exist.</dd>
 
     <dd class="tm">A plainnotebook is a mega-widget that extends a
     ttk::notebook having an arbitrary number of pages with invisible tabs by a
@@ -304,12 +304,22 @@ package require scrollutil_tile
 
     <dd>
       <pre>
-<b>-cursor</b>
+<b>-class  -cursor  -style</b>
 </pre>
     </dd>
 
-    <dd>See the <b>ttk_widget</b> manual entry for details on the above
-    standard option.&nbsp; Its default value is an empty string.</dd>
+    <dd>See the <b>ttk_widget</b> manual entry for details on the standard
+    options.&nbsp; The default value of the <code><b>-class</b></code> option
+    is <code><b>Plainnotebook</b></code> and that of
+    <code><b>-cursor</b></code> an empty string.&nbsp; The
+    <code><b>-style</b></code> option, whose value defaults to
+    <code><b>Plain.TNotebook</b></code>, refers to the style of the
+    ttk::notebook widget contained in the plainnotebook.&nbsp; The "plain" look
+    of this ttk::notebook widget is achieved by setting the layout of the style
+    <code><b>Plain.TNotebook.Tab</b></code> to <code><b>null</b></code> and the
+    <code><b>-mintabwidth</b></code>, <code><b>-tabmargins</b></code>, and
+    <code><b>-padding</b></code> options of the style
+    <code><b>Plain.TNotebook</b></code> to <code>0</code>.</dd>
 
     <dt class="tm" id="widget_options"><b>WIDGET-SPECIFIC OPTIONS</b></dt>
 
@@ -906,10 +916,12 @@ package require scrollutil_tile
         <dt class="tm" id="style"><code><i>pathName</i>
         <b>style</b></code></dt>
 
-        <dd>Returns the style used by the widget:
-        <code>"Plainnotebook.TNotebook"</code>.&nbsp; For Tk themed widgets
-        this subcommand was introduced in Tk 8.7a4, but the plainnotebook
-        widget provides it for all supported Tk versions.</dd>
+        <dd>Returns the value of the <code><b><a href=
+        "#std_options">-style</a></b></code> configuration option (i.e., the
+        style used by the ttk::notebook widget contained in the
+        plainnotebook).&nbsp; For Tk themed widgets this subcommand was
+        introduced in Tk 8.7a4, but the plainnotebook widget provides it for
+        all supported Tk versions.</dd>
 
         <dt class="tm" id="tab"><code><i>pathName</i> <b>tab</b> <i>tabId</i>
         ?<i>option</i> ?<i>value</i> <i>option</i> <i>value</i>

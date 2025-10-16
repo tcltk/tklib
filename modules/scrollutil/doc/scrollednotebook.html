@@ -16,7 +16,7 @@
     <h1>The <code><b>scrollutil::scrollednotebook</b></code> Command<br>
     and the <code><b>closetab</b></code> Style Element</h1>
 
-    <h2>For Scrollutil Version 2.6</h2>
+    <h2>For Scrollutil Version 2.7</h2>
 
     <h3>by</h3>
 
@@ -83,7 +83,7 @@ package require scrollutil_tile
 
     <dd>
       <pre>
-<b>-cursor  -style</b>
+<b>-class  -cursor  -style</b>
 </pre>
     </dd>
 
@@ -232,8 +232,7 @@ package require scrollutil_tile
     <dt class="tm" id="description"><b>DESCRIPTION</b></dt>
 
     <dd>The <code><b>scrollutil::scrollednotebook</b></code> command creates a
-    new window named <code><i>pathName</i></code> and of the class
-    <code><b>Scrollednotebook</b></code>, and makes it into a
+    new window named <code><i>pathName</i></code> and makes it into a
     <b>scrollednotebook</b> widget.&nbsp; Additional options, described below,
     may be specified on the command line or in the option database to configure
     aspects of the scrollednotebook widget such as its width, height, and
@@ -270,30 +269,26 @@ package require scrollutil_tile
 
     <dd>
       <pre>
-<b>-cursor  -style</b>
+<b>-class  -cursor  -style</b>
 </pre>
     </dd>
 
     <dd>See the <b>ttk_widget</b> manual entry for details on the standard
-    options.&nbsp; The <code><b>-style</b></code> option refers to the style of
-    the ttk::notebook widget contained in the scrollednotebook.&nbsp; The value
-    of the <code><b>-tabposition</b></code> option of the style specified by
-    this Ttk widget option must be one of <code><b>nw</b></code> (the default),
+    options.&nbsp; The default value of the <code><b>-class</b></code> option
+    is <code><b>Scrollednotebook</b></code> and that of
+    <code><b>-cursor</b></code> an empty string.&nbsp; The
+    <code><b>-style</b></code> option, whose value defaults to
+    <code><b>TNotebook</b></code>, refers to the style of the ttk::notebook
+    widget contained in the scrollednotebook.&nbsp; The value of the
+    <code><b>-tabposition</b></code> option of the style specified by this
+    option must be one of <code><b>nw</b></code> (the default),
     <code><b>n</b></code> (the default for the <code><b>aqua</b></code> theme),
     <code><b>ne</b></code>, <code><b>sw</b></code>, <code><b>s</b></code>, or
     <code><b>se</b></code>.&nbsp; These values will result in a horizontal tab
     layout (the scrollednotebook widget doesn't support vertical tab
     layouts).</dd>
 
-    <dd class="tm">The default values of the standard options are:</dd>
-
-    <dd>
-      <pre>
-<b>-cursor</b> "" <b>-style TNotebook</b>
-</pre>
-    </dd>
-
-    <dt id="widget_options"><b>WIDGET-SPECIFIC OPTIONS</b></dt>
+    <dt class="tm" id="widget_options"><b>WIDGET-SPECIFIC OPTIONS</b></dt>
 
     <dd id="forgetcommand">
       <table border="0" cellpadding="0" cellspacing="0">
@@ -729,8 +724,10 @@ baltip::tip <i>nb</i> <i>message</i> -nbktab <i>tabWindow ...</i>
         <dt class="tm" id="style"><code><i>pathName</i>
         <b>style</b></code></dt>
 
-        <dd>Returns the style used by the ttk::notebook widget contained in the
-        scrollednotebook.&nbsp; For Tk themed widgets this subcommand was
+        <dd>Returns the value of the <code><b><a href=
+        "#std_options">-style</a></b></code> configuration option (i.e., the
+        style used by the ttk::notebook widget contained in the
+        scrollednotebook).&nbsp; For Tk themed widgets this subcommand was
         introduced in Tk 8.7a4, but the scrollednotebook widget provides it for
         all supported Tk versions.</dd>
 

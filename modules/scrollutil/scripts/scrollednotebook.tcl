@@ -33,6 +33,7 @@ namespace eval scrollutil::snb {
     #
     variable configSpecs
     array set configSpecs {
+	-class			{""		""		f}
 	-cursor			{cursor		Cursor		f}
 	-forgetcommand		{forgetCommand	ForgetCommand	w}
 	-height			{height		Height		n}
@@ -47,6 +48,7 @@ namespace eval scrollutil::snb {
     #
     # Extend the elements of the array configSpecs
     #
+    lappend configSpecs(-class)		"Scrollednotebook"
     lappend configSpecs(-cursor)	""
     lappend configSpecs(-forgetcommand)	""
     lappend configSpecs(-height)	0
@@ -241,16 +243,28 @@ proc scrollutil::scrollednotebook args {
     variable snb::configSpecs
     variable snb::configOpts
 
-    if {[llength $args] == 0} {
+    set argCount [llength $args]
+    if {$argCount == 0 || $argCount % 2 == 0} {
 	mwutil::wrongNumArgs "scrollednotebook pathName ?options?"
     }
 
     #
-    # Create a ttk::frame of the class Scrollednotebook
+    # Get the value of the last "-class" option if present
+    #
+    set className "Scrollednotebook"
+    for {set n [expr {$argCount - 2}]} {$n > 1} {incr n -2} {
+	if {[lindex $args $n] eq "-class"} {
+	    set className [lindex $args [expr {$n + 1}]]
+	    break
+	}
+    }
+
+    #
+    # Create a ttk::frame of the class $className
     #
     set win [lindex $args 0]
     if {[catch {
-	ttk::frame $win -class Scrollednotebook -borderwidth 0 -relief flat \
+	ttk::frame $win -class $className -borderwidth 0 -relief flat \
 			-height 0 -width 0 -padding 0
     } result] != 0} {
 	return -code error $result
@@ -286,6 +300,7 @@ proc scrollutil::scrollednotebook args {
     foreach opt $configOpts {
 	set data($opt) [lindex $configSpecs($opt) 3]
     }
+    set data(-class) $className
 
     #
     # Create a scrollableframe and a ttk::notebook in its content frame
@@ -524,6 +539,14 @@ proc scrollutil::snb::doConfig {win opt val} {
     #
     switch [lindex $configSpecs($opt) 2] {
 	f {
+	    if {$opt eq "-class"} {
+		if {[lindex [info level -2] 0] eq "mwutil::configureSubCmd"} {
+		    return -code error "attempt to change read-only option"
+		} else {
+		    return ""
+		}
+	    }
+
 	    #
 	    # Apply the value to the frame and save the
 	    # properly formatted value of val in data($opt)
@@ -897,10 +920,7 @@ proc scrollutil::snb::scrollednotebookWidgetCmd {win args} {
 		mwutil::wrongNumArgs "$win $cmd"
 	    }
 
-	    if {[set style [$nb cget -style]] eq ""} {
-		set style TNotebook
-	    }
-	    return $style
+	    return $data(-style);
 	}
 
 	tab {

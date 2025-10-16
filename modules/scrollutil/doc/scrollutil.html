@@ -14,7 +14,7 @@
   <div>
     <h1>Scrollutil Programmer's Guide</h1>
 
-    <h2>For Scrollutil Version 2.6</h2>
+    <h2>For Scrollutil Version 2.7</h2>
 
     <h3>by</h3>
 
@@ -334,8 +334,8 @@
     </address>
   </blockquote>
 
-  <p>The distribution file is <code>scrollutil2.6.tar.gz</code> for UNIX and
-  <code>scrollutil2_6.zip</code> for Windows.&nbsp; These files contain the
+  <p>The distribution file is <code>scrollutil2.7.tar.gz</code> for UNIX and
+  <code>scrollutil2_7.zip</code> for Windows.&nbsp; These files contain the
   same information, except for the additional carriage return character
   preceding the linefeed at the end of each line in the text files for
   Windows.</p>
@@ -357,30 +357,25 @@
 
   <p>To install Scrollutil <i>on UNIX</i>, <code>cd</code> to the desired
   directory and unpack the distribution file
-  <code>scrollutil2.6.tar.gz</code>:</p>
+  <code>scrollutil2.7.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c scrollutil2.6.tar.gz | tar -xf -
-</pre>
+gunzip -c scrollutil2.6.tar.gz | tar -xf - </pre>
   </blockquote>
 
   <p>On most UNIX systems this can be replaced with</p>
 
   <blockquote>
     <pre>
-tar -zxf scrollutil2.6.tar.gz
-</pre>
+tar -zxf scrollutil2.6.tar.gz </pre>
   </blockquote>
 
-  <p>Both commands will create a directory named <code>scrollutil2.6</code>,
-  with the subdirectories <code>demos</code>, <code>doc</code>, and
+  <p>Both commands will create a directory named <code>scrollutil2.6</code>, with the subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>scrollutil2_6.zip</code> into the directory
-  <code>scrollutil2.6</code>, with the subdirectories <code>demos</code>,
-  <code>doc</code>, and <code>scripts</code>.</p>
+  the distribution file <code>scrollutil2_6.zip</code> into the directory <code>scrollutil2.6</code>, with the subdirectories <code>demos</code>, <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>Notice that in tklib the Scrollutil <code>demos</code> directory is
   replaced with the subdirectory <code>scrollutil</code> of the
@@ -735,12 +730,11 @@ namespace eval ::scaleutil { set keepTkScaling 1 }
   but the procedure provides an automatic workaround for the Tk versions that
   are still affected by this bug.)</p>
 
-  <p>Note that in Tk versions earlier than 8.7b1/9, the Tk core checkbutton and
+  <p>Note that in Tk versions earlier than 9, the Tk core checkbutton and
   radiobutton widgets, as well as the indicators of the ttk::checkbutton and
   ttk::radiobutton widgets of the <code>alt</code> and <code>winnative</code>
-  themes are not scalable (they scale automatically in Tk 8.7b1/9 and
-  later).&nbsp; The same holds true for the ttk::sizegrip widget in the
-  built-in themes.</p>
+  themes are not scalable (they scale automatically in Tk 9 and later).&nbsp;
+  The same holds true for the ttk::sizegrip widget in the built-in themes.</p>
 
   <h3 id="ov_svgfmt">More on <code>scrollutil::svgfmt</code></h3>
 
@@ -750,7 +744,7 @@ namespace eval ::scaleutil { set keepTkScaling 1 }
   <i>real</i> scaling percentage in the variable
   <code>::scaleutil::scalingPct</code>.&nbsp; This value, which is restricted
   to multiples of <code>25</code>, can be greater than <code>200</code>,
-  especially when running Androwish on a tablet or smartphone.</p>
+  especially when running AndroWish on a tablet or smartphone.</p>
 
   <p>If the Tk version is either at least 8.7 (with built-in SVG support), or
   8.6 and the tksvg package can be loaded into the interpreter, then Scrollutil
@@ -1766,11 +1760,11 @@ set entryList [$me entries]
   <blockquote>
     <pre>
 <span class="cmt">#
-# Adapt the handling of the mouse wheel events for the text, listbox,
-# ttk::combobox, ttk::spinbox, tablelist, and ttk::treeview widgets, as
+# Adapt the handling of the mouse button 2 events for the text, listbox,
+# ttk::combobox, ttk::spinbox, ttk::entry, and tablelist widgets, as
 # well as for the entry components of the mentry widget of type "Date"
 #
-### scrollutil::adaptWheelEventHandling $txt $lb $cb $sb {*}$entryList $tbl $tv</span>
+### scrollutil::adaptBtn2EventHandling $txt $lb $cb $sb $e {*}$entryList $tbl
 <span class="red">$sf preparescan</span>
 </pre>
   </blockquote>
@@ -1838,6 +1832,37 @@ grid $_sa ...
   "wheelEvent.html#add">scrollutil::addMouseWheelSupport</a></code>
   command.</p>
 
+  <p>The somewhat uncommon look of the ttk::spinbox widget <code>$sb</code>
+  displaying the number of changes in a Tablelist release is due to the fact
+  that in the file <code>SuScrollableFrmContent.tcl</code> it is created with
+  the <code>-style</code> option set to <code>Wide.TSpinbox</code> rather than
+  <code>TSpinbox</code>:</p>
+
+  <blockquote>
+    <pre>
+catch {package require wsb}
+
+. . .
+
+set sb [ttk::spinbox $cf.sb -style Wide.TSpinbox -from 0 -to 20 \
+        -state readonly -width 4]
+</pre>
+  </blockquote>
+
+  <p>The small <b>w</b>ide <b>s</b>pin<b>b</b>ox package wsb comes bundled with
+  the Scrollutil distribution, and the attempt to load it via&nbsp;
+  <code>package require wsb</code>&nbsp; will be successful if the Tk version
+  is either at least 8.7 (with built-in SVG support), or 8.6 and the tksvg
+  extension can be loaded into the interpreter.&nbsp; If loaded, the wsb
+  package will automatically create the <code>Wide.TSpinbox</code>
+  layout.&nbsp; Otherwise the&nbsp; <code>-style Wide.TSpinbox</code>&nbsp;
+  setting for the ttk::spinbox widget will have no effect.</p>
+
+  <p>The main benefit of the <code>Wide.TSpinbox</code> layout over the
+  <code>TSpinbox</code> style is the user-friendly size and placement of its
+  scaling-aware up and down arrows, which comes in handy especially when
+  running AndroWish on a tablet or smartphone:</p>
+
   <p>The file <code>SuScrollableFrmContent.tcl</code> implements just a minimal
   interaction between five of the already mentioned widgets within the content
   frame:&nbsp; By selecting a Tablelist release from the ttk::combobox
@@ -1852,20 +1877,25 @@ grid $_sa ...
   the "Configure Tablelist Widget" button as the value of its
   <code>-command</code> option.&nbsp; This procedure opens a toplevel window
   that contains a <a href=
-  "scrollableframe.html">scrollutil::scrollableframe</a> widget created
-  with the&nbsp; <code><a href=
+  "scrollableframe.html">scrollutil::scrollableframe</a> widget created with
+  the&nbsp; <code><a href=
   "scrollableframe.html#fitcontentwidth">-fitcontentwidth</a> yes</code>&nbsp;
   setting within a <a href="scrollarea.html">scrollarea</a>.&nbsp; After that
   it populates the content frame of the scrollableframe with ttk::label,
   ttk::combobox, ttk::spinbox, ttk::entry, and ttk::checkbutton or
-  tsw::toggleswitch widgets used to display and edit the configuration options
-  of the tablelist widget.&nbsp; If the toggle switch widget package Tsw can be
-  loaded into the interpreter then we use toggleswitch widgets rather than
-  checkbuttons.&nbsp; The procedure handles the
-  <code>&lt;&lt;TraverseIn&gt;&gt;</code> virtual event sent to one of these
-  widgets with the aid of the scrollableframe's <code><a href=
-  "scrollableframe.html#see">see</a></code> subcommand.&nbsp; Whenever a
-  ttk::combobox or ttk::spinbox is created, the <code><a href=
+  toggleswitch widgets used to display and edit the configuration options of
+  the tablelist widget.&nbsp; If the ttk::toggleswitch widget is available (it
+  was added to the core in Tk 9.1a1) then we use this widget rather than
+  checkbuttons; else if the toggle switch widget package Tsw can be loaded into
+  the interpreter then we use tsw::toggleswitch widgets instead.&nbsp; The
+  ttk::spinbox widgets are created with the setting&nbsp; <code>-style
+  Wide.TSpinbox</code>.</p>
+
+  <p>The procedure handles the <code>&lt;&lt;TraverseIn&gt;&gt;</code> virtual
+  event sent to one of the widgets mentioned above with the aid of the
+  scrollableframe's <code><a href="scrollableframe.html#see">see</a></code>
+  subcommand.&nbsp; Whenever a ttk::combobox or ttk::spinbox is created, the
+  <code><a href=
   "wheelEvent.html#adapt">scrollutil::adaptWheelEventHandling</a></code>
   command is invoked for it, being that these widgets have built-in bindings
   for the mouse wheel and <code>&lt;TouchpadScroll&gt;</code> events.&nbsp;
@@ -1994,13 +2024,15 @@ scrollutil::enableScrollingByWheel $sf</span>
   by the already created mouse wheel and <code>&lt;TouchpadScroll&gt;</code>
   event bindings for the binding tag <code>"all"</code>.&nbsp; After that it
   populates the content frame of the ScrollableFrame with ttk::label,
-  ttk::combobox, ttk::spinbox, ttk::entry, and ttk::checkbutton or
-  tsw::toggleswitch widgets used to display and edit the configuration options
-  of the tablelist widget.&nbsp; The procedure handles the
-  <code>&lt;&lt;TraverseIn&gt;&gt;</code> virtual event sent to one of these
-  widgets with the aid of the ScrollableFrame's <code>see</code>
-  subcommand.&nbsp; Whenever a ttk::combobox or ttk::spinbox is created, the
-  <code><a href=
+  ttk::combobox, ttk::spinbox, ttk::entry, and ttk::checkbutton or toggleswitch
+  widgets used to display and edit the configuration options of the tablelist
+  widget.&nbsp; The ttk::spinbox widgets are created with the setting&nbsp;
+  <code>-style Wide.TSpinbox</code>.</p>
+
+  <p>The procedure handles the <code>&lt;&lt;TraverseIn&gt;&gt;</code> virtual
+  event sent to one of these widgets with the aid of the ScrollableFrame's
+  <code>see</code> subcommand.&nbsp; Whenever a ttk::combobox or ttk::spinbox
+  is created, the <code><a href=
   "wheelEvent.html#adapt">scrollutil::adaptWheelEventHandling</a></code>
   command is invoked for it, being that these widgets have built-in bindings
   for the mouse wheel and <code>&lt;TouchpadScroll&gt;</code> events.</p>
@@ -2081,9 +2113,11 @@ source [file join $dir ScrolledFrmContent.tcl]
   <code>&lt;TouchpadScroll&gt;</code> event bindings for the binding tag
   <code>"all"</code>.&nbsp; After that it populates the content frame of the
   scrolledframe with ttk::label, ttk::combobox, ttk::spinbox, ttk::entry, and
-  ttk::checkbutton or tsw::toggleswitch widgets used to display and edit the
-  configuration options of the tablelist widget.&nbsp; Whenever a
-  ttk::combobox or ttk::spinbox is created, the <code><a href=
+  ttk::checkbutton or toggleswitch widgets used to display and edit the
+  configuration options of the tablelist widget.&nbsp; The ttk::spinbox widgets
+  are created with the setting&nbsp; <code>-style Wide.TSpinbox</code>.</p>
+
+  <p>Whenever a ttk::combobox or ttk::spinbox is created, the <code><a href=
   "wheelEvent.html#adapt">scrollutil::adaptWheelEventHandling</a></code>
   command is invoked for it, being that these widgets have built-in bindings
   for the mouse wheel and <code>&lt;TouchpadScroll&gt;</code>
@@ -2262,7 +2296,7 @@ proc resizeNb nb {
   will be scaled automatically, according to the display's real scaling
   percentage, which can be greater than the maximum value <code>200</code> of
   the variable <code>scrollutil::scalingpct</code>.&nbsp; This benefit comes in
-  handy especially when running Androwish on a tablet or smartphone.&nbsp; In
+  handy especially when running AndroWish on a tablet or smartphone.&nbsp; In
   the second case a total number of 5 <code>file*.gif</code> (or
   <code>file*.png</code>) files are needed to make sure that the size of the
   image will correspond to the value of the variable

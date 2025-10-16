@@ -1014,8 +1014,8 @@ proc scrollutil::sa::onWidgetOfScrollareaMap widget {
     if {[::$win cget -xscrollbarmode] eq "dynamic"} {
 	if {$idx < 0} {
 	    set delay [expr {[wrapsTextWidget $win] ? 0 : 300}]
-	    after $delay [list bindtags $win.hsb \
-		[linsert $tagList 1 DynamicHScrollbar]]
+	    set tagList [linsert $tagList 1 DynamicHScrollbar]
+	    after $delay [list scrollutil::sa::setBindtags $win.hsb $tagList]
 	}
     } else {
 	bindtags $win.hsb [lreplace $tagList $idx $idx]
@@ -1318,4 +1318,13 @@ proc scrollutil::sa::wrapsTextWidget win {
 	}
 
 	return 0
+}
+
+#------------------------------------------------------------------------------
+# scrollutil::sa::setBindtags
+#------------------------------------------------------------------------------
+proc scrollutil::sa::setBindtags {w tagList} {
+    if {[winfo exists $w]} {
+	bindtags $w $tagList
+    }
 }

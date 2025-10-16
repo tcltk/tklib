@@ -714,6 +714,14 @@ proc scrollutil::adaptWheelEventHandling args {
 	set args [lrange $args 1 end]
     }
 
+    if {[info level] == 1} {
+	set autoProcessScrlbars 1
+    } else {
+	set callerProc [namespace which -command [lindex [info level -1] 0]]
+	set autoProcessScrlbars \
+	    [expr {$callerProc ne "::scrollutil::prepareScrollingByWheel"}]
+    }
+
     foreach w $args {
 	if {![winfo exists $w]} {
 	    return -code error "bad window path name \"$w\""
@@ -774,9 +782,7 @@ proc scrollutil::adaptWheelEventHandling args {
 	# If $w is embedded into a scrollarea then invoke this
 	# procedure for the scrollbars of that scrollarea, too
 	#
-	if {[set sa [getscrollarea $w]] ne "" && ([info level] == 1 ||
-	    [lindex [info level -1] 0] ne
-	    "scrollutil::prepareScrollingByWheel")} {
+	if {[set sa [getscrollarea $w]] ne "" && $autoProcessScrlbars} {
 	    if {$ignoreFocus} {
 		adaptWheelEventHandling -ignorefocus $sa.hsb $sa.vsb
 	    } else {
@@ -1061,13 +1067,15 @@ proc scrollutil::isCompatible {event w} {
 	[string match {<Shift-*>} $event]} {
 	return 1
     } else {
-	set tagList [bindtags $w]
-	set idx [lsearch -exact $tagList "WheeleventRedir"]
-	set tag [lindex $tagList [incr idx]]
-	if {$tag eq "Btn2EventRedir"} {
-	    set tag [lindex $tagList [incr idx]]
+	set wTop [winfo toplevel $w]
+	foreach tag [bindtags $w] {
+	    if {$tag ne "WheeleventRedir" && $tag ne $wTop && $tag ne "all" &&
+		[bind $tag $event] ne ""} {
+		return 1
+	    }
 	}
-	return [expr {[bind $tag $event] ne ""}]
+
+	return 0
     }
 }
 

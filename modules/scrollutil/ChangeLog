@@ -1,3 +1,41 @@
+2025-10-16  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 2.7.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/scrollarea.tcl: Guarded against premature destruction of a
+	  scrollarea widget.
+
+	* scripts/plainnotebook.tcl:    Added support for the "-class" 
+	* scripts/scrollednotebook.tcl: configuration option to the
+	  plainnotebook and scrollednotebook widgets; added support for the
+	  "-style" configuration option to the plainnotebook widget (already
+	  present for the scrollednotebook widget).
+
+	* scripts/wheelEvent.tcl: Improvements related to the handling of mouse
+	  wheel and <TouchpadScroll> events in scrollable widget containers.
+
+	* scripts/tclIndex: Newly generated.
+
+	* scripts/utils/pkgIndex.tcl: Added the new wide spinbox package wsb,
+	* scripts/utils/wsb.tcl:      which implements the Wide.TSpinbox layout
+	  having scaling-aware up and down arrows of user-friendly size and
+	  placement, which comes in handy especially when running AndroWish on
+	  a tablet or smartphone.
+
+	* doc/ScrollableFrmDemo2.png: Updated screenshots.
+	* doc/TablelistConfig.png:
+	* doc/TablelistConfig2.png:
+
+	* ../../examples/scrollutil/*FrmContent.tcl: The demo scripts
+	  "*FrmDemo2.tcl" now use ttk::toggleswitch rather than
+	  tsw::toggleswitch widgets if available, and also make use of the wsb
+	  package.
+
 2025-06-10  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Scrollutil 2.6.

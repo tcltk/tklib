@@ -1,5 +1,31 @@
-What is new in Scrollutil 2.6?
+What is new in Scrollutil 2.7?
 ------------------------------
+
+1. Added support for the "-class" configuration option to the
+   plainnotebook and scrollednotebook widgets.
+
+2. Added support for the "-style" configuration option to the
+   plainnotebook widget (already present for the scrollednotebook
+   widget).
+
+3. The Scrollutil distribution now includes the new wide spinbox package
+   wsb, which implements the Wide.TSpinbox layout having scaling-aware
+   up and down arrows of user-friendly size and placement, which comes
+   in handy especially when running AndroWish on a tablet or smartphone.
+
+4. Improvements related to the handling of mouse wheel and
+   <TouchpadScroll> events in scrollable widget containers.
+
+5. The demo scripts "BwScrollableFrmDemo2.tcl", "ScrolledFrmDemo2.tcl",
+   and "SuScrollableFrmDemo2.tcl" now use ttk::toggleswitch rather than
+   tsw::toggleswitch widgets if available, and also make use of the wsb
+   package.
+
+6. Guarded against premature destruction of a scrollarea widget (thanks
+   to Alexandru Dadalau for his bug report).
+
+What was new in Scrollutil 2.6?
+-------------------------------
 
 1. The scanning in scrollableframe widgets is now supported with mouse
    button 2 rather than 1.  On Android this adds scan support via one-
@@ -202,7 +228,7 @@ What was new in Scrollutil 1.18?
     images that will scale automatically according to the display's real
     scaling percentage, which can be greater than 200 (the maximum value
     returned by the procedure scaleutil::scalingPercentage).  This comes
-    in handy especially when running Androwish on a tablet or
+    in handy especially when running AndroWish on a tablet or
     smartphone.
 
 4.  The scaleutil package now scales more styling options of the
@@ -225,7 +251,7 @@ What was new in Scrollutil 1.18?
     loaded into the interpreter, then the "themepatch::patch" command
     now uses fully scaling-aware SVG images for drawing the indicators
     of the ttk::checkbutton and ttk::radiobutton widgets (again, this
-    will be a benefit especially for Androwish).
+    will be a benefit especially for AndroWish).
 
 9.  Corrected the definition of the "-height" option for the
     scrollednotebook widget to be in sync with that for ttk::notebook.

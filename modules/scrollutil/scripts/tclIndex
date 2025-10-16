@@ -141,6 +141,7 @@ set auto_index(::scrollutil::sa::unlockVScrollbar) [list source [file join $dir 
 set auto_index(::scrollutil::sa::obscureScrollbars) [list source [file join $dir scrollarea.tcl]]
 set auto_index(::scrollutil::sa::unobscureScrollbars) [list source [file join $dir scrollarea.tcl]]
 set auto_index(::scrollutil::sa::wrapsTextWidget) [list source [file join $dir scrollarea.tcl]]
+set auto_index(::scrollutil::sa::setBindtags) [list source [file join $dir scrollarea.tcl]]
 set auto_index(::scrollutil::snb::createClosetabElement) [list source [file join $dir scrollednotebook.tcl]]
 set auto_index(::scrollutil::snb::createBindings) [list source [file join $dir scrollednotebook.tcl]]
 set auto_index(::scrollutil::scrollednotebook) [list source [file join $dir scrollednotebook.tcl]]
