@@ -1,3 +1,34 @@
+2025-10-16 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 7.8.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/tablelistConfig.tcl: Added support for interactive cell
+	* scripts/tablelistEdit.tcl:   editing with the aid of the
+	  ttk::toggleswitch widget; improvements related to the interactive
+	  cell editing with the aid of the Tk core checkbutton and
+	  ttk::checkbutton widgets.
+
+	* scripts/tclIndex: Newly generated.
+
+	* scripts/utils/pkgIndex.tcl: Added the new wide spinbox package wsb,
+	* scripts/utils/wsb.tcl:      which implements the Wide.TSpinbox layout
+	  having scaling-aware up and down arrows of user-friendly size and
+	  placement, which comes in handy especially when running AndroWish on
+	  a tablet or smartphone.
+
+	* doc/toggleswitch.png:    Added screenshots.
+	* doc/ttk_checkbutton.png:
+	* doc/wideSpinbox.png:
+
+	* ../../examples/tablelist/tileWidgets2.tcl: Now uses the
+	  ttk::toggleswitch rather than tsw::toggleswitch widget if available,
+	  and also makes use of the wsb package.
+
 2025-08-11 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Tablelist 7.7.

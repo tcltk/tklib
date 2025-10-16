@@ -1,5 +1,24 @@
-What is new in Tablelist 7.7?
+What is new in Tablelist 7.8?
 -----------------------------
+
+1. Support for interactive cell editing with the aid of the
+   ttk::toggleswitch widget (which was added to the core in Tk 9.1a1).
+
+2. The Tablelist distribution now includes the new wide spinbox package
+   wsb, which implements the Wide.TSpinbox layout having scaling-aware
+   up and down arrows of user-friendly size and placement, which comes
+   in handy especially when running AndroWish on a tablet or smartphone.
+
+3. Improvements related to the interactive cell editing with the aid of
+   the Tk core checkbutton and ttk::checkbutton widgets.
+
+4. The demo script "tileWidgets2.tcl" now uses the ttk::toggleswitch
+   rather than tsw::toggleswitch widget if available, and also makes use
+   of the wsb package.  See the "Tile-Based Demo Scripts" section of
+   Tablelist Programmer's Guide for details.
+
+What was new in Tablelist 7.7?
+------------------------------
 
 1. Added mouse and keyboard event bindings that invoke the "expand" and
    "collapse" subcommands with the "-fully" option.  See the updated

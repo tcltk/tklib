@@ -88,8 +88,8 @@ How to Get It?
 --------------
 
 Tablelist is available for free download from the same URL as Wcb.  The
-distribution file is "tablelist7.7.tar.gz" for UNIX and
-"tablelist7_7.zip" for Windows.  These files contain the same
+distribution file is "tablelist7.8.tar.gz" for UNIX and
+"tablelist7_8.zip" for Windows.  These files contain the same
 information, except for the additional carriage return character
 preceding the linefeed at the end of each line in the text files for
 Windows.
@@ -106,19 +106,19 @@ by the "auto_path" variable.  For example, you can install it as a
 subdirectory of the "lib" directory within your Tcl/Tk installation.
 
 To install Tablelist on UNIX, "cd" to the desired directory and unpack
-the distribution file "tablelist7.7.tar.gz":
+the distribution file "tablelist7.8.tar.gz":
 
-    gunzip -c tablelist7.7.tar.gz | tar -xf -
+    gunzip -c tablelist7.8.tar.gz | tar -xf -
 
 On most UNIX systems this can be replaced with
 
-    tar -zxf tablelist7.7.tar.gz
+    tar -zxf tablelist7.8.tar.gz
 
-Both commands will create a directory named "tablelist7.7 with the
+Both commands will create a directory named "tablelist7.8 with the
 subdirectories "demos", "doc", and "scripts".
 
 On Windows, use WinZip or some other program capable of unpacking the
-distribution file "tablelist7_7.zip" into the directory "tablelist7.7",
+distribution file "tablelist7_8.zip" into the directory "tablelist7.8",
 with the subdirectories "demos", "doc", and "scripts".
 
 The file "tablelistEdit.tcl" in the "scripts" directory is only needed

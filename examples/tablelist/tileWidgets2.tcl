@@ -2,14 +2,26 @@
 
 #==============================================================================
 # Demonstrates the interactive tablelist cell editing with the aid of some Ttk
-# widgets and the toggleswitch widget.
+# widgets and the tsw::toggleswitch widget if ttk::toggleswitch is not yet
+# available.
 #
 # Copyright (c) 2005-2025  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tk
-package require tsw
 package require tablelist_tile
+catch {package require wsb}
+
+if {[llength [info commands ::ttk::toggleswitch]] == 1} {
+    set tglswEditWin ttk::toggleswitch
+} else {
+    #
+    # Register the tsw::toggleswitch widget for interactive cell editing
+    #
+    package require tsw
+    tablelist::addToggleswitch
+    set tglswEditWin toggleswitch
+}
 
 if {[tk windowingsystem] eq "x11" &&
     ($::tk_version < 8.7 || [package vcompare $::tk_patchLevel "8.7a5"] <= 0)} {
@@ -45,11 +57,6 @@ unset theme
 source [file join $dir images.tcl]
 
 #
-# Register the toggleswitch widget for interactive cell editing
-#
-tablelist::addToggleswitch
-
-#
 # Improve the window's appearance by using a tile
 # frame as a container for the other widgets
 #
@@ -80,9 +87,8 @@ if {[$tbl cget -selectborderwidth] == 0} {
     $tbl configure -spacing 1
 }
 $tbl columnconfigure 0 -sortmode integer
-$tbl columnconfigure 1 -name available -editable yes \
-    -editwindow toggleswitch -formatcommand emptyStr \
-    -labelwindow ttk::checkbutton
+$tbl columnconfigure 1 -name available -editable yes -editwindow $tglswEditWin \
+    -formatcommand emptyStr -labelwindow ttk::checkbutton
 $tbl columnconfigure 2 -name lineName  -editable yes -editwindow ttk::entry \
     -allowduplicates 0 -sortmode dictionary
 $tbl columnconfigure 3 -name baudRate  -editable yes -editwindow ttk::combobox \
@@ -150,7 +156,7 @@ proc editStartCmd {tbl row col text} {
 	    #
 	    # Configure the spinbox
 	    #
-	    $w configure -from 5 -to 8 -state readonly
+	    $w configure -style Wide.TSpinbox -from 5 -to 8 -state readonly
 	}
 
 	parity {

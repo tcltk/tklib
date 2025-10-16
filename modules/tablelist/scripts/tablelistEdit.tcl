@@ -129,15 +129,16 @@ namespace eval tablelist {
     addTkCoreWidgets
 
     #
-    # Register the tile widgets ttk::entry, ttk::spinbox, ttk::combobox,
-    # ttk::checkbutton, and ttk::menubutton for interactive cell editing
+    # Register the tile widgets ttk::entry, ttk::spinbox,
+    # ttk::combobox, ttk::checkbutton, ttk::menubutton,
+    # and ttk::toggleswitch for interactive cell editing
     #
     proc addTileWidgets {} {
 	variable editWin
 
 	set name ttk::entry
 	array set editWin [list \
-	    $name-creationCmd	"createTileEntry %W" \
+	    $name-creationCmd	"createTtkEntry %W" \
 	    $name-putValueCmd	"%W delete 0 end; %W insert 0 %T" \
 	    $name-getValueCmd	"%W get" \
 	    $name-putTextCmd	"%W delete 0 end; %W insert 0 %T" \
@@ -157,7 +158,7 @@ namespace eval tablelist {
 
 	set name ttk::spinbox
 	array set editWin [list \
-	    $name-creationCmd	"createTileSpinbox %W" \
+	    $name-creationCmd	"createTtkSpinbox %W" \
 	    $name-putValueCmd	"%W delete 0 end; %W insert 0 %T" \
 	    $name-getValueCmd	"%W get" \
 	    $name-putTextCmd	"%W delete 0 end; %W insert 0 %T" \
@@ -177,7 +178,7 @@ namespace eval tablelist {
 
 	set name ttk::combobox
 	array set editWin [list \
-	    $name-creationCmd	"createTileCombobox %W" \
+	    $name-creationCmd	"createTtkCombobox %W" \
 	    $name-putValueCmd	"%W set %T" \
 	    $name-getValueCmd	"%W get" \
 	    $name-putTextCmd	"%W set %T" \
@@ -197,7 +198,7 @@ namespace eval tablelist {
 
 	set name ttk::checkbutton
 	array set editWin [list \
-	    $name-creationCmd	"createTileCheckbutton %W" \
+	    $name-creationCmd	"createTtkCheckbutton %W" \
 	    $name-putValueCmd	{set [%W cget -variable] %T} \
 	    $name-getValueCmd	{set [%W cget -variable]} \
 	    $name-putTextCmd	{set [%W cget -variable] %T} \
@@ -217,7 +218,7 @@ namespace eval tablelist {
 
 	set name ttk::menubutton
 	array set editWin [list \
-	    $name-creationCmd	"createTileMenubutton %W" \
+	    $name-creationCmd	"createTtkMenubutton %W" \
 	    $name-putValueCmd	{set [%W cget -textvariable] %T} \
 	    $name-getValueCmd	"%W cget -text" \
 	    $name-putTextCmd	{set [%W cget -textvariable] %T} \
@@ -230,6 +231,26 @@ namespace eval tablelist {
 	    $name-useFormat	1 \
 	    $name-useReqWidth	0 \
 	    $name-usePadX	1 \
+	    $name-isEntryLike	0 \
+	    $name-focusWin	%W \
+	    $name-reservedKeys	{} \
+	]
+
+	set name ttk::toggleswitch
+	array set editWin [list \
+	    $name-creationCmd	"createTtkToggleswitch %W" \
+	    $name-putValueCmd	"%W switchstate %T" \
+	    $name-getValueCmd	"%W switchstate" \
+	    $name-putTextCmd	"%W switchstate %T" \
+	    $name-getTextCmd	"%W switchstate" \
+	    $name-putListCmd	"" \
+	    $name-getListCmd	"" \
+	    $name-selectCmd	"" \
+	    $name-invokeCmd	{%W instate !pressed {%W toggle}} \
+	    $name-fontOpt	"" \
+	    $name-useFormat	0 \
+	    $name-useReqWidth	1 \
+	    $name-usePadX	0 \
 	    $name-isEntryLike	0 \
 	    $name-focusWin	%W \
 	    $name-reservedKeys	{} \
@@ -1120,7 +1141,8 @@ proc tablelist::addToggleswitch {{name toggleswitch}} {
 #
 # Generates an error if the given edit window name is one of "entry", "text",
 # "spinbox", "checkbutton", "menubutton", "ttk::entry", "ttk::spinbox",
-# "ttk::combobox", "ttk::checkbutton", or "ttk::menubutton".
+# "ttk::combobox", "ttk::checkbutton", "ttk::menubutton", or
+# "ttk::toggleswitch".
 #------------------------------------------------------------------------------
 proc tablelist::checkEditWinName name {
     if {[regexp {^(entry|text|spinbox|checkbutton|menubutton)$} $name]} {
@@ -1128,8 +1150,8 @@ proc tablelist::checkEditWinName name {
 	       "edit window name \"$name\" is reserved for Tk $name widgets"
     }
 
-    if {[regexp {^(::)?ttk::(entry|spinbox|combobox|checkbutton|menubutton)$} \
-	 $name]} {
+    set names "entry|spinbox|combobox|checkbutton|menubutton|toggleswitch"
+    if {[regexp "^(::)?ttk::($names)$" $name]} {
 	return -code error \
 	       "edit window name \"$name\" is reserved for tile $name widgets"
     }
@@ -1143,6 +1165,19 @@ proc tablelist::checkEditWinName name {
 #------------------------------------------------------------------------------
 proc tablelist::createCheckbutton {w args} {
     makeCkbtn $w
+
+    #
+    # Make a thin margin around the checkbutton
+    #
+    if {[winfo manager $w] eq "pack"} {
+	pack configure $w -padx 1 -pady 1
+    } else {
+	set frm [winfo parent $w]
+	set width [winfo reqwidth $frm]
+	set height [winfo reqheight $frm]
+	$frm configure -width [incr width 2] -height [incr height 2]
+	$frm configure -padx 1 -pady 1
+    }
 
     foreach {opt val} $args {
 	switch -- $opt {
@@ -1241,12 +1276,12 @@ proc tablelist::postMenuCmd w {
 }
 
 #------------------------------------------------------------------------------
-# tablelist::createTileEntry
+# tablelist::createTtkEntry
 #
-# Creates a tile entry widget of the given path name for interactive cell
+# Creates a ttk::entry widget of the given path name for interactive cell
 # editing in a tablelist widget.
 #------------------------------------------------------------------------------
-proc tablelist::createTileEntry {w args} {
+proc tablelist::createTtkEntry {w args} {
     if {$::tk_version < 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
 	package require tile 0.6[-]
     }
@@ -1293,12 +1328,12 @@ proc tablelist::createTileEntry {w args} {
 }
 
 #------------------------------------------------------------------------------
-# tablelist::createTileSpinbox
+# tablelist::createTtkSpinbox
 #
-# Creates a tile spinbox widget of the given path name for interactive cell
+# Creates a ttk::spinbox widget of the given path name for interactive cell
 # editing in a tablelist widget.
 #------------------------------------------------------------------------------
-proc tablelist::createTileSpinbox {w args} {
+proc tablelist::createTtkSpinbox {w args} {
     if {$::tk_version < 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
 	package require tile 0.8.3[-]
     }
@@ -1352,12 +1387,12 @@ proc tablelist::createTileSpinbox {w args} {
 }
 
 #------------------------------------------------------------------------------
-# tablelist::createTileCombobox
+# tablelist::createTtkCombobox
 #
-# Creates a tile combobox widget of the given path name for interactive cell
+# Creates a ttk::combobox widget of the given path name for interactive cell
 # editing in a tablelist widget.
 #------------------------------------------------------------------------------
-proc tablelist::createTileCombobox {w args} {
+proc tablelist::createTtkCombobox {w args} {
     if {$::tk_version < 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
 	package require tile 0.6[-]
     }
@@ -1385,13 +1420,26 @@ proc tablelist::createTileCombobox {w args} {
 }
 
 #------------------------------------------------------------------------------
-# tablelist::createTileCheckbutton
+# tablelist::createTtkCheckbutton
 #
-# Creates a tile checkbutton widget of the given path name for interactive cell
+# Creates a ttk::checkbutton widget of the given path name for interactive cell
 # editing in a tablelist widget.
 #------------------------------------------------------------------------------
-proc tablelist::createTileCheckbutton {w args} {
+proc tablelist::createTtkCheckbutton {w args} {
     makeTtkCkbtn $w
+
+    #
+    # Make a thin margin around the ttk::checkbutton
+    #
+    if {[winfo manager $w] eq "pack"} {
+	pack configure $w -padx 1 -pady 1
+    } else {
+	set frm [winfo parent $w]
+	set width [winfo reqwidth $frm]
+	set height [winfo reqheight $frm]
+	$frm configure -width [incr width 2] -height [incr height 2]
+	$frm configure -padx 1 -pady 1
+    }
 
     foreach {opt val} $args {
 	switch -- $opt {
@@ -1405,12 +1453,12 @@ proc tablelist::createTileCheckbutton {w args} {
 }
 
 #------------------------------------------------------------------------------
-# tablelist::createTileMenubutton
+# tablelist::createTtkMenubutton
 #
-# Creates a tile menubutton widget of the given path name for interactive cell
+# Creates a ttk::menubutton widget of the given path name for interactive cell
 # editing in a tablelist widget.
 #------------------------------------------------------------------------------
-proc tablelist::createTileMenubutton {w args} {
+proc tablelist::createTtkMenubutton {w args} {
     if {$::tk_version < 8.5 || [regexp {^8\.5a[1-5]$} $::tk_patchLevel]} {
 	package require tile 0.6[-]
     }
@@ -1457,6 +1505,23 @@ proc tablelist::createTileMenubutton {w args} {
     }
 
     $w configure -menu $menu
+}
+
+#------------------------------------------------------------------------------
+# tablelist::createTtkToggleswitch
+#
+# Creates a ttk::toggleswitch widget of the given path name for interactive
+# cell editing in a tablelist widget.
+#------------------------------------------------------------------------------
+proc tablelist::createTtkToggleswitch {w args} {
+    ttk::toggleswitch $w -size 1
+
+    set frm [winfo parent $w]
+    set width [winfo reqwidth $w]
+    set height [winfo reqheight $w]
+    $frm configure -width $width -height $height
+
+    place $w -x 0
 }
 
 #------------------------------------------------------------------------------

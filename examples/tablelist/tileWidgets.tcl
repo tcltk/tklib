@@ -87,11 +87,12 @@ $tbl columnconfigure 2 -name lineName  -editable yes -editwindow ttk::entry \
     -allowduplicates 0 -sortmode dictionary
 $tbl columnconfigure 3 -name baudRate  -editable yes -editwindow ttk::combobox \
     -sortmode integer
-if {[info commands ttk::spinbox] eq ""} {
-    $tbl columnconfigure 4 -name dataBits -editable yes -editwindow spinbox
+if {[llength [info commands ::ttk::spinbox]] == 1} {
+    set editWin ttk::spinbox
 } else {
-    $tbl columnconfigure 4 -name dataBits -editable yes -editwindow ttk::spinbox
+    set editWin spinbox
 }
+$tbl columnconfigure 4 -name dataBits  -editable yes -editwindow $editWin
 $tbl columnconfigure 5 -name parity    -editable yes -editwindow ttk::combobox
 $tbl columnconfigure 6 -name stopBits  -editable yes -editwindow ttk::combobox
 $tbl columnconfigure 7 -name handshake -editable yes -editwindow ttk::combobox

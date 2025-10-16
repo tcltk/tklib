@@ -4354,8 +4354,8 @@ proc tablelist::getEditWindow {win row col {skipLeadingColons 1}} {
 	set name $data($col-editwindow)
     }
 
-    if {[regexp {^::ttk::(entry|spinbox|combobox|checkbutton|menubutton)$} \
-	 $name] && $skipLeadingColons} {
+    set names "entry|spinbox|combobox|checkbutton|menubutton|toggleswitch"
+    if {[regexp "^::ttk::($names)$" $name] && $skipLeadingColons} {
 	set name [string range $name 2 end]
     }
 
