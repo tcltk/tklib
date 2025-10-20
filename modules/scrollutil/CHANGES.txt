@@ -22,7 +22,7 @@ What is new in Scrollutil 2.7?
    package.
 
 6. Guarded against premature destruction of a scrollarea widget (thanks
-   to Alexandru Dadalau for his bug report).
+   to Alexandru Dadalau and Harald Oehlmann for their bug reports).
 
 What was new in Scrollutil 2.6?
 -------------------------------
