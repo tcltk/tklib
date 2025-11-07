@@ -545,6 +545,10 @@ snit::widgetadaptor widget::calendar {
 
     method numberofdays {month year} {
 	if {$month == 12} {set month 0; incr year}
+	if {$month > 11} {
+	    set month [expr {$month % 12}]
+	    incr year
+	}
 	clock format [clock scan "[incr month]/1/$year	1 day ago"] -format %d
     }
 
