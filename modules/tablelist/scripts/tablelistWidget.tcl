@@ -117,17 +117,19 @@ namespace eval tablelist {
 	}
     }
 
+    proc getScalingPct {} {
+	set pct [expr {[tk scaling] * 75}]
+	for {set intPct 100} {1} {incr intPct 25} {
+	    if {$pct < $intPct + 12.5} {
+		return $intPct
+	    }
+	}
+    }
+
     variable pngSupported [expr {
 	($::tk_version >= 8.6 &&
 	 [package vcompare $::tk_patchLevel "8.6b2"] >= 0) ||
 	($::tk_version >= 8.5 && [catch {package require img::png}] == 0)}]
-
-    variable svgSupported [expr {
-	$::tk_version >= 8.7 || [catch {package require tksvg}] == 0}]
-    if {$svgSupported} {
-	variable svgfmt \
-	    [list svg -scale [expr {$::scaleutil::scalingPct / 100.0}]]
-    }
 
     variable newAquaSupport [expr {
 	($::tk_version == 8.6 &&
@@ -135,9 +137,15 @@ namespace eval tablelist {
 	($::tk_version >= 8.7 &&
 	 [package vcompare $::tk_patchLevel "8.7a3"] >= 0)}]
 
-    variable disp [expr {$::tk_version >= 8.5 ? "display" : ""}]
+    variable svgSupported [expr {
+	$::tk_version >= 8.7 || [catch {package require tksvg}] == 0}]
+    if {$svgSupported} {
+	variable svgfmt [list svg -scale [expr {[getScalingPct] / 100.0}]]
+    }
 
-    variable scaled4 [::scaleutil::scale 4 $::scaleutil::scalingPct]
+    variable scaled4 [::scaleutil::scale 4 [getScalingPct]]
+
+    variable disp [expr {$::tk_version >= 8.5 ? "display" : ""}]
 
     #
     # The array configSpecs is used to handle configuration options.  The

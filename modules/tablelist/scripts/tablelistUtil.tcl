@@ -6095,7 +6095,7 @@ proc tablelist::configLabel {w args} {
 # Creates two arrows in the canvas w.
 #------------------------------------------------------------------------------
 proc tablelist::createArrows {w width height relief} {
-    set pct $::scaleutil::scalingPct
+    set pct [getScalingPct]
     set wWidth  [expr {$width  > 0 ? $width  : int(8 * $pct / 100.0)}]
     set wHeight [expr {$height > 0 ? $height : int(4 * $pct / 100.0)}]
 
@@ -7044,8 +7044,7 @@ proc tablelist::makeTtkCkbtn w {
 	    if {[string first "Checkbutton.indicator" $ckbtnLayout] >= 0} {
 		place $w -x 0
 	    } else {		;# see procedure scaleutil::patchWinTheme
-		variable scalingpct
-		place $w -x -[expr {2 * [scaleutil::scale 2 $scalingpct]}]
+		place $w -x -[expr {2 * [scaleutil::scale 2 [getScalingPct]]}]
 	    }
 	    return [list $height $height]
 	}

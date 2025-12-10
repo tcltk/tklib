@@ -24,10 +24,14 @@ namespace eval themepatch {
 	package require tile 0.8[-]
     }
 
+    if {![info exists ::tk::scalingPct]} {		;# not Tk 9 or later
+	package require scaleutil 1.10[-]
+    }
+
     #
     # Public variables:
     #
-    variable version	1.9
+    variable version	1.10
     variable library	[file dirname [file normalize [info script]]]
 
     #
@@ -35,16 +39,17 @@ namespace eval themepatch {
     #
     namespace export	patch unpatch ispatched
 
-    #
-    # Define the procedure ::themepatch::scale
-    #
-    if {[llength [info procs ::tk::ScaleNum]] > 0} {	;# Tk 9 or later
-	proc scale {num pct} {
-	    return [::tk::ScaleNum $num]
+    proc getScalingPct {} {
+	set pct [expr {[tk scaling] * 75}]
+	for {set intPct 100} {1} {incr intPct 25} {
+	    if {$pct < $intPct + 12.5} {
+		return $intPct
+	    }
 	}
-    } else {
-	package require scaleutil 1.10[-]
-	interp alias {} ::themepatch::scale {} ::scaleutil::scale
+    }
+
+    proc scale num {
+	return [expr {round($num * [getScalingPct] / 100.0)}]
     }
 }
 
@@ -71,8 +76,7 @@ proc themepatch::patch args {
 	set fmt gif
 
 	if {$::tk_version >= 8.7 || [catch {package require tksvg}] == 0} {
-	    set pct $::scaleutil::scalingPct			;# can be > 200
-	    set fmt [list svg -scale [expr {$pct / 100.0}]]
+	    set fmt [list svg -scale [expr {[getScalingPct] / 100.0}]]
 	}
     }
 
@@ -127,16 +131,6 @@ proc themepatch::patch args {
 # Unpatches some styles of the given themes.
 #------------------------------------------------------------------------------
 proc themepatch::unpatch args {
-    if {[info exists ::tk::scalingPct]} {		;# Tk 9 or later
-	set pct $::tk::scalingPct			;# can be > 200
-    } else {
-	set pct [::scaleutil::scalingPercentage [tk windowingsystem]] ;# <= 200
-
-	if {$::tk_version >= 8.7 || [catch {package require tksvg}] == 0} {
-	    set pct $::scaleutil::scalingPct			;# can be > 200
-	}
-    }
-
     set currentTheme [getCurrentTheme]
     foreach theme $args {
 	if {[lsearch -exact {alt clam default} $theme] < 0} {
@@ -145,7 +139,7 @@ proc themepatch::unpatch args {
 	}
 
 	ttk::style theme settings $theme {
-	    unpatch_$theme $pct
+	    unpatch_$theme
 	}
 
 	if {$theme eq $currentTheme} {
@@ -213,7 +207,7 @@ proc themepatch::patch_alt {pct fmt} {
 #
 # Unpatches the styles TCheckbutton and TRadiobutton of the alt theme.
 #------------------------------------------------------------------------------
-proc themepatch::unpatch_alt pct {
+proc themepatch::unpatch_alt {} {
     #
     # Restore the TCheckbutton and TRadiobutton layouts
     #
@@ -230,7 +224,7 @@ proc themepatch::patch_clam {pct fmt} {
     #
     # TButton and TMenubutton
     #
-    set pad [scale 3 $pct]
+    set pad [scale 3]
     foreach style {TButton TMenubutton} {
 	ttk::style configure $style -padding $pad -width -9  ;# default: 5, -11
     }
@@ -262,11 +256,11 @@ proc themepatch::patch_clam {pct fmt} {
 # Unpatches the styles TButton, TMenubutton, Heading, TCheckbutton, and
 # TRadiobutton of the clam theme.
 #------------------------------------------------------------------------------
-proc themepatch::unpatch_clam pct {
+proc themepatch::unpatch_clam {} {
     #
     # TButton and TMenubutton
     #
-    set pad [scale 5 $pct]
+    set pad [scale 5]
     foreach style {TButton TMenubutton} {
 	ttk::style configure $style -padding $pad -width -11
     }
@@ -274,7 +268,7 @@ proc themepatch::unpatch_clam pct {
     #
     # Treeview Heading and Tablelist
     #
-    set pad [scale 3 $pct]
+    set pad [scale 3]
     ttk::style configure Heading -padding $pad
     if {[info exists ::tablelist::version] &&
 	[package vcompare $::tablelist::version 6.18] < 0 &&
@@ -306,7 +300,7 @@ proc themepatch::patch_default {pct fmt} {
 #
 # Unpatches the styles TCheckbutton and TRadiobutton of the default theme.
 #------------------------------------------------------------------------------
-proc themepatch::unpatch_default pct {
+proc themepatch::unpatch_default {} {
     #
     # Restore the TCheckbutton and TRadiobutton layouts
     #
@@ -322,7 +316,7 @@ proc themepatch::patchLayouts {pct fmt theme} {
     #
     # Create the Checkbutton.image_ind and Radiobutton.image_ind elements
     #
-    set pad [scale 4 $pct]
+    set pad [scale 4]
     if {[lsearch -exact [ttk::style element names] "Checkbutton.image_ind"]
 	< 0} {
 	if {[llength $fmt] > 1} {

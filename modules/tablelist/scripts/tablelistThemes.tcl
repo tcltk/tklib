@@ -582,7 +582,7 @@ proc tablelist::blackTheme {} {
 	-labelactiveFg		#ffffff \
 	-labelpressedFg		#ffffff \
 	-labelborderwidth	2 \
-	-labelpady		[scaleutil::scale 3 $scalingpct] \
+	-labelpady		[scaleutil::scale 3 [getScalingPct]] \
 	-arrowcolor		#ffffff \
 	-arrowstyle		[defaultX11ArrowStyle] \
 	-treestyle		white$pct \
@@ -693,8 +693,7 @@ proc tablelist::clamTheme {} {
     if {[styleConfig Heading -padding] == 1} {	;# set by themepatch::patch
 	set labelPadY 1
     } else {
-	variable scalingpct
-	set labelPadY [scaleutil::scale 3 $scalingpct]
+	set labelPadY [scaleutil::scale 3 [getScalingPct]]
     }
 
     variable themeDefaults
@@ -1942,7 +1941,6 @@ proc tablelist::vistaTheme {} {
 	}
     }
 
-    variable scalingpct
     array set themeDefaults [list \
 	-selectbackground	$selectBg \
 	-selectforeground	$selectFg \
@@ -1952,7 +1950,7 @@ proc tablelist::vistaTheme {} {
 	-labelactiveBg		$activeBg \
 	-labelpressedBg		$pressedBg \
 	-labelborderwidth	$labelBd \
-	-labelpady		[scaleutil::scale $labelPadY $scalingpct] \
+	-labelpady		[scaleutil::scale $labelPadY [getScalingPct]] \
 	-arrowcolor		$arrowColor \
 	-arrowstyle		$arrowStyle \
 	-treestyle		$treeStyle \
@@ -2157,7 +2155,6 @@ proc tablelist::xpnativeTheme {} {
 	}
     }
 
-    variable scalingpct
     array set themeDefaults [list \
 	-selectbackground	$selectBg \
 	-selectforeground	$selectFg \
@@ -2167,7 +2164,7 @@ proc tablelist::xpnativeTheme {} {
 	-labelactiveBg		$activeBg \
 	-labelpressedBg		$pressedBg \
 	-labelborderwidth	$labelBd \
-	-labelpady		[scaleutil::scale $labelPadY $scalingpct] \
+	-labelpady		[scaleutil::scale $labelPadY [getScalingPct]] \
 	-arrowcolor		$arrowColor \
 	-arrowstyle		$arrowStyle \
 	-treestyle		$treeStyle \

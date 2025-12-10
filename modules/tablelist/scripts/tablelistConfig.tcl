@@ -642,7 +642,7 @@ proc tablelist::doConfig {win opt val} {
 			[mwutil::fullOpt "arrow style" $val $arrowStyles]
 		    regexp {^(flat|flatAngle|sunken|photo)([0-9]+)x([0-9]+)$} \
 			   $data($opt) dummy relief width height
-		    set pct $::scaleutil::scalingPct
+		    set pct [getScalingPct]
 		    set data(arrowWidth) [expr {
 			$width > 0 ? $width : int(8 * $pct / 100.0)}]
 		    set data(arrowHeight) [expr {

@@ -14,7 +14,7 @@
   <div>
     <h1>The <code><b>tablelist::tablelist</b></code> Command</h1>
 
-    <h2>For Tablelist Version 7.8</h2>
+    <h2>For Tablelist Version 7.9</h2>
 
     <h3>by</h3>
 
@@ -2021,15 +2021,14 @@ proc acceptDropCmd {tbl targetRow sourceRow} {
         no effect.</p>
 
         <p>The arrow style <code><b>photo0x0</b></code> uses SVG images that
-        will scale <i>automatically</i> according to the display's <i>real</i>
-        scaling percentage, which can be greater than <code>200</code> (the
-        maximum value of the variable
-        <code><b>tablelist::scalingpct</b></code>).&nbsp; This comes in handy
-        especially when running Androwish on a tablet or smartphone.&nbsp; This
-        arrow style is only supported if the Tk version is either at least 8.7
-        (with built-in SVG support), or 8.6 and the tksvg extension can be
-        loaded into the interpreter.&nbsp; The sort arrows of this arrow style
-        are quite similar to those of the styles <code><b>flat8x4</b></code>,
+        will scale <i>automatically</i> according to the display's DPI scaling
+        level and Tk's scaling factor given by&nbsp; <code><b>[tk
+        scaling]</b></code>.&nbsp; This comes in handy especially when running
+        Androwish on a tablet or smartphone.&nbsp; This arrow style is only
+        supported if the Tk version is either at least 8.7 (with built-in SVG
+        support), or 8.6 and the tksvg extension can be loaded into the
+        interpreter.&nbsp; The sort arrows of this arrow style are quite
+        similar to those of the styles <code><b>flat8x4</b></code>,
         <code><b>flat10x5</b></code>, <code><b>flat12x6</b></code>,
         <code><b>flat14x7</b></code>, and <code><b>flat16x8</b></code>, except
         that they are rendered using anti-aliasing and are unlimitedly
@@ -5078,11 +5077,10 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
         <code><b>bicolor*</b></code>, <code><b>white*</b></code>, and
         <code><b>classic*</b></code>, respectively, except that they use SVG
         images whose sizes are <i>automatically</i> adapted to the display's
-        <i>real</i> scaling percentage, which can be greater than
-        <code>200</code> (the maximum value of the variable
-        <code><b>tablelist::scalingpct</b></code>).&nbsp; These unlimitedly
-        scalable tree styles come in handy especially when running Androwish on
-        a tablet or smartphone.</p>
+        DPI scaling level and Tk's scaling factor given by&nbsp; <code><b>[tk
+        scaling]</b></code>.&nbsp; These unlimitedly scalable tree styles come
+        in handy especially when running Androwish on a tablet or
+        smartphone.</p>
 
         <p>The following table contains a detailed description of the tree
         styles, in alphabetical order:</p>

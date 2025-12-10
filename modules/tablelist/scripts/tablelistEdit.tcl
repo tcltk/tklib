@@ -3537,13 +3537,14 @@ proc tablelist::isComboTopMapped w {
 #------------------------------------------------------------------------------
 # tablelist::isMenuPosted
 #
-# Checks whether the given widget is a menubutton having its menu posted.  This
-# is needed in our binding scripts for mouse wheel events to make sure that
-# they won't generate an endless loop, because of the global grab set on the
-# menu when the latter is posted.
+# Checks whether the given widget is a (ttk::)menubutton having its menu
+# posted.  This is needed in our binding scripts for mouse wheel events to
+# make sure that they won't generate an endless loop, because of the global
+# grab set on the menu when the latter is posted.
 #------------------------------------------------------------------------------
 proc tablelist::isMenuPosted w {
-    if {[winfo class $w] eq "Menubutton" && [winfo ismapped [$w cget -menu]]} {
+    if {[string match "*Menubutton" [winfo class $w]] &&
+	[winfo ismapped [$w cget -menu]]} {
 	return 1
     } else {
 	return 0

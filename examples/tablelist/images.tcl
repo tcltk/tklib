@@ -43,7 +43,7 @@ set colorValues {
 foreach name $colorNames value $colorValues {
     set colors($name) $value
 }
-set dim  [expr {round(12 * $scaleutil::scalingPct / 100.0)}]
+set dim  [expr {round(12 * [tablelist::getScalingPct] / 100.0)}]
 set dim1 [expr {$dim - 1}]
 foreach value $colorValues {
     image create photo img$value -height $dim -width $dim

@@ -3884,7 +3884,7 @@ proc tablelist::setTreeLabelWidths {treeStyle depth} {
 	^(baghira|klearlooks|.+175)$			      { incr step  7 }
 	^.+200$						      { incr step  8 }
 	^(bicolor|classic|plain|white)$ {
-	    incr step [expr {$::scaleutil::scalingPct / 25}]
+	    incr step [expr {[getScalingPct] / 25}]
 	}
     }
     set width [expr {($depth - 1) * $step + $baseWidth}]

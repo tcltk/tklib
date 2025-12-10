@@ -14,7 +14,7 @@
   <div>
     <h1>Tablelist Programmer's Guide</h1>
 
-    <h2>For Tablelist Version 7.8</h2>
+    <h2>For Tablelist Version 7.9</h2>
 
     <h3>by</h3>
 
@@ -42,6 +42,9 @@
 
     <li><a href="#ov_scalingpct">More on
     <code>tablelist::scalingpct</code></a></li>
+
+    <li><a href="#ov_getScalingPct">The Procedure
+    <code>tablelist::getScalingPct</code></a></li>
 
     <li><a href="#ov_svgfmt">More on <code>tablelist::svgfmt</code></a></li>
 
@@ -179,8 +182,8 @@
   <h3 id="ov_get">How to Get It?</h3>
 
   <p>Tablelist is available for free download from the same URL as Wcb.&nbsp;
-  The distribution file is <code>tablelist7.8.tar.gz</code> for UNIX and
-  <code>tablelist7_8.zip</code> for Windows.&nbsp; These files contain the same
+  The distribution file is <code>tablelist7.9.tar.gz</code> for UNIX and
+  <code>tablelist7_9.zip</code> for Windows.&nbsp; These files contain the same
   information, except for the additional carriage return character preceding
   the linefeed at the end of each line in the text files for Windows.</p>
 
@@ -201,11 +204,11 @@
 
   <p>To install Tablelist <i>on UNIX</i>, <code>cd</code> to the desired
   directory and unpack the distribution file
-  <code>tablelist7.8.tar.gz</code>:</p>
+  <code>tablelist7.9.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c tablelist7.8.tar.gz | tar -xf -
+gunzip -c tablelist7.9.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
@@ -213,17 +216,17 @@ gunzip -c tablelist7.8.tar.gz | tar -xf -
 
   <blockquote>
     <pre>
-tar -zxf tablelist7.8.tar.gz
+tar -zxf tablelist7.9.tar.gz
 </pre>
   </blockquote>
 
-  <p>Both commands will create a directory named <code>tablelist7.8</code>,
+  <p>Both commands will create a directory named <code>tablelist7.9</code>,
   with the subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>tablelist7_8.zip</code> into the directory
-  <code>tablelist7.8</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>tablelist7_9.zip</code> into the directory
+  <code>tablelist7.9</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>The file <code>tablelistEdit.tcl</code> in the <code>scripts</code>
@@ -365,11 +368,11 @@ namespace import tablelist::<i>pattern</i> ?tablelist::<i>pattern ...</i>?
   bundled with Tablelist.&nbsp; The way this value is computed depends on the
   windowing system:</p>
 
-  <p><i>On Windows and Mac OS X/11+</i> the scaling percentage is computed
-  from&nbsp; <code>[tk scaling]</code>.&nbsp; Note that on Mac OS X/11+ the
-  result is always <code>100</code>, regardless of the display's scaling
-  level.&nbsp; On this system the desktop engine automatically scales
-  everything as needed.</p>
+  <p><i>On Windows and Mac OS X/11+</i> the scaling percentage is computed from
+  Tk's scaling factor given by&nbsp; <code>[tk scaling]</code>.&nbsp; Note that
+  on Mac OS X/11+ the result is always <code>100</code>, regardless of the
+  display's scaling level.&nbsp; On this system the desktop engine
+  automatically scales everything as needed.</p>
 
   <p><i>On X11</i>, computing the scaling percentage from&nbsp; <code>[tk
   scaling]</code>&nbsp; is done as fallback method only, because the
@@ -434,8 +437,9 @@ namespace import tablelist::<i>pattern</i> ?tablelist::<i>pattern ...</i>?
     <code>scale-monitor-framebuffer</code>, which adds (at least) 125 %, 150 %,
     and 175 % to the list of supported scaling percentages.&nbsp; With this
     feature enabled, the value returned by
-    <code>scaleutil::scalingPercentage</code> will be <code>100</code> for all
-    scaling levels, due to the fact that in this case, instead of window
+    <code>scaleutil::scalingPercentage</code> will be <code>100</code> for
+    older GNOME versions and <code>200</code> for newer ones, regardless of the
+    scaling level, due to the fact that in this case, instead of window
     contents, monitor framebuffers will be scaled in a logical pixel coordinate
     space.</li>
 
@@ -445,8 +449,11 @@ namespace import tablelist::<i>pattern</i> ?tablelist::<i>pattern ...</i>?
     depending on the display's scaling level.</li>
 
     <li class="tm"><i>KDE Plasma on Wayland</i> supports fractional scaling,
-    too.&nbsp; In this case, the value returned by the procedure will always be
-    <code>100</code>, regardless of the display's scaling level.</li>
+    too.&nbsp; In this case, for older KDE versions the value returned by the
+    procedure will always be <code>100</code>, regardless of the display's
+    scaling level, while for newer KDE versions it will be <code>100</code>,
+    <code>125</code>, <code>150</code>, <code>175</code>, or
+    <code>200</code>.</li>
   </ul>
 
   <p>On GNOME and Budgie, the display scaling can be set in the <i>Displays</i>
@@ -459,10 +466,10 @@ namespace import tablelist::<i>pattern</i> ?tablelist::<i>pattern ...</i>?
   <code>Xft.dpi</code> can also be manipulated by setting the text scaling
   factor via the <i>Font Selection</i> page of the <i>System Settings</i>
   dialog.&nbsp; Finally, on KDE Plasma the display scaling can be set in the
-  <i>Display Configuration</i> page of the <i>System Settings</i> dialog, but
-  the value of the font DPI, given by the X resource <code>Xft.dpi</code> can
-  also be set via the <i>Fonts</i> page of the <i>System Settings</i>
-  dialog.</p>
+  <i>Display Configuration</i> page of the <i>System Settings</i> dialog, and
+  on KDE Plasma on Xorg the value of the font DPI, given by the X resource
+  <code>Xft.dpi</code> can also be set via the <i>Fonts</i> page of the
+  <i>System Settings</i> dialog.</p>
 
   <p>Besides computing the scaling percentage, the procedure
   <code>scaleutil::scalingPercentage</code> performs a series of additional
@@ -580,23 +587,38 @@ namespace eval ::scaleutil { set keepTkScaling 1 }
   themes are not scalable (they scale automatically in Tk 9 and later).&nbsp;
   The same holds true for the ttk::sizegrip widget in the built-in themes.</p>
 
-  <h3 id="ov_svgfmt">More on <code>tablelist::svgfmt</code></h3>
+  <h3 id="ov_getScalingPct">The Procedure
+  <code>tablelist::getScalingPct</code></h3>
 
-  <p>Before returning one of the scaling percentage values <code>100</code>,
-  <code>125</code>, <code>150</code>, <code>175</code>, and <code>200</code>,
-  the procedure <code>scaleutil::scalingPercentage</code> saves the display's
-  <i>real</i> scaling percentage in the variable
-  <code>::scaleutil::scalingPct</code>.&nbsp; This value, which is restricted 
-  to multiples of <code>25</code>, can be greater than <code>200</code>, 
+  <p>The Tablelist package provides the helper procedure
+  <code>tablelist::getScalingPct</code>, which expects no arguments and
+  returns the application's scaling percentage, derived from Tk's
+  <i>current</i> scaling factor given by&nbsp; <code>[tk scaling]</code>.&nbsp;
+  The procedure's return value is restricted to multiples of <code>25</code>,
+  is at least <code>100</code>, and can be greater than <code>200</code>,
   especially when running AndroWish on a tablet or smartphone.</p>
+
+  <p>If the Tk version is 9 or later then the functionality of the
+  <code>scaleutil::scalingPercentage</code> procedure described in the previous
+  section is integrated in the core.&nbsp; As part of this functionality, Tk 9+
+  sets the variable <code>tk::scalingPct</code> <i>at initialization time</i>
+  to the scaling percentage corresponding to the display's DPI scaling level,
+  and the procedure <code>scaleutil::scalingPercentage</code> just returns the
+  minimum of this value and <code>200</code>.&nbsp; Tablelist makes use of the
+  <code>tablelist::getScalingPct</code> procedure to make sure that the sizes
+  of its GUI components will correspond to Tk's current scaling factor (which
+  might have been changed via&nbsp; <code>tk scaling</code>),&nbsp; and it is
+  recommended to do this in the application code, too.</p>
+
+  <h3 id="ov_svgfmt">More on <code>tablelist::svgfmt</code></h3>
 
   <p>If the Tk version is either at least 8.7 (with built-in SVG support), or
   8.6 and the tksvg package can be loaded into the interpreter, then Tablelist
-  additionally sets the variable <code>tablelist::svgfmt</code> to</p>
+  sets the variable <code>tablelist::svgfmt</code> to</p>
 
   <blockquote>
     <pre>
-[list svg -scale [expr {$::scaleutil::scalingPct / 100.0}]]
+[list svg -scale [expr {[tablelist::getScalingPct] / 100.0}]]
 </pre>
   </blockquote>
 
@@ -609,7 +631,7 @@ namespace eval ::scaleutil { set keepTkScaling 1 }
   <code><i>imageName</i> put</code>,&nbsp; and <code><i>imageName</i>
   read</code>&nbsp; as the value of their <code>-format</code> option when
   creating or manipulating SVG images, to make sure that their sizes will
-  correspond to the display's <i>real</i> scaling percentage.</p>
+  correspond to the application's current scaling percentage.</p>
 
   <h3 id="ov_tile">More on Tablelist_tile</h3>
 

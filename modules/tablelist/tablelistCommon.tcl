@@ -12,7 +12,7 @@ namespace eval tablelist {
     #
     # Public variables:
     #
-    variable version	7.8
+    variable version	7.9
     variable library	[file dirname [file normalize [info script]]]
 
     #
@@ -40,6 +40,11 @@ namespace eval tablelist {
     namespace export	addCtext addOakleyCombobox
     namespace export	addDateMentry addTimeMentry addDateTimeMentry \
 			addFixedPointMentry addIPAddrMentry addIPv6AddrMentry
+
+    #
+    # Returns the application's current scaling percentage
+    #
+    namespace export	getScalingPct
 }
 
 package provide tablelist::common $tablelist::version
@@ -107,6 +112,6 @@ proc tablelist::loadUtils {} {
     }
     package require scaleutil 1.15[-]
 
-    package require scaleutilmisc 1.7.1[-]
+    package require scaleutilmisc 1.8[-]
 }
 tablelist::loadUtils

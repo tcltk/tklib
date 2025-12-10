@@ -1,3 +1,37 @@
+2025-12-16 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 7.9.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/tablelistBind.tcl: The scrolling with the mouse wheel or
+	  touchpad is now disabled while the menu of a (ttk::)menubutton or the
+	  listbox component of a combobox used for interactive cell editing is
+	  posted.
+
+	* scripts/*.tcl:       Added the helper procedure
+	* scripts/utils/*.tcl: "tablelist::getScalingPct"; the sizes of the GUI
+	  components created by the packages Tablelist, themepatch, and wsb now
+	  depend also on Tk's scaling factor given by [tk scaling].
+
+	* scripts/tclIndex: Newly generated.
+
+	* scripts/utils/wsb.tcl: The wide spinbox package wsb now highlights
+	  the up and down arrows when they are in pressed state.
+
+	* doc/tablelist.html: Updated the details regarding the value of
+	  "tablelist::scalingpct" for GNOME on Wayland and KDE Plasma on
+	  Wayland, to reflect the changes made in recent versions of these
+	  desktops.
+
+	* doc/embeddedWindows_tile.png: Updated screenshot.
+
+	* ../../examples/images.tcl: Updated to use the new procedure
+	  "tablelist::getScalingPct".
+
 2025-10-22 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Tablelist 7.8.

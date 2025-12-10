@@ -1339,12 +1339,12 @@ proc tablelist::defineTablelistBody {} {
 	    }
 	    lassign [tk::PreciseScrollDeltas %D] tablelist::dX tablelist::dY
 	    if {$tablelist::dX != 0} {
-		event generate %W <Shift-MouseWheel> -rootx %X -rooty %Y \
-		    -delta [expr {40 * $tablelist::dX}]
+		tablelist::handleWheelEvent <Shift-MouseWheel> x %W \
+		    %X %Y [expr {40 * $tablelist::dX}] -40.0
 	    }
 	    if {$tablelist::dY != 0} {
-		event generate %W <MouseWheel> -rootx %X -rooty %Y \
-		    -delta [expr {40 * $tablelist::dY}]
+		tablelist::handleWheelEvent <MouseWheel> y %W \
+		    %X %Y [expr {40 * $tablelist::dY}] -40.0
 	    }
 	}
     }
@@ -3506,6 +3506,14 @@ proc tablelist::handleBtn2Event {event W x y X Y} {
 #------------------------------------------------------------------------------
 proc tablelist::handleWheelEvent {event axis W X Y delta divisor} {
     set win [getTablelistPath $W]
+    if {[string first $win. [grab current $win]] == 0} {
+	#
+	# The current grab window on the tablelist widget's
+	# display is a descendant of the tablelist.
+	#
+	return -code break ""
+    }
+
     set w [::$win cget -${axis}mousewheelwindow]
     set titleCols [::$win cget -titlecolumns]
 
