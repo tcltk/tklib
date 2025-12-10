@@ -47,8 +47,8 @@ Scrollutil is available for free download from the Web page
 
     https://www.nemethi.de
 
-The distribution file is "scrollutil2.7.tar.gz" for UNIX and
-"scrollutil2_7.zip" for Windows.  These files contain the same
+The distribution file is "scrollutil2.8.tar.gz" for UNIX and
+"scrollutil2_8.zip" for Windows.  These files contain the same
 information, except for the additional carriage return character
 preceding the linefeed at the end of each line in the text files for
 Windows.
@@ -65,20 +65,20 @@ by the "auto_path" variable.  For example, you can install it as a
 subdirectory of the "lib" directory within your Tcl/Tk installation.
 
 To install Scrollutil on UNIX, "cd" to the desired directory and unpack
-the distribution file "scrollutil2.7.tar.gz":
+the distribution file "scrollutil2.8.tar.gz":
 
-    gunzip -c scrollutil2.7.tar.gz | tar -xf -
+    gunzip -c scrollutil2.8.tar.gz | tar -xf -
 
 On most UNIX systems this can be replaced with
 
-    tar -zxf scrollutil2.7.tar.gz
+    tar -zxf scrollutil2.8.tar.gz
 
-Both commands will create a directory named "scrollutil2.7", with the
+Both commands will create a directory named "scrollutil2.8", with the
 subdirectories "demos", "doc", and "scripts".
 
 On Windows, use WinZip or some other program capable of unpacking the
-distribution file "scrollutil2_7.zip" into the directory
-"scrollutil2.7", with the subdirectories "demos", "doc", and "scripts".
+distribution file "scrollutil2_8.zip" into the directory
+"scrollutil2.8", with the subdirectories "demos", "doc", and "scripts".
 
 How to Use It?
 --------------

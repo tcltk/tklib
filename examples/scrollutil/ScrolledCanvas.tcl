@@ -15,7 +15,7 @@ source [file join $dir styleUtil.tcl]
 
 wm title . "Scrolled Canvas"
 
-set scaleFactor [expr {$scaleutil::scalingPct / 100.0}]
+set scaleFactor [expr {[scrollutil::getScalingPct] / 100.0}]
 set width  [expr {13 * 32 * $scaleFactor}]
 set height [expr {10 * 32 * $scaleFactor}]
 set scrlIncr [expr {16 * $scaleFactor}]

@@ -12,7 +12,7 @@ namespace eval scrollutil {
     #
     # Public variables:
     #
-    variable version	2.7
+    variable version	2.8
     variable library	[file dirname [file normalize [info script]]]
 
     #
@@ -33,6 +33,11 @@ namespace eval scrollutil {
 			enableScrollingByWheel disableScrollingByWheel \
 			adaptWheelEventHandling setFocusCheckWindow \
 			focusCheckWindow
+
+    #
+    # Returns the application's current scaling percentage
+    #
+    namespace export	getScalingPct
 }
 
 package provide scrollutil::common $scrollutil::version

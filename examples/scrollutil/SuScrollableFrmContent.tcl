@@ -463,9 +463,10 @@ proc configTablelist tbl {
 		grid $w -row $row -column 1 -sticky we -padx 3p -pady {3p 0}
 
 		#
-		# Adapt the handling of the mouse button
-		# 2 events for the ttk::entry widget
+		# Adapt the handling of the mouse wheel and mouse
+		# button 2 events for the ttk::entry widget
 		#
+		scrollutil::adaptWheelEventHandling $w
 		scrollutil::adaptBtn2EventHandling $w
 	    }
 	}

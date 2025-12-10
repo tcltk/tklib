@@ -478,6 +478,12 @@ proc configTablelist tbl {
 		    bind $w $event [list applyValue %W $tbl $opt]
 		}
 		grid $w -row $row -column 1 -sticky we -padx 3p -pady {3p 0}
+
+		#
+		# Adapt the handling of the mouse wheel
+		# events for the ttk::entry widget
+		#
+		scrollutil::adaptWheelEventHandling $w
 	    }
 	}
 

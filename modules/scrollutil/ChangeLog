@@ -1,3 +1,44 @@
+2025-12-16  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 2.8.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/scrollableframe.tcl: Fixed a long-standing bug related to
+	  scanning with mouse button 2 in a scrollableframe widget.
+
+	* scripts/scrollarea.tcl: Adapted the handling of the <Leave> event
+	  for the scrollarea widget to the changes made in Tk 8.6.15 and 9.0.0
+	  related to this event and the detail field "NotifyInferior".
+
+	* scripts/wheelEvent.tcl: Scrollutil now automatically creates mouse
+	  wheel and <TouchpadScroll> event bindings for the widget classes
+	  Entry and TEntry if the Tk version is earlier than 9.1a1.
+
+	* scripts/*.tcl:       Added the helper procedure
+	* scripts/utils/*.tcl: "scrollutil::getScalingPct"; the sizes of the
+	  GUI components created by the packages Scrollutil, themepatch, and
+	  wsb now depend also on Tk's scaling factor given by [tk scaling].
+
+	* scripts/tclIndex: Newly generated.
+
+	* scripts/utils/wsb.tcl: The wide spinbox package wsb now highlights
+	  the up and down arrows when they are in pressed state.
+
+	* doc/scrollutil.html: Updated the details regarding the value of
+	  "scrollutil::scalingpct" for GNOME on Wayland and KDE Plasma on
+	  Wayland, to reflect the changes made in recent versions of these
+	  desktops.
+
+	* doc/ScrollableFrmDemo2.png: Updated screenshot.
+
+	* ../../examples/scrollutil/*.tcl: Adapted the demo scripts
+	  "*FrmDemo2.tcl" and "ScrolledCanvas.tcl" to the changes introduced
+	  in this Scrollutil version.
+
 2025-10-22  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Scrollutil 2.7.

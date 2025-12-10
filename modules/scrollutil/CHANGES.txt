@@ -1,5 +1,40 @@
-What is new in Scrollutil 2.7?
+What is new in Scrollutil 2.8?
 ------------------------------
+
+1. Scrollutil now automatically creates mouse wheel and <TouchpadScroll>
+   event bindings for the widget classes Entry and TEntry if Tk doesn't
+   yet have them, i.e., if the Tk version is earlier than 9.1a1.
+
+2. The wide spinbox package wsb now highlights the up and down arrows
+   when they are in pressed state.
+
+3. Added the helper procedure "scrollutil::getScalingPct", which returns
+   the application's scaling percentage, derived from Tk's current
+   scaling factor given by [tk scaling].  See the new section "The
+   Procedure tablelist::getScalingPct" in Scrollutil Programmer's Guide
+   for details).
+
+4. The sizes of the GUI components created by the packages Scrollutil,
+   themepatch, and wsb now depend not only on the display's scaling
+   level, but also on Tk's scaling factor given by [tk scaling] (thanks
+   to Harald Oehlmann for discussions on this subject).
+
+5. Updated the details regarding the value of "scrollutil::scalingpct"
+   for GNOME on Wayland and KDE Plasma on Wayland in Scrollutil
+   Programmer's Guide, to reflect the changes made in recent versions of
+   these desktops.
+
+6. Adapted the handling of the <Leave> event for the scrollarea widget
+   to the changes made in Tk 8.6.15 and 9.0.0 related to this event and
+   the detail field "NotifyInferior" (thanks to Alexandru Dadalau for
+   his bug report).
+
+7. Fixed a long-standing bug related to scanning with mouse button 2 in
+   a scrollableframe widget (again, thanks to Alexandru Dadalau for his
+   bug report).
+
+What was new in Scrollutil 2.7?
+-------------------------------
 
 1. Added support for the "-class" configuration option to the
    plainnotebook and scrollednotebook widgets.

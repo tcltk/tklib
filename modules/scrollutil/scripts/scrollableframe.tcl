@@ -1358,12 +1358,13 @@ proc scrollutil::sf::onScrollableframeCfConfigure {cf cfWidth cfHeight} {
 # scrollutil::sf::onButton2
 #------------------------------------------------------------------------------
 proc scrollutil::sf::onButton2 {w rootX rootY} {
+    variable btn2Win [winfo containing -displayof $w $rootX $rootY]
+
     if {[hasBtn2Bindings $w]} {
 	return ""
     }
 
     variable sfList
-    variable btn2Win [winfo containing -displayof $w $rootX $rootY]
     foreach win $sfList {
 	if {[mayScan $win $btn2Win]} {
 	    set x [expr {$rootX - [winfo x $win]}]

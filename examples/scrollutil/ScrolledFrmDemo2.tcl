@@ -64,9 +64,11 @@ scrollutil::createWheelEventBindings all
 scrollutil::enableScrollingByWheel $sf
 
 #
-# Adapt the handling of the mouse wheel events for the text, listbox,
-# ttk::combobox, ttk::spinbox, tablelist, and ttk::treeview widgets, as
-# well as for the entry components of the mentry widget of type "Date"
+# Adapt the handling of the mouse wheel events for the
+# text, listbox, ttk::combobox, ttk::spinbox, ttk::entry,
+# tablelist, and ttk::treeview widgets, as well as for
+# the entry components of the mentry widget of type "Date"
 #
-### scrollutil::adaptWheelEventHandling $txt $lb $cb $sb {*}$entryList $tbl $tv
+### scrollutil::adaptWheelEventHandling $txt $lb $cb $sb $e {*}$entryList \
+    $tbl $tv
 scrollutil::prepareScrollingByWheel $sf

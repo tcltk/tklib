@@ -56,6 +56,15 @@ namespace eval scrollutil {
 	}
     }
 
+    proc getScalingPct {} {
+	set pct [expr {[tk scaling] * 75}]
+	for {set intPct 100} {1} {incr intPct 25} {
+	    if {$pct < $intPct + 12.5} {
+		return $intPct
+	    }
+	}
+    }
+
     variable newAquaSupport [expr {
 	($::tk_version == 8.6 &&
 	 [package vcompare $::tk_patchLevel "8.6.10"] >= 0) ||
@@ -64,10 +73,8 @@ namespace eval scrollutil {
 
     variable svgSupported \
 	[expr {$::tk_version >= 8.7 || [catch {package require tksvg}] == 0}]
-
     if {$svgSupported} {
-	variable svgfmt \
-	    [list svg -scale [expr {$::scaleutil::scalingPct / 100.0}]]
+	variable svgfmt [list svg -scale [expr {[getScalingPct] / 100.0}]]
     }
 }
 
@@ -183,7 +190,7 @@ proc scrollutil::sa::createBindings {} {
 	scrollutil::sa::onScrollareaConfigure %W %w %h
     }
     bind Scrollarea <Enter>	{ scrollutil::sa::onScrollareaEnter %W }
-    bind Scrollarea <Leave>	{ scrollutil::sa::onScrollareaLeave %W }
+    bind Scrollarea <Leave>	{ scrollutil::sa::onScrollareaLeave %W %d }
     bind Scrollarea <Destroy> {
 	namespace delete scrollutil::ns%W
 	catch {rename %W ""}
@@ -856,7 +863,11 @@ proc scrollutil::sa::onScrollareaEnter win {
 #------------------------------------------------------------------------------
 # scrollutil::sa::onScrollareaLeave
 #------------------------------------------------------------------------------
-proc scrollutil::sa::onScrollareaLeave win {
+proc scrollutil::sa::onScrollareaLeave {win detail} {
+    if {$detail eq "NotifyInferior"} {
+	return ""
+    }
+
     upvar ::scrollutil::ns${win}::data data
     if {$data(-autohidescrollbars)} {
 	obscureScrollbars $win

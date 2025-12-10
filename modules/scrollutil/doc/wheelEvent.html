@@ -16,7 +16,7 @@
     <h1>Commands Related to Mouse Wheel and
     <code><b>&lt;TouchpadScroll&gt;</b></code> Event Handling</h1>
 
-    <h2>For Scrollutil Version 2.7</h2>
+    <h2>For Scrollutil Version 2.8</h2>
 
     <h3>by</h3>
 
@@ -513,9 +513,9 @@
     descendants of a scrollable widget container.&nbsp; The Tk and tile widgets
     having class bindings for mouse wheel and
     <code><b>&lt;TouchpadScroll&gt;</b></code> events are: listbox, text, Tk
-    core scrollbar, ttk::scrollbar, ttk::combobox, ttk::spinbox, ttk::notebook,
-    and ttk::treeview.&nbsp; Examples of widgets with binding tags other than
-    their class names that have mouse wheel and
+    core scrollbar, ttk::scrollbar, ttk::combobox, ttk::spinbox, ttk::entry,
+    ttk::notebook, and ttk::treeview.&nbsp; Examples of widgets with binding
+    tags other than their class names that have mouse wheel and
     <code><b>&lt;TouchpadScroll&gt;</b></code> event bindings are ctext and
     tablelist widgets, as well as the entry components of <a href=
     "https://www.nemethi.de/mentry/">mentry</a> widgets of type
@@ -559,13 +559,17 @@
     <code><b>TScrollbar</b></code>.</dd>
 
     <dd class="tm"><b>REMARK 5:</b>&nbsp; The mouse wheel event class bindings
+    for the ttk::entry widget were added in Tk 9.1a1, but Scrollutil
+    automatically creates them for all Tk versions starting with 8.4.</dd>
+
+    <dd class="tm"><b>REMARK 6:</b>&nbsp; The mouse wheel event class bindings
     for the ttk::notebook widget were added in Tk 8.7a4, but Scrollutil
     automatically creates them for all Tk versions starting with 8.4.&nbsp;
     These bindings implement the navigation between the tabs of a ttk::notebook
     or <a href="scrollednotebook.html">scrollutil::scrollednotebook</a> widget
     via the mouse wheel.</dd>
 
-    <dd class="tm"><b>REMARK 6:</b>&nbsp; The recommended invocation of this
+    <dd class="tm"><b>REMARK 7:</b>&nbsp; The recommended invocation of this
     command is without the <code><b>-ignorefocus</b></code> option, because it
     significantly reduces the probability that the user will inadvertently
     scroll a window within a widget container containing many scrollable
