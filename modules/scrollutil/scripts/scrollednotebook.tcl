@@ -155,7 +155,7 @@ proc scrollutil::snb::createBindings {} {
     bindtags . [linsert [bindtags .] 1 ScrollednotebookMain]
     foreach event {<<ThemeChanged>> <<LightAqua>> <<DarkAqua>>} {
 	bind ScrollednotebookMain $event {
-	    scrollutil::snb::onThemeChanged %W
+	    after idle scrollutil::snb::onThemeChanged %W
 	}
     }
 
