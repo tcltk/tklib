@@ -1,5 +1,16 @@
-What is new in Tsw 1.3?
+What is new in Tsw 1.4?
 -----------------------
+
+1. The dimensions of the trough and slider elements now depend not only
+   on the value of the "-size" option, the current theme, and the
+   display's scaling level, but also on Tk's scaling factor given by
+   [tk scaling].
+
+2. Taken into account that for some earlier macOS versions a reliable
+   handling of appearance changes requires a small delay.
+
+What was new in Tsw 1.3?
+------------------------
 
 1. Significantly improved the element creation:  Tsw now creates the
    trough and slider elements with the aid of generic procedures for

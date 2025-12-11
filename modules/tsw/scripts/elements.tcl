@@ -6,7 +6,7 @@
 #   - Private helper procedures and data
 #   - Generic private procedures creating the elements for arbitrary themes
 #   - Private procedures creating the elements for a few built-in themes
-#   - Public procedure
+#   - Public procedures
 #
 # Copyright (c) 2025  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
@@ -93,18 +93,6 @@ proc tsw::isColorLight color {
     return [expr {5 * ($g >> 8) + 2 * ($r >> 8) + ($b >> 8) > 8 * 192}]
 }
 
-#------------------------------------------------------------------------------
-# tsw::svgFormat
-#------------------------------------------------------------------------------
-proc tsw::svgFormat {} {
-    if {[info exists ::tk::svgFmt]} {			;# Tk 9 or later
-	return $::tk::svgFmt
-    } else {
-	return [list svg -scale [expr {$::scaleutil::scalingPct / 100.0}]]
-    }
-}
-
-interp alias {} tsw::createImg  {} image create photo -format [tsw::svgFormat]
 interp alias {} tsw::createElem {} ttk::style element create
 
 namespace eval tsw {
@@ -129,6 +117,8 @@ namespace eval tsw {
     set sliderData(3) {
 <svg width="24" height="20" version="1.1" xmlns="http://www.w3.org/2000/svg">
  <circle cx="12" cy="10" r="10" }
+
+    variable madeElements 0
 }
 
 #
@@ -951,17 +941,12 @@ proc tsw::updateElements_aqua {} {
     }
 }
 
-#
-# Public procedure
-# ================
-#
-
 #------------------------------------------------------------------------------
 # tsw::createElements
 #
 # Creates the Switch*.trough and Switch*.slider elements for the Toggleswitch*
-# styles if they don't yet exist.  Invoked by the procedures tsw::toggleswitch
-# and tsw::onThemeChanged (see toggleswitch.tcl).
+# styles if they don't yet exist.  Invoked by the procedures
+# tsw::condMakeElements and tsw::condUpdateElements below.
 #------------------------------------------------------------------------------
 proc tsw::createElements {} {
     variable theme
@@ -1039,5 +1024,53 @@ proc tsw::createElements {} {
 		ttk::style configure Toggleswitch$n -focussolid 1
 	    }
 	}
+    }
+}
+
+#
+# Public procedures
+# =================
+#
+
+#------------------------------------------------------------------------------
+# tsw::condMakeElements
+#
+# Creates the Switch*.trough and Switch*.slider elements for the Toggleswitch*
+# styles if necessary. Invoked by the procedure tsw::toggleswitch (see
+# toggleswitch.tcl).
+#------------------------------------------------------------------------------
+proc tsw::condMakeElements {} {
+    variable madeElements
+    if {!$madeElements} {
+	set pct [expr {[tk scaling] * 75}]
+	for {set scalingPct 100} {1} {incr scalingPct 25} {
+	    if {$pct < $scalingPct + 12.5} {
+		break
+	    }
+	}
+	set svgFmt [list svg -scale [expr {$scalingPct / 100.0}]]
+
+	interp alias {} ::tsw::createImg  {} image create photo -format $svgFmt
+
+	createElements
+
+	variable scaled4
+	set scaled4 [expr {round(4 * $scalingPct / 100.0)}]
+
+	set madeElements 1
+    }
+}
+
+#------------------------------------------------------------------------------
+# tsw::condUpdateElements
+#
+# Updates the Switch*.trough and Switch*.slider elements for the Toggleswitch*
+# styles if necessary.  Invoked from within the procedure tsw::onThemeChanged
+# (see toggleswitch.tcl).
+#------------------------------------------------------------------------------
+proc tsw::condUpdateElements {} {
+    variable madeElements
+    if {$madeElements} {		;# for some theme and appearance
+	createElements			;# for the new theme or appearance
     }
 }

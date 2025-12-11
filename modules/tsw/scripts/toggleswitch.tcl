@@ -71,20 +71,6 @@ namespace eval tsw {
     variable stateArr
     set stateArr(dragging)  0
     set stateArr(moveState) idle		;# other values: moving, moved
-
-    variable scaled4
-    if {[llength [info procs ::tk::ScaleNum]] == 0} {
-	#
-	# Make sure that the variable ::scaleutil::scalingPct is set
-	#
-	scaleutil::scalingPercentage [tk windowingsystem]
-	set scaled4 [scaleutil::scale 4 $::scaleutil::scalingPct]
-    } else {						;# Tk 9 or later
-	set scaled4 [tk::ScaleNum 4]
-    }
-
-    variable onAndroid	  [expr {[info exists ::tk::android] && $::tk::android}]
-    variable madeElements 0
 }
 
 #
@@ -109,7 +95,7 @@ proc tsw::createBindings {} {
 
     bindtags . [linsert [bindtags .] 1 TswMain]
     foreach event {<<ThemeChanged>> <<LightAqua>> <<DarkAqua>>} {
-	bind TswMain $event { tsw::onThemeChanged %W }
+	bind TswMain $event { after idle tsw::onThemeChanged %W }
     }
 
     #
@@ -119,7 +105,7 @@ proc tsw::createBindings {} {
 
     bind TswScale <<ThemeChanged>>  { tsw::onThemeChanged %W }
 
-    variable onAndroid
+    variable onAndroid [expr {[info exists ::tk::android] && $::tk::android}]
     if {!$onAndroid} {
 	bind TswScale <Enter>	    { %W instate !disabled {%W state active} }
 	bind TswScale <Leave>	    { %W state !active }
@@ -204,11 +190,7 @@ proc tsw::toggleswitch args {
     #
     # Create a ttk::scale child widget of a special style
     #
-    variable madeElements
-    if {!$madeElements} {
-	createElements					;# (see elements.tcl)
-	set madeElements 1
-    }
+    condMakeElements
     set size [lindex $configSpecs(-size) end]
     set scl [ttk::scale $win.scl -class TswScale -style Toggleswitch$size \
 	     -takefocus 0 -length 0 -from 0 -to 20]
@@ -682,10 +664,7 @@ proc tsw::onThemeChanged w {
     variable theme [ttk::style theme use]
 
     if {$w eq "."} {
-	variable madeElements
-	if {$madeElements} {	;# for some theme (see proc tsw::toggleswitch)
-	    createElements	;# for the new theme (see elements.tcl)
-	}
+	condUpdateElements
     } else {
 	set stateSpec [$w state !disabled]		;# needed for $w set
 	$w set [expr {[$w instate selected] ? [$w cget -to] : [$w cget -from]}]

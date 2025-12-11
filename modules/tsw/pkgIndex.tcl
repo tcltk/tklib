@@ -7,9 +7,9 @@
 #
 # Regular package:
 # 
-package ifneeded tsw 1.3 [list source [file join $dir tsw.tcl]]
+package ifneeded tsw 1.4 [list source [file join $dir tsw.tcl]]
 
 #
 # Alias:
 #   
-package ifneeded Tsw 1.3 { package require -exact tsw 1.3 }
+package ifneeded Tsw 1.4 { package require -exact tsw 1.4 }

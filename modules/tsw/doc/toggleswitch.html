@@ -13,7 +13,7 @@
   <div>
     <h1>The <code><b>tsw::toggleswitch</b></code> Command</h1>
 
-    <h2>For Tsw Version 1.3</h2>
+    <h2>For Tsw Version 1.4</h2>
 
     <h3>by</h3>
 
@@ -172,8 +172,10 @@
     widget.&nbsp; The trough is a fully rounded filled rectangle, and the
     slider is a filled circle contained in the trough.&nbsp; Both elements are
     rendered using scaling-aware SVG images.&nbsp; Their dimensions depend on
-    the display's scaling level, the current theme, and the value of the
-    <code><b><a href="#size">-size</a></b></code> configuration option.</dd>
+    the value of the <code><b><a href="#size">-size</a></b></code>
+    configuration option, the current theme, the display's scaling level, and
+    Tk's scaling factor given by&nbsp; <code><b>[tk scaling]</b></code>&nbsp;
+    at the time the first toggleswitch widget is created.</dd>
 
     <dd class="tm">Just like a light switch, a toggleswitch widget can have one
     of two possible <b>switch state</b>s: on or off.&nbsp; In the on state the
