@@ -2756,8 +2756,8 @@ proc tablelist::defineTablelistEdit {} {
 			$tablelist::priv(row) $tablelist::priv(col) 1
 		} else {
 		    tablelist::moveOrActivate $tablelist::W \
-			[$tablelist::W nearest       $tablelist::y] \
-			[$tablelist::W nearestcolumn $tablelist::x] \
+			[$tablelist::W containing       $tablelist::y] \
+			[$tablelist::W containingcolumn $tablelist::x] \
 			[expr {$tablelist::x >= 0 &&
 			       $tablelist::x < [winfo width $tablelist::W] &&
 			       $tablelist::y >= [winfo y $tablelist::W.body] &&

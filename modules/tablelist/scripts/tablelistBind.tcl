@@ -928,7 +928,7 @@ proc tablelist::defineTablelistBody {} {
     foreach event {<Enter> <Motion> <Leave>} {
 	##nagelfar ignore
 	bind TablelistBody $event [format {
-	    tablelist::handleMotionDelayed %%W %%x %%y %%X %%Y %%m %s
+	    tablelist::handleMotionDelayed %%W %%x %%y %%X %%Y %%m %%d %s
 	} $event]
     }
     bind TablelistBody <Button-1> {
@@ -941,8 +941,10 @@ proc tablelist::defineTablelistBody {} {
 
 	    set tablelist::priv(x) $tablelist::x
 	    set tablelist::priv(y) $tablelist::y
-	    set tablelist::priv(row) [$tablelist::W nearest       $tablelist::y]
-	    set tablelist::priv(col) [$tablelist::W nearestcolumn $tablelist::x]
+	    set tablelist::priv(row) \
+		[$tablelist::W containing       $tablelist::y]
+	    set tablelist::priv(col) \
+		[$tablelist::W containingcolumn $tablelist::x]
 	    set tablelist::priv(justClicked) 1
 	    after 300 [list set tablelist::priv(justClicked) 0]
 	    set tablelist::priv(clickedInEditWin) 0
@@ -956,9 +958,11 @@ proc tablelist::defineTablelistBody {} {
 	    } else {
 		tablelist::condEditContainingCell $tablelist::W \
 		    $tablelist::x $tablelist::y
-		tablelist::condBeginMove $tablelist::W $tablelist::priv(row)
-		tablelist::beginSelect $tablelist::W \
-		    $tablelist::priv(row) $tablelist::priv(col) 1
+		if {$tablelist::priv(row) >= 0 && $tablelist::priv(col) >= 0} {
+		    tablelist::condBeginMove $tablelist::W $tablelist::priv(row)
+		    tablelist::beginSelect $tablelist::W \
+			$tablelist::priv(row) $tablelist::priv(col) 1
+		}
 	    }
 	}
     }
@@ -995,10 +999,11 @@ proc tablelist::defineTablelistBody {} {
 	tablelist::condAutoScan $tablelist::W
 	if {!$tablelist::priv(clickedExpCollCtrl)} {
 	    tablelist::motion $tablelist::W \
-		[$tablelist::W nearest       $tablelist::y] \
-		[$tablelist::W nearestcolumn $tablelist::x] 1
+		[$tablelist::W containing       $tablelist::y] \
+		[$tablelist::W containingcolumn $tablelist::x] 1
 	    tablelist::condShowTarget $tablelist::W $tablelist::y
 	}
+	tablelist::handleMotionDelayed %W %x %y %X %Y %m %d <B1-Motion>
     }
     bind TablelistBody <ButtonRelease-1> {
 	if {[winfo exists %W]} {
@@ -1018,8 +1023,8 @@ proc tablelist::defineTablelistBody {} {
 			$tablelist::priv(row) $tablelist::priv(col) 1
 		} else {
 		    tablelist::moveOrActivate $tablelist::W \
-			[$tablelist::W nearest       $tablelist::y] \
-			[$tablelist::W nearestcolumn $tablelist::x] \
+			[$tablelist::W containing       $tablelist::y] \
+			[$tablelist::W containingcolumn $tablelist::x] \
 			[expr {$tablelist::x >= 0 &&
 			       $tablelist::x < [winfo width $tablelist::W] &&
 			       $tablelist::y >= [winfo y $tablelist::W.body] &&
@@ -1038,8 +1043,8 @@ proc tablelist::defineTablelistBody {} {
 	}
 
 	tablelist::beginExtend $tablelist::W \
-	    [$tablelist::W nearest       $tablelist::y] \
-	    [$tablelist::W nearestcolumn $tablelist::x]
+	    [$tablelist::W containing       $tablelist::y] \
+	    [$tablelist::W containingcolumn $tablelist::x]
 	tablelist::condFinishEditing $tablelist::W $tablelist::x $tablelist::y
     }
     bind TablelistBody <Control-Button-1> {
@@ -1050,8 +1055,8 @@ proc tablelist::defineTablelistBody {} {
 	}
 
 	tablelist::beginToggle $tablelist::W \
-	    [$tablelist::W nearest       $tablelist::y] \
-	    [$tablelist::W nearestcolumn $tablelist::x]
+	    [$tablelist::W containing       $tablelist::y] \
+	    [$tablelist::W containingcolumn $tablelist::x]
 	tablelist::condFinishEditing $tablelist::W $tablelist::x $tablelist::y
     }
     set modifier [expr {$winSys eq "aqua" ? "Command" : "Alt"}]
@@ -1406,7 +1411,7 @@ proc tablelist::invokeMotionHandler win {
 	set y -1
     }
 
-    handleMotionDelayed $w $x $y $X $Y "" <Motion>
+    handleMotionDelayed $w $x $y $X $Y "??" "??" <Motion>
 }
 
 #------------------------------------------------------------------------------
@@ -1416,7 +1421,7 @@ proc tablelist::invokeMotionHandler win {
 # a tablelist widget or is moving within it.  It schedules the execution of the
 # handleMotion procedure 100 ms later.
 #------------------------------------------------------------------------------
-proc tablelist::handleMotionDelayed {w x y X Y mode event} {
+proc tablelist::handleMotionDelayed {w x y X Y mode detail event} {
     set win [getTablelistPath $w]
     upvar ::tablelist::ns${win}::data data
     if {[regexp {^vsep([0-9]+)?$} [winfo name $w]]} {
@@ -1424,10 +1429,12 @@ proc tablelist::handleMotionDelayed {w x y X Y mode event} {
     }
 
     set data(motionData) [list $w $x $y $X $Y $event]
-    if {$event eq "<Leave>"} {
-	handleMotion $win
-    } elseif {![info exists data(motionId)]} {
-	set data(motionId) [after 100 [list tablelist::handleMotion $win]]
+    if {$detail ne "NotifyInferior"} {
+	if {$event eq "<Leave>"} {
+	    handleMotion $win
+	} elseif {![info exists data(motionId)]} {
+	    set data(motionId) [after 100 [list tablelist::handleMotion $win]]
+	}
     }
 
     if {$event eq "<Enter>" && $mode eq "NotifyNormal"} {
@@ -1839,8 +1846,8 @@ proc tablelist::condFinishEditing {win x y} {
 #
 # This procedure is typically invoked on button-1 presses in the body of a
 # tablelist widget or in one of its separators.  It begins the process of
-# moving the nearest row if the rows are movable and the selection mode is not
-# browse or extended.
+# moving the containing row if the rows are movable and the selection mode is
+# not browse or extended.
 #------------------------------------------------------------------------------
 proc tablelist::condBeginMove {win row} {
     upvar ::tablelist::ns${win}::data data
@@ -2020,7 +2027,8 @@ proc tablelist::autoScan win {
 	return ""
     }
 
-    motion $win [::$win nearest $priv(y)] [::$win nearestcolumn $priv(x)] 1
+    motion $win [::$win containing	 $priv(y)] \
+		[::$win containingcolumn $priv(x)] 1
     set priv(afterId) [after $ms [list tablelist::autoScan $win]]
 }
 
@@ -2137,7 +2145,7 @@ proc tablelist::autoScan2 {win margin seqNum} {
 # move or extend the selection, depending on the widget's selection mode.
 #------------------------------------------------------------------------------
 proc tablelist::motion {win row col {checkIfDragSrc 0}} {
-    if {$checkIfDragSrc && [isDragSrc $win]} {
+    if {$row < 0 || $col < 0 || ($checkIfDragSrc && [isDragSrc $win])} {
 	return ""
     }
 
@@ -2376,10 +2384,14 @@ proc tablelist::condShowTarget {win y} {
 # This procedure is invoked whenever mouse button 1 is released in the body of
 # a tablelist widget or in one of its separators.  It either moves the
 # previously clicked row before or after the one containing the mouse cursor,
-# or activates the given nearest item or element (depending on the widget's
+# or activates the given containing item or element (depending on the widget's
 # selection type).
 #------------------------------------------------------------------------------
 proc tablelist::moveOrActivate {win row col inside} {
+    if {$row < 0 || $col < 0} {
+	return ""
+    }
+
     variable priv
     upvar ::tablelist::ns${win}::data data
     if {$priv(selClearPending) && $inside} {
@@ -2605,7 +2617,7 @@ proc tablelist::cancelMove win {
 # selection mode currently in effect for the widget.
 #------------------------------------------------------------------------------
 proc tablelist::beginExtend {win row col} {
-    if {[::$win cget -selectmode] ne "extended"} {
+    if {$row < 0 || $col < 0 || [::$win cget -selectmode] ne "extended"} {
 	return ""
     }
 
@@ -2625,6 +2637,10 @@ proc tablelist::beginExtend {win row col} {
 # selection mode currently in effect for the widget.
 #------------------------------------------------------------------------------
 proc tablelist::beginToggle {win row col} {
+    if {$row < 0 || $col < 0} {
+	return ""
+    }
+
     upvar ::tablelist::ns${win}::data data
     switch $data(-selecttype) {
 	row {

@@ -6,21 +6,26 @@ What is new in Tablelist 7.9?
    combobox used for interactive cell editing is posted (thanks to Steve
    Landers for his proposal).
 
-2. The wide spinbox package wsb now highlights the up and down arrows
+2. The default bindings now ignore any mouse actions in the free space
+   that might appear below the tablelist widget's last row and/or to the
+   right of its last column, except for setting the focus via left-click
+   (thanks to Torsten Berg for his proposal).
+
+3. The wide spinbox package wsb now highlights the up and down arrows
    when they are in pressed state.
 
-3. Added the helper procedure "tablelist::getScalingPct", which returns
+4. Added the helper procedure "tablelist::getScalingPct", which returns
    the application's scaling percentage, derived from Tk's current
    scaling factor given by [tk scaling].  See the new section "The
    Procedure tablelist::getScalingPct" in Tablelist Programmer's Guide
    for details).
 
-4. The sizes of the GUI components created by the packages Tablelist,
+5. The sizes of the GUI components created by the packages Tablelist,
    themepatch, and wsb now depend not only on the display's scaling
    level, but also on Tk's scaling factor given by [tk scaling] (thanks
    to Harald Oehlmann for discussions on this subject).
 
-5. Updated the details regarding the value of "tablelist::scalingpct"
+6. Updated the details regarding the value of "tablelist::scalingpct"
    for GNOME on Wayland and KDE Plasma on Wayland in Tablelist
    Programmer's Guide, to reflect the changes made in recent versions of
    these desktops.
