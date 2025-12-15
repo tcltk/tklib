@@ -101,7 +101,7 @@ proc displayContents dir {
     set menu .menu
     menu $menu -tearoff no
     $menu add command -label "Display Contents" \
-		      -command [list putContentsOfSelFolder $tbl]
+		      -command [list putContentsOfActiveFolder $tbl]
     if {$isAwTheme} {
 	global currentTheme
 	ttk::theme::${currentTheme}::setMenuColors $menu
@@ -110,7 +110,7 @@ proc displayContents dir {
     bind $bodyTag <<Button3>>  [bind TablelistBody <Button-1>]
     bind $bodyTag <<Button3>> +[bind TablelistBody <ButtonRelease-1>]
     bind $bodyTag <<Button3>> +[list postPopupMenu %X %Y]
-    bind $bodyTag <Double-1>   [list putContentsOfSelFolder %W]
+    bind $bodyTag <Double-1>   [list putContentsOfActiveFolder %W]
 
     #
     # Create three buttons within a frame child of the main widget
@@ -331,19 +331,19 @@ proc addImages tbl {
 }
 
 #------------------------------------------------------------------------------
-# putContentsOfSelFolder
+# putContentsOfActiveFolder
 #
-# Outputs the content of the selected folder into the tablelist given by or
+# Outputs the content of the active folder into the tablelist given by or
 # containing the specified widget.
 #------------------------------------------------------------------------------
-proc putContentsOfSelFolder w {
+proc putContentsOfActiveFolder w {
     if {[winfo class $w] eq "Tablelist"} {
 	set tbl $w
     } else {
 	set tbl [tablelist::getTablelistPath $w]
     }
 
-    set row [$tbl curselection]
+    set row [$tbl index active]
     if {[$tbl hasrowattrib $row pathName]} {		;# directory item
 	set dir [$tbl rowattrib $row pathName]
 	if {[file isdirectory $dir] && [isReadable $dir]} {
@@ -368,11 +368,11 @@ proc putContentsOfSelFolder w {
 #
 # Posts the pop-up menu .menu at the given screen position.  Before posting
 # the menu, the procedure enables/disables its only entry, depending upon
-# whether the selected item represents a readable directory or not.
+# whether the active item represents a readable directory or not.
 #------------------------------------------------------------------------------
 proc postPopupMenu {rootX rootY} {
     set tbl .tf.tbl
-    set row [$tbl curselection]
+    set row [$tbl index active]
     set menu .menu
     if {[$tbl hasrowattrib $row pathName]} {		;# directory item
 	set dir [$tbl rowattrib $row pathName]

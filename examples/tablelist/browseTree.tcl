@@ -112,11 +112,11 @@ proc demo::displayChildren w {
     set menu $top.menu
     menu $menu -tearoff no
     $menu add command -label "Display Children" \
-		      -command [list demo::putChildrenOfSelWidget $tbl]
+		      -command [list demo::putChildrenOfActiveWidget $tbl]
     $menu add command -label "Display Config" \
-		      -command [list demo::dispConfigOfSelWidget $tbl]
+		      -command [list demo::dispConfigOfActiveWidget $tbl]
     set bodyTag [$tbl bodytag]
-    bind $bodyTag <Double-1>   [list demo::putChildrenOfSelWidget $tbl]
+    bind $bodyTag <Double-1>   [list demo::putChildrenOfActiveWidget $tbl]
     bind $bodyTag <<Button3>>  [bind TablelistBody <Button-1>]
     bind $bodyTag <<Button3>> +[bind TablelistBody <ButtonRelease-1>]
     bind $bodyTag <<Button3>> +[list demo::postPopupMenu $top %X %Y]
@@ -341,13 +341,13 @@ proc demo::updateItems tbl {
 }
 
 #------------------------------------------------------------------------------
-# demo::putChildrenOfSelWidget
+# demo::putChildrenOfActiveWidget
 #
-# Outputs the data of the children of the selected widget into the tablelist
+# Outputs the data of the children of the active widget into the tablelist
 # widget tbl.
 #------------------------------------------------------------------------------
-proc demo::putChildrenOfSelWidget tbl {
-    set w [$tbl rowattrib [$tbl curselection] pathName]
+proc demo::putChildrenOfActiveWidget tbl {
+    set w [$tbl rowattrib active pathName]
     if {![winfo exists $w]} {
 	bell
 	tk_messageBox -title "Error" -icon error -message \
@@ -363,14 +363,13 @@ proc demo::putChildrenOfSelWidget tbl {
 }
 
 #------------------------------------------------------------------------------
-# demo::dispConfigOfSelWidget
+# demo::dispConfigOfActiveWidget
 #
-# Displays the configuration options of the selected widget within the
-# tablelist tbl in a tablelist widget contained in a newly created toplevel
-# widget.
+# Displays the configuration options of the active widget within the tablelist
+# tbl in a tablelist widget contained in a newly created toplevel widget.
 #------------------------------------------------------------------------------
-proc demo::dispConfigOfSelWidget tbl {
-    demo::displayConfig [$tbl rowattrib [$tbl curselection] pathName]
+proc demo::dispConfigOfActiveWidget tbl {
+    demo::displayConfig [$tbl rowattrib active pathName]
 }
 
 #------------------------------------------------------------------------------
@@ -378,11 +377,11 @@ proc demo::dispConfigOfSelWidget tbl {
 #
 # Posts the pop-up menu $top.menu at the given screen position.  Before posting
 # the menu, the procedure enables/disables its first entry, depending upon
-# whether the selected widget has children or not.
+# whether the active widget has children or not.
 #------------------------------------------------------------------------------
 proc demo::postPopupMenu {top rootX rootY} {
     set tbl $top.tf.tbl
-    set w [$tbl rowattrib [$tbl curselection] pathName]
+    set w [$tbl rowattrib active pathName]
     if {![winfo exists $w]} {
 	bell
 	tk_messageBox -title "Error" -icon error -message \

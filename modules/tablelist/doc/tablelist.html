@@ -1285,8 +1285,8 @@ demo::displayChildren .
   name <code>.browseTop</code> in <code>browse.tcl</code> and the name
   <code>browseTop</code> in <code>browseTree.tcl</code>) or invoking the first
   entry of a pop-up menu within the body of the tablelist, you can display the
-  data of the children of the widget corresponding to the selected item, and
-  with the second menu entry you can display its configuration options (see the
+  data of the children of the widget corresponding to the active item, and with
+  the second menu entry you can display its configuration options (see the
   <a href="#ex_config">previous example</a> for details).&nbsp; To go one level
   up, click on the "Parent" button.</p>
 
@@ -1429,11 +1429,11 @@ proc demo::displayChildren w {
     set menu $top.menu
     menu $menu -tearoff no
     $menu add command -label "Display Children" \
-                      -command [list demo::putChildrenOfSelWidget $tbl]
+                      -command [list demo::putChildrenOfActiveWidget $tbl]
     $menu add command -label "Display Config" \
-                      -command [list demo::dispConfigOfSelWidget $tbl]
+                      -command [list demo::dispConfigOfActiveWidget $tbl]
     set bodyTag [$tbl bodytag]
-    bind $bodyTag &lt;Double-1&gt;   [list demo::putChildrenOfSelWidget $tbl]
+    bind $bodyTag &lt;Double-1&gt;   [list demo::putChildrenOfActiveWidget $tbl]
     bind $bodyTag &lt;&lt;Button3&gt;&gt;  [bind TablelistBody &lt;Button-1&gt;]
     bind $bodyTag &lt;&lt;Button3&gt;&gt; +[bind TablelistBody &lt;ButtonRelease-1&gt;]
     bind $bodyTag &lt;&lt;Button3&gt;&gt; +[list demo::postPopupMenu $top %X %Y]
@@ -1811,27 +1811,25 @@ proc demo::updateItems tbl {
   "tablelistWidget.html#refreshsorting">refreshsorting</a></code>
   subcommand.</p>
 
-  <p>The procedures <code>demo::putChildrenOfSelWidget</code>,
-  <code>demo::dispConfigOfSelWidget</code>, and
+  <p>The procedures <code>demo::putChildrenOfActiveWidget</code>,
+  <code>demo::dispConfigOfActiveWidget</code>, and
   <code>demo::postPopupMenu</code> (see <code>demo::displayChildren</code>) are
   also straight-forward.&nbsp; For example, the
-  <code>demo::putChildrenOfSelWidget</code> command shown below makes use of
-  the <code><a href="tablelistWidget.html#curselection">curselection</a></code>
-  subcommand to get the index of the selected row.&nbsp; More precisely,
-  <code>curselection</code> returns a list, but in our case this list will have
-  exactly one element, hence it can be used directly as the first component of
-  a cell index.</p>
+  <code>demo::putChildrenOfActiveWidget</code> command shown below makes use of
+  the row index <code><a href=
+  "tablelistWidget.html#row_indices">active</a></code> to identify the active
+  row.</p>
 
   <blockquote>
     <pre>
 <span class="cmt">#------------------------------------------------------------------------------
-# demo::putChildrenOfSelWidget
+# demo::putChildrenOfActiveWidget
 #
-# Outputs the data of the children of the selected widget into the tablelist
+# Outputs the data of the children of the active widget into the tablelist
 # widget tbl.
 #------------------------------------------------------------------------------</span>
-proc demo::putChildrenOfSelWidget tbl {
-    set w [$tbl cellcget [$tbl curselection],0 -text]
+proc demo::putChildrenOfActiveWidget tbl {
+    set w [$tbl rowattrib active pathName]
     if {![winfo exists $w]} {
         bell
         tk_messageBox -title "Error" -icon error -message \
@@ -1937,7 +1935,7 @@ proc demo::restoreExpandedStates {tbl nodeIdx expandedWidgetsName} {
 
   <p>By double-clicking an item or invoking the single entry of a pop-up menu
   within the body of the tablelist, you can display the content of the folder
-  corresponding to the selected item.&nbsp; To go one level up, click on the
+  corresponding to the active item.&nbsp; To go one level up, click on the
   "Parent" button.</p>
 
   <p>There are a lot of similarities between this script and the one discussed
@@ -2265,10 +2263,10 @@ proc addImages tbl {
     set topRow [$tbl index top]
     set btmRow [$tbl index bottom]
     for {set row $topRow} {$row <= $btmRow} {incr row} {
-        if {[$tbl hasrowattrib $row pathName]} {        ;<span class="cmt">;# directory item</span>
+        if {[$tbl hasrowattrib $row pathName]} {        ;<span class="cmt"># directory item</span>
             set img [expr {[$tbl isexpanded $row] ?
                     "openFolderImg" : "clsdFolderImg"}]
-        } else {                                        ;<span class="cmt">;# file item</span>
+        } else {                                        ;<span class="cmt"># file item</span>
             set img fileImg
         }
         $tbl cellconfigure $row,0 -image $img
