@@ -11,21 +11,25 @@ What is new in Tablelist 7.9?
    right of its last column, except for setting the focus via left-click
    (thanks to Torsten Berg for his proposal).
 
-3. The wide spinbox package wsb now highlights the up and down arrows
+3. Because of the changes in the default bindings, the demo scripts
+   "browse*.tcl" and "dirViewer*.tcl" now use the "active" index rather
+   than the "curselection" subcommand.
+
+4. The wide spinbox package wsb now highlights the up and down arrows
    when they are in pressed state.
 
-4. Added the helper procedure "tablelist::getScalingPct", which returns
+5. Added the helper procedure "tablelist::getScalingPct", which returns
    the application's scaling percentage, derived from Tk's current
    scaling factor given by [tk scaling].  See the new section "The
    Procedure tablelist::getScalingPct" in Tablelist Programmer's Guide
    for details).
 
-5. The sizes of the GUI components created by the packages Tablelist,
+6. The sizes of the GUI components created by the packages Tablelist,
    themepatch, and wsb now depend not only on the display's scaling
    level, but also on Tk's scaling factor given by [tk scaling] (thanks
    to Harald Oehlmann for discussions on this subject).
 
-6. Updated the details regarding the value of "tablelist::scalingpct"
+7. Updated the details regarding the value of "tablelist::scalingpct"
    for GNOME on Wayland and KDE Plasma on Wayland in Tablelist
    Programmer's Guide, to reflect the changes made in recent versions of
    these desktops.
