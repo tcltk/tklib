@@ -185,7 +185,15 @@ proc wsb::updateElements theme {
     set dFg [normalizeColor [ttk::style lookup . -foreground disabled #a3a3a3]]
 
     if {$theme eq "aqua"} {
-	set pBg [normalizeColor systemControlAccentColor]
+	scan $::tcl_platform(osVersion) "%d" majorOSVersion
+	if {$majorOSVersion >= 18} {			;# OS X 10.14 or later
+	    set pBg [expr {
+		[catch {winfo rgb . systemControlAccentColor}] == 0 ?
+		"systemControlAccentColor" : "systemHighlightAlternate"}]
+	} else {
+	    set pBg systemHighlightAlternate
+	}
+	set pBg [normalizeColor $pBg]
 	set pFg #ffffff
     } else {
 	set pBg [ttk::style lookup . -selectbackground focus #000000]

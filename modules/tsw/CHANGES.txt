@@ -6,8 +6,8 @@ What is new in Tsw 1.4?
    display's scaling level, but also on Tk's scaling factor given by
    [tk scaling].
 
-2. Taken into account that for some earlier macOS versions a reliable
-   handling of appearance changes requires a small delay.
+2. Significant improvements related to the support for earlier macOS
+   versions and older Tk versions on aqua.
 
 What was new in Tsw 1.3?
 ------------------------

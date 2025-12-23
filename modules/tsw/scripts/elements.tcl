@@ -766,7 +766,24 @@ proc tsw::createElements_aqua {} {
 proc tsw::updateElements_aqua {} {
     variable troughImgArr
     variable sliderImgArr
-    set darkMode [tk::unsupported::MacWindowStyle isdark .]
+
+    scan $::tcl_platform(osVersion) "%d" majorOSVersion
+    if {$majorOSVersion >= 18} {			;# OS X 10.14 or later
+	set darkMode [expr {
+	    [catch {tk::unsupported::MacWindowStyle isdark .} result] == 0 ?
+	    $result : 0}]
+	set selectBg [expr {
+	    [catch {winfo rgb . systemSelectedContentBackgroundColor}] == 0 ?
+	    "systemSelectedContentBackgroundColor" :
+	    "systemHighlightAlternate"}]
+	set accentColor [expr {
+	    [catch {winfo rgb . systemControlAccentColor}] == 0 ?
+	    "systemControlAccentColor" : "systemHighlightAlternate"}]
+    } else {
+	set darkMode 0
+	set selectBg systemHighlightAlternate
+	set accentColor systemHighlightAlternate
+    }
 
     set troughOffData(1) {
 <svg width="26" height="15" version="1.1" xmlns="http://www.w3.org/2000/svg">
@@ -832,8 +849,7 @@ proc tsw::updateElements_aqua {} {
 
 	# troughImgArr(on$n)
 	set imgData $troughOnData($n)
-	set fill [expr {$darkMode ? "systemSelectedContentBackgroundColor"
-				  : "systemControlAccentColor"}]
+	set fill [expr {$darkMode ? $selectBg : $accentColor}]
 	set fill [mwutil::normalizeColor $fill]
 	if {$darkMode} {
 	    # For the colors blue, purple, pink, red, orange, yellow, green,
@@ -855,8 +871,7 @@ proc tsw::updateElements_aqua {} {
 
 	# troughImgArr(onPressed$n)
 	set imgData $troughOnData($n)
-	set fill [expr {$darkMode ? "systemControlAccentColor"
-				  : "systemSelectedContentBackgroundColor"}]
+	set fill [expr {$darkMode ? $accentColor : $selectBg}]
 	set fill [mwutil::normalizeColor $fill]
 	if {$darkMode} {
 	    # For the colors purple, red, yellow, and graphite

@@ -352,62 +352,64 @@ proc tablelist::aquaTheme {} {
     #
     if {$majorOSVersion >= 18} {			;# OS X 10.14 or later
 	if {$newAquaSupport} {
-	    variable channel
-	    if {[info exists channel]} {	;# see proc condOpenPipeline
-		set input [gets $channel]
-
-		puts $channel "exit"
-		flush $channel
-		close $channel
-		unset channel
-
-		lassign $input r g b
-		set rgb [format "#%02x%02x%02x" \
-			 [expr {$r >> 8}] [expr {$g >> 8}] [expr {$b >> 8}]]
-	    } else {
-		set rgb [mwutil::normalizeColor \
-			 systemSelectedTextBackgroundColor]
-	    }
-
 	    if {[catch {winfo rgb . systemSelectedContentBackgroundColor}]
 		== 0} {
 		set selectBg systemSelectedContentBackgroundColor
-	    } elseif {$darkMode} {
-		switch $rgb {
-		    #3f638b		{ set selectBg #0059d1	;# blue }
-		    #705771 - #705670	{ set selectBg #803482	;# purple }
-		    #89576e - #88566e	{ set selectBg #c93379	;# pink }
-		    #8b5759 - #8b5758	{ set selectBg #d13539	;# red }
-		    #896647 - #886547	{ set selectBg #c96003	;# orange }
-		    #8b7a3f - #8a754a	{ set selectBg #d19e00	;# yellow }
-		    #5c7654 - #5c7653	{ set selectBg #43932a	;# green }
-		    #ffffff		{ set selectBg #696969	;# graphite }
-		    default	{ set selectBg systemHighlightAlternate }
-		}
 	    } else {
-		switch $rgb {
-		    #b3d7ff		{ set selectBg #0064e1	;# blue }
-		    #dfc5e0 - #dfc5df	{ set selectBg #7d2a7e	;# purple }
-		    #fdcbe2 - #fccae2	{ set selectBg #d93b86	;# pink }
-		    #f6c4c5 - #f5c3c5	{ set selectBg #c4262b	;# red }
-		    #fddabb - #fcd9bb	{ set selectBg #d96b0a	;# orange }
-		    #ffeebe - #fee9be	{ set selectBg #e1ac15	;# yellow }
-		    #d0eac8 - #d0eac7	{ set selectBg #4da033	;# green }
-		    #e0e0e0		{ set selectBg #808080	;# graphite }
-		    default	{ set selectBg systemHighlightAlternate }
+		variable channel
+		if {[info exists channel]} {	;# see proc condOpenPipeline
+		    set input [gets $channel]
+
+		    puts $channel "exit"
+		    flush $channel
+		    close $channel
+		    unset channel
+
+		    lassign $input r g b
+		    set rgb [format "#%02x%02x%02x" \
+			     [expr {$r >> 8}] [expr {$g >> 8}] [expr {$b >> 8}]]
+		} else {
+		    set rgb [mwutil::normalizeColor \
+			     systemSelectedTextBackgroundColor]
+		}
+
+		if {$darkMode} {
+		    switch $rgb {
+			#3f638b		   { set selectBg #0059d1  ;# blue }
+			#705771 - #705670  { set selectBg #803482  ;# purple }
+			#89576e - #88566e  { set selectBg #c93379  ;# pink }
+			#8b5759 - #8b5758  { set selectBg #d13539  ;# red }
+			#896647 - #886547  { set selectBg #c96003  ;# orange }
+			#8b7a3f - #8a754a  { set selectBg #d19e00  ;# yellow }
+			#5c7654 - #5c7653  { set selectBg #43932a  ;# green }
+			#ffffff		   { set selectBg #696969  ;# graphite }
+			default	  { set selectBg systemHighlightAlternate }
+		    }
+		} else {
+		    switch $rgb {
+			#b3d7ff		   { set selectBg #0064e1  ;# blue }
+			#dfc5e0 - #dfc5df  { set selectBg #7d2a7e  ;# purple }
+			#fdcbe2 - #fccae2  { set selectBg #d93b86  ;# pink }
+			#f6c4c5 - #f5c3c5  { set selectBg #c4262b  ;# red }
+			#fddabb - #fcd9bb  { set selectBg #d96b0a  ;# orange }
+			#ffeebe - #fee9be  { set selectBg #e1ac15  ;# yellow }
+			#d0eac8 - #d0eac7  { set selectBg #4da033  ;# green }
+			#e0e0e0		   { set selectBg #808080  ;# graphite }
+			default	  { set selectBg systemHighlightAlternate }
+		    }
 		}
 	    }
 	} else {
 	    switch [mwutil::normalizeColor systemHighlight] {
-		#b2d7ff	{ set selectBg #0064e1	;# blue }
-		#f7d4ff	{ set selectBg #7d2a7e	;# purple }
-		#ffbfd2	{ set selectBg #d93b86	;# pink }
-		#ffbbb8	{ set selectBg #c4262b	;# red }
-		#ffdfb3	{ set selectBg #d96b0a	;# orange }
-		#ffefb0	{ set selectBg #e1ac15	;# yellow }
-		#c0f6ad	{ set selectBg #4da033	;# green }
-		#d8d8dc	{ set selectBg #808080	;# graphite }
-		default	{ set selectBg systemHighlightAlternate }
+		#b2d7ff  { set selectBg #0064e1  ;# blue }
+		#f7d4ff  { set selectBg #7d2a7e  ;# purple }
+		#ffbfd2  { set selectBg #d93b86  ;# pink }
+		#ffbbb8  { set selectBg #c4262b  ;# red }
+		#ffdfb3  { set selectBg #d96b0a  ;# orange }
+		#ffefb0  { set selectBg #e1ac15  ;# yellow }
+		#c0f6ad  { set selectBg #4da033  ;# green }
+		#d8d8dc  { set selectBg #808080  ;# graphite }
+		default  { set selectBg systemHighlightAlternate }
 	    }
 	}
     } else {

@@ -95,7 +95,7 @@ proc tsw::createBindings {} {
 
     bindtags . [linsert [bindtags .] 1 TswMain]
     foreach event {<<ThemeChanged>> <<LightAqua>> <<DarkAqua>>} {
-	bind TswMain $event { after idle tsw::onThemeChanged %W }
+	bind TswMain $event { tsw::onThemeChanged %W }
     }
 
     #
