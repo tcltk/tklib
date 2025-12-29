@@ -17,6 +17,8 @@ set auto_index(::tsw::createElements_win11) [list source [file join $dir element
 set auto_index(::tsw::createElements_win10) [list source [file join $dir elements.tcl]]
 set auto_index(::tsw::createElements_aqua) [list source [file join $dir elements.tcl]]
 set auto_index(::tsw::updateElements_aqua) [list source [file join $dir elements.tcl]]
+set auto_index(::tsw::updateElements_aqua_macos26) [list source [file join $dir elements.tcl]]
+set auto_index(::tsw::updateElements_aqua_macos15) [list source [file join $dir elements.tcl]]
 set auto_index(::tsw::createElements) [list source [file join $dir elements.tcl]]
 set auto_index(::tsw::condMakeElements) [list source [file join $dir elements.tcl]]
 set auto_index(::tsw::condUpdateElements) [list source [file join $dir elements.tcl]]

@@ -6,7 +6,10 @@ What is new in Tsw 1.4?
    display's scaling level, but also on Tk's scaling factor given by
    [tk scaling].
 
-2. Significant improvements related to the support for earlier macOS
+2. Added explicit support for the toggleswitch element shapes and colors
+   specific to the latest macOS version 26 (Tahoe).
+
+3. Significant improvements related to the support for earlier macOS
    versions and older Tk versions on aqua.
 
 What was new in Tsw 1.3?

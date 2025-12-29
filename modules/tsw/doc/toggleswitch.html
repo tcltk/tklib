@@ -170,12 +170,13 @@
     <b>trough</b> and a <b>slider</b>, just like a ttk::scale widget.&nbsp;
     Actually, these elements belong to a ttk::scale contained in the
     widget.&nbsp; The trough is a fully rounded filled rectangle, and the
-    slider is a filled circle contained in the trough.&nbsp; Both elements are
-    rendered using scaling-aware SVG images.&nbsp; Their dimensions depend on
-    the value of the <code><b><a href="#size">-size</a></b></code>
-    configuration option, the current theme, the display's scaling level, and
-    Tk's scaling factor given by&nbsp; <code><b>[tk scaling]</b></code>&nbsp;
-    at the time the first toggleswitch widget is created.</dd>
+    slider is a filled circle or fully rounded filled rectangle contained in
+    the trough.&nbsp; Both elements are rendered using scaling-aware SVG
+    images.&nbsp; Their dimensions depend on the value of the
+    <code><b><a href="#size">-size</a></b></code> configuration option, the
+    current theme, the display's scaling level, and Tk's scaling factor given
+    by&nbsp; <code><b>[tk scaling]</b></code>&nbsp; at the time the first
+    toggleswitch widget is created.</dd>
 
     <dd class="tm">Just like a light switch, a toggleswitch widget can have one
     of two possible <b>switch state</b>s: on or off.&nbsp; In the on state the
@@ -325,19 +326,21 @@
         <code><b>2</b></code> (the default), and <code><b>3</b></code>.&nbsp;
         If the current theme is <code><b>aqua</b></code> then these size IDs
         correspond to the control sizes "mini", "small", and "large" of the
-        native toggle switches on macOS.&nbsp; The value <code><b>1</b></code>
-        stands for the trough size of 26 x 15 pixels, the value
-        <code><b>2</b></code> for the trough size of 32 x 18 pixels, and the
-        value <code><b>3</b></code> identifies the trough size of 38 x 22
-        pixels.&nbsp; For all the other themes, on an unscaled screen the value
-        <code><b>1</b></code> stands for the trough size of 32 x 16 pixels, the
-        value <code><b>2</b></code> for the trough size of 40 x 20 pixels, and
-        the value <code><b>3</b></code> identifies the trough size of 48 x 24
-        pixels, except that on Windows 10 and earlier, for the themes
-        <code><b>vista</b></code>, <code><b>winnative</b></code>, and
-        <code><b>xpnative</b></code> the unscaled trough width is 35, 44, and
-        53 pixels, respectively (for compatibility with the native toggle
-        switch).</p>
+        native toggle switches on macOS.&nbsp; For macOS versions 15 (Sequoia)
+	and earlier the value <code><b>1</b></code> stands for the trough size
+	of 26 x 15 pixels, the value <code><b>2</b></code> for the trough size
+	of 32 x 18 pixels, and the value <code><b>3</b></code> identifies the
+	trough size of 38 x 22 pixels.&nbsp; Starting with macOS 26 (Tahoe),
+	the trough sizes are 29 x 13, 36 x 16, and 44 x 20 pixels,
+	respectively.&nbsp; For all the other themes, on an unscaled screen the
+	value <code><b>1</b></code> stands for the trough size of 32 x 16
+	pixels, the value <code><b>2</b></code> for the trough size of 40 x 20
+	pixels, and the value <code><b>3</b></code> identifies the trough size
+	of 48 x 24 pixels, except that on Windows 10 and earlier, for
+	compatibility with the native toggle switch, for the themes
+	<code><b>vista</b></code>, <code><b>winnative</b></code>, and
+	<code><b>xpnative</b></code> the unscaled trough width is 35, 44, and
+	53 pixels, respectively.</p>
 
         <p>Note that by setting this option to a value
         <code><i>size</i></code>, the <code><b><a href=
