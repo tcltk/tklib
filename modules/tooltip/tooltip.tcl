@@ -325,6 +325,7 @@ proc ::tooltip::createToplevel {} {
         wm overrideredirect $b 1
     }
     catch {wm attributes $b -topmost 1}
+    catch {wm attributes $b -type tooltip}
     # avoid the blink issue with 1 to <1 alpha on Windows
     catch {wm attributes $b -alpha 0.99}
     wm positionfrom $b program
