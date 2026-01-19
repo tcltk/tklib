@@ -21,6 +21,9 @@ proc notifywindow::notifywindow {msg img} {
 	wm attributes $w -toolwindow true
 	wm title $w "Alert"
     }
+    if {[tk windowingsystem] eq "x11"} {
+	wm attributes $w -type notification
+    }
     if {[lsearch [image names] $img] > -1} {
 	label $w.l -bg gray30 -fg white -image $img
 	pack $w.l -fill both -expand yes -side left
