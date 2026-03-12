@@ -1,5 +1,17 @@
-What is new in Scrollutil 2.8?
+What is new in Scrollutil 2.9?
 ------------------------------
+
+1. Adapted the scaleutil package to the recent changes related to the
+   ttk::treeview widget, implemented by Brian O'Hagan.
+
+2. Extended the section "The Procedure scrollutil::getScalingPct and
+   Tk's Scaling Factor" in Scrollutil Programmer's Guide by the
+   recommendation that changing Tk's scaling factor via "tk scaling"
+   should be done before loading Scrollutil or Scrollutil_tile (thanks
+   to Mark Summerfield for his suggestion).
+
+What was new in Scrollutil 2.8?
+-------------------------------
 
 1. Scrollutil now automatically creates mouse wheel and <TouchpadScroll>
    event bindings for the widget classes Entry and TEntry if Tk doesn't

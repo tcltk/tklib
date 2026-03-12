@@ -14,7 +14,7 @@
   <div>
     <h1>Scrollutil Programmer's Guide</h1>
 
-    <h2>For Scrollutil Version 2.8</h2>
+    <h2>For Scrollutil Version 2.9</h2>
 
     <h3>by</h3>
 
@@ -44,7 +44,7 @@
     <code>scrollutil::scalingpct</code></a></li>
 
     <li><a href="#ov_getScalingPct">The Procedure
-    <code>scrollutil::getScalingPct</code></a></li>
+    <code>scrollutil::getScalingPct</code> and Tk's Scaling Factor</a></li>
 
     <li><a href="#ov_svgfmt">More on <code>scrollutil::svgfmt</code></a></li>
   </ul>
@@ -337,8 +337,8 @@
     </address>
   </blockquote>
 
-  <p>The distribution file is <code>scrollutil2.8.tar.gz</code> for UNIX and
-  <code>scrollutil2_8.zip</code> for Windows.&nbsp; These files contain the
+  <p>The distribution file is <code>scrollutil2.9.tar.gz</code> for UNIX and
+  <code>scrollutil2_9.zip</code> for Windows.&nbsp; These files contain the
   same information, except for the additional carriage return character
   preceding the linefeed at the end of each line in the text files for
   Windows.</p>
@@ -360,27 +360,27 @@
 
   <p>To install Scrollutil <i>on UNIX</i>, <code>cd</code> to the desired
   directory and unpack the distribution file
-  <code>scrollutil2.8.tar.gz</code>:</p>
+  <code>scrollutil2.9.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c scrollutil2.8.tar.gz | tar -xf - </pre>
+gunzip -c scrollutil2.9.tar.gz | tar -xf - </pre>
   </blockquote>
 
   <p>On most UNIX systems this can be replaced with</p>
 
   <blockquote>
     <pre>
-tar -zxf scrollutil2.8.tar.gz </pre>
+tar -zxf scrollutil2.9.tar.gz </pre>
   </blockquote>
 
-  <p>Both commands will create a directory named <code>scrollutil2.8</code>,
+  <p>Both commands will create a directory named <code>scrollutil2.9</code>,
   with the subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>scrollutil2_8.zip</code> into the directory
-  <code>scrollutil2.8</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>scrollutil2_9.zip</code> into the directory
+  <code>scrollutil2.9</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>Notice that in tklib the Scrollutil <code>demos</code> directory is
@@ -747,7 +747,7 @@ namespace eval ::scaleutil { set keepTkScaling 1 }
   The same holds true for the ttk::sizegrip widget in the built-in themes.</p>
 
   <h3 id="ov_getScalingPct">The Procedure
-  <code>scrollutil::getScalingPct</code></h3>
+  <code>scrollutil::getScalingPct</code> and Tk's Scaling Factor</h3>
 
   <p>The Scrollutil package provides the helper procedure
   <code>scrollutil::getScalingPct</code>, which expects no arguments and
@@ -755,19 +755,31 @@ namespace eval ::scaleutil { set keepTkScaling 1 }
   <i>current</i> scaling factor given by&nbsp; <code>[tk scaling]</code>.&nbsp;
   The procedure's return value is restricted to multiples of <code>25</code>,
   is at least <code>100</code>, and can be greater than <code>200</code>,
-  especially when running AndroWish on a tablet or smartphone.</p>
+  especially when running AndroWish on a tablet or smartphone.&nbsp; Scrollutil
+  makes use of this procedure to make sure that the sizes of its GUI components
+  will correspond to Tk's current scaling factor (which might have been changed
+  via&nbsp; <code>tk scaling</code>),&nbsp; and it is recommended to do this in
+  the application code, too.</p>
 
   <p>If the Tk version is 9 or later then the functionality of the
   <code>scaleutil::scalingPercentage</code> procedure described in the previous
   section is integrated in the core.&nbsp; As part of this functionality, Tk 9+
-  sets the variable <code>tk::scalingPct</code> <i>at initialization time</i>
-  to the scaling percentage corresponding to the display's DPI scaling level,
-  and the procedure <code>scaleutil::scalingPercentage</code> just returns the
-  minimum of this value and <code>200</code>.&nbsp; Scrollutil makes use of the
-  <code>scrollutil::getScalingPct</code> procedure to make sure that the sizes
-  of its GUI components will correspond to Tk's current scaling factor (which
-  might have been changed via&nbsp; <code>tk scaling</code>),&nbsp; and it is
-  recommended to do this in the application code, too.</p>
+  sets the variable <code>tk::scalingPct</code> at initialization time to the
+  scaling percentage corresponding to the display's DPI scaling level, and the
+  procedure <code>scaleutil::scalingPercentage</code> just returns the minimum
+  of the current value of <code>tk::scalingPct</code> and
+  <code>200</code>.&nbsp; Recall that in Tk 9+, whenever the scaling factor is
+  changed via&nbsp; <code>tk scaling</code>,&nbsp; the value of the variable
+  <code>tk::scalingPct</code> is automatically updated.&nbsp; Consequently, if
+  the application changes Tk's scaling factor <i>before loading Scrollutil or
+  Scrollutil_tile</i></i> via&nbsp; <code>package require</code>,&nbsp; then
+  the variable <code>scrollutil::scalingpct</code> will be set to the minimum
+  of the automatically updated value of <code>tk::scalingPct</code> and
+  <code>200</code>.&nbsp; These facts result in the following</p>
+
+  <p><b>Recommendation:</b> If your application changes Tk's scaling factor by
+  invoking&nbsp; <code>tk scaling</code>,&nbsp; it should do this <i>before
+  loading Scrollutil or Scrollutil_tile</i>.</p>
 
   <h3 id="ov_svgfmt">More on <code>scrollutil::svgfmt</code></h3>
 

@@ -1,7 +1,7 @@
 #==============================================================================
 # Main Scrollutil and Scrollutil_tile package module.
 #
-# Copyright (c) 2019-2025  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2019-2026  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 namespace eval scrollutil {
@@ -12,7 +12,7 @@ namespace eval scrollutil {
     #
     # Public variables:
     #
-    variable version	2.8
+    variable version	2.9
     variable library	[file dirname [file normalize [info script]]]
 
     #
@@ -107,9 +107,9 @@ proc scrollutil::loadUtils {} {
     package require mwutil 2.25[-]
 
     if {[catch {package present scaleutil} version] == 0 &&
-	[package vcompare $version 1.15] < 0} {
+	[package vcompare $version 1.16] < 0} {
 	package forget scaleutil
     }
-    package require scaleutil 1.15[-]
+    package require scaleutil 1.16[-]
 }
 scrollutil::loadUtils

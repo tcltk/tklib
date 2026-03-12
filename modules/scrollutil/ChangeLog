@@ -1,3 +1,22 @@
+2026-03-12  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 2.9.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/utils/pkgIndex.tcl:  Adapted the scaleutil package to the
+	* scripts/utils/scaleutil.tcl: recent changes related to the
+	  ttk::treeview widget, implemented by Brian O'Hagan.
+
+	* doc/scrollutil.html: Added a recommendation related to "tk scaling"
+	  to the section "The Procedure scrollutil::getScalingPct and Tk's
+	  Scaling Factor".
+
+	* doc/ScrollableFrmDemo2.png: Updated screenshot.
+
 2026-01-06  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Scrollutil 2.8.
