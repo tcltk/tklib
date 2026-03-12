@@ -7,7 +7,7 @@
 #   - Private procedures related to tile themes
 #   - Private procedures related to global KDE configuration options
 #
-# Copyright (c) 2005-2025  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2005-2026  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -28,14 +28,16 @@ proc tablelist::setThemeDefaults {} {
     #
     variable themeDefaults
     array set themeDefaults [list \
-	-background		white \
-	-foreground		black \
-	-font			TkDefaultFont \
-	-labelforeground	black \
-	-labelactiveFg		black \
-	-labelpressedFg		black \
-	-labelfont		TkDefaultFont \
-	-arrowcolor		black \
+	-background			white \
+	-foreground			black \
+	-inactiveselectbackground	"" \
+	-inactiveselectforeground	"" \
+	-font				TkDefaultFont \
+	-labelforeground		black \
+	-labelactiveFg			black \
+	-labelpressedFg			black \
+	-labelfont			TkDefaultFont \
+	-arrowcolor			black \
     ]
 
     set currentTheme [::mwutil::currentTheme]
@@ -113,7 +115,8 @@ proc tablelist::setThemeDefaults {} {
 
     variable configSpecs
     foreach opt {-background -foreground -disabledforeground -stripebackground
-		 -selectbackground -selectforeground -selectborderwidth -font
+		 -selectbackground -selectforeground -inactiveselectbackground
+		 -inactiveselectforeground -selectborderwidth -font
 		 -labelforeground -labelfont -labelborderwidth -labelpady
 		 -arrowcolor -arrowdisabledcolor -arrowstyle -treestyle
 		 -targetcolor} {
@@ -252,41 +255,28 @@ proc tablelist::aquaTheme {} {
 		set labeldeactivatedBg	#323232
 		set labeldisabledBg	""
 		set labelpressedBg	#323232
-		if {$majorOSVersion >= 20} {		;# macOS 11.0 or higher
-		    set arrowColor	#a4a0a1
-		} else {
-		    set arrowColor	#808080
-		}
 	    } else {
 		set labelBg		#eeeeee
 		set labeldeactivatedBg	#f6f6f6
 		set labeldisabledBg	""
 		set labelpressedBg	#eeeeee
-		if {$majorOSVersion >= 20} {		;# macOS 11.0 or higher
-		    set arrowColor	#878787
-		} else {
-		    set arrowColor	#404040
-		}
 	    }
 	} else {
 	    set labelBg			#f6f6f6
 	    set labeldeactivatedBg	#ffffff
 	    set labeldisabledBg		#ffffff
 	    set labelpressedBg		#e9e9e9
-	    set arrowColor		#404040
 	}
     } elseif {$majorOSVersion >= 11} {			;# OS X 10.7 or later
 	set labelBg		#f3f3f3
 	set labeldeactivatedBg	#f3f3f3
 	set labeldisabledBg	#f3f3f3
 	set labelpressedBg	#d5d5d5
-	set arrowColor		#777777
     } else {
 	set labelBg		#efefef
 	set labeldeactivatedBg	#efefef
 	set labeldisabledBg	#efefef
 	set labelpressedBg	#dddddd
-	set arrowColor		#777777
     }
 
     switch [mwutil::normalizeColor systemMenuActive] {
@@ -347,75 +337,6 @@ proc tablelist::aquaTheme {} {
 	}
     }
 
-    #
-    # Get the default value of the -selectbackground option
-    #
-    if {$majorOSVersion >= 18} {			;# OS X 10.14 or later
-	if {$newAquaSupport} {
-	    if {[catch {winfo rgb . systemSelectedContentBackgroundColor}]
-		== 0} {
-		set selectBg systemSelectedContentBackgroundColor
-	    } else {
-		variable channel
-		if {[info exists channel]} {	;# see proc condOpenPipeline
-		    set input [gets $channel]
-
-		    puts $channel "exit"
-		    flush $channel
-		    close $channel
-		    unset channel
-
-		    lassign $input r g b
-		    set rgb [format "#%02x%02x%02x" \
-			     [expr {$r >> 8}] [expr {$g >> 8}] [expr {$b >> 8}]]
-		} else {
-		    set rgb [mwutil::normalizeColor \
-			     systemSelectedTextBackgroundColor]
-		}
-
-		if {$darkMode} {
-		    switch $rgb {
-			#3f638b		   { set selectBg #0059d1  ;# blue }
-			#705771 - #705670  { set selectBg #803482  ;# purple }
-			#89576e - #88566e  { set selectBg #c93379  ;# pink }
-			#8b5759 - #8b5758  { set selectBg #d13539  ;# red }
-			#896647 - #886547  { set selectBg #c96003  ;# orange }
-			#8b7a3f - #8a754a  { set selectBg #d19e00  ;# yellow }
-			#5c7654 - #5c7653  { set selectBg #43932a  ;# green }
-			#ffffff		   { set selectBg #696969  ;# graphite }
-			default	  { set selectBg systemHighlightAlternate }
-		    }
-		} else {
-		    switch $rgb {
-			#b3d7ff		   { set selectBg #0064e1  ;# blue }
-			#dfc5e0 - #dfc5df  { set selectBg #7d2a7e  ;# purple }
-			#fdcbe2 - #fccae2  { set selectBg #d93b86  ;# pink }
-			#f6c4c5 - #f5c3c5  { set selectBg #c4262b  ;# red }
-			#fddabb - #fcd9bb  { set selectBg #d96b0a  ;# orange }
-			#ffeebe - #fee9be  { set selectBg #e1ac15  ;# yellow }
-			#d0eac8 - #d0eac7  { set selectBg #4da033  ;# green }
-			#e0e0e0		   { set selectBg #808080  ;# graphite }
-			default	  { set selectBg systemHighlightAlternate }
-		    }
-		}
-	    }
-	} else {
-	    switch [mwutil::normalizeColor systemHighlight] {
-		#b2d7ff  { set selectBg #0064e1  ;# blue }
-		#f7d4ff  { set selectBg #7d2a7e  ;# purple }
-		#ffbfd2  { set selectBg #d93b86  ;# pink }
-		#ffbbb8  { set selectBg #c4262b  ;# red }
-		#ffdfb3  { set selectBg #d96b0a  ;# orange }
-		#ffefb0  { set selectBg #e1ac15  ;# yellow }
-		#c0f6ad  { set selectBg #4da033  ;# green }
-		#d8d8dc  { set selectBg #808080  ;# graphite }
-		default  { set selectBg systemHighlightAlternate }
-	    }
-	}
-    } else {
-	set selectBg systemHighlightAlternate
-    }
-
     variable themeDefaults
     if {$newAquaSupport} {
 	array set themeDefaults [list \
@@ -438,24 +359,39 @@ proc tablelist::aquaTheme {} {
 	    -labelselectedpressedFg	systemModelessDialogActiveText \
 	]
     }
+
+    set selectBg [defaultAquaSelectBgColor]
+    set selectFg [defaultAquaSelectFgColor]
+    set inactiveSelBg [expr {
+	$selectBg eq "systemSelectedContentBackgroundColor" ?
+	"systemUnemphasizedSelectedContentBackgroundColor" :
+	"systemWindowBackgroundColor2"}]
+    set inactiveSelFg [expr {
+	$selectFg eq "systemAlternateSelectedControlTextColor" ?
+	"systemSelectedControlTextColor" :
+	"systemModelessDialogInactiveText"}]
+    set arrowColor [defaultAquaArrowColor]
+
     array set themeDefaults [list \
-	-disabledforeground	$disabledFg \
-	-stripebackground	$stripeBg \
-	-selectbackground	$selectBg \
-	-selectforeground	white \
-	-selectborderwidth	0 \
-	-labelbackground	$labelBg \
-	-labeldeactivatedBg	$labeldeactivatedBg \
-	-labeldisabledBg	$labeldisabledBg \
-	-labelactiveBg		$labelBg \
-	-labelpressedBg		$labelpressedBg \
-	-labelselectedBg	$labelselectedBg \
-	-labelselectedpressedBg	$labelselectedpressedBg \
-	-labeldisabledFg	$disabledFg \
-	-labelfont		TkHeadingFont \
-	-labelborderwidth	1 \
-	-labelpady		1 \
-	-arrowcolor		$arrowColor \
+	-disabledforeground		$disabledFg \
+	-stripebackground		$stripeBg \
+	-selectbackground		$selectBg \
+	-selectforeground		$selectFg \
+	-inactiveselectbackground	$inactiveSelBg \
+	-inactiveselectforeground	$inactiveSelFg \
+	-selectborderwidth		0 \
+	-labelbackground		$labelBg \
+	-labeldeactivatedBg		$labeldeactivatedBg \
+	-labeldisabledBg		$labeldisabledBg \
+	-labelactiveBg			$labelBg \
+	-labelpressedBg			$labelpressedBg \
+	-labelselectedBg		$labelselectedBg \
+	-labelselectedpressedBg		$labelselectedpressedBg \
+	-labeldisabledFg		$disabledFg \
+	-labelfont			TkHeadingFont \
+	-labelborderwidth		1 \
+	-labelpady			1 \
+	-arrowcolor			$arrowColor \
     ]
 
     variable pngSupported
@@ -700,21 +636,23 @@ proc tablelist::clamTheme {} {
 
     variable themeDefaults
     array set themeDefaults [list \
-	-disabledforeground	#999999 \
-	-stripebackground	#eeebe7 \
-	-selectbackground	#4a6984 \
-	-selectforeground	#ffffff \
-	-selectborderwidth	0 \
-	-labelbackground	#dcdad5 \
-	-labeldeactivatedBg	#dcdad5 \
-	-labeldisabledBg	#dcdad5 \
-	-labelactiveBg		#eeebe7 \
-	-labelpressedBg		#eeebe7 \
-	-labeldisabledFg	#999999 \
-	-labelborderwidth	2 \
-	-labelpady		$labelPadY \
-	-arrowstyle		[defaultX11ArrowStyle] \
-	-treestyle		gtk \
+	-disabledforeground		#999999 \
+	-stripebackground		#eeebe7 \
+	-selectbackground		#4a6984 \
+	-selectforeground		#ffffff \
+	-inactiveselectbackground	#9e9a91 \
+	-inactiveselectforeground	#ffffff \
+	-selectborderwidth		0 \
+	-labelbackground		#dcdad5 \
+	-labeldeactivatedBg		#dcdad5 \
+	-labeldisabledBg		#dcdad5 \
+	-labelactiveBg			#eeebe7 \
+	-labelpressedBg			#eeebe7 \
+	-labeldisabledFg		#999999 \
+	-labelborderwidth		2 \
+	-labelpady			$labelPadY \
+	-arrowstyle			[defaultX11ArrowStyle] \
+	-treestyle			gtk \
     ]
 }
 
@@ -1943,19 +1881,23 @@ proc tablelist::vistaTheme {} {
 	}
     }
 
+    set labelPadY [scaleutil::scale $labelPadY [getScalingPct]]
+
     array set themeDefaults [list \
-	-selectbackground	$selectBg \
-	-selectforeground	$selectFg \
-	-labelbackground	$labelBg \
-	-labeldeactivatedBg	$labelBg \
-	-labeldisabledBg	$labelBg \
-	-labelactiveBg		$activeBg \
-	-labelpressedBg		$pressedBg \
-	-labelborderwidth	$labelBd \
-	-labelpady		[scaleutil::scale $labelPadY [getScalingPct]] \
-	-arrowcolor		$arrowColor \
-	-arrowstyle		$arrowStyle \
-	-treestyle		$treeStyle \
+	-selectbackground		$selectBg \
+	-selectforeground		$selectFg \
+	-inactiveselectbackground	#d9d9d9 \
+	-inactiveselectforeground	SystemWindowText \
+	-labelbackground		$labelBg \
+	-labeldeactivatedBg		$labelBg \
+	-labeldisabledBg		$labelBg \
+	-labelactiveBg			$activeBg \
+	-labelpressedBg			$pressedBg \
+	-labelborderwidth		$labelBd \
+	-labelpady			$labelPadY \
+	-arrowcolor			$arrowColor \
+	-arrowstyle			$arrowStyle \
+	-treestyle			$treeStyle \
     ]
 }
 
@@ -1965,27 +1907,29 @@ proc tablelist::vistaTheme {} {
 proc tablelist::winnativeTheme {} {
     variable themeDefaults
     array set themeDefaults [list \
-	-background		SystemWindow \
-	-foreground		SystemWindowText \
-	-disabledforeground	SystemDisabledText \
-	-stripebackground	"" \
-	-selectbackground	SystemHighlight \
-	-selectforeground	SystemHighlightText \
-	-selectborderwidth	0 \
-	-labelbackground	SystemButtonFace \
-	-labeldeactivatedBg	SystemButtonFace \
-	-labeldisabledBg	SystemButtonFace \
-	-labelactiveBg		SystemButtonFace \
-	-labelpressedBg		SystemButtonFace \
-	-labelforeground	SystemButtonText \
-	-labeldisabledFg	SystemDisabledText \
-	-labelactiveFg		SystemButtonText \
-	-labelpressedFg		SystemButtonText \
-	-labelborderwidth	2 \
-	-labelpady		0 \
-	-arrowcolor		"" \
-	-arrowstyle		sunken8x7 \
-	-treestyle		winnative \
+	-background			SystemWindow \
+	-foreground			SystemWindowText \
+	-disabledforeground		SystemDisabledText \
+	-stripebackground		"" \
+	-selectbackground		SystemHighlight \
+	-selectforeground		SystemHighlightText \
+	-inactiveselectbackground	#d9d9d9 \
+	-inactiveselectforeground	SystemWindowText \
+	-selectborderwidth		0 \
+	-labelbackground		SystemButtonFace \
+	-labeldeactivatedBg		SystemButtonFace \
+	-labeldisabledBg		SystemButtonFace \
+	-labelactiveBg			SystemButtonFace \
+	-labelpressedBg			SystemButtonFace \
+	-labelforeground		SystemButtonText \
+	-labeldisabledFg		SystemDisabledText \
+	-labelactiveFg			SystemButtonText \
+	-labelpressedFg			SystemButtonText \
+	-labelborderwidth		2 \
+	-labelpady			0 \
+	-arrowcolor			"" \
+	-arrowstyle			sunken8x7 \
+	-treestyle			winnative \
     ]
 }
 
@@ -2157,19 +2101,23 @@ proc tablelist::xpnativeTheme {} {
 	}
     }
 
+    set labelPadY [scaleutil::scale $labelPadY [getScalingPct]]
+
     array set themeDefaults [list \
-	-selectbackground	$selectBg \
-	-selectforeground	$selectFg \
-	-labelbackground	$labelBg \
-	-labeldeactivatedBg	$labelBg \
-	-labeldisabledBg	$labelBg \
-	-labelactiveBg		$activeBg \
-	-labelpressedBg		$pressedBg \
-	-labelborderwidth	$labelBd \
-	-labelpady		[scaleutil::scale $labelPadY [getScalingPct]] \
-	-arrowcolor		$arrowColor \
-	-arrowstyle		$arrowStyle \
-	-treestyle		$treeStyle \
+	-selectbackground		$selectBg \
+	-selectforeground		$selectFg \
+	-inactiveselectbackground	#d9d9d9 \
+	-inactiveselectforeground	SystemWindowText \
+	-labelbackground		$labelBg \
+	-labeldeactivatedBg		$labelBg \
+	-labeldisabledBg		$labelBg \
+	-labelactiveBg			$activeBg \
+	-labelpressedBg			$pressedBg \
+	-labelborderwidth		$labelBd \
+	-labelpady			$labelPadY \
+	-arrowcolor			$arrowColor \
+	-arrowstyle			$arrowStyle \
+	-treestyle			$treeStyle \
     ]
 }
 

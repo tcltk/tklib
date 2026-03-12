@@ -1,5 +1,34 @@
-What is new in Tablelist 7.9?
------------------------------
+What is new in Tablelist 7.10?
+------------------------------
+
+1. Added the "-inactiveselectbackground" and "-inactiveselectforeground"
+   configuration options, whose default values on the windowing systems
+   "aqua" and "win32", as well as for the themes "aqua", "clam",
+   "vista", "winnative", and "xpnative" make sure that the selection
+   will appear in native colors also when the tablelist's body doesn't
+   have the input focus.
+
+2. Added the "rowcount" and "header rowcount" subcommands, as synonyms
+   for "size" and "header size", respectively (thanks to Ralf Richard
+   Goebel for his proposal).
+
+3. Made the updates using the "-listvariable" option by several orders
+   of magnitude faster (thanks to Alexandru Dadalau for reporting the
+   poor performance of the original implementation).
+
+4. Adapted the scaleutil package to the recent changes related to the
+   ttk::treeview widget, implemented by Brian O'Hagan.
+
+5. Extended the section "The Procedure tablelist::getScalingPct and Tk's
+   Scaling Factor" in Tablelist Programmer's Guide by the recommendation
+   that changing Tk's scaling factor via "tk scaling" should be done
+   before loading Tablelist or Tablelist_tile (thanks to Mark
+   Summerfield for his suggestion).
+
+6. The demo scripts no longer set the "-setgrid" option to true.
+
+What was new in Tablelist 7.9?
+------------------------------
 
 1. The scrolling with the mouse wheel or touchpad is now disabled while
    the menu of a (ttk::)menubutton or the listbox component of a

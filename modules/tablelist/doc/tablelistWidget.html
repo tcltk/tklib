@@ -14,7 +14,7 @@
   <div>
     <h1>The <code><b>tablelist::tablelist</b></code> Command</h1>
 
-    <h2>For Tablelist Version 7.9</h2>
+    <h2>For Tablelist Version 7.10</h2>
 
     <h3>by</h3>
 
@@ -71,8 +71,8 @@
 </pre>
     </dd>
 
-    <dt><a href="#body_options">OPTIONS FOR THE BODY AND HEADER COMPONENTS OF
-    THE WIDGET</a></dt>
+    <dt><a href="#body_hdr_options">OPTIONS FOR THE BODY AND HEADER COMPONENTS
+    OF THE WIDGET</a></dt>
 
     <dd>
       <pre>
@@ -187,6 +187,14 @@
     <i>boolean</i></code></dd>
 
     <dd><code><b><a href="#height">-height</a></b> <i>units</i></code></dd>
+
+    <dd><code><b><a href=
+    "#inactiveselectbackground">-inactiveselectbackground</a></b>
+    <i>color</i></code></dd>
+
+    <dd><code><b><a href=
+    "#inactiveselectforeground">-inactiveselectforeground</a></b>
+    <i>color</i></code></dd>
 
     <dd><code><b><a href="#incrarrowtype">-incrarrowtype</a></b>
     <b>up</b>|<b>down</b></code></dd>
@@ -1171,6 +1179,9 @@
     <i>index</i> ?<i>option</i>? ?<i>value</i> <i>option</i> <i>value</i>
     ...?</code></dd>
 
+    <dd><code><i>pathName</i> <b><a href=
+    "#rowcount">rowcount</a></b></code></dd>
+
     <dd><code><i>pathName</i> <b><a href="#scan">scan</a></b>
     <b>mark</b>|<b>dragto</b> <i>x</i> <i>y</i></code></dd>
 
@@ -1497,6 +1508,9 @@
     rowconfigure</a></b> <i>headerIndex</i> ?<i>option</i>? ?<i>value</i>
     <i>option</i> <i>value</i> ...?</code></dd>
 
+    <dd><code><i>pathName</i> <b><a href="#hdr_rowcount">header
+    rowcount</a></b></code></dd>
+
     <dd><code><i>pathName</i> <b><a href="#hdr_size">header
     size</a></b></code></dd>
 
@@ -1686,7 +1700,7 @@
     supports both static and dynamic scrollbars, and respects the header
     component and title columns of tablelist widgets.</dd>
 
-    <dt class="tm" id="body_options"><b>OPTIONS FOR THE BODY AND HEADER
+    <dt class="tm" id="body_hdr_options"><b>OPTIONS FOR THE BODY AND HEADER
     COMPONENTS OF THE WIDGET</b></dt>
 
     <dd>
@@ -1697,10 +1711,10 @@
 
     <dd>These options (described in the <b>options</b> manual entry) are only
     valid for the body and header components of the tablelist widget.&nbsp; As
-    discussed in the next section, the colors and font used when drawing the
-    header <i>labels</i> can be different from those specified for the body and
-    header <i>items</i>.&nbsp; When using the package Tablelist_tile, these
-    options have theme-specific default values.</dd>
+    discussed below, the colors and fonts used when drawing the header
+    <i>labels</i> can be different from those specified for the body and header
+    <i>items</i>.&nbsp; When using the package Tablelist_tile, these options
+    have theme-specific default values.</dd>
 
     <dt class="tm" id="widget_options"><b>WIDGET-SPECIFIC OPTIONS</b></dt>
 
@@ -2883,6 +2897,90 @@ proc expandCmd {tbl row} {
       </blockquote>
     </dd>
 
+    <dd id="inactiveselectbackground">
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td>Command-Line Name:&nbsp;</td>
+          <td><code><b>-inactiveselectbackground</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Name:</td>
+          <td><code><b>&nbsp;inactiveSelectBackground</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Class:</td>
+          <td><code><b>&nbsp;Foreground</b></code></td>
+        </tr>
+      </table>
+
+      <blockquote>
+        <p>Specifies the background color to use for the selection in the
+        tablelist's body when the latter does not have the input focus.&nbsp;
+        If empty then the value of the <b>-selectbackground</b></code> option
+        at <a href="#std_options">widget</a>, <a href=
+        "#col_selectbackground">column</a>, <a href=
+        "#row_selectbackground">row</a>, or <a href=
+        "#cell_selectbackground">cell</a> level is used when the widget's body
+        does not have the focus.</p>
+
+        <p>The default value depends on the windowing system in the Tablelist
+        package and on the current theme in Tablelist_tile:&nbsp; In the
+        Tablelist package it is non-empty on the windowing systems
+        <code><b>aqua</b></code> and <code><b>win32</b></code>, and an empty
+        string on <code><b>x11</b></code>; in Tablelist_tile it is non-empty
+        for the themes <code><b>aqua</b></code>, <code><b>clam</b></code>,
+        <code><b>vista</b></code>, <code><b>winnative</b></code>, and
+        <code><b>xpnative</b></code>, and an empty string for all the other
+        themes.&nbsp; The choice of the default value makes sure that the
+	selection will appear in native colors also when the widget's body does
+	not have the focus.</p>
+      </blockquote>
+    </dd>
+
+    <dd id="inactiveselectforeground">
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td>Command-Line Name:&nbsp;</td>
+          <td><code><b>-inactiveselectforeground</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Name:</td>
+          <td><code><b>&nbsp;inactiveSelectForeground</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Class:</td>
+          <td><code><b>&nbsp;Background</b></code></td>
+        </tr>
+      </table>
+
+      <blockquote>
+        <p>Specifies the foreground color to use for the selection in the
+        tablelist's body when the latter does not have the input focus.&nbsp;
+        This option is only relevant if the value of the <code><b><a href=
+        "#inactiveselectbackground">-inactiveselectbackground</a></b></code>
+        option is non-empty, in which case, if the value of this option is an
+        empty string then the value of the <b>-selectforeground</b></code>
+        option at <a href="#std_options">widget</a> level (only) is used when
+        the tablelist's body does not have the focus.</p>
+
+        <p>The default value depends on the windowing system in the Tablelist
+        package and on the current theme in Tablelist_tile:&nbsp; In the
+        Tablelist package it is non-empty on the windowing systems
+        <code><b>aqua</b></code> and <code><b>win32</b></code>, and an empty
+        string on <code><b>x11</b></code>; in Tablelist_tile it is non-empty
+        for the themes <code><b>aqua</b></code>, <code><b>clam</b></code>,
+        <code><b>vista</b></code>, <code><b>winnative</b></code>, and
+        <code><b>xpnative</b></code>, and an empty string for all the other
+        themes.&nbsp; The choice of the default value makes sure that the
+	selection will appear in native colors also when the widget's body does
+	not have the focus.</p>
+      </blockquote>
+    </dd>
+
     <dd id="incrarrowtype">
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
@@ -2971,7 +3069,7 @@ proc expandCmd {tbl row} {
         the body items and that of the header area filled with the header
         items (if any).&nbsp; The default value is an empty string, indicating
         that these areas will inherit the background color specified by the
-        <code><b><a href="#body_options">-background</a></b></code>
+        <code><b><a href="#body_hdr_options">-background</a></b></code>
         configuration option.&nbsp; Notice that regardless of the value of this
         option, the blank space that might appear to the right of the body and
         header items as well as below the last body item will always have the
@@ -4206,7 +4304,8 @@ option add *Tablelist.showHorizSeparator 0
         the widget is disabled then neither items nor columns may be inserted,
         deleted, updated, or moved, the items, header labels, and the up- or
         down-arrow are drawn in the <code><b><a href=
-        "#body_options">-disabledforeground</a></b></code>, <code><b><a href=
+        "#body_hdr_options">-disabledforeground</a></b></code>,
+        <code><b><a href=
         "#labeldisabledforeground">-labeldisabledforeground</a></b></code>, and
         <code><b><a href=
         "#arrowdisabledcolor">-arrowdisabledcolor</a></b></code> color,
@@ -4297,7 +4396,7 @@ option add *Tablelist.showHorizSeparator 0
         items, and so on.&nbsp; In the Tablelist package and in most themes
         supported by Tablelist_tile, the default value is an empty string,
         indicating that the stripes will inherit the background color specified
-        by the <code><b><a href="#body_options">-background</a></b></code>
+        by the <code><b><a href="#body_hdr_options">-background</a></b></code>
         configuration option.&nbsp; When using Tablelist_tile with the
         <code><b>tileqt</b></code> theme then the default value is given by the
         global KDE option <code><b>alternateBackground</b></code>, which in
@@ -4343,7 +4442,7 @@ option add *Tablelist.showHorizSeparator 0
         which in turn is followed by the same number of "normal" viewable
         items, and so on.&nbsp; The default value is an empty string,
         indicating that the stripes will inherit the foreground color specified
-        by the <code><b><a href="#body_options">-foreground</a></b></code>
+        by the <code><b><a href="#body_hdr_options">-foreground</a></b></code>
         configuration option.&nbsp; The <code><b>-stripeforeground</b></code>
         option has a higher priority than the <code><b>-foreground</b></code>
         column configuration option, but a lower priority than the
@@ -4937,7 +5036,7 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
         <code><b>vistaClassic</b></code>, <code><b>win7Aero</b></code>,
         <code><b>win7Classic</b></code>, and <code><b>win10</b></code> are
         <i>automatically</i> adapted to the display's scaling percentage.&nbsp;
-        Platform-independent <i>manual</i> scaling is supported by the
+        Platform-independent <i>manual</i> scaling is supported for the
         following tree styles:</p>
 
         <table border="2" cellspacing="0" cellpadding="3" rules="groups">
@@ -5224,8 +5323,9 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr valign="top">
                   <td>Tablelist_tile:&nbsp;</td>
-                  <td>Default for the <code><b>awarc</b></code> theme, if SVG
-                  support is available.</td>
+                  <td>Default for the themes <code><b>arc</b></code>,
+                  <code><b>awarc</b></code>, and <code><b>droid</b></code>, if
+                  SVG support is available.</td>
                 </tr>
               </table>
             </td>
@@ -5244,8 +5344,9 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr valign="top">
                   <td>Tablelist_tile:&nbsp;</td>
-                  <td>Default for the <code><b>awarc</b></code> theme, in the
-                  absence of SVG support.</td>
+                  <td>Default for the themes <code><b>arc</b></code>,
+                  <code><b>awarc</b></code>, and <code><b>droid</b></code>, in
+                  the absence of SVG support.</td>
                 </tr>
               </table>
             </td>
@@ -10971,6 +11072,12 @@ upvar #0 [.tbl <span class="red">itemlistvar</span>] itemList
         described in the <a href="#row_options">ROW CONFIGURATION OPTIONS IN
         THE TABLELIST BODY</a> section.</dd>
 
+        <dt class="tm" id="rowcount"><code><i>pathName</i>
+        <b>rowcount</b></code></dt>
+
+        <dd>Returns the total number of items in the tablelist body.&nbsp;
+        Synonym for <code><b><a href="#size">size</a></b></code>.</dd>
+
         <dt class="tm" id="scan"><code><i>pathName</i> <b>scan</b>
         <i>option</i> <i>args</i></code></dt>
 
@@ -11317,7 +11424,8 @@ upvar #0 [.tbl <span class="red">itemlistvar</span>] itemList
 
         <dt class="tm" id="size"><code><i>pathName</i> <b>size</b></code></dt>
 
-        <dd>Returns the total number of items in the tablelist body.</dd>
+        <dd>Returns the total number of items in the tablelist body.&nbsp;</dd>
+        Synonym for <code><b><a href="#rowcount">rowcount</a></b></code>.</dd>
 
         <dt class="tm" id="sort"><code><i>pathName</i> <b>sort</b>
         ?<b>-increasing</b>|<b>-decreasing</b>?</code></dt>
@@ -12159,11 +12267,19 @@ upvar #0 [.tbl <span class="red">itemlistvar</span>] itemList
         described in the <a href="#hdr_row_options">ROW CONFIGURATION OPTIONS
         IN THE TABLELIST HEADER</a> section.</dd>
 
+        <dt class="tm" id="hdr_rowcount"><code><i>pathName</i> <b>header
+        rowcount</b></code></dt>
+
+        <dd>Similar to the <code><b><a href="#rowcount">rowcount</a></b></code>
+        command for the tablelist body.&nbsp; Synonym for <code><b><a href=
+        "#hdr_size">header size</a></b></code>.</dd>
+
         <dt class="tm" id="hdr_size"><code><i>pathName</i> <b>header
         size</b></code></dt>
 
         <dd>Similar to the <code><b><a href="#size">size</a></b></code> command
-        for the tablelist body.</dd>
+        for the tablelist body.&nbsp; Synonym for <code><b><a href=
+        "#hdr_rowcount">header rowcount</a></b></code>.</dd>
 
         <dt class="tm" id="hdr_unsetcellattrib"><code><i>pathName</i> <b>header
         unsetcellattrib</b> <i>headerCellIndex</i> <i>name</i></code></dt>

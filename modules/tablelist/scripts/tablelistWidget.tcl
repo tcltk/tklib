@@ -8,7 +8,7 @@
 #   - Private procedures implementing the tablelist widget command
 #   - Private callback procedures
 #
-# Copyright (c) 2000-2025  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2026  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -161,110 +161,112 @@ namespace eval tablelist {
     #
     variable configSpecs
     array set configSpecs {
-	-acceptchildcommand	 {acceptChildCommand	  AcceptChildCommand  w}
-	-acceptdropcommand	 {acceptDropCommand	  AcceptDropCommand   w}
-	-activestyle		 {activeStyle		  ActiveStyle	      w}
-	-aftercopycommand	 {afterCopyCommand	  AfterCopyCommand    w}
-	-arrowcolor		 {arrowColor		  ArrowColor	      w}
-	-arrowdisabledcolor	 {arrowDisabledColor	  ArrowDisabledColor  w}
-	-arrowstyle		 {arrowStyle		  ArrowStyle	      w}
-	-autofinishediting	 {autoFinishEditing	  AutoFinishEditing   w}
-	-autoscan		 {autoScan		  AutoScan	      w}
-	-background		 {background		  Background	      b}
-	-bg			 -background
-	-borderwidth		 {borderWidth		  BorderWidth	      f}
-	-bd			 -borderwidth
-	-button2window		 {button2Window		  Button2Window	      w}
-	-collapsecommand	 {collapseCommand	  CollapseCommand     w}
-	-colorizecommand	 {colorizeCommand	  ColorizeCommand     w}
-	-columns		 {columns		  Columns	      w}
-	-columntitles		 {columnTitles		  ColumnTitles	      w}
-	-cursor			 {cursor		  Cursor	      c}
-	-customdragsource	 {customDragSource	  CustomDragSource    w}
-	-disabledforeground	 {disabledForeground	  DisabledForeground  w}
-	-displayondemand	 {displayOnDemand	  DisplayOnDemand     w}
-	-editendcommand		 {editEndCommand	  EditEndCommand      w}
-	-editendonfocusout	 {editEndOnFocusOut	  EditEndOnFocusOut   w}
-	-editendonmodclick	 {editEndOnModClick	  EditEndOnModClick   w}
-	-editselectedonly	 {editSelectedOnly	  EditSelectedOnly    w}
-	-editstartcommand	 {editStartCommand	  EditStartCommand    w}
-	-expandcommand		 {expandCommand		  ExpandCommand       w}
-	-exportselection	 {exportSelection	  ExportSelection     w}
-	-font			 {font			  Font		      b}
-	-forceeditendcommand	 {forceEditEndCommand	  ForceEditEndCommand w}
-	-foreground		 {foreground		  Foreground	      b}
-	-fg			 -foreground
-	-fullseparators		 {fullSeparators	  FullSeparators      w}
-	-height			 {height		  Height	      w}
-	-highlightbackground	 {highlightBackground	  HighlightBackground f}
-	-highlightcolor		 {highlightColor	  HighlightColor      f}
-	-highlightthickness	 {highlightThickness	  HighlightThickness  f}
-	-incrarrowtype		 {incrArrowType		  IncrArrowType	      w}
-	-instanttoggle		 {instantToggle		  InstantToggle	      w}
-	-itembackground		 {itemBackground	  Background	      w}
-	-itembg			 -itembackground
-	-labelactivebackground	 {labelActiveBackground	  Foreground	      l}
-	-labelactiveforeground	 {labelActiveForeground	  Background	      l}
-	-labelbackground	 {labelBackground	  Background	      l}
-	-labelbg		 -labelbackground
-	-labelborderwidth	 {labelBorderWidth	  BorderWidth	      l}
-	-labelbd		 -labelborderwidth
-	-labelcommand		 {labelCommand		  LabelCommand	      w}
-	-labelcommand2		 {labelCommand2		  LabelCommand2	      w}
-	-labeldisabledforeground {labelDisabledForeground DisabledForeground  l}
-	-labelfont		 {labelFont		  Font		      l}
-	-labelforeground	 {labelForeground	  Foreground	      l}
-	-labelfg		 -labelforeground
-	-labelheight		 {labelHeight		  Height	      l}
-	-labelpady		 {labelPadY		  Pad		      l}
-	-labelrelief		 {labelRelief		  Relief	      l}
-	-listvariable		 {listVariable		  Variable	      w}
-	-movablecolumns	 	 {movableColumns	  MovableColumns      w}
-	-movablerows		 {movableRows		  MovableRows	      w}
-	-movecolumncursor	 {moveColumnCursor	  MoveColumnCursor    w}
-	-movecursor		 {moveCursor		  MoveCursor	      w}
-	-populatecommand	 {populateCommand	  PopulateCommand     w}
-	-protecttitlecolumns	 {protectTitleColumns	  ProtectTitleColumns w}
-	-relief			 {relief		  Relief	      f}
-	-resizablecolumns	 {resizableColumns	  ResizableColumns    w}
-	-resizecursor		 {resizeCursor		  ResizeCursor	      w}
-	-selectbackground	 {selectBackground	  Foreground	      w}
-	-selectborderwidth	 {selectBorderWidth	  BorderWidth	      w}
-	-selectfiltercommand	 {selectFilterCommand	  SelectFilterCommand w}
-	-selectforeground	 {selectForeground	  Background	      w}
-	-selectmode		 {selectMode		  SelectMode	      w}
-	-selecttype		 {selectType		  SelectType	      w}
-	-setfocus		 {setFocus		  SetFocus	      w}
-	-setgrid		 {setGrid		  SetGrid	      w}
-	-showarrow		 {showArrow		  ShowArrow	      w}
-	-showbusycursor		 {showBusyCursor	  ShowBusyCursor      w}
-	-showeditcursor		 {showEditCursor	  ShowEditCursor      w}
-	-showhorizseparator	 {showHorizSeparator	  ShowHorizSeparator  w}
-	-showlabels		 {showLabels		  ShowLabels	      w}
-	-showseparators		 {showSeparators	  ShowSeparators      w}
-	-snipstring		 {snipString		  SnipString	      w}
-	-sortcommand		 {sortCommand		  SortCommand	      w}
-	-spacing		 {spacing		  Spacing	      w}
-	-state			 {state			  State		      w}
-	-stretch		 {stretch		  Stretch	      w}
-	-stripebackground	 {stripeBackground	  Background	      w}
-	-stripebg		 -stripebackground
-	-stripeforeground	 {stripeForeground	  Foreground	      w}
-	-stripefg		 -stripeforeground
-	-stripeheight		 {stripeHeight		  StripeHeight	      w}
-	-takefocus		 {takeFocus		  TakeFocus	      f}
-	-targetcolor		 {targetColor		  TargetColor	      w}
-	-tight			 {tight			  Tight		      w}
-	-titlecolumns		 {titleColumns	  	  TitleColumns	      w}
-	-tooltipaddcommand	 {tooltipAddCommand	  TooltipAddCommand   w}
-	-tooltipdelcommand	 {tooltipDelCommand	  TooltipDelCommand   w}
-	-treecolumn		 {treeColumn		  TreeColumn	      w}
-	-treestyle		 {treeStyle		  TreeStyle	      w}
-	-width			 {width			  Width		      w}
-	-xmousewheelwindow	 {xMouseWheelWindow	  MouseWheelWindow    w}
-	-xscrollcommand		 {xScrollCommand	  ScrollCommand	      w}
-	-ymousewheelwindow	 {yMouseWheelWindow	  MouseWheelWindow    w}
-	-yscrollcommand		 {yScrollCommand	  ScrollCommand	      w}
+	-acceptchildcommand	  {acceptChildCommand	  AcceptChildCommand  w}
+	-acceptdropcommand	  {acceptDropCommand	  AcceptDropCommand   w}
+	-activestyle		  {activeStyle		  ActiveStyle	      w}
+	-aftercopycommand	  {afterCopyCommand	  AfterCopyCommand    w}
+	-arrowcolor		  {arrowColor		  ArrowColor	      w}
+	-arrowdisabledcolor	  {arrowDisabledColor	  ArrowDisabledColor  w}
+	-arrowstyle		  {arrowStyle		  ArrowStyle	      w}
+	-autofinishediting	  {autoFinishEditing	  AutoFinishEditing   w}
+	-autoscan		  {autoScan		  AutoScan	      w}
+	-background		  {background		  Background	      b}
+	-bg			  -background
+	-borderwidth		  {borderWidth		  BorderWidth	      f}
+	-bd			  -borderwidth
+	-button2window		  {button2Window	  Button2Window	      w}
+	-collapsecommand	  {collapseCommand	  CollapseCommand     w}
+	-colorizecommand	  {colorizeCommand	  ColorizeCommand     w}
+	-columns		  {columns		  Columns	      w}
+	-columntitles		  {columnTitles		  ColumnTitles	      w}
+	-cursor			  {cursor		  Cursor	      c}
+	-customdragsource	  {customDragSource	  CustomDragSource    w}
+	-disabledforeground	  {disabledForeground	  DisabledForeground  w}
+	-displayondemand	  {displayOnDemand	  DisplayOnDemand     w}
+	-editendcommand		  {editEndCommand	  EditEndCommand      w}
+	-editendonfocusout	  {editEndOnFocusOut	  EditEndOnFocusOut   w}
+	-editendonmodclick	  {editEndOnModClick	  EditEndOnModClick   w}
+	-editselectedonly	  {editSelectedOnly	  EditSelectedOnly    w}
+	-editstartcommand	  {editStartCommand	  EditStartCommand    w}
+	-expandcommand		  {expandCommand	  ExpandCommand       w}
+	-exportselection	  {exportSelection	  ExportSelection     w}
+	-font			  {font			  Font		      b}
+	-forceeditendcommand	  {forceEditEndCommand	  ForceEditEndCommand w}
+	-foreground		  {foreground		  Foreground	      b}
+	-fg			  -foreground
+	-fullseparators		  {fullSeparators	  FullSeparators      w}
+	-height			  {height		  Height	      w}
+	-highlightbackground	  {highlightBackground	  HighlightBackground f}
+	-highlightcolor		  {highlightColor	  HighlightColor      f}
+	-highlightthickness	  {highlightThickness	  HighlightThickness  f}
+	-inactiveselectbackground {inactiveSelectBackground Foreground	      w}
+	-inactiveselectforeground {inactiveSelectForeground Background	      w}
+	-incrarrowtype		  {incrArrowType	  IncrArrowType	      w}
+	-instanttoggle		  {instantToggle	  InstantToggle	      w}
+	-itembackground		  {itemBackground	  Background	      w}
+	-itembg			  -itembackground
+	-labelactivebackground	  {labelActiveBackground  Foreground	      l}
+	-labelactiveforeground	  {labelActiveForeground  Background	      l}
+	-labelbackground	  {labelBackground	  Background	      l}
+	-labelbg		  -labelbackground
+	-labelborderwidth	  {labelBorderWidth	  BorderWidth	      l}
+	-labelbd		  -labelborderwidth
+	-labelcommand		  {labelCommand		  LabelCommand	      w}
+	-labelcommand2		  {labelCommand2	  LabelCommand2	      w}
+	-labeldisabledforeground  {labelDisabledForeground DisabledForeground l}
+	-labelfont		  {labelFont		  Font		      l}
+	-labelforeground	  {labelForeground	  Foreground	      l}
+	-labelfg		  -labelforeground
+	-labelheight		  {labelHeight		  Height	      l}
+	-labelpady		  {labelPadY		  Pad		      l}
+	-labelrelief		  {labelRelief		  Relief	      l}
+	-listvariable		  {listVariable		  Variable	      w}
+	-movablecolumns	 	  {movableColumns	  MovableColumns      w}
+	-movablerows		  {movableRows		  MovableRows	      w}
+	-movecolumncursor	  {moveColumnCursor	  MoveColumnCursor    w}
+	-movecursor		  {moveCursor		  MoveCursor	      w}
+	-populatecommand	  {populateCommand	  PopulateCommand     w}
+	-protecttitlecolumns	  {protectTitleColumns	  ProtectTitleColumns w}
+	-relief			  {relief		  Relief	      f}
+	-resizablecolumns	  {resizableColumns	  ResizableColumns    w}
+	-resizecursor		  {resizeCursor		  ResizeCursor	      w}
+	-selectbackground	  {selectBackground	  Foreground	      w}
+	-selectborderwidth	  {selectBorderWidth	  BorderWidth	      w}
+	-selectfiltercommand	  {selectFilterCommand	  SelectFilterCommand w}
+	-selectforeground	  {selectForeground	  Background	      w}
+	-selectmode		  {selectMode		  SelectMode	      w}
+	-selecttype		  {selectType		  SelectType	      w}
+	-setfocus		  {setFocus		  SetFocus	      w}
+	-setgrid		  {setGrid		  SetGrid	      w}
+	-showarrow		  {showArrow		  ShowArrow	      w}
+	-showbusycursor		  {showBusyCursor	  ShowBusyCursor      w}
+	-showeditcursor		  {showEditCursor	  ShowEditCursor      w}
+	-showhorizseparator	  {showHorizSeparator	  ShowHorizSeparator  w}
+	-showlabels		  {showLabels		  ShowLabels	      w}
+	-showseparators		  {showSeparators	  ShowSeparators      w}
+	-snipstring		  {snipString		  SnipString	      w}
+	-sortcommand		  {sortCommand		  SortCommand	      w}
+	-spacing		  {spacing		  Spacing	      w}
+	-state			  {state		  State		      w}
+	-stretch		  {stretch		  Stretch	      w}
+	-stripebackground	  {stripeBackground	  Background	      w}
+	-stripebg		  -stripebackground
+	-stripeforeground	  {stripeForeground	  Foreground	      w}
+	-stripefg		  -stripeforeground
+	-stripeheight		  {stripeHeight		  StripeHeight	      w}
+	-takefocus		  {takeFocus		  TakeFocus	      f}
+	-targetcolor		  {targetColor		  TargetColor	      w}
+	-tight			  {tight		  Tight		      w}
+	-titlecolumns		  {titleColumns	  	  TitleColumns	      w}
+	-tooltipaddcommand	  {tooltipAddCommand	  TooltipAddCommand   w}
+	-tooltipdelcommand	  {tooltipDelCommand	  TooltipDelCommand   w}
+	-treecolumn		  {treeColumn		  TreeColumn	      w}
+	-treestyle		  {treeStyle		  TreeStyle	      w}
+	-width			  {width		  Width		      w}
+	-xmousewheelwindow	  {xMouseWheelWindow	  MouseWheelWindow    w}
+	-xscrollcommand		  {xScrollCommand	  ScrollCommand	      w}
+	-ymousewheelwindow	  {yMouseWheelWindow	  MouseWheelWindow    w}
+	-yscrollcommand		  {yScrollCommand	  ScrollCommand	      w}
     }
 
     #
@@ -511,13 +513,14 @@ namespace eval tablelist {
 	itemlistvar itemtodict labelpath labels labeltag labelwindowpath \
 	loadfromfile loadfromstring move movecolumn nearest nearestcell \
 	nearestcolumn noderow parentkey refreshsorting rejectinput \
-	resetsortinfo restorecursor rowattrib rowcget rowconfigure scan \
-	searchcolumn see seecell seecolumn selection separatorpath separators \
-	setbusycursor showtargetmark size sort sortbycolumn sortbycolumnlist \
-	sortcolumn sortcolumnlist sortorder sortorderlist stopautoscroll \
-	targetmarkpath targetmarkpos togglecolumnhide togglerowhide \
-	toplevelkey unsetattrib unsetcellattrib unsetcolumnattrib \
-	unsetrowattrib viewablerowcount windowpath xview yview]
+	resetsortinfo restorecursor rowattrib rowcget rowconfigure rowcount \
+	scan searchcolumn see seecell seecolumn selection separatorpath \
+	separators setbusycursor showtargetmark size sort sortbycolumn \
+	sortbycolumnlist sortcolumn sortcolumnlist sortorder sortorderlist \
+	stopautoscroll targetmarkpath targetmarkpos togglecolumnhide \
+	togglerowhide toplevelkey unsetattrib unsetcellattrib \
+	unsetcolumnattrib unsetrowattrib viewablerowcount windowpath xview \
+	yview]
 
     proc restrictCmdOpts {} {
 	variable cmdOpts
@@ -570,8 +573,8 @@ namespace eval tablelist {
 				 hascellattrib hasrowattrib imagelabelpath \
 				 index insert insertlist iselemsnipped \
 				 itemlistvar nearest nearestcell rowattrib \
-				 rowcget rowconfigure size unsetcellattrib \
-				 unsetrowattrib windowpath]
+				 rowcget rowconfigure rowcount size \
+				 unsetcellattrib unsetrowattrib windowpath]
     variable labelWinTypes [list checkbutton ttk::checkbutton]
     variable scanOpts      [list mark dragto]
     variable searchOpts    [list -all -backwards -check -descend -exact \
@@ -1146,6 +1149,7 @@ proc tablelist::tablelist args {
     $w tag configure itembg -background ""		     ;# initial setting
     $w tag configure stripe -background "" -foreground ""    ;# initial setting
     $w tag configure select -relief raised
+    $w tag configure inactsel -relief raised
     $w tag configure curRow -borderwidth 1 -relief raised
     $w tag configure active -borderwidth ""		     ;# initial setting
     $w tag configure disabled -foreground ""		     ;# initial setting
@@ -4698,6 +4702,18 @@ proc tablelist::header_rowconfigureSubCmd {win argList} {
 }
 
 #------------------------------------------------------------------------------
+# tablelist::header_rowcountSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::header_rowcountSubCmd {win argList} {
+    if {[llength $argList] != 0} {
+	mwutil::wrongNumArgs "$win header rowcount"
+    }
+
+    upvar ::tablelist::ns${win}::data data
+    return $data(hdr_itemCount)
+}
+
+#------------------------------------------------------------------------------
 # tablelist::header_sizeSubCmd
 #------------------------------------------------------------------------------
 proc tablelist::header_sizeSubCmd {win argList} {
@@ -5625,6 +5641,19 @@ proc tablelist::rowconfigureSubCmd {win argList} {
     return [mwutil::configureSubCmd $win rowConfigSpecs \
 	    "tablelist::doRowConfig $row" "tablelist::doRowCget $row" \
 	    [lrange $argList 1 end]]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::rowcountSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::rowcountSubCmd {win argList} {
+    if {[llength $argList] != 0} {
+	mwutil::wrongNumArgs "$win rowcount"
+    }
+
+    synchronize $win
+    upvar ::tablelist::ns${win}::data data
+    return $data(itemCount)
 }
 
 #------------------------------------------------------------------------------

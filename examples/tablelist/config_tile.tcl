@@ -2,7 +2,7 @@
 # Demonstrates how to use a tablelist widget for displaying and editing the
 # configuration options of an arbitrary widget.
 #
-# Copyright (c) 2000-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2026  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require tablelist_tile
@@ -50,7 +50,6 @@ namespace eval demo {
     }
     option add *DemoTop.tf.relief			sunken
     option add *DemoTop.tf.tbl.borderWidth		0
-    option add *DemoTop.tf.tbl.setGrid			yes
     option add *DemoTop.bf.TButton.width		10
 }
 

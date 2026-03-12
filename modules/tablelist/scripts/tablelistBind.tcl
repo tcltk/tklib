@@ -10,7 +10,7 @@
 #   - Binding tag TablelistHeader
 #   - Binding tags TablelistLabel, TablelistSubLabel, and TablelistArrow
 #
-# Copyright (c) 2000-2025  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2026  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -215,40 +215,6 @@ proc tablelist::delaySashPosUpdates {w ms} {
 # Binding tag Tablelist
 # =====================
 #
-
-#------------------------------------------------------------------------------
-# tablelist::addActiveTag
-#
-# This procedure is invoked when the tablelist widget win gains the keyboard
-# focus.  It moves the "active" tag to the line or cell that displays the
-# active item or element of the widget in its body text child.
-#------------------------------------------------------------------------------
-proc tablelist::addActiveTag win {
-    upvar ::tablelist::ns${win}::data data
-    set data(ownsFocus) 1
-
-    #
-    # Conditionally move the "active" tag to the line
-    # or cell that displays the active item or element
-    #
-    if {![info exists data(dispId)]} {
-	moveActiveTag $win
-    }
-}
-
-#------------------------------------------------------------------------------
-# tablelist::removeActiveTag
-#
-# This procedure is invoked when the tablelist widget win loses the keyboard
-# focus.  It removes the "active" tag from the body text child of the widget.
-#------------------------------------------------------------------------------
-proc tablelist::removeActiveTag win {
-    upvar ::tablelist::ns${win}::data data
-    set data(ownsFocus) 0
-
-    $data(body) tag remove curRow 1.0 end
-    $data(body) tag remove active 1.0 end
-}
 
 #------------------------------------------------------------------------------
 # tablelist::finishEditingOnFocusOut
@@ -597,6 +563,7 @@ proc tablelist::updateConfiguration win {
 	variable themeDefaults
 	foreach opt {-background -foreground -disabledforeground
 		     -stripebackground -selectbackground -selectforeground
+		     -inactiveselectbackground -inactiveselectforeground
 		     -selectborderwidth -font -labelforeground -labelfont
 		     -labelborderwidth -labelpady -treestyle -targetcolor} {
 	    if {$data($opt) eq $tmp($opt)} {
@@ -786,8 +753,8 @@ proc tablelist::updateAppearance win {
     #
     variable themeDefaults
     foreach opt {-background -foreground -disabledforeground -stripebackground
-		 -selectbackground -selectforeground -labelforeground
-		 -targetcolor} {
+		 -selectbackground -selectforeground -inactiveselectbackground
+		 -inactiveselectforeground -labelforeground -targetcolor} {
 	if {$data($opt) eq $tmp($opt)} {
 	    doConfig $win $opt $themeDefaults($opt)
 	}
@@ -918,11 +885,15 @@ proc tablelist::defineTablelistBody {} {
     }
 
     bind TablelistBody <FocusIn> {
-	tablelist::addActiveTag [tablelist::getTablelistPath %W]
+	set tablelist::W [tablelist::getTablelistPath %W]
+	tablelist::addActiveTag $tablelist::W
+	tablelist::updateColorsWhenIdle $tablelist::W
     }
     bind TablelistBody <FocusOut> {
 	if {"%d" ne "NotifyInferior"} {
-	    tablelist::removeActiveTag [tablelist::getTablelistPath %W]
+	    set tablelist::W [tablelist::getTablelistPath %W]
+	    tablelist::removeActiveTag $tablelist::W
+	    tablelist::updateColorsWhenIdle $tablelist::W
 	}
     }
     foreach event {<Enter> <Motion> <Leave>} {
@@ -1390,6 +1361,40 @@ proc tablelist::defineTablelistBody {} {
 	    }
 	} $script]
     }
+}
+
+#------------------------------------------------------------------------------
+# tablelist::addActiveTag
+#
+# This procedure is invoked when the tablelist widget win gains the keyboard
+# focus.  It moves the "active" tag to the line or cell that displays the
+# active item or element of the widget in its body text child.
+#------------------------------------------------------------------------------
+proc tablelist::addActiveTag win {
+    upvar ::tablelist::ns${win}::data data
+    set data(ownsFocus) 1
+
+    #
+    # Conditionally move the "active" tag to the line
+    # or cell that displays the active item or element
+    #
+    if {![info exists data(dispId)]} {
+	moveActiveTag $win
+    }
+}
+
+#------------------------------------------------------------------------------
+# tablelist::removeActiveTag
+#
+# This procedure is invoked when the tablelist widget win loses the keyboard
+# focus.  It removes the "active" tag from the body text child of the widget.
+#------------------------------------------------------------------------------
+proc tablelist::removeActiveTag win {
+    upvar ::tablelist::ns${win}::data data
+    set data(ownsFocus) 0
+
+    $data(body) tag remove curRow 1.0 end
+    $data(body) tag remove active 1.0 end
 }
 
 #------------------------------------------------------------------------------

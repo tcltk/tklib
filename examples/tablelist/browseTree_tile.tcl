@@ -2,7 +2,7 @@
 # Demonstrates how to use a tablelist widget for displaying information about
 # the children of an arbitrary widget.
 #
-# Copyright (c) 2010-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2010-2026  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require tablelist_tile
@@ -72,7 +72,7 @@ proc demo::displayChildren w {
 		  0 "Viewable"	center
 		  0 "Manager"	left} \
 	-expandcommand demo::expandCmd -labelcommand demo::labelCmd \
-	-yscrollcommand [list $vsb set] -setgrid no -width 0
+	-yscrollcommand [list $vsb set] -width 0
     if {[$tbl cget -selectborderwidth] == 0} {
 	$tbl configure -spacing 1
     }

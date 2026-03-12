@@ -5,7 +5,7 @@
 #   - Namespace initialization
 #   - Private utility procedures
 #
-# Copyright (c) 2000-2025  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2026  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -3831,8 +3831,9 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 	set fromTextIdx "$topTextIdx linestart"
 	set toTextIdx   "$btmTextIdx lineend"
 
-	$w tag remove select $fromTextIdx $toTextIdx
-	$w tag remove itembg $fromTextIdx $toTextIdx
+	$w tag remove select   $fromTextIdx $toTextIdx
+	$w tag remove inactsel $fromTextIdx $toTextIdx
+	$w tag remove itembg   $fromTextIdx $toTextIdx
 	set hasItemBg   [expr {$data(-itembackground) ne ""}]
 	set hasStripeBg [expr {$data(-stripebackground) ne ""}]
 	set hasStripeFg [expr {$data(-stripeforeground) ne ""}]
@@ -3895,7 +3896,13 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 
 		set selected [cellSelection $win includes $row $col $row $col]
 		if {$selected} {
-		    $w tag add select $tabIdx1 $textIdx2
+		    if {!$data(ownsFocus) &&
+			$data(-inactiveselectbackground) ne ""} {
+			set tag inactsel
+		    } else {
+			set tag select
+		    }
+		    $w tag add $tag $tabIdx1 $textIdx2
 		}
 		foreach optTail {background foreground} {
 		    set normalOpt -$optTail
@@ -3905,7 +3912,7 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 					$key,$col$normalOpt] \
 			    selectName [list $col$selectOpt $key$selectOpt \
 					$key,$col$selectOpt] {
-			if {$selected} {
+			if {$selected && $tag eq "select"} {
 			    if {[info exists data($selectName)]} {
 				$w tag add $level$selectOpt-$data($selectName) \
 				       $tabIdx1 $textIdx2
@@ -3932,6 +3939,8 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 
     set hasExpCollCtrlSelImgs \
 	[expr {[info exists ::tablelist::$data(-treestyle)_collapsedSelImg]}]
+    variable currentTheme
+    set curThemeIsClam [expr {$currentTheme eq "clam"}]
 
     foreach {dummy path textIdx} [$w dump -window $fromTextIdx $toTextIdx] {
 	if {$path eq ""} {
@@ -3953,13 +3962,15 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 	}
 
 	set tagNames [$w tag names $textIdx]
-	set selected [expr {[lsearch -exact $tagNames select] >= 0}]
-	set inStripe [expr {[lsearch -exact $tagNames stripe] >= 0}]
+	set selectFound	  [expr {[lsearch -exact $tagNames select] >= 0}]
+	set inactselFound [expr {[lsearch -exact $tagNames inactsel] >= 0}]
+	set inStripe	  [expr {[lsearch -exact $tagNames stripe] >= 0}]
 
 	#
-	# If the widget is an indentation label then conditionally remove the
-	# "active" and "select" tags from its text position and the preceding
-	# one, or change its image to become the "normal" or "selected" one
+	# If the widget is an indentation label then conditionally
+	# remove the "active" and "select"/"inactsel" tags from
+	# its text position and the preceding one, or change
+	# its image to become the "normal" or "selected" one
 	#
 	if {$path eq "$w.ind_$key,$col"} {
 	    if {$data(protectIndents)} {
@@ -3969,17 +3980,18 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 		$w tag remove curRow $fromTextIdx $toTextIdx
 		$w tag remove active $fromTextIdx $toTextIdx
 
-		if {$updateAll && $selected} {
+		if {$updateAll && ($selectFound || $inactselFound)} {
 		    $w tag remove select $fromTextIdx $toTextIdx
+		    $w tag remove inactsel $fromTextIdx $toTextIdx
 		    foreach tag [$w tag names $fromTextIdx] {
 			if {[string match "*-selectbackground-*" $tag] ||
 			    [string match "*-selectforeground-*" $tag]} {
 			    $w tag remove $tag $fromTextIdx $toTextIdx
 			}
 		    }
-		    set selected 0
-		    foreach optTail {background foreground} {
-			set opt -$optTail
+		    set selectFound 0
+		    set inactselFound 0
+		    foreach opt {-background -foreground} {
 			foreach level [list col row cell] \
 				name  [list $col$opt $key$opt $key,$col$opt] {
 			    if {[info exists data($name)]} {
@@ -3991,7 +4003,7 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 		}
 	    } elseif {$hasExpCollCtrlSelImgs} {
 		set curIndent $data($key,$col-indent)
-		if {$selected} {
+		if {$selectFound || ($inactselFound && $curThemeIsClam)} {
 		    set newIndent [string map {
 			"SelActImg" "SelActImg" "ActImg" "SelActImg"
 			"SelImg" "SelImg" "collapsedImg" "collapsedSelImg"
@@ -4022,9 +4034,8 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 	if {$data(isDisabled)} {
 	    set bg $data(-background)
 	    set fg $data(-disabledforeground)
-	} elseif {$selected} {
-	    if {$isImgLabel &&
-		[info exists data($key,$col-imagebackground)]} {
+	} elseif {$selectFound} {
+	    if {$isImgLabel && [info exists data($key,$col-imagebackground)]} {
 		set bg $data($key,$col-imagebackground)
 	    } elseif {[info exists data($key,$col-selectbackground)]} {
 		set bg $data($key,$col-selectbackground)
@@ -4047,9 +4058,22 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 		    set fg $data(-selectforeground)
 		}
 	    }
+	} elseif {$inactselFound} {
+	    if {$isImgLabel && [info exists data($key,$col-imagebackground)]} {
+		set bg $data($key,$col-imagebackground)
+	    } else {
+		set bg $data(-inactiveselectbackground)
+	    }
+
+	    if {$isMessage || $isTblWin} {
+		if {$data(-inactiveselectforeground) ne ""} {
+		    set fg $data(-inactiveselectforeground)
+		} else {
+		    set fg $data(-selectforeground)
+		}
+	    }
 	} else {
-	    if {$isImgLabel &&
-		[info exists data($key,$col-imagebackground)]} {
+	    if {$isImgLabel && [info exists data($key,$col-imagebackground)]} {
 		set bg $data($key,$col-imagebackground)
 	    } elseif {[info exists data($key,$col-background)]} {
 		set bg $data($key,$col-background)
@@ -5771,45 +5795,42 @@ proc tablelist::synchronize win {
 			    a list of lists ($err)"
     }
 
+    set oldCount $data(itemCount)
     set newCount [llength $var]
-    if {$newCount < $data(itemCount)} {
+    set updateCount $newCount
+    if {$newCount < $oldCount} {
 	#
 	# Delete the items with indices >= newCount from the widget
 	#
-	set updateCount $newCount
 	deleteRows $win $newCount $data(lastRow) 0
-    } elseif {$newCount > $data(itemCount)} {
+    } elseif {$newCount > $oldCount} {
 	#
-	# Insert the items of var with indices
-	# >= data(itemCount) into the widget
+	# Insert the items of var with indices >= oldCount into the widget
 	#
-	set updateCount $data(itemCount)
-	insertRows $win $data(itemCount) [lrange $var $data(itemCount) end] 0 \
-		   root $data(itemCount)
-    } else {
-	set updateCount $newCount
+	insertRows $win $oldCount [lrange $var $oldCount end] 0 root $oldCount
+	set updateCount $oldCount
     }
 
     #
-    # Update the first updateCount items of the internal list
+    # Update the internal list
     #
-    set itemsChanged 0
+    upvar 0 data(itemList) itemList
+    set colCount $data(colCount)
+    set lst1 {}
     for {set row 0} {$row < $updateCount} {incr row} {
-	set oldItem [lindex $data(itemList) $row]
-	set newItem [adjustItem [lindex $var $row] $data(colCount)]
-	lappend newItem [lindex $oldItem end]
-
-	if {$oldItem ne $newItem} {
-	    set data(itemList) [lreplace $data(itemList) $row $row $newItem]
-	    set itemsChanged 1
-	}
+	set oldItem [lindex $itemList $row]
+	set newItem [adjustItem [lindex $var $row] $colCount]
+	lappend lst1 [lappend newItem [lindex $oldItem end]]
     }
+    set lst2 [lrange $itemList $updateCount end]
+    set itemList $lst1
+    eval lappend itemList $lst2
 
     #
     # If necessary, adjust the columns and make sure
     # that the items will be redisplayed at idle time
     #
-    if {$itemsChanged} {
+    if {$updateCount != 0} {
 	adjustColumns $win allCols 1
 	redisplayWhenIdle $win
 	showLineNumbersWhenIdle $win

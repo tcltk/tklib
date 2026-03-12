@@ -1,7 +1,7 @@
 #==============================================================================
 # Contains private configuration procedures for tablelist widgets.
 #
-# Copyright (c) 2000-2025  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2026  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #------------------------------------------------------------------------------
@@ -88,7 +88,8 @@ proc tablelist::extendConfigSpecs {} {
     foreach configSet [$helpListbox configure] {
 	if {[llength $configSet] != 2} {
 	    set opt [lindex $configSet 0]
-	    if {[info exists configSpecs($opt)]} {
+	    if {![regexp {^-(inactive)?select(back|fore)ground$} $opt] &&
+		[info exists configSpecs($opt)]} {
 		lappend configSpecs($opt) [lindex $configSet 3]
 	    }
 	}
@@ -100,6 +101,7 @@ proc tablelist::extendConfigSpecs {} {
 	set helpLabel .__helpLabel$n
     }
 
+    variable newAquaSupport
     if {$usingTile} {
 	foreach opt {-highlightbackground -highlightcolor -highlightthickness
 		     -labelactivebackground -labelactiveforeground
@@ -114,10 +116,9 @@ proc tablelist::extendConfigSpecs {} {
 	#
 	variable currentTheme
 	if {$currentTheme eq "aqua"} {
-	    variable newAquaSupport
 	    ##nagelfar ignore
 	    scan $::tcl_platform(osVersion) "%d" majorOSVersion
-	    if {$newAquaSupport && $majorOSVersion >= 18} {	;# OS X 10.14+
+	    if {$newAquaSupport && $majorOSVersion >= 18} {	;# macOS 10.14+
 		update idletasks		;# needed for the isdark query
 	    }
 	} elseif {$currentTheme eq "tileqt"} {
@@ -154,12 +155,12 @@ proc tablelist::extendConfigSpecs {} {
 		    }
 		}
 
-		variable newAquaSupport
 		if {!$newAquaSupport} {
 		    style map Tablelist.Heading -foreground {disabled #b1b1b1}
 		}
 	    }
 	}
+
     } else {
 	lappend configSpecs(-targetcolor) [lindex $configSpecs(-foreground) 3]
 
@@ -209,11 +210,17 @@ proc tablelist::extendConfigSpecs {} {
 	destroy $helpButton
 
 	#
-	# Set the default values of the -arrowcolor,
+	# Set the default values of the -selectbackground, -selectforeground,
+	# -inactiveselectbackground, -inactiveselectforeground, -arrowcolor,
 	# -arrowdisabledcolor, -arrowstyle, and -treestyle options
 	#
 	switch $winSys {
 	    x11 {
+		set selectBg		#c3c3c3
+		set selectFg		black
+		set inactiveSelBg	""
+		set inactiveSelFg	""
+
 		set arrowColor		black
 		set arrowDisabledColor	#a3a3a3
 		set arrowStyle		[defaultX11ArrowStyle]
@@ -221,6 +228,11 @@ proc tablelist::extendConfigSpecs {} {
 	    }
 
 	    win32 {
+		set selectBg		SystemHighlight
+		set selectFg		SystemHighlightText
+		set inactiveSelBg	#d9d9d9
+		set inactiveSelFg	SystemWindowText
+
 		if {$::tcl_platform(osVersion) < 5.1} {		;# Win native
 		    set arrowColor		{}
 		    set arrowDisabledColor	{}
@@ -255,6 +267,9 @@ proc tablelist::extendConfigSpecs {} {
 		} elseif {$::tcl_platform(osVersion) == 6.0} {	;# Win Vista
 		    switch [mwutil::normalizeColor SystemHighlight] {
 			#3399ff {				;# Vista Aero
+			    set selectBg	#d8effb
+			    set selectFg	SystemWindowText
+
 			    set arrowColor	#569bc0
 			    set arrowStyle	photo[defaultWinArrowSize]
 			    set treeStyle	vistaAero
@@ -270,6 +285,11 @@ proc tablelist::extendConfigSpecs {} {
 		} elseif {$::tcl_platform(osVersion) < 10.0} {	;# Win 7/8
 		    switch [mwutil::normalizeColor SystemHighlight] {
 			#3399ff" {				;# Win 7/8 Aero
+			    set selectBg [expr {
+				$::tcl_platform(osVersion) == 6.1 ?
+				"#cee2fc" : "#cbe8f6"}]
+			    set selectFg	SystemWindowText
+
 			    set arrowColor	#569bc0
 			    set arrowStyle	photo[defaultWinArrowSize]
 			    set treeStyle	win7Aero
@@ -283,6 +303,9 @@ proc tablelist::extendConfigSpecs {} {
 		    set arrowDisabledColor	SystemDisabledText
 
 		} else {					;# Win 10
+		    set selectBg		#cce8ff
+		    set selectFg		SystemWindowText
+
 		    set arrowColor		#595959
 		    set arrowDisabledColor	SystemDisabledText
 		    set arrowStyle		flatAngle[defaultWinArrowSize]
@@ -293,14 +316,25 @@ proc tablelist::extendConfigSpecs {} {
 	    aqua {
 		##nagelfar ignore
 		scan $::tcl_platform(osVersion) "%d" majorOSVersion
-		if {$majorOSVersion >= 20} {		;# macOS 11.0 or higher
-		    set arrowColor	#878787
-		    set arrowStyle	flatAngle7x4
-		} elseif {$majorOSVersion >= 14} {	;# OS X 10.10 or higher
-		    set arrowColor	#404040
+		if {$newAquaSupport && $majorOSVersion >= 18} {	;# macOS 10.14+
+		    update idletasks		;# needed for the isdark query
+		}
+
+		set selectBg [defaultAquaSelectBgColor]
+		set selectFg [defaultAquaSelectFgColor]
+		set inactiveSelBg [expr {
+		    $selectBg eq "systemSelectedContentBackgroundColor" ?
+		    "systemUnemphasizedSelectedContentBackgroundColor" :
+		    "systemWindowBackgroundColor2"}]
+		set inactiveSelFg [expr {
+		    $selectFg eq "systemAlternateSelectedControlTextColor" ?
+		    "systemSelectedControlTextColor" :
+		    "systemModelessDialogInactiveText"}]
+
+		set arrowColor [defaultAquaArrowColor]
+		if {$majorOSVersion >= 14} {		;# OS X 10.10 or higher
 		    set arrowStyle	flatAngle7x4
 		} else {
-		    set arrowColor	#777777
 		    variable pngSupported
 		    if {$pngSupported} {
 			set arrowStyle	photo7x7
@@ -314,8 +348,17 @@ proc tablelist::extendConfigSpecs {} {
 		} else {
 		    set treeStyle	aqua
 		}
+
+		set labelFg [expr {$newAquaSupport ?
+		    "systemLabelColor" : "systemModelessDialogActiveText"}]
+		set configSpecs(-labelforeground) \
+		    [lreplace $configSpecs(-labelforeground) end end $labelFg]
 	    }
 	}
+	lappend configSpecs(-selectbackground)		$selectBg
+	lappend configSpecs(-selectforeground)		$selectFg
+	lappend configSpecs(-inactiveselectbackground)	$inactiveSelBg
+	lappend configSpecs(-inactiveselectforeground)	$inactiveSelFg
 	lappend configSpecs(-arrowcolor)		$arrowColor
 	lappend configSpecs(-arrowdisabledcolor)	$arrowDisabledColor
 	lappend configSpecs(-arrowstyle)		$arrowStyle
@@ -840,6 +883,27 @@ proc tablelist::doConfig {win opt val} {
 		    }
 		    set data($opt) $val
 		}
+		-inactiveselectbackground -
+		-inactiveselectforeground {
+		    #
+		    # Get optTail by removing the "-inactiveselect" from opt,
+		    # configure the "inactsel" tag in the body text widget, and
+		    # save the properly formatted value of val in data($opt)
+		    #
+		    set w $data(body)
+		    set optTail [string range $opt 15 end]  ;# (back|fore)ground
+		    if {$val eq ""} {
+			$w tag configure inactsel -$optTail \
+			    $data(-select$optTail)
+			set data($opt) $val
+		    } else {
+			$w tag configure inactsel -$optTail $val
+			set data($opt) [$w tag cget inactsel -$optTail]
+		    }
+		    if {!$data(isDisabled)} {
+			updateColorsWhenIdle $win
+		    }
+		}
 		-incrarrowtype {
 		    #
 		    # Save the properly formatted value of val in
@@ -874,16 +938,20 @@ proc tablelist::doConfig {win opt val} {
 		-selectbackground -
 		-selectforeground {
 		    #
-		    # Configure the "select" tag in the body text widget
+		    # Get optTail by removing the "-select" from opt,
+		    # configure the "select" tag in the body text widget,
 		    # and save the properly formatted value of val in
 		    # data($opt).  Don't use the built-in "sel" tag
 		    # because on Windows the selection in a text widget only
 		    # becomes visible when the window gets the input focus.
 		    #
 		    set w $data(body)
-		    set optTail [string range $opt 7 end] ;# remove the -select
+		    set optTail [string range $opt 7 end]  ;# (back|fore)ground
 		    $w tag configure select -$optTail $val
 		    set data($opt) [$w tag cget select -$optTail]
+		    if {$data(-inactiveselect$optTail) eq ""} {
+			$w tag configure inactsel -$optTail $val
+		    }
 		    if {!$data(isDisabled)} {
 			updateColorsWhenIdle $win
 		    }
@@ -4103,6 +4171,122 @@ proc tablelist::defaultWinArrowSize {} {
     variable scalingpct
     array set arr {100 7x4  125 9x5  150 11x6  175 13x7  200 15x8}
     return $arr($scalingpct)
+}
+
+#------------------------------------------------------------------------------
+# tablelist::defaultAquaSelectBgColor
+#
+# Returns the default selection background color on the windowing system aqua.
+#------------------------------------------------------------------------------
+proc tablelist::defaultAquaSelectBgColor {} {
+    if {[catch {winfo rgb . systemSelectedContentBackgroundColor}] == 0} {
+	return systemSelectedContentBackgroundColor
+    }
+
+    ##nagelfar ignore
+    scan $::tcl_platform(osVersion) "%d" majorOSVersion
+    if {$majorOSVersion >= 18} {			;# macOS 10.14 or later
+	variable newAquaSupport
+	if {$newAquaSupport} {
+	    variable channel
+	    if {[info exists channel]} {	;# see proc condOpenPipeline
+		set input [gets $channel]
+
+		puts $channel "exit"
+		flush $channel
+		close $channel
+		unset channel
+
+		lassign $input r g b
+		set rgb [format "#%02x%02x%02x" \
+			 [expr {$r >> 8}] [expr {$g >> 8}] [expr {$b >> 8}]]
+	    } else {
+		set rgb [mwutil::normalizeColor \
+			 systemSelectedTextBackgroundColor]
+	    }
+
+	    if {[tk::unsupported::MacWindowStyle isdark .]} {
+		switch $rgb {
+		    #3f638b		{ return #0059d1  ;# blue }
+		    #705771 - #705670	{ return #803482  ;# purple }
+		    #89576e - #88566e	{ return #c93379  ;# pink }
+		    #8b5759 - #8b5758	{ return #d13539  ;# red }
+		    #896647 - #886547	{ return #c96003  ;# orange }
+		    #8b7a3f - #8a754a	{ return #d19e00  ;# yellow }
+		    #5c7654 - #5c7653	{ return #43932a  ;# green }
+		    #ffffff		{ return #696969  ;# graphite }
+		    default		{ return systemHighlightAlternate }
+		}
+	    } else {
+		switch $rgb {
+		    #b3d7ff		{ return #0064e1  ;# blue }
+		    #dfc5e0 - #dfc5df	{ return #7d2a7e  ;# purple }
+		    #fdcbe2 - #fccae2	{ return #d93b86  ;# pink }
+		    #f6c4c5 - #f5c3c5	{ return #c4262b  ;# red }
+		    #fddabb - #fcd9bb	{ return #d96b0a  ;# orange }
+		    #ffeebe - #fee9be	{ return #e1ac15  ;# yellow }
+		    #d0eac8 - #d0eac7	{ return #4da033  ;# green }
+		    #e0e0e0		{ return #808080  ;# graphite }
+		    default		{ return systemHighlightAlternate }
+		}
+	    }
+	} else {
+	    switch [mwutil::normalizeColor systemHighlight] {
+		#b2d7ff  { return #0064e1  ;# blue }
+		#f7d4ff  { return #7d2a7e  ;# purple }
+		#ffbfd2  { return #d93b86  ;# pink }
+		#ffbbb8  { return #c4262b  ;# red }
+		#ffdfb3  { return #d96b0a  ;# orange }
+		#ffefb0  { return #e1ac15  ;# yellow }
+		#c0f6ad  { return #4da033  ;# green }
+		#d8d8dc  { return #808080  ;# graphite }
+		default  { return systemHighlightAlternate }
+	    }
+	}
+    } else {
+	return systemHighlightAlternate
+    }
+}
+
+#------------------------------------------------------------------------------
+# tablelist::defaultAquaSelectFgColor
+#
+# Returns the default selection foreground color on the windowing system aqua.
+#------------------------------------------------------------------------------
+proc tablelist::defaultAquaSelectFgColor {} {
+    if {[catch {winfo rgb . systemAlternateSelectedControlTextColor}] == 0} {
+	return systemAlternateSelectedControlTextColor
+    } else {
+	return white
+    }
+}
+
+#------------------------------------------------------------------------------
+# tablelist::defaultAquaArrowColor
+#
+# Returns the default arrow color on the windowing system aqua.
+#------------------------------------------------------------------------------
+proc tablelist::defaultAquaArrowColor {} {
+    ##nagelfar ignore
+    scan $::tcl_platform(osVersion) "%d" majorOSVersion
+    if {$majorOSVersion >= 14} {			;# OS X 10.10 or later
+	variable newAquaSupport
+	if {$newAquaSupport} {
+	    #
+	    # The arrow color depends on the appearance (light or
+	    # dark mode) and whether the macOS version is >= 11.0.
+	    #
+	    if {[tk::unsupported::MacWindowStyle isdark .]} {
+		return [expr {$majorOSVersion >= 20 ? "#a4a0a1" : "#808080"}]
+	    } else {
+		return [expr {$majorOSVersion >= 20 ? "#878787" : "#404040"}]
+	    }
+	} else {
+	    return #404040
+	}
+    } else {
+	return #777777
+    }
 }
 
 #------------------------------------------------------------------------------

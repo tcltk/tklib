@@ -1,7 +1,7 @@
 #==============================================================================
 # Contains some Tk option database settings.
 #
-# Copyright (c) 2004-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2004-2026  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -20,7 +20,6 @@ if {[tk windowingsystem] eq "x11"} {
     option add *selectForeground  $tablelist::themeDefaults(-selectforeground)
 }
 option add *selectBorderWidth	  $tablelist::themeDefaults(-selectborderwidth)
-option add *Tablelist.setGrid			yes
 option add *Tablelist.movableColumns		yes
 option add *Tablelist.labelCommand		tablelist::sortByColumn
 option add *Tablelist.labelCommand2		tablelist::addToSortColumns

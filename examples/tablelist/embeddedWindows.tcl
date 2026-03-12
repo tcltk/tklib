@@ -3,7 +3,7 @@
 #==============================================================================
 # Demonstrates the use of embedded windows in tablelist widgets.
 #
-# Copyright (c) 2004-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2004-2026  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tk
@@ -48,7 +48,7 @@ tablelist::tablelist $tbl \
 	      0 "File Size" right
 	      0 "View"      center
 	      0 "Seen"      center} \
-    -setgrid no -yscrollcommand [list $vsb set] -width 0
+    -yscrollcommand [list $vsb set] -width 0
 if {[$tbl cget -selectborderwidth] == 0} {
     $tbl configure -spacing 1
 }
@@ -160,7 +160,7 @@ proc viewFile {tbl key} {
     frame $tf -class ScrollArea
     set txt $tf.txt
     set vsb $tf.vsb
-    text $txt -background white -font TkFixedFont -setgrid yes \
+    text $txt -background white -font TkFixedFont \
 	      -yscrollcommand [list $vsb set]
     catch {$txt configure -tabstyle wordprocessor}
     scrollbar $vsb -orient vertical -command [list $txt yview]
