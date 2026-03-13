@@ -1,7 +1,7 @@
 #==============================================================================
 # Main Tsw package module. 
 #
-# Copyright (c) 2025  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2025-2026  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 namespace eval tsw {
@@ -16,7 +16,7 @@ namespace eval tsw {
     #
     # Public variables:
     #
-    variable version    1.4
+    variable version    1.4.1
     variable library    [file dirname [file normalize [info script]]]
 
     #

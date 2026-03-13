@@ -1,5 +1,11 @@
-What is new in Tsw 1.4?
------------------------
+What is new in Tsw 1.4.1?
+-------------------------
+
+1. Fixed a bug related to changing the theme (thanks to Bo Berggren for
+   his bug report).
+
+What was new in Tsw 1.4?
+------------------------
 
 1. The dimensions of the trough and slider elements now depend not only
    on the value of the "-size" option, the current theme, and the

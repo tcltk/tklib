@@ -8,7 +8,7 @@
 #   - Private procedures creating the elements for a few built-in themes
 #   - Public procedures
 #
-# Copyright (c) 2025  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2025-2026  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -1121,9 +1121,8 @@ proc tsw::updateElements_aqua_macos15 {} {
 # tsw::condMakeElements and tsw::condUpdateElements below.
 #------------------------------------------------------------------------------
 proc tsw::createElements {} {
-    variable theme
-
     variable elemInfoArr
+    set theme [ttk::style theme use]
     if {[info exists elemInfoArr($theme)]} {
 	if {$theme eq "aqua"} {
 	    updateElements_$theme
@@ -1202,7 +1201,7 @@ proc tsw::createElements {} {
 #
 # Public procedures
 # =================
-#
+
 
 #------------------------------------------------------------------------------
 # tsw::condMakeElements
