@@ -69,6 +69,21 @@ proc scrollutil::createBindings {} {
 	createEntryBindings
     }
 
+    #
+    # In Tk release 9.1b0 <Control-MouseWheel> and <Command-MouseWheel>
+    # event bindings for the console will be added to the Tk core,
+    # according to TIP 742 -- for earlier Tk versions create them here.
+    #
+    if {[llength [info commands console]] != 0 &&
+	[package vcompare $::tk_patchLevel 9.1b0] < 0} {
+	createConsoleBindings1
+
+	variable touchpadScrollSupport
+	if {$touchpadScrollSupport} {
+	    createConsoleBindings2
+	}
+    }
+
     variable winSys
     if {$winSys eq "win32" && ($::tk_version < 8.6 ||
 	[package vcompare $::tk_patchLevel "8.6b2"] < 0)} {
@@ -1152,6 +1167,44 @@ proc scrollutil::entryScrollByUnits {w axis amount {divisor 1.0}} {
 	$w xview scroll [expr {$amount/$divisor}] units
     } else {						
 	$w xview scroll $amount units
+    }
+}
+
+#------------------------------------------------------------------------------
+# scrollutil::createConsoleBindings1
+#------------------------------------------------------------------------------
+proc scrollutil::createConsoleBindings1 {} {
+    console eval {
+	foreach modifier {Control Command} {
+	    bind Console <$modifier-MouseWheel> {
+		if {%D > 0} {
+		    event generate %W <<Console_FontSizeIncr>>
+		} else {
+		    event generate %W <<Console_FontSizeDecr>>
+		}
+	    }
+	}
+    }
+}
+
+#------------------------------------------------------------------------------
+# scrollutil::createConsoleBindings2
+#------------------------------------------------------------------------------
+proc scrollutil::createConsoleBindings2 {} {
+    console eval {
+	foreach modifier {Control Command} {
+	    bind Console <$modifier-TouchpadScroll> {
+		lassign [tk::PreciseScrollDeltas %D] \
+		    scrollutil::dX scrollutil::dY
+		if {$scrollutil::dY != 0 && %# %% 15 == 0} {
+		    if {$scrollutil::dY > 0} {
+			event generate %W <<Console_FontSizeIncr>>
+		    } else {
+			event generate %W <<Console_FontSizeDecr>>
+		    }
+		}
+	    }
+	}
     }
 }
 

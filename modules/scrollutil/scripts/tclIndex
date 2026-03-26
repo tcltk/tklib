@@ -219,6 +219,8 @@ set auto_index(::scrollutil::createScrlbarBindings) [list source [file join $dir
 set auto_index(::scrollutil::scrlbarScrollByUnits) [list source [file join $dir wheelEvent.tcl]]
 set auto_index(::scrollutil::createEntryBindings) [list source [file join $dir wheelEvent.tcl]]
 set auto_index(::scrollutil::entryScrollByUnits) [list source [file join $dir wheelEvent.tcl]]
+set auto_index(::scrollutil::createConsoleBindings1) [list source [file join $dir wheelEvent.tcl]]
+set auto_index(::scrollutil::createConsoleBindings2) [list source [file join $dir wheelEvent.tcl]]
 set auto_index(::scrollutil::hasFocus) [list source [file join $dir wheelEvent.tcl]]
 set auto_index(::scrollutil::isCompatible) [list source [file join $dir wheelEvent.tcl]]
 set auto_index(::scrollutil::cycleMenuEntry1) [list source [file join $dir wheelEvent.tcl]]

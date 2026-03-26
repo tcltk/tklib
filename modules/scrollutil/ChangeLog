@@ -1,3 +1,11 @@
+2026-03-26  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* CHANGES.txt:            Added mouse wheel and touchpad event bindings
+	* scripts/wheelEvent.tcl: for increasing/decreasing the size of the
+	  console font.
+
+	* scripts/tclIndex: Newly generated.
+
 2026-03-12  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl:         Bumped the version number to 2.9.
