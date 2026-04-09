@@ -245,7 +245,7 @@ proc ::Plotchart::MarginsRectangle { w argv {notext 2.0} {text_width 8}} {
     variable scaling
 
     if { [string match {[0-9]*} $w] } {
-        set c [string range $w 2 end]
+        set c .[join [lrange [split $w .] 1 end] .]
     } else {
         set c $w
     }
@@ -389,7 +389,7 @@ proc ::Plotchart::MarginsSquare { w {notext 2.0} {text_width 8}} {
     variable scaling
 
     if { [string match {[0-9]*} $w] } {
-        set c [string range $w 2 end]
+        set c .[join [lrange [split $w .] 1 end] .]
     } else {
         set c $w
     }
@@ -450,7 +450,7 @@ proc ::Plotchart::MarginsCircle { w args } {
    variable scaling
 
    if { [string match {[0-9]*} $w] } {
-       set c [string range $w 2 end]
+       set c .[join [lrange [split $w .] 1 end] .]
    } else {
        set c $w
    }
@@ -567,7 +567,7 @@ proc ::Plotchart::Margins3DPlot { w } {
     variable scaling
 
     if { [string match {[0-9]*} $w] } {
-        set c [string range $w 2 end]
+        set c .[join [lrange [split $w .] 1 end] .]
     } else {
         set c $w
     }
@@ -850,7 +850,7 @@ proc ::Plotchart::DrawMask { w } {
     }
 
     if { [string match {[0-9]*} $w] } {
-        set c [string range $w 2 end]
+        set c .[join [lrange [split $w .] 1 end] .]
     } else {
         set c $w
     }
@@ -941,7 +941,7 @@ proc ::Plotchart::DrawTernaryMask { w } {
     }
 
     if { [string match {[0-9]*} $w] } {
-        set c [string range $w 2 end]
+        set c .[join [lrange [split $w .] 1 end] .]
     } else {
         set c $w
     }
@@ -986,7 +986,7 @@ proc ::Plotchart::DrawTitle { w title {position center}} {
     variable config
 
     if { [string match {[0-9]*} $w] } {
-        set c [string range $w 2 end]
+        set c .[join [lrange [split $w .] 1 end] .]
     } else {
         set c $w
     }
@@ -1044,7 +1044,7 @@ proc ::Plotchart::DrawSubtitle { w title } {
     variable config
 
     if { [string match {[0-9]*} $w] } {
-        set c [string range $w 2 end]
+        set c .[join [lrange [split $w .] 1 end] .]
     } else {
         set c $w
     }
