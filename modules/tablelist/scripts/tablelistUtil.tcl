@@ -2440,6 +2440,7 @@ proc tablelist::setupColumns {win columns createLabels} {
 		ttk::label $w -style Tablelist.Heading -image "" \
 			      -padding {1 1 1 1} -takefocus 0 -text "" \
 			      -textvariable "" -wraplength 0
+		$w state alternate		;# needed for the aqua theme
 	    } else {
 		tk::label $w -bitmap "" -highlightthickness 0 -image "" \
 			     -takefocus 0 -text "" -textvariable "" \
@@ -2796,8 +2797,9 @@ proc tablelist::getSepX {} {
     if {$usingTile} {
 	variable currentTheme
 	variable xpStyle
-	if {($currentTheme eq "aqua") ||
-	    ($currentTheme eq "xpnative" && $xpStyle)} {
+	if {$currentTheme eq "aqua"} {
+	    set x -1
+	} elseif {$currentTheme eq "xpnative" && $xpStyle} {
 	    set x 0
 	} elseif {$currentTheme eq "tileqt"} {
 	    switch -- [string tolower [tileqt_currentThemeName]] {
@@ -6932,14 +6934,20 @@ proc tablelist::makeTtkCkbtn w {
 	aqua {
 	    variable extendedAquaSupport
 	    if {$extendedAquaSupport} {
-		$frm configure -width 14 -height 14
-		place $w -x -2 -y -3
-		return {14 14}
+		if {[package vcompare $::tk_patchLevel "9.1a1"] > 0} {
+		    $frm configure -width 15 -height 15
+		    place $w -x -2 -y -2
+		    return {15 15}
+		} else {
+		    $frm configure -width 14 -height 14
+		    place $w -x -2 -y -3
+		    return {14 14}
+		}
 	    } else {
 		$frm configure -width 16 -height 16
 		variable newAquaSupport
 		if {$newAquaSupport} {
-		    if {[tk::unsupported::MacWindowStyle isdark .]} {
+		    if {[isInDarkMode]} {
 			place $w -x 0 -y -2
 		    } else {
 			place $w -x -1 -y -2
@@ -7086,4 +7094,16 @@ proc tablelist::makeTtkCkbtn w {
 	    return [list [winfo reqwidth $w] [winfo reqheight $w]]
 	}
     }
+}
+
+#------------------------------------------------------------------------------
+# tablelist::isInDarkMode
+#
+# Returns 1 if the application is in dark mode and 0 otherwise.
+#------------------------------------------------------------------------------
+proc tablelist::isInDarkMode {} {
+    return [expr {
+	([catch {winfo isdark .} result] == 0 ||
+	 [catch {tk::unsupported::MacWindowStyle isdark .} result] == 0) ?
+	$result : 0}]
 }

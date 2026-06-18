@@ -12,7 +12,7 @@ namespace eval tablelist {
     #
     # Public variables:
     #
-    variable version	7.10
+    variable version	7.11
     variable library	[file dirname [file normalize [info script]]]
 
     #
@@ -107,10 +107,10 @@ proc tablelist::loadUtils {} {
     package require mwutil 2.25[-]
 
     if {[catch {package present scaleutil} version] == 0 &&
-	[package vcompare $version 1.16] < 0} {
+	[package vcompare $version 1.17] < 0} {
 	package forget scaleutil
     }
-    package require scaleutil 1.16[-]
+    package require scaleutil 1.17[-]
 
     package require scaleutilmisc 1.8[-]
 }

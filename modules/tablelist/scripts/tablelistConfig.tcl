@@ -4205,7 +4205,7 @@ proc tablelist::defaultAquaSelectBgColor {} {
 			 systemSelectedTextBackgroundColor]
 	    }
 
-	    if {[tk::unsupported::MacWindowStyle isdark .]} {
+	    if {[isInDarkMode]} {
 		switch $rgb {
 		    #3f638b		{ return #0059d1  ;# blue }
 		    #705771 - #705670	{ return #803482  ;# purple }
@@ -4276,7 +4276,7 @@ proc tablelist::defaultAquaArrowColor {} {
 	    # The arrow color depends on the appearance (light or
 	    # dark mode) and whether the macOS version is >= 11.0.
 	    #
-	    if {[tk::unsupported::MacWindowStyle isdark .]} {
+	    if {[isInDarkMode]} {
 		return [expr {$majorOSVersion >= 20 ? "#a4a0a1" : "#808080"}]
 	    } else {
 		return [expr {$majorOSVersion >= 20 ? "#878787" : "#404040"}]

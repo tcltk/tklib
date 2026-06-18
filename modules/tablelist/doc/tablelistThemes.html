@@ -13,7 +13,7 @@
   <div>
     <h1>Commands Related to Tile Themes</h1>
 
-    <h2>For Tablelist Version 7.10</h2>
+    <h2>For Tablelist Version 7.11</h2>
 
     <h3>by</h3>
 
@@ -234,11 +234,13 @@
     <dd class="tm">The <code><b>tablelist::setThemeDefaults</b></code> command
     is invoked by Tablelist_tile automatically at application start time and
     when the <code><b>&lt;&lt;ThemeChanged&gt;&gt;</b></code> virtual event is
-    sent to the main window.&nbsp; It is also invoked on Mac OS 10.14 (Mojave)
+    sent to the main window.&nbsp; It is also invoked on macOS 10.14 (Mojave)
     and later whenever the main window receives a
-    <code><b>&lt;&lt;LightAqua&gt;&gt;</b></code> or
-    <code><b>&lt;&lt;DarkAqua&gt;&gt;</b></code> virtual event, if the current
-    theme is <code>aqua</code>.&nbsp; In these cases, after invoking the
+    <code><b>&lt;&lt;LightAppearance&gt;&gt;</b></code> (formerly:
+    <code><b>&lt;&lt;LightAqua&gt;&gt;</b></code>) or
+    <code><b>&lt;&lt;DarkAppearance&gt;&gt;</b></code> (formerly:
+    <code><b>&lt;&lt;DarkAqua&gt;&gt;</b></code>) virtual event, if the current
+    theme is <code><b>aqua</b></code>.&nbsp; In these cases, after invoking the
     <code><b>tablelist::setThemeDefaults</b></code> command, Tablelist_tile
     sends the virtual event
     <code><b>&lt;&lt;TablelistThemeDefaultsChanged&gt;&gt;</b></code> to the
@@ -246,13 +248,15 @@
     using the new default values of those options that were not set explicitly
     to values different from the corresponding defaults.</dd>
 
-    <dd class="tm">On Mac OS 10.14 (Mojave) and later, the virtual events
+    <dd class="tm">On macOS 10.14 (Mojave) and later, the virtual events
+    <code><b>&lt;&lt;LightAppearance&gt;&gt;</b></code> and
+    <code><b>&lt;&lt;DarkAppearance&gt;&gt;</b></code> (or
     <code><b>&lt;&lt;LightAqua&gt;&gt;</b></code> and
-    <code><b>&lt;&lt;DarkAqua&gt;&gt;</b></code> are sent by Tk 8.6.10 and
+    <code><b>&lt;&lt;DarkAqua&gt;&gt;</b></code>) are sent by Tk 8.6.10 and
     later to all toplevel widgets whenever the system appearance toggles
     between Light Mode and Dark Mode or the Accent Color in the General
     Preferences changes.&nbsp; Tk versions 8.6.11 and later send these events
-    on Mac OS 10.15 (Catalina) and later also when changing the Highlight Color
+    on macOS 10.15 (Catalina) and later also when changing the Highlight Color
     in the General Preferences.</dd>
 
     <dd class="tm">Besides being used by Tablelist_tile, this command can also
@@ -295,8 +299,10 @@ bind TablelistMain &lt;&lt;TablelistThemeDefaultsChanged&gt;&gt; ...
     <dd>The binding tag <code><b>TablelistMain</b></code> is assigned by
     Tablelist_tile to the main window and used internally for handling the
     virtual events <code><b>&lt;&lt;ThemeChanged&gt;&gt;</b></code>,
-    <code><b>&lt;&lt;LightAqua&gt;&gt;</b></code>, and
-    <code><b>&lt;&lt;DarkAqua&gt;&gt;</b></code>.&nbsp; As shown above,
+    <code><b>&lt;&lt;LightAppearance&gt;&gt;</b></code> (or
+    <code><b>&lt;&lt;LightAqua&gt;&gt;</b></code>), and
+    <code><b>&lt;&lt;DarkAppearance&gt;&gt;</b></code> (or
+    <code><b>&lt;&lt;DarkAqua&gt;&gt;</b></code>).&nbsp; As shown above,
     applications can make use of it, e.g., to handle the virtual event
     <code><b>&lt;&lt;TablelistThemeDefaultsChanged&gt;&gt;</b></code>.</dd>
 

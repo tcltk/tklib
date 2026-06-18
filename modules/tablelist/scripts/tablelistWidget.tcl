@@ -729,7 +729,8 @@ proc tablelist::createBindings {} {
     variable winSys
     variable newAquaSupport
     if {$usingTile && $winSys eq "aqua" && $newAquaSupport} {
-	foreach event {<<LightAqua>> <<DarkAqua>>} {
+	foreach event {<<LightAppearance>> <<DarkAppearance>>
+		       <<LightAqua>> <<DarkAqua>>} {
 	    bind TablelistMain $event {
 		if {![info exists tablelist::appearanceId]} {
 		    set tablelist::appearanceId \
@@ -1066,7 +1067,7 @@ proc tablelist::tablelist args {
 	    $w configure -background $labelBg
 	}
 
-	if {[tk::unsupported::MacWindowStyle isdark .]} {
+	if {[isInDarkMode]} {
 	    set labelBorderBg #4b4b4b
 	} else {
 	    set labelBorderBg #c8c8c8
@@ -6699,7 +6700,8 @@ proc tablelist::xviewSubCmd {win argList} {
 			if {$winSys eq "x11"} {
 			    set delay [expr {($data(colCount) + 7) / 8}]
 			} else {
-			    set delay [expr {($data(colCount) + 1) / 2}]
+			    set delay $data(colCount)
+			    if {$delay < 10} { set delay 10 }
 			}
 			set data(horizMoveToId) \
 			    [after $delay [list tablelist::horizMoveTo $win]]
@@ -6715,7 +6717,8 @@ proc tablelist::xviewSubCmd {win argList} {
 			    if {$winSys eq "x11"} {
 				set delay [expr {($data(colCount) + 7) / 8}]
 			    } else {
-				set delay [expr {($data(colCount) + 1) / 2}]
+				set delay $data(colCount)
+				if {$delay < 10} { set delay 10 }
 			    }
 			    set data(horizScrollId) [after $delay \
 				[list tablelist::horizScrollByUnits $win]]
@@ -6865,6 +6868,7 @@ proc tablelist::yviewSubCmd {win argList} {
 			set delay [expr {($data(colCount) + 3) / 4}]
 		    } else {
 			set delay $data(colCount)
+			if {$delay < 20} { set delay 20 }
 		    }
 		    set data(vertMoveToId) \
 			[after $delay [list tablelist::vertMoveTo $win]]
@@ -6881,6 +6885,7 @@ proc tablelist::yviewSubCmd {win argList} {
 			    set delay [expr {($data(colCount) + 3) / 4}]
 			} else {
 			    set delay $data(colCount)
+			    if {$delay < 20} { set delay 20 }
 			}
 			set data(vertScrollId) [after $delay \
 			    [list tablelist::vertScrollByUnits $win]]
@@ -8625,6 +8630,7 @@ proc tablelist::doScan {win opt x y} {
 		set delay [expr {($data(colCount) + 3) / 4}]
 	    } else {
 		set delay $data(colCount)
+		if {$delay < 20} { set delay 20 }
 	    }
 	    set data(dragToId) \
 		[after $delay [list tablelist::dragTo $win]]

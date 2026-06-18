@@ -668,7 +668,7 @@ proc tablelist::updateConfiguration win {
 		$w configure -background $themeDefaults($name)
 	    }
 
-	    if {[tk::unsupported::MacWindowStyle isdark .]} {
+	    if {[isInDarkMode]} {
 		set labelBorderBg #4b4b4b
 	    } else {
 		set labelBorderBg #c8c8c8
@@ -690,7 +690,8 @@ proc tablelist::updateConfiguration win {
 #------------------------------------------------------------------------------
 # tablelist::handleAppearanceEvent
 #
-# This procedure handles the virtual events <<LightAqua>> and <<DarkAqua>>.
+# This procedure handles the virtual events <<LightAppearance>> and
+# <<DarkAppearance>> or <<LightAqua>> and <<DarkAqua>>.
 #------------------------------------------------------------------------------
 proc tablelist::handleAppearanceEvent {} {
     variable appearanceId
@@ -736,7 +737,8 @@ proc tablelist::handleAppearanceEvent {} {
 # tablelist::updateAppearance
 #
 # Updates the appearance of the tablelist widget win according to the virtual
-# events <<LightAqua>> and <<DarkAqua>>.
+# events <<LightAppearance>> and <<DarkAppearance>> or <<LightAqua>> and
+# <<DarkAqua>>.
 #------------------------------------------------------------------------------
 proc tablelist::updateAppearance win {
     upvar ::tablelist::ns${win}::data data
@@ -785,7 +787,7 @@ proc tablelist::updateAppearance win {
 	$w configure -background $themeDefaults($name)
     }
 
-    if {[tk::unsupported::MacWindowStyle isdark .]} {
+    if {[isInDarkMode]} {
 	set labelBorderBg #4b4b4b
     } else {
 	set labelBorderBg #c8c8c8
@@ -2150,7 +2152,7 @@ proc tablelist::autoScan2 {win margin seqNum} {
 # move or extend the selection, depending on the widget's selection mode.
 #------------------------------------------------------------------------------
 proc tablelist::motion {win row col {checkIfDragSrc 0}} {
-    if {$row < 0 || $col < 0 || ($checkIfDragSrc && [isDragSrc $win])} {
+    if {$row < 0 || ($checkIfDragSrc && [isDragSrc $win])} {
 	return ""
     }
 
@@ -2202,6 +2204,10 @@ proc tablelist::motion {win row col {checkIfDragSrc 0}} {
 	}
 
 	cell {
+	    if {$col < 0} {
+		return ""
+	    }
+
 	    set prRow $priv(prevRow)
 	    set prCol $priv(prevCol)
 	    if {$row == $prRow && $col == $prCol} {

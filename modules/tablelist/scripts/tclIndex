@@ -463,6 +463,7 @@ set auto_index(::tablelist::makeCkbtn) [list source [file join $dir tablelistUti
 set auto_index(::tablelist::createTtkCkbtn) [list source [file join $dir tablelistUtil.tcl]]
 set auto_index(::tablelist::hdr_createTtkCkbtn) [list source [file join $dir tablelistUtil.tcl]]
 set auto_index(::tablelist::makeTtkCkbtn) [list source [file join $dir tablelistUtil.tcl]]
+set auto_index(::tablelist::isInDarkMode) [list source [file join $dir tablelistUtil.tcl]]
 set auto_index(::tablelist::restoreScalingpct) [list source [file join $dir tablelistWidget.tcl]]
 set auto_index(::tablelist::createTileAliases) [list source [file join $dir tablelistWidget.tcl]]
 set auto_index(::tablelist::getScalingPct) [list source [file join $dir tablelistWidget.tcl]]

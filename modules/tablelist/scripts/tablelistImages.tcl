@@ -1488,13 +1488,13 @@ proc tablelist::bicolorTreeImgs {} {
 
     tablelist_bicolor_collapsedSelImg put {
 <svg width="16" height="12" version="1.1" xmlns="http://www.w3.org/2000/svg">
- <path d="m3 0.5h1l5 5v1l-5 5h-1z" fill="#fff"/>
+ <path d="m3.5 .5 5 5-5 5z" fill="#fff" stroke="#fff" stroke-linejoin="round"/>
 </svg>
     } -format $svgfmt
 
     tablelist_bicolor_expandedSelImg put {
 <svg width="16" height="12" version="1.1" xmlns="http://www.w3.org/2000/svg">
- <path d="m0.5 3v1l5 5h1l5-5v-1z" fill="#fff"/>
+ <path d="m.5 3.5 5 5 5-5z" fill="#fff" stroke="#fff" stroke-linejoin="round"/>
 </svg>
     } -format $svgfmt
 }
@@ -2477,13 +2477,13 @@ proc tablelist::plainTreeImgs {{treeStyle "plain"}} {
 
     tablelist_${treeStyle}_collapsedImg put {
 <svg width="16" height="12" version="1.1" xmlns="http://www.w3.org/2000/svg">
- <path d="m3 0.5h1l5 5v1l-5 5h-1z" fill="#000" fill-opacity=".5"/>
+ <path d="m3.5 .5 5 5-5 5z" fill="#000" stroke="#000" stroke-linejoin="round" opacity=".5"/>
 </svg>
     } -format $svgfmt
 
     tablelist_${treeStyle}_expandedImg put {
 <svg width="16" height="12" version="1.1" xmlns="http://www.w3.org/2000/svg">
- <path d="m0.5 3v1l5 5h1l5-5v-1z" fill="#000" fill-opacity=".5"/>
+ <path d="m.5 3.5 5 5 5-5z" fill="#000" stroke="#000" stroke-linejoin="round" opacity=".5"/>
 </svg>
     } -format $svgfmt
 }
@@ -3299,13 +3299,13 @@ proc tablelist::whiteTreeImgs {} {
 
     tablelist_white_collapsedImg put {
 <svg width="16" height="12" version="1.1" xmlns="http://www.w3.org/2000/svg">
- <path d="m3 0.5h1l5 5v1l-5 5h-1z" fill="#fff"/>
+ <path d="m3.5 .5 5 5-5 5z" fill="#fff" stroke="#fff" stroke-linejoin="round"/>
 </svg>
     } -format $svgfmt
 
     tablelist_white_expandedImg put {
 <svg width="16" height="12" version="1.1" xmlns="http://www.w3.org/2000/svg">
- <path d="m0.5 3v1l5 5h1l5-5v-1z" fill="#fff"/>
+ <path d="m.5 3.5 5 5 5-5z" fill="#fff" stroke="#fff" stroke-linejoin="round"/>
 </svg>
     } -format $svgfmt
 }

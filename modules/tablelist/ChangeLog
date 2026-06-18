@@ -1,3 +1,24 @@
+2026-06-18 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 7.11.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/*.tcl:               Adapted to the recent changes in Tk 9.1
+	* scripts/utils/pkgIndex.tcl:  according to TIPs 750 and 740; the
+	* scripts/utils/scaleutil.tcl: "-inactiveselectbackground" and
+	  "-inactiveselectforeground"options now have nonempty default values
+	  for the "alt" and "default" themes, too; fixed a bug in the binding
+	  script for extending the selection with the keyboard.
+
+	* scripts/tclIndex: Newly generated.
+
+	* ../../examples/tablelist/embeddedWindows_tile.tcl: Adapted to the
+	  recent changes in Tk 9.1 according to TIP 750.
+
 2026-04-21 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Tablelist 7.10.

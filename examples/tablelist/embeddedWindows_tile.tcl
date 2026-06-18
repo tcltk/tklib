@@ -121,11 +121,17 @@ if {$tk_version >= 8.5} {
 	$tbl header rowconfigure 0 -foreground SkyBlue
     } elseif {$currentTheme eq "aqua" &&
 	[package vcompare $tk_patchLevel "8.6.10"] >= 0} {
-	if {[tk::unsupported::MacWindowStyle isdark .]} {
+	if {([catch {winfo isdark .} result] == 0 ||
+	     [catch {tk::unsupported::MacWindowStyle isdark .} result] == 0)
+	     && $result} {
 	    $tbl header rowconfigure 0 -foreground SkyBlue
 	}
-	bind . <<LightAqua>> { $tbl header rowconfigure 0 -foreground blue }
-	bind . <<DarkAqua>>  { $tbl header rowconfigure 0 -foreground SkyBlue }
+	foreach event {<<LightAppearance>> <<LightAqua>>} {
+	    bind . $event { $tbl header rowconfigure 0 -foreground blue }
+	}
+	foreach event {<<DarkAppearance>> <<DarkAqua>>} {
+	    bind . $event { $tbl header rowconfigure 0 -foreground SkyBlue }
+	}
     }
 }
 

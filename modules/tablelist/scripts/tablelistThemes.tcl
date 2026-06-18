@@ -216,21 +216,23 @@ proc tablelist::awTheme theme {
 proc tablelist::altTheme {} {
     variable themeDefaults
     array set themeDefaults [list \
-	-disabledforeground	#a3a3a3 \
-	-stripebackground	#f0f0f0 \
-	-selectbackground	#4a6984 \
-	-selectforeground	#ffffff \
-	-selectborderwidth	0 \
-	-labelbackground	#d9d9d9 \
-	-labeldeactivatedBg	#d9d9d9 \
-	-labeldisabledBg	#d9d9d9 \
-	-labelactiveBg		#ececec \
-	-labelpressedBg		#ececec \
-	-labeldisabledFg	#a3a3a3 \
-	-labelborderwidth	2 \
-	-labelpady		1 \
-	-arrowstyle		[defaultX11ArrowStyle] \
-	-treestyle		gtk \
+	-disabledforeground		#a3a3a3 \
+	-stripebackground		#f0f0f0 \
+	-selectbackground		#4a6984 \
+	-selectforeground		#ffffff \
+	-inactiveselectbackground	#c3c3c3 \
+	-inactiveselectforeground	#ffffff \
+	-selectborderwidth		0 \
+	-labelbackground		#d9d9d9 \
+	-labeldeactivatedBg		#d9d9d9 \
+	-labeldisabledBg		#d9d9d9 \
+	-labelactiveBg			#ececec \
+	-labelpressedBg			#ececec \
+	-labeldisabledFg		#a3a3a3 \
+	-labelborderwidth		2 \
+	-labelpady			1 \
+	-arrowstyle			[defaultX11ArrowStyle] \
+	-treestyle			gtk \
     ]
 }
 
@@ -240,7 +242,7 @@ proc tablelist::altTheme {} {
 proc tablelist::aquaTheme {} {
     variable newAquaSupport
     if {$newAquaSupport} {
-	set darkMode   [tk::unsupported::MacWindowStyle isdark .]
+	set darkMode   [isInDarkMode]
 	set disabledFg [expr {$darkMode ? "#646464" : "#b1b1b1"}]
     } else {
 	set disabledFg #b1b1b1
@@ -719,20 +721,22 @@ proc tablelist::clearlooksTheme {} {
 proc tablelist::defaultTheme {} {
     variable themeDefaults
     array set themeDefaults [list \
-	-disabledforeground	#a3a3a3 \
-	-stripebackground	#e8e8e8 \
-	-selectbackground	#4a6984 \
-	-selectforeground	#ffffff \
-	-labelbackground	#d9d9d9 \
-	-labeldeactivatedBg	#d9d9d9 \
-	-labeldisabledBg	#d9d9d9 \
-	-labelactiveBg		#ececec \
-	-labelpressedBg		#ececec \
-	-labeldisabledFg	#a3a3a3 \
-	-labelborderwidth	1 \
-	-labelpady		1 \
-	-arrowstyle		[defaultX11ArrowStyle] \
-	-treestyle		gtk \
+	-disabledforeground		#a3a3a3 \
+	-stripebackground		#e8e8e8 \
+	-selectbackground		#4a6984 \
+	-selectforeground		#ffffff \
+	-inactiveselectbackground	#c3c3c3 \
+	-inactiveselectforeground	#ffffff \
+	-labelbackground		#d9d9d9 \
+	-labeldeactivatedBg		#d9d9d9 \
+	-labeldisabledBg		#d9d9d9 \
+	-labelactiveBg			#ececec \
+	-labelpressedBg			#ececec \
+	-labeldisabledFg		#a3a3a3 \
+	-labelborderwidth		1 \
+	-labelpady			1 \
+	-arrowstyle			[defaultX11ArrowStyle] \
+	-treestyle			gtk \
     ]
 
     set val [styleConfig . -selectborderwidth]
