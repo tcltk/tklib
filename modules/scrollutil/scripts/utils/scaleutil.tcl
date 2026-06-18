@@ -22,7 +22,7 @@ namespace eval scaleutil {
     #
     # Public variables:
     #
-    variable version	1.16
+    variable version	1.17
     variable library	[file dirname [file normalize [info script]]]
 
     #
@@ -72,8 +72,15 @@ proc scaleutil::scalingPercentage winSys {
     if {[info exists ::tk::scalingPct]} {		;# Tk 9 or later
 	set scalingPct $::tk::scalingPct
     }
+
     if {[info exists scalingPct]} {
-	return [expr {$scalingPct > 200 ? 200 : $scalingPct}]
+	if {$scalingPct < 100} {
+	    return 100
+	} elseif {$scalingPct > 200} {
+	    return 200
+	} else {
+	    return $scalingPct
+	}
     }
 
     variable ttkSupported

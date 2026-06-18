@@ -8,7 +8,7 @@
 #   https://icons8.com/icon/mEF_vyjYlnE3/file
 #   https://icons8.com/icon/JXYalxb9XWWd/folder
 #
-# Copyright (c) 2021-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2021-2026  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tk
@@ -17,6 +17,7 @@ set dir [file dirname [info script]]
 source [file join $dir styleUtil.tcl]
 
 wm title . "Tk Library Files"
+wm withdraw .
 
 #
 # Create two images corresponding to the display's DPI scaling level
@@ -39,11 +40,12 @@ if {$tk_version >= 8.7 || [catch {package require tksvg}] == 0} {
 #
 proc populateNotebook {nb sfx} {
     set currentTheme [styleutil::getCurrentTheme]
-    set panePadding [expr {$currentTheme eq "aqua" ? 0 : "7p"}]
+    set panePadding [expr {$currentTheme eq "aqua" ? 0 : "9p"}]
     ##nagelfar ignore
     foreach fileName [lsort -dictionary [glob *.$sfx]] {
 	set baseName [string range $fileName 0 end-4]
 	set sa [scrollutil::scrollarea $nb.sa_$baseName]
+	$sa configure -xscrollbarmode none -yscrollbarmode static ;# temporarily
 	if {$sfx eq "gif"} {
 	    set canv [canvas $sa.canv -background #c0c0c0]
 	    set img [image create photo -file $fileName -format gif]
@@ -223,6 +225,22 @@ proc restoreSel nb {
 #
 set b [ttk::button $f.b -text "Close" -command exit]
 
-pack $b  -side bottom -pady {0 7p}
-pack $pm -side top -expand yes -fill both -padx 7p -pady 7p
+update idletasks
+pack $b  -side bottom -pady {0 9p}
+pack $pm -side top -expand yes -fill both -padx 9p -pady 9p
 pack $f  -expand yes -fill both
+
+wm deiconify .
+tkwait visibility $pm
+after 400 [list configScrollareas $pm]
+
+proc configScrollareas pm {
+    wm geometry . [wm geometry .]
+    foreach nb [$pm pages] {
+	foreach w [$nb tabs] {
+	    if {[winfo class $w] eq "Scrollarea"} {
+		$w configure -xscrollbarmode dynamic -yscrollbarmode dynamic
+	    }
+	}
+    }
+}

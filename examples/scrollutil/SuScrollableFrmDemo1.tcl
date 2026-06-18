@@ -4,7 +4,7 @@
 # Demonstrates the use of the Scrollutil package in connection with the
 # scrollutil::scrollableframe widget.
 #
-# Copyright (c) 2019-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2019-2026  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tk
@@ -102,8 +102,8 @@ foreach country $countryList {
 #
 set b [ttk::button $f.b -text "Close" -command exit]
 
-pack $b  -side bottom -pady {0 7p}
-pack $sa -side top -expand yes -fill both -padx 7p -pady 7p
+pack $b  -side bottom -pady {0 9p}
+pack $sa -side top -expand yes -fill both -padx 9p -pady 9p
 pack $f  -expand yes -fill both
 
 #

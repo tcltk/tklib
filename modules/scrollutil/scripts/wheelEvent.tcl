@@ -13,7 +13,7 @@
 #   - Public procedures
 #   - Private procedures
 #
-# Copyright (c) 2019-2025  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2019-2026  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -1032,11 +1032,14 @@ proc scrollutil::createScrlbarBindings {} {
 #------------------------------------------------------------------------------
 proc scrollutil::scrlbarScrollByUnits {w orient amount {divisor 1.0}} {
     if {![info exists ::tk::Priv(xEvents)]} {
+	variable xWheelEvents; variable yWheelEvents
+	if {![info exists xWheelEvents]} { set xWheelEvents 0 }
+	if {![info exists yWheelEvents]} { set yWheelEvents 0 }
+
 	#
 	# Count both the <MouseWheel> and <Shift-MouseWheel>
 	# events, and ignore the non-dominant ones
 	#
-	variable xWheelEvents; variable yWheelEvents
 	set axis [expr {[string index $orient 0] eq "h" ? "x" : "y"}]
 	incr ${axis}WheelEvents
 	if {($xWheelEvents + $yWheelEvents > 10) &&
@@ -1149,11 +1152,14 @@ proc scrollutil::createEntryBindings {} {
 #------------------------------------------------------------------------------
 proc scrollutil::entryScrollByUnits {w axis amount {divisor 1.0}} {
     if {![info exists ::tk::Priv(xWheelEvents)]} {
+	variable xWheelEvents; variable yWheelEvents
+	if {![info exists xWheelEvents]} { set xWheelEvents 0 }
+	if {![info exists yWheelEvents]} { set yWheelEvents 0 }
+
 	#
 	# Count both the <MouseWheel> and <Shift-MouseWheel>
 	# events, and ignore the non-dominant ones
 	#
-	variable xWheelEvents; variable yWheelEvents
 	incr ${axis}WheelEvents
 	if {($xWheelEvents + $yWheelEvents > 10) &&
 	    ($axis eq "x" && $xWheelEvents < $yWheelEvents ||
@@ -1175,7 +1181,12 @@ proc scrollutil::entryScrollByUnits {w axis amount {divisor 1.0}} {
 #------------------------------------------------------------------------------
 proc scrollutil::createConsoleBindings1 {} {
     console eval {
-	foreach modifier {Control Command} {
+	set modifiers {Control}
+	if {[tk windowingsystem] eq "aqua"} {
+	    lappend modifiers Command
+	}
+
+	foreach modifier $modifiers {
 	    bind Console <$modifier-MouseWheel> {
 		if {%D > 0} {
 		    event generate %W <<Console_FontSizeIncr>>
@@ -1192,7 +1203,12 @@ proc scrollutil::createConsoleBindings1 {} {
 #------------------------------------------------------------------------------
 proc scrollutil::createConsoleBindings2 {} {
     console eval {
-	foreach modifier {Control Command} {
+	set modifiers {Control}
+	if {[tk windowingsystem] eq "aqua"} {
+	    lappend modifiers Command
+	}
+
+	foreach modifier $modifiers {
 	    bind Console <$modifier-TouchpadScroll> {
 		lassign [tk::PreciseScrollDeltas %D] \
 		    scrollutil::dX scrollutil::dY
@@ -1297,11 +1313,14 @@ proc scrollutil::cycleMenuEntry2 {w dxdy} {
 # scrollutil::scaleIncrement1
 #------------------------------------------------------------------------------
 proc scrollutil::scaleIncrement1 {w axis delta {divisor 1.0}} {
+    variable xWheelEvents; variable yWheelEvents
+    if {![info exists xWheelEvents]} { set xWheelEvents 0 }
+    if {![info exists yWheelEvents]} { set yWheelEvents 0 }
+
     #
     # Count both the <MouseWheel> and <Shift-MouseWheel>
     # events, and ignore the non-dominant ones
     #
-    variable xWheelEvents; variable yWheelEvents
     incr ${axis}WheelEvents
     if {($xWheelEvents + $yWheelEvents > 10) &&
 	($axis eq "x" && $xWheelEvents < $yWheelEvents ||
@@ -1319,11 +1338,14 @@ proc scrollutil::scaleIncrement1 {w axis delta {divisor 1.0}} {
 # scrollutil::ttkScaleIncrement1
 #------------------------------------------------------------------------------
 proc scrollutil::ttkScaleIncrement1 {w axis delta {divisor 1.0}} {
+    variable xWheelEvents; variable yWheelEvents
+    if {![info exists xWheelEvents]} { set xWheelEvents 0 }
+    if {![info exists yWheelEvents]} { set yWheelEvents 0 }
+
     #
     # Count both the <MouseWheel> and <Shift-MouseWheel>
     # events, and ignore the non-dominant ones
     #
-    variable xWheelEvents; variable yWheelEvents
     incr ${axis}WheelEvents
     if {($xWheelEvents + $yWheelEvents > 10) &&
 	($axis eq "x" && $xWheelEvents < $yWheelEvents ||

@@ -9,7 +9,7 @@
 #   - Private procedures implementing the scrollableframe widget command
 #   - Private procedures used in bindings
 #
-# Copyright (c) 2019-2025  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2019-2026  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -151,13 +151,15 @@ proc scrollutil::sf::createBindings {} {
     }
     bind Scrollableframe <Destroy> { scrollutil::sf::onDestroy %W }
 
-    bind ScrollableframeCf <<NoManagedChild>> {
-	scrollutil::sf::onNoManagedChild %W
+    bind ScrollableframeMf <Configure> {
+	scrollutil::sf::onMfConfigure %W %w %h
     }
 
-    foreach class {ScrollableframeMf ScrollableframeCf} isCf {0 1} {
-	bind $class <Configure> \
-	    [list scrollutil::sf::on${class}Configure %W %w %h]
+    bind ScrollableframeCf <Configure> {
+	scrollutil::sf::onCfConfigure %W %w %h
+    }
+    bind ScrollableframeCf <<NoManagedChild>> {
+	scrollutil::sf::onNoManagedChild %W
     }
 
     ##nagelfar ignore
@@ -232,10 +234,12 @@ proc scrollutil::scrollableframe args {
 	    cfWidth	0
 	    cfReqWidth	0
 	    mfWidth	0
+	    settingXDim	0
 	    yOffset	0
 	    cfHeight	0
 	    cfReqHeight	0
 	    mfHeight	0
+	    settingYDim	0
 	    scanX	0
 	    scanY	0
 	    scanXOffset	0
@@ -447,10 +451,17 @@ proc scrollutil::sf::doConfig {win opt val} {
 		    set data($opt) [expr {$val ? 1 : 0}]
 		    updateHorizPlaceOpts $win
 		}
-		-height -
+		-height {
+		    set data($opt) [winfo pixels $win $val]
+		    $data(mf) configure $opt $val
+		    set data(settingYDim) 1
+		    after 100 [list scrollutil::sf::resetSettingDim $win y]
+		}
 		-width {
 		    set data($opt) [winfo pixels $win $val]
 		    $data(mf) configure $opt $val
+		    set data(settingXDim) 1
+		    after 100 [list scrollutil::sf::resetSettingDim $win x]
 		}
 		-xscrollcommand -
 		-yscrollcommand {
@@ -1222,16 +1233,59 @@ proc scrollutil::sf::applyOffset {win axis offset force} {
     }
 
     if {$offset != $data(${axis}Offset) || $force} {
-	#
-	# Save the offset, update the -(x|y) place option, and invoke the
-	# command specified as the value of the -(x|y)scrollcommand opton
-	#
-	set data(${axis}Offset) $offset
-	place configure $data(cf) -$axis -$offset
-	if {$data(-${axis}scrollcommand) ne ""} {
-	    eval $data(-${axis}scrollcommand) [${axis}viewSubCmd $win {}]
+	set data(${axis}NewOffset) $offset
+	if {![info exists data(${axis}AfterId)]} {
+	    set data(${axis}AfterId) \
+		[after 50 [list scrollutil::sf::doApplyOffset $win $axis]]
 	}
     }
+}
+
+#------------------------------------------------------------------------------
+# scrollutil::sf::doApplyOffset
+#------------------------------------------------------------------------------
+proc scrollutil::sf::doApplyOffset {win axis} {
+    #
+    # This is an "after 50" callback; check whether the window exists
+    #
+    if {![array exists ::scrollutil::ns${win}::data] ||
+	[winfo class $win] ne "Scrollableframe"} {
+	return ""
+    }
+
+    upvar ::scrollutil::ns${win}::data data
+    unset data(${axis}AfterId)
+
+    #
+    # Save the offset, update the -(x|y) place option, and invoke the
+    # command specified as the value of the -(x|y)scrollcommand opton
+    #
+    set offset $data(${axis}NewOffset)
+    set data(${axis}Offset) $offset
+    place configure $data(cf) -$axis -$offset
+    if {$data(-${axis}scrollcommand) ne ""} {
+	eval $data(-${axis}scrollcommand) [${axis}viewSubCmd $win {}]
+    }
+
+    if {$data(setting[string toupper $axis]Dim)} {
+	update idletasks
+    }
+}
+
+#------------------------------------------------------------------------------
+# scrollutil::sf::resetSettingDim
+#------------------------------------------------------------------------------
+proc scrollutil::sf::resetSettingDim {win axis} {
+    #
+    # This is an "after 100" callback; check whether the window exists
+    #
+    if {![array exists ::scrollutil::ns${win}::data] ||
+	[winfo class $win] ne "Scrollableframe"} {
+	return ""
+    }
+
+    upvar ::scrollutil::ns${win}::data data
+    set data(setting[string toupper $axis]Dim) 0
 }
 
 #
@@ -1271,27 +1325,9 @@ proc scrollutil::sf::onDestroy win {
 }
 
 #------------------------------------------------------------------------------
-# scrollutil::sf::onNoManagedChild
+# scrollutil::sf::onMfConfigure
 #------------------------------------------------------------------------------
-proc scrollutil::sf::onNoManagedChild cf {
-    set win [winfo parent [winfo parent $cf]]
-    upvar ::scrollutil::ns${win}::data data
-
-    if {!$data(-fitcontentwidth) && $data(-contentwidth) <= 0} {
-	$cf configure -width 1
-	$cf configure -width $data(-contentwidth)
-    }
-
-    if {!$data(-fitcontentheight) && $data(-contentheight) <= 0} {
-	$cf configure -height 1
-	$cf configure -height $data(-contentheight)
-    }
-}
-
-#------------------------------------------------------------------------------
-# scrollutil::sf::onScrollableframeMfConfigure
-#------------------------------------------------------------------------------
-proc scrollutil::sf::onScrollableframeMfConfigure {mf mfWidth mfHeight} {
+proc scrollutil::sf::onMfConfigure {mf mfWidth mfHeight} {
     set win [winfo parent $mf]
     upvar ::scrollutil::ns${win}::data data
 
@@ -1325,9 +1361,9 @@ proc scrollutil::sf::onScrollableframeMfConfigure {mf mfWidth mfHeight} {
 }
 
 #------------------------------------------------------------------------------
-# scrollutil::sf::onScrollableframeCfConfigure
+# scrollutil::sf::onCfConfigure
 #------------------------------------------------------------------------------
-proc scrollutil::sf::onScrollableframeCfConfigure {cf cfWidth cfHeight} {
+proc scrollutil::sf::onCfConfigure {cf cfWidth cfHeight} {
     set win [winfo parent [winfo parent $cf]]
     upvar ::scrollutil::ns${win}::data data
 
@@ -1351,6 +1387,24 @@ proc scrollutil::sf::onScrollableframeCfConfigure {cf cfWidth cfHeight} {
     if {$cfHeight != $data(cfHeight)} {
 	set data(cfHeight) $cfHeight
 	yviewSubCmd $win {scroll 0 units}
+    }
+}
+
+#------------------------------------------------------------------------------
+# scrollutil::sf::onNoManagedChild
+#------------------------------------------------------------------------------
+proc scrollutil::sf::onNoManagedChild cf {
+    set win [winfo parent [winfo parent $cf]]
+    upvar ::scrollutil::ns${win}::data data
+
+    if {!$data(-fitcontentwidth) && $data(-contentwidth) <= 0} {
+	$cf configure -width 1
+	$cf configure -width $data(-contentwidth)
+    }
+
+    if {!$data(-fitcontentheight) && $data(-contentheight) <= 0} {
+	$cf configure -height 1
+	$cf configure -height $data(-contentheight)
     }
 }
 

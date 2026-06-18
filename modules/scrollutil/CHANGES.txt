@@ -1,5 +1,28 @@
-What is new in Scrollutil 2.9?
-------------------------------
+What is new in Scrollutil 2.10?
+-------------------------------
+
+1. Adapted to the recent changes in Tk 9.1 according to TIP 750:
+   "Consistent dark mode for Windows and macOS".
+
+2. Adapted to the recent changes in Tk 9.1 according to TIP 740:
+   "Enhanced Treeview Widget".
+
+3. Eliminated some artifacts caused by Tk 9 when scrolling or scanning
+   at high speed in a scrollableframe widget containing labels that
+   display large images (thanks to Nicolas Robert for providing an
+   example for this regression in Tk 9).
+
+4. Improvements in the demo scripts (especially in "PagesManDemo.tcl"
+   and "ScrolledNotebookDemo.tcl").
+
+5. Made sure that the <Command-MouseWheel> and <Command-TouchpadScroll>
+   event bindings for the console are added on macOS only, because Tk
+   8.6 and earlier on Windows unexpectedly create these events if the
+   "NumLock" key is pressed (thanks to Harald Oehlmann for his bug
+   report).
+
+What was new in Scrollutil 2.9?
+-------------------------------
 
 1. Scrollutil now automatically creates <Control|Command-MouseWheel>
    and <Control|Command-TouchpadScroll> event bindings for the console

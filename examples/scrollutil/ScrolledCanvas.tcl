@@ -5,7 +5,7 @@
 # scrollutil::addMouseWheelSupport command in connection with a canvas and two
 # ttk::scale widgets.
 #
-# Copyright (c) 2024-2025  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2024-2026  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tk
@@ -129,9 +129,9 @@ set b [ttk::button $f.b -text "Close" -command exit]
 #
 # Manage the widgets
 #
-grid $sa -columnspan 2 -padx 7p -pady 7p -sticky news
-grid $fRows $fCols -padx 7p -sticky we
-grid $b -columnspan 2 -pady 7p
+grid $sa -columnspan 2 -padx 9p -pady 9p -sticky news
+grid $fRows $fCols -padx 9p -sticky we
+grid $b -columnspan 2 -pady 9p
 grid rowconfigure    $f 0 -weight 1
 grid columnconfigure $f 0 -weight 1
 grid columnconfigure $f 1 -weight 1

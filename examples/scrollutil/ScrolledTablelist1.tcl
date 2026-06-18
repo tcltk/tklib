@@ -4,7 +4,7 @@
 # Demonstrates the traditional scrollbar management in connection with a
 # tablelist widget.
 #
-# Copyright (c) 2019-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2019-2026  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tk 8.5-
@@ -78,10 +78,10 @@ grid columnconfigure $frm 1 -weight 1
 # Create a ttk::button widget outside the frame
 #
 set b [ttk::button $f.b -text "Close" -command exit]
-pack $b -side bottom -pady {0 7p}
+pack $b -side bottom -pady {0 9p}
 
 #
 # Manage the frame
 #
-pack $frm -expand yes -fill both -padx 7p -pady 7p
+pack $frm -expand yes -fill both -padx 9p -pady 9p
 pack $f   -expand yes -fill both

@@ -11,7 +11,7 @@
 #   - Private procedures used in bindings
 #   - Private utility procedures
 #
-# Copyright (c) 2021-2025  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2021-2026  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -153,7 +153,8 @@ proc scrollutil::snb::createBindings {} {
     }
 
     bindtags . [linsert [bindtags .] 1 ScrollednotebookMain]
-    foreach event {<<ThemeChanged>> <<LightAqua>> <<DarkAqua>>} {
+    foreach event {<<ThemeChanged>> <<LightAppearance>> <<DarkAppearance>>
+		   <<LightAqua>> <<DarkAqua>>} {
 	bind ScrollednotebookMain $event {
 	    after idle scrollutil::snb::onThemeChanged %W
 	}

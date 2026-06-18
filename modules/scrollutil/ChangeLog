@@ -1,3 +1,26 @@
+2026-06-18  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 2.10.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/*.tcl:               Adapted to the recent changes in Tk 9.1
+	* scripts/utils/pkgIndex.tcl:  according to TIPs 750 and 740;
+	* scripts/utils/scaleutil.tcl: eliminated some artifacts caused by Tk 9
+	  when scrolling or scanning at high speed in a scrollableframe widget
+	  containing labels that display large images; made sure that
+	  <Command-MouseWheel> and <Command-TouchpadScroll> event bindings for
+	  the console are added on macOS only.
+
+	* scripts/tclIndex: Newly generated.
+
+	* doc/*.png: Updated the screenshots.
+
+	* ../../examples/scrollutil/*.tcl: Improvements in the demo scripts.
+
 2026-04-21  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Scrollutil 2.9.

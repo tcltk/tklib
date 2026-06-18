@@ -11,7 +11,7 @@
 #   - Private procedures used in bindings
 #   - Private utility procedures
 #
-# Copyright (c) 2019-2025  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2019-2026  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -982,13 +982,12 @@ proc scrollutil::sa::onDynamicHScrollbarMap hsb {
 
     #
     # Make sure that showing the horizontal scrollbar by decreasing 
-    # the toplevel window's width won't make the toplevel higher
+    # the toplevel window's width, or showing the horizontal scrollbar
+    # for an embedded text widget, won't make the toplevel higher
     #
-    set win [winfo parent $hsb]
-    upvar ::scrollutil::ns${win}::data data
     variable topWidthArr
-    if {[winfo reqheight $win] >= $data(height) &&
-	([winfo width $top] < $topWidthArr($top) || [wrapsTextWidget $win])} {
+    if {[winfo width $top] < $topWidthArr($top) ||
+	[wrapsTextWidget [winfo parent $hsb]]} {
 	wm geometry $top [wm geometry $top]
     }
 }
@@ -1004,13 +1003,10 @@ proc scrollutil::sa::onDynamicHScrollbarUnmap hsb {
 
     #
     # Make sure that hiding the horizontal scrollbar by increasing 
-    # the toplevel window's width won't make the toplevel higher
+    # the toplevel window's width won't change the toplevel's height
     #
-    set win [winfo parent $hsb]
-    upvar ::scrollutil::ns${win}::data data
     variable topWidthArr
-    if {[winfo reqheight $win] >= $data(height) &&
-	[winfo width $top] > $topWidthArr($top) && ![wrapsTextWidget $win]} {
+    if {[winfo width $top] > $topWidthArr($top)} {
 	wm geometry $top [wm geometry $top]
     }
 }

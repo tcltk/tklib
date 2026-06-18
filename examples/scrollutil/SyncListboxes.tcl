@@ -4,7 +4,7 @@
 # Demonstrates the use of the scrollutil::scrollsync widget in connection with
 # two listbox widgets.
 #
-# Copyright (c) 2019-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2019-2026  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tk
@@ -84,9 +84,9 @@ grid columnconfigure $ss 1 -weight 1
 #
 set b [ttk::button $f.b -text "Close" -command exit]
 
-pack $b  -side bottom -pady {0 7p}
-pack $tf -side top -fill x -pady {7p 0}    ;# for -padx see the proc updatePadx
-pack $sa -side top -expand yes -fill both -padx 7p -pady {1.5p 7p}
+pack $b  -side bottom -pady {0 9p}
+pack $tf -side top -fill x -pady {9p 0}    ;# for -padx see the proc updatePadx
+pack $sa -side top -expand yes -fill both -padx 9p -pady {1.5p 9p}
 pack $f  -expand yes -fill both
 
 #
@@ -95,7 +95,7 @@ pack $f  -expand yes -fill both
 #
 proc updatePadx {w vsb vsbMapped} {
     set sa [winfo parent $vsb]
-    set l [expr {[winfo pixels . 7p] + [$sa cget -borderwidth]}]
+    set l [expr {[winfo pixels . 9p] + [$sa cget -borderwidth]}]
     set r $l
     if {$vsbMapped} {
 	incr r [winfo width $vsb]
@@ -104,6 +104,7 @@ proc updatePadx {w vsb vsbMapped} {
     pack configure $w -padx [list $l $r]
 }
 
+update idletasks
 updatePadx $tf $sa.vsb 0
 bind $sa.vsb <Map>   [list updatePadx $tf %W 1]	 ;# $tf doesn't contain % chars
 bind $sa.vsb <Unmap> [list updatePadx $tf %W 0]	 ;# $tf doesn't contain % chars

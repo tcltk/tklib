@@ -4,7 +4,7 @@
 # Demonstrates the use of the scrollutil::scrollarea widget in connection with
 # a text widget.
 #
-# Copyright (c) 2020-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2020-2026  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tk
@@ -38,12 +38,12 @@ $txt tag add bgRed 25.0 25.end
 # Create a ttk::button widget outside the scrollarea
 #
 set b [ttk::button $f.b -text "Close" -command exit]
-pack $b -side bottom -pady {0 7p}
+pack $b -side bottom -pady {0 9p}
 
 #
 # Manage the scrollarea
 #
-pack $sa -expand yes -fill both -padx 7p -pady 7p
+pack $sa -expand yes -fill both -padx 9p -pady 9p
 pack $f  -expand yes -fill both
 
 #
