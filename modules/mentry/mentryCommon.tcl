@@ -71,14 +71,18 @@ proc mentry::useTile {bool} {
 # variable to its original value, given by the first argument.
 #
 proc mentry::restoreUsingTile {origVal varName index op} {
-    variable usingTile $origVal
+    upvar $varName var
     switch $op {
 	write {
-	    return -code error "it is not supported to use both Mentry and\
-				Mentry_tile in the same application"
+	    if {$var != $origVal} {
+		set var $origVal
+		return -code error "it is not supported to use both Mentry\
+				    and Mentry_tile in the same application"
+	    }
 	}
 	unset {
-	    trace add variable usingTile {write unset} \
+	    set var $origVal
+	    trace add variable var {write unset} \
 		[list mentry::restoreUsingTile $origVal]
 	}
     }

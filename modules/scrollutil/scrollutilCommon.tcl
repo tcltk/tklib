@@ -59,14 +59,18 @@ proc scrollutil::useTile {bool} {
 # variable to its original value, given by the first argument.
 #
 proc scrollutil::restoreUsingTile {origVal varName index op} {
-    variable usingTile $origVal
+    upvar $varName var
     switch $op {
 	write {
-	    return -code error "it is not supported to use both Scrollutil and\
-				Scrollutil_tile in the same application"
+	    if {$var != $origVal} {
+		set var $origVal
+		return -code error "it is not supported to use both Scrollutil\
+				    and Scrollutil_tile in the same application"
+	    }
 	}
 	unset {
-	    trace add variable usingTile {write unset} \
+	    set var $origVal
+	    trace add variable var {write unset} \
 		[list scrollutil::restoreUsingTile $origVal]
 	}
     }
