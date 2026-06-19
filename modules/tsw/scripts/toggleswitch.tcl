@@ -9,7 +9,7 @@
 #   - Private procedure implementing the toggleswitch widget command
 #   - Private procedures used in bindings
 #
-# Copyright (c) 2025  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2026  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -94,7 +94,8 @@ proc tsw::createBindings {} {
     bind Toggleswitch <Destroy>     { tsw::onDestroy %W }
 
     bindtags . [linsert [bindtags .] 1 TswMain]
-    foreach event {<<ThemeChanged>> <<LightAqua>> <<DarkAqua>>} {
+    foreach event {<<ThemeChanged>> <<LightAppearance>> <<DarkAppearance>>
+		   <<LightAqua>> <<DarkAqua>>} {
 	bind TswMain $event { tsw::onThemeChanged %W }
     }
 

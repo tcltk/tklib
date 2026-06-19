@@ -824,7 +824,8 @@ proc tsw::updateElements_aqua_macos26 {} {
  <rect x="2" y="2" width="26" height="16" rx="8" }
 
     set darkMode [expr {
-	[catch {tk::unsupported::MacWindowStyle isdark .} result] == 0 ?
+	([catch {winfo isdark .} result] == 0 ||
+	 [catch {tk::unsupported::MacWindowStyle isdark .} result] == 0) ?
 	$result : 0}]
     set selectBg [expr {
 	[catch {winfo rgb . systemSelectedContentBackgroundColor}] == 0 ?
@@ -975,7 +976,8 @@ proc tsw::updateElements_aqua_macos15 {} {
     scan $::tcl_platform(osVersion) "%d" majorOSVersion
     if {$majorOSVersion >= 18} {			;# OS X 10.14 or later
 	set darkMode [expr {
-	    [catch {tk::unsupported::MacWindowStyle isdark .} result] == 0 ?
+	    ([catch {winfo isdark .} result] == 0 ||
+	     [catch {tk::unsupported::MacWindowStyle isdark .} result] == 0) ?
 	    $result : 0}]
 	set selectBg [expr {
 	    [catch {winfo rgb . systemSelectedContentBackgroundColor}] == 0 ?

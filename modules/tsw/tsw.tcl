@@ -16,7 +16,7 @@ namespace eval tsw {
     #
     # Public variables:
     #
-    variable version    1.4.1
+    variable version    1.4.2
     variable library    [file dirname [file normalize [info script]]]
 
     #
