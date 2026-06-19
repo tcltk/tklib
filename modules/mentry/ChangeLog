@@ -1,3 +1,15 @@
+2026-06-19  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 4.5.1.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/*.tcl: Adapted to the recent changes in Tk 9.1 according to
+	  TIP 750.
+
 2025-06-10  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Mentry 4.5.

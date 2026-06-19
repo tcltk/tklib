@@ -1,5 +1,11 @@
-What is new in Mentry 4.5?
---------------------------
+What is new in Mentry 4.5.1?
+----------------------------
+
+1. Adapted to the recent changes in Tk 9.1 according to TIP 750:
+   "Consistent dark mode for Windows and macOS".
+
+What was new in Mentry 4.5?
+---------------------------
 
 1. Included the same version 2.25 of the mega-widget utility package
    mwutil as in the most recent Tablelist, Scrollutil, and Tsw releases.

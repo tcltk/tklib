@@ -1,7 +1,7 @@
 #==============================================================================
 # Main Mentry and Mentry_tile package module.
 #
-# Copyright (c) 1999-2025  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 1999-2026  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 namespace eval mentry {
@@ -22,7 +22,7 @@ namespace eval mentry {
     #
     # Public variables:
     #
-    variable version	4.5
+    variable version	4.5.1
     variable library	[file dirname [file normalize [info script]]]
 
     #
