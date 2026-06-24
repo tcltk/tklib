@@ -441,7 +441,7 @@ snit::widget widget::dialog {
 	    # win32 multiple desktops may produce negative geometry - avoid.
 	    set checkBounds -1
 	}
-	if {$checkBounds} {
+	if {$checkBounds > 0} {
 	    if {$x < 0 && $checkBounds > 0} {
 		set x 0
 	    } elseif {$x > ([winfo screenwidth $w]-[winfo reqwidth $w])} {
