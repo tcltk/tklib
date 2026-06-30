@@ -1,3 +1,11 @@
+2026-06-30  Csaba Nemethi  <csaba.nemethi@t-online.de>
+
+	* pkgIndex.tcl:	Bumped the tooltip version number to 2.0.3.
+	* tooltip.man:
+
+	* tooltip.tcl: Adaptad to TIP 750: Consistent dark mode for Windows and
+	  macOS.
+
 2025-08-02  Csaba Nemethi  <csaba.nemethi@t-online.de>
 
 	* pkgIndex.tcl:	Bumped the tooltip version number to 2.0.2.

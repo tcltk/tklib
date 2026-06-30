@@ -1,5 +1,5 @@
 [comment {-*- tcl -*- doctools manpage}]
-[vset VERSION 2.0.1]
+[vset VERSION 2.0.3]
 [manpage_begin tooltip n [vset VERSION]]
 [keywords balloon]
 [keywords help]
