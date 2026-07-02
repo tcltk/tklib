@@ -2,7 +2,7 @@
 
 #(c) 2015-2019 Kevin Walzer/WordTech Communications LLC. License: standard Tcl license, http://www.tcl.tk/software/tcltk/license.html
 
-package provide notifywindow 1.0.1
+package provide notifywindow 1.0.2
 
 namespace eval notifywindow {
     namespace export *
@@ -12,23 +12,28 @@ namespace eval notifywindow {
 
 proc notifywindow::notifywindow {msg img} {
     set w [toplevel ._notify]
-    if {[tk windowingsystem] eq "aqua"} {
-	::tk::unsupported::MacWindowStyle style $w utility {hud
-	    closeBox resizable}
-	wm title $w "Alert"
-    }
-    if {[tk windowingsystem] eq "win32"} {
-	wm attributes $w -toolwindow true
-	wm title $w "Alert"
-    }
-    if {[tk windowingsystem] eq "x11"} {
-	wm attributes $w -type notification
+    switch [tk windowingsystem] {
+	aqua {
+	    if {[catch {wm attributes $w -stylemask \
+			{titled closable resizable}}] != 0} {
+		::tk::unsupported::MacWindowStyle style $w utility \
+		    {hud closeBox resizable}
+	    }
+	    wm title $w "Alert"
+	}
+	win32 {
+	    wm attributes $w -toolwindow true
+	    wm title $w "Alert"
+	}
+	x11 {
+	    wm attributes $w -type notification
+	}
     }
     if {[lsearch [image names] $img] > -1} {
 	label $w.l -bg gray30 -fg white -image $img
 	pack $w.l -fill both -expand yes -side left
     }
-    message $w.message -aspect 150 -bg gray30 -fg white -aspect 150 -text $msg -width 280
+    message $w.message -aspect 150 -bg gray30 -fg white -text $msg -width 280
     pack $w.message -side right -fill both -expand yes
     if {[tk windowingsystem] eq "x11"} {
 	wm overrideredirect $w true
@@ -51,7 +56,6 @@ proc notifywindow::fade_out {w} {
 	} else {
 	    destroy $w
 	}
-
     }
 }
 
