@@ -180,9 +180,6 @@ snit::widgetadaptor widget::dateentry {
 	    wm overrideredirect $dropbox 1
 	    wm transient $dropbox [winfo toplevel $win]
 	    wm group     $dropbox [winfo parent $win]
-	} else {
-	    tk::unsupported::MacWindowStyle style $dropbox \
-		help {noActivates hideOnSuspend}
 	}
 	wm resizable $dropbox 0 0
 
@@ -234,7 +231,14 @@ snit::widgetadaptor widget::dateentry {
 	wm deiconify $dropbox
 	raise $dropbox
 
-	if {[tk windowingsystem] ne "aqua"} {
+	if {[tk windowingsystem] eq "aqua"} {
+	    if {[catch {wm attributes $dropbox -stylemask {}}] == 0} {
+		wm geometry $dropbox "+$x+$y"
+	    } else {
+		tk::unsupported::MacWindowStyle style $dropbox \
+		    help {noActivates hideOnSuspend}
+	    }
+	} else {
 	    tkwait visibility $dropbox
 	}
 
@@ -348,7 +352,7 @@ bind TDateEntry <ButtonRelease-1> { %W state !pressed }
 bind TDateEntryPopdown <Map> { ttk::globalGrab %W }
 bind TDateEntryPopdown <Unmap> { ttk::releaseGrab %W }
 
-package provide widget::dateentry 0.98
+package provide widget::dateentry 0.99
 
 ##############
 # TEST CODE ##

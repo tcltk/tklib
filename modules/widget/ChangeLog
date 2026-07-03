@@ -1,3 +1,11 @@
+2026-07-03  Csaba Nemethi  <csaba.nemethi@t-online.de>
+
+	* dateentry.tcl: Adaptad to TIP 750: Consistent dark mode for Windows
+	  and macOS.
+
+	* pkgIndex.tcl:         Bumped the dateentry version number to 0.99.
+	* widget_dateentry.man:
+
 2025-11-07 Harald Oehlmann
 
 	* calendar.tcl: [Bug c800a75eb5]: Fix error due to tcl 9
