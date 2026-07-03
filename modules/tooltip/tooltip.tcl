@@ -514,7 +514,9 @@ proc ::tooltip::show {w msg {i {}}} {
     wm deiconify $b
     raise $b
     if {[tk windowingsystem] eq "aqua"} {
-	if {[catch {wm attributes $b -stylemask {}}] != 0} {
+	if {[catch {wm attributes $b -stylemask {}}] == 0} {
+	    wm geometry $b +$x+$y
+	} else {
 	    ::tk::unsupported::MacWindowStyle style $b help none
 	}
 	if {$focus ne ""} {
@@ -761,4 +763,4 @@ proc ::tooltip::conditionally-hide {w tag} {
     hide 1
 }
 
-package provide tooltip 2.0.3
+package provide tooltip 2.0.4
