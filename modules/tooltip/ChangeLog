@@ -1,3 +1,11 @@
+2026-07-03  Csaba Nemethi  <csaba.nemethi@t-online.de>
+
+	* pkgIndex.tcl:	Bumped the tooltip version number to 2.0.4.
+	* tooltip.man:
+
+	* tooltip.tcl: Minor improvement regarding the tooltip window's
+	  placement on macOS.
+
 2026-06-30  Csaba Nemethi  <csaba.nemethi@t-online.de>
 
 	* pkgIndex.tcl:	Bumped the tooltip version number to 2.0.3.
