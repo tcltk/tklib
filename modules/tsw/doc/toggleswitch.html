@@ -13,7 +13,7 @@
   <div>
     <h1>The <code><b>tsw::toggleswitch</b></code> Command</h1>
 
-    <h2>For Tsw Version 1.4</h2>
+    <h2>For Tsw Version 1.5</h2>
 
     <h3>by</h3>
 
@@ -65,7 +65,10 @@
 
     <dd>
       <pre>
-<b>-class  -cursor  -style</b>
+<b>-class       -style         -underline
+-cursor      -takefocus     -width
+-font        -text
+-foreground  -textvariable</b>
 </pre>
     </dd>
 
@@ -79,9 +82,6 @@
 
     <dd><code><b><a href="#size">-size</a></b>
     <b>1</b>|<b>2</b>|<b>3</b></code></dd>
-
-    <dd><code><b><a href="#takefocus">-takefocus</a></b>
-    <b>0</b>|<b>1</b>|<b>""</b>|<i>command</i></code></dd>
 
     <dd><code><b><a href="#variable">-variable</a></b>
     <i>variable</i></code></dd>
@@ -166,17 +166,22 @@
     invoked, there must not exist a window named <code><i>pathName</i></code>,
     but <code><i>pathName</i></code>'s parent must exist.</dd>
 
-    <dd class="tm">A toggleswitch is a mega-widget consisting of a horizontal
-    <b>trough</b> and a <b>slider</b>, just like a ttk::scale widget.&nbsp;
-    Actually, these elements belong to a ttk::scale contained in the
-    widget.&nbsp; The trough is a fully rounded filled rectangle, and the
+    <dd class="tm">A toggleswitch is a mega-widget consisting basically of a
+    horizontal <b>trough</b> and a <b>slider</b>, just like a ttk::scale
+    widget.&nbsp; Actually, these elements belong to a ttk::scale contained in
+    the widget.&nbsp; The trough is a fully rounded filled rectangle, and the
     slider is a filled circle or fully rounded filled rectangle contained in
     the trough.&nbsp; Both elements are rendered using scaling-aware SVG
-    images.&nbsp; Their dimensions depend on the value of the
-    <code><b><a href="#size">-size</a></b></code> configuration option, the
-    current theme, the display's scaling level, and Tk's scaling factor given
-    by&nbsp; <code><b>[tk scaling]</b></code>&nbsp; at the time the first
-    toggleswitch widget is created.</dd>
+    images.&nbsp; Their dimensions depend on the value of the <code><b><a href=
+    "#size">-size</a></b></code> configuration option, the current theme, the
+    display's scaling level, and Tk's scaling factor given by&nbsp;
+    <code><b>[tk scaling]</b></code>&nbsp; at the time the first toggleswitch
+    widget is created.&nbsp; The widget also contains a ttk::label displaying
+    an optional text to the scale's left; this child widget is only managed if
+    the text specified with the <code><b><a href=
+    "#std_options">-text</a></b></code> or <code><b><a href=
+    "#std_options">-textvariable</a></b></code> option is a nonempty
+    string.</dd>
 
     <dd class="tm">Just like a light switch, a toggleswitch widget can have one
     of two possible <b>switch state</b>s: on or off.&nbsp; In the on state the
@@ -211,17 +216,26 @@
 
     <dd>
       <pre>
-<b>-class  -cursor  -style</b>
+<b>-class       -style         -underline
+-cursor      -takefocus     -width
+-font        -text
+-foreground  -textvariable</b>
 </pre>
     </dd>
 
     <dd>See the <b>ttk_widget</b> manual entry for details on the standard
     options.&nbsp; The default value of the <code><b>-class</b></code> option
-    is <code><b>Toggleswitch</b></code> and that of <code><b>-cursor</b></code>
-    an empty string.&nbsp; The value of the <code><b>-style</b></code> option
-    defaults to <code><b>Toggleswitch2</b></code>, corresponding to the
-    <code><b><a href="#size">-size</a></b></code> option's default value
-    <code><b>2</b></code>.</dd>
+    is <code><b>Toggleswitch</b></code>.&nbsp; The value of the
+    <code><b>-style</b></code> option defaults to
+    <code><b>Toggleswitch2</b></code>, corresponding to the <code><b><a href=
+    "#size">-size</a></b></code> option's default value
+    <code><b>2</b></code>.&nbsp; Depending on the value of the
+    <code><b>-size</b></code> option, the standard
+    <code><b>-style</b></code> value is one of
+    <code><b>Toggleswitch1</b></code>, <code><b>Toggleswitch2</b></code>, or
+    <code><b>Toggleswitch3</b></code> (see below).&nbsp; The default value of
+    the <code><b>-takefocus</b></code> option is <code>"ttk::takefocus"</code>
+    (just like for most Tk themed widgets).</dd>
 
     <dt class="tm" id="widget_options"><b>WIDGET-SPECIFIC OPTIONS</b></dt>
 
@@ -327,45 +341,47 @@
         If the current theme is <code><b>aqua</b></code> then these size IDs
         correspond to the control sizes "mini", "small", and "large" of the
         native toggle switches on macOS.&nbsp; For macOS versions 15 (Sequoia)
-	and earlier the value <code><b>1</b></code> stands for the trough size
-	of 26 x 15 pixels, the value <code><b>2</b></code> for the trough size
-	of 32 x 18 pixels, and the value <code><b>3</b></code> identifies the
-	trough size of 38 x 22 pixels.&nbsp; Starting with macOS 26 (Tahoe),
-	the trough sizes are 29 x 13, 36 x 16, and 44 x 20 pixels,
-	respectively.&nbsp; For all the other themes, on an unscaled screen the
-	value <code><b>1</b></code> stands for the trough size of 32 x 16
-	pixels, the value <code><b>2</b></code> for the trough size of 40 x 20
-	pixels, and the value <code><b>3</b></code> identifies the trough size
-	of 48 x 24 pixels, except that on Windows 10 and earlier, for
-	compatibility with the native toggle switch, for the themes
-	<code><b>vista</b></code>, <code><b>winnative</b></code>, and
-	<code><b>xpnative</b></code> the unscaled trough width is 35, 44, and
-	53 pixels, respectively.</p>
+        and earlier the value <code><b>1</b></code> stands for the trough size
+        of 26 x 15 pixels, the value <code><b>2</b></code> for the trough size
+        of 32 x 18 pixels, and the value <code><b>3</b></code> identifies the
+        trough size of 38 x 22 pixels.&nbsp; Starting with macOS 26 (Tahoe),
+        the trough sizes are 29 x 13, 36 x 16, and 44 x 20 pixels,
+        respectively.&nbsp; For all the other themes, on an unscaled screen the
+        value <code><b>1</b></code> stands for the trough size of 32 x 16
+        pixels, the value <code><b>2</b></code> for the trough size of 40 x 20
+        pixels, and the value <code><b>3</b></code> identifies the trough size
+        of 48 x 24 pixels, except that on Windows 10 and earlier, for
+        compatibility with the native toggle switch, for the themes
+        <code><b>vista</b></code>, <code><b>winnative</b></code>, and
+        <code><b>xpnative</b></code> the unscaled trough width is 35, 44, and
+        53 pixels, respectively.</p>
 
         <p>Note that by setting this option to a value
         <code><i>size</i></code>, the <code><b><a href=
         "#std_options">-style</a></b></code> option's value will automatically
         change to <code><b>Toggleswitch</b><i>size</i></code> if its previous
-        or requested value was <code><b>Toggleswitch1</b></code>,
+        or requested value was one of <code><b>Toggleswitch1</b></code>,
         <code><b>Toggleswitch2</b></code>, or
         <code><b>Toggleswitch3</b></code>, and to
         <code><i>prefix</i>.<b>Toggleswitch</b><i>size</i></code> if its
-        previous or requested value was
+        previous or requested value was one of
         <code><i>prefix</i>.<b>Toggleswitch1</b></code>,
         <code><i>prefix</i>.<b>Toggleswitch2</b></code>, or
-        <code><i>prefix</i>.<b>Toggleswitch3</b></code>.&nbsp; Conversely, by
-        setting the <code><b>-style</b></code> option to a value of the form
+        <code><i>prefix</i>.<b>Toggleswitch3</b></code>.</p>
+
+        <p>Conversely, by setting the <code><b>-style</b></code> option to a
+        value of the form
         <code><b>Toggleswitch</b><i>size</i></code> or
         <code><i>prefix</i>.<b>Toggleswitch</b><i>size</i></code> (where
         <code><i>size</i></code> is one of <code><b>1</b></code>,
         <code><b>2</b></code>, or <code><b>3</b></code>), the
         <code><b>-size</b></code> option will automatically be set to
-        <code><i>size</i></code>.&nbsp; When configuring both options
-        <code><b>-size</b></code> and <code><b>-style</b></code>, the former
-        will take precedence over the latter, regardless of the order in which
-        they were specified.</p>
+        <code><i>size</i></code>.</p>
 
-        <p>For example, if you create the widget with</p>
+        <p>When configuring both options <code><b>-size</b></code> and
+        <code><b>-style</b></code>, the former will take precedence over the
+        latter, regardless of the order in which they were specified.&nbsp;
+        For example, if you create the widget with</p>
 
         <blockquote>
           <pre>
@@ -398,37 +414,6 @@ tsw::toggleswitch <i>pathName</i> -style My.Toggleswitch3
         triggers the default&nbsp; <code><b>-size 2</b></code>&nbsp; setting,
         which takes precedence over&nbsp; <code><b>-style</b>
         My.<b>Toggleswitch3</b></code>.</p>
-      </blockquote>
-    </dd>
-
-    <dd id="takefocus">
-      <table border="0" cellpadding="0" cellspacing="0">
-        <tr>
-          <td>Command-Line Name:&nbsp;</td>
-          <td><code><b>-takefocus</b></code></td>
-        </tr>
-
-        <tr>
-          <td>Database Name:</td>
-          <td><code><b>&nbsp;takeFocus</b></code></td>
-        </tr>
-
-        <tr>
-          <td>Database Class:</td>
-          <td><code><b>&nbsp;TakeFocus</b></code></td>
-        </tr>
-      </table>
-
-      <blockquote>
-        <p>This option determines whether the toggleswitch widget accepts the
-        focus during keyboard traversal.&nbsp; It is almost identical to the
-        standard option of the same name (see the <b>options</b> manual entry
-        for details).&nbsp; The only difference is that not the toggleswitch
-        itself but the ttk::scale widget contained in it will receive the focus
-        during keyboard traversal with the standard keys (<code>Tab</code> and
-        <code>Shift-Tab</code>).&nbsp; The default is
-        <code>"ttk::takefocus"</code> (just like for most Tk themed
-        widgets).</p>
       </blockquote>
     </dd>
 
@@ -539,7 +524,11 @@ tsw::toggleswitch <i>pathName</i> -style My.Toggleswitch3
         <dt class="tm" id="identify"><code><i>pathName</i> <b>identify</b>
         ?<b>element</b>? <i>x</i> <i>y</i></code></dt>
 
-        <dd>See the <b>ttk_widget</b> manual entry.</dd>
+        <dd>See the <b>ttk_widget</b> manual entry.&nbsp; The coordinates are
+        expected to be relative to the toggleswitch, but they are converted to
+        values relative to the ttk::scale child and the return value will be
+        the name of the corresponding style element of this child or an empty
+        string.</dd>
 
         <dt class="tm" id="instate"><code><i>pathName</i> <b>instate</b>
         <i>stateSpec</i> ?<i>script</i>?</code></dt>
@@ -674,9 +663,24 @@ tsw::toggleswitch <i>pathName</i> -style My.Toggleswitch3
     <code><b>pressed</b></code>, <code><b>selected</b></code>.</dd>
 
     <dd class="tm">
+      Styling options configurable with <code><b>ttk::style</b></code> for
       <code><b>Toggleswitch1</b></code>, <code><b>Toggleswitch2</b></code>, and
-      <code><b>Toggleswitch3</b></code> styling options configurable with
-      <code><b>ttk::style</b></code> are:
+      <code><b>Toggleswitch3</b></code>:
+
+      <blockquote>
+        <dt><code><b>-padding</b> <i>padding</i></code></dt>
+
+        <dd>Defaults to <code>0.75p</code>.</dd>
+      </blockquote>
+    </dd>
+
+    <dd class="tm">
+      The ttk::scale and the ttk::label displaying an optional text are
+      children of a ttk:frame having the layout
+      <code><b>ToggleswitchHull</b></code>, which contains a
+      <code><b>focus</b></code> element for all themes, except
+      <code><b>aqua</b></code>.&nbsp; Styling options configurable with
+      <code><b>ttk::style</b></code> for <code><b>ToggleswitchHull</b></code>:
 
       <blockquote>
         <dt><code><b>-focuscolor</b> <i>color</i></code></dt>
@@ -693,19 +697,11 @@ tsw::toggleswitch <i>pathName</i> -style My.Toggleswitch3
 
         <dd>The default is <code>1</code>.&nbsp; The value may have any of the
         forms acceptable to <code><b>Tk_GetPixels</b></code>.
-
-        <dt><code><b>-padding</b> <i>padding</i></code></dt>
-
-        <dd>Defaults to <code>1.5p</code> for the <code><b>aqua</b></code>
-        theme (for which the three above-mentioned styles have no
-        <code><b>focus</b></code> element) and <code>0.75p</code> for all the
-        other themes.</dd>
       </blockquote>
     </dd>
 
-    <dd class="tm">For the <code><b>aqua</b></code> theme only the
-    <code><b>-padding</b></code> option is available, the others are simply
-    ignored.</dd>
+    <dd class="tm">For the <code><b>aqua</b></code> theme these focus-related
+    options are simply ignored.</dd>
 
     <dd class="tm">See the <b>ttk_style</b> manual page for information on how
     to configure ttk styles.

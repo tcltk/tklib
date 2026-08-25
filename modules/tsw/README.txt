@@ -23,9 +23,14 @@ and contains:
   - a tutorial in HTML format;
   - a reference page in HTML format.
 
-A toggleswitch is a mega-widget consisting of a horizontal trough (a
-fully rounded filled rectangle) and a slider (a filled circle contained
-in the trunk).  It can have one of two possible switch states: on or
+A toggleswitch is a mega-widget consisting basically of a horizontal
+trough (a fully rounded filled rectangle) and a slider (a filled circle
+or fully rounded filled rectangle contained in the trunk).  The widget
+also contains a ttk::label displaying an optional text to the trough's
+left; this child widget is only managed if the text specified with the
+"-text" or "-textvariable" option is a nonempty string.
+
+A toggleswitch widget can have one of two possible switch states: on or
 off.  In the on state the slider is placed at the end of the trough, and
 in the off state at its beginning.  The user can toggle between these
 two states with the mouse or the space key.
@@ -44,14 +49,14 @@ Tsw is available for free download from the Web page
 
     https://www.nemethi.de
 
-The distribution file is "tsw1.4.2.tar.gz" for UNIX and "tsw1_4_2.zip"
-for Windows.  These files contain the same information, except for the
+The distribution file is "tsw1.5.tar.gz" for UNIX and "tsw1_5.zip" for
+Windows.  These files contain the same information, except for the
 additional carriage return character preceding the linefeed at the end
 of each line in the text files for Windows.
 
 Tsw is also included in tklib, which has the address
 
-    https://core.tcl.tk/tklib
+    https://core.tcl-lang.org/tklib
 
 How to Install It?
 ------------------
@@ -62,19 +67,19 @@ subdirectory of the "lib" directory within your Tcl/Tk installation (at
 the same level as the tk8.X or tk9.X subdirectory).
 
 To install Tsw on UNIX, "cd" to the desired directory and unpack the
-distribution file "tsw1.4.2.tar.gz":
+distribution file "tsw1.5.tar.gz":
 
-    gunzip -c tsw1.4.2.tar.gz | tar -xf -
+    gunzip -c tsw1.5.tar.gz | tar -xf -
 
 On most UNIX systems this can be replaced with
 
-    tar -zxf tsw1.4.2.tar.gz
+    tar -zxf tsw1.5.tar.gz
 
-Both commands will create a directory named "tsw1.4.2", with the
+Both commands will create a directory named "tsw1.5", with the
 subdirectories "demos", "doc", and "scripts".
 
 On Windows, use WinZip or some other program capable of unpacking the
-distribution file "tsw1_4_2.zip" into the directory "tsw1.4.2", with the
+distribution file "tsw1_5.zip" into the directory "tsw1.5", with the
 subdirectories "demos", "doc", and "scripts".
 
 How to Use It?

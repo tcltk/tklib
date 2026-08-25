@@ -1,5 +1,27 @@
-What is new in Tsw 1.4.2?
--------------------------
+What is new in Tsw 1.5?
+-----------------------
+
+1. Added support for the standard options "-font", "-foreground",
+   "-text", "-textvariable", "-underline", and "-width" (thanks to
+   Valer100 for his proposal).
+
+2. The toggleswitch widget now also contains a ttk::label displaying an
+   optional text to the scale child's left; this label is only managed
+   if the text specified with the "-text" or "-textvariable" option is
+   a nonempty string.
+
+3. The ttk:frame containing a ttk::scale and a ttk::label as children
+   now has its own layout named "ToggleswitchHull"; the styling options
+   "-focuscolor", "-focussolid", and "-focusthickness" now refer to this
+   style rather than to "Toggleswitch1", "Toggleswitch2", and
+   "Toggleswitch3" (which continue to support the "-padding" option).
+
+4. Modified the demo script "EditingOpts.tcl" to specify the texts of
+   the "Editing Options" window as the values of the "-text" option of
+   the toggleswitch widgets.
+
+What was new in Tsw 1.4.2?
+--------------------------
 
 1. Adapted to the recent changes in Tk 9.1 according to TIP 750:
    "Consistent dark mode for Windows and macOS".
