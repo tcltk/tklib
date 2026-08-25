@@ -411,11 +411,9 @@ proc tsw::createElements_vista {} {
 
     foreach n {1 2 3} {
 	ttk::style layout Toggleswitch$n [list \
-	    Switch.focus -sticky nswe -children [list \
-		Switch.padding -sticky nswe -children [list \
-		    Switch$n.trough -sticky {} -children [list \
-			Switch$n.slider -side left -sticky {}
-		    ]
+	    Switch.padding -sticky nswe -children [list \
+		Switch$n.trough -sticky e -children [list \
+		    Switch$n.slider -side left -sticky {}
 		]
 	    ]
 	]
@@ -774,8 +772,8 @@ proc tsw::updateElements_aqua {} {
     foreach n {1 2 3} {
 	ttk::style layout Toggleswitch$n [list \
 	    Switch.padding -sticky nswe -children [list \
-		Switch$n.trough -sticky {} -children [list \
-		    Switch$n.slider -side left -sticky {} \
+		Switch$n.trough -sticky e -children [list \
+		    Switch$n.slider -side left -sticky {}
 		]
 	    ]
 	]
@@ -1163,39 +1161,17 @@ proc tsw::createElements {} {
     }
     set elemInfoArr($theme) 1
 
-    if {$theme eq "aqua"} {
-	foreach n {1 2 3} {
-	    ttk::style layout Toggleswitch$n [list \
-		Switch.padding -sticky nswe -children [list \
-		    Switch$n.trough -sticky {} -children [list \
-			Switch$n.slider -side left -sticky {} \
-		    ]
+    foreach n {1 2 3} {
+	ttk::style layout Toggleswitch$n [list \
+	    Switch.padding -sticky nswe -children [list \
+		Switch$n.trough -sticky e -children [list \
+		    Switch$n.slider -side left -sticky {}
 		]
 	    ]
+	]
 
-	    if {[ttk::style lookup Toggleswitch$n -padding] eq ""} {
-		ttk::style configure Toggleswitch$n -padding 1.5p
-	    }
-	}
-    } else {
-	foreach n {1 2 3} {
-	    ttk::style layout Toggleswitch$n [list \
-		Switch.focus -sticky nswe -children [list \
-		    Switch.padding -sticky nswe -children [list \
-			Switch$n.trough -sticky {} -children [list \
-			    Switch$n.slider -side left -sticky {}
-			]
-		    ]
-		]
-	    ]
-
-	    if {[ttk::style lookup Toggleswitch$n -padding] eq ""} {
-		ttk::style configure Toggleswitch$n -padding 0.75p
-	    }
-	    if {$theme eq "classic" &&
-		[ttk::style lookup Toggleswitch$n -focussolid] eq ""} {
-		ttk::style configure Toggleswitch$n -focussolid 1
-	    }
+	if {[ttk::style lookup Toggleswitch$n -padding] eq ""} {
+	    ttk::style configure Toggleswitch$n -padding 0.75p
 	}
     }
 }
@@ -1225,11 +1201,9 @@ proc tsw::condMakeElements {} {
 
 	interp alias {} ::tsw::createImg  {} image create photo -format $svgFmt
 
+	variable scaled4 [expr {round(4 * $scalingPct / 100.0)}]
+
 	createElements
-
-	variable scaled4
-	set scaled4 [expr {round(4 * $scalingPct / 100.0)}]
-
 	set madeElements 1
     }
 }

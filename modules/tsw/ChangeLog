@@ -1,3 +1,29 @@
+2026-08-25  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 1.5.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/*.tcl: Added support for the standard options "-font",
+	  "-foreground", "-text", "-textvariable", "-underline", and "-width";
+	  the toggleswitch widget now also contains a ttk::label displaying an
+	  optional text to the scale child's left (only managed if the text is
+	  nonempty); the ttk:frame containing a ttk::scale and a ttk::label as
+	  children now has its own layout named "ToggleswitchHull"; the styling
+	  options "-focuscolor", "-focussolid", and "-focusthickness" now refer
+	  to this style.
+
+	* scripts/tclIndex: Newly generated.
+
+	* doc/EditingOpts.png: Updated screenshot.
+
+	* ../../examples/tsw/EditingOpts.tcl: Modified to specify the texts of
+	  the "Editing Options" window using the "-text" option of the
+	  toggleswitch widgets.
+
 2026-06-25  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Tsw 1.4.2.

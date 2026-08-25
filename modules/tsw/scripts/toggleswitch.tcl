@@ -9,7 +9,7 @@
 #   - Private procedure implementing the toggleswitch widget command
 #   - Private procedures used in bindings
 #
-# Copyright (c) 2026  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2025-2026  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -25,8 +25,8 @@ namespace eval tsw {
     # of its elements are the configuration options for the Toggleswitch class.
     # The value of an array element is either an alias name or a list
     # containing the database name and class as well as an indicator specifying
-    # the widget to which the option applies: f stands for the frame and w for
-    # the toggleswitch widget itself.
+    # the widget to which the option applies: f stands for the frame, l for the
+    # ttk::label child, and w for the toggleswitch widget itself.
     #
     #   Command-Line Name	{Database Name	Database Class	W}
     #   ----------------------------------------------------------
@@ -36,12 +36,18 @@ namespace eval tsw {
 	-class			{""		""		f}
 	-command		{command	Command		w}
 	-cursor			{cursor		Cursor		f}
+	-font			{font		Font		l}
+	-foreground		{textColor	TextColor	l}
 	-offvalue		{offValue	OffValue	w}
 	-onvalue		{onValue	OnValue		w}
 	-size			{size		Size		w}
 	-style			{style		Style		w}
 	-takefocus		{takeFocus	TakeFocus	f}
+	-text			{text		Text		l}
+	-textvariable		{textVariable	Variable	w}
+	-underline		{underline	Underline	l}
 	-variable		{variable	Variable	w}
+	-width			{width		Width		l}
     }
 
     #
@@ -50,12 +56,18 @@ namespace eval tsw {
     lappend configSpecs(-class)		"Toggleswitch"
     lappend configSpecs(-command)	""
     lappend configSpecs(-cursor)	""
+    lappend configSpecs(-font)		"TkDefaultFont"
+    lappend configSpecs(-foreground)	""
     lappend configSpecs(-offvalue)	0
     lappend configSpecs(-onvalue)	1
-    lappend configSpecs(-size)		2
+    lappend configSpecs(-size)		"2"
     lappend configSpecs(-style)		"Toggleswitch2"
     lappend configSpecs(-takefocus)	"ttk::takefocus"
+    lappend configSpecs(-text)		""
+    lappend configSpecs(-textvariable)	""
+    lappend configSpecs(-underline)	[expr {$::tk_version >= 9 ? "" : -1}]
     lappend configSpecs(-variable)	""
+    lappend configSpecs(-width)		0
 
     variable configOpts [lsort [array names configSpecs]]
 
@@ -71,6 +83,30 @@ namespace eval tsw {
     variable stateArr
     set stateArr(dragging)  0
     set stateArr(moveState) idle		;# other values: moving, moved
+
+    #
+    # Create the ToggleswitchHull layout
+    #
+    proc createToggleswitchHullLayout {} {
+	variable theme
+	if {$theme eq "aqua"} {
+	    ttk::style layout ToggleswitchHull {
+		Switch.border -sticky nswe
+	    }
+	} else {
+	    ttk::style layout ToggleswitchHull {
+		Switch.focus -sticky nswe -children {
+		    Switch.border -sticky nswe
+		}
+	    }
+	}
+
+	if {$theme eq "classic" &&
+	    [ttk::style lookup ToggleswitchHull -focussolid] eq ""} {
+	    ttk::style configure ToggleswitchHull -focussolid 1
+	}
+    }
+    createToggleswitchHullLayout
 }
 
 #
@@ -82,16 +118,20 @@ namespace eval tsw {
 # tsw::createBindings
 #
 # Creates the default bindings for the binding tags Toggleswitch, TswMain,
-# ToggleswitchKeyNav, and TswScale.
+# TswScale, and TswLabel.
 #------------------------------------------------------------------------------
 proc tsw::createBindings {} {
     bind Toggleswitch <KeyPress> continue
-    bind Toggleswitch <FocusIn> {
-	if {[focus -lastfor %W] eq "%W" && [winfo exists %W.scl]} {
-	    focus %W.scl
+    bind Toggleswitch <space>	     { tsw::onSpace %W }
+    bind Toggleswitch <Destroy>	     { tsw::onDestroy %W }
+
+    variable onAndroid [expr {[info exists ::tk::android] && $::tk::android}]
+    if {!$onAndroid} {
+	bind Toggleswitch <Enter>    { %W instate !disabled {%W state active} }
+	bind Toggleswitch <Leave> {
+	    if {"%d" ne "NotifyInferior"} { %W state !active }
 	}
     }
-    bind Toggleswitch <Destroy>     { tsw::onDestroy %W }
 
     bindtags . [linsert [bindtags .] 1 TswMain]
     foreach event {<<ThemeChanged>> <<LightAppearance>> <<DarkAppearance>>
@@ -99,23 +139,14 @@ proc tsw::createBindings {} {
 	bind TswMain $event { tsw::onThemeChanged %W }
     }
 
-    #
-    # Define the binding tag ToggleswitchKeyNav
-    #
-    mwutil::defineKeyNav Toggleswitch
+    bind TswScale <<ThemeChanged>>	{ tsw::onThemeChanged %W }
 
-    bind TswScale <<ThemeChanged>>  { tsw::onThemeChanged %W }
-
-    variable onAndroid [expr {[info exists ::tk::android] && $::tk::android}]
-    if {!$onAndroid} {
-	bind TswScale <Enter>	    { %W instate !disabled {%W state active} }
-	bind TswScale <Leave>	    { %W state !active }
+    foreach class {TswScale TswLabel} {
+	bind $class <B1-Leave>		{ # Preserves the active state. }
+	bind $class <Button-1>		{ tsw::onButton1    %W %x %y }
+	bind $class <B1-Motion>		{ tsw::onB1Motion   %W %x %y }
+	bind $class <ButtonRelease-1>	{ tsw::onButtonRel1 %W }
     }
-    bind TswScale <B1-Leave>	    { # Preserves the active state. }
-    bind TswScale <Button-1>	    { tsw::onButton1	%W %x %y }
-    bind TswScale <B1-Motion>	    { tsw::onB1Motion	%W %x %y }
-    bind TswScale <ButtonRelease-1> { tsw::onButtonRel1	%W }
-    bind TswScale <space>	    { tsw::onSpace	%W }
 }
 
 #
@@ -156,8 +187,9 @@ proc tsw::toggleswitch args {
     #
     set win [lindex $args 0]
     if {[catch {
-	ttk::frame $win -class $className -borderwidth 0 -relief flat \
-			-height 0 -width 0 -padding 0
+	ttk::frame $win -class $className -style ToggleswitchHull \
+			-borderwidth 0 -relief flat -height 0 -width 0 \
+			-padding 0
     } result] != 0} {
 	return -code error $result
     }
@@ -187,16 +219,24 @@ proc tsw::toggleswitch args {
     }
     set data(-class) $className
     set data(varTraceCmd) [list tsw::varTrace $win]
+    set data(textVarTraceCmd) [list tsw::textVarTrace $win]
 
     #
-    # Create a ttk::scale child widget of a special style
+    # Create a ttk::scale child of a special style and a ttk::label child
     #
     condMakeElements
     set size [lindex $configSpecs(-size) end]
     set scl [ttk::scale $win.scl -class TswScale -style Toggleswitch$size \
 	     -takefocus 0 -length 0 -from 0 -to 20]
-    pack $scl -expand 1 -fill both
-    bindtags $scl [linsert [bindtags $scl] 3 ToggleswitchKeyNav]
+    pack $scl -side right -fill both
+    variable scaled4
+    set r [expr {2 * $scaled4}]
+    set pad [list 0 0 $r 0]
+    set l [ttk::label $win.l -anchor w -class TswLabel -compound "" \
+	   -background "" -cursor "" -font TkDefaultFont -foreground "" \
+	   -image {} -justify left -padding $pad -relief flat -state normal \
+	   -style TLabel -takefocus 0 -text "" -textvariable "" -underline \
+	   [expr {$::tk_version >= 9 ? "" : -1}] -width 0 -wraplength 0]
 
     #
     # Configure the widget according to the command-line
@@ -215,6 +255,7 @@ proc tsw::toggleswitch args {
     }
 
     updateStyle $win
+    updateGeometry $win
 
     #
     # Move the original widget command into the current namespace
@@ -262,8 +303,39 @@ proc tsw::doConfig {win opt val} {
 	    set data($opt) [$win cget $opt]
 
 	    switch -- $opt {
-		-cursor { $win.scl configure $opt $val }
+		-cursor {
+		    $win.scl configure $opt $val
+		    $win.l   configure $opt $val
+		}
 	    }
+	}
+
+	l {
+	    #
+	    # Apply the value to the label child and save the
+	    # properly formatted value of val in data($opt)
+	    #
+
+	    $win.l configure $opt $val
+
+	    switch -- $opt {
+		-text {
+		    if {$data(-textvariable) ne ""} {
+			#
+			# Update the text variable *before*
+			# invoking "$win.l cget -text"
+			#
+			upvar #0 $data(-textvariable) var
+			trace remove variable var {write unset} \
+			    $data(textVarTraceCmd)
+			set var $val
+			trace add variable var {write unset} \
+			    $data(textVarTraceCmd)
+		    }
+		}
+	    }
+
+	    set data($opt) [$win.l cget $opt]
 	}
 
 	w {
@@ -305,12 +377,50 @@ proc tsw::doConfig {win opt val} {
 		    set data($opt) $val
 		}
 
+		-textvariable {
+		    makeTextVariable $win $val
+		    $win.l configure $opt $val
+		    set data($opt) $val
+		}
+
 		-variable {
 		    makeVariable $win $val
 		    set data($opt) $val
 		}
 	    }
 	}
+    }
+}
+
+#------------------------------------------------------------------------------
+# tsw::doCget
+#
+# Returns the value of the configuration option opt for the toggleswitch
+# widget win.
+#------------------------------------------------------------------------------
+proc tsw::doCget {win opt} {
+    upvar ::tsw::ns${win}::data data
+    return $data($opt)
+}
+
+#------------------------------------------------------------------------------
+# tsw::updateGeometry
+#
+# Updates the pack parameters for the children of the toggleswitch widget win.
+#------------------------------------------------------------------------------
+proc tsw::updateGeometry win {
+    set hullStyle [$win cget -style]
+    set thickness [ttk::style lookup $hullStyle -focusthickness {} 1]
+    set solid [ttk::style lookup $hullStyle -focussolid {} 0]
+    set pad [expr {$solid ? [winfo pixels $win $thickness] : 1}]
+    set l $win.l; set scl $win.scl
+
+    if {[$l cget -text] eq ""} {
+	pack forget $l
+	pack configure $scl -expand 1 -padx $pad -pady $pad
+    } else {
+	pack $l -side left -expand 1 -fill both -padx [list $pad 0] -pady $pad
+	pack configure $scl -expand 0 -padx [list 0 $pad] -pady $pad
     }
 }
 
@@ -322,7 +432,7 @@ proc tsw::doConfig {win opt val} {
 #------------------------------------------------------------------------------
 proc tsw::updateStyle win {
     upvar ::tsw::ns${win}::data data
-    set size $data(-size);
+    set size $data(-size)
     set style $data(-style)
     set idx [string last "." $style]
     set styleTail [expr {$idx < 0 ?
@@ -353,6 +463,103 @@ proc tsw::updateSize win {
 	set data(-size) 2
     } elseif {$styleTail eq "Toggleswitch3"} {
 	set data(-size) 3
+    }
+}
+
+#------------------------------------------------------------------------------
+# tsw::makeTextVariable
+#
+# Arranges for the global variable specified by varName to become the text
+# variable associated with the toggleswitch widget win.
+#------------------------------------------------------------------------------
+proc tsw::makeTextVariable {win varName} {
+    upvar ::tsw::ns${win}::data data
+    if {$varName eq ""} {
+	#
+	# If there is an old text variable associated with the
+	# widget then remove the trace set on this variable
+	#
+	if {$data(-textvariable) ne "" &&
+	    [catch {upvar #0 $data(-textvariable) oldVar}] == 0} {
+	    trace remove variable oldVar {write unset} $data(textVarTraceCmd)
+	}
+	return ""
+    }
+
+    #
+    # The variable may be an array element but must not be an array
+    #
+    upvar #0 $varName var
+    if {![regexp {^(.*)\((.*)\)$} $varName dummy name1 name2]} {
+	if {[array exists var]} {
+	    return -code error "variable \"$varName\" is array"
+	}
+
+	set name1 $varName
+	set name2 ""
+    }
+
+    #
+    # If there is an old text variable associated with the
+    # widget then remove the trace set on this variable
+    #
+    if {$data(-textvariable) ne "" &&
+	[catch {upvar #0 $data(-textvariable) oldVar}] == 0} {
+	trace remove variable oldVar {write unset} $data(textVarTraceCmd)
+    }
+
+    if {[info exists var]} {
+	#
+	# Invoke the trace procedure associated with the new variable
+	#
+	varTrace $win $name1 $name2 write
+    } else {
+	#
+	# Set $varName according to the widget's text
+	#
+	set var [$win.l cget -text]
+    }
+
+    #
+    # Set a trace on the new variable
+    #
+    trace add variable var {write unset} $data(textVarTraceCmd)
+}
+
+#------------------------------------------------------------------------------
+# tsw::textVarTrace
+#
+# This procedure is executed whenever the global variable specified by varName
+# and arrIndex is written or unset.  It makes sure that the label's text is
+# synchronized with the value of the variable, and that the variable is
+# recreated if it was unset.
+#------------------------------------------------------------------------------
+proc tsw::textVarTrace {win varName arrIndex op} {
+    if {$arrIndex ne ""} {
+	set varName ${varName}($arrIndex)
+    }
+    upvar #0 $varName var
+
+    upvar ::tsw::ns${win}::data data
+    switch $op {
+	write {
+	    #
+	    # Synchronize the label's text with the variable's value
+	    #
+	    $win.l configure -text $var
+	    set data(-text) $var
+
+	    updateGeometry $win
+	}
+
+	unset {
+	    #
+	    # Recreate the variable $varName by setting it according to
+	    # the label's text, and set the trace on it again
+	    #
+	    set var [$win.l cget -text]
+	    trace add variable var {write unset} $data(textVarTraceCmd)
+	}
     }
 }
 
@@ -461,17 +668,6 @@ proc tsw::varTrace {win varName arrIndex op} {
     }
 }
 
-#------------------------------------------------------------------------------
-# tsw::doCget
-#
-# Returns the value of the configuration option opt for the toggleswitch
-# widget win.
-#------------------------------------------------------------------------------
-proc tsw::doCget {win opt} {
-    upvar ::tsw::ns${win}::data data
-    return $data($opt)
-}
-
 #
 # Private procedure implementing the toggleswitch widget command
 # ==============================================================
@@ -530,6 +726,8 @@ proc tsw::toggleswitchWidgetCmd {win args} {
 			break
 		    }
 		}
+
+		updateGeometry $win
 	    }
 
 	    return $result
@@ -544,13 +742,16 @@ proc tsw::toggleswitchWidgetCmd {win args} {
 	    return [mwutil::${cmd}SubCmdEx "tsw" $win "widget" [lindex $args 1]]
 	}
 
-	identify -
-	state {
+	identify {
 	    if {[catch {$scl $cmd {*}$argList} result] != 0} {
 		return -code error [string map [list $scl $win] $result]
 	    }
 
-	    return $result
+	    set xIdx [expr {$argCount - 3}]
+	    set x [lindex $argList $xIdx]
+	    incr x -[winfo x $scl]
+	    set argList [lreplace $argList $xIdx $xIdx $x]
+	    return [$scl $cmd {*}$argList]
 	}
 
 	instate {
@@ -567,6 +768,18 @@ proc tsw::toggleswitchWidgetCmd {win args} {
 	    } else {
 		return ""
 	    }
+	}
+
+	state {
+	    if {[catch {$scl $cmd {*}$argList} result] != 0} {
+		return -code error [string map [list $scl $win] $result]
+	    }
+
+	    if {$argCount > 1} {
+		$win.l state [lindex $args 1]
+	    }
+
+	    return $result
 	}
 
 	style {
@@ -641,6 +854,18 @@ proc tsw::toggleswitchWidgetCmd {win args} {
 #
 
 #------------------------------------------------------------------------------
+# tsw::onSpace
+#------------------------------------------------------------------------------
+proc tsw::onSpace win {
+    if {[$win instate disabled] || [$win instate pressed]} {
+	return ""
+    }
+
+    $win state pressed
+    after 200 [list tsw::toggleSwitchState $win]
+}
+
+#------------------------------------------------------------------------------
 # tsw::onDestroy
 #------------------------------------------------------------------------------
 proc tsw::onDestroy win {
@@ -665,8 +890,11 @@ proc tsw::onThemeChanged w {
     variable theme [ttk::style theme use]
 
     if {$w eq "."} {
+	createToggleswitchHullLayout
 	condUpdateElements
     } else {
+	updateGeometry [winfo parent $w]
+
 	set stateSpec [$w state !disabled]		;# needed for $w set
 	$w set [expr {[$w instate selected] ? [$w cget -to] : [$w cget -from]}]
 	$w state $stateSpec				;# restores the state
@@ -681,11 +909,13 @@ proc tsw::onButton1 {w x y} {
 	return ""
     }
 
-    $w state pressed
+    set win [winfo parent $w]
+    ::$win state pressed
 
     variable stateArr
+    incr x [winfo x $w]
     array set stateArr [list  dragging 0  moveState idle  startX $x  prevX $x \
-			prevElem [$w identify element $x $y]]
+			prevElem [::$win identify element $x $y]]
 }
 
 #------------------------------------------------------------------------------
@@ -699,19 +929,23 @@ proc tsw::onB1Motion {w x y} {
     variable theme
     variable stateArr
 
+    set win [winfo parent $w]
+    set scl $win.scl
+    incr x [winfo x $w]
+
     if {$theme eq "aqua"} {
 	if {$stateArr(moveState) eq "moving"} {
 	    return ""
 	}
 
-	set curElem [$w identify element $x $y]
+	set curElem [::$win identify element $x $y]
 	if {[string match "*.slider" $stateArr(prevElem)] &&
 	    [string match "*.trough" $curElem]} {
-	    startToggling $w
+	    startToggling $scl
 	} elseif {$x < 0} {
-	    startMovingLeft $w
-	} elseif {$x >= [winfo width $w]} {
-	    startMovingRight $w
+	    startMovingLeft $scl
+	} elseif {$x >= [winfo width $win]} {
+	    startMovingRight $scl
 	}
 
 	set stateArr(prevElem) $curElem
@@ -728,12 +962,12 @@ proc tsw::onB1Motion {w x y} {
 	# Guard against a bug in the ttk::scale widget's "get x y"
 	# command (fixed in July 2025 for Tk 9.1a0, 9.0.3, and 8.6.17)
 	#
-	lassign [$w coords [$w cget -from]] fromX fromY
-	lassign [$w coords [$w cget -to]] toX toY
+	lassign [$scl coords [$scl cget -from]] fromX fromY
+	lassign [$scl coords [$scl cget -to]] toX toY
 	if {$fromX < $toX} {
-	    lassign [$w coords] curX curY
+	    lassign [$scl coords] curX curY
 	    set newX [expr {$curX + $x - $stateArr(prevX)}]
-	    $w set [$w get $newX $curY]
+	    $scl set [$scl get $newX $curY]
 	}
 
 	set stateArr(prevX) $x
@@ -750,34 +984,35 @@ proc tsw::onButtonRel1 w {
 
     variable stateArr
     set win [winfo parent $w]
+    set scl $win.scl
 
     if {$stateArr(dragging)} {
-	::$win switchstate [expr {[$w get] > [$w cget -to]/2}]
+	::$win switchstate [expr {[$scl get] > [$scl cget -to]/2}]
     } elseif {[$w instate hover]} {
 	variable theme
 	if {$theme eq "aqua"} {
 	    if {$stateArr(moveState) eq "idle"} {
-		startToggling $w
+		startToggling $scl
 	    }
 	} else {
 	    ::$win toggle
 	}
     }
 
-    $w state !pressed
+    ::$win state !pressed
     set stateArr(dragging) 0
 }
 
 #------------------------------------------------------------------------------
-# tsw::onSpace
+# tsw::toggleSwitchState
 #------------------------------------------------------------------------------
-proc tsw::onSpace w {
-    if {[$w instate disabled] || [$w instate pressed]} {
+proc tsw::toggleSwitchState win {
+    if {![winfo exists $win] || [winfo class $win] ne "Toggleswitch"} {
 	return ""
     }
 
-    $w state pressed
-    after 200 [list tsw::toggleSwitchState $w]
+    ::$win toggle
+    $win state !pressed
 }
 
 #------------------------------------------------------------------------------
@@ -863,16 +1098,4 @@ proc tsw::moveRight {w val} {
 	variable stateArr
 	set stateArr(moveState) moved
     }
-}
-
-#------------------------------------------------------------------------------
-# tsw::toggleSwitchState
-#------------------------------------------------------------------------------
-proc tsw::toggleSwitchState w {
-    if {![winfo exists $w] || [winfo class $w] ne "TswScale"} {
-	return ""
-    }
-
-    ::[winfo parent $w] toggle
-    $w state !pressed
 }

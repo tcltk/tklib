@@ -13,7 +13,7 @@
   <div>
     <h1>Tsw Programmer's Guide</h1>
 
-    <h2>For Tsw Version 1.4.2</h2>
+    <h2>For Tsw Version 1.5</h2>
 
     <h3>by</h3>
 
@@ -77,12 +77,19 @@
     <li>a reference page in HTML format.</li>
   </ul>
 
-  <p>A toggleswitch is a mega-widget consisting of a horizontal trough (a fully
-  rounded filled rectangle) and a slider (a filled circle contained in the
-  trunk).&nbsp; It can have one of two possible switch states: on or off.&nbsp;
-  In the on state the slider is placed at the end of the trough, and in the off
-  state at its beginning.&nbsp; The user can toggle between these two states
-  with the mouse or the space key.</p>
+  <p>A toggleswitch is a mega-widget consisting basically of a horizontal
+  trough (a fully rounded filled rectangle) and a slider (a filled circle or
+  fully rounded filled rectangle contained in the trunk).&nbsp; The widget also
+  contains a ttk::label displaying an optional text to the trough's left; this
+  child widget is only managed if the text specified with the <code><a href=
+  "toggleswitch.html#std_options">-text</a></code> or <code><a href=
+  "toggleswitch.html#std_options">-textvariable</a></code> option is a nonempty
+  string.</p>
+
+  <p>A toggleswitch widget can have one of two possible switch states: on or
+  off.&nbsp; In the on state the slider is placed at the end of the trough, and
+  ihttps://core.tcl-lang.org/tklibhttps://core.tcl-lang.org/tklibn the off state at its beginning.&nbsp; The user can toggle between these
+  two states with the mouse or the space key.</p>
 
   <p>You can use the <code><a href=
   "toggleswitch.html#switchstate">switchstate</a></code> subcommand of the Tcl
@@ -106,8 +113,8 @@
     </address>
   </blockquote>
 
-  <p>The distribution file is <code>tsw1.4.2.tar.gz</code> for UNIX and
-  <code>tsw1_4_2.zip</code> for Windows.&nbsp; These files contain the same
+  <p>The distribution file is <code>tsw1.5.tar.gz</code> for UNIX and
+  <code>tsw1_5.zip</code> for Windows.&nbsp; These files contain the same
   information, except for the additional carriage return character preceding
   the linefeed at the end of each line in the text files for Windows.</p>
 
@@ -115,7 +122,9 @@
 
   <blockquote>
     <address>
-      <a href="https://core.tcl.tk/tklib">https://core.tcl.tk/tklib</a>
+      <a href=
+     
+     "https://core.tcl-lang.org/tklib">https://core.tcl-lang.org/tklib</a>
     </address>
   </blockquote>
 
@@ -128,11 +137,11 @@
   <code>tk9.X</code> subdirectory).</p>
 
   <p>To install Tsw <i>on UNIX</i>, <code>cd</code> to the desired directory
-  and unpack the distribution file <code>tsw1.4.2.tar.gz</code>:</p>
+  and unpack the distribution file <code>tsw1.5.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c tsw1.4.2.tar.gz | tar -xf -
+gunzip -c tsw1.5.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
@@ -140,17 +149,17 @@ gunzip -c tsw1.4.2.tar.gz | tar -xf -
 
   <blockquote>
     <pre>
-tar -zxf tsw1.4.2.tar.gz
+tar -zxf tsw1.5.tar.gz
 </pre>
   </blockquote>
 
-  <p>Both commands will create a directory named <code>tsw1.4.2</code>, with
-  the subdirectories <code>demos</code>, <code>doc</code>, and
+  <p>Both commands will create a directory named <code>tsw1.5</code>, with the
+  subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>tsw1_4_2.zip</code> into the directory
-  <code>tsw1.4.2</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>tsw1_5.zip</code> into the directory
+  <code>tsw1.5</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>Notice that in tklib the Tsw <code>demos</code> directory is replaced with
@@ -358,7 +367,7 @@ proc toggleWidgetsState sw {
       <tr valign="top">
         <td><img src="SerialLineConfig.png" alt="Serial Line Configuration"
         width="686" height="503"></td>
-        <td><img src="EditingOpts.png" alt="Editing Options" width="285"
+        <td><img src="EditingOpts.png" alt="Editing Options" width="281"
         height="318"></td>
       </tr>
     </table>
@@ -411,17 +420,15 @@ proc configEditing tbl {
         lassign [$tbl configure $opt] option dbName dbClass default current
         set defaultStr [expr {$default ? "on" : "off"}]
 
-        set l [ttk::label $tf.l$row -text "$opt ($defaultStr)"]
+        <span class="red">set sw [tsw::toggleswitch $tf.sw$row -text "$opt ($defaultStr)"]</span>
         if {$current != $default} {
-            $l configure -foreground red2
+            <span class="red">$sw configure -foreground red2</span>
         }
-        grid $l -row $row -column 0 -sticky w -padx 9p -pady {0 3p}
 
-        <span class="red">set sw [tsw::toggleswitch $tf.sw$row]
-        $sw switchstate $current</span>        ;<span class="cmt"># sets the switch state to $current</span>
+        <span class="red">$sw switchstate $current</span>        ;<span class="cmt"># sets the switch state to $current</span>
         <span class="red">$sw attrib default $default</span>     ;<span class="cmt"># saves $default as attribute value</span>
-        <span class="red">$sw configure -command [list applySwitchState $sw $tbl $opt $l]</span>
-        grid $sw -row $row -column 1 -sticky w -padx {0 9p} -pady {0 3p}
+        <span class="red">$sw configure -command [list applySwitchState $sw $tbl $opt]</span>
+        pack $sw -padx 9p -pady {0 3p} -fill x
 
         incr row
     }
@@ -432,17 +439,17 @@ proc configEditing tbl {
   </blockquote>
 
   <p>For each of the 7 editing-related options with boolean values, the
-  procedure displays the option's name and default value in a ttk::label, and
-  sets the <a href="toggleswitch.html#switchstate">switch state</a> of the
-  corresponding toggleswitch widget to the option's current value.&nbsp; In
-  addition, it invokes the <code><a href=
-  "toggleswitch.html#attrib">attrib</a></code> subcommand of the Tcl command
-  associated with the toggleswitch to save the default as the value of the
-  widget's attribute of name <code>default</code>.&nbsp; In this way, the
-  widget "remembers" the default value in an object-oriented manner and can
+  procedure displays the option's name and default value in a toggleswitch
+  widget and sets the latter's <a href="toggleswitch.html#switchstate">switch
+  state</a> to the option's current value.&nbsp; In addition, it invokes the
+  <code><a href="toggleswitch.html#attrib">attrib</a></code> subcommand of the
+  Tcl command associated with the toggleswitch to save the default as the value
+  of the widget's attribute of name <code>default</code>.&nbsp; In this way,
+  the widget "remembers" the default value in an object-oriented manner and can
   retrieve it later without needing any external resources.&nbsp; For increased
-  user-friendliness, the label is displayed in the <code>red2</code> foreground
-  color if the option's current value is different from the default one.</p>
+  user-friendliness, the text of the toggleswitch is displayed in the
+  <code>red2</code> foreground color if the option's current value is different
+  from the default one.</p>
 
   <p>Whenever the toggleswitch widget's switch state gets toggled, the script
   specified as the value of its <code><a href=
@@ -455,23 +462,28 @@ proc configEditing tbl {
 # applySwitchState
 #
 # Sets the configuration option opt of the tablelist tbl and the foreground
-# color of the ttk::label l according to the switch state of the toggleswitch
-# widget sw.
+# color of the toggleswitch widget sw according to its switch state.
 #------------------------------------------------------------------------------</span>
-proc applySwitchState {sw tbl opt l} {
+proc applySwitchState {sw tbl opt} {
     <span class="red">set switchState [$sw switchstate]</span>
     $tbl configure $opt $switchState
 
-    <span class="red">set fgColor [expr {$switchState == [$sw attrib default] ? "" : "red2"}]</span>
-    $l configure -foreground $fgColor
+    <span class="red">set fgColor [expr {$switchState == [$sw attrib default] ? "" : "red2"}]
+    $sw configure -foreground $fgColor</span>
 }
 </pre>
   </blockquote>
 
   <p>We set the specified tablelist option to the toggleswitch widget's switch
-  state, and also the label's foreground color, depending on the switch state
+  state, and also the widget's foreground color, depending on the switch state
   and the option's default value, which we retrieve by using the
   <code>attrib</code> toggleswitch subcommand.</p>
+
+  <p>Notice that in this example we specify the texts of the "Editing Options"
+  window as the values the <code><a href=
+  "toggleswitch.html#std_options">-text</a></code> option of the toggleswitch
+  widgets, unlike in the previous example, in which we used extra ttk::label
+  widgets displayed to the left of the corresponding toggleswitches.</p>
 
   <div align="center">
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=
