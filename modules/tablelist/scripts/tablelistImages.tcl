@@ -3,7 +3,7 @@
 # argument w specifies a canvas displaying a sort arrow, while the argument win
 # stands for a tablelist widget.
 #
-# Copyright (c) 2006-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2006-2026  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #------------------------------------------------------------------------------
@@ -1344,21 +1344,77 @@ proc tablelist::aqua11TreeImgs {} {
 		 [image create photo tablelist_aqua11_${mode}Img]
     }
 
-    tablelist_aqua11_collapsedImg put "
-R0lGODlhCQAIAKECAAAAAICAgP///////yH5BAEKAAAALAAAAAAJAAgAAAINhI8RmMumHnTtRXZR
-AQA7" -format gif
+    variable svgSupported
+    if {$svgSupported} {
+	variable svgfmt
 
-    tablelist_aqua11_expandedImg put "
-R0lGODlhCQAIAKECAAAAAICAgP///////yH5BAEKAAAALAAAAAAJAAgAAAINhI95kQzhXoSyURVV
-KgA7" -format gif
+	tablelist_aqua11_collapsedImg put {
+<svg width="14" height="12" version="1.1" xmlns="http://www.w3.org/2000/svg">
+ <path d="m3.5 2.5 4 4-4 4" fill="none" stroke="#808080" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"/>
+</svg>} -format $svgfmt
 
-    tablelist_aqua11_collapsedSelImg put "
-R0lGODlhCQAIAKEBAAAAAP///////////yH5BAEKAAAALAAAAAAJAAgAAAINhI8RmMumHnTtRXZR
-AQA7" -format gif
+	tablelist_aqua11_expandedImg put {
+<svg width="14" height="12" version="1.1" xmlns="http://www.w3.org/2000/svg">
+ <path d="m1.5 4.5 4 4 4-4" fill="none" stroke="#808080" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"/>
+</svg>} -format $svgfmt
 
-    tablelist_aqua11_expandedSelImg put "
-R0lGODlhCQAIAKEBAAAAAP///////////yH5BAEKAAAALAAAAAAJAAgAAAINhI95kQzhXoSyURVV
-KgA7" -format gif
+	tablelist_aqua11_collapsedSelImg put {
+<svg width="14" height="12" version="1.1" xmlns="http://www.w3.org/2000/svg">
+ <path d="m3.5 2.5 4 4-4 4" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"/>
+</svg>} -format $svgfmt
+
+	tablelist_aqua11_expandedSelImg put {
+<svg width="14" height="12" version="1.1" xmlns="http://www.w3.org/2000/svg">
+ <path d="m1.5 4.5 4 4 4-4" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"/>
+</svg>} -format $svgfmt
+
+    } else {
+	variable pngSupported
+	if {$pngSupported} {
+	    tablelist_aqua11_collapsedImg put "
+iVBORw0KGgoAAAANSUhEUgAAAA4AAAAMCAYAAABSgIzaAAAAAXNSR0IB2cksfwAAAARnQU1BAACx
+jwv8YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAIlJREFU
+KM9jYKAGaGho4CRWLTOapjd2dnaPDh48eIlojQcOHPjj4OBwl5GRcQFU80WiNEI1X3VwcLjNyMg4
+n5BmZnQBYjUz4gmomQwMDAkMDAwCDQ0N39HlWXBoCmdgYEj49+9falNT03eibIRqWgTVtAiXixjJ
+0YSiERaP//79S29qalpCs5QDALhuTZCpak2pAAAAAElFTkSuQmCC" -format png
+
+	    tablelist_aqua11_expandedImg put "
+iVBORw0KGgoAAAANSUhEUgAAAA4AAAAMCAYAAABSgIzaAAAAAXNSR0IB2cksfwAAAARnQU1BAACx
+jwv8YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAJtJREFU
+KM/VkDEKAjEURGe08lLh32KbLUQUPEVIcg7RsHiQ5AAWFlZis60eQfJtFDSshTbilDM8/swH/kvO
+ucmn+ehuXqy17RBkrW1V9VzD45TSVUROJKMxps85758uNSSjqi6997sXEABSSgcROZLcPGDnXAOg
+K6UsQghd3YR1LZJrABHAVFVnIYTt0AQObSK5UtX5O+jrL/9GNxoDRZWP2IZ/AAAAAElFTkSuQmCC" \
+		-format png
+
+	    tablelist_aqua11_collapsedSelImg put "
+iVBORw0KGgoAAAANSUhEUgAAAA4AAAAMCAYAAABSgIzaAAAAAXNSR0IB2cksfwAAAARnQU1BAACx
+jwv8YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAERJREFU
+KM9jYKAGePbsGSdZmv79+/f179+/MSRr/vv3b/i/f/9+/v37N24Iaf7379/Mf//+/SQpwMiykX6a
+KIpHUgICAGa2YzZFEitwAAAAAElFTkSuQmCC" -format png
+
+	    tablelist_aqua11_expandedSelImg put "
+iVBORw0KGgoAAAANSUhEUgAAAA4AAAAMCAYAAABSgIzaAAAAAXNSR0IB2cksfwAAAARnQU1BAACx
+jwv8YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAFJJREFU
+KM/V0DEKgDAQRNG0OaFN8GAecE+goIH/sZcYkkqccpYHw6b0r0REnr5HRFYPoLQQUNS9iYFFvYB1
+pO/iIfSYVdVNrW/ze/icQqNf/iY3pUdjPQMthwoAAAAASUVORK5CYII=" -format png
+	} else {
+	    tablelist_aqua11_collapsedImg put "
+R0lGODlhDgAMAKEBAICAgP///////////yH5BAEKAAEALAAAAAAOAAwAAAIUjI+pewCcHERymmox
+04srHz2WVQAAOw==" -format gif
+
+	    tablelist_aqua11_expandedImg put "
+R0lGODlhDgAMAKECAH9/f4CAgP///////yH5BAEKAAIALAAAAAAOAAwAAAIUlI+py+0WQAIyxQMC
+u9nR6j3iSBYAOw==" -format gif
+
+	    tablelist_aqua11_collapsedSelImg put "
+R0lGODlhDgAMAKEBAP7+/v///////////yH5BAEKAAEALAAAAAAOAAwAAAIUjI+pewCcHERymmox
+04srHz2WVQAAOw==" -format gif
+
+	    tablelist_aqua11_expandedSelImg put "
+R0lGODlhDgAMAKEBAP7+/v///////////yH5BAEKAAEALAAAAAAOAAwAAAIUjI+py+0GQIqKQrmo
+ZRE7/4TiUwAAOw==" -format gif
+	}
+    }
 }
 
 #------------------------------------------------------------------------------
@@ -1489,14 +1545,12 @@ proc tablelist::bicolorTreeImgs {} {
     tablelist_bicolor_collapsedSelImg put {
 <svg width="16" height="12" version="1.1" xmlns="http://www.w3.org/2000/svg">
  <path d="m3.5 .5 5 5-5 5z" fill="#fff" stroke="#fff" stroke-linejoin="round"/>
-</svg>
-    } -format $svgfmt
+</svg>} -format $svgfmt
 
     tablelist_bicolor_expandedSelImg put {
 <svg width="16" height="12" version="1.1" xmlns="http://www.w3.org/2000/svg">
  <path d="m.5 3.5 5 5 5-5z" fill="#fff" stroke="#fff" stroke-linejoin="round"/>
-</svg>
-    } -format $svgfmt
+</svg>} -format $svgfmt
 }
 
 #------------------------------------------------------------------------------
@@ -1771,15 +1825,13 @@ proc tablelist::classicTreeImgs {} {
 <svg width="16" height="12" version="1.1" xmlns="http://www.w3.org/2000/svg">
  <rect x="1.5" y="1.5" width="10" height="10" rx="1.5" fill="#fff" stroke="#808080"/>
  <path d="m4 6.5h5m-2.5-2.5v5" fill="none" stroke="#000"/>
-</svg>
-    } -format $svgfmt
+</svg>} -format $svgfmt
 
     tablelist_classic_expandedImg put {
 <svg width="16" height="12" version="1.1" xmlns="http://www.w3.org/2000/svg">
  <rect x="1.5" y="1.5" width="10" height="10" rx="1.5" fill="#fff" stroke="#808080"/>
  <path d="m4 6.5h5" fill="none" stroke="#000"/>
-</svg>
-    } -format $svgfmt
+</svg>} -format $svgfmt
 }
 
 #------------------------------------------------------------------------------
@@ -2478,14 +2530,12 @@ proc tablelist::plainTreeImgs {{treeStyle "plain"}} {
     tablelist_${treeStyle}_collapsedImg put {
 <svg width="16" height="12" version="1.1" xmlns="http://www.w3.org/2000/svg">
  <path d="m3.5 .5 5 5-5 5z" fill="#000" stroke="#000" stroke-linejoin="round" opacity=".5"/>
-</svg>
-    } -format $svgfmt
+</svg>} -format $svgfmt
 
     tablelist_${treeStyle}_expandedImg put {
 <svg width="16" height="12" version="1.1" xmlns="http://www.w3.org/2000/svg">
  <path d="m.5 3.5 5 5 5-5z" fill="#000" stroke="#000" stroke-linejoin="round" opacity=".5"/>
-</svg>
-    } -format $svgfmt
+</svg>} -format $svgfmt
 }
 
 #------------------------------------------------------------------------------
@@ -3300,14 +3350,12 @@ proc tablelist::whiteTreeImgs {} {
     tablelist_white_collapsedImg put {
 <svg width="16" height="12" version="1.1" xmlns="http://www.w3.org/2000/svg">
  <path d="m3.5 .5 5 5-5 5z" fill="#fff" stroke="#fff" stroke-linejoin="round"/>
-</svg>
-    } -format $svgfmt
+</svg>} -format $svgfmt
 
     tablelist_white_expandedImg put {
 <svg width="16" height="12" version="1.1" xmlns="http://www.w3.org/2000/svg">
  <path d="m.5 3.5 5 5 5-5z" fill="#fff" stroke="#fff" stroke-linejoin="round"/>
-</svg>
-    } -format $svgfmt
+</svg>} -format $svgfmt
 }
 
 #------------------------------------------------------------------------------
@@ -3873,16 +3921,19 @@ proc tablelist::setTreeLabelWidths {treeStyle depth} {
 		200 { incr step -13 }
 	    }
 	}
-	^ubuntu$					      { incr step -2 }
-	^(mate|mint2)$					      { incr step -1 }
-	^(blueMenta|menta|mint|newWave|ubuntu2|ubuntuMate)$   { incr step  1 }
-	^ubuntu3$					      { incr step  2 }
-	^plasti.+$					      { incr step  3 }
-	^(adwaita|aqua|arc|.+100)$			      { incr step  4 }
-	^(oxygen.|phase|winnative|winxp.+|.+125)$	      { incr step  5 }
-	^(aqua11|.+150)$				      { incr step  6 }
-	^(baghira|klearlooks|.+175)$			      { incr step  7 }
-	^.+200$						      { incr step  8 }
+	^ubuntu$					     { incr step -2 }
+	^(mate|mint2)$					     { incr step -1 }
+	^(blueMenta|menta|mint|newWave|ubuntu2|ubuntuMate)$  { incr step  1 }
+	^ubuntu3$					     { incr step  2 }
+	^plasti.+$					     { incr step  3 }
+	^(adwaita|aqua|arc|.+100)$			     { incr step  4 }
+	^(oxygen.|phase|winnative|winxp.+|.+125)$	     { incr step  5 }
+	^.+150$						     { incr step  6 }
+	^(baghira|klearlooks|.+175)$			     { incr step  7 }
+	^.+200$						     { incr step  8 }
+	^aqua11$ {
+	    incr step [expr {[getScalingPct] / 25 - 3}]
+	}
 	^(bicolor|classic|plain|white)$ {
 	    incr step [expr {[getScalingPct] / 25}]
 	}

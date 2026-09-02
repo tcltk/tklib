@@ -398,7 +398,11 @@ proc tablelist::aquaTheme {} {
 
     variable pngSupported
     if {$majorOSVersion >= 14} {			;# OS X 10.10 or later
-	set themeDefaults(-arrowstyle) flatAngle7x4
+	if {[package vcompare $::tk_patchLevel "9.1a1"] > 0} {
+	    set themeDefaults(-arrowstyle) flatAngle[defaultWinArrowSize]
+	} else {
+	    set themeDefaults(-arrowstyle) flatAngle7x4
+	}
     } elseif {$pngSupported} {
 	set themeDefaults(-arrowstyle) photo7x7
     } else {
@@ -1824,7 +1828,7 @@ proc tablelist::vistaTheme {} {
 	-labelpressedFg		SystemButtonText \
     ]
 
-    if {$::tcl_platform(osVersion) >= 10.0} {			;# Win 10
+    if {$::tcl_platform(osVersion) >= 10.0} {			;# Win 10+
 	set selectBg	#cce8ff
 	set selectFg	SystemWindowText
 	set labelBg	#ffffff
@@ -1980,7 +1984,7 @@ proc tablelist::xpnativeTheme {} {
 	-labelpressedFg		SystemButtonText \
     ]
 
-    if {$::tcl_platform(osVersion) >= 10.0} {			;# Win 10
+    if {$::tcl_platform(osVersion) >= 10.0} {			;# Win 10+
 	set xpStyle	0
 	set selectBg	#cce8ff
 	set selectFg	SystemWindowText

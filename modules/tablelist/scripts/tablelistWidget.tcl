@@ -859,6 +859,7 @@ proc tablelist::tablelist args {
 	    imgCount		 0
 	    winCount		 0
 	    indentCount		 0
+	    hasBodyLblMsg	 0
 	    labelClicked	 0
 	    labelModifClicked	 0
 	    arrowColList	 {}
@@ -1141,11 +1142,12 @@ proc tablelist::tablelist args {
     }
 
     #
-    # Create the "stripe", "select", "curRow", "active", "disabled", "redraw",
-    # "hiddenRow", "elidedRow", "hiddenCol", and "elidedCol" tags in the body
-    # text widget.  Don't use the built-in "sel" tag because on Windows the
-    # selection in a text widget only becomes visible when the window gets
-    # the input focus.  DO NOT CHANGE the order of creation of these tags!
+    # Create the "itembg", "stripe", "select", "inactsel", "curRow",
+    # "active", "disabled", "redraw", "hiddenRow", "elidedRow",
+    # "hiddenCol", and "elidedCol" tags in the body text widget.
+    # Don't use the built-in "sel" tag because on Windows the selection
+    # in a text widget only becomes visible when the window gets the
+    # input focus.  DO NOT CHANGE the order of creation of these tags!
     #
     $w tag configure itembg -background ""		     ;# initial setting
     $w tag configure stripe -background "" -foreground ""    ;# initial setting
@@ -7441,7 +7443,7 @@ proc tablelist::deleteRows {win first last updateListVar} {
 	array unset data {k[0-9]*}
 	array set data {rowTagRefCount 0  nonViewableRowCount 0
 	    cellTagRefCount 0  imgCount 0  winCount 0  indentCount 0
-	    root-childList {}}
+	    hasBodyLblMsg 0  root-childList {}}
 
 	array unset attribs {k[0-9]*}
 	array unset selStates *

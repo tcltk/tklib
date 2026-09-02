@@ -1,3 +1,20 @@
+2026-09-02 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 7.12.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/*.tcl: Made the default sort arrows and expand/collapse
+	  controls of the "aqua" theme, as well as its embedded
+	  ttk::checkbutton widgets scaling-aware; code optimizations and fixes
+	  contributed by Nicolas Bats; fixed a bug related to the
+	  "-inactiveselectbackground" and "-inactiveselectforeground" options.
+
+	* doc/aqua11.png: Updated screenshot.
+
 2026-06-25 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Tablelist 7.11.

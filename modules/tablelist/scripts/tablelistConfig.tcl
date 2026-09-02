@@ -142,7 +142,7 @@ proc tablelist::extendConfigSpecs {} {
 		    style layout Tablelist.Heading {
 			Treeheading.cell
 			Label.padding -children {
-			    Label.label -side top
+			    Label.label
 			    Separator.hseparator -side bottom
 			}
 		    }
@@ -150,7 +150,7 @@ proc tablelist::extendConfigSpecs {} {
 		    style layout Tablelist.Heading {
 			Treeheading.cell
 			Label.padding -children {
-			    Label.label -side top
+			    Label.label
 			}
 		    }
 		}
@@ -302,7 +302,7 @@ proc tablelist::extendConfigSpecs {} {
 		    }
 		    set arrowDisabledColor	SystemDisabledText
 
-		} else {					;# Win 10
+		} else {					;# Win 10+
 		    set selectBg		#cce8ff
 		    set selectFg		SystemWindowText
 
@@ -333,7 +333,11 @@ proc tablelist::extendConfigSpecs {} {
 
 		set arrowColor [defaultAquaArrowColor]
 		if {$majorOSVersion >= 14} {		;# OS X 10.10 or higher
-		    set arrowStyle	flatAngle7x4
+		    if {[package vcompare $::tk_patchLevel "9.1a1"] > 0} {
+			set arrowStyle	flatAngle[defaultWinArrowSize]
+		    } else {
+			set arrowStyle	flatAngle7x4
+		    }
 		} else {
 		    variable pngSupported
 		    if {$pngSupported} {
@@ -396,7 +400,7 @@ proc tablelist::extendConfigSpecs {} {
 	($::tcl_platform(osVersion) >= 10.0 ||
 	 ($::tcl_platform(osVersion) >= 6.0 &&
 	  [mwutil::normalizeColor SystemHighlight] eq \
-	  "#3399ff"))} {				;# Win 10 or 7/8 Aero
+	  "#3399ff"))} {				;# Win 10+ or 7/8 Aero
 	set centerArrows 1
     }
 }
@@ -4165,7 +4169,7 @@ proc tablelist::defaultX11ArrowStyle {} {
 # tablelist::defaultWinArrowSize
 #
 # Returns the size (of the form "<width>x<height>") of the default sort arrow
-# on Windows, corresponding to the display's scaling level.
+# on Windows and macOS, corresponding to the display's scaling level.
 #------------------------------------------------------------------------------
 proc tablelist::defaultWinArrowSize {} {
     variable scalingpct

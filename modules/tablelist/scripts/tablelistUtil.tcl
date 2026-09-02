@@ -278,7 +278,11 @@ proc tablelist::colIndex {win idx checkRange {decrX 1}} {
 	    set bbox [$data(hdrTxt) bbox 1.0]
 	    set viewChanged 1
 	}
-	set baseX [lindex $bbox 0]
+	if {[llength $bbox] == 0} {		;# no bbox info available yet
+	    set baseX [winfo x $data(hdrTxtFrm)]
+	} else {
+	    set baseX [lindex $bbox 0]
+	}
 	if {$viewChanged} {
 	    $data(hdrTxt) yview 1
 	}
@@ -1319,6 +1323,7 @@ proc tablelist::displayIndent {win key col width} {
 		     -height 0 -highlightthickness 0 -image $img \
 		     -padx 0 -pady 0 -relief flat -takefocus 0 -width $width
 	bindtags $w [lreplace [bindtags $w] 1 1 $data(bodyTag) TablelistBody]
+	set data(hasBodyLblMsg) 1
     }
 
     updateColorsWhenIdle $win
@@ -1353,6 +1358,7 @@ proc tablelist::displayImage {win key col anchor width} {
 	if {$inBody} {
 	    bindtags $w [lreplace [bindtags $w] 1 1 $data(bodyTag) \
 			 TablelistBody]
+	    set data(hasBodyLblMsg) 1
 	} else {
 	    bindtags $w [lreplace [bindtags $w] 1 1 $data(headerTag) \
 			 TablelistHeader]
@@ -1394,6 +1400,7 @@ proc tablelist::displayText {win key col text font pixels alignment} {
 	if {$inBody} {
 	    bindtags $w [lreplace [bindtags $w] 1 1 $data(bodyTag) \
 			 TablelistBody]
+	    set data(hasBodyLblMsg) 1
 	} else {
 	    bindtags $w [lreplace [bindtags $w] 1 1 $data(headerTag) \
 			 TablelistHeader]
@@ -2898,8 +2905,8 @@ proc tablelist::adjustColumns {win whichWidths stretchCols} {
 			      -relx 0.4999 -y 1
 	    } else {
 		set y 0
-		if {([winfo reqheight $w] - [winfo reqheight $canvas]) % 2 == 0
-		    && $data(arrowHeight) == 5} {
+		if {(([winfo reqheight $w] - [winfo reqheight $canvas]) & 1)
+		    == 0 && $data(arrowHeight) == 5} {
 		    set y -1
 		}
 		if {$aquaTheme && $newAquaSupport} {
@@ -3901,6 +3908,7 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 		    if {!$data(ownsFocus) &&
 			$data(-inactiveselectbackground) ne ""} {
 			set tag inactsel
+			$w tag raise $tag
 		    } else {
 			set tag select
 		    }
@@ -3959,6 +3967,10 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 
 	set name [winfo name $path]
 	foreach {key col} [split [string range $name 4 end] ","] {}
+	if {$isTblWin &&
+	    [set winUpdCmd [getOpt $win $key $col -windowupdate]] eq ""} {
+	    continue
+	}
 	if {[info exists data($key-elide)] || [info exists data($key-hide)]} {
 	    continue
 	}
@@ -4131,11 +4143,8 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 	    $path configure -foreground $fg
 	}
 	if {$isTblWin} {
-	    set cmd [getOpt $win $key $col -windowupdate]
-	    if {$cmd ne ""} {
-		uplevel #0 $cmd [list $win [keyToRow $win $key] $col \
-		    $path.w -background $bg -foreground $fg]
-	    }
+	    uplevel #0 $winUpdCmd [list $win [keyToRow $win $key] $col \
+		$path.w -background $bg -foreground $fg]
 	}
     }
 }
@@ -4255,6 +4264,10 @@ proc tablelist::hdr_updateColors win {
 
 	set name [winfo name $path]
 	foreach {key col} [split [string range $name 4 end] ","] {}
+	if {$isTblWin &&
+	    [set winUpdCmd [getOpt $win $key $col -windowupdate]] eq ""} {
+	    continue
+	}
 
 	#
 	# Set the widget's background and foreground
@@ -4305,11 +4318,8 @@ proc tablelist::hdr_updateColors win {
 	    $path configure -foreground $fg
 	}
 	if {$isTblWin} {
-	    set cmd [getOpt $win $key $col -windowupdate]
-	    if {$cmd ne ""} {
-		uplevel #0 $cmd [list $win [hdr_keyToRow $win $key] $col \
-		    $path.w -background $bg -foreground $fg]
-	    }
+	    uplevel #0 $winUpdCmd [list $win [hdr_keyToRow $win $key] $col \
+		$path.w -background $bg -foreground $fg]
 	}
     }
 }
@@ -5723,7 +5733,7 @@ proc tablelist::purgeWidgets win {
 	set data(topRowChanged) 0
     } elseif {$data(winSizeChanged)} {
 	set data(winSizeChanged) 0
-    } else {
+    } elseif {$data(hasBodyLblMsg)} {
 	set w $data(body)
 	set fromTextIdx "[$w index @0,0] linestart"
 	set toTextIdx "[$w index @0,$data(btmY)] lineend"
@@ -5980,6 +5990,8 @@ proc tablelist::configLabel {w args} {
 		    set val [winfo pixels $w $val]
 		    set padding [$w cget -padding]
 		    lset padding 1 $val
+		    variable winSys
+		    if {$winSys eq "aqua"} { incr val 7 }
 		    lset padding 3 $val
 		    $w configure -padding $padding
 		} else {
@@ -6571,7 +6583,12 @@ proc tablelist::getVertComplTopRow win {
     set topTextIdx [$w index @0,0]
     set topRow [expr {int($topTextIdx) - 1}]
 
-    foreach {x y width height baselinePos} [$w dlineinfo $topTextIdx] {}
+    set dlineinfo [$w dlineinfo $topTextIdx]
+    if {[llength $dlineinfo] == 0} {	;# display info not yet available
+	return $topRow
+    }
+
+    foreach {x y width height baselinePos} $dlineinfo {}
     if {$y < 0} {		;# top row incomplete in vertical direction
 	set topTextIdx [$w index @0,[incr y $height]]
 	set topRow [expr {int($topTextIdx) - 1}]
@@ -6596,7 +6613,12 @@ proc tablelist::getVertComplBtmRow win {
 	set btmRow $data(lastRow)
     }
 
-    foreach {x y width height baselinePos} [$w dlineinfo $btmTextIdx] {}
+    set dlineinfo [$w dlineinfo $btmTextIdx]
+    if {[llength $dlineinfo] == 0} {	;# display info not yet available
+	return $btmRow
+    }
+
+    foreach {x y width height baselinePos} $dlineinfo {}
     set y2 [expr {$y + $height}]
     set text [$w get @0,$y @[expr {$data(rightX) + 1}],$y]
     if {[$w compare [$w index @0,$y] == [$w index @0,$y2]] &&
@@ -6935,9 +6957,11 @@ proc tablelist::makeTtkCkbtn w {
 	    variable extendedAquaSupport
 	    if {$extendedAquaSupport} {
 		if {[package vcompare $::tk_patchLevel "9.1a1"] > 0} {
-		    $frm configure -width 15 -height 15
+		    set height [winfo reqheight $w]
+		    incr height [expr {($height & 1) ? -4 : -5}]
+		    $frm configure -width $height -height $height
 		    place $w -x -2 -y -2
-		    return {15 15}
+		    return [list $height $height]
 		} else {
 		    $frm configure -width 14 -height 14
 		    place $w -x -2 -y -3
