@@ -96,7 +96,7 @@ Windows.
 
 Tablelist is also included in tklib, which has the address
 
-    https://core.tcl.tk/tklib
+    https://core.tcl-lang.org/tklib
 
 How to Install It?
 ------------------
