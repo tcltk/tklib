@@ -14,7 +14,7 @@
   <div>
     <h1>The <code><b>tablelist::tablelist</b></code> Command</h1>
 
-    <h2>For Tablelist Version 7.11</h2>
+    <h2>For Tablelist Version 7.12</h2>
 
     <h3>by</h3>
 
@@ -2934,8 +2934,8 @@ proc expandCmd {tbl row} {
         <code><b>vista</b></code>, <code><b>winnative</b></code>, and
         <code><b>xpnative</b></code>, and an empty string for all the other
         themes.&nbsp; The choice of the default value makes sure that the
-	selection will appear in native colors also when the widget's body does
-	not have the focus.</p>
+        selection will appear in native colors also when the widget's body does
+        not have the focus.</p>
       </blockquote>
     </dd>
 
@@ -2976,8 +2976,8 @@ proc expandCmd {tbl row} {
         <code><b>vista</b></code>, <code><b>winnative</b></code>, and
         <code><b>xpnative</b></code>, and an empty string for all the other
         themes.&nbsp; The choice of the default value makes sure that the
-	selection will appear in native colors also when the widget's body does
-	not have the focus.</p>
+        selection will appear in native colors also when the widget's body does
+        not have the focus.</p>
       </blockquote>
     </dd>
 
@@ -5036,7 +5036,10 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
         <code><b>vistaClassic</b></code>, <code><b>win7Aero</b></code>,
         <code><b>win7Classic</b></code>, and <code><b>win10</b></code> are
         <i>automatically</i> adapted to the display's scaling percentage.&nbsp;
-        Platform-independent <i>manual</i> scaling is supported for the
+        The same holds true for <code><b>aqua11</b></code> in the presence of
+        SVG support.</p>
+
+        <p>Platform-independent <i>manual</i> scaling is supported for the
         following tree styles:</p>
 
         <table border="2" cellspacing="0" cellpadding="3" rules="groups">
@@ -5231,6 +5234,8 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
             <td><img src="aqua11.png" alt="aqua11" width="120" height=
             "54"></td>
             <td>
+              When posssible, uses SVG images that scale automatically,
+              according to the display's real scaling percentage.<br>
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr valign="top">
                   <td>Tablelist:&nbsp;</td>

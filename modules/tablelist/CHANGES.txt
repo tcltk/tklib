@@ -1,5 +1,21 @@
-What is new in Tablelist 7.11?
+What is new in Tablelist 7.12?
 ------------------------------
+
+1. Made the default sort arrows and expand/collapse controls of the
+   "aqua" theme, as well as its embedded ttk::checkbutton widgets
+   scaling-aware.
+
+2. Internal code optimizations (thanks to Nicolas Bats for his input).
+
+3. Made the code more robust by incorporating three fix proposals
+   provided by Nicolas Bats.
+
+4. Fixed a bug related to the "-inactiveselectbackground" and
+   "-inactiveselectforeground" options (thanks to Harald Oehlmann for
+   his bug report).
+
+What was new in Tablelist 7.11?
+-------------------------------
 
 1. Adapted to the recent changes in Tk 9.1 according to TIP 750:
    "Consistent dark mode for Windows and macOS".
