@@ -2,7 +2,8 @@
 
 #(c) 2015-2019 Kevin Walzer/WordTech Communications LLC. License: standard Tcl license, http://www.tcl.tk/software/tcltk/license.html
 
-package provide notifywindow 1.0.2
+package require Tk
+package provide notifywindow 1.0.3
 
 namespace eval notifywindow {
     namespace export *
@@ -11,7 +12,9 @@ namespace eval notifywindow {
 #Main procedure for window
 
 proc notifywindow::notifywindow {msg img} {
-    set w [toplevel ._notify]
+    set w ._notify
+    destroy $w
+    toplevel $w
     switch [tk windowingsystem] {
 	aqua {
 	    if {[catch {wm attributes $w -stylemask \
