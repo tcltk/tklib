@@ -7,10 +7,13 @@ What is new in Tablelist 7.12?
 
 2. Internal code optimizations (thanks to Nicolas Bats for his input).
 
-3. Made the code more robust by incorporating three fix proposals
+3. Improvements in the bundled wide spinbox package wsb, related to the
+   Windows platform.
+
+4. Made the code more robust by incorporating three fix proposals
    provided by Nicolas Bats.
 
-4. Fixed a bug related to the "-inactiveselectbackground" and
+5. Fixed a bug related to the "-inactiveselectbackground" and
    "-inactiveselectforeground" options (thanks to Harald Oehlmann for
    his bug report).
 
