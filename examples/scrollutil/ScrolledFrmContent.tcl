@@ -262,13 +262,21 @@ set b2 [ttk::button $bf.b2 -text "Close" -command exit]
 pack $b2 -side right -padx 9p -pady {0 9p}
 pack $b1 -side left -padx 9p -pady {0 9p}
 
+update idletasks
 pack $bf -side bottom -fill x
 pack $tf -side top -expand yes -fill both
 
 #
 # Set the scrolledframe's width, height, and yscrollincrement
 #
-after 100 [list configMainSf $sf $cf $lb]
+set vsb [$sf component vertsb]
+set width  [expr {[winfo reqwidth $cf] + [winfo reqwidth $vsb] + 2}]
+set height [expr {[winfo reqheight $cf.l0] + [winfo pixels . 3p] +
+		  [winfo reqheight $cf.sa1] + 2*[winfo pixels . 9p] + 2}]
+$sf configure -width $width -height $height
+set canvas [$sf component canvas]
+$canvas configure -yscrollincrement [expr {[winfo reqheight $lb] / 10}]
+after 50 [list $sf configure -hscrollmode dynamic]
 
 #------------------------------------------------------------------------------
 
@@ -292,19 +300,6 @@ proc updateWidgets {} {
 
 proc cancelEdit {w args} {
     wcb::cancel
-}
-
-#------------------------------------------------------------------------------
-
-proc configMainSf {sf cf lb} {
-    set vsb [$sf component vertsb]
-    set width  [expr {[winfo reqwidth $cf] + [winfo reqwidth $vsb] + 2}]
-    set height [expr {[winfo reqheight $cf.l0] + [winfo pixels . 3p] +
-		      [winfo reqheight $cf.sa1] + 2*[winfo pixels . 9p] + 2}]
-    $sf configure -width $width -height $height
-    set canvas [$sf component canvas]
-    $canvas configure -yscrollincrement [expr {[winfo reqheight $lb] / 10}]
-    after 100 [list $sf configure -hscrollmode dynamic]
 }
 
 #------------------------------------------------------------------------------
@@ -506,12 +501,20 @@ proc configTablelist tbl {
 
     pack $b  -side bottom -pady {0 9p}
     pack $sf -side top -expand yes -fill both -padx 9p -pady 9p
-    pack $f  -expand yes -fill both
+
+    update idletasks
+    pack $f -expand yes -fill both
 
     #
     # Set the scrolledframe's width, height, and yscrollincrement
     #
-    after 50 [list configTopSf $sf $cf $row]
+    set vsb [$sf component vertsb]
+    set width [expr {[winfo reqwidth $cf] + [winfo reqwidth $vsb] + 2}]
+    set rowHeight [expr {[winfo reqheight $cf] / $row}]
+    set height [expr {10*$rowHeight + [winfo pixels .top 3p] + 2}]
+    $sf configure -width $width -height $height
+    set canvas [$sf component canvas]
+    $canvas configure -yscrollincrement $rowHeight
 }
 
 #------------------------------------------------------------------------------
@@ -536,16 +539,4 @@ proc applyBoolean {w tbl opt} {
     } else {
 	$tbl configure $opt [$w switchstate]
     }
-}
-
-#------------------------------------------------------------------------------
-
-proc configTopSf {sf cf row} {
-    set vsb [$sf component vertsb]
-    set width [expr {[winfo reqwidth $cf] + [winfo reqwidth $vsb] + 2}]
-    set rowHeight [expr {[winfo reqheight $cf] / $row}]
-    set height [expr {10*$rowHeight + [winfo pixels .top 3p] + 2}]
-    $sf configure -width $width -height $height
-    set canvas [$sf component canvas]
-    $canvas configure -yscrollincrement $rowHeight
 }

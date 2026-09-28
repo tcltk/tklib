@@ -12,7 +12,7 @@ namespace eval scrollutil {
     #
     # Public variables:
     #
-    variable version	2.10
+    variable version	2.11
     variable library	[file dirname [file normalize [info script]]]
 
     #

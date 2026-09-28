@@ -1,3 +1,28 @@
+2026-09-28  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 2.11.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/scrollableframe.tcl: Various improvements related to the
+	* scripts/scrollarea.tcl:      implementation of the scrollableframe
+	  and scrollarea widgets.
+
+	* scripts/tclIndex: Newly generated.
+
+	* scripts/utils/pkgIndex.tcl: Improvements in the bundled wide spinbox
+	* scripts/utils/wsb.tcl:      package wsb, related to the Windows
+	  platform.
+
+	* doc/ScrollableFrmDemo2.png: Updated screenshot.
+
+	* ../../examples/scrollutil/*.tcl: Significantly improved the start
+	  behavior of the demo applications "BwScrollableFrmDemo(1|2).tcl",
+	  "ScrolledFrmDemo(1|2).tcl", and "SuScrollableFrmDemo(1|2)tcl".
+
 2026-06-25  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Scrollutil 2.10.

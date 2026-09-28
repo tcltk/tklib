@@ -178,7 +178,7 @@ namespace eval scrollutil::sa {
 # scrollutil::sa::createBindings
 #
 # Creates the default bindings for the binding tags Scrollarea, ScrollareaTop,
-# ScrollareaScrollbar, DynamicHScrollbar, and WidgetOfScrollarea.
+# ScrollareaScrollbar, DynHScrollbar, and WidgetOfScrollarea.
 #------------------------------------------------------------------------------
 proc scrollutil::sa::createBindings {} {
     bind Scrollarea <KeyPress> continue
@@ -213,16 +213,13 @@ proc scrollutil::sa::createBindings {} {
 	scrollutil::sa::onScrollbarClicked %W
     }
 
-    bind DynamicHScrollbar <Map> {
-	scrollutil::sa::onDynamicHScrollbarMap %W
+    bind DynHScrollbar <Map> {
+	scrollutil::sa::onDynHScrollbarMap %W
     }
-    bind DynamicHScrollbar <Unmap> {
-	scrollutil::sa::onDynamicHScrollbarUnmap %W
+    bind DynHScrollbar <Unmap> {
+	scrollutil::sa::onDynHScrollbarUnmap %W
     }
 
-    bind WidgetOfScrollarea <Map> {
-	scrollutil::sa::onWidgetOfScrollareaMap %W
-    }
     bind WidgetOfScrollarea <Destroy> {
 	scrollutil::sa::onWidgetOfScrollareaDestroy %W
     }
@@ -502,12 +499,27 @@ proc scrollutil::sa::doConfig {win opt val} {
 		    }
 		    set data($opt) $val
 
+		    set tagList [bindtags $win.hsb]
+		    set idx [lsearch -exact $tagList "DynHScrollbar"]
+
 		    switch $val {
-			static	{ showHScrollbar $win }
-			dynamic	{
-			    eval setHScrollbar [list $win] [$win.hsb get]
+			static {
+			    bindtags $win.hsb [lreplace $tagList $idx $idx]
+			    showHScrollbar $win
 			}
-			none	{ hideHScrollbar $win }
+			dynamic {
+			    if {$idx < 0} {
+				set tagList [linsert $tagList 1 DynHScrollbar]
+				after 1000 [list scrollutil::sa::setBindtags \
+					    $win.hsb $tagList]
+			    }
+			    foreach {first last} [$win.hsb get] {}
+			    setHScrollbar $win $first $last
+			}
+			none {
+			    bindtags $win.hsb [lreplace $tagList $idx $idx]
+			    hideHScrollbar $win
+			}
 		    }
 		}
 		-yscrollbarmode {
@@ -537,7 +549,8 @@ proc scrollutil::sa::doConfig {win opt val} {
 		    switch $val {
 			static	{ showVScrollbar $win }
 			dynamic	{
-			    eval setVScrollbar [list $win] [$win.vsb get]
+			    foreach {first last} [$win.vsb get] {}
+			    setVScrollbar $win $first $last
 			}
 			none	{ hideVScrollbar $win }
 		    }
@@ -747,8 +760,10 @@ proc scrollutil::sa::setwidgetSubCmd {win widget} {
     }
 
     set data(widget) $widget
-    eval setHScrollbar [list $win] [$widget xview]
-    eval setVScrollbar [list $win] [$widget yview]
+    foreach {first last} [$widget xview] {}
+    setHScrollbar $win $first $last
+    foreach {first last} [$widget yview] {}
+    setVScrollbar $win $first $last
 
     return $oldWidget
 }
@@ -972,9 +987,9 @@ proc scrollutil::sa::onScrollbarClicked sb {
 }
 
 #------------------------------------------------------------------------------
-# scrollutil::sa::onDynamicHScrollbarMap
+# scrollutil::sa::onDynHScrollbarMap
 #------------------------------------------------------------------------------
-proc scrollutil::sa::onDynamicHScrollbarMap hsb {
+proc scrollutil::sa::onDynHScrollbarMap hsb {
     set top [winfo toplevel $hsb]
     if {![winfo ismapped $top]} {
 	return ""
@@ -993,9 +1008,9 @@ proc scrollutil::sa::onDynamicHScrollbarMap hsb {
 }
 
 #------------------------------------------------------------------------------
-# scrollutil::sa::onDynamicHScrollbarUnmap
+# scrollutil::sa::onDynHScrollbarUnmap
 #------------------------------------------------------------------------------
-proc scrollutil::sa::onDynamicHScrollbarUnmap hsb {
+proc scrollutil::sa::onDynHScrollbarUnmap hsb {
     set top [winfo toplevel $hsb]
     if {![winfo ismapped $top]} {
 	return ""
@@ -1008,24 +1023,6 @@ proc scrollutil::sa::onDynamicHScrollbarUnmap hsb {
     variable topWidthArr
     if {[winfo width $top] > $topWidthArr($top)} {
 	wm geometry $top [wm geometry $top]
-    }
-}
-
-#------------------------------------------------------------------------------
-# scrollutil::sa::onWidgetOfScrollareaMap
-#------------------------------------------------------------------------------
-proc scrollutil::sa::onWidgetOfScrollareaMap widget {
-    set win [::scrollutil::getscrollarea $widget]
-    set tagList [bindtags $win.hsb]
-    set idx [lsearch -exact $tagList "DynamicHScrollbar"]
-    if {[::$win cget -xscrollbarmode] eq "dynamic"} {
-	if {$idx < 0} {
-	    set delay [expr {[wrapsTextWidget $win] ? 0 : 300}]
-	    set tagList [linsert $tagList 1 DynamicHScrollbar]
-	    after $delay [list scrollutil::sa::setBindtags $win.hsb $tagList]
-	}
-    } else {
-	bindtags $win.hsb [lreplace $tagList $idx $idx]
     }
 }
 

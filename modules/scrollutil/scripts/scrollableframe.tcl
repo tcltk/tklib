@@ -234,12 +234,10 @@ proc scrollutil::scrollableframe args {
 	    cfWidth	0
 	    cfReqWidth	0
 	    mfWidth	0
-	    settingXDim	0
 	    yOffset	0
 	    cfHeight	0
 	    cfReqHeight	0
 	    mfHeight	0
-	    settingYDim	0
 	    scanX	0
 	    scanY	0
 	    scanXOffset	0
@@ -454,14 +452,10 @@ proc scrollutil::sf::doConfig {win opt val} {
 		-height {
 		    set data($opt) [winfo pixels $win $val]
 		    $data(mf) configure $opt $val
-		    set data(settingYDim) 1
-		    after 100 [list scrollutil::sf::resetSettingDim $win y]
 		}
 		-width {
 		    set data($opt) [winfo pixels $win $val]
 		    $data(mf) configure $opt $val
-		    set data(settingXDim) 1
-		    after 100 [list scrollutil::sf::resetSettingDim $win x]
 		}
 		-xscrollcommand -
 		-yscrollcommand {
@@ -1266,26 +1260,6 @@ proc scrollutil::sf::doApplyOffset {win axis} {
     if {$data(-${axis}scrollcommand) ne ""} {
 	eval $data(-${axis}scrollcommand) [${axis}viewSubCmd $win {}]
     }
-
-    if {$data(setting[string toupper $axis]Dim)} {
-	update idletasks
-    }
-}
-
-#------------------------------------------------------------------------------
-# scrollutil::sf::resetSettingDim
-#------------------------------------------------------------------------------
-proc scrollutil::sf::resetSettingDim {win axis} {
-    #
-    # This is an "after 100" callback; check whether the window exists
-    #
-    if {![array exists ::scrollutil::ns${win}::data] ||
-	[winfo class $win] ne "Scrollableframe"} {
-	return ""
-    }
-
-    upvar ::scrollutil::ns${win}::data data
-    set data(setting[string toupper $axis]Dim) 0
 }
 
 #

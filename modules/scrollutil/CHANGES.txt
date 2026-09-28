@@ -1,5 +1,18 @@
-What is new in Scrollutil 2.10?
+What is new in Scrollutil 2.11?
 -------------------------------
+
+1. Various improvements related to the implementation of the scrollarea
+   and scrollableframe widgets.
+
+2. Improvements in the bundled wide spinbox package wsb, related to the
+   Windows platform.
+
+3. Significantly improved the start behavior of the demo applications
+   "BwScrollableFrmDemo(1|2).tcl", "ScrolledFrmDemo(1|2).tcl", and
+   "SuScrollableFrmDemo(1|2)tcl".
+
+What was new in Scrollutil 2.10?
+--------------------------------
 
 1. Adapted to the recent changes in Tk 9.1 according to TIP 750:
    "Consistent dark mode for Windows and macOS".

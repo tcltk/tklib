@@ -225,13 +225,13 @@ proc restoreSel nb {
 #
 set b [ttk::button $f.b -text "Close" -command exit]
 
-update idletasks
 pack $b  -side bottom -pady {0 9p}
 pack $pm -side top -expand yes -fill both -padx 9p -pady 9p
-pack $f  -expand yes -fill both
+
+update idletasks
+pack $f -expand yes -fill both
 
 wm deiconify .
-tkwait visibility $pm
 after 400 [list configScrollareas $pm]
 
 proc configScrollareas pm {

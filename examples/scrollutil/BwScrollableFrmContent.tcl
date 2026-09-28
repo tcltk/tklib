@@ -262,13 +262,18 @@ set b2 [ttk::button $bf.b2 -text "Close" -command exit]
 pack $b2 -side right -padx 9p -pady {0 9p}
 pack $b1 -side left -padx 9p -pady {0 9p}
 
+update idletasks
 pack $bf -side bottom -fill x
 pack $tf -side top -expand yes -fill both
 
 #
 # Set the ScrollableFrame's width, height, and yscrollincrement
 #
-after 100 [list configMainSf $sf $cf $lb]
+set width [winfo reqwidth $cf]
+set height [expr {[winfo reqheight $cf.l0] + [winfo pixels . 3p] +
+		  [winfo reqheight $cf.sa1] + 2*[winfo pixels . 9p]}]
+$sf configure -width $width -height $height \
+    -yscrollincrement [expr {[winfo reqheight $lb] / 10}]
 
 #------------------------------------------------------------------------------
 
@@ -292,16 +297,6 @@ proc updateWidgets {} {
 
 proc cancelEdit {w args} {
     wcb::cancel
-}
-
-#------------------------------------------------------------------------------
-
-proc configMainSf {sf cf lb} {
-    set width [winfo reqwidth $cf]
-    set height [expr {[winfo reqheight $cf.l0] + [winfo pixels . 3p] +
-		      [winfo reqheight $cf.sa1] + 2*[winfo pixels . 9p]}]
-    $sf configure -width $width -height $height \
-	-yscrollincrement [expr {[winfo reqheight $lb] / 10}]
 }
 
 #------------------------------------------------------------------------------
@@ -507,12 +502,17 @@ proc configTablelist tbl {
 
     pack $b  -side bottom -pady {0 9p}
     pack $sa -side top -expand yes -fill both -padx 9p -pady 9p
-    pack $f  -expand yes -fill both
+
+    update idletasks
+    pack $f -expand yes -fill both
 
     #
     # Set the ScrollableFrame's width, height, and yscrollincrement
     #
-    after 50 [list configTopSf $sf $cf $row]
+    set width [winfo reqwidth $cf]
+    set rowHeight [expr {[winfo reqheight $cf] / $row}]
+    set height [expr {10*$rowHeight + [winfo pixels .top 3p]}]
+    $sf configure -width $width -height $height -yscrollincrement $rowHeight
 }
 
 #------------------------------------------------------------------------------
@@ -537,13 +537,4 @@ proc applyBoolean {w tbl opt} {
     } else {
 	$tbl configure $opt [$w switchstate]
     }
-}
-
-#------------------------------------------------------------------------------
-
-proc configTopSf {sf cf row} {
-    set width [winfo reqwidth $cf]
-    set rowHeight [expr {[winfo reqheight $cf] / $row}]
-    set height [expr {10*$rowHeight + [winfo pixels .top 3p]}]
-    $sf configure -width $width -height $height -yscrollincrement $rowHeight
 }
