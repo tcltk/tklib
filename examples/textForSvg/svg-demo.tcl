@@ -1,7 +1,7 @@
 #! /usr/bin/env wish
 
 # Example script for module textForSvg.
-# Copyright © Keith Nash 2021-2025 All Rights Reserved except as licensed below.
+# Copyright © Keith Nash 2021-2026 All Rights Reserved except as licensed below.
 # Tklib license.
 
 namespace eval :: {
@@ -23,11 +23,25 @@ namespace eval :: {
     variable txt              .left.txt
 }
 
+package require Tk
+
 proc createMainGui {} {
     destroy .top .bot .left .right
 
     frame  .top
     panedwindow .bot -sashrelief groove -sashwidth 2p -sashpad 0p -bd 0 -showhandle 1 -handlesize 8p
+
+    font create LeftTextFont {*}[font actual TkFixedFont]
+    if {[tk windowingsystem] eq {aqua} && $::tk_version eq "8.6"} {
+        # TkFixedFont 11 is too small
+        font configure LeftTextFont -size 14
+    } elseif {[tk windowingsystem] eq {aqua}} {
+        # TkFixedFont 8 is too small
+        font configure LeftTextFont -size 11
+    } elseif {$::tcl_platform(os) eq {Darwin}} {
+        # X11 TkFixedFont 9 (for 8.6), 10 (for 9.0) are too small
+        font configure LeftTextFont -size 11
+    }
 
     frame  .left
     text   .left.txt     \
@@ -35,6 +49,7 @@ proc createMainGui {} {
             -width 60    \
             -wrap  word  \
             -undo  1     \
+            -font  LeftTextFont \
             -highlightcolor #d9d9d9 \
             -yscrollcommand {.left.scroll set}
 
@@ -489,7 +504,7 @@ proc createAboutScreen {} {
         |• N.B. Some examples have deliberate errors.  This is
         |   mentioned in a comment added to the example source code.
         |
-        |• Module textForSvg is © 2021-2025 Keith Nash and is
+        |• Module textForSvg is © 2021-2026 Keith Nash and is
         |   released under the Tklib license.
     }]
 
@@ -1173,17 +1188,22 @@ proc SvgToImage {xmlData {xoff 0.0} {yoff 0.0}} {
 
 
 proc loadPackages {} {
+    if {[file exists [file join [file dirname [info script]] .. .. modules textForSvg pkgIndex.tcl]]} {
+        lappend ::auto_path [file normalize [file join [file dirname [info script]] .. .. modules textForSvg]]
+    }
     set err 0
     set missing {}
     foreach {pkg ver} {
-        Tcl        8.6-
-        Tk         8.6-
-        htmlparse  {}
-        Img        {}
-        tdom       0.9
-        tksvg      0.14
-        textForSvg 1.0-
-        base64     {}
+        Tcl           8.6-
+        Tk            8.6-
+        base64        {}
+        cmdline       1.1
+        struct::stack 1.3
+        htmlparse     {}
+        Img           {}
+        tdom          0.9
+        tksvg         0.14
+        textForSvg    1.0-
     } {
         if {($::tk_version > 8.6) && ($pkg eq {tksvg})} {
             continue

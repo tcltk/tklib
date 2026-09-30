@@ -6,7 +6,7 @@
 #       Module/Package to add text strings to a SVG image on a canvas.
 #
 # LICENCE:
-#       Copyright (C) 2021-2025 Keith Nash.
+#       Copyright © 2021-2026 Keith Nash.
 #       This file may be used subject to the terms in the Tklib license;
 #       please note in particular the terms repeated here:
 #
@@ -28,7 +28,8 @@
 package require Tk 8.6-
 package require tdom
 package require htmlparse
-# package img::window is loaded on demand by imageCreatePhoto.
+# packages img::window and base64 are loaded on demand by imageCreatePhoto.
+# packages cmdline and struct::stack are dependencies of htmlparse.
 
 if {    ([package vcompare 8.7a0 [package require Tk]] == 1)
      && (![interp issafe])

@@ -4,6 +4,7 @@
 [titledesc {Implement Text Elements For Some SVG Images}]
 [require Tcl 8.6-]
 [require Tk 8.6-]
+[require base64]
 [require htmlparse]
 [require img::window]
 [require tdom 0.9-]
@@ -26,7 +27,7 @@ Package [package textForSvg]'s functions and variables are contained entirely in
 [comment {use emph instead of term, because term creates a hyperlink, and [emph canvas] occurs in almost every sentence: the page would be covered with the same hyperlinks many times}]
 [para]
 
-The compatibility package [package tksvg] is needed only for [package Tk] 8.6.  Package [package img::window] (part of package [package Img]) is needed only for command [cmd textForSvg::imageCreatePhoto].
+The compatibility package [package tksvg] is needed only for [package Tk] 8.6.  Packages [package img::window] (part of package [package Img]) and base64 are needed only for command [cmd textForSvg::imageCreatePhoto].
 [para]
 
 If the values for the default font family and its height are unsuitable, they can be changed by the commands [cmd textForSvg::setDefaultFontFamily] and [cmd textForSvg::setDefaultFontHeightInPixels] respectively.  The corresponding commands for monospace fonts are [cmd textForSvg::setMonospaceFontFamily] and [cmd textForSvg::setMonospaceFontHeightInPixels] respectively.
