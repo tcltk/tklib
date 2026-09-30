@@ -9,7 +9,7 @@
 #
 # The basics for the entry were taken from the "MenuEntry widget"
 # of the widget package in the tklib.
-# The visual calendar is taken from http://wiki.tcl.tk/1816.
+# The visual calendar is taken from http://wiki.tcl-lang.org/1816.
 #
 # So many thanks to Richard Suchenwirth for visual calendar
 # and to Jeff Hobbs for the widget package in tklib.

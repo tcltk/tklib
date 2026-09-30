@@ -1,5 +1,5 @@
 [section {Bugs, Ideas, Feedback}]
-[vset TRACKER http://core.tcl.tk/tklib/reportlist]
+[vset TRACKER http://core.tcl-lang.org/tklib/reportlist]
 [vset LABEL   {Tklib Trackers}]
 
 This document, and the package it describes, will undoubtedly contain

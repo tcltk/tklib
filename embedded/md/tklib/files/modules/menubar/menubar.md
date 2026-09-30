@@ -684,16 +684,17 @@ Windows \(Vista\), Linux and OSX \(10\.4\)\.
 
 See also
 
-  1. [menu](http://www\.tcl\.tk/man/tcl8\.6/TkCmd/menu\.htm)
+  1. [menu](http://www\.tcl\-lang\.org/man/tcl8\.6/TkCmd/menu\.htm)
 
-  1. [A command that creates menubar objects](http://wiki\.tcl\.tk/25231)
+  1. [A command that creates menubar
+     objects](http://wiki\.tcl\-lang\.org/25231)
 
 # <a name='section14'></a>Bugs, Ideas, Feedback
 
 This document, and the package it describes, will undoubtedly contain bugs and
 other problems\. Please report such in the category *menubar* of the [Tklib
-Trackers](http://core\.tcl\.tk/tklib/reportlist)\. Please also report any ideas
-for enhancements you may have for either package and/or documentation\.
+Trackers](http://core\.tcl\-lang\.org/tklib/reportlist)\. Please also report any
+ideas for enhancements you may have for either package and/or documentation\.
 
 # <a name='copyright'></a>COPYRIGHT
 

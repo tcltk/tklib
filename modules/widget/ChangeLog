@@ -89,7 +89,7 @@
 2010-07-09  Andreas Kupries  <andreask@activestate.com>
 
 	* arrowb.tcl: Added arrowbutton widgets using Keith Vetter's
-	* pkgIndex.tcl: bitmaps (see http://wiki.tcl.tk/8554). Bumped
+	* pkgIndex.tcl: bitmaps (see http://wiki.tcl-lang.org/8554). Bumped
 	  widget::all version to 1.2.2.
 
 2010-06-02  Andreas Kupries  <andreask@activestate.com>

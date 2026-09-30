@@ -14,7 +14,7 @@
   <div>
     <h1>The <code><b>tablelist::tablelist</b></code> Command</h1>
 
-    <h2>For Tablelist Version 7.4</h2>
+    <h2>For Tablelist Version 7.12</h2>
 
     <h3>by</h3>
 
@@ -71,8 +71,8 @@
 </pre>
     </dd>
 
-    <dt><a href="#body_options">OPTIONS FOR THE BODY AND HEADER COMPONENTS OF
-    THE WIDGET</a></dt>
+    <dt><a href="#body_hdr_options">OPTIONS FOR THE BODY AND HEADER COMPONENTS
+    OF THE WIDGET</a></dt>
 
     <dd>
       <pre>
@@ -100,19 +100,48 @@
     <dd><code><b><a href="#arrowdisabledcolor">-arrowdisabledcolor</a></b>
     <i>color</i></code></dd>
 
-    <dd><code><b><a href="#arrowstyle">-arrowstyle</a></b>
-    <b>flat7x4</b>|<b>flat7x7</b>|<b>flat8x4</b>|<b>flat8x5</b>|<b>flat9x5</b>|<b>flat10x5</b>|<br>
-    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;flat11x6</b>|<b>flat12x6</b>|<b>flat13x7</b>|<b>flat14x7</b>|<b>flat15x8</b>|<b>flat16x8</b>|<br>
-    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;flatAngle7x4</b>|<b>flatAngle7x5</b>|<b>flatAngle9x5</b>|<b>flatAngle9x6</b>|<br>
-    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;flatAngle10x6</b>|<b>flatAngle11x6</b>|<b>flatAngle13x7</b>|<b>flatAngle15x8</b>|<br>
-    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;photo0x0</b>|<b>photo7x4</b>|<b>photo7x7</b>|<b>photo9x5</b>|<b>photo11x6</b>|<br>
-    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;photo13x7</b>|<b>photo15x8</b>|<b>sunken8x7</b>|<b>sunken10x9</b>|<b>sunken12x11</b></code></dd>
+    <dd>
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td><code><b><a href="#arrowstyle">-arrowstyle</a></b></code></td>
+          <td><code><b>flat7x4</b>|<b>flat7x7</b>|<b>flat8x4</b>|<b>flat8x5</b>|<b>flat9x5</b>|<b>flat10x5</b>|</code></td>
+        </tr>
+
+        <tr>
+          <td></td>
+          <td><code><b>flat11x6</b>|<b>flat12x6</b>|<b>flat13x7</b>|<b>flat14x7</b>|<b>flat15x8</b>|<b>flat16x8</b>|</code></td>
+        </tr>
+
+        <tr>
+          <td></td>
+          <td><code><b>flatAngle7x4</b>|<b>flatAngle7x5</b>|<b>flatAngle9x5</b>|<b>flatAngle9x6</b>|</code></td>
+        </tr>
+
+        <tr>
+          <td></td>
+          <td><code><b>flatAngle10x6</b>|<b>flatAngle11x6</b>|<b>flatAngle13x7</b>|<b>flatAngle15x8</b>|</code></td>
+        </tr>
+
+        <tr>
+          <td></td>
+          <td><code><b>photo0x0</b>|<b>photo7x4</b>|<b>photo7x7</b>|<b>photo9x5</b>|<b>photo11x6</b>|</code></td>
+        </tr>
+
+        <tr>
+          <td></td>
+          <td><code><b>photo13x7</b>|<b>photo15x8</b>|<b>sunken8x7</b>|<b>sunken10x9</b>|<b>sunken12x11</b></code></td>
+        </tr>
+      </table>
+    </dd>
 
     <dd><code><b><a href="#autofinishediting">-autofinishediting</a></b>
     <i>boolean</i></code></dd>
 
     <dd><code><b><a href="#autoscan">-autoscan</a></b>
     <i>boolean</i></code></dd>
+
+    <dd><code><b><a href="#button2window">-button2window</a></b>
+    <i>window</i></code></dd>
 
     <dd><code><b><a href="#collapsecommand">-collapsecommand</a></b>
     <i>command</i></code></dd>
@@ -158,6 +187,14 @@
     <i>boolean</i></code></dd>
 
     <dd><code><b><a href="#height">-height</a></b> <i>units</i></code></dd>
+
+    <dd><code><b><a href=
+    "#inactiveselectbackground">-inactiveselectbackground</a></b>
+    <i>color</i></code></dd>
+
+    <dd><code><b><a href=
+    "#inactiveselectforeground">-inactiveselectforeground</a></b>
+    <i>color</i></code></dd>
 
     <dd><code><b><a href="#incrarrowtype">-incrarrowtype</a></b>
     <b>up</b>|<b>down</b></code></dd>
@@ -314,15 +351,49 @@
     <dd><code><b><a href="#treecolumn">-treecolumn</a></b>
     <i>columnIndex</i></code></dd>
 
-    <dd><code><b><a href="#treestyle">-treestyle</a></b>
-    <b>adwaita</b>|<b>ambiance</b>|<b>aqua</b>|<b>aqua11</b>|<b>arc</b>|<b>baghira</b>|<b>bicolor</b>|<b>bicolor100</b>|<br>
-    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bicolor125</b>|<b>bicolor150</b>|<b>bicolor175</b>|<b>bicolor200</b>|<b>blueMenta</b>|<b>classic</b>|<br>
-    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;classic100</b>|<b>classic125</b>|<b>classic150</b>|<b>classic175</b>|<b>classic200</b>|<b>dust</b>|<b>dustSand</b>|<br>
-    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gtk</b>|<b>klearlooks</b>|<b>mate</b>|<b>menta</b>|<b>mint</b>|<b>mint2</b>|<b>newWave</b>|<b>oxygen1</b>|<b>oxygen2</b>|<b>phase</b>|<br>
-    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;plain</b>|<b>plain100</b>|<b>plain125</b>|<b>plain150</b>|<b>plain175</b>|<b>plain200</b>|<b>plastik</b>|<b>plastique</b>|<br>
-    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;radiance</b>|<b>ubuntu</b>|<b>ubuntu2</b>|<b>ubuntu3</b>|<b>ubuntuMate</b>|<b>vistaAero</b>|<b>vistaClassic</b>|<br>
-    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;white</b>|<b>white100</b>|<b>white125</b>|<b>white150</b>|<b>white175</b>|<b>white200</b>|<b>win7Aero</b>|<br>
-    &nbsp;<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;win7Classic</b>|<b>win10</b>|<b>winnative</b>|<b>winxpBlue</b>|<b>winxpOlive</b>|<b>winxpSilver</b>|<b>yuyo</b></code></dd>
+    <dd>
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td><code><b><a href="#treestyle">-treestyle</a></b></code></td>
+          <td><code><b>adwaita</b>|<b>ambiance</b>|<b>aqua</b>|<b>aqua11</b>|<b>arc</b>|<b>baghira</b>|<b>bicolor</b>|<b>bicolor100</b>|</code></td>
+        </tr>
+
+        <tr>
+          <td></td>
+          <td><code><b>bicolor125</b>|<b>bicolor150</b>|<b>bicolor175</b>|<b>bicolor200</b>|<b>blueMenta</b>|<b>classic</b>|</code></td>
+        </tr>
+
+        <tr>
+          <td></td>
+          <td><code><b>classic100</b>|<b>classic125</b>|<b>classic150</b>|<b>classic175</b>|<b>classic200</b>|<b>dust</b>|<b>dustSand</b>|</code></td>
+        </tr>
+
+        <tr>
+          <td></td>
+          <td><code><b>gtk</b>|<b>klearlooks</b>|<b>mate</b>|<b>menta</b>|<b>mint</b>|<b>mint2</b>|<b>newWave</b>|<b>oxygen1</b>|<b>oxygen2</b>|<b>phase</b>|</code></td>
+        </tr>
+
+        <tr>
+          <td></td>
+          <td><code><b>plain100</b>|<b>plain125</b>|<b>plain150</b>|<b>plain175</b>|<b>plain200</b>|<b>plastik</b>|<b>plastique</b>|</code></td>
+        </tr>
+
+        <tr>
+          <td></td>
+          <td><code><b>radiance</b>|<b>ubuntu</b>|<b>ubuntu2</b>|<b>ubuntu3</b>|<b>ubuntuMate</b>|<b>vistaAero</b>|<b>vistaClassic</b>|</code></td>
+        </tr>
+
+        <tr>
+          <td></td>
+          <td><code><b>white</b>|<b>white100</b>|<b>white125</b>|<b>white150</b>|<b>white175</b>|<b>white200</b>|<b>win7Aero</b>|</code></td>
+        </tr>
+
+        <tr>
+          <td></td>
+          <td><code><b>win7Classic</b>|<b>win10</b>|<b>winnative</b>|<b>winxpBlue</b>|<b>winxpOlive</b>|<b>winxpSilver</b>|<b>yuyo</b></code></td>
+        </tr>
+      </table>
+    </dd>
 
     <dd><code><b><a href="#width">-width</a></b> <i>characters</i></code></dd>
 
@@ -678,7 +749,7 @@
 
     <dd><code><i>pathName</i> <b><a href=
     "#autoscrolltarget">autoscrolltarget</a></b> <i>event</i>
-    <i>x</i></code> <i>y</i></code></dd>
+    <i>x</i> <i>y</i></code></dd>
 
     <dd><code><i>pathName</i> <b><a href="#bbox">bbox</a></b>
     <i>index</i></code></dd>
@@ -1108,6 +1179,9 @@
     <i>index</i> ?<i>option</i>? ?<i>value</i> <i>option</i> <i>value</i>
     ...?</code></dd>
 
+    <dd><code><i>pathName</i> <b><a href=
+    "#rowcount">rowcount</a></b></code></dd>
+
     <dd><code><i>pathName</i> <b><a href="#scan">scan</a></b>
     <b>mark</b>|<b>dragto</b> <i>x</i> <i>y</i></code></dd>
 
@@ -1434,6 +1508,9 @@
     rowconfigure</a></b> <i>headerIndex</i> ?<i>option</i>? ?<i>value</i>
     <i>option</i> <i>value</i> ...?</code></dd>
 
+    <dd><code><i>pathName</i> <b><a href="#hdr_rowcount">header
+    rowcount</a></b></code></dd>
+
     <dd><code><i>pathName</i> <b><a href="#hdr_size">header
     size</a></b></code></dd>
 
@@ -1545,18 +1622,18 @@
     widget, thus making sure that all the validation facilities available for
     entry widgets can be used during the editing process.&nbsp; A great variety
     of widgets from the packages BWidget, Iwidgets, combobox (by Bryan Oakley),
-    ctext, and Mentry (or Mentry_tile), as well as Tk core text, spinbox,
+    ctext, Mentry (or Mentry_tile), and Tsw, as well as Tk core text, spinbox,
     checkbutton, and menubutton widgets, along with tile entry, spinbox,
     combobox, checkbutton, and menubutton widgets are also supported as
     temporary embedded widgets used for cell editing.&nbsp; In addition, a rich
     set of keyboard bindings is provided for a comfortable navigation between
     the editable cells.</dd>
 
-    <dd class="tm">When first created, a new tablelist widget has no
-    items.&nbsp; Items (in both the body and the header) may be added, deleted,
-    or updated using widget commands described below.&nbsp; In addition, one or
-    more items or elements of the widget's body may be selected.&nbsp; If a
-    tablelist widget is exporting its selection (see the
+    <dd class="tm">When created, a new tablelist widget has no items.&nbsp;
+    Items (in both the body and the header) may be added, deleted, or updated
+    using widget commands described below.&nbsp; In addition, one or more items
+    or elements of the widget's body may be selected.&nbsp; If a tablelist
+    widget is exporting its selection (see the
     <code><b>-exportselection</b></code> option), then it will observe the
     standard X11 protocols for handling the selection.&nbsp; Tablelist widget
     selections are available as types <code><b>STRING</b></code> and
@@ -1623,7 +1700,7 @@
     supports both static and dynamic scrollbars, and respects the header
     component and title columns of tablelist widgets.</dd>
 
-    <dt class="tm" id="body_options"><b>OPTIONS FOR THE BODY AND HEADER
+    <dt class="tm" id="body_hdr_options"><b>OPTIONS FOR THE BODY AND HEADER
     COMPONENTS OF THE WIDGET</b></dt>
 
     <dd>
@@ -1634,10 +1711,10 @@
 
     <dd>These options (described in the <b>options</b> manual entry) are only
     valid for the body and header components of the tablelist widget.&nbsp; As
-    discussed in the next section, the colors and font used when drawing the
-    header <i>labels</i> can be different from those specified for the body and
-    header <i>items</i>.&nbsp; When using the package Tablelist_tile, these
-    options have theme-specific default values.</dd>
+    discussed below, the colors and fonts used when drawing the header
+    <i>labels</i> can be different from those specified for the body and header
+    <i>items</i>.&nbsp; When using the package Tablelist_tile, these options
+    have theme-specific default values.</dd>
 
     <dt class="tm" id="widget_options"><b>WIDGET-SPECIFIC OPTIONS</b></dt>
 
@@ -1958,15 +2035,14 @@ proc acceptDropCmd {tbl targetRow sourceRow} {
         no effect.</p>
 
         <p>The arrow style <code><b>photo0x0</b></code> uses SVG images that
-        will scale <i>automatically</i> according to the display's <i>real</i>
-        scaling percentage, which can be greater than <code>200</code> (the
-        maximum value of the variable
-        <code><b>tablelist::scalingpct</b></code>).&nbsp; This comes in handy
-        especially when running Androwish on a tablet or smartphone.&nbsp; This
-        arrow style is only supported if the Tk version is either at least 8.7
-        (with built-in SVG support), or 8.6 and the tksvg extension can be
-        loaded into the interpreter.&nbsp; The sort arrows of this arrow style
-        are quite similar to those of the styles <code><b>flat8x4</b></code>,
+        will scale <i>automatically</i> according to the display's DPI scaling
+        level and Tk's scaling factor given by&nbsp; <code><b>[tk
+        scaling]</b></code>.&nbsp; This comes in handy especially when running
+        Androwish on a tablet or smartphone.&nbsp; This arrow style is only
+        supported if the Tk version is either at least 8.7 (with built-in SVG
+        support), or 8.6 and the tksvg extension can be loaded into the
+        interpreter.&nbsp; The sort arrows of this arrow style are quite
+        similar to those of the styles <code><b>flat8x4</b></code>,
         <code><b>flat10x5</b></code>, <code><b>flat12x6</b></code>,
         <code><b>flat14x7</b></code>, and <code><b>flat16x8</b></code>, except
         that they are rendered using anti-aliasing and are unlimitedly
@@ -2087,6 +2163,68 @@ proc acceptDropCmd {tbl targetRow sourceRow} {
         tablelist's <code><b><a href=
         "#customdragsource">-customdragsource</a></b></code> option was set to
         true.</p>
+      </blockquote>
+    </dd>
+
+    <dd id="button2window">
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td>Command-Line Name:&nbsp;</td>
+          <td><code><b>-button2window</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Name:</td>
+          <td><code><b>&nbsp;button2Window</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Class:</td>
+          <td><code><b>&nbsp;Button2Window</b></code></td>
+        </tr>
+      </table>
+
+      <blockquote>
+        <p>Specifies the path name of the window to which the default bindings
+        for the binding tags <code><b><a href=
+        "#body_bindings">TablelistBody</a></b></code> and <code><b><a href=
+        "#edit_bindings">TablelistEdit</a></b></code> should redirect the
+        <code><b>&lt;Button-2&gt;</b></code>,
+        <code><b>&lt;B2-Motion&gt;</b></code>, and
+        <code><b>&lt;ButtonRelease-2&gt;</b></code> events via&nbsp;
+        <code><b>event generate</b></code>&nbsp; if the focus window on the
+        display containing the tablelist widget is outside the tablelist.&nbsp;
+        The default is an empty string, meaning that the mouse button 2 events
+        received by a widget having one of the two above-mentioned binding tags
+        will give rise to scanning within the tablelist or its edit window,
+        regardless of whether the focus is inside or outside the tablelist
+        widget.</p>
+
+        <p><b>REMARK 1:</b>&nbsp; If the tablelist is contained in a <a href=
+        "https://www.nemethi.de/scrollutil/scrollableframe.html">scrollutil::scrollableframe</a>
+        and you set this option to the path name of the containing toplevel
+        widget, then the above-mentioned mouse button 2 events over the
+        tablelist's body will be handled as follows:</p>
+
+        <ul>
+          <li class="tm">If the focus is inside the tablelist widget then the
+          events will trigger a scanning of the content of the tablelist or its
+          edit window and no further processing of the events will take
+          place.</li>
+
+          <li class="tm">If the focus is outside the tablelist widget then no
+          scanning within the tablelist's body or edit window will happen.&nbsp;
+          Instead, the event will be redirected to the toplevel widget with the
+          aid of the&nbsp; <code><b>event generate</b></code>&nbsp;
+          command.&nbsp; This in turn will give rise to scanning of the
+          scrollableframe's content.</li>
+        </ul>
+
+        <p><b>REMARK 2:</b>&nbsp; If you pass the tablelist widget to the
+        <code><b><a href=
+        "https://www.nemethi.de/scrollutil/scrollableframe.html#adapt">scrollutil::adaptBtn2EventHandling</a></b></code>
+        command then that command will set this option to the path name of the
+        containing toplevel window.</p>
       </blockquote>
     </dd>
 
@@ -2759,6 +2897,90 @@ proc expandCmd {tbl row} {
       </blockquote>
     </dd>
 
+    <dd id="inactiveselectbackground">
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td>Command-Line Name:&nbsp;</td>
+          <td><code><b>-inactiveselectbackground</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Name:</td>
+          <td><code><b>&nbsp;inactiveSelectBackground</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Class:</td>
+          <td><code><b>&nbsp;Foreground</b></code></td>
+        </tr>
+      </table>
+
+      <blockquote>
+        <p>Specifies the background color to use for the selection in the
+        tablelist's body when the latter does not have the input focus.&nbsp;
+        If empty then the value of the <b>-selectbackground</b></code> option
+        at <a href="#std_options">widget</a>, <a href=
+        "#col_selectbackground">column</a>, <a href=
+        "#row_selectbackground">row</a>, or <a href=
+        "#cell_selectbackground">cell</a> level is used when the widget's body
+        does not have the focus.</p>
+
+        <p>The default value depends on the windowing system in the Tablelist
+        package and on the current theme in Tablelist_tile:&nbsp; In the
+        Tablelist package it is non-empty on the windowing systems
+        <code><b>aqua</b></code> and <code><b>win32</b></code>, and an empty
+        string on <code><b>x11</b></code>; in Tablelist_tile it is non-empty
+        for the themes <code><b>aqua</b></code>, <code><b>clam</b></code>,
+        <code><b>vista</b></code>, <code><b>winnative</b></code>, and
+        <code><b>xpnative</b></code>, and an empty string for all the other
+        themes.&nbsp; The choice of the default value makes sure that the
+        selection will appear in native colors also when the widget's body does
+        not have the focus.</p>
+      </blockquote>
+    </dd>
+
+    <dd id="inactiveselectforeground">
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td>Command-Line Name:&nbsp;</td>
+          <td><code><b>-inactiveselectforeground</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Name:</td>
+          <td><code><b>&nbsp;inactiveSelectForeground</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Class:</td>
+          <td><code><b>&nbsp;Background</b></code></td>
+        </tr>
+      </table>
+
+      <blockquote>
+        <p>Specifies the foreground color to use for the selection in the
+        tablelist's body when the latter does not have the input focus.&nbsp;
+        This option is only relevant if the value of the <code><b><a href=
+        "#inactiveselectbackground">-inactiveselectbackground</a></b></code>
+        option is non-empty, in which case, if the value of this option is an
+        empty string then the value of the <b>-selectforeground</b></code>
+        option at <a href="#std_options">widget</a> level (only) is used when
+        the tablelist's body does not have the focus.</p>
+
+        <p>The default value depends on the windowing system in the Tablelist
+        package and on the current theme in Tablelist_tile:&nbsp; In the
+        Tablelist package it is non-empty on the windowing systems
+        <code><b>aqua</b></code> and <code><b>win32</b></code>, and an empty
+        string on <code><b>x11</b></code>; in Tablelist_tile it is non-empty
+        for the themes <code><b>aqua</b></code>, <code><b>clam</b></code>,
+        <code><b>vista</b></code>, <code><b>winnative</b></code>, and
+        <code><b>xpnative</b></code>, and an empty string for all the other
+        themes.&nbsp; The choice of the default value makes sure that the
+        selection will appear in native colors also when the widget's body does
+        not have the focus.</p>
+      </blockquote>
+    </dd>
+
     <dd id="incrarrowtype">
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
@@ -2811,13 +3033,14 @@ proc expandCmd {tbl row} {
 
       <blockquote>
         <p>Specifies a boolean value that controls whether the interactive cell
-        editing with the aid of a Tk or tile checkbutton widget, if started
-        with the left mouse button, will be finished immediately after
-        automatically toggling the check state of the temporary embedded
-        checkbutton.&nbsp; The default value is <code>0</code>, meaning that a
-        mouse click into the cell will only start the editing session (and
-        automatically toggle the checkbutton's check state), but not also
-        finish it.</p>
+        editing with the aid of a Tk or tile checkbutton or a toggleswitch
+        widget, if started with the left mouse button, will be finished
+        immediately after automatically toggling the check state of the
+        temporary embedded checkbutton or the switch state of the temporary
+        embedded toggleswitch.&nbsp; The default value is <code>0</code>,
+        meaning that a mouse click into the cell will only start the editing
+        session (and automatically toggle the checkbutton's check state or the
+        toggleswitch widget's switch state), but not also finish it.</p>
       </blockquote>
     </dd>
 
@@ -2846,7 +3069,7 @@ proc expandCmd {tbl row} {
         the body items and that of the header area filled with the header
         items (if any).&nbsp; The default value is an empty string, indicating
         that these areas will inherit the background color specified by the
-        <code><b><a href="#body_options">-background</a></b></code>
+        <code><b><a href="#body_hdr_options">-background</a></b></code>
         configuration option.&nbsp; Notice that regardless of the value of this
         option, the blank space that might appear to the right of the body and
         header items as well as below the last body item will always have the
@@ -4081,7 +4304,8 @@ option add *Tablelist.showHorizSeparator 0
         the widget is disabled then neither items nor columns may be inserted,
         deleted, updated, or moved, the items, header labels, and the up- or
         down-arrow are drawn in the <code><b><a href=
-        "#body_options">-disabledforeground</a></b></code>, <code><b><a href=
+        "#body_hdr_options">-disabledforeground</a></b></code>,
+        <code><b><a href=
         "#labeldisabledforeground">-labeldisabledforeground</a></b></code>, and
         <code><b><a href=
         "#arrowdisabledcolor">-arrowdisabledcolor</a></b></code> color,
@@ -4172,7 +4396,7 @@ option add *Tablelist.showHorizSeparator 0
         items, and so on.&nbsp; In the Tablelist package and in most themes
         supported by Tablelist_tile, the default value is an empty string,
         indicating that the stripes will inherit the background color specified
-        by the <code><b><a href="#body_options">-background</a></b></code>
+        by the <code><b><a href="#body_hdr_options">-background</a></b></code>
         configuration option.&nbsp; When using Tablelist_tile with the
         <code><b>tileqt</b></code> theme then the default value is given by the
         global KDE option <code><b>alternateBackground</b></code>, which in
@@ -4218,7 +4442,7 @@ option add *Tablelist.showHorizSeparator 0
         which in turn is followed by the same number of "normal" viewable
         items, and so on.&nbsp; The default value is an empty string,
         indicating that the stripes will inherit the foreground color specified
-        by the <code><b><a href="#body_options">-foreground</a></b></code>
+        by the <code><b><a href="#body_hdr_options">-foreground</a></b></code>
         configuration option.&nbsp; The <code><b>-stripeforeground</b></code>
         option has a higher priority than the <code><b>-foreground</b></code>
         column configuration option, but a lower priority than the
@@ -4300,8 +4524,8 @@ option add *Tablelist.showHorizSeparator 0
       <blockquote>
         <p>Specifies the color of the gap displayed in the tablelist's body or
         header label area to indicate the target position when moving a row or
-        column interactively.&nbsp; The target indicator belonging to the
-        tablelist's body can also be displayed explicitly with the aid of the
+        column interactively.&nbsp; The target indicator for the tablelist's
+        body can also be displayed explicitly with the aid of the
         <code><b><a href="#showtargetmark">showtargetmark</a></b></code>
         subcommand, and its path name can be retrieved via <code><b><a href=
         "#targetmarkpath">targetmarkpath</a></b></code>.&nbsp; The default
@@ -4812,7 +5036,10 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
         <code><b>vistaClassic</b></code>, <code><b>win7Aero</b></code>,
         <code><b>win7Classic</b></code>, and <code><b>win10</b></code> are
         <i>automatically</i> adapted to the display's scaling percentage.&nbsp;
-        Platform-independent <i>manual</i> scaling is supported by the
+        The same holds true for <code><b>aqua11</b></code> in the presence of
+        SVG support.</p>
+
+        <p>Platform-independent <i>manual</i> scaling is supported for the
         following tree styles:</p>
 
         <table border="2" cellspacing="0" cellpadding="3" rules="groups">
@@ -4922,7 +5149,6 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
               <th><code>classic200</code></th>
             </tr>
           </tbody>
-          </tbody>
         </table>
 
         <p>If the tree style is <code><b>gtk</b></code>,
@@ -4953,11 +5179,10 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
         <code><b>bicolor*</b></code>, <code><b>white*</b></code>, and
         <code><b>classic*</b></code>, respectively, except that they use SVG
         images whose sizes are <i>automatically</i> adapted to the display's
-        <i>real</i> scaling percentage, which can be greater than
-        <code>200</code> (the maximum value of the variable
-        <code><b>tablelist::scalingpct</b></code>).&nbsp; These unlimitedly
-        scalable tree styles come in handy especially when running Androwish on
-        a tablet or smartphone.</p>
+        DPI scaling level and Tk's scaling factor given by&nbsp; <code><b>[tk
+        scaling]</b></code>.&nbsp; These unlimitedly scalable tree styles come
+        in handy especially when running Androwish on a tablet or
+        smartphone.</p>
 
         <p>The following table contains a detailed description of the tree
         styles, in alphabetical order:</p>
@@ -5009,6 +5234,8 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
             <td><img src="aqua11.png" alt="aqua11" width="120" height=
             "54"></td>
             <td>
+              When posssible, uses SVG images that scale automatically,
+              according to the display's real scaling percentage.<br>
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr valign="top">
                   <td>Tablelist:&nbsp;</td>
@@ -5101,8 +5328,9 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr valign="top">
                   <td>Tablelist_tile:&nbsp;</td>
-                  <td>Default for the <code><b>awarc</b></code> theme, if SVG
-                  support is available.</td>
+                  <td>Default for the themes <code><b>arc</b></code>,
+                  <code><b>awarc</b></code>, and <code><b>droid</b></code>, if
+                  SVG support is available.</td>
                 </tr>
               </table>
             </td>
@@ -5121,8 +5349,9 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr valign="top">
                   <td>Tablelist_tile:&nbsp;</td>
-                  <td>Default for the <code><b>awarc</b></code> theme, in the
-                  absence of SVG support.</td>
+                  <td>Default for the themes <code><b>arc</b></code>,
+                  <code><b>awarc</b></code>, and <code><b>droid</b></code>, in
+                  the absence of SVG support.</td>
                 </tr>
               </table>
             </td>
@@ -5754,10 +5983,9 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
         widget container like a <a href=
         "https://www.nemethi.de/scrollutil/scrollableframe.html">scrollutil::scrollableframe</a>,
         BWidget ScrollableFrame, or iwidgets::scrolledframe, and you set this
-        option to the path name of that container window or that of the
-        containing toplevel widget, then a horizontal mouse wheel or
-        <code><b>&lt;TouchpadScroll&gt;</b></code> event over the tablelist's
-        body will be handled as follows:</p>
+        option to the path name of the containing toplevel widget, then a
+        horizontal mouse wheel or <code><b>&lt;TouchpadScroll&gt;</b></code>
+        event over the tablelist's body will be handled as follows:</p>
 
         <ul>
           <li class="tm">If the focus is inside the tablelist widget then the
@@ -5766,13 +5994,12 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
 
           <li class="tm">If the focus is outside the tablelist widget then no
           scrolling of the tablelist's body or edit window will happen.&nbsp;
-          Instead, the event will be redirected to the widget container or the
-          toplevel widget with the aid of the&nbsp; <code><b>event
-          generate</b></code>&nbsp; command.&nbsp; This in turn will give rise
-          to horizontal scrolling of the widget container, provided that the
-          containing toplevel widget or the binding tag <code><b>all</b></code>
-          has the necessary mouse wheel or
-          <code><b>&lt;TouchpadScroll&gt;</b></code> event bindings.</li>
+          Instead, the event will be redirected to the toplevel widget with the
+          aid of the&nbsp; <code><b>event generate</b></code>&nbsp;
+          command.&nbsp; This in turn will give rise to horizontal scrolling of
+          the widget container, provided that the containing toplevel widget or
+          the binding tag <code><b>all</b></code> has the necessary mouse wheel
+          or <code><b>&lt;TouchpadScroll&gt;</b></code> event bindings.</li>
         </ul>
 
         <p><b>REMARK 3:</b>&nbsp; If you pass the tablelist widget to the
@@ -5856,10 +6083,9 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
         widget container like a <a href=
         "https://www.nemethi.de/scrollutil/scrollableframe.html">scrollutil::scrollableframe</a>,
         BWidget ScrollableFrame, or iwidgets::scrolledframe, and you set this
-        option to the path name of that container window or that of the
-        containing toplevel widget, then a vertical mouse wheel or
-        <code><b>&lt;TouchpadScroll&gt;</b></code> event over the tablelist's
-        body will be handled as follows:</p>
+        option to the path name of the containing toplevel widget, then a
+        vertical mouse wheel or <code><b>&lt;TouchpadScroll&gt;</b></code>
+        event over the tablelist's body will be handled as follows:</p>
 
         <ul>
           <li class="tm">If the focus is inside the tablelist widget then the
@@ -5868,13 +6094,12 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
 
           <li class="tm">If the focus is outside the tablelist widget then no
           scrolling of the tablelist's body or edit window will happen.&nbsp;
-          Instead, the event will be redirected to the widget container or the
-          toplevel widget with the aid of the&nbsp; <code><b>event
-          generate</b></code>&nbsp; command.&nbsp; This in turn will give rise
-          to vertical scrolling of the widget container, provided that the
-          containing toplevel widget or the binding tag <code><b>all</b></code>
-          has the necessary mouse wheel or
-          <code><b>&lt;TouchpadScroll&gt;</b></code> event bindings.</li>
+          Instead, the event will be redirected to the toplevel widget with the
+          aid of the&nbsp; <code><b>event generate</b></code>&nbsp;
+          command.&nbsp; This in turn will give rise to vertical scrolling of
+          the widget container, provided that the containing toplevel widget or
+          the binding tag <code><b>all</b></code> has the necessary mouse wheel
+          or <code><b>&lt;TouchpadScroll&gt;</b></code> event bindings.</li>
         </ul>
 
         <p><b>REMARK 3:</b>&nbsp; If you pass the tablelist widget to the
@@ -5980,11 +6205,11 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
         "tablelistBWidget.html">BWidget</a>, <a href=
         "tablelistIwidgets.html">Iwidgets</a>, <a href=
         "tablelistCombobox.html">combobox</a> (by Bryan Oakley), <a href=
-        "tablelistCtext.html">ctext</a>, and <a href=
-        "tablelistMentry.html">Mentry (or Mentry_tile)</a>.&nbsp; For example,
-        you can use&nbsp; <code><b>-editwindow ComboBox</b></code>&nbsp;
-        <i>after</i> registering the ComboBox widget for interactive cell
-        editing with the aid of the <code><b><a href=
+        "tablelistCtext.html">ctext</a>, <a href="tablelistMentry.html">Mentry
+        (or Mentry_tile)</a>, and <a href="tablelistTsw.html">Tsw</a>.&nbsp;
+        For example, you can use&nbsp; <code><b>-editwindow
+        ComboBox</b></code>&nbsp; <i>after</i> registering the ComboBox widget
+        for interactive cell editing with the aid of the <code><b><a href=
         "tablelistBWidget.html#ComboBox">tablelist::addBWidgetComboBox</a></b></code>
         command.&nbsp; Similarly, you can use&nbsp; <code><b>-editwindow
         combobox</b></code>&nbsp; <i>after</i> registering Bryan Oakley's
@@ -7320,17 +7545,17 @@ proc updateWindow {tbl row col w args} {
     <a href="#cell_editwindow">cell</a> configuration option to specify another
     widget instead of an entry, like a Tk core text, spinbox, checkbutton, or
     menubutton widget, or a tile entry, spinbox, combobox, checkbutton, or
-    menubutton, or one of the 19 currently supported widgets from the packages
+    menubutton, or one of the 20 currently supported widgets from the packages
     <a href="tablelistBWidget.html">BWidget</a>, <a href=
     "tablelistIwidgets.html">Iwidgets</a>, <a href=
     "tablelistCombobox.html">combobox</a> (by Bryan Oakley), <a href=
-    "tablelistCtext.html">ctext</a>, and <a href="tablelistMentry.html">Mentry
-    (or Mentry_tile)</a>.&nbsp; Before specifying a widget from one of these
-    library packages as the value of the <code><b>-editwindow</b></code> column
-    or cell configuration option, you must register it for interactive cell
-    editing by invoking the corresponding <code><b>tablelist::add*</b></code>
-    command.&nbsp; The above-mentioned Tk core and tile widgets are
-    automatically registered for cell editing.</dd>
+    "tablelistCtext.html">ctext</a>, <a href="tablelistMentry.html">Mentry (or
+    Mentry_tile)</a>, and <a href="tablelistTsw.html">Tsw</a>.&nbsp; Before
+    specifying a widget from one of these library packages as the value of the
+    <code><b>-editwindow</b></code> column or cell configuration option, you
+    must register it for interactive cell editing by invoking the corresponding
+    <code><b>tablelist::add*</b></code> command.&nbsp; The above-mentioned Tk
+    core and tile widgets are automatically registered for cell editing.</dd>
 
     <dd class="tm">In the simplest case, the text automatically inserted into
     the temporary embedded widget is the same as the text displayed in the
@@ -7395,12 +7620,13 @@ proc updateWindow {tbl row col w args} {
     with the left mouse button anywhere in the tablelist's body, outside the
     cell just being edited, or moving into another editable cell by using
     keyboard navigation.&nbsp; If the editing was started with the left mouse
-    button, the edit window is a Tk or tile checkbutton, and the value of the
-    <code><b><a href="#instanttoggle">-instanttoggle</a></b></code> option is
-    true, then the normal termination of the editing will take place
-    automatically, without any user interaction.&nbsp; Similarly, if the edit
-    window is one of the four combobox widgets supported by Tablelist or a
-    menubutton widget, and the value of the <code><b><a href=
+    button, the edit window is a Tk or tile checkbutton or a toggleswitch
+    widget, and the value of the <code><b><a href=
+    "#instanttoggle">-instanttoggle</a></b></code> option is true, then the
+    normal termination of the editing will take place automatically, without
+    any user interaction.&nbsp; Similarly, if the edit window is one of the
+    four combobox widgets supported by Tablelist or a (ttk::)menubutton widget,
+    and the value of the <code><b><a href=
     "#autofinishediting">-autofinishediting</a></b></code> option is true, then
     selecting a combobox or menu entry will automatically terminate the editing
     session.&nbsp; Finally, if the value of the <code><b><a href=
@@ -7508,7 +7734,7 @@ proc updateWindow {tbl row col w args} {
 
     <dd class="tm">
       <b>TkDND EXAMPLE:</b>&nbsp; For an introduction to TkDND see the online
-      <a href="https://wiki.tcl.tk/36708">TkDND Tutorial</a> by Georgios
+      <a href="https://wiki.tcl-lang.org/36708">TkDND Tutorial</a> by Georgios
       Petasis.&nbsp; For the following example it is strongly recommended to
       use TkDND version 2.7 or later, which can be downloaded from the location
 
@@ -7563,7 +7789,7 @@ proc onTblDrop {tbl action data} {
     <dd>
       <b>BWidget EXAMPLE:</b>&nbsp; For an introduction to drag & drop with
       BWidget see the online tutorial <a href=
-      "https://wiki.tcl.tk/16126">BWidget example: Drag and Drop Demo</a> by
+      "https://wiki.tcl-lang.org/16126">BWidget example: Drag and Drop Demo</a> by
       Kevin Walzer.&nbsp; The <code><b>DropSite::*</b></code> commands used in
       the following example are described in the "DropSite" reference page
       included in the BWidget distribution.&nbsp; When using this drag & drop
@@ -7885,7 +8111,8 @@ proc handleTblDrop {tbl data} {
           <td>A list consisting of the numerical indices of the leftmost and
           rightmost columns visible in the tablelist window, i.e., of the
           numerical equivalents of the <a href="#col_indices">column
-          indices</a> <code><b>left</b></code> and <code><b>right</code>.</td>
+          indices</a> <code><b>left</b></code> and
+          <code><b>right</b></code>.</td>
         </tr>
 
         <tr valign="top">
@@ -7895,7 +8122,8 @@ proc handleTblDrop {tbl data} {
           <td>A list consisting of the numerical indices of the topmost and
           bottommost body items visible in the tablelist window, i.e., of
           the numerical equivalents of the <a href="#row_indices">row
-          indices</a> <code><b>top</b></code> and <code><b>bottom</code>.</td>
+          indices</a> <code><b>top</b></code> and
+          <code><b>bottom</b></code>.</td>
         </tr>
       </table>
     </dd>
@@ -7907,8 +8135,10 @@ proc handleTblDrop {tbl data} {
     "tablelistThemes.html#setThemeDefaults">tablelist::setThemeDefaults</a></b></code>
     command when handling the virtual events
     <code><b>&lt;&lt;ThemeChanged&gt;&gt;</b></code>,
-    <code><b>&lt;&lt;LightAqua&gt;&gt;</b></code>, and
-    <code><b>&lt;&lt;DarkAqua&gt;&gt;</b></code>.&nbsp; To handle it, use the
+    <code><b>&lt;&lt;LightAppearance&gt;&gt;</b></code> (formerly:
+    <code><b>&lt;&lt;LightAqua&gt;&gt;</b></code>), and
+    <code><b>&lt;&lt;DarkAppearance&gt;&gt;</b></code> (formerly:
+    <code><b>&lt;&lt;DarkAqua&gt;&gt;</b></code>).&nbsp; To handle it, use the
     binding tag <code><b>TablelistMain</b></code>, which is assigned by
     Tablelist_tile to the main window.</dd>
 
@@ -8818,12 +9048,12 @@ registerDragSrc [$tbl bodypath]
         will be collapsed, so that a subsequent invocation of the non-recursive
         version of the <code><b><a href="#expand">expand(all)</a></b></code>
         subcommand will only display their children but no further descendants
-        of them.&nbsp; The <code><b>-partly</b></code> option (which is used by
-        the default bindings) restricts the operation to just one hierarchy
-        level, implying that by a subsequent invocation of the non-recursive
-        version of the <code><b>expand(all)</b></code> subcommand exactly the
-        same descendants will be displayed again that were visible prior to
-        collapsing the rows.</dd>
+        of them.&nbsp; The <code><b>-partly</b></code> option restricts the
+        operation to just one hierarchy level, implying that by a subsequent
+        invocation of the non-recursive version of the
+        <code><b>expand(all)</b></code> subcommand exactly the same descendants
+        will be displayed again that were visible prior to collapsing the
+        rows.</dd>
 
         <dd class="tm">Before hiding the descendants of a row, the command
         specified as the value of the <code><b><a href=
@@ -9447,7 +9677,7 @@ pack $sa -expand yes -fill both -padx 10 -pady 10
         <dd class="tm">This subcommand is only available in the presence of the
         <code><b>dict</b></code> command, which is the case when using Tcl
         version 8.5 or later, or one of the alternative, <a href=
-        "https://wiki.tcl.tk/10609">Tcl-only <code><b>dict</b></code>
+        "https://wiki.tcl-lang.org/10609">Tcl-only <code><b>dict</b></code>
         implementations</a>.</dd>
 
         <dt class="tm" id="dumptofile"><code><i>pathName</i> <b>dumptofile</b>
@@ -9538,8 +9768,9 @@ pack $sa -expand yes -fill both -padx 10 -pady 10
         components of the temporary embedded widget used for interactive cell
         editing.&nbsp; These components depend on the edit window: the widget
         itself in case of a Tk or tile checkbutton or menubutton; the edit
-        window's entry children in case of a mentry widget; the only entry or
-        entry-like component of the edit window in all other cases (see also
+        window's entry children in case of a mentry widget; the ttk::scale
+        widget contained in a toggleswitch used as edit window; the only entry
+        or entry-like component of the edit window in all other cases (see also
         the <code><b><a href="#entrypath">entrypath</a></b></code>
         subcommand).&nbsp; This binding tag precedes the tag <code><b><a href=
         "#edit_bindings">TablelistEdit</a></b></code> in the list of binding
@@ -9630,14 +9861,14 @@ bind [.tbl <span class="red">editwintag</span>] &lt;Return&gt; "[bind <a href=
         the <code><b><a href="#editcell">editcell</a></b></code>
         subcommand.&nbsp; If no cell is currently being edited or the editing
         is taking place with the aid of a Tk or tile checkbutton, Tk or tile
-        menubutton, or mentry widget, then the return value is an empty string;
-        otherwise it is the path name of a Tk or tile entry, text or ctext, Tk
-        or tile spinbox, or BWidget Entry widget, which can be the edit window
-        itself or one of its descendants.&nbsp; This subcommand enables you to
-        access the entry or entry-like component of the temporary embedded
-        widget from within the commands specified by the <code><b><a href=
-        "#editstartcommand">-editstartcommand</a></b></code> and
-        <code><b><a href="#editendcommand">-editendcommand</a></b></code>
+        menubutton, mentry, or toggleswitch widget, then the return value is an
+        empty string; otherwise it is the path name of a Tk or tile entry, text
+        or ctext, Tk or tile spinbox, or BWidget Entry widget, which can be the
+        edit window itself or one of its descendants.&nbsp; This subcommand
+        enables you to access the entry or entry-like component of the
+        temporary embedded widget from within the commands specified by the
+        <code><b><a href="#editstartcommand">-editstartcommand</a></b></code>
+        and <code><b><a href="#editendcommand">-editendcommand</a></b></code>
         configuration options.</dd>
 
         <dt class="tm" id="expand"><code><i>pathName</i> <b>expand</b>
@@ -9648,11 +9879,10 @@ bind [.tbl <span class="red">editwintag</span>] &lt;Return&gt; "[bind <a href=
         argument <code><b>-fully</b></code> (which is the default) indicates
         that the command will be performed recursively, i.e., all of the
         descendants of the nodes specified by <code><i>indexList</i></code>
-        will be displayed.&nbsp; The <code><b>-partly</b></code> option (which
-        is used by the default bindings) restricts the operation to just one
-        hierarchy level, indicating that only the children of the specified
-        nodes will be displayed, without changing the expanded/collapsed state
-        of the child nodes.</dd>
+        will be displayed.&nbsp; The <code><b>-partly</b></code> option
+        restricts the operation to just one hierarchy level, indicating that
+        only the children of the specified nodes will be displayed, without
+        changing the expanded/collapsed state of the child nodes.</dd>
 
         <dd class="tm">Before displaying the children of a row, the command
         specified as the value of the <code><b><a href=
@@ -9774,12 +10004,12 @@ bind [.tbl <span class="red">editwintag</span>] &lt;Return&gt; "[bind <a href=
         the tablelist's body, outside the cell just being edited, or moving
         into another editable cell by using keyboard navigation.&nbsp; If the
         editing was started with the left mouse button, the edit window is a Tk
-        or tile checkbutton, and the value of the <code><b><a href=
-        "#instanttoggle">-instanttoggle</a></b></code> option is true, then
-        this subcommand will be invoked automatically, without any user
-        interaction.&nbsp; Similarly, if the edit window is one of the four
-        combobox widgets supported by Tablelist or a menubutton widget, and the
-        value of the <code><b><a href=
+        or tile checkbutton or a toggleswitch widget, and the value of the
+        <code><b><a href= "#instanttoggle">-instanttoggle</a></b></code> option
+        is true, then this subcommand will be invoked automatically, without
+        any user interaction.&nbsp; Similarly, if the edit window is one of the
+        four combobox widgets supported by Tablelist or a (ttk::)menubutton
+        widget, and the value of the <code><b><a href=
         "#autofinishediting">-autofinishediting</a></b></code> option is true,
         then selecting a combobox or menu entry will automatically invoke this
         subcommand and thus terminate the editing session.&nbsp; Finally, if
@@ -10518,7 +10748,7 @@ upvar #0 [.tbl <span class="red">itemlistvar</span>] itemList
         <dd>This subcommand is only available in the presence of the
         <code><b>dict</b></code> command, which is the case when using Tcl
         version 8.5 or later, or one of the alternative, <a href=
-        "https://wiki.tcl.tk/10609">Tcl-only <code><b>dict</b></code>
+        "https://wiki.tcl-lang.org/10609">Tcl-only <code><b>dict</b></code>
         implementations</a>.</dd>
 
         <dt class="tm" id="labelpath"><code><i>pathName</i> <b>labelpath</b>
@@ -10611,7 +10841,7 @@ upvar #0 [.tbl <span class="red">itemlistvar</span>] itemList
             after that it collapses all rows of the tablelist by invoking&nbsp;
             <code><b><a href="#collapseall">collapseall</a>
             -fully</b></code>.</li>
-          <ul>
+          </ul>
         </dd>
 
         <dd class="tm"><b>REMARK 1:</b>&nbsp; Invoking this subcommand with the
@@ -10848,6 +11078,12 @@ upvar #0 [.tbl <span class="red">itemlistvar</span>] itemList
         string.&nbsp; <code><i>option</i></code> may have any of the values
         described in the <a href="#row_options">ROW CONFIGURATION OPTIONS IN
         THE TABLELIST BODY</a> section.</dd>
+
+        <dt class="tm" id="rowcount"><code><i>pathName</i>
+        <b>rowcount</b></code></dt>
+
+        <dd>Returns the total number of items in the tablelist body.&nbsp;
+        Synonym for <code><b><a href="#size">size</a></b></code>.</dd>
 
         <dt class="tm" id="scan"><code><i>pathName</i> <b>scan</b>
         <i>option</i> <i>args</i></code></dt>
@@ -11195,7 +11431,8 @@ upvar #0 [.tbl <span class="red">itemlistvar</span>] itemList
 
         <dt class="tm" id="size"><code><i>pathName</i> <b>size</b></code></dt>
 
-        <dd>Returns the total number of items in the tablelist body.</dd>
+        <dd>Returns the total number of items in the tablelist body.&nbsp;</dd>
+        Synonym for <code><b><a href="#rowcount">rowcount</a></b></code>.</dd>
 
         <dt class="tm" id="sort"><code><i>pathName</i> <b>sort</b>
         ?<b>-increasing</b>|<b>-decreasing</b>?</code></dt>
@@ -11389,7 +11626,7 @@ upvar #0 [.tbl <span class="red">itemlistvar</span>] itemList
         <b>targetmarkpath</b></code></dt>
 
         <dd>Returns the path name of the drop target indicator (displayed as a
-        horizontal gap or vertical bar) belonging to the tablelist's body.</dd>
+        horizontal gap or vertical bar).</dd>
 
         <dt class="tm" id="targetmarkpos"><code><i>pathName</i>
         <b>targetmarkpos</b> <i>y</i>
@@ -12037,11 +12274,19 @@ upvar #0 [.tbl <span class="red">itemlistvar</span>] itemList
         described in the <a href="#hdr_row_options">ROW CONFIGURATION OPTIONS
         IN THE TABLELIST HEADER</a> section.</dd>
 
+        <dt class="tm" id="hdr_rowcount"><code><i>pathName</i> <b>header
+        rowcount</b></code></dt>
+
+        <dd>Similar to the <code><b><a href="#rowcount">rowcount</a></b></code>
+        command for the tablelist body.&nbsp; Synonym for <code><b><a href=
+        "#hdr_size">header size</a></b></code>.</dd>
+
         <dt class="tm" id="hdr_size"><code><i>pathName</i> <b>header
         size</b></code></dt>
 
         <dd>Similar to the <code><b><a href="#size">size</a></b></code> command
-        for the tablelist body.</dd>
+        for the tablelist body.&nbsp; Synonym for <code><b><a href=
+        "#hdr_rowcount">header rowcount</a></b></code>.</dd>
 
         <dt class="tm" id="hdr_unsetcellattrib"><code><i>pathName</i> <b>header
         unsetcellattrib</b> <i>headerCellIndex</i> <i>name</i></code></dt>
@@ -12308,7 +12553,7 @@ proc printClickedCell {w x y} {
           <p><b>REMARK 1:</b>&nbsp; The default widget bindings in current Tk
           versions on Windows already support <code>Control-a</code> as an
           alternative to <code>Control-slash</code>.&nbsp; In Tablelist this is
-          now valid on X11, too.</p>
+          valid on X11, too.</p>
 
           <p><b>REMARK 2:</b>&nbsp; On Mac OS X/11+, the default widget
           bindings in current Tk versions use the key sequence
@@ -12319,7 +12564,7 @@ proc printClickedCell {w x y} {
         <li class="tm">
           <code>Shift-Control-A</code> behaves the same as
           <code>Control-backslash</code>, i.e., it deselects everything in the
-          widget, except in <code><b>browse</b></code> mode where it has no
+          widget, except in <code><b>browse</b></code> mode, where it has no
           effect.
 
           <p><b>REMARK 1:</b>&nbsp; This shortcut comes in handy on Windows
@@ -12490,19 +12735,38 @@ proc printClickedCell {w x y} {
     <dd>
       <ol>
         <li class="tm">Pressing mouse button 1 over an expand/collapse control
-        toggles the expanded/collapsed state of the corresponding row.</li>
+        toggles the expanded/collapsed state of the corresponding row by
+        invoking the non-recursive version of the <code><b><a href=
+        "#expand">expand</a></b></code> or <code><b><a href=
+        "#collapse">collapse</a></b></code> subcommand (the one with the
+        <code><b>-partly</b></code> argument).&nbsp; Pressing mouse button 1
+        over an expand/collapse control with the <code>Alt</code> key down
+        toggles the expanded/collapsed state of the corresponding row with the
+        aid of the <code><b>expand</b></code> or <code><b>collapse</b></code>
+        subcommand's recursive version (the one with the
+        <code><b>-fully</b></code> argument).&nbsp; On Mac OS X/11+ Aqua the
+        <code>Command</code> key is used instead of <code>Alt</code>.</li>
 
         <li class="tm">If the current active row contains an expand/collapse
         control in collapsed state then the <code>Right</code>,
-        <code>plus</code>, and <code>KP_Add</code> keys expand the
-        corresponding row by invoking the non-recursive version of the
-        <code><b><a href="#expand">expand</a></b></code> subcommand.</li>
+        <code>plus</code>, and <code>KP_Add</code> keys expand that row by
+        invoking the non-recursive version of the <code><b>expand</b></code>
+        subcommand, while <code>Alt-Right</code>, <code>Alt-plus</code>, and
+        <code>Alt-KP_Add</code> (<code>Command-Right</code>,
+        <code>Command-plus</code>, and <code>Command-KP_Add</code> on Mac OS
+        X/11+ Aqua) expand the row with the aid of the
+        <code><b>expand</b></code> subcommand's recursive version.</li>
 
         <li class="tm">If the current active row contains an expand/collapse
         control in expanded state then the <code>Left</code>,
-        <code>minus</code>, and <code>KP_Subtract</code> keys collapse the
-        corresponding row by invoking the non-recursive version of the
-        <code><b><a href="#collapse">collapse</a></b></code> subcommand.</li>
+        <code>minus</code>, and <code>KP_Subtract</code> keys collapse that row
+        by invoking the non-recursive version of the
+        <code><b>collapse</b></code> subcommand, while <code>Alt-Left</code>,
+        <code>Alt-minus</code>, and <code>Alt-KP_Subtract</code>
+        (<code>Command-Left</code>, <code>Command-minus</code>, and
+        <code>Command-KP_Subtract</code> on Mac OS X/11+ Aqua) collapse the row
+        with the aid of the <code><b>collapse</b></code> subcommand's recursive
+        version.</li>
       </ol>
     </dd>
 
@@ -12748,7 +13012,8 @@ bind [.tbl <a href="#labeltag">labeltag</a>] &lt;Button-3&gt; {
     <dd class="tm">The affected components of the temporary embedded widget
     depend on the edit window: the widget itself in case of a Tk or tile
     checkbutton or menubutton; the edit window's entry children in case of a
-    mentry widget; the only entry or entry-like component of the edit window in
+    mentry widget; the ttk::scale widget contained in a toggleswitch used as
+    edit window; the only entry or entry-like component of the edit window in
     all other cases (see also the <code><b><a href=
     "#entrypath">entrypath</a></b></code> subcommand).&nbsp; The list of
     binding tags of these edit window components contains two addditional tags,
@@ -12858,8 +13123,9 @@ bind [.tbl <a href="#labeltag">labeltag</a>] &lt;Button-3&gt; {
         a text or ctext widget then <code>Meta-b</code> and <code>Meta-f</code>
         behave the same as <code>Alt-Left</code> and <code>Alt-Right</code>,
         respectively.&nbsp; If the edit window is a Tk or tile checkbutton or
-        menubutton widget then <code>Left</code>/<code>Right</code> has the
-        same effect as <code>Alt-Left</code>/<code>Alt-Right</code>.</li>
+        menubutton, or a toggleswitch widget, then
+        <code>Left</code>/<code>Right</code> has the same effect as
+        <code>Alt-Left</code>/<code>Alt-Right</code>.</li>
 
         <li class="tm">When editing a cell that is not the first/last editable
         cell within its column, <code>Alt-Up</code>/<code>Alt-Down</code>
@@ -12876,10 +13142,10 @@ bind [.tbl <a href="#labeltag">labeltag</a>] &lt;Button-3&gt; {
         <code>Control-p</code> and <code>Control-n</code> behave the same as
         <code>Alt-Up</code> and <code>Alt-Down</code>, respectively.&nbsp; If
         the edit window is a Tk or tile entry, Tk or tile checkbutton, Tk or
-        tile menubutton, BWidget Entry, Iwidgets entryfield/spinner/spinint, or
-        a mentry widget of type <code>"FixedPoint"</code>, then
-        <code>Up</code>/<code>Down</code> has the same effect as
-        <code>Alt-Up</code>/<code>Alt-Down</code>.</li>
+        tile menubutton, toggleswitch, BWidget Entry, Iwidgets
+        entryfield/spinner/spinint, or a mentry widget of type
+        <code>"FixedPoint"</code>, then <code>Up</code>/<code>Down</code> has
+        the same effect as <code>Alt-Up</code>/<code>Alt-Down</code>.</li>
 
         <li class="tm">When editing a cell that is not the first/last editable
         cell within its column, <code>Alt-Prior</code>/<code>Alt-Next</code>

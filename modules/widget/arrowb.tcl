@@ -1,7 +1,7 @@
 ##+##########################################################################
 #
 # Reference
-#    http://wiki.tcl.tk/8554
+#    http://wiki.tcl-lang.org/8554
 #
 # arrows.tcl -- bitmaps for eight directional arrows
 # by Keith Vetter, Mar 12, 2003

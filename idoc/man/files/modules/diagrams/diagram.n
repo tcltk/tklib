@@ -870,7 +870,7 @@ If not specified the system falls back to the value taken from the
 language variable \fBanchor\fR, which itself defaults to
 \fBcenter\fR\&.
 The legal values are all those accepted by
-\fITk_GetAnchor\fR [http://www\&.tcl\&.tk/man/tcl8\&.5/TkLib/GetAnchor\&.htm]\&.
+\fITk_GetAnchor\fR [http://www\&.tcl-lang\&.org/man/tcl8\&.5/TkLib/GetAnchor\&.htm]\&.
 The commands without arguments are all shorthands with the anchor
 implied\&. Note that they do not combine, only the last is used\&. For
 comined directions the main attribute command, \fBanchor\fR has to be
@@ -957,7 +957,7 @@ If not specified the system falls back to the value taken from the
 language variable \fBlinestyle\fR, which itself defaults to
 \fBsolid\fR lines\&.
 The legal values are all those accepted by
-\fITk_GetDash\fR [http://www\&.tcl\&.tk/man/tcl8\&.5/TkLib/GetDash\&.htm],
+\fITk_GetDash\fR [http://www\&.tcl-lang\&.org/man/tcl8\&.5/TkLib/GetDash\&.htm],
 and additionally all which are listed below:
 .RS
 .TP
@@ -1070,7 +1070,7 @@ If not specified the system falls back to the value taken from the
 language variable \fBanchor\fR, which itself defaults to
 \fBcenter\fR\&.
 The legal values are all those accepted by
-\fITk_GetAnchor\fR [http://www\&.tcl\&.tk/man/tcl8\&.5/TkLib/GetAnchor\&.htm]\&.
+\fITk_GetAnchor\fR [http://www\&.tcl-lang\&.org/man/tcl8\&.5/TkLib/GetAnchor\&.htm]\&.
 The commands without arguments are all shorthands with the anchor
 implied\&. Note that they do not combine, only the last is used\&. For
 comined directions the main attribute command, \fBanchor\fR has to be
@@ -1148,7 +1148,7 @@ If not specified the system falls back to the value taken from the
 language variable \fBlinestyle\fR, which itself defaults to
 \fBsolid\fR lines\&.
 The legal values are all those accepted by
-\fITk_GetDash\fR [http://www\&.tcl\&.tk/man/tcl8\&.5/TkLib/GetDash\&.htm],
+\fITk_GetDash\fR [http://www\&.tcl-lang\&.org/man/tcl8\&.5/TkLib/GetDash\&.htm],
 and additionally all which are listed below:
 .RS
 .TP
@@ -1236,7 +1236,7 @@ If not specified the system falls back to the value taken from the
 language variable \fBanchor\fR, which itself defaults to
 \fBcenter\fR\&.
 The legal values are all those accepted by
-\fITk_GetAnchor\fR [http://www\&.tcl\&.tk/man/tcl8\&.5/TkLib/GetAnchor\&.htm]\&.
+\fITk_GetAnchor\fR [http://www\&.tcl-lang\&.org/man/tcl8\&.5/TkLib/GetAnchor\&.htm]\&.
 The commands without arguments are all shorthands with the anchor
 implied\&. Note that they do not combine, only the last is used\&. For
 comined directions the main attribute command, \fBanchor\fR has to be
@@ -1316,7 +1316,7 @@ If not specified the system falls back to the value taken from the
 language variable \fBlinestyle\fR, which itself defaults to
 \fBsolid\fR lines\&.
 The legal values are all those accepted by
-\fITk_GetDash\fR [http://www\&.tcl\&.tk/man/tcl8\&.5/TkLib/GetDash\&.htm],
+\fITk_GetDash\fR [http://www\&.tcl-lang\&.org/man/tcl8\&.5/TkLib/GetDash\&.htm],
 and additionally all which are listed below:
 .RS
 .TP
@@ -1396,7 +1396,7 @@ If not specified the system falls back to the value taken from the
 language variable \fBanchor\fR, which itself defaults to
 \fBcenter\fR\&.
 The legal values are all those accepted by
-\fITk_GetAnchor\fR [http://www\&.tcl\&.tk/man/tcl8\&.5/TkLib/GetAnchor\&.htm]\&.
+\fITk_GetAnchor\fR [http://www\&.tcl-lang\&.org/man/tcl8\&.5/TkLib/GetAnchor\&.htm]\&.
 The commands without arguments are all shorthands with the anchor
 implied\&. Note that they do not combine, only the last is used\&. For
 comined directions the main attribute command, \fBanchor\fR has to be
@@ -1516,7 +1516,7 @@ If not specified the system falls back to the value taken from the
 language variable \fBlinestyle\fR, which itself defaults to
 \fBsolid\fR lines\&.
 The legal values are all those accepted by
-\fITk_GetDash\fR [http://www\&.tcl\&.tk/man/tcl8\&.5/TkLib/GetDash\&.htm],
+\fITk_GetDash\fR [http://www\&.tcl-lang\&.org/man/tcl8\&.5/TkLib/GetDash\&.htm],
 and additionally all which are listed below:
 .RS
 .TP
@@ -1623,7 +1623,7 @@ If not specified the system falls back to the value taken from the
 language variable \fBanchor\fR, which itself defaults to
 \fBcenter\fR\&.
 The legal values are all those accepted by
-\fITk_GetAnchor\fR [http://www\&.tcl\&.tk/man/tcl8\&.5/TkLib/GetAnchor\&.htm]\&.
+\fITk_GetAnchor\fR [http://www\&.tcl-lang\&.org/man/tcl8\&.5/TkLib/GetAnchor\&.htm]\&.
 The commands without arguments are all shorthands with the anchor
 implied\&. Note that they do not combine, only the last is used\&. For
 comined directions the main attribute command, \fBanchor\fR has to be
@@ -1700,7 +1700,7 @@ If not specified the system falls back to the value taken from the
 language variable \fBlinestyle\fR, which itself defaults to
 \fBsolid\fR lines\&.
 The legal values are all those accepted by
-\fITk_GetDash\fR [http://www\&.tcl\&.tk/man/tcl8\&.5/TkLib/GetDash\&.htm],
+\fITk_GetDash\fR [http://www\&.tcl-lang\&.org/man/tcl8\&.5/TkLib/GetDash\&.htm],
 and additionally all which are listed below:
 .RS
 .TP
@@ -1786,7 +1786,7 @@ If not specified the system falls back to the value taken from the
 language variable \fBanchor\fR, which itself defaults to
 \fBcenter\fR\&.
 The legal values are all those accepted by
-\fITk_GetAnchor\fR [http://www\&.tcl\&.tk/man/tcl8\&.5/TkLib/GetAnchor\&.htm]\&.
+\fITk_GetAnchor\fR [http://www\&.tcl-lang\&.org/man/tcl8\&.5/TkLib/GetAnchor\&.htm]\&.
 The commands without arguments are all shorthands with the anchor
 implied\&. Note that they do not combine, only the last is used\&. For
 comined directions the main attribute command, \fBanchor\fR has to be
@@ -1855,7 +1855,7 @@ If not specified the system falls back to the value taken from the
 language variable \fBlinestyle\fR, which itself defaults to
 \fBsolid\fR lines\&.
 The legal values are all those accepted by
-\fITk_GetDash\fR [http://www\&.tcl\&.tk/man/tcl8\&.5/TkLib/GetDash\&.htm],
+\fITk_GetDash\fR [http://www\&.tcl-lang\&.org/man/tcl8\&.5/TkLib/GetDash\&.htm],
 and additionally all which are listed below:
 .RS
 .TP
@@ -1943,7 +1943,7 @@ If not specified the system falls back to the value taken from the
 language variable \fBanchor\fR, which itself defaults to
 \fBcenter\fR\&.
 The legal values are all those accepted by
-\fITk_GetAnchor\fR [http://www\&.tcl\&.tk/man/tcl8\&.5/TkLib/GetAnchor\&.htm]\&.
+\fITk_GetAnchor\fR [http://www\&.tcl-lang\&.org/man/tcl8\&.5/TkLib/GetAnchor\&.htm]\&.
 The commands without arguments are all shorthands with the anchor
 implied\&. Note that they do not combine, only the last is used\&. For
 comined directions the main attribute command, \fBanchor\fR has to be
@@ -2062,7 +2062,7 @@ If not specified the system falls back to the value taken from the
 language variable \fBlinestyle\fR, which itself defaults to
 \fBsolid\fR lines\&.
 The legal values are all those accepted by
-\fITk_GetDash\fR [http://www\&.tcl\&.tk/man/tcl8\&.5/TkLib/GetDash\&.htm],
+\fITk_GetDash\fR [http://www\&.tcl-lang\&.org/man/tcl8\&.5/TkLib/GetDash\&.htm],
 and additionally all which are listed below:
 .RS
 .TP
@@ -2199,7 +2199,7 @@ If not specified the system falls back to the value taken from the
 language variable \fBanchor\fR, which itself defaults to
 \fBcenter\fR\&.
 The legal values are all those accepted by
-\fITk_GetAnchor\fR [http://www\&.tcl\&.tk/man/tcl8\&.5/TkLib/GetAnchor\&.htm]\&.
+\fITk_GetAnchor\fR [http://www\&.tcl-lang\&.org/man/tcl8\&.5/TkLib/GetAnchor\&.htm]\&.
 The commands without arguments are all shorthands with the anchor
 implied\&. Note that they do not combine, only the last is used\&. For
 comined directions the main attribute command, \fBanchor\fR has to be
@@ -2305,7 +2305,7 @@ If not specified the system falls back to the value taken from the
 language variable \fBanchor\fR, which itself defaults to
 \fBcenter\fR\&.
 The legal values are all those accepted by
-\fITk_GetAnchor\fR [http://www\&.tcl\&.tk/man/tcl8\&.5/TkLib/GetAnchor\&.htm]\&.
+\fITk_GetAnchor\fR [http://www\&.tcl-lang\&.org/man/tcl8\&.5/TkLib/GetAnchor\&.htm]\&.
 The commands without arguments are all shorthands with the anchor
 implied\&. Note that they do not combine, only the last is used\&. For
 comined directions the main attribute command, \fBanchor\fR has to be
@@ -2569,7 +2569,7 @@ If not specified the system falls back to the value taken from the
 language variable \fBlinestyle\fR, which itself defaults to
 \fBsolid\fR lines\&.
 The legal values are all those accepted by
-\fITk_GetDash\fR [http://www\&.tcl\&.tk/man/tcl8\&.5/TkLib/GetDash\&.htm],
+\fITk_GetDash\fR [http://www\&.tcl-lang\&.org/man/tcl8\&.5/TkLib/GetDash\&.htm],
 and additionally all which are listed below:
 .RS
 .TP
@@ -3073,7 +3073,7 @@ uses, and values are:
 The default value for the attribute \fBanchor\fR\&.
 Initialized to \fBcenter\fR\&.
 The legal values are all those accepted by
-\fITk_GetAnchor\fR [http://www\&.tcl\&.tk/man/tcl8\&.5/TkLib/GetAnchor\&.htm]\&.
+\fITk_GetAnchor\fR [http://www\&.tcl-lang\&.org/man/tcl8\&.5/TkLib/GetAnchor\&.htm]\&.
 .TP
 \fBarcradius\fR
 The default value for the attribute \fBradius\fR of \fBarc\fR
@@ -3146,7 +3146,7 @@ The default value for the attribute \fBstyle\fR of all elements
 having to draw some line\&.
 Initialized to \fBsolid\fR\&.
 The legal values are all those accepted by
-\fITk_GetDash\fR [http://www\&.tcl\&.tk/man/tcl8\&.5/TkLib/GetDash\&.htm],
+\fITk_GetDash\fR [http://www\&.tcl-lang\&.org/man/tcl8\&.5/TkLib/GetDash\&.htm],
 and additionally all which are listed below:
 .RS
 .TP
@@ -3240,7 +3240,7 @@ General support class handling various vector operations\&.
 This document, and the package it describes, will undoubtedly contain
 bugs and other problems\&.
 Please report such in the category \fIdiagram\fR of the
-\fITklib Trackers\fR [http://core\&.tcl\&.tk/tklib/reportlist]\&.
+\fITklib Trackers\fR [http://core\&.tcl-lang\&.org/tklib/reportlist]\&.
 Please also report any ideas for enhancements you may have for either
 package and/or documentation\&.
 .SH KEYWORDS

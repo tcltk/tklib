@@ -1,9 +1,9 @@
 '\"
 '\" Generated from file 'canvas_gradient\&.man' by tcllib/doctools with format 'nroff'
 '\" Copyright (c) 2013 Jarek Lewandowski, MaxJarek
-'\" Copyright (c) Origin http://wiki\&.tcl\&.tk/6100
-'\" Copyright (c) Origin http://wiki\&.tcl\&.tk/37242
-'\" Copyright (c) Origin http://wiki\&.tcl\&.tk/9079
+'\" Copyright (c) Origin http://wiki\&.tcl-lang\&.org/6100
+'\" Copyright (c) Origin http://wiki\&.tcl-lang\&.org/37242
+'\" Copyright (c) Origin http://wiki\&.tcl-lang\&.org/9079
 '\"
 .TH "canvas::gradient" n 0\&.2 tklib "Variations on a canvas"
 .\" The -*- nroff -*- definitions below are for supplemental macros used
@@ -366,7 +366,7 @@ for linear interpolation between the start and end colors (default)\&.
 This document, and the package it describes, will undoubtedly contain
 bugs and other problems\&.
 Please report such in the category \fIcanvas\fR of the
-\fITklib Trackers\fR [http://core\&.tcl\&.tk/tklib/reportlist]\&.
+\fITklib Trackers\fR [http://core\&.tcl-lang\&.org/tklib/reportlist]\&.
 Please also report any ideas for enhancements you may have for either
 package and/or documentation\&.
 .SH KEYWORDS
@@ -374,8 +374,8 @@ background, canvas, color gradient, gradients, image, widget background
 .SH COPYRIGHT
 .nf
 Copyright (c) 2013 Jarek Lewandowski, MaxJarek
-Copyright (c) Origin http://wiki\&.tcl\&.tk/6100
-Copyright (c) Origin http://wiki\&.tcl\&.tk/37242
-Copyright (c) Origin http://wiki\&.tcl\&.tk/9079
+Copyright (c) Origin http://wiki\&.tcl-lang\&.org/6100
+Copyright (c) Origin http://wiki\&.tcl-lang\&.org/37242
+Copyright (c) Origin http://wiki\&.tcl-lang\&.org/9079
 
 .fi

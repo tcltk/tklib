@@ -1,6 +1,6 @@
 #notifywindow.tcl: provides routines for posting a Growl-style "notification window" in the upper right corner of the screen, fading in and out in an unobtrusive fashion
 
-#(c) 2015-2019 Kevin Walzer/WordTech Communications LLC. License: standard Tcl license, http://www.tcl.tk/software/tcltk/license.html
+#(c) 2015-2019 Kevin Walzer/WordTech Communications LLC. License: standard Tcl license, http://www.tcl-lang.org/software/tcltk/license.html
 
 package provide notifywindow 1.0.2
 

@@ -7,7 +7,7 @@
 # @@ Meta Begin
 # Package map::point::map-display 0.1
 # Meta author      {Andreas Kupries}
-# Meta location    https://core.tcl.tk/tklib
+# Meta location    https://core.tcl-lang.org/tklib
 # Meta platform    tcl
 # Meta summary	   Map Action Engine: Layer to display point definitions
 # Meta description Attachment to map display widgets providing custom behaviour.

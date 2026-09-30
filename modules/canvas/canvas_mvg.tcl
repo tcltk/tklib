@@ -2,8 +2,8 @@
 # ### ### ### ######### ######### #########
 
 # Copyright (c) 2010 Wolf-Dieter Busch
-# Origin http://wiki.tcl.tk/26859 [23-08-2010]
-# OLL licensed (http://wiki.tcl.tk/10892).
+# Origin http://wiki.tcl-lang.org/26859 [23-08-2010]
+# OLL licensed (http://wiki.tcl-lang.org/10892).
 
 # ### ### ### ######### ######### #########
 ## Requisites

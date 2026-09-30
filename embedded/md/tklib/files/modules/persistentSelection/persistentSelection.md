@@ -237,7 +237,7 @@ __[Tk](\.\./\.\./\.\./\.\./index\.md\#tk)__\. Any incompatibility with any of th
 versions, for any __[Tk](\.\./\.\./\.\./\.\./index\.md\#tk)__ windowing system,
 should be reported as a bug\. Please report such in the category
 *persistentSelection* of the [Tklib
-Trackers](http://core\.tcl\.tk/tklib/reportlist)\.
+Trackers](http://core\.tcl\-lang\.org/tklib/reportlist)\.
 
 # <a name='section6'></a>EXAMPLES
 

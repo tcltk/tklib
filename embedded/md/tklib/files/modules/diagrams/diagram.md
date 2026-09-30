@@ -499,7 +499,7 @@ Commands](#subsection7)\.
         element\. If not specified the system falls back to the value taken from
         the language variable __anchor__, which itself defaults to
         __center__\. The legal values are all those accepted by
-        [Tk\_GetAnchor](http://www\.tcl\.tk/man/tcl8\.5/TkLib/GetAnchor\.htm)\.
+        [Tk\_GetAnchor](http://www\.tcl\-lang\.org/man/tcl8\.5/TkLib/GetAnchor\.htm)\.
         The commands without arguments are all shorthands with the anchor
         implied\. Note that they do not combine, only the last is used\. For
         comined directions the main attribute command, __anchor__ has to be
@@ -595,8 +595,8 @@ Commands](#subsection7)\.
         back to the value taken from the language variable __linestyle__,
         which itself defaults to __solid__ lines\. The legal values are all
         those accepted by
-        [Tk\_GetDash](http://www\.tcl\.tk/man/tcl8\.5/TkLib/GetDash\.htm), and
-        additionally all which are listed below:
+        [Tk\_GetDash](http://www\.tcl\-lang\.org/man/tcl8\.5/TkLib/GetDash\.htm),
+        and additionally all which are listed below:
 
           + __solid__, empty string
 
@@ -709,7 +709,7 @@ Commands](#subsection7)\.
         element\. If not specified the system falls back to the value taken from
         the language variable __anchor__, which itself defaults to
         __center__\. The legal values are all those accepted by
-        [Tk\_GetAnchor](http://www\.tcl\.tk/man/tcl8\.5/TkLib/GetAnchor\.htm)\.
+        [Tk\_GetAnchor](http://www\.tcl\-lang\.org/man/tcl8\.5/TkLib/GetAnchor\.htm)\.
         The commands without arguments are all shorthands with the anchor
         implied\. Note that they do not combine, only the last is used\. For
         comined directions the main attribute command, __anchor__ has to be
@@ -793,8 +793,8 @@ Commands](#subsection7)\.
         back to the value taken from the language variable __linestyle__,
         which itself defaults to __solid__ lines\. The legal values are all
         those accepted by
-        [Tk\_GetDash](http://www\.tcl\.tk/man/tcl8\.5/TkLib/GetDash\.htm), and
-        additionally all which are listed below:
+        [Tk\_GetDash](http://www\.tcl\-lang\.org/man/tcl8\.5/TkLib/GetDash\.htm),
+        and additionally all which are listed below:
 
           + __solid__, empty string
 
@@ -881,7 +881,7 @@ Commands](#subsection7)\.
         element\. If not specified the system falls back to the value taken from
         the language variable __anchor__, which itself defaults to
         __center__\. The legal values are all those accepted by
-        [Tk\_GetAnchor](http://www\.tcl\.tk/man/tcl8\.5/TkLib/GetAnchor\.htm)\.
+        [Tk\_GetAnchor](http://www\.tcl\-lang\.org/man/tcl8\.5/TkLib/GetAnchor\.htm)\.
         The commands without arguments are all shorthands with the anchor
         implied\. Note that they do not combine, only the last is used\. For
         comined directions the main attribute command, __anchor__ has to be
@@ -968,8 +968,8 @@ Commands](#subsection7)\.
         back to the value taken from the language variable __linestyle__,
         which itself defaults to __solid__ lines\. The legal values are all
         those accepted by
-        [Tk\_GetDash](http://www\.tcl\.tk/man/tcl8\.5/TkLib/GetDash\.htm), and
-        additionally all which are listed below:
+        [Tk\_GetDash](http://www\.tcl\-lang\.org/man/tcl8\.5/TkLib/GetDash\.htm),
+        and additionally all which are listed below:
 
           + __solid__, empty string
 
@@ -1048,7 +1048,7 @@ Commands](#subsection7)\.
         element\. If not specified the system falls back to the value taken from
         the language variable __anchor__, which itself defaults to
         __center__\. The legal values are all those accepted by
-        [Tk\_GetAnchor](http://www\.tcl\.tk/man/tcl8\.5/TkLib/GetAnchor\.htm)\.
+        [Tk\_GetAnchor](http://www\.tcl\-lang\.org/man/tcl8\.5/TkLib/GetAnchor\.htm)\.
         The commands without arguments are all shorthands with the anchor
         implied\. Note that they do not combine, only the last is used\. For
         comined directions the main attribute command, __anchor__ has to be
@@ -1176,8 +1176,8 @@ Commands](#subsection7)\.
         back to the value taken from the language variable __linestyle__,
         which itself defaults to __solid__ lines\. The legal values are all
         those accepted by
-        [Tk\_GetDash](http://www\.tcl\.tk/man/tcl8\.5/TkLib/GetDash\.htm), and
-        additionally all which are listed below:
+        [Tk\_GetDash](http://www\.tcl\-lang\.org/man/tcl8\.5/TkLib/GetDash\.htm),
+        and additionally all which are listed below:
 
           + __solid__, empty string
 
@@ -1285,7 +1285,7 @@ Commands](#subsection7)\.
         element\. If not specified the system falls back to the value taken from
         the language variable __anchor__, which itself defaults to
         __center__\. The legal values are all those accepted by
-        [Tk\_GetAnchor](http://www\.tcl\.tk/man/tcl8\.5/TkLib/GetAnchor\.htm)\.
+        [Tk\_GetAnchor](http://www\.tcl\-lang\.org/man/tcl8\.5/TkLib/GetAnchor\.htm)\.
         The commands without arguments are all shorthands with the anchor
         implied\. Note that they do not combine, only the last is used\. For
         comined directions the main attribute command, __anchor__ has to be
@@ -1367,8 +1367,8 @@ Commands](#subsection7)\.
         back to the value taken from the language variable __linestyle__,
         which itself defaults to __solid__ lines\. The legal values are all
         those accepted by
-        [Tk\_GetDash](http://www\.tcl\.tk/man/tcl8\.5/TkLib/GetDash\.htm), and
-        additionally all which are listed below:
+        [Tk\_GetDash](http://www\.tcl\-lang\.org/man/tcl8\.5/TkLib/GetDash\.htm),
+        and additionally all which are listed below:
 
           + __solid__, empty string
 
@@ -1453,7 +1453,7 @@ Commands](#subsection7)\.
         element\. If not specified the system falls back to the value taken from
         the language variable __anchor__, which itself defaults to
         __center__\. The legal values are all those accepted by
-        [Tk\_GetAnchor](http://www\.tcl\.tk/man/tcl8\.5/TkLib/GetAnchor\.htm)\.
+        [Tk\_GetAnchor](http://www\.tcl\-lang\.org/man/tcl8\.5/TkLib/GetAnchor\.htm)\.
         The commands without arguments are all shorthands with the anchor
         implied\. Note that they do not combine, only the last is used\. For
         comined directions the main attribute command, __anchor__ has to be
@@ -1527,8 +1527,8 @@ Commands](#subsection7)\.
         back to the value taken from the language variable __linestyle__,
         which itself defaults to __solid__ lines\. The legal values are all
         those accepted by
-        [Tk\_GetDash](http://www\.tcl\.tk/man/tcl8\.5/TkLib/GetDash\.htm), and
-        additionally all which are listed below:
+        [Tk\_GetDash](http://www\.tcl\-lang\.org/man/tcl8\.5/TkLib/GetDash\.htm),
+        and additionally all which are listed below:
 
           + __solid__, empty string
 
@@ -1615,7 +1615,7 @@ Commands](#subsection7)\.
         element\. If not specified the system falls back to the value taken from
         the language variable __anchor__, which itself defaults to
         __center__\. The legal values are all those accepted by
-        [Tk\_GetAnchor](http://www\.tcl\.tk/man/tcl8\.5/TkLib/GetAnchor\.htm)\.
+        [Tk\_GetAnchor](http://www\.tcl\-lang\.org/man/tcl8\.5/TkLib/GetAnchor\.htm)\.
         The commands without arguments are all shorthands with the anchor
         implied\. Note that they do not combine, only the last is used\. For
         comined directions the main attribute command, __anchor__ has to be
@@ -1745,8 +1745,8 @@ Commands](#subsection7)\.
         back to the value taken from the language variable __linestyle__,
         which itself defaults to __solid__ lines\. The legal values are all
         those accepted by
-        [Tk\_GetDash](http://www\.tcl\.tk/man/tcl8\.5/TkLib/GetDash\.htm), and
-        additionally all which are listed below:
+        [Tk\_GetDash](http://www\.tcl\-lang\.org/man/tcl8\.5/TkLib/GetDash\.htm),
+        and additionally all which are listed below:
 
           + __solid__, empty string
 
@@ -1885,7 +1885,7 @@ Commands](#subsection7)\.
         element\. If not specified the system falls back to the value taken from
         the language variable __anchor__, which itself defaults to
         __center__\. The legal values are all those accepted by
-        [Tk\_GetAnchor](http://www\.tcl\.tk/man/tcl8\.5/TkLib/GetAnchor\.htm)\.
+        [Tk\_GetAnchor](http://www\.tcl\-lang\.org/man/tcl8\.5/TkLib/GetAnchor\.htm)\.
         The commands without arguments are all shorthands with the anchor
         implied\. Note that they do not combine, only the last is used\. For
         comined directions the main attribute command, __anchor__ has to be
@@ -1994,10 +1994,10 @@ implicit __[text](\.\./\.\./\.\./\.\./index\.md\#text)__ attribute\.
     not specified the system falls back to the value taken from the language
     variable __anchor__, which itself defaults to __center__\. The legal
     values are all those accepted by
-    [Tk\_GetAnchor](http://www\.tcl\.tk/man/tcl8\.5/TkLib/GetAnchor\.htm)\. The
-    commands without arguments are all shorthands with the anchor implied\. Note
-    that they do not combine, only the last is used\. For comined directions the
-    main attribute command, __anchor__ has to be used\.
+    [Tk\_GetAnchor](http://www\.tcl\-lang\.org/man/tcl8\.5/TkLib/GetAnchor\.htm)\.
+    The commands without arguments are all shorthands with the anchor implied\.
+    Note that they do not combine, only the last is used\. For comined directions
+    the main attribute command, __anchor__ has to be used\.
 
       * __ljust__
 
@@ -2265,7 +2265,7 @@ implicit __[text](\.\./\.\./\.\./\.\./index\.md\#text)__ attribute\.
     back to the value taken from the language variable __linestyle__, which
     itself defaults to __solid__ lines\. The legal values are all those
     accepted by
-    [Tk\_GetDash](http://www\.tcl\.tk/man/tcl8\.5/TkLib/GetDash\.htm), and
+    [Tk\_GetDash](http://www\.tcl\-lang\.org/man/tcl8\.5/TkLib/GetDash\.htm), and
     additionally all which are listed below:
 
       * __solid__, empty string
@@ -2734,7 +2734,7 @@ are:
 
     The default value for the attribute __anchor__\. Initialized to
     __center__\. The legal values are all those accepted by
-    [Tk\_GetAnchor](http://www\.tcl\.tk/man/tcl8\.5/TkLib/GetAnchor\.htm)\.
+    [Tk\_GetAnchor](http://www\.tcl\-lang\.org/man/tcl8\.5/TkLib/GetAnchor\.htm)\.
 
   - __arcradius__
 
@@ -2821,7 +2821,7 @@ are:
     The default value for the attribute __style__ of all elements having to
     draw some line\. Initialized to __solid__\. The legal values are all those
     accepted by
-    [Tk\_GetDash](http://www\.tcl\.tk/man/tcl8\.5/TkLib/GetDash\.htm), and
+    [Tk\_GetDash](http://www\.tcl\-lang\.org/man/tcl8\.5/TkLib/GetDash\.htm), and
     additionally all which are listed below:
 
       * __solid__, empty string
@@ -2932,8 +2932,8 @@ system, i\.e\.:
 
 This document, and the package it describes, will undoubtedly contain bugs and
 other problems\. Please report such in the category *diagram* of the [Tklib
-Trackers](http://core\.tcl\.tk/tklib/reportlist)\. Please also report any ideas
-for enhancements you may have for either package and/or documentation\.
+Trackers](http://core\.tcl\-lang\.org/tklib/reportlist)\. Please also report any
+ideas for enhancements you may have for either package and/or documentation\.
 
 # <a name='keywords'></a>KEYWORDS
 

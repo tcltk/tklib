@@ -5,7 +5,7 @@
 # @@ Meta Begin
 # Package map::box::store::memory 0.1
 # Meta author      {Andreas Kupries}
-# Meta location    https://core.tcl.tk/tklib
+# Meta location    https://core.tcl-lang.org/tklib
 # Meta platform    tcl
 # Meta summary	   In-memory store for geo/box definitions
 # Meta description In-memory store for geo/box definitions, with

@@ -7,7 +7,7 @@
 # @@ Meta Begin
 # Package map::area::table-table-display 0.1
 # Meta author      {Andreas Kupries}
-# Meta location    https://core.tcl.tk/tklib
+# Meta location    https://core.tcl-lang.org/tklib
 # Meta platform    tcl
 # Meta summary	   Widget to display a table of area definitions
 # Meta description Widget to display the information of many area definitions

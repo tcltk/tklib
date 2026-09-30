@@ -4,7 +4,7 @@ package provide plotanim 0.2
 
 #
 # This package is based on Arjen Markus' wiki page
-# http://wiki.tcl.tk/21580 (Creating Mathematical Animations)
+# http://wiki.tcl-lang.org/21580 (Creating Mathematical Animations)
 # and integrated into Plotchart by Torsten Berg
 #
 

@@ -8,7 +8,7 @@
 [keywords {print screen}]
 [keywords serialization]
 [keywords {vector graphics}]
-[copyright {2010 Wolf-Dieter Busch (http://wiki.tcl.tk/15505)}]
+[copyright {2010 Wolf-Dieter Busch (http://wiki.tcl-lang.org/15505)}]
 [copyright {2010 Documentation, Andreas Kupries}]
 [moddesc   {Variations on a canvas}]
 [titledesc {Canvas to ImageMagick MVG vector format}]

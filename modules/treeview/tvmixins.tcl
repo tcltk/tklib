@@ -1383,7 +1383,7 @@ if {[info exists argv0] && $argv0 eq [info script] && [regexp {tvmixins} $argv0]
 #' ## <a name='see'>SEE ALSO</a>
 #'
 #' - [dgw package homepage](https://chiselapp.com/user/dgroth/repository/tclcode/index) - various useful widgets
-#' - [ttk::treeview widget manual](https://www.tcl.tk/man/tcl8.6/TkCmd/ttk_treeview.htm) standard manual page for the ttk::treeview widget
+#' - [ttk::treeview widget manual](https://www.tcl-lang.org/man/tcl8.6/TkCmd/ttk_treeview.htm) standard manual page for the ttk::treeview widget
 #'
 #'  
 #' ## <a name='changes'>CHANGES</a>

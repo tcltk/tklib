@@ -139,8 +139,9 @@ pressing a key the command is invoked and the textvariable is updated\. updated\
 
 This document, and the package it describes, will undoubtedly contain bugs and
 other problems\. Please report such in the category *widget::calendar* of the
-[Tklib Trackers](http://core\.tcl\.tk/tklib/reportlist)\. Please also report
-any ideas for enhancements you may have for either package and/or documentation\.
+[Tklib Trackers](http://core\.tcl\-lang\.org/tklib/reportlist)\. Please also
+report any ideas for enhancements you may have for either package and/or
+documentation\.
 
 # <a name='keywords'></a>KEYWORDS
 

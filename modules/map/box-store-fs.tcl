@@ -9,7 +9,7 @@
 # @@ Meta Begin
 # Package map::box::store::fs 0.1
 # Meta author      {Andreas Kupries}
-# Meta location    https://core.tcl.tk/tklib
+# Meta location    https://core.tcl-lang.org/tklib
 # Meta platform    tcl
 # Meta summary	   Filesystem-based store of geobox definitions
 # Meta description Store loading geobox definitions from a

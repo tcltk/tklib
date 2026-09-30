@@ -72,8 +72,8 @@ The following commands are available:
 
 This document, and the package it describes, will undoubtedly contain bugs and
 other problems\. Please report such in the category *cursor* of the [Tklib
-Trackers](http://core\.tcl\.tk/tklib/reportlist)\. Please also report any ideas
-for enhancements you may have for either package and/or documentation\.
+Trackers](http://core\.tcl\-lang\.org/tklib/reportlist)\. Please also report any
+ideas for enhancements you may have for either package and/or documentation\.
 
 # <a name='seealso'></a>SEE ALSO
 

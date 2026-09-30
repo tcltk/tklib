@@ -5,5 +5,5 @@ Description: This package is intended to be a collection of
     large collection of Tk programmers.
 Rights: BSD
 Version: @PACKAGE_VERSION@
-URL: http://core.tcl.tk/tklib/
+URL: http://core.tcl-lang.org/tklib/
 Architecture: tcl

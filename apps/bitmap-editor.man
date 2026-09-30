@@ -16,7 +16,7 @@ The application described by this document, [syscmd bitmap-editor], is
 a simple editor for XBM based bitmap images.
 
 Written by Keith Vetter the original code can be found at
-[uri http://wiki.tcl.tk/6298].
+[uri http://wiki.tcl-lang.org/6298].
 
 [subsection {COMMAND LINE}]
 

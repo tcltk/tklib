@@ -37,7 +37,7 @@ documentation explaining more options.
 
 * [Wikipage on Tclers Wiki](https://wiki.tcl-lang.org/page/shtmlview)
 * [tkhtml(1)](https://github.com/wjoye/tkhtml1)
-* [tkhtml3](http://tkhtml.tcl.tk/index.html)
+* [tkhtml3](http://tkhtml.tcl-lang.org/index.html)
 
 ### TODO's
 

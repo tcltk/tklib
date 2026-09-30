@@ -1,7 +1,7 @@
 
 The legal values are all those accepted by
 [uri \
-     http://www.tcl.tk/man/tcl8.5/TkLib/GetDash.htm \
+     http://www.tcl-lang.org/man/tcl8.5/TkLib/GetDash.htm \
      Tk_GetDash],
 
 and additionally all which are listed below:

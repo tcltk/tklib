@@ -5,7 +5,7 @@
 # @@ Meta Begin
 # Package map::area::store::memory 0.1
 # Meta author      {Andreas Kupries}
-# Meta location    https://core.tcl.tk/tklib
+# Meta location    https://core.tcl-lang.org/tklib
 # Meta platform    tcl
 # Meta summary	   In-memory store for geo/area definitions
 # Meta description In-memory store for geo/area definitions, with

@@ -7,7 +7,7 @@
 # @@ Meta Begin
 # Package map::point::store::fs 0.1
 # Meta author      {Andreas Kupries}
-# Meta location    https://core.tcl.tk/tklib
+# Meta location    https://core.tcl-lang.org/tklib
 # Meta platform    tcl
 # Meta summary	   Filesystem-based store of geo/point definitions
 # Meta description Store loading geo/point definitions from a

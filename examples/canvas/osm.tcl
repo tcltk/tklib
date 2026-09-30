@@ -565,7 +565,7 @@ proc ForgetPoint {pid} {
     #puts Missed
     return
 }
-# See http://wiki.tcl.tk/8447
+# See http://wiki.tcl-lang.org/8447
 proc GreatCircleDistance {lat1 lon1 lat2 lon2} {
     set y1 $lat1
     set x1 $lon1

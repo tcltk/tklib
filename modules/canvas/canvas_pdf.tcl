@@ -2,7 +2,7 @@
 # ### ### ### ######### ######### #########
 
 # Copyright (c) 2014 andreas Kupries, Arjen Markus
-# OLL licensed (http://wiki.tcl.tk/10892).
+# OLL licensed (http://wiki.tcl-lang.org/10892).
 
 # ### ### ### ######### ######### #########
 ## Requisites
