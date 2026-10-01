@@ -422,10 +422,11 @@ snit::type ::canvas::edit::points {
 	set e [expr {$x + $r}]
 	set s [expr {$y + $r}]
 	lappend items [$c create $options(-kind) $w $n $e $s \
-			   -width      1           \
-			   -outline    black       \
-			   -activefill $options(-hilit-color) \
-			   -fill       $options(-color)]
+			   -width         1           \
+			   -activeoutline $options(-hilit-color) \
+			   -outline       $options(-color)       \
+			   -activefill    $options(-hilit-color) \
+			   -fill          $options(-color)]
 	return $items
     }
 
