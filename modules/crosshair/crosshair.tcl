@@ -16,6 +16,33 @@
 #	(Actual code inspired by Frank's, but modified and extended (multiple bboxes)).
 
 # ### ### ### ######### ######### #########
+## State information
+
+# opts - de/serialized into/from config(<window>)
+#
+# - args   :: crosshair (canvas line) configuration
+# - bbox   :: list of the bboxes the crosshairs are allowed to track
+# - hidden :: bool - crosshairs are hidden when leaving their canvas
+#
+# - hhairl :: item id of left  crosshair line
+# - hhairr :: item id of right crosshair line
+# - vhaird :: item id of down  crosshair line
+# - vhairu :: item id of up    crosshair line
+#
+# - x      :: current mouse position, canvas coordinates
+# - y      :: current mouse position, canvas coordinates
+#
+# - x0     :: left  edge of the active bbox, limits the left  crosshair line
+# - x1     :: right edge of the active bbox, limits the right crosshair line
+# - y0     :: upper edge of the active bbox, limits the up    crosshair line
+# - y1     :: lower edge of the active bbox, limits the down  crosshair line
+#
+# NOTE: the bbox list contains only the item ids of the hidden canvas
+#       rectangles used to hold the box geometries
+#
+#       the active bbox can describe the whole canvas if there are no bboxes
+
+# ### ### ### ######### ######### #########
 ## Requisites
 
 package require Tcl 8.4- 
@@ -208,7 +235,7 @@ proc ::crosshair::bbox_remove { token } {
     }
     array set opts $config($w)
 
-    # Replace chosen box with nothing.
+    # Replace chosen box with nothing -- cannot shrink in the middle, ids contain list index
     incr index -1
     set newboxes [lreplace $opts(bbox) $index $index {}]
 
