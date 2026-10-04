@@ -21,6 +21,13 @@
 # - Callback used to report on line editing activity.
 #   Default: NONE.
 #
+#	CMD clear		- Drop the entire poly-line
+#	CMD append x y		- Extend poly-line at end with point (X,Y)
+#	CMD prepend x y		- Extend poly-line at start with point (X,Y)
+#	CMD remove idx		- Remove vertex at index IDX
+#	CMD insert idx x y	- Insert new vertex (X,Y) before index IDX
+#	CMD move idx x y	- Move vertex at index IDX to new location (X,Y)
+#
 # - Callback used to report enter/leave editing activity on the points
 #   Default: Do nothing.
 
@@ -215,7 +222,7 @@ snit::type ::canvas::edit::polyline {
 	array unset mycoords *
 
 	$self Regenerate
-	Note
+	Note clear
 	return
     }
 
@@ -360,21 +367,22 @@ snit::type ::canvas::edit::polyline {
 	    }
 
 	    # Regenerate is handled by caller (enables deferal until complete line is loaded)
+	    Note append $x $y
 	    return
 	}
 
-	$self ExtendLine $id $x $y
+	set op [$self ExtendLine $id $x $y]
 	$self Regenerate
-	Note
+	Note {*}$op $x $y
 	return
     }
 
     method {Point remove} {pe id} {
 	if {$myrskip} return
 
-	$self ShrinkLine $id
+	set pos [$self ShrinkLine $id]
 	$self Regenerate
-	Note
+	Note remove $pos
 	return
     }
 
@@ -386,6 +394,7 @@ snit::type ::canvas::edit::polyline {
 	set pos [lsearch -exact $mypoints $id]
 	if {$pos < 0} return
 
+	set mydpos $pos
 	set fix {}
 
 	set prev $pos ; incr prev -1
@@ -424,7 +433,7 @@ snit::type ::canvas::edit::polyline {
 	}
 
 	$self Regenerate
-	Note
+	Note move $mydpos {*}$mydloc
 	return 1
     }
 
@@ -519,6 +528,7 @@ snit::type ::canvas::edit::polyline {
 	switch -exact -- $len {
 	    0 - 1 {
 		lappend mypoints $p
+		return append
 	    }
 	    default {
 		# 2 or more points ... (NEW) ... Rules at top of file
@@ -532,7 +542,7 @@ snit::type ::canvas::edit::polyline {
 
 		    set pos      [lsearch -exact $mypoints $pb]
 		    set mypoints [linsert $mypoints $pos $p]
-		    return
+		    return [list insert $pos]
 		}
 
 		# Rule 4.
@@ -546,7 +556,7 @@ snit::type ::canvas::edit::polyline {
 
 		if {$options(-closed) && ($len == 2)} {
 		    lappend mypoints $p
-		    return
+		    return append
 		}
 
 		# Rule 2. Attach to the nearer of the two endpoints.
@@ -556,14 +566,14 @@ snit::type ::canvas::edit::polyline {
 
 		if {[Distance $p $first] < [Distance $p $last]} {
 		    set mypoints [linsert $mypoints 0 $p]
-		    return
+		    return prepend
 		}
 
 		lappend mypoints $p
-		return
+		return append
 	    }
 	}
-	return
+	return error
     }
 
     method ShrinkLine {p} {
@@ -572,7 +582,7 @@ snit::type ::canvas::edit::polyline {
 	set mypoints [lreplace $mypoints $pos $pos]
 
 	unset mycoords($p)
-	return
+	return $pos
     }
 
     proc Distance {pa pb} {
@@ -609,9 +619,14 @@ snit::type ::canvas::edit::polyline {
 
     #### Generate notification about changes to the point cloud.
 
-    proc Note {} {
+    proc Note {args} {
 	upvar 1 options options
 	if {![llength $options(-data-cmd)]} return
+	upvar 1 self self
+	# new style reporting - exact change
+	return [{*}$options(-data-cmd) $self {*}$args]
+	#########################################################
+	## old style reporting - simply the entire new poly-line	
 	upvar 1 mypoints mypoints mycoords mycoords self self
 	set coords {}
 	foreach p $mypoints {
@@ -643,6 +658,7 @@ snit::type ::canvas::edit::polyline {
     variable mycoords -array {} ; # Reference coordinates of the points. Keyed by point id.
     variable mydloc          {} ; # Drag state. Location of the moving vertex.
     variable mydstart        {} ; # Drag state. Original location of the moving vertex.
+    variable mydpos	     {} ; # Drag state. Index of the moving vertex in mypoints.
     variable mydoappend       0 ; # Flag. When set new points are always
                                   # appended at the end of the line.
     variable myrskip          0 ; # Flag. Skip complex point removal when set.
@@ -653,7 +669,7 @@ snit::type ::canvas::edit::polyline {
 # # ## ### ##### ######## ############# #####################
 ## Ready
 
-package provide canvas::edit::polyline 0.2
+package provide canvas::edit::polyline 0.3
 return
 
 # # ## ### ##### ######## ############# #####################
