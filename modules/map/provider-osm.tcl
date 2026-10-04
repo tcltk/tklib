@@ -63,7 +63,7 @@ snit::type ::map::provider::osm {
     # - OpenStreetMap. Mapnik Tile Set
     # - Alternative: http://tah.openstreetmap.org/Tiles/tile
 
-    typevariable ourtileset  http://tile.openstreetmap.org
+    typevariable ourtileset  https://tile.openstreetmap.org
     typevariable ourlevels   20
 
     # . . .. ... ..... ........ ............. .....................
