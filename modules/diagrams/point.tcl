@@ -179,6 +179,44 @@ proc ::diagram::point::polar2cartesian {polar} {
 
 namespace eval ::diagram::point::geo {
     namespace import ::math::geometry::*
+
+    # The y axis of the canvas points down, with angles counted
+    # counter-clockwise on the screen (90 == north == up). Since
+    # math::geometry 1.4 [direction] and [octant] use the mathematical
+    # orientation of the y axis. Use local versions which do not
+    # depend on the version of math::geometry.
+
+    namespace export direction octant
+
+    proc direction {angle} {
+	set a [expr {$angle * acos(-1) / 180.0}]
+	return [list [expr {cos($a)}] [expr {-sin($a)}]]
+    }
+
+    proc octant {p} {
+	lassign $p x y
+	set a [expr {atan2(-$y, $x) * 180.0 / acos(-1)}]
+	if {$a < 0} {set a [expr {360 + $a}]}
+
+	if {$a <= 157.5} {
+	    if {$a <= 67.5} {
+		if {$a <= 22.5} { return east }
+		return northeast
+	    }
+	    if {$a <= 112.5} { return north }
+	    return northwest
+	} else {
+	    if {$a <= 247.5} {
+		if {$a <= 202.5} { return west }
+		return southwest
+	    }
+	    if {$a <= 337.5} {
+		if {$a <= 292.5} { return south }
+		return southeast
+	    }
+	    return east
+	}
+    }
 }
 
 package provide diagram::point 1

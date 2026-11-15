@@ -1271,6 +1271,10 @@ snit::type ::diagram::basic {
 
 namespace eval ::diagram::basic::geo {
     namespace import ::math::geometry::*
+    # Screen-oriented [direction] and [octant], see point.tcl.
+    namespace import -force \
+	::diagram::point::geo::direction \
+	::diagram::point::geo::octant
 }
 
 # # ## ### ##### ######## ############# ######################

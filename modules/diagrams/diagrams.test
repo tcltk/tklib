@@ -1,0 +1,81 @@
+# -*- tcl -*-
+# Test cases of the diagram package
+
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+package require tcltest 2.2
+namespace import ::tcltest::*
+
+set auto_path [linsert $auto_path 0 \
+	[file dirname [file dirname [file normalize [info script]]]]]
+package require diagram
+
+# -------------------------------------------------------------------------
+
+proc roundPoints {points} {
+    set res {}
+    foreach p $points {
+	lassign [diagram::point unbox $p] x y
+	lappend res [expr {round($x)}] [expr {round($y)}]
+    }
+    return $res
+}
+
+test diagram-direction-1.1 {line north goes up on the screen} -setup {
+    canvas .c
+    diagram d .c
+} -body {
+    lassign [roundPoints [d draw {
+	set l [line north]
+	list [$l start] [$l end]
+    }]] x0 y0 x1 y1
+    list [expr {$x1 - $x0}] [expr {$y1 < $y0}]
+} -cleanup {
+    d destroy
+    destroy .c
+} -result {0 1}
+
+test diagram-direction-1.2 {relative points by distance and angle} -setup {
+    canvas .c
+    diagram d .c
+} -body {
+    roundPoints [d draw {
+	set l [line from [0 0] then [by 10 90] then [by 10 0]]
+	list [$l start] [$l end]
+    }]
+} -cleanup {
+    d destroy
+    destroy .c
+} -result {0 0 10 -10}
+
+test diagram-direction-1.3 {circle diagonal corners} -setup {
+    canvas .c
+    diagram d .c
+} -body {
+    roundPoints [d draw {
+	set c [circle at [0 0] radius 10]
+	list [$c northeast] [$c northwest] [$c southwest] [$c southeast]
+    }]
+} -cleanup {
+    d destroy
+    destroy .c
+} -result {7 -7 -7 -7 -7 7 7 7}
+
+test diagram-direction-1.4 {octant of a vector on the canvas} -body {
+    lmap v {{10 0} {10 -10} {0 -10} {-10 -10} {-10 0} {-10 10} {0 10} {10 10}} {
+	diagram::point::geo::octant $v
+    }
+} -result {east northeast north northwest west southwest south southeast}
+
+# -------------------------------------------------------------------------
+::tcltest::cleanupTests
