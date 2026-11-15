@@ -20,34 +20,60 @@ source [file join [file dirname [info script]] ctext.tcl]
 
 # -------------------------------------------------------------------------
 
-test ctext-modified-1.1 {<<Modified>> is sent only when the flag changes} -setup {
+test ctext-modified-1.1 {<<Modified>> is sent once when the text changes} -setup {
     ctext .t
     set ::events 0
     bind .t <<Modified>> {incr ::events}
 } -body {
     .t insert end a
+    update
     .t insert end b
+    update
     .t delete 1.0
+    update
     list $::events [.t edit modified]
 } -cleanup {
     destroy .t
     unset ::events
 } -result {1 1}
 
-test ctext-modified-1.2 {edit modified sends <<Modified>> on change} -setup {
+test ctext-modified-1.2 {edit modified sends <<Modified>> when the flag changes} -setup {
     ctext .t
     .t insert end a
+    update
     set ::events 0
     bind .t <<Modified>> {incr ::events}
 } -body {
     .t edit modified 0
+    update
     .t edit modified 0
+    update
     .t edit modified 1
+    update
     list $::events [.t edit modified]
 } -cleanup {
     destroy .t
     unset ::events
 } -result {2 1}
+
+test ctext-modified-1.3 {<<Modified>> is sent again after edit modified 0} -setup {
+    ctext .t
+    .t insert end a
+    update
+    .t edit modified 0
+    update
+    set ::events 0
+    bind .t <<Modified>> {incr ::events}
+} -body {
+    .t fastinsert end b
+    update
+    .t insert end c
+    update
+    list $::events [.t edit modified]
+} -cleanup {
+    destroy .t
+    unset ::events
+} -result {1 1}
 
 # -------------------------------------------------------------------------
 ::tcltest::cleanupTests

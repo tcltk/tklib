@@ -41,7 +41,6 @@ proc ctext {win args} {
     set ar(-linemap_select_bg) yellow
     set ar(-highlight) 1
     set ar(win) $win
-    set ar(modified) 0
     set ar(commentsAfterId) ""
     set ar(highlightAfterId) ""
     set ar(blinkAfterId) ""
@@ -104,7 +103,6 @@ proc ctext {win args} {
     # If the user wants C comments they should call
     # ctext::enableComments
     ctext::disableComments $win
-    ctext::modified $win 0
     ctext::buildArgParseTable $win
 
     return $win
@@ -337,7 +335,6 @@ proc ctext::instanceCmd {self cmd args} {
 		clipboard clear -displayof $self.t
 		clipboard append -displayof $self.t $data
 		$self delete [$self.t index sel.first] [$self.t index sel.last]
-		ctext::modified $self 1
 	    }
 	}
 
@@ -414,18 +411,15 @@ proc ctext::instanceCmd {self cmd args} {
 	    } else {
 		return -code error "invalid argument(s) sent to $self delete: $args"
 	    }
-	    ctext::modified $self 1
 	}
 
 	fastdelete {
 	    eval \$self._t delete $args
-	    ctext::modified $self 1
 	    ctext::linemapUpdate $self
 	}
 
 	fastinsert {
 	    eval \$self._t insert $args
-	    ctext::modified $self 1
 	    ctext::linemapUpdate $self
 	}
 
@@ -487,33 +481,11 @@ proc ctext::instanceCmd {self cmd args} {
 		    ctext::matchQuote $self
 		}
 	    }
-	    ctext::modified $self 1
 	    ctext::linemapUpdate $self
 	}
 
 	paste {
 	    tk_textPaste $self
-	    ctext::modified $self 1
-	}
-
-	edit {
-	    set subCmd [lindex $args 0]
-	    set argsLength [llength $args]
-
-	    ctext::getAr $self config ar
-
-	    if {"modified" == $subCmd} {
-		if {$argsLength == 1} {
-		    return $ar(modified)
-		} elseif {$argsLength == 2} {
-		    ctext::modified $self [lindex $args 1]
-		} else {
-		    return -code error "invalid arg(s) to $self edit modified: $args"
-		}
-	    } else {
-		#Tk 8.4 has other edit subcommands that I don't want to emulate.
-		return [uplevel 1 [linsert $args 0 $self._t $cmd]]
-	    }
 	}
 
 	default {
@@ -1104,13 +1076,9 @@ if {![catch {
     proc ctext::linemapUpdateOffset {args} {}
 }
 
+# The text widget keeps the modified flag and sends <<Modified>> when
+# it changes. Since $win is in its bindtags, bindings on $win see it.
 proc ctext::modified {win value} {
-    ctext::getAr $win config ar
-    set value [expr {$value ? 1 : 0}]
-    # Like the text widget, only send <<Modified>> when the flag changes.
-    if {$ar(modified) != $value} {
-	set ar(modified) $value
-	event generate $win <<Modified>>
-    }
-    return $value
+    $win._t edit modified $value
+    return [$win._t edit modified]
 }
