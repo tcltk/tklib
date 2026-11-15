@@ -105,8 +105,8 @@ snit::widget controlwidget::tachometer {
         #
         # Draw the tachometer
         #
-        set width  [$win.c cget -width]
-        set height [$win.c cget -height]
+        set width  [winfo pixels $win.c [$win.c cget -width]]
+        set height [winfo pixels $win.c [$win.c cget -height]]
         set num    [llength $options(-labels)]
         set delta  [expr {(360.0-40.0)/($num-1)}]
 
@@ -262,10 +262,10 @@ snit::widget controlwidget::tachometer {
         set max  $options(-max)
         set id   $options(-indexid)
 
-        set v [expr { ($value <= ($max*1.02))? $value : ($max*1.02) }]
+        set v [expr { ($value <= ($max*1.02))? double($value) : ($max*1.02) }]
         set angle [expr {((($v-$min)/($max-$min))*320.0+20.0)*$pi}]
 
-        set width  [$c cget -width]
+        set width  [winfo pixels $c [$c cget -width]]
         set half [expr {$width/2.0}]
         set length [expr {$half*0.8}]
 
