@@ -372,11 +372,7 @@ proc ctext::instanceCmd {self cmd args} {
 		set removeStart $lineStart
 		set removeEnd $lineEnd
 
-		foreach tag [$self._t tag names] {
-		    if {[string equal $tag "_cComment"] != 1} {
-			$self._t tag remove $tag $removeStart $removeEnd
-		    }
-		}
+		ctext::removeHighlightTags $self $removeStart $removeEnd
 
 		set checkStr "$prevChar[set char]"
 
@@ -397,11 +393,7 @@ proc ctext::instanceCmd {self cmd args} {
 		set lineEnd [$self._t index "$deleteEndPos + 1 chars lineend"]
 		eval \$self._t delete $args
 
-		foreach tag [$self._t tag names] {
-		    if {[string equal $tag "_cComment"] != 1} {
-			$self._t tag remove $tag $lineStart $lineEnd
-		    }
-		}
+		ctext::removeHighlightTags $self $lineStart $lineEnd
 
 		if {[regexp $commentRE $data]} {
 		    ctext::commentsAfterIdle $self
@@ -458,11 +450,7 @@ proc ctext::instanceCmd {self cmd args} {
 		set nextSpace $lineEnd
 	    }
 
-	    foreach tag [$self._t tag names] {
-		if {[string equal $tag "_cComment"] != 1} {
-		    $self._t tag remove $tag $prevSpace $nextSpace
-		}
-	    }
+	    ctext::removeHighlightTags $self $prevSpace $nextSpace
 
 	    set REData $prevChar
 	    append REData $data
@@ -780,6 +768,15 @@ proc ctext::deleteHighlightClass {win classToDelete} {
 	}
     }
     unset classesAr($classToDelete)
+    $win tag delete $classToDelete
+}
+
+#Remove the tags of the highlight classes (but not the user's own tags)
+#from the given range.
+proc ctext::removeHighlightTags {win start end} {
+    foreach tag [ctext::getHighlightClasses $win] {
+	$win._t tag remove $tag $start $end
+    }
 }
 
 proc ctext::getHighlightClasses win {
@@ -849,6 +846,10 @@ proc ctext::findPreviousSpace {win index} {
 }
 
 proc ctext::clearHighlightClasses {win} {
+    foreach class [ctext::getHighlightClasses $win] {
+	$win tag delete $class
+    }
+
     #no need to catch, because array unset doesn't complain
     #puts [array exists ::ctext::highlight$win]
 
