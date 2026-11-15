@@ -1,0 +1,64 @@
+# -*- tcl -*-
+# Test cases of the ico package
+
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+package require tcltest 2.2
+namespace import ::tcltest::*
+
+source [file join [file dirname [info script]] ico.tcl]
+
+# -------------------------------------------------------------------------
+
+# A square color list of the given size, with some transparent pixels.
+proc makeColors {size} {
+    set data {}
+    for {set y 0} {$y < $size} {incr y} {
+	set row {}
+	for {set x 0} {$x < $size} {incr x} {
+	    lappend row [expr {($x + $y) % 3 ? "#FF0000" : ""}]
+	}
+	lappend data $row
+    }
+    return $data
+}
+
+foreach size {8 16 20 24 40 48} {
+    test ico-andmask-1.$size "transparency round trip of a ${size}x$size icon" -setup {
+	set file [makeFile {} ico-andmask.ico]
+	file delete $file
+    } -body {
+	set data [makeColors $size]
+	::ico::writeIcon $file 0 24 $data
+	expr {[::ico::getIcon $file 0 -format colors -res $size] eq $data}
+    } -cleanup {
+	removeFile ico-andmask.ico
+    } -result 1
+
+    test ico-andmask-2.$size "transparency of ${size}x$size icon data" -setup {
+	set file [makeFile {} ico-andmask.ico]
+	file delete $file
+    } -body {
+	set data [makeColors $size]
+	::ico::writeIcon $file 0 24 $data
+	set fh [open $file rb]
+	set ico [read $fh]
+	close $fh
+	expr {[::ico::getIconAsColorList {*}[::ico::getRawIconDataICODATA $ico 0]] eq $data}
+    } -cleanup {
+	removeFile ico-andmask.ico
+    } -result 1
+}
+
+# -------------------------------------------------------------------------
+::tcltest::cleanupTests

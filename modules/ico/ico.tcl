@@ -650,7 +650,7 @@ proc ::ico::getAndMaskFromColors {colors} {
 	set l {}
 	foreach x $line {append l [expr {$x eq ""}]}
 	set w [string length $l]
-	append l [string repeat 0 [expr {($w == 24) ? 8 : ($w % 32)}]]
+	append l [string repeat 0 [expr {(32 - $w % 32) % 32}]]
 	foreach {a b c d e f g h} [split $l {}] {
 	    append and [binary format B8 $a$b$c$d$e$f$g$h]
 	}
@@ -795,7 +795,7 @@ proc ::ico::readDIB {fh} {
     }
 
     set xor  [read $fh [expr {int(($w * $h) * ($bpp / 8.0))}]]
-    set and1 [read $fh [expr {(($w * $h) + ($h * (($w == 24) ? 8 : ($w % 32)))) / 8}]]
+    set and1 [read $fh [expr {(($w + 31) / 32) * 4 * $h}]]
 
     set and {}
     set row [expr {((($w - 1) / 32) * 32 + 32) / 8}]
@@ -837,7 +837,7 @@ proc ::ico::readDIBFromData {data loc} {
     set end  [expr {$cnt + int(($w * $h) * ($bpp / 8.0)) - 1}]
     set xor  [string range $data $cnt $end]
     set and1 [string range $data [expr {$end + 1}] \
-		  [expr {$end + ((($w * $h) + ($h * (($w == 24) ? 8 : ($w % 32)))) / 8) - 1}]]
+		  [expr {$end + (($w + 31) / 32) * 4 * $h - 1}]]
 
     set and {}
     set row [expr {((($w - 1) / 32) * 32 + 32) / 8}]
