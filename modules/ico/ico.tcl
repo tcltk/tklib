@@ -914,7 +914,12 @@ proc ::ico::getIconMembersICO {file name} {
     for {set i 0} {$i < $num} {incr i} {
         set info ""
         lappend RES($file,group,$name,members) $i
-	lappend info [scan [read $fh 1] %c] [scan [read $fh 1] %c]
+	# A width or height of 0 means 256
+	foreach x {w h} {
+	    set $x [scan [read $fh 1] %c]
+	    if {[set $x] == 0} { set $x 256 }
+	}
+	lappend info $w $h
 	set bpp [scan [read $fh 1] %c]
         if {$bpp == 0} {
 	    set orig [tell $fh]
@@ -946,6 +951,12 @@ proc ::ico::getIconMembersICODATA {data} {
 	    return -code error "error decoding icon data"
 	}
 	incr cnt 3
+	set bpp [expr {$bpp & 0xFF}]
+	# A width or height of 0 means 256
+	foreach x {w h} {
+	    set $x [expr {[set $x] & 0xFF}]
+	    if {[set $x] == 0} { set $x 256 }
+	}
 	set info [list $i $w $h]
 	if {$bpp == 0} {
 	    set off [expr {$cnt + 9}]
