@@ -506,8 +506,7 @@ proc ctext::instanceCmd {self cmd args} {
 		if {$argsLength == 1} {
 		    return $ar(modified)
 		} elseif {$argsLength == 2} {
-		    set value [lindex $args 1]
-		    set ar(modified) $value
+		    ctext::modified $self [lindex $args 1]
 		} else {
 		    return -code error "invalid arg(s) to $self edit modified: $args"
 		}
@@ -1107,7 +1106,11 @@ if {![catch {
 
 proc ctext::modified {win value} {
     ctext::getAr $win config ar
-    set ar(modified) $value
-    event generate $win <<Modified>>
+    set value [expr {$value ? 1 : 0}]
+    # Like the text widget, only send <<Modified>> when the flag changes.
+    if {$ar(modified) != $value} {
+	set ar(modified) $value
+	event generate $win <<Modified>>
+    }
     return $value
 }
