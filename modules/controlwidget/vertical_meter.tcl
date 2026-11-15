@@ -1376,7 +1376,7 @@ snit::widget controlwidget::thermometer {
         if {$options(-variable) ne ""} {
             set ::$options(-variable) $newValue;      # This updates meter too.
         } else {
-            $self lineTo $newValue
+            $self needleTo $newValue
         }
     }
 
@@ -1393,7 +1393,7 @@ snit::widget controlwidget::thermometer {
 
     method variableChanged {name1 name2 op} {
 
-        $self lineTo [set ::$options(-variable)]
+        $self needleTo [set ::$options(-variable)]
     }
 
     # Set a new position for the needle:
