@@ -114,6 +114,7 @@ snit::widget controlwidget::rdial {
         #
         set d2r   [expr {atan(1.0)/45.0}]
         set ssize [expr {sin($sector*$d2r)}]
+        set sfact [expr {$ssize*2/$options(-width)}]
 
         #
         # Now initialise the widget
