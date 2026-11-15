@@ -96,8 +96,8 @@ snit::widget controlwidget::voltmeter {
             trace add variable ::$options(-variable) write [mymethod tracer $options(-variable)]
         }
 
-        set width   [$win.c cget -width]
-        set height  [$win.c cget -height]
+        set width   [winfo pixels $win.c [$win.c cget -width]]
+        set height  [winfo pixels $win.c [$win.c cget -height]]
         set xcentre [expr {$width*0.5}]
         set ycentre [expr {$width*1.4}]
         set t       1.15
@@ -234,7 +234,7 @@ snit::widget controlwidget::voltmeter {
 
         set angle [expr {((($v-$min)/(1.0*($max-$min)))*30.0+165.0)*$pi}]
 
-        set width   [$c cget -width]
+        set width   [winfo pixels $c [$c cget -width]]
         set xcentre [expr {$width/2.0}]
         set ycentre [expr {$width*1.4}]
         set l1      [expr {$ycentre*0.85}]

@@ -590,8 +590,8 @@ snit::widget controlwidget::meter {
         set valueRange [expr {1.0*($to - $from)}]
 
 
-        set options(-height) [$win.c cget -height]
-        set options(-width)  [$win.c cget -width]
+        set options(-height) [winfo pixels $win.c [$win.c cget -height]]
+        set options(-width)  [winfo pixels $win.c [$win.c cget -width]]
 
         # In order to support label we need to create a left margin
         # the margin will be 8chars worth of 8's  in the font we've used
@@ -1288,8 +1288,8 @@ snit::widget controlwidget::thermometer {
         set valueRange [expr {1.0*($to - $from)}]
 
 
-        set options(-height) [$win.c cget -height]
-        set options(-width)  [$win.c cget -width]
+        set options(-height) [winfo pixels $win.c [$win.c cget -height]]
+        set options(-width)  [winfo pixels $win.c [$win.c cget -width]]
 
         # In order to support labels we need to create both a left margin
         # and a right margin

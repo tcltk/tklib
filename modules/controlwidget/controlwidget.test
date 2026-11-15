@@ -1,0 +1,60 @@
+# -*- tcl -*-
+# Tests for the controlwidget packages
+
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2
+    namespace import ::tcltest::*
+}
+
+if {[catch {package require snit} msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring snit, $msg"
+    return
+}
+
+source [file join [file dirname [info script]] voltmeter.tcl]
+source [file join [file dirname [info script]] vertical_meter.tcl]
+
+# -------------------------------------------------------------------------
+
+test voltmeter-1.0 {create with the default size given in mm} -setup {
+    set ::tvalue 0
+} -body {
+    controlwidget::voltmeter .v -variable ::tvalue
+    set c1 [.v.c coords [.v cget -indexid]]
+    set ::tvalue 50
+    expr {$c1 ne [.v.c coords [.v cget -indexid]]}
+} -cleanup {
+    destroy .v
+    unset -nocomplain ::tvalue c1
+} -result 1
+
+test meter-1.0 {create with the default size given in inches} -body {
+    controlwidget::meter .m
+    list [string is integer -strict [.m cget -width]] \
+	[expr {[.m cget -width] == [winfo pixels . 1.5i]}]
+} -cleanup {
+    destroy .m
+} -result {1 1}
+
+test thermometer-1.0 {create with a size given in inches} -body {
+    controlwidget::thermometer .t -width 1i -height 2i
+    expr {[.t cget -height] == [winfo pixels . 2i]}
+} -cleanup {
+    destroy .t
+} -result 1
+
+# -------------------------------------------------------------------------
+::tcltest::cleanupTests
