@@ -748,6 +748,8 @@ proc ::ipentry::destroyWidget {w} {
 #       nothing
 #
 proc ::ipentry::traceFired {w name key op} {
+    # Do not use name and key, they are relative to the accessing frame
+    set name $::ipentry::textvars($w)
     upvar #0 $name var
     if {[info level] > 1} {
         set caller [lindex [info level -1] 0]
@@ -782,6 +784,8 @@ proc ::ipentry::traceFired {w name key op} {
 #       nothing
 #
 proc ::ipentry::traceFired6 {w name key op} {
+    # Do not use name and key, they are relative to the accessing frame
+    set name $::ipentry::textvars($w)
     upvar #0 $name var
     if {[info level] > 1} {
         set caller [lindex [info level -1] 0]

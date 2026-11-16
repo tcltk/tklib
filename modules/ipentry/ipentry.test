@@ -1,0 +1,46 @@
+# -*- tcl -*-
+# Test cases of the ipentry package
+
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+package require tcltest 2.2
+namespace import ::tcltest::*
+
+source [file join [file dirname [info script]] ipentry.tcl]
+
+# -------------------------------------------------------------------------
+
+test ipentry-textvariable-1.1 {array element as -textvariable} -setup {
+    set ::foo(bar) 1.1.1.1
+    ::ipentry::ipentry .ip -textvariable ::foo(bar)
+} -body {
+    set ::foo(bar) 1.1.1.2
+    list [.ip get] $::foo(bar)
+} -cleanup {
+    destroy .ip
+    unset ::foo
+} -result {{1 1 1 2} 1.1.1.2}
+
+test ipentry-textvariable-1.2 {array element as -textvariable of ipentry6} -setup {
+    set ::foo(bar) 1:2:3:4:5:6:7:8
+    ::ipentry::ipentry6 .ip6 -textvariable ::foo(bar)
+} -body {
+    set ::foo(bar) 1:2:3:4:5:6:7:9
+    list [.ip6 get] $::foo(bar)
+} -cleanup {
+    destroy .ip6
+    unset ::foo
+} -result {{1 2 3 4 5 6 7 9} 1:2:3:4:5:6:7:9}
+
+# -------------------------------------------------------------------------
+::tcltest::cleanupTests
