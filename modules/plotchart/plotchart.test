@@ -780,5 +780,34 @@ test Plotchart-5.6 {Filled radial chart} -constraints tk -body {
     set res
 } -result 1 ;# {}
 
+proc canvasTexts {c} {
+    set texts {}
+    foreach item [$c find all] {
+	if {[$c type $item] eq "text"} {
+	    lappend texts [$c itemcget $item -text]
+	}
+    }
+    return $texts
+}
+
+test Plotchart-6.6 {Labels of reversed axes} -constraints tk -setup {
+    canvas .c -width 600 -height 400 -bg white
+} -body {
+    set p [::Plotchart::createXYPlot .c {2.0 0.0 -0.2} {1.0 0.0 -0.2}]
+    lsort -real [canvasTexts .c]
+} -cleanup {
+    destroy .c
+} -result {0 0 0.2 0.2 0.4 0.4 0.6 0.6 0.8 0.8 1 1 1.2 1.4 1.6 1.8 2}
+
+test Plotchart-6.7 {Radial labels of polar plot} -constraints tk -setup {
+    canvas .c -width 600 -height 400 -bg white
+} -body {
+    set p [::Plotchart::createPolarplot .c {2.0 0.2}]
+    # Skip the angle labels (0.0, 30.0, ...)
+    lsort -real [lsearch -all -inline -not [canvasTexts .c] *.0]
+} -cleanup {
+    destroy .c
+} -result {0.2 0.4 0.6 0.8 1 1.2 1.4 1.6 1.8 2}
+
 # -------------------------------------------------------------------------
 ::tcltest::cleanupTests

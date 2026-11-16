@@ -168,7 +168,7 @@ proc ::Plotchart::DrawYaxis { w ymin ymax ydelt args} {
             lappend yts $yt
             set y  [expr {$y+abs($ydelt)}]
             set yt [expr {$yt+$ydelt}]
-            if { abs($y) < 0.5*abs($ydelt) } {
+            if { abs($yt) < 0.5*abs($ydelt) } {
                 set yt 0.0
             }
         }
@@ -310,7 +310,7 @@ proc ::Plotchart::DrawRightaxis { w ymin ymax ydelt args } {
             lappend yts $yt
             set y  [expr {$y+abs($ydelt)}]
             set yt [expr {$yt+$ydelt}]
-            if { abs($y) < 0.5*abs($ydelt) } {
+            if { abs($yt) < 0.5*abs($ydelt) } {
                 set yt 0.0
             }
         }
@@ -536,7 +536,7 @@ proc ::Plotchart::DrawXaxis { w xmin xmax xdelt args } {
             lappend xbackup  $xt
             set x  [expr {$x+abs($xdelt)}]
             set xt [expr {$xt+$xdelt}]
-            if { abs($x) < 0.5*abs($xdelt) } {
+            if { abs($xt) < 0.5*abs($xdelt) } {
                 set xt 0.0
             }
         }
@@ -751,7 +751,7 @@ proc ::Plotchart::DrawTernaryAxes { w xmin xmax xdelt } {
         lappend xts $xt
         set x  [expr {$x+abs($xdelt)}]
         set xt [expr {$xt+$xdelt}]
-        if { abs($x) < 0.5*abs($xdelt) } {
+        if { abs($xt) < 0.5*abs($xdelt) } {
             set xt 0.0
         }
     }
@@ -1125,7 +1125,7 @@ proc ::Plotchart::DrawPolarAxes { w rad_max rad_step } {
         $w lower $oval
 
         if { $config($w,axis,shownumbers) } {
-            $w create text $xright [expr {$ytxt+3}] -text $rad -anchor n -fill $textcolor -font $textfont -tags [list polar $w]
+            $w create text $xright [expr {$ytxt+3}] -text [format "%.12g" $rad] -anchor n -fill $textcolor -font $textfont -tags [list polar $w]
         }
 
         set rad [expr {$rad+$rad_step}]
