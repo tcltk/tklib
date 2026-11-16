@@ -119,7 +119,7 @@ proc ::autoscroll::widgetCommand { w command args } {
                     grid forget $w
                 }
                 pack {
-                    foreach x [pack slaves [winfo parent $w]] {
+                    foreach x [pack slaves [lindex [pack info $w] 1]] {
                         lappend grid($w) "[list pack $x] [pack info $x]"
                     }
                     pack forget $w
