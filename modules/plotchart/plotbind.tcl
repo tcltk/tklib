@@ -20,23 +20,50 @@
 proc ::Plotchart::BindPlot {w event cmd} {
     variable scaling
 
-    if {![info exists scaling($w,eventobj)]} {
-        set scaling($w,eventobj) ""
+    #
+    # Bind to the canvas widget itself rather than to an invisible
+    # canvas item, so that the event is also received when the cursor
+    # is over a data item, the background or any other item in the plot
+    #
+    set c [lindex [interp alias {} $w] 0]
+    if { $c == "" } {
+        set c $w
     }
 
-    if { $scaling($w,eventobj) == "" } {
-
-        set pxmin $scaling($w,pxmin)
-        set pxmax $scaling($w,pxmax)
-        set pymin $scaling($w,pymin)
-        set pymax $scaling($w,pymax)
-
-        set scaling($w,eventobj) [$w create rectangle $pxmin $pymin $pxmax $pymax -fill {} -outline {}]
+    if { ![info exists scaling($w,bindplot,$event)] } {
+        bind $c $event +[list ::Plotchart::BindPlotCmd %x %y $w $event]
     }
-    $w lower $scaling($w,eventobj)
+    set scaling($w,bindplot,$event) $cmd
+}
 
-    $w bind $scaling($w,eventobj) $event [list ::Plotchart::BindCmd %x %y $w $cmd]
+# BindPlotCmd --
+#     Call the command bound to the plot, if the event occurred
+#     within the plot area
+#
+# Arguments:
+#     xcoord          X coordinate of event (window coordinates)
+#     ycoord          Y coordinate of event (window coordinates)
+#     w               Canvas widget
+#     event           Type of event
+#
+# Result:
+#     None
+#
+proc ::Plotchart::BindPlotCmd {xcoord ycoord w event} {
+    variable scaling
 
+    if { ![info exists scaling($w,bindplot,$event)] } {
+        return
+    }
+
+    set xcoord [$w canvasx $xcoord]
+    set ycoord [$w canvasy $ycoord]
+    if { $xcoord < $scaling($w,pxmin) || $xcoord > $scaling($w,pxmax) ||
+         $ycoord < $scaling($w,pymin) || $ycoord > $scaling($w,pymax) } {
+        return
+    }
+
+    BindCmd $xcoord $ycoord $w $scaling($w,bindplot,$event)
 }
 
 # BindLast --

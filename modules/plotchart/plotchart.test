@@ -780,5 +780,36 @@ test Plotchart-5.6 {Filled radial chart} -constraints tk -body {
     set res
 } -result 1 ;# {}
 
+test Plotchart-6.3 {bindplot also works over data items} -constraints tk -setup {
+    toplevel .t
+    canvas .t.c -width 400 -height 300
+    pack .t.c
+    update
+    proc callback {args} {lappend ::hits [expr {round([lindex $args 0])}] [expr {round([lindex $args 1])}]}
+} -body {
+    set p [::Plotchart::createXYPlot .t.c {0 10 2} {0 10 2}]
+    $p dataconfig s -symbol circle -type both -width 5
+    $p plot s 0 0
+    $p plot s 5 5
+    $p plot s 10 10
+    $p bindplot <ButtonPress-1> callback
+    update
+    set ::hits {}
+    foreach {x y} {5 5 2 7 -2 5} {
+        foreach {px py} [::Plotchart::coordsToPixel .t.c $x $y] {break}
+        set px [expr {round($px)}]
+        set py [expr {round($py)}]
+        event generate .t.c <Motion>          -x $px -y $py
+        event generate .t.c <ButtonPress-1>   -x $px -y $py
+        event generate .t.c <ButtonRelease-1> -x $px -y $py
+        update
+    }
+    set ::hits
+} -cleanup {
+    destroy .c
+    rename callback {}
+    unset -nocomplain ::hits
+} -result {5 5 2 7}
+
 # -------------------------------------------------------------------------
 ::tcltest::cleanupTests
