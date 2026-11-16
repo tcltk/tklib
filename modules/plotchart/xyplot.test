@@ -1,0 +1,59 @@
+# -*- tcl -*-
+# Tests for the xyplot package
+#
+# Sourcing this file into Tcl runs the tests and generates output for errors.
+# No output means no errors were found.
+
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+if {[catch { package require cmdline } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring cmdline (Tcllib), $msg"
+    return
+}
+
+package require tcltest 2.1
+namespace import ::tcltest::*
+
+source [file join [file dirname [info script]] plotchart.tcl]
+source [file join [file dirname [info script]] xyplot.tcl]
+
+# -------------------------------------------------------------------------
+
+test xyplot-1.1 {a data series is drawn as a single line, not point by point} -setup {
+    toplevel .t
+    wm geometry .t 600x400
+    set xydata {}
+    for {set i 0} {$i < 1000} {incr i} {
+        lappend xydata [expr {$i*0.01}] [expr {sin($i*0.01)}]
+    }
+} -body {
+    set xyp [xyplot .t.xyp]
+    pack $xyp -fill both -expand true
+    $xyp add_data s1 $xydata -color red
+    update
+    set c $::xyplot::data(.t.xyp,c)
+    set lines {}
+    foreach item [$c find withtag data] {
+        if { [$c type $item] eq "line" } {
+            lappend lines [expr {[llength [$c coords $item]] / 2}]
+        }
+    }
+    set lines
+} -cleanup {
+    destroy .t
+    unset -nocomplain xydata
+} -result 1000
+
+# -------------------------------------------------------------------------
+::tcltest::cleanupTests

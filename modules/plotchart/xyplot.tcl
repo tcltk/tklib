@@ -241,10 +241,11 @@ proc xyplot::draw { path {scale {}} } {
 	if {[string length $data($path,$sid,legend)]} {
 	    $s legend $sid $data($path,$sid,legend)
 	}
+	set xs {}
+	set ys {}
 	foreach {x y} $data($path,$sid,data) {
-	    if {$data($path,type) ne "dot"} {
-		$s plot $sid $x $y
-	    }
+	    lappend xs $x
+	    lappend ys $y
 	    if {$first || $x < $mx} {
 		set mx $x
 	    }
@@ -258,6 +259,13 @@ proc xyplot::draw { path {scale {}} } {
 		set My $y
 	    }
 	    set first 0
+	}
+	#
+	# Draw all data of the series at once - much faster than
+	# plotting point by point
+	#
+	if {$data($path,type) ne "dot" && [llength $xs]} {
+	    $s plotlist $sid $xs $ys
 	}
     }
     if {$first} {
