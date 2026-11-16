@@ -30,7 +30,9 @@ package require widget::scrolledwindow
 package require widget::validator
 package require tooltip
 package require msgcat
-package require img::png
+if {![package vsatisfies [package provide Tk] 8.6-]} {
+    package require img::png             ; # Tk 8.6+ supports PNG natively.
+}
 
 # # ## ### ##### ######## ############# #####################
 ## Implementation
@@ -672,5 +674,5 @@ if 0 {
 
 # # ## ### ##### ######## ############# #####################
 ## Ready
-package provide widget::listsimple 0.1.2
+package provide widget::listsimple 0.1.3
 return

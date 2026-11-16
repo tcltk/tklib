@@ -1,4 +1,4 @@
-[vset VERSION 0.1.2]
+[vset VERSION 0.1.3]
 [comment {-*- tcl -*- doctools manpage}]
 [manpage_begin widget_listentry n [vset VERSION]]
 [keywords {data entry lists}]
@@ -17,12 +17,14 @@
 [require widget::scrolledwindow]
 [require snit]
 [require tooltip]
-[require img::png]
 [require msgcat]
 [description]
 
 This package provides a megawidget for the interactive entry of
 ordered and unordered lists.
+
+With Tk 8.5 the package also requires [package img::png], for its icons.
+Tk 8.6 and later read PNG images natively.
 
 For a simpler and more restricted megawidget please see the
 package [package widget::listsimple].
