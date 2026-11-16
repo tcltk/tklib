@@ -2264,6 +2264,28 @@ proc ::Plotchart::DrawPolarData { w series rad phi } {
    DrawData $w $series $xcrd $ycrd
 }
 
+# ClipToRange --
+#    Clip a value to the given range
+# Arguments:
+#    value       Value to clip
+#    min         Lower bound
+#    max         Upper bound
+# Result:
+#    The value, clipped to the range [min,max]
+#
+proc ::Plotchart::ClipToRange { value min max } {
+   if { $min > $max } {
+       foreach {min max} [list $max $min] {break}
+   }
+   if { $value < $min } {
+       return $min
+   } elseif { $value > $max } {
+       return $max
+   } else {
+       return $value
+   }
+}
+
 # DrawVertBarData --
 #    Draw the vertical bars
 # Arguments:
@@ -2326,8 +2348,13 @@ proc ::Plotchart::DrawVertBarData { w series ydata {colour black} {dir {}} {brig
 
       set xnext [expr {$x+$scaling($w,barwidth)}]
       set y     [expr {$yvalue+$ybase}]
-      foreach {px1 py1} [coordsToPixel $w $x     $ybase] {break}
-      foreach {px2 py2} [coordsToPixel $w $xnext $y    ] {break}
+      #
+      # Keep the bar within the plot area (the axis need not start at zero)
+      #
+      set ylow  [ClipToRange $ybase $scaling($w,ymin) $scaling($w,ymax)]
+      set yhigh [ClipToRange $y     $scaling($w,ymin) $scaling($w,ymax)]
+      foreach {px1 py1} [coordsToPixel $w $x     $ylow ] {break}
+      foreach {px2 py2} [coordsToPixel $w $xnext $yhigh] {break}
 
       if { $dir == {} } {
           $w create rectangle $px1 $py1 $px2 $py2 \
@@ -2433,8 +2460,13 @@ proc ::Plotchart::DrawHorizBarData { w series xdata {colour black} {dir {}} {bri
 
       set ynext [expr {$y+$scaling($w,barwidth)}]
       set x     [expr {$xvalue+$xbase}]
-      foreach {px1 py1} [coordsToPixel $w $xbase $y    ] {break}
-      foreach {px2 py2} [coordsToPixel $w $x     $ynext] {break}
+      #
+      # Keep the bar within the plot area (the axis need not start at zero)
+      #
+      set xlow  [ClipToRange $xbase $scaling($w,xmin) $scaling($w,xmax)]
+      set xhigh [ClipToRange $x     $scaling($w,xmin) $scaling($w,xmax)]
+      foreach {px1 py1} [coordsToPixel $w $xlow  $y    ] {break}
+      foreach {px2 py2} [coordsToPixel $w $xhigh $ynext] {break}
 
       if { $dir == {} } {
           $w create rectangle $px1 $py1 $px2 $py2 \

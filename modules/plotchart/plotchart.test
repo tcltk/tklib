@@ -780,5 +780,34 @@ test Plotchart-5.6 {Filled radial chart} -constraints tk -body {
     set res
 } -result 1 ;# {}
 
+test Plotchart-6.4 {bars stay within the plot area if the axis does not start at zero} -constraints tk -setup {
+    canvas .c -width 500 -height 400
+    pack .c
+    proc pointsOutside {w} {
+        regsub {^[^_]*_} $w "" w
+        set bad 0
+        foreach i [.c find withtag "data && $w"] {
+            foreach {px py} [.c coords $i] {
+                if { $px < $::Plotchart::scaling($w,pxmin)-0.5 || $px > $::Plotchart::scaling($w,pxmax)+0.5 ||
+                     $py < $::Plotchart::scaling($w,pymin)-0.5 || $py > $::Plotchart::scaling($w,pymax)+0.5 } {
+                    incr bad
+                }
+            }
+        }
+        return $bad
+    }
+} -body {
+    set p [::Plotchart::createBarchart .c {a b c} {6 36 6} 1]
+    $p plot s {20 35 10} blue
+    set res [pointsOutside $p]
+    .c delete all
+    set p [::Plotchart::createHorizontalBarchart .c {6 36 6} {a b c} 1]
+    $p plot s {20 35 10} blue
+    lappend res [pointsOutside $p]
+} -cleanup {
+    destroy .c
+    rename pointsOutside {}
+} -result {0 0}
+
 # -------------------------------------------------------------------------
 ::tcltest::cleanupTests
