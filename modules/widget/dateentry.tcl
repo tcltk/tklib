@@ -132,6 +132,7 @@ snit::widgetadaptor widget::dateentry {
     variable formattedDate	;# Chosen date, formatted, linked to calendar, shown in entry
     variable rawDate		;# Same, as seconds.
     variable startOnMonday 1	;# !! Unused
+    variable constructed 0	;# Set at the end of the constructor
 
     constructor args {
 	::widget::createdateentryLayout
@@ -148,6 +149,8 @@ snit::widgetadaptor widget::dateentry {
 	set formattedDate [clock format $rawDate -format $options(-dateformat)]
 
 	$self UpdateEntry
+	$self InitTextvariable
+	set constructed 1
     }
 
     destructor {
@@ -161,13 +164,30 @@ snit::widgetadaptor widget::dateentry {
     }
 
     method C-textvariable {option value} {
+	# The linked variable is global, like for the standard widgets.
 	if {$options(-textvariable) ne {}} {
-	    trace remove variable $options(-textvariable) write [mymethod DateSet]
+	    uplevel \#0 [list trace remove variable $options(-textvariable) \
+			     write [mymethod DateSet]]
 	}
 	set options($option) $value
 	if {$options(-textvariable) ne {}} {
-	    trace add variable $options(-textvariable) write [mymethod DateSet]
-	}	
+	    uplevel \#0 [list trace add variable $options(-textvariable) \
+			     write [mymethod DateSet]]
+	    # During construction this is done after the date is initialized.
+	    if {$constructed} {
+		$self InitTextvariable
+	    }
+	}
+    }
+
+    # Synchronize a newly linked -textvariable with the widget: show its
+    # date if it holds a valid one, else initialize it with the current date.
+    method InitTextvariable {} {
+	if {$options(-textvariable) eq {}} return
+	upvar \#0 $options(-textvariable) date
+	if {[info exists date] && ![catch {$self set $date}]} return
+	set date $formattedDate
+	return
     }
     
     method MakeCalendar {args} {
@@ -299,8 +319,10 @@ snit::widgetadaptor widget::dateentry {
 	set rawDate [clock scan $formattedDate -format $options(-dateformat)]
 	
 	# Export to linked variable
-	upvar 0  $options(-textvariable) date
-	set date $formattedDate
+	if {$options(-textvariable) ne {}} {
+	    upvar \#0 $options(-textvariable) date
+	    set date $formattedDate
+	}
 
 	# Export via callback
 	$self CallCommand
