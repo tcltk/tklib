@@ -263,7 +263,13 @@ proc ::Plotchart::MarginsRectangle { w argv {notext 2.0} {text_width 8}} {
         set char_height [font metrics $config($w,rightaxis,vsubtextfont) -linespace]
         set margin_right [expr {$margin_right + $char_height + 4}]
     }
-    set margin_bottom [expr {$char_height * 2 + 2}]
+    #
+    # Room for the tick labels and the text below the x-axis
+    #
+    set ticklength  $config($w,bottomaxis,ticklength)
+    set offtick     [expr {($ticklength > 0)? $ticklength+$config($w,leftaxis,labeloffset) : $config($w,leftaxis,labeloffset)}]
+    set linespace   [font metrics $config($w,bottomaxis,font) -linespace]
+    set margin_bottom [expr {max($char_height, $linespace) * 2 + $offtick}]
     if { $margin_bottom < $config($w,margin,bottom) } {
         set margin_bottom $config($w,margin,bottom)
     }

@@ -780,5 +780,24 @@ test Plotchart-5.6 {Filled radial chart} -constraints tk -body {
     set res
 } -result 1 ;# {}
 
+test Plotchart-6.5 {x-axis text does not overlap the tick labels for a large font} -constraints tk -setup {
+    canvas .c -width 400 -height 300 -highlightthickness 0 -borderwidth 0
+    pack .c
+    font create PlotchartTestFont -family Helvetica -size -30
+    set oldfont [::Plotchart::plotconfig xyplot bottomaxis font]
+    ::Plotchart::plotconfig xyplot bottomaxis font PlotchartTestFont
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p xtext "X label"
+    set labels [.c bbox xaxis]
+    set text   [.c bbox xtext]
+    list [expr {[lindex $text 1] >= [lindex $labels 3] - 1}] \
+         [expr {[lindex $text 3] <= [winfo reqheight .c] + 1}]
+} -cleanup {
+    ::Plotchart::plotconfig xyplot bottomaxis font $oldfont
+    destroy .c
+    font delete PlotchartTestFont
+} -result {1 1}
+
 # -------------------------------------------------------------------------
 ::tcltest::cleanupTests

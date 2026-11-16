@@ -833,8 +833,14 @@ proc ::Plotchart::DrawXtext { w args } {
     set textcolor  $config($w,bottomaxis,textcolor)
     set textfont   $config($w,bottomaxis,font)
 
+    #
+    # Put the text below the tick labels
+    #
+    set ticklength  $config($w,bottomaxis,ticklength)
+    set offtick     [expr {($ticklength > 0)? $ticklength+$config($w,leftaxis,labeloffset) : $config($w,leftaxis,labeloffset)}]
+
     set xt [expr {($scaling($w,pxmin)+$scaling($w,pxmax))/2}]
-    set yt [expr {$scaling($w,pymax)+$config($w,font,char_height)+4}]
+    set yt [expr {$scaling($w,pymax)+$offtick+[font metrics $textfont -linespace]}]
 
     $w delete "xtext && $w"
     if {$config($w,bottomaxis,render) eq "simple"} {
