@@ -780,5 +780,20 @@ test Plotchart-5.6 {Filled radial chart} -constraints tk -body {
     set res
 } -result 1 ;# {}
 
+test Plotchart-6.2 {yconfig method of log-Y plots without a step} -constraints tk -setup {
+    canvas .c -width 400 -height 300
+    pack .c
+} -body {
+    set res {}
+    foreach type {createXLogYPlot createLogXLogYPlot} {
+        .c delete all
+        set p [::Plotchart::$type .c {1 10 1} {1 1000}]
+        lappend res [catch {$p yconfig -format %.2f} msg] [llength [.c find withtag yaxis]]
+    }
+    set res
+} -cleanup {
+    destroy .c
+} -match glob -result {0 [1-9]* 0 [1-9]*}
+
 # -------------------------------------------------------------------------
 ::tcltest::cleanupTests

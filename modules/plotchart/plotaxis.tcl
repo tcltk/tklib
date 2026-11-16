@@ -369,12 +369,13 @@ proc ::Plotchart::DrawRightaxis { w ymin ymax ydelt args } {
 #    ymin        Minimum y coordinate
 #    ymax        Maximum y coordinate
 #    ystep       Step size
+#    args        Options (currently ignored)
 # Result:
 #    None
 # Side effects:
 #    Axis drawn in canvas
 #
-proc ::Plotchart::DrawLogYaxis { w ymin ymax ydelt } {
+proc ::Plotchart::DrawLogYaxis { w ymin ymax ydelt args } {
     variable scaling
     variable config
 
