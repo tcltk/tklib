@@ -780,5 +780,16 @@ test Plotchart-5.6 {Filled radial chart} -constraints tk -body {
     set res
 } -result 1 ;# {}
 
+test Plotchart-6.1 {xconfig method of an X-logY plot} -constraints tk -setup {
+    canvas .c -width 400 -height 300
+    pack .c
+} -body {
+    set p [::Plotchart::createXLogYPlot .c {0 10 2} {1 1000 10}]
+    $p xconfig -format %.2f
+    .c itemcget [lindex [.c find withtag xaxis] end] -text
+} -cleanup {
+    destroy .c
+} -result 10.00
+
 # -------------------------------------------------------------------------
 ::tcltest::cleanupTests

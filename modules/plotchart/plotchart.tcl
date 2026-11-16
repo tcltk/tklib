@@ -119,7 +119,7 @@ namespace eval ::Plotchart {
    set methodProc(xlogyplot,trend)          DrawLogTrendLine
    set methodProc(xlogyplot,saveplot)       SavePlot
    set methodProc(xlogyplot,dataconfig)     DataConfig
-   set methodProc(xlogyplot,xconfig)        XConfigXlogY
+   set methodProc(xlogyplot,xconfig)        XConfigXLogY
    set methodProc(xlogyplot,yconfig)        YConfigXLogY
    set methodProc(xlogyplot,xticklines)     DrawXTicklines
    set methodProc(xlogyplot,yticklines)     DrawYTicklines
