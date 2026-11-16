@@ -7,11 +7,19 @@ package provide notifywindow 1.0.3
 
 namespace eval notifywindow {
     namespace export *
+    # Ids of the pending fade_in/fade_out events
+    variable afterids {}
 }
 
 #Main procedure for window
 
 proc notifywindow::notifywindow {msg img} {
+    variable afterids
+    # Replace a notification window which is still shown
+    foreach id $afterids {
+	after cancel $id
+    }
+    set afterids {}
     set w ._notify
     destroy $w
     toplevel $w
@@ -45,17 +53,19 @@ proc notifywindow::notifywindow {msg img} {
     set xpos [expr [winfo screenwidth $w] - 325]
     wm geometry $w +$xpos+30
     notifywindow::fade_in $w
-    after 3000 notifywindow::fade_out $w
+    lappend afterids [after 3000 [list notifywindow::fade_out $w]]
 }
 
 #Fade and destroy window
 proc notifywindow::fade_out {w} {
+    variable afterids
+    set afterids {}
     catch {
 	set prev_degree [wm attributes $w -alpha]
 	set new_degree [expr $prev_degree - 0.05]
 	set current_degree [wm attributes $w -alpha $new_degree]
 	if {$new_degree > 0.0 && $new_degree != $prev_degree} {
-	    after 10 [list notifywindow::fade_out $w]
+	    lappend afterids [after 10 [list notifywindow::fade_out $w]]
 	} else {
 	    destroy $w
 	}
@@ -64,6 +74,7 @@ proc notifywindow::fade_out {w} {
 
 #Fade the window into view
 proc notifywindow::fade_in {w} {
+    variable afterids
     catch {
 	raise $w
 	wm attributes $w -topmost 1
@@ -72,7 +83,7 @@ proc notifywindow::fade_in {w} {
 	set current_degree [wm attributes $w -alpha $new_degree]
 	focus -force $w
 	if {$new_degree < 0.9 && $new_degree != $prev_degree} {
-	    after 10 [list notifywindow::fade_in $w]
+	    lappend afterids [after 10 [list notifywindow::fade_in $w]]
 	} else {
 	    return
 	}

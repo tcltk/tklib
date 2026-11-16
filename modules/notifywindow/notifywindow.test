@@ -1,0 +1,71 @@
+# -*- tcl -*-
+# Tests for the notifywindow package
+
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2
+    namespace import ::tcltest::*
+}
+
+source [file join [file dirname [info script]] notifywindow.tcl]
+
+# -------------------------------------------------------------------------
+
+test notifywindow-1.0 {notification window is created} -body {
+    notifywindow::notifywindow "hello" ::tk::icons::information
+    list [winfo exists ._notify] [winfo class ._notify] \
+	[._notify.message cget -text]
+} -cleanup {
+    destroy ._notify
+} -result {1 Toplevel hello}
+
+test notifywindow-1.1 {successive calls, ticket 79747a0cb5} -body {
+    foreach msg {hello world} {
+	notifywindow::notifywindow $msg ::tk::icons::information
+    }
+    list [winfo exists ._notify] [._notify.message cget -text]
+} -cleanup {
+    destroy ._notify
+} -result {1 world}
+
+test notifywindow-1.2 {fading out an old window does not hit the new one} -body {
+    notifywindow::notifywindow "hello" {}
+    after 200 {set ::done 1}; vwait ::done
+    notifywindow::notifywindow "world" {}
+    # The old 3s fade_out timer must have been cancelled
+    set ids {}
+    foreach id [after info] {
+	if {[string match *fade_out* [lindex [after info $id] 0]]} {
+	    lappend ids $id
+	}
+    }
+    llength $ids
+} -cleanup {
+    destroy ._notify
+    unset -nocomplain ::done ids id
+} -result 1
+
+test notifywindow-1.3 {a new window is not faded out by the timer of the old one} -body {
+    notifywindow::notifywindow "hello" {}
+    after 2000 {set ::done 1}; vwait ::done
+    notifywindow::notifywindow "world" {}
+    after 1500 {set ::done 1}; vwait ::done
+    list [winfo exists ._notify] [expr {[wm attributes ._notify -alpha] > 0.5}]
+} -cleanup {
+    destroy ._notify
+    unset -nocomplain ::done
+} -result {1 1}
+
+# -------------------------------------------------------------------------
+::tcltest::cleanupTests
