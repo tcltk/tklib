@@ -690,10 +690,7 @@ proc ::ipentry::configure {w args} {
                 set name [lindex $args 1]
                 upvar #0 $name var
                 #if {![string match ::* $name]} { set name ::$name }
-                if {[info exists ::ipentry::textvars($w)]} {
-                    set trace [trace info variable var]
-                    trace remove variable var [lindex $trace 0 0] [lindex $trace 0 1]
-                }
+                ::ipentry::untraceVar $w
                 set ::ipentry::textvars($w) $name
                 if {![info exists var]} { set var "" }
                 ::ipentry::traceFired $w $name {} write
@@ -724,13 +721,30 @@ proc ::ipentry::configure {w args} {
 #
 proc ::ipentry::destroyWidget {w} {
     upvar #0 [namespace current]::widget_$w state
-    if {[info exists ::ipentry::textvars($w)]} {
-        upvar #0 $::ipentry::textvars($w) var
-        set trace [trace info variable var]
-        trace remove variable var [lindex $trace 0 0] [lindex $trace 0 1]
-    }
+    untraceVar $w
     rename $w {}
     unset state
+}
+
+# untraceVar --
+#
+# remove the trace from the textvariable of the widget, if any
+# used by both ipentry and ipentry6
+#
+# ARGS:
+#       w       name of the ipentry widget
+#
+# RETURNS:
+#       nothing
+#
+proc ::ipentry::untraceVar {w} {
+    variable textvars
+    if {![info exists textvars($w)]} { return }
+    upvar #0 $textvars($w) var
+    foreach cmd {::ipentry::traceFired ::ipentry::traceFired6} {
+        trace remove variable var {write unset} [list $cmd $w]
+    }
+    unset textvars($w)
 }
 
 # traceFired --
@@ -763,7 +777,7 @@ proc ::ipentry::traceFired {w name key op} {
         set var $val
     } elseif {$op == "unset"} {
         ::ipentry::updateTextvar $w.0
-        trace add variable var {write unset} [list ipentry::traceFired $w]
+        trace add variable var {write unset} [list ::ipentry::traceFired $w]
     }
 }
 
@@ -797,7 +811,7 @@ proc ::ipentry::traceFired6 {w name key op} {
         set var $val
     } elseif {$op == "unset"} {
         ::ipentry::updateTextvar $w.0
-        trace add variable var {write unset} [list ipentry::traceFired6 $w]
+        trace add variable var {write unset} [list ::ipentry::traceFired6 $w]
     }
 }
 

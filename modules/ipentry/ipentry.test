@@ -1,0 +1,50 @@
+# -*- tcl -*-
+# Test cases of the ipentry package
+
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+package require tcltest 2.2
+namespace import ::tcltest::*
+
+source [file join [file dirname [info script]] ipentry.tcl]
+
+# -------------------------------------------------------------------------
+
+test ipentry-textvariable-2.1 {recreate widget with the same -textvariable} -setup {
+    set ::ipaddress 1.2.3.4
+} -body {
+    ::ipentry::ipentry .ip -textvariable ::ipaddress
+    destroy .ip
+    ::ipentry::ipentry .ip -textvariable ::ipaddress
+    set ::ipaddress 1.2.3.5
+    list [.ip get] [llength [trace info variable ::ipaddress]]
+} -cleanup {
+    destroy .ip
+    unset ::ipaddress
+} -result {{1 2 3 5} 1}
+
+test ipentry-textvariable-2.2 {destroy keeps other traces on the variable} -setup {
+    set ::ipaddress 1.2.3.4
+    ::ipentry::ipentry .ip1 -textvariable ::ipaddress
+    ::ipentry::ipentry .ip2 -textvariable ::ipaddress
+} -body {
+    destroy .ip1
+    set ::ipaddress 1.2.3.5
+    .ip2 get
+} -cleanup {
+    destroy .ip2
+    unset ::ipaddress
+} -result {1 2 3 5}
+
+# -------------------------------------------------------------------------
+::tcltest::cleanupTests
