@@ -6,7 +6,7 @@
 #   - Public utility procedures
 #   - Private helper procedures
 #
-# Copyright (c) 2020-2025  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2020-2026  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 if {[catch {package require Tk 8.4-}]} {
@@ -22,7 +22,7 @@ namespace eval scaleutil {
     #
     # Public variables:
     #
-    variable version	1.15
+    variable version	1.17
     variable library	[file dirname [file normalize [info script]]]
 
     #
@@ -69,11 +69,18 @@ package provide scaleutil $scaleutil::version
 #------------------------------------------------------------------------------
 proc scaleutil::scalingPercentage winSys {
     variable scalingPct
-    if {[info exists ::tk::scalingPct]} {		;# Tk 8.7b1/9 or later
+    if {[info exists ::tk::scalingPct]} {		;# Tk 9 or later
 	set scalingPct $::tk::scalingPct
     }
+
     if {[info exists scalingPct]} {
-	return [expr {$scalingPct > 200 ? 200 : $scalingPct}]
+	if {$scalingPct < 100} {
+	    return 100
+	} elseif {$scalingPct > 200} {
+	    return 200
+	} else {
+	    return $scalingPct
+	}
     }
 
     variable ttkSupported
@@ -296,10 +303,15 @@ proc scaleutil::scale {num pct} {
 # Sets the default height of the ttk::treeview rows.
 #------------------------------------------------------------------------------
 proc scaleutil::setTreeviewRowHeight {} {
-    set font [ttk::style lookup Treeview -font]
-    if {$font eq ""} {
-	set font TkDefaultFont
+    if {$::tk_version >= 8.7 &&
+	[package vcompare $::tk_patchLevel "8.7a5"] > 0} {
+	if {[llength [info procs ::ttk::setTreeviewRowHeight]] != 0} {
+	    ::ttk::setTreeviewRowHeight
+	}
+	return ""
     }
+
+    set font [ttk::style lookup Treeview -font {} TkDefaultFont]
 
     ttk::style configure Treeview -rowheight \
 	[expr {[font metrics $font -linespace] + 2}]
@@ -468,12 +480,15 @@ proc scaleutil::scaleStyles_alt pct {
 	    -gripsize [scale 20 $pct]
 
 	#
-	# -diameter was replaced with -size in Tk 9.
+	# -diameter was replaced with -size in Tk 9.0.
 	#
 	set l [scale 2 $pct]; set t $l; set r [scale 4 $pct]; set b $l
 	set indMargins [list $l $t $r $b]			;# {2 2 4 2}
 	ttk::style configure Item -diameter [scale 9 $pct] \
 	    -size [scale 9 $pct] -indicatormargins $indMargins
+	set l 0; set t [scale 1 $pct]; set b $t
+	set indMargin [list $l $t $r $b]			;# {0 1 4 1}
+	ttk::style configure CheckTreeview.Item -indicatormargin $indMargin
 	ttk::style configure Treeview -indent [scale 20 $pct]
     }
 }
@@ -486,7 +501,7 @@ proc scaleutil::scaleStyles_alt pct {
 proc scaleutil::scaleStyles_clam pct {
     ttk::style theme settings clam {
 	#
-	# -gripcount was replaced with -gripsize in Tk 9.
+	# -gripcount was replaced with -gripsize in Tk 9.0.
 	#
 	set gripCount [scale 5 $pct]
 	set gripSize [scale 10 $pct]
@@ -514,7 +529,7 @@ proc scaleutil::scaleStyles_clam pct {
 	    -arrowpadding [scale 3 $pct] -padding [scale 5 $pct]
 
 	#
-	# The -indicatorsize option was removed in Tk 8.7b1/9.
+	# The -indicatorsize option was removed in Tk 9.0.
 	#
 	set l [scale 1 $pct]; set t $l; set r [scale 4 $pct]; set b $l
 	set indMargin [list $l $t $r $b]			;# {1 1 4 1}
@@ -531,7 +546,7 @@ proc scaleutil::scaleStyles_clam pct {
 	    -padding [list selected [list $l $t $r $b]]		;# {6 4 6 2}
 
 	#
-	# -gripcount was replaced with -gripsize in Tk 9.
+	# -gripcount was replaced with -gripsize in Tk 9.0.
 	#
 	ttk::style configure Sash -sashthickness [scale 6 $pct] \
 	    -gripcount [scale 10 $pct] -gripsize [scale 20 $pct]
@@ -541,6 +556,9 @@ proc scaleutil::scaleStyles_clam pct {
 	set indMargins [list $l $t $r $b]			;# {2 2 4 2}
 	ttk::style configure Item -indicatorsize [scale 12 $pct] \
 	    -indicatormargins $indMargins
+	set l 0; set t [scale 1 $pct]; set b $t
+	set indMargin [list $l $t $r $b]			;# {0 1 4 1}
+	ttk::style configure CheckTreeview.Item -indicatormargin $indMargin
 	ttk::style configure Treeview -indent [scale 20 $pct]
 
 	ttk::style configure TLabelframe \
@@ -586,7 +604,7 @@ proc scaleutil::scaleStyles_classic pct {
 	set indMargin [list 0 $t $r $b]				;# {0 2 4 2}
 	foreach style {TCheckbutton TRadiobutton} {
 	    #
-	    # -indicatordiameter was renamed to -indicatorsize in Tk 9.
+	    # -indicatordiameter was renamed to -indicatorsize in Tk 9.0.
 	    #
 	    ttk::style configure $style -indicatordiameter [scale 12 $pct] \
 		-indicatorsize [scale 12 $pct] -indicatormargin $indMargin
@@ -602,6 +620,9 @@ proc scaleutil::scaleStyles_classic pct {
 	set indMargins [list $l $t $r $b]			;# {2 2 4 2}
 	ttk::style configure Item -indicatorsize [scale 12 $pct] \
 	    -indicatormargins $indMargins
+	set l 0; set t [scale 1 $pct]; set b $t
+	set indMargin [list $l $t $r $b]			;# {0 1 4 1}
+	ttk::style configure CheckTreeview.Item -indicatormargin $indMargin
 	ttk::style configure Treeview -indent [scale 20 $pct]
     }
 }
@@ -641,7 +662,7 @@ proc scaleutil::scaleStyles_default pct {
 
 	#
 	# -indicatormargin was replaced with
-	# -arrowsize and -arrowpadding in Tk 8.7b1/9.
+	# -arrowsize and -arrowpadding in Tk 9.0.
 	#
 	ttk::style configure TMenubutton \
 	    -indicatormargin [list [scale 5 $pct] 0] \
@@ -652,7 +673,7 @@ proc scaleutil::scaleStyles_default pct {
 	set indMargin [list 0 $t $r $b]				;# {0 2 4 2}
 	foreach style {TCheckbutton TRadiobutton} {
 	    #
-	    # -indicatordiameter was removed in Tk 8.7b1/9.
+	    # -indicatordiameter was removed in Tk 9.0.
 	    #
 	    ttk::style configure $style -indicatordiameter [scale 10 $pct] \
 		-indicatormargin $indMargin -padding [scale 1 $pct]
@@ -668,6 +689,9 @@ proc scaleutil::scaleStyles_default pct {
 	set indMargins [list $l $t $r $b]			;# {2 2 4 2}
 	ttk::style configure Item -indicatorsize [scale 12 $pct] \
 	    -indicatormargins $indMargins
+	set l 0; set t [scale 1 $pct]; set b $t
+	set indMargin [list $l $t $r $b]			;# {0 1 4 1}
+	ttk::style configure CheckTreeview.Item -indicatormargin $indMargin
 	ttk::style configure Treeview -indent [scale 20 $pct]
     }
 }
@@ -696,6 +720,9 @@ proc scaleutil::scaleStyles_vista pct {
 
 	set padding [list [scale 4 $pct] 0 0 0]			;# {4 0 0 0}
 	ttk::style configure Item -padding $padding
+	set l [scale 4 $pct]; set t [scale 1 $pct]; set r 0; set b $t
+	set padding [list $l $t $r $b]				;# {4 1 0 1}
+	ttk::style configure CheckTreeview.Item -padding $padding
 	ttk::style configure Treeview -indent [scale 20 $pct]
     }
 }
@@ -736,12 +763,15 @@ proc scaleutil::scaleStyles_winnative pct {
 	    -gripsize [scale 20 $pct]
 
 	#
-	# -diameter was replaced with -size in Tk 9.
+	# -diameter was replaced with -size in Tk 9.0.
 	#
 	set l [scale 2 $pct]; set t $l; set r [scale 4 $pct]; set b $l
 	set indMargins [list $l $t $r $b]			;# {2 2 4 2}
 	ttk::style configure Item -diameter [scale 9 $pct] \
 	    -size [scale 9 $pct] -indicatormargins $indMargins
+	set l 0; set t [scale 1 $pct]; set r 0; set b $t
+	set padding [list $l $t $r $b]				;# {0 1 0 1}
+	ttk::style configure CheckTreeview.Item -padding $padding
 	ttk::style configure Treeview -indent [scale 20 $pct]
     }
 }
@@ -772,12 +802,15 @@ proc scaleutil::scaleStyles_xpnative pct {
 	    -gripsize [scale 20 $pct]
 
 	#
-	# -diameter was replaced with -size in Tk 9.
+	# -diameter was replaced with -size in Tk 9.0.
 	#
 	set l [scale 2 $pct]; set t $l; set r [scale 4 $pct]; set b $l
 	set indMargins [list $l $t $r $b]			;# {2 2 4 2}
 	ttk::style configure Item -diameter [scale 9 $pct] \
 	    -size [scale 9 $pct] -indicatormargins $indMargins
+	set l 0; set t [scale 1 $pct]; set r 0; set b $t
+	set padding [list $l $t $r $b]				;# {0 1 0 1}
+	ttk::style configure CheckTreeview.Item -padding $padding
 	ttk::style configure Treeview -indent [scale 20 $pct]
     }
 }

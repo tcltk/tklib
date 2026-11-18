@@ -1,16 +1,140 @@
-What is new in Tablelist 7.7?
------------------------------
+What is new in Tablelist 7.12?
+------------------------------
 
-1. Added explicit support for the "droid" theme, which is the default in
+1. Made the default sort arrows and expand/collapse controls of the
+   "aqua" theme, as well as its embedded ttk::checkbutton widgets
+   scaling-aware.
+
+2. Internal code optimizations (thanks to Nicolas Bats for his input).
+
+3. Improvements in the bundled wide spinbox package wsb, related to the
+   Windows platform.
+
+4. Made the code more robust by incorporating three fix proposals
+   provided by Nicolas Bats.
+
+5. Fixed a bug related to the "-inactiveselectbackground" and
+   "-inactiveselectforeground" options (thanks to Harald Oehlmann for
+   his bug report).
+
+What was new in Tablelist 7.11?
+-------------------------------
+
+1. Adapted to the recent changes in Tk 9.1 according to TIP 750:
+   "Consistent dark mode for Windows and macOS".
+
+2. Adapted to the recent changes in Tk 9.1 according to TIP 740:
+   "Enhanced Treeview Widget".
+
+3. The "-inactiveselectbackground" and "-inactiveselectforeground"
+   configuration options now have nonempty default values for the "alt"
+   and "default" themes, too.
+
+4. Fixed a bug in the binding script for extending the selection with
+   the keyboard (thanks to Nicolas Bats for his bug report and fix). 
+
+What was new in Tablelist 7.10?
+-------------------------------
+
+1. Added the "-inactiveselectbackground" and "-inactiveselectforeground"
+   configuration options, whose default values on the windowing systems
+   "aqua" and "win32", as well as for the themes "aqua", "clam",
+   "vista", "winnative", and "xpnative" make sure that the selection
+   will appear in native colors also when the tablelist's body doesn't
+   have the input focus.
+
+2. Added the "rowcount" and "header rowcount" subcommands, as synonyms
+   for "size" and "header size", respectively (thanks to Ralf Richard
+   Goebel for his proposal).
+
+3. Made the updates using the "-listvariable" option by several orders
+   of magnitude faster (thanks to Alexandru Dadalau for reporting the
+   poor performance of the original implementation).
+
+4. Adapted the scaleutil package to the recent changes related to the
+   ttk::treeview widget, implemented by Brian O'Hagan.
+
+5. Extended the section "The Procedure tablelist::getScalingPct and Tk's
+   Scaling Factor" in Tablelist Programmer's Guide by the recommendation
+   that changing Tk's scaling factor via "tk scaling" should be done
+   before loading Tablelist or Tablelist_tile (thanks to Mark
+   Summerfield for his suggestion).
+
+6. The demo scripts no longer set the "-setgrid" option to true.
+
+What was new in Tablelist 7.9?
+------------------------------
+
+1. The scrolling with the mouse wheel or touchpad is now disabled while
+   the menu of a (ttk::)menubutton or the listbox component of a
+   combobox used for interactive cell editing is posted (thanks to Steve
+   Landers for his proposal).
+
+2. The default bindings now ignore any mouse actions in the free space
+   that might appear below the tablelist widget's last row and/or to the
+   right of its last column, except for setting the focus via left-click
+   (thanks to Torsten Berg for his proposal).
+
+3. Because of the changes in the default bindings, the demo scripts
+   "browse*.tcl" and "dirViewer*.tcl" now use the "active" index rather
+   than the "curselection" subcommand.
+
+4. The wide spinbox package wsb now highlights the up and down arrows
+   when they are in pressed state.
+
+5. Added the helper procedure "tablelist::getScalingPct", which returns
+   the application's scaling percentage, derived from Tk's current
+   scaling factor given by [tk scaling].  See the new section "The
+   Procedure tablelist::getScalingPct" in Tablelist Programmer's Guide
+   for details).
+
+6. The sizes of the GUI components created by the packages Tablelist,
+   themepatch, and wsb now depend not only on the display's scaling
+   level, but also on Tk's scaling factor given by [tk scaling] (thanks
+   to Harald Oehlmann for discussions on this subject).
+
+7. Updated the details regarding the value of "tablelist::scalingpct"
+   for GNOME on Wayland and KDE Plasma on Wayland in Tablelist
+   Programmer's Guide, to reflect the changes made in recent versions of
+   these desktops.
+
+What was new in Tablelist 7.8?
+------------------------------
+
+1. Support for interactive cell editing with the aid of the
+   ttk::toggleswitch widget (which was added to the core in Tk 9.1a1).
+
+2. The Tablelist distribution now includes the new wide spinbox package
+   wsb, which implements the Wide.TSpinbox layout having scaling-aware
+   up and down arrows of user-friendly size and placement, which comes
+   in handy especially when running AndroWish on a tablet or smartphone.
+
+3. Improvements related to the interactive cell editing with the aid of
+   the Tk core checkbutton and ttk::checkbutton widgets.
+
+4. The demo script "tileWidgets2.tcl" now uses the ttk::toggleswitch
+   rather than tsw::toggleswitch widget if available, and also makes use
+   of the wsb package.  See the "Tile-Based Demo Scripts" section of
+   Tablelist Programmer's Guide for details.
+
+What was new in Tablelist 7.7?
+------------------------------
+
+1. Added mouse and keyboard event bindings that invoke the "expand" and
+   "collapse" subcommands with the "-fully" option.  See the updated
+   subsection "TREE WIDGET BINDINGS:" in the reference manual for
+   details (thanks to Torsten Berg for his proposal and testing).
+
+2. Added explicit support for the "droid" theme, which is the default in
    AndroWish.
 
-2. Improvements related to the themes provided by the awthemes package
+3. Improvements related to the themes provided by the awthemes package
    and the ones that are not explicitly supported by Tablelist.
 
-3. Improved the interactive cell editing with the aid of the
+4. Improved the interactive cell editing with the aid of the
    toggleswitch widget.
 
-4. The demo scripts "dirViewer.tcl" and "dirViewer_tile.tcl" now work
+5. The demo scripts "dirViewer.tcl" and "dirViewer_tile.tcl" now work
    around the fact that on Android the directory "/" is normally not
    readable.
 

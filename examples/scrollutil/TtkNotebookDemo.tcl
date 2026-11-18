@@ -6,7 +6,7 @@
 #
 #   https://icons8.com/icon/mEF_vyjYlnE3/file
 #
-# Copyright (c) 2021-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2021-2026  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tk
@@ -37,7 +37,7 @@ if {$tk_version >= 8.7 || [catch {package require tksvg}] == 0} {
 set f  [ttk::frame .f]
 set nb [ttk::notebook $f.nb -style My.TNotebook]
 set currentTheme [styleutil::getCurrentTheme]
-set panePadding [expr {$currentTheme eq "aqua" ? 0 : "7p"}]
+set panePadding [expr {$currentTheme eq "aqua" ? 0 : "9p"}]
 cd [expr {[info exists ttk::library] ? $ttk::library : $tile::library}]
 ##nagelfar ignore
 foreach fileName [lsort [glob *.tcl]] {
@@ -106,8 +106,8 @@ proc closeTab {nb tabIdx} {
 #
 set b [ttk::button $f.b -text "Close" -command exit]
 
-pack $b  -side bottom -pady {0 7p}
-pack $nb -side top -expand yes -fill both -padx 7p -pady 7p
+pack $b  -side bottom -pady {0 9p}
+pack $nb -side top -expand yes -fill both -padx 9p -pady 9p
 pack $f  -expand yes -fill both
 
 #
@@ -118,6 +118,6 @@ after 50 [list configNb $nb $sa]
 
 proc configNb {nb sa} {
     set width [expr {[winfo reqwidth $sa] + [winfo reqwidth $sa.vsb]}]
-    incr width [expr {$::currentTheme eq "aqua" ? 0 : 2*[winfo pixels . 7p]}]
+    incr width [expr {$::currentTheme eq "aqua" ? 0 : 2*[winfo pixels . 9p]}]
     $nb configure -width $width
 }

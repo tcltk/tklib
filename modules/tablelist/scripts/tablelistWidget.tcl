@@ -8,7 +8,7 @@
 #   - Private procedures implementing the tablelist widget command
 #   - Private callback procedures
 #
-# Copyright (c) 2000-2025  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2026  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -117,17 +117,19 @@ namespace eval tablelist {
 	}
     }
 
+    proc getScalingPct {} {
+	set pct [expr {[tk scaling] * 75}]
+	for {set intPct 100} {1} {incr intPct 25} {
+	    if {$pct < $intPct + 12.5} {
+		return $intPct
+	    }
+	}
+    }
+
     variable pngSupported [expr {
 	($::tk_version >= 8.6 &&
 	 [package vcompare $::tk_patchLevel "8.6b2"] >= 0) ||
 	($::tk_version >= 8.5 && [catch {package require img::png}] == 0)}]
-
-    variable svgSupported [expr {
-	$::tk_version >= 8.7 || [catch {package require tksvg}] == 0}]
-    if {$svgSupported} {
-	variable svgfmt \
-	    [list svg -scale [expr {$::scaleutil::scalingPct / 100.0}]]
-    }
 
     variable newAquaSupport [expr {
 	($::tk_version == 8.6 &&
@@ -135,9 +137,15 @@ namespace eval tablelist {
 	($::tk_version >= 8.7 &&
 	 [package vcompare $::tk_patchLevel "8.7a3"] >= 0)}]
 
-    variable disp [expr {$::tk_version >= 8.5 ? "display" : ""}]
+    variable svgSupported [expr {
+	$::tk_version >= 8.7 || [catch {package require tksvg}] == 0}]
+    if {$svgSupported} {
+	variable svgfmt [list svg -scale [expr {[getScalingPct] / 100.0}]]
+    }
 
-    variable scaled4 [::scaleutil::scale 4 $::scaleutil::scalingPct]
+    variable scaled4 [::scaleutil::scale 4 [getScalingPct]]
+
+    variable disp [expr {$::tk_version >= 8.5 ? "display" : ""}]
 
     #
     # The array configSpecs is used to handle configuration options.  The
@@ -153,110 +161,112 @@ namespace eval tablelist {
     #
     variable configSpecs
     array set configSpecs {
-	-acceptchildcommand	 {acceptChildCommand	  AcceptChildCommand  w}
-	-acceptdropcommand	 {acceptDropCommand	  AcceptDropCommand   w}
-	-activestyle		 {activeStyle		  ActiveStyle	      w}
-	-aftercopycommand	 {afterCopyCommand	  AfterCopyCommand    w}
-	-arrowcolor		 {arrowColor		  ArrowColor	      w}
-	-arrowdisabledcolor	 {arrowDisabledColor	  ArrowDisabledColor  w}
-	-arrowstyle		 {arrowStyle		  ArrowStyle	      w}
-	-autofinishediting	 {autoFinishEditing	  AutoFinishEditing   w}
-	-autoscan		 {autoScan		  AutoScan	      w}
-	-background		 {background		  Background	      b}
-	-bg			 -background
-	-borderwidth		 {borderWidth		  BorderWidth	      f}
-	-bd			 -borderwidth
-	-button2window		 {button2Window		  Button2Window	      w}
-	-collapsecommand	 {collapseCommand	  CollapseCommand     w}
-	-colorizecommand	 {colorizeCommand	  ColorizeCommand     w}
-	-columns		 {columns		  Columns	      w}
-	-columntitles		 {columnTitles		  ColumnTitles	      w}
-	-cursor			 {cursor		  Cursor	      c}
-	-customdragsource	 {customDragSource	  CustomDragSource    w}
-	-disabledforeground	 {disabledForeground	  DisabledForeground  w}
-	-displayondemand	 {displayOnDemand	  DisplayOnDemand     w}
-	-editendcommand		 {editEndCommand	  EditEndCommand      w}
-	-editendonfocusout	 {editEndOnFocusOut	  EditEndOnFocusOut   w}
-	-editendonmodclick	 {editEndOnModClick	  EditEndOnModClick   w}
-	-editselectedonly	 {editSelectedOnly	  EditSelectedOnly    w}
-	-editstartcommand	 {editStartCommand	  EditStartCommand    w}
-	-expandcommand		 {expandCommand		  ExpandCommand       w}
-	-exportselection	 {exportSelection	  ExportSelection     w}
-	-font			 {font			  Font		      b}
-	-forceeditendcommand	 {forceEditEndCommand	  ForceEditEndCommand w}
-	-foreground		 {foreground		  Foreground	      b}
-	-fg			 -foreground
-	-fullseparators		 {fullSeparators	  FullSeparators      w}
-	-height			 {height		  Height	      w}
-	-highlightbackground	 {highlightBackground	  HighlightBackground f}
-	-highlightcolor		 {highlightColor	  HighlightColor      f}
-	-highlightthickness	 {highlightThickness	  HighlightThickness  f}
-	-incrarrowtype		 {incrArrowType		  IncrArrowType	      w}
-	-instanttoggle		 {instantToggle		  InstantToggle	      w}
-	-itembackground		 {itemBackground	  Background	      w}
-	-itembg			 -itembackground
-	-labelactivebackground	 {labelActiveBackground	  Foreground	      l}
-	-labelactiveforeground	 {labelActiveForeground	  Background	      l}
-	-labelbackground	 {labelBackground	  Background	      l}
-	-labelbg		 -labelbackground
-	-labelborderwidth	 {labelBorderWidth	  BorderWidth	      l}
-	-labelbd		 -labelborderwidth
-	-labelcommand		 {labelCommand		  LabelCommand	      w}
-	-labelcommand2		 {labelCommand2		  LabelCommand2	      w}
-	-labeldisabledforeground {labelDisabledForeground DisabledForeground  l}
-	-labelfont		 {labelFont		  Font		      l}
-	-labelforeground	 {labelForeground	  Foreground	      l}
-	-labelfg		 -labelforeground
-	-labelheight		 {labelHeight		  Height	      l}
-	-labelpady		 {labelPadY		  Pad		      l}
-	-labelrelief		 {labelRelief		  Relief	      l}
-	-listvariable		 {listVariable		  Variable	      w}
-	-movablecolumns	 	 {movableColumns	  MovableColumns      w}
-	-movablerows		 {movableRows		  MovableRows	      w}
-	-movecolumncursor	 {moveColumnCursor	  MoveColumnCursor    w}
-	-movecursor		 {moveCursor		  MoveCursor	      w}
-	-populatecommand	 {populateCommand	  PopulateCommand     w}
-	-protecttitlecolumns	 {protectTitleColumns	  ProtectTitleColumns w}
-	-relief			 {relief		  Relief	      f}
-	-resizablecolumns	 {resizableColumns	  ResizableColumns    w}
-	-resizecursor		 {resizeCursor		  ResizeCursor	      w}
-	-selectbackground	 {selectBackground	  Foreground	      w}
-	-selectborderwidth	 {selectBorderWidth	  BorderWidth	      w}
-	-selectfiltercommand	 {selectFilterCommand	  SelectFilterCommand w}
-	-selectforeground	 {selectForeground	  Background	      w}
-	-selectmode		 {selectMode		  SelectMode	      w}
-	-selecttype		 {selectType		  SelectType	      w}
-	-setfocus		 {setFocus		  SetFocus	      w}
-	-setgrid		 {setGrid		  SetGrid	      w}
-	-showarrow		 {showArrow		  ShowArrow	      w}
-	-showbusycursor		 {showBusyCursor	  ShowBusyCursor      w}
-	-showeditcursor		 {showEditCursor	  ShowEditCursor      w}
-	-showhorizseparator	 {showHorizSeparator	  ShowHorizSeparator  w}
-	-showlabels		 {showLabels		  ShowLabels	      w}
-	-showseparators		 {showSeparators	  ShowSeparators      w}
-	-snipstring		 {snipString		  SnipString	      w}
-	-sortcommand		 {sortCommand		  SortCommand	      w}
-	-spacing		 {spacing		  Spacing	      w}
-	-state			 {state			  State		      w}
-	-stretch		 {stretch		  Stretch	      w}
-	-stripebackground	 {stripeBackground	  Background	      w}
-	-stripebg		 -stripebackground
-	-stripeforeground	 {stripeForeground	  Foreground	      w}
-	-stripefg		 -stripeforeground
-	-stripeheight		 {stripeHeight		  StripeHeight	      w}
-	-takefocus		 {takeFocus		  TakeFocus	      f}
-	-targetcolor		 {targetColor		  TargetColor	      w}
-	-tight			 {tight			  Tight		      w}
-	-titlecolumns		 {titleColumns	  	  TitleColumns	      w}
-	-tooltipaddcommand	 {tooltipAddCommand	  TooltipAddCommand   w}
-	-tooltipdelcommand	 {tooltipDelCommand	  TooltipDelCommand   w}
-	-treecolumn		 {treeColumn		  TreeColumn	      w}
-	-treestyle		 {treeStyle		  TreeStyle	      w}
-	-width			 {width			  Width		      w}
-	-xmousewheelwindow	 {xMouseWheelWindow	  MouseWheelWindow    w}
-	-xscrollcommand		 {xScrollCommand	  ScrollCommand	      w}
-	-ymousewheelwindow	 {yMouseWheelWindow	  MouseWheelWindow    w}
-	-yscrollcommand		 {yScrollCommand	  ScrollCommand	      w}
+	-acceptchildcommand	  {acceptChildCommand	  AcceptChildCommand  w}
+	-acceptdropcommand	  {acceptDropCommand	  AcceptDropCommand   w}
+	-activestyle		  {activeStyle		  ActiveStyle	      w}
+	-aftercopycommand	  {afterCopyCommand	  AfterCopyCommand    w}
+	-arrowcolor		  {arrowColor		  ArrowColor	      w}
+	-arrowdisabledcolor	  {arrowDisabledColor	  ArrowDisabledColor  w}
+	-arrowstyle		  {arrowStyle		  ArrowStyle	      w}
+	-autofinishediting	  {autoFinishEditing	  AutoFinishEditing   w}
+	-autoscan		  {autoScan		  AutoScan	      w}
+	-background		  {background		  Background	      b}
+	-bg			  -background
+	-borderwidth		  {borderWidth		  BorderWidth	      f}
+	-bd			  -borderwidth
+	-button2window		  {button2Window	  Button2Window	      w}
+	-collapsecommand	  {collapseCommand	  CollapseCommand     w}
+	-colorizecommand	  {colorizeCommand	  ColorizeCommand     w}
+	-columns		  {columns		  Columns	      w}
+	-columntitles		  {columnTitles		  ColumnTitles	      w}
+	-cursor			  {cursor		  Cursor	      c}
+	-customdragsource	  {customDragSource	  CustomDragSource    w}
+	-disabledforeground	  {disabledForeground	  DisabledForeground  w}
+	-displayondemand	  {displayOnDemand	  DisplayOnDemand     w}
+	-editendcommand		  {editEndCommand	  EditEndCommand      w}
+	-editendonfocusout	  {editEndOnFocusOut	  EditEndOnFocusOut   w}
+	-editendonmodclick	  {editEndOnModClick	  EditEndOnModClick   w}
+	-editselectedonly	  {editSelectedOnly	  EditSelectedOnly    w}
+	-editstartcommand	  {editStartCommand	  EditStartCommand    w}
+	-expandcommand		  {expandCommand	  ExpandCommand       w}
+	-exportselection	  {exportSelection	  ExportSelection     w}
+	-font			  {font			  Font		      b}
+	-forceeditendcommand	  {forceEditEndCommand	  ForceEditEndCommand w}
+	-foreground		  {foreground		  Foreground	      b}
+	-fg			  -foreground
+	-fullseparators		  {fullSeparators	  FullSeparators      w}
+	-height			  {height		  Height	      w}
+	-highlightbackground	  {highlightBackground	  HighlightBackground f}
+	-highlightcolor		  {highlightColor	  HighlightColor      f}
+	-highlightthickness	  {highlightThickness	  HighlightThickness  f}
+	-inactiveselectbackground {inactiveSelectBackground Foreground	      w}
+	-inactiveselectforeground {inactiveSelectForeground Background	      w}
+	-incrarrowtype		  {incrArrowType	  IncrArrowType	      w}
+	-instanttoggle		  {instantToggle	  InstantToggle	      w}
+	-itembackground		  {itemBackground	  Background	      w}
+	-itembg			  -itembackground
+	-labelactivebackground	  {labelActiveBackground  Foreground	      l}
+	-labelactiveforeground	  {labelActiveForeground  Background	      l}
+	-labelbackground	  {labelBackground	  Background	      l}
+	-labelbg		  -labelbackground
+	-labelborderwidth	  {labelBorderWidth	  BorderWidth	      l}
+	-labelbd		  -labelborderwidth
+	-labelcommand		  {labelCommand		  LabelCommand	      w}
+	-labelcommand2		  {labelCommand2	  LabelCommand2	      w}
+	-labeldisabledforeground  {labelDisabledForeground DisabledForeground l}
+	-labelfont		  {labelFont		  Font		      l}
+	-labelforeground	  {labelForeground	  Foreground	      l}
+	-labelfg		  -labelforeground
+	-labelheight		  {labelHeight		  Height	      l}
+	-labelpady		  {labelPadY		  Pad		      l}
+	-labelrelief		  {labelRelief		  Relief	      l}
+	-listvariable		  {listVariable		  Variable	      w}
+	-movablecolumns	 	  {movableColumns	  MovableColumns      w}
+	-movablerows		  {movableRows		  MovableRows	      w}
+	-movecolumncursor	  {moveColumnCursor	  MoveColumnCursor    w}
+	-movecursor		  {moveCursor		  MoveCursor	      w}
+	-populatecommand	  {populateCommand	  PopulateCommand     w}
+	-protecttitlecolumns	  {protectTitleColumns	  ProtectTitleColumns w}
+	-relief			  {relief		  Relief	      f}
+	-resizablecolumns	  {resizableColumns	  ResizableColumns    w}
+	-resizecursor		  {resizeCursor		  ResizeCursor	      w}
+	-selectbackground	  {selectBackground	  Foreground	      w}
+	-selectborderwidth	  {selectBorderWidth	  BorderWidth	      w}
+	-selectfiltercommand	  {selectFilterCommand	  SelectFilterCommand w}
+	-selectforeground	  {selectForeground	  Background	      w}
+	-selectmode		  {selectMode		  SelectMode	      w}
+	-selecttype		  {selectType		  SelectType	      w}
+	-setfocus		  {setFocus		  SetFocus	      w}
+	-setgrid		  {setGrid		  SetGrid	      w}
+	-showarrow		  {showArrow		  ShowArrow	      w}
+	-showbusycursor		  {showBusyCursor	  ShowBusyCursor      w}
+	-showeditcursor		  {showEditCursor	  ShowEditCursor      w}
+	-showhorizseparator	  {showHorizSeparator	  ShowHorizSeparator  w}
+	-showlabels		  {showLabels		  ShowLabels	      w}
+	-showseparators		  {showSeparators	  ShowSeparators      w}
+	-snipstring		  {snipString		  SnipString	      w}
+	-sortcommand		  {sortCommand		  SortCommand	      w}
+	-spacing		  {spacing		  Spacing	      w}
+	-state			  {state		  State		      w}
+	-stretch		  {stretch		  Stretch	      w}
+	-stripebackground	  {stripeBackground	  Background	      w}
+	-stripebg		  -stripebackground
+	-stripeforeground	  {stripeForeground	  Foreground	      w}
+	-stripefg		  -stripeforeground
+	-stripeheight		  {stripeHeight		  StripeHeight	      w}
+	-takefocus		  {takeFocus		  TakeFocus	      f}
+	-targetcolor		  {targetColor		  TargetColor	      w}
+	-tight			  {tight		  Tight		      w}
+	-titlecolumns		  {titleColumns	  	  TitleColumns	      w}
+	-tooltipaddcommand	  {tooltipAddCommand	  TooltipAddCommand   w}
+	-tooltipdelcommand	  {tooltipDelCommand	  TooltipDelCommand   w}
+	-treecolumn		  {treeColumn		  TreeColumn	      w}
+	-treestyle		  {treeStyle		  TreeStyle	      w}
+	-width			  {width		  Width		      w}
+	-xmousewheelwindow	  {xMouseWheelWindow	  MouseWheelWindow    w}
+	-xscrollcommand		  {xScrollCommand	  ScrollCommand	      w}
+	-ymousewheelwindow	  {yMouseWheelWindow	  MouseWheelWindow    w}
+	-yscrollcommand		  {yScrollCommand	  ScrollCommand	      w}
     }
 
     #
@@ -503,13 +513,14 @@ namespace eval tablelist {
 	itemlistvar itemtodict labelpath labels labeltag labelwindowpath \
 	loadfromfile loadfromstring move movecolumn nearest nearestcell \
 	nearestcolumn noderow parentkey refreshsorting rejectinput \
-	resetsortinfo restorecursor rowattrib rowcget rowconfigure scan \
-	searchcolumn see seecell seecolumn selection separatorpath separators \
-	setbusycursor showtargetmark size sort sortbycolumn sortbycolumnlist \
-	sortcolumn sortcolumnlist sortorder sortorderlist stopautoscroll \
-	targetmarkpath targetmarkpos togglecolumnhide togglerowhide \
-	toplevelkey unsetattrib unsetcellattrib unsetcolumnattrib \
-	unsetrowattrib viewablerowcount windowpath xview yview]
+	resetsortinfo restorecursor rowattrib rowcget rowconfigure rowcount \
+	scan searchcolumn see seecell seecolumn selection separatorpath \
+	separators setbusycursor showtargetmark size sort sortbycolumn \
+	sortbycolumnlist sortcolumn sortcolumnlist sortorder sortorderlist \
+	stopautoscroll targetmarkpath targetmarkpos togglecolumnhide \
+	togglerowhide toplevelkey unsetattrib unsetcellattrib \
+	unsetcolumnattrib unsetrowattrib viewablerowcount windowpath xview \
+	yview]
 
     proc restrictCmdOpts {} {
 	variable cmdOpts
@@ -562,8 +573,8 @@ namespace eval tablelist {
 				 hascellattrib hasrowattrib imagelabelpath \
 				 index insert insertlist iselemsnipped \
 				 itemlistvar nearest nearestcell rowattrib \
-				 rowcget rowconfigure size unsetcellattrib \
-				 unsetrowattrib windowpath]
+				 rowcget rowconfigure rowcount size \
+				 unsetcellattrib unsetrowattrib windowpath]
     variable labelWinTypes [list checkbutton ttk::checkbutton]
     variable scanOpts      [list mark dragto]
     variable searchOpts    [list -all -backwards -check -descend -exact \
@@ -718,7 +729,8 @@ proc tablelist::createBindings {} {
     variable winSys
     variable newAquaSupport
     if {$usingTile && $winSys eq "aqua" && $newAquaSupport} {
-	foreach event {<<LightAqua>> <<DarkAqua>>} {
+	foreach event {<<LightAppearance>> <<DarkAppearance>>
+		       <<LightAqua>> <<DarkAqua>>} {
 	    bind TablelistMain $event {
 		if {![info exists tablelist::appearanceId]} {
 		    set tablelist::appearanceId \
@@ -847,6 +859,7 @@ proc tablelist::tablelist args {
 	    imgCount		 0
 	    winCount		 0
 	    indentCount		 0
+	    hasBodyLblMsg	 0
 	    labelClicked	 0
 	    labelModifClicked	 0
 	    arrowColList	 {}
@@ -1055,7 +1068,7 @@ proc tablelist::tablelist args {
 	    $w configure -background $labelBg
 	}
 
-	if {[tk::unsupported::MacWindowStyle isdark .]} {
+	if {[isInDarkMode]} {
 	    set labelBorderBg #4b4b4b
 	} else {
 	    set labelBorderBg #c8c8c8
@@ -1109,7 +1122,11 @@ proc tablelist::tablelist args {
     }
 
     #
-    # Create the body text widget within the main frame
+    # Create the body text widget within the main frame and replace the
+    # binding tag Text with $data(bodyTag) and TablelistBody in the list
+    # of its binding tags.  Also insert the binding tag TablelistKeyNav,
+    # and on the windowing system aqua insert the additional binding tag
+    # TablelistBody2, needed to work around some binding-related problems.
     #
     set w $data(body)
     text $w -borderwidth 0 -exportselection 0 -highlightthickness 0 \
@@ -1119,17 +1136,23 @@ proc tablelist::tablelist args {
     pack $w -expand 1 -fill both
     bindtags $w [list $w $data(bodyTag) TablelistBody $data(topWin) \
 		 TablelistKeyNav all]
+    variable winSys
+    if {$winSys eq "aqua"} {
+	bindtags $w [linsert [bindtags $w] 3 TablelistBody2]
+    }
 
     #
-    # Create the "stripe", "select", "curRow", "active", "disabled", "redraw",
-    # "hiddenRow", "elidedRow", "hiddenCol", and "elidedCol" tags in the body
-    # text widget.  Don't use the built-in "sel" tag because on Windows the
-    # selection in a text widget only becomes visible when the window gets
-    # the input focus.  DO NOT CHANGE the order of creation of these tags!
+    # Create the "itembg", "stripe", "select", "inactsel", "curRow",
+    # "active", "disabled", "redraw", "hiddenRow", "elidedRow",
+    # "hiddenCol", and "elidedCol" tags in the body text widget.
+    # Don't use the built-in "sel" tag because on Windows the selection
+    # in a text widget only becomes visible when the window gets the
+    # input focus.  DO NOT CHANGE the order of creation of these tags!
     #
     $w tag configure itembg -background ""		     ;# initial setting
     $w tag configure stripe -background "" -foreground ""    ;# initial setting
     $w tag configure select -relief raised
+    $w tag configure inactsel -relief raised
     $w tag configure curRow -borderwidth 1 -relief raised
     $w tag configure active -borderwidth ""		     ;# initial setting
     $w tag configure disabled -foreground ""		     ;# initial setting
@@ -4682,6 +4705,18 @@ proc tablelist::header_rowconfigureSubCmd {win argList} {
 }
 
 #------------------------------------------------------------------------------
+# tablelist::header_rowcountSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::header_rowcountSubCmd {win argList} {
+    if {[llength $argList] != 0} {
+	mwutil::wrongNumArgs "$win header rowcount"
+    }
+
+    upvar ::tablelist::ns${win}::data data
+    return $data(hdr_itemCount)
+}
+
+#------------------------------------------------------------------------------
 # tablelist::header_sizeSubCmd
 #------------------------------------------------------------------------------
 proc tablelist::header_sizeSubCmd {win argList} {
@@ -5609,6 +5644,19 @@ proc tablelist::rowconfigureSubCmd {win argList} {
     return [mwutil::configureSubCmd $win rowConfigSpecs \
 	    "tablelist::doRowConfig $row" "tablelist::doRowCget $row" \
 	    [lrange $argList 1 end]]
+}
+
+#------------------------------------------------------------------------------
+# tablelist::rowcountSubCmd
+#------------------------------------------------------------------------------
+proc tablelist::rowcountSubCmd {win argList} {
+    if {[llength $argList] != 0} {
+	mwutil::wrongNumArgs "$win rowcount"
+    }
+
+    synchronize $win
+    upvar ::tablelist::ns${win}::data data
+    return $data(itemCount)
 }
 
 #------------------------------------------------------------------------------
@@ -6654,7 +6702,8 @@ proc tablelist::xviewSubCmd {win argList} {
 			if {$winSys eq "x11"} {
 			    set delay [expr {($data(colCount) + 7) / 8}]
 			} else {
-			    set delay [expr {($data(colCount) + 1) / 2}]
+			    set delay $data(colCount)
+			    if {$delay < 10} { set delay 10 }
 			}
 			set data(horizMoveToId) \
 			    [after $delay [list tablelist::horizMoveTo $win]]
@@ -6670,7 +6719,8 @@ proc tablelist::xviewSubCmd {win argList} {
 			    if {$winSys eq "x11"} {
 				set delay [expr {($data(colCount) + 7) / 8}]
 			    } else {
-				set delay [expr {($data(colCount) + 1) / 2}]
+				set delay $data(colCount)
+				if {$delay < 10} { set delay 10 }
 			    }
 			    set data(horizScrollId) [after $delay \
 				[list tablelist::horizScrollByUnits $win]]
@@ -6820,6 +6870,7 @@ proc tablelist::yviewSubCmd {win argList} {
 			set delay [expr {($data(colCount) + 3) / 4}]
 		    } else {
 			set delay $data(colCount)
+			if {$delay < 20} { set delay 20 }
 		    }
 		    set data(vertMoveToId) \
 			[after $delay [list tablelist::vertMoveTo $win]]
@@ -6836,6 +6887,7 @@ proc tablelist::yviewSubCmd {win argList} {
 			    set delay [expr {($data(colCount) + 3) / 4}]
 			} else {
 			    set delay $data(colCount)
+			    if {$delay < 20} { set delay 20 }
 			}
 			set data(vertScrollId) [after $delay \
 			    [list tablelist::vertScrollByUnits $win]]
@@ -7391,7 +7443,7 @@ proc tablelist::deleteRows {win first last updateListVar} {
 	array unset data {k[0-9]*}
 	array set data {rowTagRefCount 0  nonViewableRowCount 0
 	    cellTagRefCount 0  imgCount 0  winCount 0  indentCount 0
-	    root-childList {}}
+	    hasBodyLblMsg 0  root-childList {}}
 
 	array unset attribs {k[0-9]*}
 	array unset selStates *
@@ -8580,6 +8632,7 @@ proc tablelist::doScan {win opt x y} {
 		set delay [expr {($data(colCount) + 3) / 4}]
 	    } else {
 		set delay $data(colCount)
+		if {$delay < 20} { set delay 20 }
 	    }
 	    set data(dragToId) \
 		[after $delay [list tablelist::dragTo $win]]

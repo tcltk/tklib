@@ -1425,7 +1425,7 @@ proc ::ico::Show {file args} {
 		# catch in case theres any icons with unsupported color
 		if {[catch {getIconByName $file $name} img]} {
 		    set txt "ERROR: $img"
-		    set lbl [label $sf.lbl$wname-$x -anchor w -text $txt]
+		    set lbl [label $sf.lbl$wname-$name -anchor w -text $txt]
 		    grid $lbl -sticky s -row 0 -column [incr col]
 		} else {
 		    set txt "$name: ${w}x${h} ${bpp}bpp"

@@ -10,7 +10,7 @@
 #   - Private procedures used in bindings
 #   - Private utility procedures
 #
-# Copyright (c) 2021-2025  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2021-2026  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -33,6 +33,7 @@ namespace eval scrollutil::pnb {
     variable configSpecs
     array set configSpecs {
 	-caller			{caller		Caller		w}
+	-class			{""		""		f}
 	-closabletabs		{closableTabs	ClosableTabs	w}
 	-cursor			{cursor		Cursor		f}
 	-forgetcommand		{forgetCommand	ForgetCommand	w}
@@ -40,6 +41,7 @@ namespace eval scrollutil::pnb {
 	-leavecommand		{leaveCommand	LeaveCommand	w}
 	-movabletabs		{movableTabs	MovableTabs	w}
 	-side			{side		Side		w}
+	-style			{style		Style		n}
 	-takefocus		{takeFocus	TakeFocus	f}
 	-title			{title		Title		w}
 	-width			{width		Width		n}
@@ -49,6 +51,7 @@ namespace eval scrollutil::pnb {
     # Extend the elements of the array configSpecs
     #
     lappend configSpecs(-caller)	-1
+    lappend configSpecs(-class)		"Plainnotebook"
     lappend configSpecs(-closabletabs)	0
     lappend configSpecs(-cursor)	""
     lappend configSpecs(-forgetcommand)	""
@@ -56,6 +59,7 @@ namespace eval scrollutil::pnb {
     lappend configSpecs(-leavecommand)	""
     lappend configSpecs(-movabletabs)	1
     lappend configSpecs(-side)		left
+    lappend configSpecs(-style)		"Plain.TNotebook"
     lappend configSpecs(-takefocus)	"ttk::takefocus"
     lappend configSpecs(-title)		""
     lappend configSpecs(-width)		0
@@ -214,11 +218,11 @@ namespace eval scrollutil::pnb {
     #
     proc configStyles {} {
 	#
-	# Configure the Plainnotebook.TNotebook style
+	# Configure the Plain.TNotebook style
 	#
-	ttk::style layout Plainnotebook.TNotebook.Tab null
-	ttk::style configure Plainnotebook.TNotebook -mintabwidth 0 \
-	    -padding 0 -tabmargins 0
+	ttk::style layout Plain.TNotebook.Tab null
+	ttk::style configure Plain.TNotebook -mintabwidth 0 -padding 0 \
+	    -tabmargins 0
 
 	#
 	# Configure the Desc.Toolbutton, Page.Toolbutton,
@@ -298,9 +302,10 @@ proc scrollutil::pnb::createBindings {} {
     bind Plainnotebook <<ThemeChanged>> { scrollutil::pnb::onThemeChanged %W }
 
     bindtags . [linsert [bindtags .] 1 PlainnotebookMain]
-    foreach event {<<ThemeChanged>> <<LightAqua>> <<DarkAqua>>} {
+    foreach event {<<ThemeChanged>> <<LightAppearance>> <<DarkAppearance>>
+		   <<LightAqua>> <<DarkAqua>>} {
 	bind PlainnotebookMain $event {
-	    scrollutil::pnb::onThemeChanged %W
+	    after idle scrollutil::pnb::onThemeChanged %W
 	}
     }
 
@@ -424,16 +429,28 @@ proc scrollutil::plainnotebook args {
     variable pnb::configSpecs
     variable pnb::configOpts
 
-    if {[llength $args] == 0} {
+    set argCount [llength $args]
+    if {$argCount == 0 || $argCount % 2 == 0} {
 	mwutil::wrongNumArgs "plainnotebook pathName ?options?"
     }
 
     #
-    # Create a ttk::frame of the class Plainnotebook
+    # Get the value of the last "-class" option if present
+    #
+    set className "Plainnotebook"
+    for {set n [expr {$argCount - 2}]} {$n > 1} {incr n -2} {
+	if {[lindex $args $n] eq "-class"} {
+	    set className [lindex $args [expr {$n + 1}]]
+	    break
+	}
+    }
+
+    #
+    # Create a ttk::frame of the class $className
     #
     set win [lindex $args 0]
     if {[catch {
-	ttk::frame $win -class Plainnotebook -borderwidth 0 -relief flat \
+	ttk::frame $win -class $className -borderwidth 0 -relief flat \
 			-height 0 -width 0 -padding 0
     } result] != 0} {
 	return -code error $result
@@ -462,6 +479,7 @@ proc scrollutil::plainnotebook args {
     foreach opt $configOpts {
 	set data($opt) [lindex $configSpecs($opt) 3]
     }
+    set data(-class) $className
 
     #
     # Create a frame with the ascend toolbutton,
@@ -507,7 +525,7 @@ proc scrollutil::plainnotebook args {
     # Create a plain ttk::notebook widget and deactivate
     # the TNotebook keyboard bindings for it
     #
-    set nb [ttk::notebook $win.nb -style Plainnotebook.TNotebook -takefocus 0]
+    set nb [ttk::notebook $win.nb -style Plain.TNotebook -takefocus 0]
     foreach event {<Right> <Left> <Control-Tab> <Control-Shift-Tab>} {
 	bind $nb $event break
     }
@@ -601,6 +619,14 @@ proc scrollutil::pnb::doConfig {win opt val} {
     #
     switch [lindex $configSpecs($opt) 2] {
 	f {
+	    if {$opt eq "-class"} {
+		if {[lindex [info level -2] 0] eq "mwutil::configureSubCmd"} {
+		    return -code error "attempt to change read-only option"
+		} else {
+		    return ""
+		}
+	    }
+
 	    #
 	    # Apply the value to the outer frame and save the
 	    # properly formatted value of val in data($opt)
@@ -1185,7 +1211,7 @@ proc scrollutil::pnb::plainnotebookWidgetCmd {win args} {
 		mwutil::wrongNumArgs "$win $cmd"
 	    }
 
-	    return "Plainnotebook.TNotebook"
+	    return $data(-style);
 	}
 
 	tab {

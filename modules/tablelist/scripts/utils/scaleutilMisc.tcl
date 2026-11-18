@@ -25,7 +25,7 @@ namespace eval scaleutilmisc {
     #
     # Public variables:
     #
-    variable version	1.7.1
+    variable version	1.8
     variable library	[file dirname [file normalize [info script]]]
 
     #
@@ -34,6 +34,15 @@ namespace eval scaleutilmisc {
     namespace export	scaleBWidgetSpinBox scaleBWidgetComboBox \
 			scaleIncrDateentry scaleIncrTimeentry \
 			scaleIncrCombobox scaleOakleyComboboxArrow
+
+    proc getScalingPct {} {
+	set pct [expr {[tk scaling] * 75}]
+	for {set intPct 100} {1} {incr intPct 25} {
+	    if {$pct < $intPct + 12.5} {
+		return $intPct
+	    }
+	}
+    }
 
     variable onX11 [expr {[tk windowingsystem] eq "x11"}]
 
@@ -57,8 +66,7 @@ proc scaleutilmisc::scaleBWidgetSpinBox w {
     #
     # Scale the width of the two arrows, which is set to 11
     #
-    set pct $::scaleutil::scalingPct				;# can be > 200
-    set arrWidth [::scaleutil::scale 11 $pct]
+    set arrWidth [::scaleutil::scale 11 [getScalingPct]]
     $w.arrup configure -width $arrWidth
     $w.arrdn configure -width $arrWidth
 }
@@ -74,8 +82,7 @@ proc scaleutilmisc::scaleBWidgetComboBox w {
     #
     variable onX11
     set defaultWidth [expr {$onX11 ? 11 : 15}]
-    set pct $::scaleutil::scalingPct				;# can be > 200
-    set width [::scaleutil::scale $defaultWidth $pct]
+    set width [::scaleutil::scale $defaultWidth [getScalingPct]]
     $w.a configure -width $width
 
     #
@@ -227,7 +234,7 @@ proc scaleutilmisc::calendarImg pct {
 
     variable svgSupported
     if {$svgSupported} {
-	set pct $::scaleutil::scalingPct			;# can be > 200
+	set svgFmt [list svg -scale [expr {[getScalingPct] / 100.0}]]
 	scaleutilmisc_calendarImg put {
 <svg width="16" height="16" version="1.1" xmlns="http://www.w3.org/2000/svg">
  <rect width="16" height="16" rx="1" fill="#8b0000"/>
@@ -245,7 +252,7 @@ proc scaleutilmisc::calendarImg pct {
  <rect x="9" y="12" width="2" height="2"/>
  <rect x="12" y="12" width="2" height="2"/>
 </svg>
-	} -format [list svg -scale [expr {$pct / 100.0}]]
+	} -format $svgFmt
 
     } else {
 	switch $pct {
@@ -464,13 +471,13 @@ proc scaleutilmisc::watchImg pct {
 
     variable svgSupported
     if {$svgSupported} {
-	set pct $::scaleutil::scalingPct			;# can be > 200
+	set svgFmt [list svg -scale [expr {[getScalingPct] / 100.0}]]
 	scaleutilmisc_watchImg put {
 <svg width="16" height="16" version="1.1" xmlns="http://www.w3.org/2000/svg">
  <circle cx="8" cy="8" r="7.5" fill="#fff" stroke="#8b0000"/>
  <path d="m8 3v5h4" fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
-	} -format [list svg -scale [expr {$pct / 100.0}]]
+	} -format $svgFmt
 
     } else {
 	switch $pct {

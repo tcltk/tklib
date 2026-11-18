@@ -2,9 +2,9 @@
 [//000000001]: # (canvas::gradient \- Variations on a canvas)
 [//000000002]: # (Generated from file 'canvas\_gradient\.man' by tcllib/doctools with format 'markdown')
 [//000000003]: # (Copyright &copy; 2013 Jarek Lewandowski, MaxJarek)
-[//000000004]: # (Copyright &copy; Origin http://wiki\.tcl\.tk/6100)
-[//000000005]: # (Copyright &copy; Origin http://wiki\.tcl\.tk/37242)
-[//000000006]: # (Copyright &copy; Origin http://wiki\.tcl\.tk/9079)
+[//000000004]: # (Copyright &copy; Origin http://wiki\.tcl\-lang\.org/6100)
+[//000000005]: # (Copyright &copy; Origin http://wiki\.tcl\-lang\.org/37242)
+[//000000006]: # (Copyright &copy; Origin http://wiki\.tcl\-lang\.org/9079)
 [//000000007]: # (canvas::gradient\(n\) 0\.2 tklib "Variations on a canvas")
 
 <hr> [ <a href="../../../../toc.md">Main Table Of Contents</a> &#124; <a
@@ -127,8 +127,8 @@ use\.
 
 This document, and the package it describes, will undoubtedly contain bugs and
 other problems\. Please report such in the category *canvas* of the [Tklib
-Trackers](http://core\.tcl\.tk/tklib/reportlist)\. Please also report any ideas
-for enhancements you may have for either package and/or documentation\.
+Trackers](http://core\.tcl\-lang\.org/tklib/reportlist)\. Please also report any
+ideas for enhancements you may have for either package and/or documentation\.
 
 # <a name='keywords'></a>KEYWORDS
 
@@ -142,6 +142,6 @@ background](\.\./\.\./\.\./\.\./index\.md\#widget\_background)
 # <a name='copyright'></a>COPYRIGHT
 
 Copyright &copy; 2013 Jarek Lewandowski, MaxJarek  
-Copyright &copy; Origin http://wiki\.tcl\.tk/6100  
-Copyright &copy; Origin http://wiki\.tcl\.tk/37242  
-Copyright &copy; Origin http://wiki\.tcl\.tk/9079
+Copyright &copy; Origin http://wiki\.tcl\-lang\.org/6100  
+Copyright &copy; Origin http://wiki\.tcl\-lang\.org/37242  
+Copyright &copy; Origin http://wiki\.tcl\-lang\.org/9079

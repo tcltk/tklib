@@ -14,7 +14,7 @@
   <div>
     <h1>The <code><b>tablelist::tablelist</b></code> Command</h1>
 
-    <h2>For Tablelist Version 7.7</h2>
+    <h2>For Tablelist Version 7.12</h2>
 
     <h3>by</h3>
 
@@ -71,8 +71,8 @@
 </pre>
     </dd>
 
-    <dt><a href="#body_options">OPTIONS FOR THE BODY AND HEADER COMPONENTS OF
-    THE WIDGET</a></dt>
+    <dt><a href="#body_hdr_options">OPTIONS FOR THE BODY AND HEADER COMPONENTS
+    OF THE WIDGET</a></dt>
 
     <dd>
       <pre>
@@ -187,6 +187,14 @@
     <i>boolean</i></code></dd>
 
     <dd><code><b><a href="#height">-height</a></b> <i>units</i></code></dd>
+
+    <dd><code><b><a href=
+    "#inactiveselectbackground">-inactiveselectbackground</a></b>
+    <i>color</i></code></dd>
+
+    <dd><code><b><a href=
+    "#inactiveselectforeground">-inactiveselectforeground</a></b>
+    <i>color</i></code></dd>
 
     <dd><code><b><a href="#incrarrowtype">-incrarrowtype</a></b>
     <b>up</b>|<b>down</b></code></dd>
@@ -1171,6 +1179,9 @@
     <i>index</i> ?<i>option</i>? ?<i>value</i> <i>option</i> <i>value</i>
     ...?</code></dd>
 
+    <dd><code><i>pathName</i> <b><a href=
+    "#rowcount">rowcount</a></b></code></dd>
+
     <dd><code><i>pathName</i> <b><a href="#scan">scan</a></b>
     <b>mark</b>|<b>dragto</b> <i>x</i> <i>y</i></code></dd>
 
@@ -1497,6 +1508,9 @@
     rowconfigure</a></b> <i>headerIndex</i> ?<i>option</i>? ?<i>value</i>
     <i>option</i> <i>value</i> ...?</code></dd>
 
+    <dd><code><i>pathName</i> <b><a href="#hdr_rowcount">header
+    rowcount</a></b></code></dd>
+
     <dd><code><i>pathName</i> <b><a href="#hdr_size">header
     size</a></b></code></dd>
 
@@ -1686,7 +1700,7 @@
     supports both static and dynamic scrollbars, and respects the header
     component and title columns of tablelist widgets.</dd>
 
-    <dt class="tm" id="body_options"><b>OPTIONS FOR THE BODY AND HEADER
+    <dt class="tm" id="body_hdr_options"><b>OPTIONS FOR THE BODY AND HEADER
     COMPONENTS OF THE WIDGET</b></dt>
 
     <dd>
@@ -1697,10 +1711,10 @@
 
     <dd>These options (described in the <b>options</b> manual entry) are only
     valid for the body and header components of the tablelist widget.&nbsp; As
-    discussed in the next section, the colors and font used when drawing the
-    header <i>labels</i> can be different from those specified for the body and
-    header <i>items</i>.&nbsp; When using the package Tablelist_tile, these
-    options have theme-specific default values.</dd>
+    discussed below, the colors and fonts used when drawing the header
+    <i>labels</i> can be different from those specified for the body and header
+    <i>items</i>.&nbsp; When using the package Tablelist_tile, these options
+    have theme-specific default values.</dd>
 
     <dt class="tm" id="widget_options"><b>WIDGET-SPECIFIC OPTIONS</b></dt>
 
@@ -2021,15 +2035,14 @@ proc acceptDropCmd {tbl targetRow sourceRow} {
         no effect.</p>
 
         <p>The arrow style <code><b>photo0x0</b></code> uses SVG images that
-        will scale <i>automatically</i> according to the display's <i>real</i>
-        scaling percentage, which can be greater than <code>200</code> (the
-        maximum value of the variable
-        <code><b>tablelist::scalingpct</b></code>).&nbsp; This comes in handy
-        especially when running Androwish on a tablet or smartphone.&nbsp; This
-        arrow style is only supported if the Tk version is either at least 8.7
-        (with built-in SVG support), or 8.6 and the tksvg extension can be
-        loaded into the interpreter.&nbsp; The sort arrows of this arrow style
-        are quite similar to those of the styles <code><b>flat8x4</b></code>,
+        will scale <i>automatically</i> according to the display's DPI scaling
+        level and Tk's scaling factor given by&nbsp; <code><b>[tk
+        scaling]</b></code>.&nbsp; This comes in handy especially when running
+        Androwish on a tablet or smartphone.&nbsp; This arrow style is only
+        supported if the Tk version is either at least 8.7 (with built-in SVG
+        support), or 8.6 and the tksvg extension can be loaded into the
+        interpreter.&nbsp; The sort arrows of this arrow style are quite
+        similar to those of the styles <code><b>flat8x4</b></code>,
         <code><b>flat10x5</b></code>, <code><b>flat12x6</b></code>,
         <code><b>flat14x7</b></code>, and <code><b>flat16x8</b></code>, except
         that they are rendered using anti-aliasing and are unlimitedly
@@ -2884,6 +2897,90 @@ proc expandCmd {tbl row} {
       </blockquote>
     </dd>
 
+    <dd id="inactiveselectbackground">
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td>Command-Line Name:&nbsp;</td>
+          <td><code><b>-inactiveselectbackground</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Name:</td>
+          <td><code><b>&nbsp;inactiveSelectBackground</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Class:</td>
+          <td><code><b>&nbsp;Foreground</b></code></td>
+        </tr>
+      </table>
+
+      <blockquote>
+        <p>Specifies the background color to use for the selection in the
+        tablelist's body when the latter does not have the input focus.&nbsp;
+        If empty then the value of the <b>-selectbackground</b></code> option
+        at <a href="#std_options">widget</a>, <a href=
+        "#col_selectbackground">column</a>, <a href=
+        "#row_selectbackground">row</a>, or <a href=
+        "#cell_selectbackground">cell</a> level is used when the widget's body
+        does not have the focus.</p>
+
+        <p>The default value depends on the windowing system in the Tablelist
+        package and on the current theme in Tablelist_tile:&nbsp; In the
+        Tablelist package it is non-empty on the windowing systems
+        <code><b>aqua</b></code> and <code><b>win32</b></code>, and an empty
+        string on <code><b>x11</b></code>; in Tablelist_tile it is non-empty
+        for the themes <code><b>aqua</b></code>, <code><b>clam</b></code>,
+        <code><b>vista</b></code>, <code><b>winnative</b></code>, and
+        <code><b>xpnative</b></code>, and an empty string for all the other
+        themes.&nbsp; The choice of the default value makes sure that the
+        selection will appear in native colors also when the widget's body does
+        not have the focus.</p>
+      </blockquote>
+    </dd>
+
+    <dd id="inactiveselectforeground">
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td>Command-Line Name:&nbsp;</td>
+          <td><code><b>-inactiveselectforeground</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Name:</td>
+          <td><code><b>&nbsp;inactiveSelectForeground</b></code></td>
+        </tr>
+
+        <tr>
+          <td>Database Class:</td>
+          <td><code><b>&nbsp;Background</b></code></td>
+        </tr>
+      </table>
+
+      <blockquote>
+        <p>Specifies the foreground color to use for the selection in the
+        tablelist's body when the latter does not have the input focus.&nbsp;
+        This option is only relevant if the value of the <code><b><a href=
+        "#inactiveselectbackground">-inactiveselectbackground</a></b></code>
+        option is non-empty, in which case, if the value of this option is an
+        empty string then the value of the <b>-selectforeground</b></code>
+        option at <a href="#std_options">widget</a> level (only) is used when
+        the tablelist's body does not have the focus.</p>
+
+        <p>The default value depends on the windowing system in the Tablelist
+        package and on the current theme in Tablelist_tile:&nbsp; In the
+        Tablelist package it is non-empty on the windowing systems
+        <code><b>aqua</b></code> and <code><b>win32</b></code>, and an empty
+        string on <code><b>x11</b></code>; in Tablelist_tile it is non-empty
+        for the themes <code><b>aqua</b></code>, <code><b>clam</b></code>,
+        <code><b>vista</b></code>, <code><b>winnative</b></code>, and
+        <code><b>xpnative</b></code>, and an empty string for all the other
+        themes.&nbsp; The choice of the default value makes sure that the
+        selection will appear in native colors also when the widget's body does
+        not have the focus.</p>
+      </blockquote>
+    </dd>
+
     <dd id="incrarrowtype">
       <table border="0" cellpadding="0" cellspacing="0">
         <tr>
@@ -2972,7 +3069,7 @@ proc expandCmd {tbl row} {
         the body items and that of the header area filled with the header
         items (if any).&nbsp; The default value is an empty string, indicating
         that these areas will inherit the background color specified by the
-        <code><b><a href="#body_options">-background</a></b></code>
+        <code><b><a href="#body_hdr_options">-background</a></b></code>
         configuration option.&nbsp; Notice that regardless of the value of this
         option, the blank space that might appear to the right of the body and
         header items as well as below the last body item will always have the
@@ -4207,7 +4304,8 @@ option add *Tablelist.showHorizSeparator 0
         the widget is disabled then neither items nor columns may be inserted,
         deleted, updated, or moved, the items, header labels, and the up- or
         down-arrow are drawn in the <code><b><a href=
-        "#body_options">-disabledforeground</a></b></code>, <code><b><a href=
+        "#body_hdr_options">-disabledforeground</a></b></code>,
+        <code><b><a href=
         "#labeldisabledforeground">-labeldisabledforeground</a></b></code>, and
         <code><b><a href=
         "#arrowdisabledcolor">-arrowdisabledcolor</a></b></code> color,
@@ -4298,7 +4396,7 @@ option add *Tablelist.showHorizSeparator 0
         items, and so on.&nbsp; In the Tablelist package and in most themes
         supported by Tablelist_tile, the default value is an empty string,
         indicating that the stripes will inherit the background color specified
-        by the <code><b><a href="#body_options">-background</a></b></code>
+        by the <code><b><a href="#body_hdr_options">-background</a></b></code>
         configuration option.&nbsp; When using Tablelist_tile with the
         <code><b>tileqt</b></code> theme then the default value is given by the
         global KDE option <code><b>alternateBackground</b></code>, which in
@@ -4344,7 +4442,7 @@ option add *Tablelist.showHorizSeparator 0
         which in turn is followed by the same number of "normal" viewable
         items, and so on.&nbsp; The default value is an empty string,
         indicating that the stripes will inherit the foreground color specified
-        by the <code><b><a href="#body_options">-foreground</a></b></code>
+        by the <code><b><a href="#body_hdr_options">-foreground</a></b></code>
         configuration option.&nbsp; The <code><b>-stripeforeground</b></code>
         option has a higher priority than the <code><b>-foreground</b></code>
         column configuration option, but a lower priority than the
@@ -4938,7 +5036,10 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
         <code><b>vistaClassic</b></code>, <code><b>win7Aero</b></code>,
         <code><b>win7Classic</b></code>, and <code><b>win10</b></code> are
         <i>automatically</i> adapted to the display's scaling percentage.&nbsp;
-        Platform-independent <i>manual</i> scaling is supported by the
+        The same holds true for <code><b>aqua11</b></code> in the presence of
+        SVG support.</p>
+
+        <p>Platform-independent <i>manual</i> scaling is supported for the
         following tree styles:</p>
 
         <table border="2" cellspacing="0" cellpadding="3" rules="groups">
@@ -5078,11 +5179,10 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
         <code><b>bicolor*</b></code>, <code><b>white*</b></code>, and
         <code><b>classic*</b></code>, respectively, except that they use SVG
         images whose sizes are <i>automatically</i> adapted to the display's
-        <i>real</i> scaling percentage, which can be greater than
-        <code>200</code> (the maximum value of the variable
-        <code><b>tablelist::scalingpct</b></code>).&nbsp; These unlimitedly
-        scalable tree styles come in handy especially when running Androwish on
-        a tablet or smartphone.</p>
+        DPI scaling level and Tk's scaling factor given by&nbsp; <code><b>[tk
+        scaling]</b></code>.&nbsp; These unlimitedly scalable tree styles come
+        in handy especially when running Androwish on a tablet or
+        smartphone.</p>
 
         <p>The following table contains a detailed description of the tree
         styles, in alphabetical order:</p>
@@ -5134,6 +5234,8 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
             <td><img src="aqua11.png" alt="aqua11" width="120" height=
             "54"></td>
             <td>
+              When posssible, uses SVG images that scale automatically,
+              according to the display's real scaling percentage.<br>
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr valign="top">
                   <td>Tablelist:&nbsp;</td>
@@ -5226,8 +5328,9 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr valign="top">
                   <td>Tablelist_tile:&nbsp;</td>
-                  <td>Default for the <code><b>awarc</b></code> theme, if SVG
-                  support is available.</td>
+                  <td>Default for the themes <code><b>arc</b></code>,
+                  <code><b>awarc</b></code>, and <code><b>droid</b></code>, if
+                  SVG support is available.</td>
                 </tr>
               </table>
             </td>
@@ -5246,8 +5349,9 @@ proc tooltipDelCmd tbl { <span class="red">tooltip::tooltip $tbl ""</span> }
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr valign="top">
                   <td>Tablelist_tile:&nbsp;</td>
-                  <td>Default for the <code><b>awarc</b></code> theme, in the
-                  absence of SVG support.</td>
+                  <td>Default for the themes <code><b>arc</b></code>,
+                  <code><b>awarc</b></code>, and <code><b>droid</b></code>, in
+                  the absence of SVG support.</td>
                 </tr>
               </table>
             </td>
@@ -7630,7 +7734,7 @@ proc updateWindow {tbl row col w args} {
 
     <dd class="tm">
       <b>TkDND EXAMPLE:</b>&nbsp; For an introduction to TkDND see the online
-      <a href="https://wiki.tcl.tk/36708">TkDND Tutorial</a> by Georgios
+      <a href="https://wiki.tcl-lang.org/36708">TkDND Tutorial</a> by Georgios
       Petasis.&nbsp; For the following example it is strongly recommended to
       use TkDND version 2.7 or later, which can be downloaded from the location
 
@@ -7685,7 +7789,7 @@ proc onTblDrop {tbl action data} {
     <dd>
       <b>BWidget EXAMPLE:</b>&nbsp; For an introduction to drag & drop with
       BWidget see the online tutorial <a href=
-      "https://wiki.tcl.tk/16126">BWidget example: Drag and Drop Demo</a> by
+      "https://wiki.tcl-lang.org/16126">BWidget example: Drag and Drop Demo</a> by
       Kevin Walzer.&nbsp; The <code><b>DropSite::*</b></code> commands used in
       the following example are described in the "DropSite" reference page
       included in the BWidget distribution.&nbsp; When using this drag & drop
@@ -8008,7 +8112,7 @@ proc handleTblDrop {tbl data} {
           rightmost columns visible in the tablelist window, i.e., of the
           numerical equivalents of the <a href="#col_indices">column
           indices</a> <code><b>left</b></code> and
-	  <code><b>right</b></code>.</td>
+          <code><b>right</b></code>.</td>
         </tr>
 
         <tr valign="top">
@@ -8019,7 +8123,7 @@ proc handleTblDrop {tbl data} {
           bottommost body items visible in the tablelist window, i.e., of
           the numerical equivalents of the <a href="#row_indices">row
           indices</a> <code><b>top</b></code> and
-	  <code><b>bottom</b></code>.</td>
+          <code><b>bottom</b></code>.</td>
         </tr>
       </table>
     </dd>
@@ -8031,8 +8135,10 @@ proc handleTblDrop {tbl data} {
     "tablelistThemes.html#setThemeDefaults">tablelist::setThemeDefaults</a></b></code>
     command when handling the virtual events
     <code><b>&lt;&lt;ThemeChanged&gt;&gt;</b></code>,
-    <code><b>&lt;&lt;LightAqua&gt;&gt;</b></code>, and
-    <code><b>&lt;&lt;DarkAqua&gt;&gt;</b></code>.&nbsp; To handle it, use the
+    <code><b>&lt;&lt;LightAppearance&gt;&gt;</b></code> (formerly:
+    <code><b>&lt;&lt;LightAqua&gt;&gt;</b></code>), and
+    <code><b>&lt;&lt;DarkAppearance&gt;&gt;</b></code> (formerly:
+    <code><b>&lt;&lt;DarkAqua&gt;&gt;</b></code>).&nbsp; To handle it, use the
     binding tag <code><b>TablelistMain</b></code>, which is assigned by
     Tablelist_tile to the main window.</dd>
 
@@ -8942,12 +9048,12 @@ registerDragSrc [$tbl bodypath]
         will be collapsed, so that a subsequent invocation of the non-recursive
         version of the <code><b><a href="#expand">expand(all)</a></b></code>
         subcommand will only display their children but no further descendants
-        of them.&nbsp; The <code><b>-partly</b></code> option (which is used by
-        the default bindings) restricts the operation to just one hierarchy
-        level, implying that by a subsequent invocation of the non-recursive
-        version of the <code><b>expand(all)</b></code> subcommand exactly the
-        same descendants will be displayed again that were visible prior to
-        collapsing the rows.</dd>
+        of them.&nbsp; The <code><b>-partly</b></code> option restricts the
+        operation to just one hierarchy level, implying that by a subsequent
+        invocation of the non-recursive version of the
+        <code><b>expand(all)</b></code> subcommand exactly the same descendants
+        will be displayed again that were visible prior to collapsing the
+        rows.</dd>
 
         <dd class="tm">Before hiding the descendants of a row, the command
         specified as the value of the <code><b><a href=
@@ -9571,7 +9677,7 @@ pack $sa -expand yes -fill both -padx 10 -pady 10
         <dd class="tm">This subcommand is only available in the presence of the
         <code><b>dict</b></code> command, which is the case when using Tcl
         version 8.5 or later, or one of the alternative, <a href=
-        "https://wiki.tcl.tk/10609">Tcl-only <code><b>dict</b></code>
+        "https://wiki.tcl-lang.org/10609">Tcl-only <code><b>dict</b></code>
         implementations</a>.</dd>
 
         <dt class="tm" id="dumptofile"><code><i>pathName</i> <b>dumptofile</b>
@@ -9773,11 +9879,10 @@ bind [.tbl <span class="red">editwintag</span>] &lt;Return&gt; "[bind <a href=
         argument <code><b>-fully</b></code> (which is the default) indicates
         that the command will be performed recursively, i.e., all of the
         descendants of the nodes specified by <code><i>indexList</i></code>
-        will be displayed.&nbsp; The <code><b>-partly</b></code> option (which
-        is used by the default bindings) restricts the operation to just one
-        hierarchy level, indicating that only the children of the specified
-        nodes will be displayed, without changing the expanded/collapsed state
-        of the child nodes.</dd>
+        will be displayed.&nbsp; The <code><b>-partly</b></code> option
+        restricts the operation to just one hierarchy level, indicating that
+        only the children of the specified nodes will be displayed, without
+        changing the expanded/collapsed state of the child nodes.</dd>
 
         <dd class="tm">Before displaying the children of a row, the command
         specified as the value of the <code><b><a href=
@@ -10643,7 +10748,7 @@ upvar #0 [.tbl <span class="red">itemlistvar</span>] itemList
         <dd>This subcommand is only available in the presence of the
         <code><b>dict</b></code> command, which is the case when using Tcl
         version 8.5 or later, or one of the alternative, <a href=
-        "https://wiki.tcl.tk/10609">Tcl-only <code><b>dict</b></code>
+        "https://wiki.tcl-lang.org/10609">Tcl-only <code><b>dict</b></code>
         implementations</a>.</dd>
 
         <dt class="tm" id="labelpath"><code><i>pathName</i> <b>labelpath</b>
@@ -10973,6 +11078,12 @@ upvar #0 [.tbl <span class="red">itemlistvar</span>] itemList
         string.&nbsp; <code><i>option</i></code> may have any of the values
         described in the <a href="#row_options">ROW CONFIGURATION OPTIONS IN
         THE TABLELIST BODY</a> section.</dd>
+
+        <dt class="tm" id="rowcount"><code><i>pathName</i>
+        <b>rowcount</b></code></dt>
+
+        <dd>Returns the total number of items in the tablelist body.&nbsp;
+        Synonym for <code><b><a href="#size">size</a></b></code>.</dd>
 
         <dt class="tm" id="scan"><code><i>pathName</i> <b>scan</b>
         <i>option</i> <i>args</i></code></dt>
@@ -11320,7 +11431,8 @@ upvar #0 [.tbl <span class="red">itemlistvar</span>] itemList
 
         <dt class="tm" id="size"><code><i>pathName</i> <b>size</b></code></dt>
 
-        <dd>Returns the total number of items in the tablelist body.</dd>
+        <dd>Returns the total number of items in the tablelist body.&nbsp;</dd>
+        Synonym for <code><b><a href="#rowcount">rowcount</a></b></code>.</dd>
 
         <dt class="tm" id="sort"><code><i>pathName</i> <b>sort</b>
         ?<b>-increasing</b>|<b>-decreasing</b>?</code></dt>
@@ -12162,11 +12274,19 @@ upvar #0 [.tbl <span class="red">itemlistvar</span>] itemList
         described in the <a href="#hdr_row_options">ROW CONFIGURATION OPTIONS
         IN THE TABLELIST HEADER</a> section.</dd>
 
+        <dt class="tm" id="hdr_rowcount"><code><i>pathName</i> <b>header
+        rowcount</b></code></dt>
+
+        <dd>Similar to the <code><b><a href="#rowcount">rowcount</a></b></code>
+        command for the tablelist body.&nbsp; Synonym for <code><b><a href=
+        "#hdr_size">header size</a></b></code>.</dd>
+
         <dt class="tm" id="hdr_size"><code><i>pathName</i> <b>header
         size</b></code></dt>
 
         <dd>Similar to the <code><b><a href="#size">size</a></b></code> command
-        for the tablelist body.</dd>
+        for the tablelist body.&nbsp; Synonym for <code><b><a href=
+        "#hdr_rowcount">header rowcount</a></b></code>.</dd>
 
         <dt class="tm" id="hdr_unsetcellattrib"><code><i>pathName</i> <b>header
         unsetcellattrib</b> <i>headerCellIndex</i> <i>name</i></code></dt>
@@ -12615,19 +12735,38 @@ proc printClickedCell {w x y} {
     <dd>
       <ol>
         <li class="tm">Pressing mouse button 1 over an expand/collapse control
-        toggles the expanded/collapsed state of the corresponding row.</li>
+        toggles the expanded/collapsed state of the corresponding row by
+        invoking the non-recursive version of the <code><b><a href=
+        "#expand">expand</a></b></code> or <code><b><a href=
+        "#collapse">collapse</a></b></code> subcommand (the one with the
+        <code><b>-partly</b></code> argument).&nbsp; Pressing mouse button 1
+        over an expand/collapse control with the <code>Alt</code> key down
+        toggles the expanded/collapsed state of the corresponding row with the
+        aid of the <code><b>expand</b></code> or <code><b>collapse</b></code>
+        subcommand's recursive version (the one with the
+        <code><b>-fully</b></code> argument).&nbsp; On Mac OS X/11+ Aqua the
+        <code>Command</code> key is used instead of <code>Alt</code>.</li>
 
         <li class="tm">If the current active row contains an expand/collapse
         control in collapsed state then the <code>Right</code>,
-        <code>plus</code>, and <code>KP_Add</code> keys expand the
-        corresponding row by invoking the non-recursive version of the
-        <code><b><a href="#expand">expand</a></b></code> subcommand.</li>
+        <code>plus</code>, and <code>KP_Add</code> keys expand that row by
+        invoking the non-recursive version of the <code><b>expand</b></code>
+        subcommand, while <code>Alt-Right</code>, <code>Alt-plus</code>, and
+        <code>Alt-KP_Add</code> (<code>Command-Right</code>,
+        <code>Command-plus</code>, and <code>Command-KP_Add</code> on Mac OS
+        X/11+ Aqua) expand the row with the aid of the
+        <code><b>expand</b></code> subcommand's recursive version.</li>
 
         <li class="tm">If the current active row contains an expand/collapse
         control in expanded state then the <code>Left</code>,
-        <code>minus</code>, and <code>KP_Subtract</code> keys collapse the
-        corresponding row by invoking the non-recursive version of the
-        <code><b><a href="#collapse">collapse</a></b></code> subcommand.</li>
+        <code>minus</code>, and <code>KP_Subtract</code> keys collapse that row
+        by invoking the non-recursive version of the
+        <code><b>collapse</b></code> subcommand, while <code>Alt-Left</code>,
+        <code>Alt-minus</code>, and <code>Alt-KP_Subtract</code>
+        (<code>Command-Left</code>, <code>Command-minus</code>, and
+        <code>Command-KP_Subtract</code> on Mac OS X/11+ Aqua) collapse the row
+        with the aid of the <code><b>collapse</b></code> subcommand's recursive
+        version.</li>
       </ol>
     </dd>
 

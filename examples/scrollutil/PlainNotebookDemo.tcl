@@ -6,7 +6,7 @@
 #
 #   https://icons8.com/icon/mEF_vyjYlnE3/file
 #
-# Copyright (c) 2021-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2021-2026  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tk
@@ -36,7 +36,7 @@ set f  [ttk::frame .f]
 set nb [scrollutil::plainnotebook $f.nb -closabletabs 1 \
 	-forgetcommand condCopySel -leavecommand saveSel]
 set currentTheme [styleutil::getCurrentTheme]
-set panePadding [expr {$currentTheme eq "aqua" ? 0 : "7p"}]
+set panePadding [expr {$currentTheme eq "aqua" ? 0 : "9p"}]
 cd [expr {[info exists ttk::library] ? $ttk::library : $tile::library}]
 ##nagelfar ignore
 foreach fileName [lsort [glob *.tcl]] {
@@ -124,6 +124,6 @@ proc restoreSel nb {
 #
 set b [ttk::button $f.b -text "Close" -command exit]
 
-pack $b  -side bottom -pady {0 7p}
-pack $nb -side top -expand yes -fill both -padx 7p -pady 7p
+pack $b  -side bottom -pady {0 9p}
+pack $nb -side top -expand yes -fill both -padx 9p -pady 9p
 pack $f  -expand yes -fill both

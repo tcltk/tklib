@@ -11,7 +11,7 @@
 #   - Private procedures used in bindings
 #   - Private utility procedures
 #
-# Copyright (c) 1999-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 1999-2026  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -281,7 +281,8 @@ proc mentry::createBindings {} {
     variable winSys
     variable newAquaSupport
     if {$usingTile && $winSys eq "aqua" && $newAquaSupport} {
-	foreach event {<<LightAqua>> <<DarkAqua>>} {
+	foreach event {<<LightAppearance>> <<DarkAppearance>>
+		       <<LightAqua>> <<DarkAqua>>} {
 	    bind MentryMain $event {
 		if {![info exists mentry::appearanceId]} {
 		    set mentry::appearanceId \
@@ -1684,7 +1685,8 @@ proc mentry::updateConfiguration win {
 #------------------------------------------------------------------------------
 # mentry::handleAppearanceEvent
 #
-# This procedure handles the virtual events <<LightAqua>> and <<DarkAqua>>.
+# This procedure handles the virtual events <<LightAppearance>> and
+# <<DarkAppearance>> or <<LightAqua>> and <<DarkAqua>>.
 #------------------------------------------------------------------------------
 proc mentry::handleAppearanceEvent {} {
     variable appearanceId
@@ -1724,7 +1726,8 @@ proc mentry::handleAppearanceEvent {} {
 # mentry::updateAppearance
 #
 # Updates the appearance of the mentry widget win according to the virtual
-# events <<LightAqua>> and <<DarkAqua>>.
+# events <<LightAppearance>> and <<DarkAppearance>> or <<LightAqua>> and
+# <<DarkAqua>>.
 #------------------------------------------------------------------------------
 proc mentry::updateAppearance win {
     upvar ::mentry::ns${win}::data data

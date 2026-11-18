@@ -14,7 +14,7 @@
   <div>
     <h1>Tablelist Programmer's Guide</h1>
 
-    <h2>For Tablelist Version 7.7</h2>
+    <h2>For Tablelist Version 7.12</h2>
 
     <h3>by</h3>
 
@@ -42,6 +42,9 @@
 
     <li><a href="#ov_scalingpct">More on
     <code>tablelist::scalingpct</code></a></li>
+
+    <li><a href="#ov_getScalingPct">The Procedure
+    <code>tablelist::getScalingPct</code> and Tk's Scaling Factor</a></li>
 
     <li><a href="#ov_svgfmt">More on <code>tablelist::svgfmt</code></a></li>
 
@@ -179,16 +182,18 @@
   <h3 id="ov_get">How to Get It?</h3>
 
   <p>Tablelist is available for free download from the same URL as Wcb.&nbsp;
-  The distribution file is <code>tablelist7.7.tar.gz</code> for UNIX and
-  <code>tablelist7_7.zip</code> for Windows.&nbsp; These files contain the same
-  information, except for the additional carriage return character preceding
-  the linefeed at the end of each line in the text files for Windows.</p>
+  The distribution file is <code>tablelist7.12.tar.gz</code> for UNIX and
+  <code>tablelist7_12.zip</code> for Windows.&nbsp; These files contain the
+  same information, except for the additional carriage return character
+  preceding the linefeed at the end of each line in the text files for
+  Windows.</p>
 
   <p>Tablelist is also included in tklib, which has the address</p>
 
   <blockquote>
     <address>
-      <a href="https://core.tcl.tk/tklib">https://core.tcl.tk/tklib</a>
+      <a href=
+      "https://core.tcl-lang.org/tklib">https://core.tcl-lang.org/tklib</a>
     </address>
   </blockquote>
 
@@ -201,11 +206,11 @@
 
   <p>To install Tablelist <i>on UNIX</i>, <code>cd</code> to the desired
   directory and unpack the distribution file
-  <code>tablelist7.7.tar.gz</code>:</p>
+  <code>tablelist7.12.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c tablelist7.7.tar.gz | tar -xf -
+gunzip -c tablelist7.12.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
@@ -213,17 +218,17 @@ gunzip -c tablelist7.7.tar.gz | tar -xf -
 
   <blockquote>
     <pre>
-tar -zxf tablelist7.7.tar.gz
+tar -zxf tablelist7.12.tar.gz
 </pre>
   </blockquote>
 
-  <p>Both commands will create a directory named <code>tablelist7.7</code>,
+  <p>Both commands will create a directory named <code>tablelist7.12</code>,
   with the subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>tablelist7_7.zip</code> into the directory
-  <code>tablelist7.7</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>tablelist7_12.zip</code> into the directory
+  <code>tablelist7.12</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>The file <code>tablelistEdit.tcl</code> in the <code>scripts</code>
@@ -365,11 +370,11 @@ namespace import tablelist::<i>pattern</i> ?tablelist::<i>pattern ...</i>?
   bundled with Tablelist.&nbsp; The way this value is computed depends on the
   windowing system:</p>
 
-  <p><i>On Windows and Mac OS X/11+</i> the scaling percentage is computed
-  from&nbsp; <code>[tk scaling]</code>.&nbsp; Note that on Mac OS X/11+ the
-  result is always <code>100</code>, regardless of the display's scaling
-  level.&nbsp; On this system the desktop engine automatically scales
-  everything as needed.</p>
+  <p><i>On Windows and Mac OS X/11+</i> the scaling percentage is computed from
+  Tk's scaling factor given by&nbsp; <code>[tk scaling]</code>.&nbsp; Note that
+  on Mac OS X/11+ the result is always <code>100</code>, regardless of the
+  display's scaling level.&nbsp; On this system the desktop engine
+  automatically scales everything as needed.</p>
 
   <p><i>On X11</i>, computing the scaling percentage from&nbsp; <code>[tk
   scaling]</code>&nbsp; is done as fallback method only, because the
@@ -434,8 +439,9 @@ namespace import tablelist::<i>pattern</i> ?tablelist::<i>pattern ...</i>?
     <code>scale-monitor-framebuffer</code>, which adds (at least) 125 %, 150 %,
     and 175 % to the list of supported scaling percentages.&nbsp; With this
     feature enabled, the value returned by
-    <code>scaleutil::scalingPercentage</code> will be <code>100</code> for all
-    scaling levels, due to the fact that in this case, instead of window
+    <code>scaleutil::scalingPercentage</code> will be <code>100</code> for
+    older GNOME versions and <code>200</code> for newer ones, regardless of the
+    scaling level, due to the fact that in this case, instead of window
     contents, monitor framebuffers will be scaled in a logical pixel coordinate
     space.</li>
 
@@ -445,8 +451,11 @@ namespace import tablelist::<i>pattern</i> ?tablelist::<i>pattern ...</i>?
     depending on the display's scaling level.</li>
 
     <li class="tm"><i>KDE Plasma on Wayland</i> supports fractional scaling,
-    too.&nbsp; In this case, the value returned by the procedure will always be
-    <code>100</code>, regardless of the display's scaling level.</li>
+    too.&nbsp; In this case, for older KDE versions the value returned by the
+    procedure will always be <code>100</code>, regardless of the display's
+    scaling level, while for newer KDE versions it will be <code>100</code>,
+    <code>125</code>, <code>150</code>, <code>175</code>, or
+    <code>200</code>.</li>
   </ul>
 
   <p>On GNOME and Budgie, the display scaling can be set in the <i>Displays</i>
@@ -459,10 +468,10 @@ namespace import tablelist::<i>pattern</i> ?tablelist::<i>pattern ...</i>?
   <code>Xft.dpi</code> can also be manipulated by setting the text scaling
   factor via the <i>Font Selection</i> page of the <i>System Settings</i>
   dialog.&nbsp; Finally, on KDE Plasma the display scaling can be set in the
-  <i>Display Configuration</i> page of the <i>System Settings</i> dialog, but
-  the value of the font DPI, given by the X resource <code>Xft.dpi</code> can
-  also be set via the <i>Fonts</i> page of the <i>System Settings</i>
-  dialog.</p>
+  <i>Display Configuration</i> page of the <i>System Settings</i> dialog, and
+  on KDE Plasma on Xorg the value of the font DPI, given by the X resource
+  <code>Xft.dpi</code> can also be set via the <i>Fonts</i> page of the
+  <i>System Settings</i> dialog.</p>
 
   <p>Besides computing the scaling percentage, the procedure
   <code>scaleutil::scalingPercentage</code> performs a series of additional
@@ -574,30 +583,56 @@ namespace eval ::scaleutil { set keepTkScaling 1 }
   but the procedure provides an automatic workaround for the Tk versions that
   are still affected by this bug.)</p>
 
-  <p>Note that in Tk versions earlier than 8.7b1/9, the Tk core checkbutton and
+  <p>Note that in Tk versions earlier than 9, the Tk core checkbutton and
   radiobutton widgets, as well as the indicators of the ttk::checkbutton and
   ttk::radiobutton widgets of the <code>alt</code> and <code>winnative</code>
-  themes are not scalable (they scale automatically in Tk 8.7b1/9 and
-  later).&nbsp; The same holds true for the ttk::sizegrip widget in the
-  built-in themes.</p>
+  themes are not scalable (they scale automatically in Tk 9 and later).&nbsp;
+  The same holds true for the ttk::sizegrip widget in the built-in themes.</p>
+
+  <h3 id="ov_getScalingPct">The Procedure
+  <code>tablelist::getScalingPct</code> and Tk's Scaling Factor</h3>
+
+  <p>The Tablelist package provides the helper procedure
+  <code>tablelist::getScalingPct</code>, which expects no arguments and
+  returns the application's scaling percentage, derived from Tk's
+  <i>current</i> scaling factor given by&nbsp; <code>[tk scaling]</code>.&nbsp;
+  The procedure's return value is restricted to multiples of <code>25</code>,
+  is at least <code>100</code>, and can be greater than <code>200</code>,
+  especially when running AndroWish on a tablet or smartphone.&nbsp; Tablelist
+  makes use of this procedure to make sure that the sizes of its GUI components
+  will correspond to Tk's current scaling factor (which might have been changed
+  via&nbsp; <code>tk scaling</code>),&nbsp; and it is recommended to do this in
+  the application code, too.</p>
+
+  <p>If the Tk version is 9 or later then the functionality of the
+  <code>scaleutil::scalingPercentage</code> procedure described in the previous
+  section is integrated in the core.&nbsp; As part of this functionality, Tk 9+
+  sets the variable <code>tk::scalingPct</code> at initialization time to the
+  scaling percentage corresponding to the display's DPI scaling level, and the
+  procedure <code>scaleutil::scalingPercentage</code> just returns the minimum
+  of the current value of <code>tk::scalingPct</code> and
+  <code>200</code>.&nbsp; Recall that in Tk 9+, whenever the scaling factor is
+  changed via&nbsp; <code>tk scaling</code>,&nbsp; the value of the variable
+  <code>tk::scalingPct</code> is automatically updated.&nbsp; Consequently, if
+  the application changes Tk's scaling factor <i>before loading Tablelist or
+  Tablelist_tile</i></i> via&nbsp; <code>package require</code>,&nbsp; then the
+  variable <code>tablelist::scalingpct</code> will be set to the minimum of the
+  automatically updated value of <code>tk::scalingPct</code> and
+  <code>200</code>.&nbsp; These facts result in the following</p>
+
+  <p><b>Recommendation:</b> If your application changes Tk's scaling factor by
+  invoking&nbsp; <code>tk scaling</code>,&nbsp; it should do this <i>before
+  loading Tablelist or Tablelist_tile</i>.</p>
 
   <h3 id="ov_svgfmt">More on <code>tablelist::svgfmt</code></h3>
 
-  <p>Before returning one of the scaling percentage values <code>100</code>,
-  <code>125</code>, <code>150</code>, <code>175</code>, and <code>200</code>,
-  the procedure <code>scaleutil::scalingPercentage</code> saves the display's
-  <i>real</i> scaling percentage in the variable
-  <code>::scaleutil::scalingPct</code>.&nbsp; This value, which is restricted 
-  to multiples of <code>25</code>, can be greater than <code>200</code>, 
-  especially when running Androwish on a tablet or smartphone.</p>
-
   <p>If the Tk version is either at least 8.7 (with built-in SVG support), or
   8.6 and the tksvg package can be loaded into the interpreter, then Tablelist
-  additionally sets the variable <code>tablelist::svgfmt</code> to</p>
+  sets the variable <code>tablelist::svgfmt</code> to</p>
 
   <blockquote>
     <pre>
-[list svg -scale [expr {$::scaleutil::scalingPct / 100.0}]]
+[list svg -scale [expr {[tablelist::getScalingPct] / 100.0}]]
 </pre>
   </blockquote>
 
@@ -610,7 +645,7 @@ namespace eval ::scaleutil { set keepTkScaling 1 }
   <code><i>imageName</i> put</code>,&nbsp; and <code><i>imageName</i>
   read</code>&nbsp; as the value of their <code>-format</code> option when
   creating or manipulating SVG images, to make sure that their sizes will
-  correspond to the display's <i>real</i> scaling percentage.</p>
+  correspond to the application's current scaling percentage.</p>
 
   <h3 id="ov_tile">More on Tablelist_tile</h3>
 
@@ -837,7 +872,6 @@ namespace eval demo {
     option add *DemoTop.tf.tbl.highlightThickness       0
     option add *DemoTop.tf.tbl.background               white
     option add *DemoTop.tf.tbl.stripeBackground         #f0f0f0
-    option add *DemoTop.tf.tbl.setGrid                  yes
     option add *DemoTop.tf.tbl*Entry.background         white
     option add *DemoTop.bf.Button.width                 10
 }
@@ -1264,8 +1298,8 @@ demo::displayChildren .
   name <code>.browseTop</code> in <code>browse.tcl</code> and the name
   <code>browseTop</code> in <code>browseTree.tcl</code>) or invoking the first
   entry of a pop-up menu within the body of the tablelist, you can display the
-  data of the children of the widget corresponding to the selected item, and
-  with the second menu entry you can display its configuration options (see the
+  data of the children of the widget corresponding to the active item, and with
+  the second menu entry you can display its configuration options (see the
   <a href="#ex_config">previous example</a> for details).&nbsp; To go one level
   up, click on the "Parent" button.</p>
 
@@ -1316,7 +1350,7 @@ source [file join $demo::dir config.tcl]
   will be scaled automatically, according to the display's real scaling
   percentage, which can be greater than the maximum value <code>200</code> of
   the variable <code>::tablelist::scalingpct</code>.&nbsp; This benefit comes
-  in handy especially when running Androwish on a tablet or smartphone.&nbsp;
+  in handy especially when running AndroWish on a tablet or smartphone.&nbsp;
   In the second case a total number of 10 <code>*.gif</code> (or
   <code>*.png</code>, or <code>*.xbm</code>) files are needed to make sure that
   the sizes of the images will correspond to the value of the variable
@@ -1367,7 +1401,7 @@ proc demo::displayChildren w {
                   0 "Viewable"  center
                   0 "Manager"   left} \
         -expandcommand demo::expandCmd -labelcommand demo::labelCmd \
-        -yscrollcommand [list $vsb set] -setgrid no -width 0
+        -yscrollcommand [list $vsb set] -width 0
     if {[$tbl cget -selectborderwidth] == 0} {
         $tbl configure -spacing 1
     }
@@ -1408,11 +1442,11 @@ proc demo::displayChildren w {
     set menu $top.menu
     menu $menu -tearoff no
     $menu add command -label "Display Children" \
-                      -command [list demo::putChildrenOfSelWidget $tbl]
+                      -command [list demo::putChildrenOfActiveWidget $tbl]
     $menu add command -label "Display Config" \
-                      -command [list demo::dispConfigOfSelWidget $tbl]
+                      -command [list demo::dispConfigOfActiveWidget $tbl]
     set bodyTag [$tbl bodytag]
-    bind $bodyTag &lt;Double-1&gt;   [list demo::putChildrenOfSelWidget $tbl]
+    bind $bodyTag &lt;Double-1&gt;   [list demo::putChildrenOfActiveWidget $tbl]
     bind $bodyTag &lt;&lt;Button3&gt;&gt;  [bind TablelistBody &lt;Button-1&gt;]
     bind $bodyTag &lt;&lt;Button3&gt;&gt; +[bind TablelistBody &lt;ButtonRelease-1&gt;]
     bind $bodyTag &lt;&lt;Button3&gt;&gt; +[list demo::postPopupMenu $top %X %Y]
@@ -1790,27 +1824,25 @@ proc demo::updateItems tbl {
   "tablelistWidget.html#refreshsorting">refreshsorting</a></code>
   subcommand.</p>
 
-  <p>The procedures <code>demo::putChildrenOfSelWidget</code>,
-  <code>demo::dispConfigOfSelWidget</code>, and
+  <p>The procedures <code>demo::putChildrenOfActiveWidget</code>,
+  <code>demo::dispConfigOfActiveWidget</code>, and
   <code>demo::postPopupMenu</code> (see <code>demo::displayChildren</code>) are
   also straight-forward.&nbsp; For example, the
-  <code>demo::putChildrenOfSelWidget</code> command shown below makes use of
-  the <code><a href="tablelistWidget.html#curselection">curselection</a></code>
-  subcommand to get the index of the selected row.&nbsp; More precisely,
-  <code>curselection</code> returns a list, but in our case this list will have
-  exactly one element, hence it can be used directly as the first component of
-  a cell index.</p>
+  <code>demo::putChildrenOfActiveWidget</code> command shown below makes use of
+  the row index <code><a href=
+  "tablelistWidget.html#row_indices">active</a></code> to identify the active
+  row.</p>
 
   <blockquote>
     <pre>
 <span class="cmt">#------------------------------------------------------------------------------
-# demo::putChildrenOfSelWidget
+# demo::putChildrenOfActiveWidget
 #
-# Outputs the data of the children of the selected widget into the tablelist
+# Outputs the data of the children of the active widget into the tablelist
 # widget tbl.
 #------------------------------------------------------------------------------</span>
-proc demo::putChildrenOfSelWidget tbl {
-    set w [$tbl cellcget [$tbl curselection],0 -text]
+proc demo::putChildrenOfActiveWidget tbl {
+    set w [$tbl rowattrib active pathName]
     if {![winfo exists $w]} {
         bell
         tk_messageBox -title "Error" -icon error -message \
@@ -1916,7 +1948,7 @@ proc demo::restoreExpandedStates {tbl nodeIdx expandedWidgetsName} {
 
   <p>By double-clicking an item or invoking the single entry of a pop-up menu
   within the body of the tablelist, you can display the content of the folder
-  corresponding to the selected item.&nbsp; To go one level up, click on the
+  corresponding to the active item.&nbsp; To go one level up, click on the
   "Parent" button.</p>
 
   <p>There are a lot of similarities between this script and the one discussed
@@ -1978,7 +2010,7 @@ proc dirContent dir {
   will be scaled automatically, according to the display's real scaling
   percentage, which can be greater than the maximum value <code>200</code> of
   the variable <code>tablelist::scalingpct</code>.&nbsp; This benefit comes in
-  handy especially when running Androwish on a tablet or smartphone.&nbsp; In
+  handy especially when running AndroWish on a tablet or smartphone.&nbsp; In
   the second case a total number of 15 <code>*.gif</code> (or
   <code>*.png</code>) files are needed to make sure that the sizes of the
   images will correspond to the value of the variable
@@ -2005,9 +2037,9 @@ proc displayContents dir {
         -columns {0 "Name"          left
                   0 "Size"          right
                   0 "Date Modified" left} \
-        -height 16 -width 80 -movablecolumns no -setgrid no \
-        -showseparators yes -expandcommand expandCmd \
-        -xscrollcommand [list $hsb set] -yscrollcommand [list $vsb set]
+        -height 16 -width 80 -movablecolumns no -showseparators yes \
+        -expandcommand expandCmd -xscrollcommand [list $hsb set] \
+        -yscrollcommand [list $vsb set]
     if {[$tbl cget -selectborderwidth] == 0} {
         $tbl configure -spacing 1
     }
@@ -2244,10 +2276,10 @@ proc addImages tbl {
     set topRow [$tbl index top]
     set btmRow [$tbl index bottom]
     for {set row $topRow} {$row <= $btmRow} {incr row} {
-        if {[$tbl hasrowattrib $row pathName]} {        ;<span class="cmt">;# directory item</span>
+        if {[$tbl hasrowattrib $row pathName]} {        ;<span class="cmt"># directory item</span>
             set img [expr {[$tbl isexpanded $row] ?
                     "openFolderImg" : "clsdFolderImg"}]
-        } else {                                        ;<span class="cmt">;# file item</span>
+        } else {                                        ;<span class="cmt"># file item</span>
             set img fileImg
         }
         $tbl cellconfigure $row,0 -image $img
@@ -2930,7 +2962,7 @@ tablelist::tablelist $tbl \
               0 "File Size" right
               0 "View"      center
               0 "Seen"      center} \
-    -setgrid no -yscrollcommand [list $vsb set] -width 0
+    -yscrollcommand [list $vsb set] -width 0
 if {[$tbl cget -selectborderwidth] == 0} {
     $tbl configure -spacing 1
 }
@@ -3095,7 +3127,7 @@ proc viewFile {tbl key} {
     frame $tf -class ScrollArea
     set txt $tf.txt
     set vsb $tf.vsb
-    text $txt -background white -font TkFixedFont -setgrid yes \
+    text $txt -background white -font TkFixedFont \
               -yscrollcommand [list $vsb set]
     catch {$txt configure -tabstyle wordprocessor}
     scrollbar $vsb -orient vertical -command [list $txt yview]
@@ -3309,27 +3341,111 @@ option add *selectBorderWidth     $tablelist::themeDefaults(-selectborderwidth)
     <pre>
 if {[tk windowingsystem] eq "x11" &&
     ($::tk_version &lt; 8.7 || [package vcompare $::tk_patchLevel "8.7a5"] &lt;= 0)} {
-    #
+    <span class="cmt">#
     # Patch the default theme's styles TCheckbutton and TRadiobutton
-    #
+    #</span>
     package require themepatch
     themepatch::patch default
 }
 </pre>
   </blockquote>
 
-  <p>Due to this (optional) step, the scalable ttk::checkbutton widgets used in
-  the colum "Available" have a modern look and behavior, just like the ones of
-  the themes <code>aqua</code> and <code>vista</code>.</p>
-
-  <p>The demo script <code>tileWidgets2.tcl</code> differs from
-  <code>tileWidgets.tcl</code> mainly in the fact that it uses the toggleswitch
-  widget from the Tsw package rather than the ttk::checkbutton for editing the
-  elements of the "Available" column:</p>
+  <p>Due to this (optional) step, the scaling-aware ttk::checkbutton widgets
+  used in the colum "Available" have a modern look and behavior, just like the
+  ones of the themes <code>aqua</code> and <code>vista</code>:</p>
 
   <blockquote>
-    <img src="tileWidgets2.png" alt="Serial Line Configuration" width="801"
-    height="449">
+    <table border="0" cellspacing="0" cellpadding="12">
+      <tr bgcolor="#D9D9D9">
+        <td><img src="ttk_checkbutton.png" alt="ttk::checkbutton" width="84"
+        height="81"></td>
+      </tr>
+    </table>
+  </blockquote>
+
+  <p>The demo script <code>tileWidgets2.tcl</code> differs from
+  <code>tileWidgets.tcl</code> mainly in the fact that it uses the
+  ttk::toggleswitch or tsw::toggleswitch widget rather than the
+  ttk::checkbutton for editing the elements of the "Available" column.&nbsp;
+  (The ttk::toggleswitch widget was added to the core in Tk 9.1a1.)&nbsp;
+  Here is the relevant code:</p>
+
+  <blockquote>
+    <pre>
+if {[llength [info commands ::ttk::toggleswitch]] == 1} {
+    set tglswEditWin ttk::toggleswitch
+} else {
+    <span class="cmt">#
+    # Register the tsw::toggleswitch widget for interactive cell editing
+    #</span>
+    package require tsw
+    tablelist::addToggleswitch
+    set tglswEditWin toggleswitch
+}
+
+. . .
+
+$tbl columnconfigure 1 -name available -editable yes -editwindow $tglswEditWin \
+    -formatcommand emptyStr -labelwindow ttk::checkbutton
+</pre>
+  </blockquote>
+
+  <blockquote>
+    <table border="0" cellspacing="0" cellpadding="12">
+      <tr bgcolor="#D9D9D9">
+        <td><img src="toggleswitch.png" alt="toggleswitch" width="84" height=
+        "81"></td>
+      </tr>
+    </table>
+  </blockquote>
+
+  <p>In addition, in <code>tileWidgets2.tcl</code> the ttk::spinbox widget used
+  for editing the elements of the "Data Bits" column is of style
+  <code>Wide.TSpinbox</code> rather than <code>TSpinbox</code>:</p>
+
+  <blockquote>
+    <pre>
+catch {package require wsb}
+
+. . .
+
+proc editStartCmd {tbl row col text} {
+    set w [$tbl editwinpath]
+
+    switch [$tbl columncget $col -name] {
+
+        . . .
+
+        dataBits {
+            <span class="cmt">#
+            # Configure the spinbox
+            #</span>
+            $w configure -style Wide.TSpinbox -from 5 -to 8 -state readonly
+        }
+</pre>
+  </blockquote>
+
+  <p>The small <b>w</b>ide <b>s</b>pin<b>b</b>ox package wsb comes bundled with
+  the Tablelist distribution, and the attempt to load it via&nbsp;
+  <code>package require wsb</code>&nbsp; will be successful if the Tk version
+  is either at least 8.7 (with built-in SVG support), or 8.6 and the tksvg
+  extension can be loaded into the interpreter.&nbsp; If loaded, the wsb
+  package will automatically create the <code>Wide.TSpinbox</code>
+  layout.&nbsp; Otherwise the&nbsp; <code>-style Wide.TSpinbox</code>&nbsp;
+  setting for a ttk::spinbox widget will have no effect.</p>
+
+  <p>The main benefit of the <code>Wide.TSpinbox</code> layout over the
+  <code>TSpinbox</code> style is the user-friendly size and placement of its
+  scaling-aware up and down arrows, which comes in handy especially when
+  running AndroWish on a tablet or smartphone:</p>
+
+  <blockquote>
+    <table border="0" cellspacing="0" cellpadding="12">
+      <tr bgcolor="#D9D9D9">
+        <td><img src="wideSpinbox.png" alt="Wide.TSpinbox" width="65" height=
+        "81"></td>
+      </tr>
+    </table>
   </blockquote>
 
   <p>The tile-based version of the demo script <code><a href=
@@ -3344,18 +3460,19 @@ if {[tk windowingsystem] eq "x11" &&
   </blockquote>
 
   <p>Finally, notice that the following tile-based demo-scripts provide
-  <i>full</i> support for the Dark Mode appearance on Mac OS 10.14 (Mojave) and
+  <i>full</i> support for the Dark Mode appearance on macOS 10.14 (Mojave) and
   later with Tk 8.6.10 or above, as well as for the <code>awdark</code>,
   <code>awlight</code>, and the six other themes provided by the
   multi-platform package <a href=
   "https://sourceforge.net/projects/tcl-awthemes/">awthemes</a> 10.3 or later
   by Brad Lanam: <code>browse_tile.tcl</code>,
   <code>browseTree_tile.tcl</code>, <code>config_tile.tcl</code>,
-  <code>dirViewer_tile.tcl</code>, <code>embeddedWindows_tile.tcl</code>, and
-  <code>tileWidgets.tcl</code>.&nbsp; While the Aqua Dark Mode support has been
-  present in Tk since its version 8.6.10, for an optimal user experience on the
-  Mac it is recommended to run these scripts with Tk 8.6.11 or later, due to a
-  few appearance-related improvements made in Tk 8.6.11.</p>
+  <code>dirViewer_tile.tcl</code>, <code>embeddedWindows_tile.tcl</code>,
+  <code>tileWidgets.tcl</code>, and <code>tileWidgets2.tcl</code>.&nbsp; While
+  the Aqua Dark Mode support has been present in Tk since its version 8.6.10,
+  for an optimal user experience on the Mac it is recommended to run these
+  scripts with Tk 8.6.11 or later, due to a few appearance-related improvements
+  made in Tk 8.6.11.</p>
 
   <div>
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=

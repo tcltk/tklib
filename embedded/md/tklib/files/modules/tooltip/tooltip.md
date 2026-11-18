@@ -3,7 +3,7 @@
 [//000000002]: # (Generated from file 'tooltip\.man' by tcllib/doctools with format 'markdown')
 [//000000003]: # (Copyright &copy; 1996\-2008, Jeffrey Hobbs)
 [//000000004]: # (Copyright &copy; 2024 Emmanuel Frecon)
-[//000000005]: # (tooltip\(n\) 2\.0\.1 tklib "Tooltip management")
+[//000000005]: # (tooltip\(n\) 2\.0\.4 tklib "Tooltip management")
 
 <hr> [ <a href="../../../../toc.md">Main Table Of Contents</a> &#124; <a
 href="../../../toc.md">Table Of Contents</a> &#124; <a
@@ -39,7 +39,7 @@ tooltip \- Tooltip management
 # <a name='synopsis'></a>SYNOPSIS
 
 package require Tcl 8\.5  
-package require tooltip ?2\.0\.1?  
+package require tooltip ?2\.0\.4?  
 
 [__::tooltip::tooltip__ *command* ?*options*?](#1)  
 [__::tooltip::tooltip__ *pathName* ?*option value*\.\.\.? ?__\-\-__? *message*](#2)  
@@ -221,8 +221,8 @@ on eventual message change\.
 
 This document, and the package it describes, will undoubtedly contain bugs and
 other problems\. Please report such in the category *tooltip* of the [Tklib
-Trackers](http://core\.tcl\.tk/tklib/reportlist)\. Please also report any ideas
-for enhancements you may have for either package and/or documentation\.
+Trackers](http://core\.tcl\-lang\.org/tklib/reportlist)\. Please also report any
+ideas for enhancements you may have for either package and/or documentation\.
 
 # <a name='keywords'></a>KEYWORDS
 

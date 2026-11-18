@@ -1,7 +1,7 @@
 #==============================================================================
 # Main Mentry and Mentry_tile package module.
 #
-# Copyright (c) 1999-2025  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 1999-2026  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 namespace eval mentry {
@@ -22,7 +22,7 @@ namespace eval mentry {
     #
     # Public variables:
     #
-    variable version	4.5
+    variable version	4.5.1
     variable library	[file dirname [file normalize [info script]]]
 
     #
@@ -71,14 +71,18 @@ proc mentry::useTile {bool} {
 # variable to its original value, given by the first argument.
 #
 proc mentry::restoreUsingTile {origVal varName index op} {
-    variable usingTile $origVal
+    upvar $varName var
     switch $op {
 	write {
-	    return -code error "it is not supported to use both Mentry and\
-				Mentry_tile in the same application"
+	    if {$var != $origVal} {
+		set var $origVal
+		return -code error "it is not supported to use both Mentry\
+				    and Mentry_tile in the same application"
+	    }
 	}
 	unset {
-	    trace add variable usingTile {write unset} \
+	    set var $origVal
+	    trace add variable var {write unset} \
 		[list mentry::restoreUsingTile $origVal]
 	}
     }

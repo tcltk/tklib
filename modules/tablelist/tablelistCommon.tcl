@@ -1,7 +1,7 @@
 #==============================================================================
 # Main Tablelist and Tablelist_tile package module.
 #
-# Copyright (c) 2000-2025  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2026  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 namespace eval tablelist {
@@ -12,7 +12,7 @@ namespace eval tablelist {
     #
     # Public variables:
     #
-    variable version	7.7
+    variable version	7.12
     variable library	[file dirname [file normalize [info script]]]
 
     #
@@ -40,6 +40,11 @@ namespace eval tablelist {
     namespace export	addCtext addOakleyCombobox
     namespace export	addDateMentry addTimeMentry addDateTimeMentry \
 			addFixedPointMentry addIPAddrMentry addIPv6AddrMentry
+
+    #
+    # Returns the application's current scaling percentage
+    #
+    namespace export	getScalingPct
 }
 
 package provide tablelist::common $tablelist::version
@@ -61,14 +66,18 @@ proc tablelist::useTile {bool} {
 # variable to its original value, given by the first argument.
 #
 proc tablelist::restoreUsingTile {origVal varName index op} {
-    variable usingTile $origVal
+    upvar $varName var
     switch $op {
 	write {
-	    return -code error "it is not supported to use both Tablelist and\
-				Tablelist_tile in the same application"
+	    if {$var != $origVal} {
+		set var $origVal
+		return -code error "it is not supported to use both Tablelist\
+				    and Tablelist_tile in the same application"
+	    }
 	}
 	unset {
-	    trace add variable usingTile {write unset} \
+	    set var $origVal
+	    trace add variable var {write unset} \
 		[list tablelist::restoreUsingTile $origVal]
 	}
     }
@@ -102,11 +111,11 @@ proc tablelist::loadUtils {} {
     package require mwutil 2.25[-]
 
     if {[catch {package present scaleutil} version] == 0 &&
-	[package vcompare $version 1.15] < 0} {
+	[package vcompare $version 1.17] < 0} {
 	package forget scaleutil
     }
-    package require scaleutil 1.15[-]
+    package require scaleutil 1.17[-]
 
-    package require scaleutilmisc 1.7.1[-]
+    package require scaleutilmisc 1.8[-]
 }
 tablelist::loadUtils

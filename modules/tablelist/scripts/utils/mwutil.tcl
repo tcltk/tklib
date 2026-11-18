@@ -182,8 +182,8 @@ proc mwutil::processTraversal {w class event} {
 # mwutil::configureWidget
 #
 # Configures the widget win by processing the command-line arguments specified
-# in optValPairs and, if the value of initialize is true, also those database
-# options that don't match any command-line arguments.
+# in optValPairs and, if the value of the initialize argument is true, also
+# those configuration options that don't match any command-line arguments.
 #------------------------------------------------------------------------------
 proc mwutil::configureWidget {win configSpecsName configCmd cgetCmd \
 			      optValPairs initialize} {

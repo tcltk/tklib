@@ -5,7 +5,7 @@
 # widgets and the configuration of boolean editing options using toggleswitch
 # widgets.
 #
-# Copyright (c) 2005-2025  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2025-2026  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tk
@@ -273,23 +273,20 @@ proc configEditing tbl {
 	lassign [$tbl configure $opt] option dbName dbClass default current
 	set defaultStr [expr {$default ? "on" : "off"}]
 
-	set l [ttk::label $tf.l$row -text "$opt ($defaultStr)"]
+	set sw [tsw::toggleswitch $tf.sw$row -text "$opt ($defaultStr)"]
 	if {$current != $default} {
-	    $l configure -foreground red2
+	    $sw configure -foreground red2
 	}
-	grid $l -row $row -column 0 -sticky w -padx 9p -pady {0 3p}
 
-	set sw [tsw::toggleswitch $tf.sw$row]
 	$sw switchstate $current	;# sets the switch state to $current
 	$sw attrib default $default	;# saves $default as attribute value
-	$sw configure -command [list applySwitchState $sw $tbl $opt $l]
-	grid $sw -row $row -column 1 -sticky w -padx {0 9p} -pady {0 3p}
+	$sw configure -command [list applySwitchState $sw $tbl $opt]
+	pack $sw -padx 9p -pady {0 3p} -fill x
 
 	incr row
     }
 
-    grid configure $tf.l0 $tf.sw0 -pady {9p 3p}
-    grid columnconfigure $tf 0 -weight 1
+    pack configure $tf.sw0 -pady {9p 3p}
 
     #   
     # Create a ttk::button widget
@@ -305,13 +302,12 @@ proc configEditing tbl {
 # applySwitchState
 #
 # Sets the configuration option opt of the tablelist tbl and the foreground
-# color of the ttk::label l according to the switch state of the toggleswitch
-# widget sw.
+# color of the toggleswitch widget sw according to its switch state.
 #------------------------------------------------------------------------------
-proc applySwitchState {sw tbl opt l} {
+proc applySwitchState {sw tbl opt} {
     set switchState [$sw switchstate]
     $tbl configure $opt $switchState
 
     set fgColor [expr {$switchState == [$sw attrib default] ? "" : "red2"}]
-    $l configure -foreground $fgColor
+    $sw configure -foreground $fgColor
 }

@@ -4,7 +4,7 @@
 # Demonstrates the use of the Scrollutil package in connection with the
 # iwidgets::scrolledframe widget.
 #
-# Copyright (c) 2019-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2019-2026  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tk
@@ -106,14 +106,23 @@ foreach country $countryList {
 #
 set b [ttk::button $f.b -text "Close" -command exit]
 
-pack $b  -side bottom -pady {0 7p}
-pack $sf -side top -expand yes -fill both -padx 7p -pady 7p
-pack $f  -expand yes -fill both
+pack $b  -side bottom -pady {0 9p}
+pack $sf -side top -expand yes -fill both -padx 9p -pady 9p
+
+update idletasks
+pack $f -expand yes -fill both
 
 #
 # Set the scrolledframe's width, height, and yscrollincrement
 #
-after 50 [list configSf $sf $cf $row $topPadY]
+set vsb [$sf component vertsb]
+set width [expr {[winfo reqwidth $cf] + [winfo reqwidth $vsb] + 2}]
+set rowHeight [expr {[winfo reqheight $cf] / $row}]
+set height [expr {10*$rowHeight + [winfo pixels . $topPadY] + 2}]
+$sf configure -width $width -height $height
+set canvas [$sf component canvas]
+$canvas configure -yscrollincrement $rowHeight
+after 50 [list $sf configure -hscrollmode dynamic]
 
 #------------------------------------------------------------------------------
 
@@ -135,17 +144,4 @@ proc setCapital {w country} {
     $w configure -foreground ""
     global capitalArr
     $w set $capitalArr($country)
-}
-
-#------------------------------------------------------------------------------
-
-proc configSf {sf cf row topPadY} {
-    set vsb [$sf component vertsb]
-    set width [expr {[winfo reqwidth $cf] + [winfo reqwidth $vsb] + 2}]
-    set rowHeight [expr {[winfo reqheight $cf] / $row}]
-    set height [expr {10*$rowHeight + [winfo pixels . $topPadY] + 2}]
-    $sf configure -width $width -height $height
-    set canvas [$sf component canvas]
-    $canvas configure -yscrollincrement $rowHeight
-    after 100 [list $sf configure -hscrollmode dynamic]
 }

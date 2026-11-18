@@ -1,3 +1,181 @@
+2026-10-01  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* Released Scrollutil 2.11.
+
+2026-09-28  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 2.11.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/scrollableframe.tcl: Various improvements related to the
+	* scripts/scrollarea.tcl:      implementation of the scrollableframe
+	  and scrollarea widgets.
+
+	* scripts/tclIndex: Newly generated.
+
+	* scripts/utils/pkgIndex.tcl: Improvements in the bundled wide spinbox
+	* scripts/utils/wsb.tcl:      package wsb, related to the Windows
+	  platform.
+
+	* doc/ScrollableFrmDemo2.png: Updated screenshot.
+
+	* ../../examples/scrollutil/*.tcl: Significantly improved the start
+	  behavior of the demo applications "BwScrollableFrmDemo(1|2).tcl",
+	  "ScrolledFrmDemo(1|2).tcl", and "SuScrollableFrmDemo(1|2)tcl".
+
+2026-06-25  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* Released Scrollutil 2.10.
+
+2026-06-18  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 2.10.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/*.tcl:               Adapted to the recent changes in Tk 9.1
+	* scripts/utils/pkgIndex.tcl:  according to TIPs 750 and 740;
+	* scripts/utils/scaleutil.tcl: eliminated some artifacts caused by Tk 9
+	  when scrolling or scanning at high speed in a scrollableframe widget
+	  containing labels that display large images; made sure that
+	  <Command-MouseWheel> and <Command-TouchpadScroll> event bindings for
+	  the console are added on macOS only.
+
+	* scripts/tclIndex: Newly generated.
+
+	* doc/*.png: Updated the screenshots.
+
+	* ../../examples/scrollutil/*.tcl: Improvements in the demo scripts.
+
+2026-04-21  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* Released Scrollutil 2.9.
+
+2026-03-26  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* CHANGES.txt:            Added mouse wheel and touchpad event bindings
+	* scripts/wheelEvent.tcl: for increasing/decreasing the size of the
+	  console font.
+
+	* scripts/tclIndex: Newly generated.
+
+2026-03-12  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 2.9.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/utils/pkgIndex.tcl:  Adapted the scaleutil package to the
+	* scripts/utils/scaleutil.tcl: recent changes related to the
+	  ttk::treeview widget, implemented by Brian O'Hagan.
+
+	* doc/scrollutil.html: Added a recommendation related to "tk scaling"
+	  to the section "The Procedure scrollutil::getScalingPct and Tk's
+	  Scaling Factor".
+
+	* doc/ScrollableFrmDemo2.png: Updated screenshot.
+
+2026-01-06  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* Released Scrollutil 2.8.
+
+2026-01-06  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* Released Scrollutil 2.8.
+
+2025-12-10  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 2.8.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/scrollableframe.tcl: Fixed a long-standing bug related to
+	  scanning with mouse button 2 in a scrollableframe widget.
+
+	* scripts/scrollarea.tcl: Adapted the handling of the <Leave> event
+	  for the scrollarea widget to the changes made in Tk 8.6.15 and 9.0.0
+	  related to this event and the detail field "NotifyInferior".
+
+	* scripts/wheelEvent.tcl: Scrollutil now automatically creates mouse
+	  wheel and <TouchpadScroll> event bindings for the widget classes
+	  Entry and TEntry if the Tk version is earlier than 9.1a1.
+
+	* scripts/*.tcl:       Added the helper procedure
+	* scripts/utils/*.tcl: "scrollutil::getScalingPct"; the sizes of the
+	  GUI components created by the packages Scrollutil, themepatch, and
+	  wsb now depend also on Tk's scaling factor given by [tk scaling].
+
+	* scripts/tclIndex: Newly generated.
+
+	* scripts/utils/wsb.tcl: The wide spinbox package wsb now highlights
+	  the up and down arrows when they are in pressed state.
+
+	* doc/scrollutil.html: Updated the details regarding the value of
+	  "scrollutil::scalingpct" for GNOME on Wayland and KDE Plasma on
+	  Wayland, to reflect the changes made in recent versions of these
+	  desktops.
+
+	* doc/ScrollableFrmDemo2.png: Updated screenshot.
+
+	* ../../examples/scrollutil/*.tcl: Adapted the demo scripts
+	  "*FrmDemo2.tcl" and "ScrolledCanvas.tcl" to the changes introduced
+	  in this Scrollutil version.
+
+2025-10-22  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* Released Scrollutil 2.7.
+
+2025-10-16  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 2.7.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/scrollarea.tcl: Guarded against premature destruction of a
+	  scrollarea widget.
+
+	* scripts/plainnotebook.tcl:    Added support for the "-class" 
+	* scripts/scrollednotebook.tcl: configuration option to the
+	  plainnotebook and scrollednotebook widgets; added support for the
+	  "-style" configuration option to the plainnotebook widget (already
+	  present for the scrollednotebook widget).
+
+	* scripts/wheelEvent.tcl: Improvements related to the handling of mouse
+	  wheel and <TouchpadScroll> events in scrollable widget containers.
+
+	* scripts/tclIndex: Newly generated.
+
+	* scripts/utils/pkgIndex.tcl: Added the new wide spinbox package wsb,
+	* scripts/utils/wsb.tcl:      which implements the Wide.TSpinbox layout
+	  having scaling-aware up and down arrows of user-friendly size and
+	  placement, which comes in handy especially when running AndroWish on
+	  a tablet or smartphone.
+
+	* doc/ScrollableFrmDemo2.png: Updated screenshots.
+	* doc/TablelistConfig.png:
+	* doc/TablelistConfig2.png:
+
+	* ../../examples/scrollutil/*FrmContent.tcl: The demo scripts
+	  "*FrmDemo2.tcl" now use ttk::toggleswitch rather than
+	  tsw::toggleswitch widgets if available, and also make use of the wsb
+	  package.
+
 2025-06-10  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Scrollutil 2.6.

@@ -8,7 +8,7 @@
 #   https://icons8.com/icon/RdCT0UIsKOIp/opened-folder
 #   https://icons8.com/icon/mEF_vyjYlnE3/file
 #
-# Copyright (c) 2010-2025  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2010-2026  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tk
@@ -65,9 +65,9 @@ proc displayContents dir {
 	-columns {0 "Name"	    left
 		  0 "Size"	    right
 		  0 "Date Modified" left} \
-	-height 16 -width 80 -movablecolumns no -setgrid no \
-	-showseparators yes -expandcommand expandCmd \
-	-xscrollcommand [list $hsb set] -yscrollcommand [list $vsb set]
+	-height 16 -width 80 -movablecolumns no -showseparators yes \
+	-expandcommand expandCmd -xscrollcommand [list $hsb set] \
+	-yscrollcommand [list $vsb set]
     if {[$tbl cget -selectborderwidth] == 0} {
 	$tbl configure -spacing 1
     }
@@ -101,7 +101,7 @@ proc displayContents dir {
     set menu .menu
     menu $menu -tearoff no
     $menu add command -label "Display Contents" \
-		      -command [list putContentsOfSelFolder $tbl]
+		      -command [list putContentsOfActiveFolder $tbl]
     if {$isAwTheme} {
 	global currentTheme
 	ttk::theme::${currentTheme}::setMenuColors $menu
@@ -110,7 +110,7 @@ proc displayContents dir {
     bind $bodyTag <<Button3>>  [bind TablelistBody <Button-1>]
     bind $bodyTag <<Button3>> +[bind TablelistBody <ButtonRelease-1>]
     bind $bodyTag <<Button3>> +[list postPopupMenu %X %Y]
-    bind $bodyTag <Double-1>   [list putContentsOfSelFolder %W]
+    bind $bodyTag <Double-1>   [list putContentsOfActiveFolder %W]
 
     #
     # Create three buttons within a frame child of the main widget
@@ -331,19 +331,19 @@ proc addImages tbl {
 }
 
 #------------------------------------------------------------------------------
-# putContentsOfSelFolder
+# putContentsOfActiveFolder
 #
-# Outputs the content of the selected folder into the tablelist given by or
+# Outputs the content of the active folder into the tablelist given by or
 # containing the specified widget.
 #------------------------------------------------------------------------------
-proc putContentsOfSelFolder w {
+proc putContentsOfActiveFolder w {
     if {[winfo class $w] eq "Tablelist"} {
 	set tbl $w
     } else {
 	set tbl [tablelist::getTablelistPath $w]
     }
 
-    set row [$tbl curselection]
+    set row [$tbl index active]
     if {[$tbl hasrowattrib $row pathName]} {		;# directory item
 	set dir [$tbl rowattrib $row pathName]
 	if {[file isdirectory $dir] && [isReadable $dir]} {
@@ -368,11 +368,11 @@ proc putContentsOfSelFolder w {
 #
 # Posts the pop-up menu .menu at the given screen position.  Before posting
 # the menu, the procedure enables/disables its only entry, depending upon
-# whether the selected item represents a readable directory or not.
+# whether the active item represents a readable directory or not.
 #------------------------------------------------------------------------------
 proc postPopupMenu {rootX rootY} {
     set tbl .tf.tbl
-    set row [$tbl curselection]
+    set row [$tbl index active]
     set menu .menu
     if {[$tbl hasrowattrib $row pathName]} {		;# directory item
 	set dir [$tbl rowattrib $row pathName]

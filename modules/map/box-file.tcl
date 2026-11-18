@@ -18,7 +18,7 @@
 # @@ Meta Begin
 # Package map::box::file 0.1
 # Meta author      {Andreas Kupries}
-# Meta location    https://core.tcl.tk/tklib
+# Meta location    https://core.tcl-lang.org/tklib
 # Meta platform    tcl
 # Meta summary	   Reading/writing tklib geo/box files
 # Meta description Reading/writing tklib geo/box files

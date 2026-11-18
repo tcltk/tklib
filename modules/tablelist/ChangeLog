@@ -1,3 +1,158 @@
+2026-10-01 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* Released Tablelist 7.12.
+
+2026-09-02 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 7.12.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/*.tcl: Made the default sort arrows and expand/collapse
+	  controls of the "aqua" theme, as well as its embedded
+	  ttk::checkbutton widgets scaling-aware; code optimizations and fixes
+	  contributed by Nicolas Bats; fixed a bug related to the
+	  "-inactiveselectbackground" and "-inactiveselectforeground" options.
+
+	* doc/aqua11.png: Updated screenshot.
+
+2026-06-25 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* Released Tablelist 7.11.
+
+2026-06-18 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 7.11.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/*.tcl:               Adapted to the recent changes in Tk 9.1
+	* scripts/utils/pkgIndex.tcl:  according to TIPs 750 and 740; the
+	* scripts/utils/scaleutil.tcl: "-inactiveselectbackground" and
+	  "-inactiveselectforeground"options now have nonempty default values
+	  for the "alt" and "default" themes, too; fixed a bug in the binding
+	  script for extending the selection with the keyboard.
+
+	* scripts/tclIndex: Newly generated.
+
+	* ../../examples/tablelist/embeddedWindows_tile.tcl: Adapted to the
+	  recent changes in Tk 9.1 according to TIP 750.
+
+2026-04-21 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* Released Tablelist 7.10.
+
+2026-03-12 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 7.10.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/*.tcl: Added the "-inactiveselectbackground" and
+	  "-inactiveselectforeground configuration options; added the
+	  "rowcount" and "header rowcount" subcommands, as synonyms for "size"
+	  and "header size", respectively; made the updates using the
+	  "-listvariable" option by several orders of magnitude faster.
+
+	* scripts/tclIndex: Newly generated.
+
+	* scripts/utils/pkgIndex.tcl:  Adapted the scaleutil package to the
+	* scripts/utils/scaleutil.tcl: recent changes related to the
+	  ttk::treeview widget, implemented by Brian O'Hagan.
+
+	* doc/tablelist.html: Added a recommendation related to "tk scaling" to
+	  the section "The Procedure tablelist::getScalingPct and Tk's Scaling
+	  Factor".
+
+	* ../../examples/tablelist/*.tcl: The demo scripts no longer set the
+	  "-setgrid" option to true.
+
+2026-01-06 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* Released Tablelist 7.9.
+
+2025-12-10 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 7.9.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/tablelistBind.tcl: The scrolling with the mouse wheel or
+	  touchpad is now disabled while the menu of a (ttk::)menubutton or the
+	  listbox component of a combobox used for interactive cell editing is
+	  posted.
+
+	* scripts/*.tcl:       Added the helper procedure
+	* scripts/utils/*.tcl: "tablelist::getScalingPct"; the sizes of the GUI
+	  components created by the packages Tablelist, themepatch, and wsb now
+	  depend also on Tk's scaling factor given by [tk scaling].
+
+	* scripts/tclIndex: Newly generated.
+
+	* scripts/utils/wsb.tcl: The wide spinbox package wsb now highlights
+	  the up and down arrows when they are in pressed state.
+
+	* doc/tablelist.html: Updated the details regarding the value of
+	  "tablelist::scalingpct" for GNOME on Wayland and KDE Plasma on
+	  Wayland, to reflect the changes made in recent versions of these
+	  desktops.
+
+	* doc/embeddedWindows_tile.png: Updated screenshot.
+
+	* ../../examples/images.tcl: Updated to use the new procedure
+	  "tablelist::getScalingPct".
+
+2025-10-22 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* Released Tablelist 7.8.
+
+2025-10-16 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 7.8.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes.
+	* doc/*.html:
+
+	* scripts/tablelistConfig.tcl: Added support for interactive cell
+	* scripts/tablelistEdit.tcl:   editing with the aid of the
+	  ttk::toggleswitch widget; improvements related to the interactive
+	  cell editing with the aid of the Tk core checkbutton and
+	  ttk::checkbutton widgets.
+
+	* scripts/tclIndex: Newly generated.
+
+	* scripts/utils/pkgIndex.tcl: Added the new wide spinbox package wsb,
+	* scripts/utils/wsb.tcl:      which implements the Wide.TSpinbox layout
+	  having scaling-aware up and down arrows of user-friendly size and
+	  placement, which comes in handy especially when running AndroWish on
+	  a tablet or smartphone.
+
+	* doc/toggleswitch.png:    Added screenshots.
+	* doc/ttk_checkbutton.png:
+	* doc/wideSpinbox.png:
+
+	* ../../examples/tablelist/tileWidgets2.tcl: Now uses the
+	  ttk::toggleswitch rather than tsw::toggleswitch widget if available,
+	  and also makes use of the wsb package.
+
+2025-08-11 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* Released Tablelist 7.7.
+
 2025-07-01 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* *.tcl:         Bumped the version number to 7.7.

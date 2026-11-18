@@ -1,7 +1,7 @@
 #==============================================================================
 # Main Scrollutil and Scrollutil_tile package module.
 #
-# Copyright (c) 2019-2025  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2019-2026  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 namespace eval scrollutil {
@@ -12,7 +12,7 @@ namespace eval scrollutil {
     #
     # Public variables:
     #
-    variable version	2.6
+    variable version	2.11
     variable library	[file dirname [file normalize [info script]]]
 
     #
@@ -33,6 +33,11 @@ namespace eval scrollutil {
 			enableScrollingByWheel disableScrollingByWheel \
 			adaptWheelEventHandling setFocusCheckWindow \
 			focusCheckWindow
+
+    #
+    # Returns the application's current scaling percentage
+    #
+    namespace export	getScalingPct
 }
 
 package provide scrollutil::common $scrollutil::version
@@ -54,14 +59,18 @@ proc scrollutil::useTile {bool} {
 # variable to its original value, given by the first argument.
 #
 proc scrollutil::restoreUsingTile {origVal varName index op} {
-    variable usingTile $origVal
+    upvar $varName var
     switch $op {
 	write {
-	    return -code error "it is not supported to use both Scrollutil and\
-				Scrollutil_tile in the same application"
+	    if {$var != $origVal} {
+		set var $origVal
+		return -code error "it is not supported to use both Scrollutil\
+				    and Scrollutil_tile in the same application"
+	    }
 	}
 	unset {
-	    trace add variable usingTile {write unset} \
+	    set var $origVal
+	    trace add variable var {write unset} \
 		[list scrollutil::restoreUsingTile $origVal]
 	}
     }
@@ -102,9 +111,9 @@ proc scrollutil::loadUtils {} {
     package require mwutil 2.25[-]
 
     if {[catch {package present scaleutil} version] == 0 &&
-	[package vcompare $version 1.15] < 0} {
+	[package vcompare $version 1.17] < 0} {
 	package forget scaleutil
     }
-    package require scaleutil 1.15[-]
+    package require scaleutil 1.17[-]
 }
 scrollutil::loadUtils

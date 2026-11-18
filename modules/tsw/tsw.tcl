@@ -1,7 +1,7 @@
 #==============================================================================
 # Main Tsw package module. 
 #
-# Copyright (c) 2025  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2025-2026  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 namespace eval tsw {
@@ -16,7 +16,7 @@ namespace eval tsw {
     #
     # Public variables:
     #
-    variable version    1.2
+    variable version    1.5
     variable library    [file dirname [file normalize [info script]]]
 
     #
@@ -35,28 +35,16 @@ package provide Tsw $tsw::version
 lappend auto_path [file join $tsw::library scripts]
 
 #
-# Load the packages mwutil and (conditionally) scaleutil from
-# the directory "scripts/utils".  Take into account that mwutil
-# is also included in Mentry, Scrollutil, and Tablelist, and
-# scaleutil is also included in Scrollutil and Tablelist.
+# Load the package mwutil from the directory "scripts/mwutil".  Take into
+# account that it is also included in Mentry, Scrollutil, and Tablelist.
 #
-proc tsw::loadUtils {} {
+proc tsw::loadUtil {} {
     if {[catch {package present mwutil} version] == 0 &&
         [package vcompare $version 2.25] < 0} {
         package forget mwutil
     }
     package require mwutil 2.25[-]
-
-    if {[info exists ::tk::svgFmt]} {			;# Tk 8.7b1/9 or later
-	return ""
-    }
-
-    if {[catch {package present scaleutil} version] == 0 &&
-	[package vcompare $version 1.15] < 0} {
-	package forget scaleutil
-    }
-    package require scaleutil 1.15[-]
 }
-tsw::loadUtils
+tsw::loadUtil
 
 tsw::createBindings

@@ -1,7 +1,7 @@
 
 [//000000001]: # (canvas::snap \- Variations on a canvas)
 [//000000002]: # (Generated from file 'canvas\_snap\.man' by tcllib/doctools with format 'markdown')
-[//000000003]: # (Copyright &copy; 2004 George Petasis \(http://wiki\.tcl\.tk/1404\))
+[//000000003]: # (Copyright &copy; 2004 George Petasis \(http://wiki\.tcl\-lang\.org/1404\))
 [//000000004]: # (Copyright &copy; 2010 Documentation, Andreas Kupries)
 [//000000005]: # (canvas::snap\(n\) 1\.0\.1 tklib "Variations on a canvas")
 
@@ -60,8 +60,8 @@ This package provides a command to take snapshots of arbitrary canvases\.
 
 This document, and the package it describes, will undoubtedly contain bugs and
 other problems\. Please report such in the category *canvas* of the [Tklib
-Trackers](http://core\.tcl\.tk/tklib/reportlist)\. Please also report any ideas
-for enhancements you may have for either package and/or documentation\.
+Trackers](http://core\.tcl\-lang\.org/tklib/reportlist)\. Please also report any
+ideas for enhancements you may have for either package and/or documentation\.
 
 # <a name='keywords'></a>KEYWORDS
 
@@ -73,5 +73,5 @@ screen](\.\./\.\./\.\./\.\./index\.md\#print\_screen),
 
 # <a name='copyright'></a>COPYRIGHT
 
-Copyright &copy; 2004 George Petasis \(http://wiki\.tcl\.tk/1404\)  
+Copyright &copy; 2004 George Petasis \(http://wiki\.tcl\-lang\.org/1404\)  
 Copyright &copy; 2010 Documentation, Andreas Kupries

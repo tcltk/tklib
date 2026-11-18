@@ -7,7 +7,7 @@
 #   - Private procedures related to tile themes
 #   - Private procedures related to global KDE configuration options
 #
-# Copyright (c) 2006-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2006-2026  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -174,10 +174,13 @@ proc mentry::aquaTheme {} {
     variable themeDefaults
     if {$newAquaSupport} {
 	variable extendedAquaSupport
-	if {[tk::unsupported::MacWindowStyle isdark .]} {
-	    set background [expr {$extendedAquaSupport ? "#3a3a3a" : "#4b4b4b"}]
+	if {([catch {winfo isdark .} result] == 0 ||
+	     [catch {tk::unsupported::MacWindowStyle isdark .} result] == 0)
+	    && $result} {
+	    set background [expr {$extendedAquaSupport ?
+			    "systemWindowBackgroundColor1" : "#4b4b4b"}]
 	} else {
-	    set background #ffffff
+	    set background systemTextBackgroundColor
 	}
 
 	if {$extendedAquaSupport} {

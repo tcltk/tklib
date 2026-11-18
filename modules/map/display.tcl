@@ -7,7 +7,7 @@
 # @@ Meta Begin
 # Package map::display 0.1
 # Meta author      {Andreas Kupries}
-# Meta location    https://core.tcl.tk/tklib
+# Meta location    https://core.tcl-lang.org/tklib
 # Meta platform    tcl
 # Meta summary	   Map Display Widget
 # Meta description Map Display Widget with basic behaviour (Drag, Center, Zoom +/-)

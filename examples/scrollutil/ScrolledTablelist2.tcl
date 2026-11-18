@@ -4,7 +4,7 @@
 # Demonstrates the use of the scrollutil::scrollarea widget in connection with
 # a tablelist.
 #
-# Copyright (c) 2019-2024  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2019-2026  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require Tk 8.5-
@@ -59,10 +59,10 @@ $tbl insertlist end $itemList
 # Create a ttk::button widget outside the scrollarea
 #
 set b [ttk::button $f.b -text "Close" -command exit]
-pack $b -side bottom -pady {0 7p}
+pack $b -side bottom -pady {0 9p}
 
 #
 # Manage the scrollarea
 #
-pack $sa -expand yes -fill both -padx 7p -pady 7p
+pack $sa -expand yes -fill both -padx 9p -pady 9p
 pack $f  -expand yes -fill both

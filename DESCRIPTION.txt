@@ -5,7 +5,7 @@ Description: This package is intended to be a collection of
     large collection of Tk programmers.
 Rights: BSD
 Version: 0.9
-URL: http://core.tcl.tk/tklib/
+URL: http://core.tcl-lang.org/tklib/
 Architecture: tcl
 Contributor: 0.7 <andreas_kupries at users dot sourceforge dot net>
 Contributor: Aaron Faupell <afaupell at users dot sourceforge dot net>

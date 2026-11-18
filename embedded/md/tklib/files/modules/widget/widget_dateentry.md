@@ -1,7 +1,7 @@
 
 [//000000001]: # (widget\_dateentry \- Various megawidgets)
 [//000000002]: # (Generated from file 'widget\_dateentry\.man' by tcllib/doctools with format 'markdown')
-[//000000003]: # (widget\_dateentry\(n\) 0\.98 tklib "Various megawidgets")
+[//000000003]: # (widget\_dateentry\(n\) 0\.99 tklib "Various megawidgets")
 
 <hr> [ <a href="../../../../toc.md">Main Table Of Contents</a> &#124; <a
 href="../../../toc.md">Table Of Contents</a> &#124; <a
@@ -41,7 +41,7 @@ widget\_dateentry \- Date Entry Megawidget
 package require Tcl 8\.4  
 package require Tk 8\.4  
 package require widget ?3\.0?  
-package require widget::dateentry ?0\.98?  
+package require widget::dateentry ?0\.99?  
 
 [__widget::dateentry__ *pathname* ?options?](#1)  
 [*pathname* __get__](#2)  
@@ -134,8 +134,9 @@ navigation within the calendar, see its manpage\.
 
 This document, and the package it describes, will undoubtedly contain bugs and
 other problems\. Please report such in the category *widget::dateentry* of the
-[Tklib Trackers](http://core\.tcl\.tk/tklib/reportlist)\. Please also report
-any ideas for enhancements you may have for either package and/or documentation\.
+[Tklib Trackers](http://core\.tcl\-lang\.org/tklib/reportlist)\. Please also
+report any ideas for enhancements you may have for either package and/or
+documentation\.
 
 # <a name='keywords'></a>KEYWORDS
 

@@ -1,10 +1,10 @@
 #==============================================================================
 # Main Mentry package module.
 #
-# Copyright (c) 1999-2025  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 1999-2026  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
-package require -exact mentry::common 4.5
+package require -exact mentry::common 4.5.1
 
 package provide mentry $mentry::version
 package provide Mentry $mentry::version

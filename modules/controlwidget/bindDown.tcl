@@ -9,7 +9,7 @@
 #     are described at:
 #
 #     GPL:  http://www.gnu.org/licenses/gpl.txt
-#     Tcl:  http://www.tcl.tk/softare/tcltk/license.html
+#     Tcl:  http://www.tcl-lang.org/softare/tcltk/license.html
 #     Start with the second paragraph under the Tcl/Tk License terms
 #     as ownership is solely by Board of Trustees at Michigan State University.
 #

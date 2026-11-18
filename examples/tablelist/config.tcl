@@ -2,7 +2,7 @@
 # Demonstrates how to use a tablelist widget for displaying and editing the
 # configuration options of an arbitrary widget.
 #
-# Copyright (c) 2000-2023  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2026  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 package require tablelist
@@ -36,7 +36,6 @@ namespace eval demo {
     option add *DemoTop.tf.tbl.highlightThickness	0
     option add *DemoTop.tf.tbl.background		white
     option add *DemoTop.tf.tbl.stripeBackground		#f0f0f0
-    option add *DemoTop.tf.tbl.setGrid			yes
     option add *DemoTop.tf.tbl*Entry.background		white
     option add *DemoTop.bf.Button.width			10
 }

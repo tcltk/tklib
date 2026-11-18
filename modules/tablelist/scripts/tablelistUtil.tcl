@@ -5,7 +5,7 @@
 #   - Namespace initialization
 #   - Private utility procedures
 #
-# Copyright (c) 2000-2025  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2000-2026  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 #
@@ -278,7 +278,11 @@ proc tablelist::colIndex {win idx checkRange {decrX 1}} {
 	    set bbox [$data(hdrTxt) bbox 1.0]
 	    set viewChanged 1
 	}
-	set baseX [lindex $bbox 0]
+	if {[llength $bbox] == 0} {		;# no bbox info available yet
+	    set baseX [winfo x $data(hdrTxtFrm)]
+	} else {
+	    set baseX [lindex $bbox 0]
+	}
 	if {$viewChanged} {
 	    $data(hdrTxt) yview 1
 	}
@@ -1319,6 +1323,7 @@ proc tablelist::displayIndent {win key col width} {
 		     -height 0 -highlightthickness 0 -image $img \
 		     -padx 0 -pady 0 -relief flat -takefocus 0 -width $width
 	bindtags $w [lreplace [bindtags $w] 1 1 $data(bodyTag) TablelistBody]
+	set data(hasBodyLblMsg) 1
     }
 
     updateColorsWhenIdle $win
@@ -1353,6 +1358,7 @@ proc tablelist::displayImage {win key col anchor width} {
 	if {$inBody} {
 	    bindtags $w [lreplace [bindtags $w] 1 1 $data(bodyTag) \
 			 TablelistBody]
+	    set data(hasBodyLblMsg) 1
 	} else {
 	    bindtags $w [lreplace [bindtags $w] 1 1 $data(headerTag) \
 			 TablelistHeader]
@@ -1394,6 +1400,7 @@ proc tablelist::displayText {win key col text font pixels alignment} {
 	if {$inBody} {
 	    bindtags $w [lreplace [bindtags $w] 1 1 $data(bodyTag) \
 			 TablelistBody]
+	    set data(hasBodyLblMsg) 1
 	} else {
 	    bindtags $w [lreplace [bindtags $w] 1 1 $data(headerTag) \
 			 TablelistHeader]
@@ -2440,6 +2447,7 @@ proc tablelist::setupColumns {win columns createLabels} {
 		ttk::label $w -style Tablelist.Heading -image "" \
 			      -padding {1 1 1 1} -takefocus 0 -text "" \
 			      -textvariable "" -wraplength 0
+		$w state alternate		;# needed for the aqua theme
 	    } else {
 		tk::label $w -bitmap "" -highlightthickness 0 -image "" \
 			     -takefocus 0 -text "" -textvariable "" \
@@ -2796,8 +2804,9 @@ proc tablelist::getSepX {} {
     if {$usingTile} {
 	variable currentTheme
 	variable xpStyle
-	if {($currentTheme eq "aqua") ||
-	    ($currentTheme eq "xpnative" && $xpStyle)} {
+	if {$currentTheme eq "aqua"} {
+	    set x -1
+	} elseif {$currentTheme eq "xpnative" && $xpStyle} {
 	    set x 0
 	} elseif {$currentTheme eq "tileqt"} {
 	    switch -- [string tolower [tileqt_currentThemeName]] {
@@ -2896,8 +2905,8 @@ proc tablelist::adjustColumns {win whichWidths stretchCols} {
 			      -relx 0.4999 -y 1
 	    } else {
 		set y 0
-		if {([winfo reqheight $w] - [winfo reqheight $canvas]) % 2 == 0
-		    && $data(arrowHeight) == 5} {
+		if {(([winfo reqheight $w] - [winfo reqheight $canvas]) & 1)
+		    == 0 && $data(arrowHeight) == 5} {
 		    set y -1
 		}
 		if {$aquaTheme && $newAquaSupport} {
@@ -3831,8 +3840,9 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 	set fromTextIdx "$topTextIdx linestart"
 	set toTextIdx   "$btmTextIdx lineend"
 
-	$w tag remove select $fromTextIdx $toTextIdx
-	$w tag remove itembg $fromTextIdx $toTextIdx
+	$w tag remove select   $fromTextIdx $toTextIdx
+	$w tag remove inactsel $fromTextIdx $toTextIdx
+	$w tag remove itembg   $fromTextIdx $toTextIdx
 	set hasItemBg   [expr {$data(-itembackground) ne ""}]
 	set hasStripeBg [expr {$data(-stripebackground) ne ""}]
 	set hasStripeFg [expr {$data(-stripeforeground) ne ""}]
@@ -3895,7 +3905,14 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 
 		set selected [cellSelection $win includes $row $col $row $col]
 		if {$selected} {
-		    $w tag add select $tabIdx1 $textIdx2
+		    if {!$data(ownsFocus) &&
+			$data(-inactiveselectbackground) ne ""} {
+			set tag inactsel
+			$w tag raise $tag
+		    } else {
+			set tag select
+		    }
+		    $w tag add $tag $tabIdx1 $textIdx2
 		}
 		foreach optTail {background foreground} {
 		    set normalOpt -$optTail
@@ -3905,7 +3922,7 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 					$key,$col$normalOpt] \
 			    selectName [list $col$selectOpt $key$selectOpt \
 					$key,$col$selectOpt] {
-			if {$selected} {
+			if {$selected && $tag eq "select"} {
 			    if {[info exists data($selectName)]} {
 				$w tag add $level$selectOpt-$data($selectName) \
 				       $tabIdx1 $textIdx2
@@ -3932,6 +3949,8 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 
     set hasExpCollCtrlSelImgs \
 	[expr {[info exists ::tablelist::$data(-treestyle)_collapsedSelImg]}]
+    variable currentTheme
+    set curThemeIsClam [expr {$currentTheme eq "clam"}]
 
     foreach {dummy path textIdx} [$w dump -window $fromTextIdx $toTextIdx] {
 	if {$path eq ""} {
@@ -3948,18 +3967,24 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 
 	set name [winfo name $path]
 	foreach {key col} [split [string range $name 4 end] ","] {}
+	if {$isTblWin &&
+	    [set winUpdCmd [getOpt $win $key $col -windowupdate]] eq ""} {
+	    continue
+	}
 	if {[info exists data($key-elide)] || [info exists data($key-hide)]} {
 	    continue
 	}
 
 	set tagNames [$w tag names $textIdx]
-	set selected [expr {[lsearch -exact $tagNames select] >= 0}]
-	set inStripe [expr {[lsearch -exact $tagNames stripe] >= 0}]
+	set selectFound	  [expr {[lsearch -exact $tagNames select] >= 0}]
+	set inactselFound [expr {[lsearch -exact $tagNames inactsel] >= 0}]
+	set inStripe	  [expr {[lsearch -exact $tagNames stripe] >= 0}]
 
 	#
-	# If the widget is an indentation label then conditionally remove the
-	# "active" and "select" tags from its text position and the preceding
-	# one, or change its image to become the "normal" or "selected" one
+	# If the widget is an indentation label then conditionally
+	# remove the "active" and "select"/"inactsel" tags from
+	# its text position and the preceding one, or change
+	# its image to become the "normal" or "selected" one
 	#
 	if {$path eq "$w.ind_$key,$col"} {
 	    if {$data(protectIndents)} {
@@ -3969,17 +3994,18 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 		$w tag remove curRow $fromTextIdx $toTextIdx
 		$w tag remove active $fromTextIdx $toTextIdx
 
-		if {$updateAll && $selected} {
+		if {$updateAll && ($selectFound || $inactselFound)} {
 		    $w tag remove select $fromTextIdx $toTextIdx
+		    $w tag remove inactsel $fromTextIdx $toTextIdx
 		    foreach tag [$w tag names $fromTextIdx] {
 			if {[string match "*-selectbackground-*" $tag] ||
 			    [string match "*-selectforeground-*" $tag]} {
 			    $w tag remove $tag $fromTextIdx $toTextIdx
 			}
 		    }
-		    set selected 0
-		    foreach optTail {background foreground} {
-			set opt -$optTail
+		    set selectFound 0
+		    set inactselFound 0
+		    foreach opt {-background -foreground} {
 			foreach level [list col row cell] \
 				name  [list $col$opt $key$opt $key,$col$opt] {
 			    if {[info exists data($name)]} {
@@ -3991,7 +4017,7 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 		}
 	    } elseif {$hasExpCollCtrlSelImgs} {
 		set curIndent $data($key,$col-indent)
-		if {$selected} {
+		if {$selectFound || ($inactselFound && $curThemeIsClam)} {
 		    set newIndent [string map {
 			"SelActImg" "SelActImg" "ActImg" "SelActImg"
 			"SelImg" "SelImg" "collapsedImg" "collapsedSelImg"
@@ -4022,9 +4048,8 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 	if {$data(isDisabled)} {
 	    set bg $data(-background)
 	    set fg $data(-disabledforeground)
-	} elseif {$selected} {
-	    if {$isImgLabel &&
-		[info exists data($key,$col-imagebackground)]} {
+	} elseif {$selectFound} {
+	    if {$isImgLabel && [info exists data($key,$col-imagebackground)]} {
 		set bg $data($key,$col-imagebackground)
 	    } elseif {[info exists data($key,$col-selectbackground)]} {
 		set bg $data($key,$col-selectbackground)
@@ -4047,9 +4072,22 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 		    set fg $data(-selectforeground)
 		}
 	    }
+	} elseif {$inactselFound} {
+	    if {$isImgLabel && [info exists data($key,$col-imagebackground)]} {
+		set bg $data($key,$col-imagebackground)
+	    } else {
+		set bg $data(-inactiveselectbackground)
+	    }
+
+	    if {$isMessage || $isTblWin} {
+		if {$data(-inactiveselectforeground) ne ""} {
+		    set fg $data(-inactiveselectforeground)
+		} else {
+		    set fg $data(-selectforeground)
+		}
+	    }
 	} else {
-	    if {$isImgLabel &&
-		[info exists data($key,$col-imagebackground)]} {
+	    if {$isImgLabel && [info exists data($key,$col-imagebackground)]} {
 		set bg $data($key,$col-imagebackground)
 	    } elseif {[info exists data($key,$col-background)]} {
 		set bg $data($key,$col-background)
@@ -4105,11 +4143,8 @@ proc tablelist::updateColors {win {fromTextIdx ""} {toTextIdx ""}} {
 	    $path configure -foreground $fg
 	}
 	if {$isTblWin} {
-	    set cmd [getOpt $win $key $col -windowupdate]
-	    if {$cmd ne ""} {
-		uplevel #0 $cmd [list $win [keyToRow $win $key] $col \
-		    $path.w -background $bg -foreground $fg]
-	    }
+	    uplevel #0 $winUpdCmd [list $win [keyToRow $win $key] $col \
+		$path.w -background $bg -foreground $fg]
 	}
     }
 }
@@ -4229,6 +4264,10 @@ proc tablelist::hdr_updateColors win {
 
 	set name [winfo name $path]
 	foreach {key col} [split [string range $name 4 end] ","] {}
+	if {$isTblWin &&
+	    [set winUpdCmd [getOpt $win $key $col -windowupdate]] eq ""} {
+	    continue
+	}
 
 	#
 	# Set the widget's background and foreground
@@ -4279,11 +4318,8 @@ proc tablelist::hdr_updateColors win {
 	    $path configure -foreground $fg
 	}
 	if {$isTblWin} {
-	    set cmd [getOpt $win $key $col -windowupdate]
-	    if {$cmd ne ""} {
-		uplevel #0 $cmd [list $win [hdr_keyToRow $win $key] $col \
-		    $path.w -background $bg -foreground $fg]
-	    }
+	    uplevel #0 $winUpdCmd [list $win [hdr_keyToRow $win $key] $col \
+		$path.w -background $bg -foreground $fg]
 	}
     }
 }
@@ -5697,7 +5733,7 @@ proc tablelist::purgeWidgets win {
 	set data(topRowChanged) 0
     } elseif {$data(winSizeChanged)} {
 	set data(winSizeChanged) 0
-    } else {
+    } elseif {$data(hasBodyLblMsg)} {
 	set w $data(body)
 	set fromTextIdx "[$w index @0,0] linestart"
 	set toTextIdx "[$w index @0,$data(btmY)] lineend"
@@ -5771,45 +5807,42 @@ proc tablelist::synchronize win {
 			    a list of lists ($err)"
     }
 
+    set oldCount $data(itemCount)
     set newCount [llength $var]
-    if {$newCount < $data(itemCount)} {
+    set updateCount $newCount
+    if {$newCount < $oldCount} {
 	#
 	# Delete the items with indices >= newCount from the widget
 	#
-	set updateCount $newCount
 	deleteRows $win $newCount $data(lastRow) 0
-    } elseif {$newCount > $data(itemCount)} {
+    } elseif {$newCount > $oldCount} {
 	#
-	# Insert the items of var with indices
-	# >= data(itemCount) into the widget
+	# Insert the items of var with indices >= oldCount into the widget
 	#
-	set updateCount $data(itemCount)
-	insertRows $win $data(itemCount) [lrange $var $data(itemCount) end] 0 \
-		   root $data(itemCount)
-    } else {
-	set updateCount $newCount
+	insertRows $win $oldCount [lrange $var $oldCount end] 0 root $oldCount
+	set updateCount $oldCount
     }
 
     #
-    # Update the first updateCount items of the internal list
+    # Update the internal list
     #
-    set itemsChanged 0
+    upvar 0 data(itemList) itemList
+    set colCount $data(colCount)
+    set lst1 {}
     for {set row 0} {$row < $updateCount} {incr row} {
-	set oldItem [lindex $data(itemList) $row]
-	set newItem [adjustItem [lindex $var $row] $data(colCount)]
-	lappend newItem [lindex $oldItem end]
-
-	if {$oldItem ne $newItem} {
-	    set data(itemList) [lreplace $data(itemList) $row $row $newItem]
-	    set itemsChanged 1
-	}
+	set oldItem [lindex $itemList $row]
+	set newItem [adjustItem [lindex $var $row] $colCount]
+	lappend lst1 [lappend newItem [lindex $oldItem end]]
     }
+    set lst2 [lrange $itemList $updateCount end]
+    set itemList $lst1
+    eval lappend itemList $lst2
 
     #
     # If necessary, adjust the columns and make sure
     # that the items will be redisplayed at idle time
     #
-    if {$itemsChanged} {
+    if {$updateCount != 0} {
 	adjustColumns $win allCols 1
 	redisplayWhenIdle $win
 	showLineNumbersWhenIdle $win
@@ -5957,6 +5990,8 @@ proc tablelist::configLabel {w args} {
 		    set val [winfo pixels $w $val]
 		    set padding [$w cget -padding]
 		    lset padding 1 $val
+		    variable winSys
+		    if {$winSys eq "aqua"} { incr val 7 }
 		    lset padding 3 $val
 		    $w configure -padding $padding
 		} else {
@@ -6095,7 +6130,7 @@ proc tablelist::configLabel {w args} {
 # Creates two arrows in the canvas w.
 #------------------------------------------------------------------------------
 proc tablelist::createArrows {w width height relief} {
-    set pct $::scaleutil::scalingPct
+    set pct [getScalingPct]
     set wWidth  [expr {$width  > 0 ? $width  : int(8 * $pct / 100.0)}]
     set wHeight [expr {$height > 0 ? $height : int(4 * $pct / 100.0)}]
 
@@ -6548,7 +6583,12 @@ proc tablelist::getVertComplTopRow win {
     set topTextIdx [$w index @0,0]
     set topRow [expr {int($topTextIdx) - 1}]
 
-    foreach {x y width height baselinePos} [$w dlineinfo $topTextIdx] {}
+    set dlineinfo [$w dlineinfo $topTextIdx]
+    if {[llength $dlineinfo] == 0} {	;# display info not yet available
+	return $topRow
+    }
+
+    foreach {x y width height baselinePos} $dlineinfo {}
     if {$y < 0} {		;# top row incomplete in vertical direction
 	set topTextIdx [$w index @0,[incr y $height]]
 	set topRow [expr {int($topTextIdx) - 1}]
@@ -6573,7 +6613,12 @@ proc tablelist::getVertComplBtmRow win {
 	set btmRow $data(lastRow)
     }
 
-    foreach {x y width height baselinePos} [$w dlineinfo $btmTextIdx] {}
+    set dlineinfo [$w dlineinfo $btmTextIdx]
+    if {[llength $dlineinfo] == 0} {	;# display info not yet available
+	return $btmRow
+    }
+
+    foreach {x y width height baselinePos} $dlineinfo {}
     set y2 [expr {$y + $height}]
     set text [$w get @0,$y @[expr {$data(rightX) + 1}],$y]
     if {[$w compare [$w index @0,$y] == [$w index @0,$y2]] &&
@@ -6911,14 +6956,22 @@ proc tablelist::makeTtkCkbtn w {
 	aqua {
 	    variable extendedAquaSupport
 	    if {$extendedAquaSupport} {
-		$frm configure -width 14 -height 14
-		place $w -x -2 -y -3
-		return {14 14}
+		if {[package vcompare $::tk_patchLevel "9.1a1"] > 0} {
+		    set height [winfo reqheight $w]
+		    incr height [expr {($height & 1) ? -4 : -5}]
+		    $frm configure -width $height -height $height
+		    place $w -x -2 -y -2
+		    return [list $height $height]
+		} else {
+		    $frm configure -width 14 -height 14
+		    place $w -x -2 -y -3
+		    return {14 14}
+		}
 	    } else {
 		$frm configure -width 16 -height 16
 		variable newAquaSupport
 		if {$newAquaSupport} {
-		    if {[tk::unsupported::MacWindowStyle isdark .]} {
+		    if {[isInDarkMode]} {
 			place $w -x 0 -y -2
 		    } else {
 			place $w -x -1 -y -2
@@ -7044,8 +7097,7 @@ proc tablelist::makeTtkCkbtn w {
 	    if {[string first "Checkbutton.indicator" $ckbtnLayout] >= 0} {
 		place $w -x 0
 	    } else {		;# see procedure scaleutil::patchWinTheme
-		variable scalingpct
-		place $w -x -[expr {2 * [scaleutil::scale 2 $scalingpct]}]
+		place $w -x -[expr {2 * [scaleutil::scale 2 [getScalingPct]]}]
 	    }
 	    return [list $height $height]
 	}
@@ -7066,4 +7118,16 @@ proc tablelist::makeTtkCkbtn w {
 	    return [list [winfo reqwidth $w] [winfo reqheight $w]]
 	}
     }
+}
+
+#------------------------------------------------------------------------------
+# tablelist::isInDarkMode
+#
+# Returns 1 if the application is in dark mode and 0 otherwise.
+#------------------------------------------------------------------------------
+proc tablelist::isInDarkMode {} {
+    return [expr {
+	([catch {winfo isdark .} result] == 0 ||
+	 [catch {tk::unsupported::MacWindowStyle isdark .} result] == 0) ?
+	$result : 0}]
 }

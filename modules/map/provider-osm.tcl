@@ -7,7 +7,7 @@
 # @@ Meta Begin
 # Package map::provider::osm 0.1
 # Meta author      {Andreas Kupries}
-# Meta location    https://core.tcl.tk/tlib
+# Meta location    https://core.tcl-lang.org/tlib
 # Meta platform    tcl
 # Meta summary	   Tile provider using OpenStreetMap Mapnik as origin
 # Meta description Tile provider using OpenStreetMap Mapnik as origin and
@@ -63,7 +63,7 @@ snit::type ::map::provider::osm {
     # - OpenStreetMap. Mapnik Tile Set
     # - Alternative: http://tah.openstreetmap.org/Tiles/tile
 
-    typevariable ourtileset  http://tile.openstreetmap.org
+    typevariable ourtileset  https://tile.openstreetmap.org
     typevariable ourlevels   20
 
     # . . .. ... ..... ........ ............. .....................

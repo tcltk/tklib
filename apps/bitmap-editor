@@ -20,7 +20,7 @@ package require Tcl 8.4
 ##+##########################################################################
 #
 # bitmap.tcl -- simple bitmap editor
-# by Keith Vetter (http://wiki.tcl.tk/606)
+# by Keith Vetter (http://wiki.tcl-lang.org/606)
 #
 # Revisions:
 # KPV Jan 15, 2003 - initial revision

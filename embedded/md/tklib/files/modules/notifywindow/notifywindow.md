@@ -2,7 +2,7 @@
 [//000000001]: # (notifywindow \- notifywindow)
 [//000000002]: # (Generated from file 'notifywindow\.man' by tcllib/doctools with format 'markdown')
 [//000000003]: # (Copyright &copy; 2015 Kevin Walzer/WordTech Communications LLC <kw@codebykevin\.com>)
-[//000000004]: # (notifywindow\(n\) 1\.0\.1 tklib "notifywindow")
+[//000000004]: # (notifywindow\(n\) 1\.0\.2 tklib "notifywindow")
 
 <hr> [ <a href="../../../../toc.md">Main Table Of Contents</a> &#124; <a
 href="../../../toc.md">Table Of Contents</a> &#124; <a
@@ -35,7 +35,7 @@ applications
 # <a name='synopsis'></a>SYNOPSIS
 
 package require tk  
-package require notifywindow ?1\.0\.1?  
+package require notifywindow ?1\.0\.2?  
 
 [__::notifywindow::notifywindow__ *msg* *img*](#1)  
 [__::notifywindow::demo__](#2)  
@@ -67,8 +67,9 @@ Mac OS X, it shares no code with that project whatsoever\.
 
 This document, and the package it describes, will undoubtedly contain bugs and
 other problems\. Please report such in the category *notifywindow* of the
-[Tklib Trackers](http://core\.tcl\.tk/tklib/reportlist)\. Please also report
-any ideas for enhancements you may have for either package and/or documentation\.
+[Tklib Trackers](http://core\.tcl\-lang\.org/tklib/reportlist)\. Please also
+report any ideas for enhancements you may have for either package and/or
+documentation\.
 
 # <a name='keywords'></a>KEYWORDS
 

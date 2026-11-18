@@ -5,7 +5,7 @@
 [keywords photo]
 [keywords {print screen}]
 [keywords snapshot]
-[copyright {2004 George Petasis (http://wiki.tcl.tk/1404)}]
+[copyright {2004 George Petasis (http://wiki.tcl-lang.org/1404)}]
 [copyright {2010 Documentation, Andreas Kupries}]
 [moddesc   {Variations on a canvas}]
 [titledesc {Canvas snapshot to Tk photo image}]

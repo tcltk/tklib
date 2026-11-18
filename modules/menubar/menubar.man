@@ -671,8 +671,8 @@ tested on Windows (Vista), Linux and OSX (10.4).
 [section References]
 See also
 [list_begin enumerated]
-[enum] [uri http://www.tcl.tk/man/tcl8.6/TkCmd/menu.htm menu]
-[enum] [uri http://wiki.tcl.tk/25231 {A command that creates menubar objects}]
+[enum] [uri http://www.tcl-lang.org/man/tcl8.6/TkCmd/menu.htm menu]
+[enum] [uri http://wiki.tcl-lang.org/25231 {A command that creates menubar objects}]
 [list_end]
 
 [vset CATEGORY menubar]

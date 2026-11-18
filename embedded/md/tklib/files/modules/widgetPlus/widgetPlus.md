@@ -427,7 +427,7 @@ code repository for __[Tk](\.\./\.\./\.\./\.\./index\.md\#tk)__\. Any
 incompatibility with any of these versions, for any
 __[Tk](\.\./\.\./\.\./\.\./index\.md\#tk)__ windowing system, should be reported
 as a bug\. Please report such in the category *widgetPlus* of the [Tklib
-Trackers](http://core\.tcl\.tk/tklib/reportlist)\.
+Trackers](http://core\.tcl\-lang\.org/tklib/reportlist)\.
 
 # <a name='section10'></a>EXAMPLES
 
@@ -502,8 +502,8 @@ command __::widgetPlus::EnableBWidget__ must be called first\.
 
 This document, and the package it describes, will undoubtedly contain bugs and
 other problems\. Please report such in the category *widgetPlus* of the [Tklib
-Trackers](http://core\.tcl\.tk/tklib/reportlist)\. Please also report any ideas
-for enhancements you may have for either package and/or documentation\.
+Trackers](http://core\.tcl\-lang\.org/tklib/reportlist)\. Please also report any
+ideas for enhancements you may have for either package and/or documentation\.
 
 # <a name='seealso'></a>SEE ALSO
 
