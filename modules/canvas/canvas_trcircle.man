@@ -1,0 +1,98 @@
+[comment {-*- tcl -*- doctools manpage}]
+[vset VERSION 0.1]
+[manpage_begin canvas::track::circle n [vset VERSION]]
+[see_also canvas::track::lines]
+[keywords canvas]
+[keywords crosshair]
+[keywords tracking]
+[moddesc   {Variations on a canvas}]
+[titledesc {Show a circle following the mouse}]
+[require Tcl 8.5]
+[require Tk 8.5]
+[require canvas::track::circle [opt [vset VERSION]]]
+[description]
+
+This package provides a utility class which shows a circle on a
+canvas, centered on the mouse pointer while it is over the canvas,
+e.g. to show the range of an action at the pointer.
+
+[section {Class API}]
+
+[list_begin definitions]
+[comment {= = == === ===== ======== ============= =====================}]
+[call [cmd ::canvas::track] [method circle] [arg objectName] [arg canvas]]
+
+This, the class command, creates a new instance of the tracker, named
+[arg objectName], and attaches it to the specified [arg canvas]
+widget.  The tracker is enabled: the circle is shown when the pointer
+enters the canvas, follows it and is removed when the pointer leaves
+the canvas.  The radius is 10 pixels.
+
+[para] The result of the command is the fully qualified name of the
+instance command.
+
+[list_end]
+
+[section {Instance API}]
+
+Instances of this class provide the following API:
+
+[list_begin definitions]
+[comment {= = == === ===== ======== ============= =====================}]
+[call [cmd objectName] [method destroy]]
+
+This method detaches the tracker from the canvas, removes the circle,
+and destroys the instance.  It does not destroy the attached canvas.
+Destroying the canvas does not destroy the instance.
+
+[comment {= = == === ===== ======== ============= =====================}]
+[call [cmd objectName] [method off]]
+[call [cmd objectName] [method on]]
+
+These methods disable and re-enable the following of the mouse.
+While disabled, the circle is not shown when the pointer enters the
+canvas and does not follow it; it can still be shown and moved with
+the methods [method start] and [method move].  Note that
+[method off] does not remove a circle already shown; use
+[method done] for this.
+
+[comment {= = == === ===== ======== ============= =====================}]
+[call [cmd objectName] [method radius] [arg radius]]
+
+This method sets the radius of the circle, in pixels.  A circle
+currently shown is redrawn with the new radius.
+
+[comment {= = == === ===== ======== ============= =====================}]
+[call [cmd objectName] [method start] [arg x] [arg y]]
+
+This method shows the circle centered on the point [arg x] [arg y],
+given in window coordinates of the canvas (as from [const %x] and
+[const %y] in a binding), removing a circle already shown.
+
+[comment {= = == === ===== ======== ============= =====================}]
+[call [cmd objectName] [method move] [arg x] [arg y]]
+
+This method moves the circle shown to the new center [arg x] [arg y],
+in window coordinates.  It does nothing if no circle is shown.
+
+[comment {= = == === ===== ======== ============= =====================}]
+[call [cmd objectName] [method done]]
+
+This method removes the circle from the canvas.
+
+[list_end]
+
+[section EXAMPLE]
+
+[example {
+package require canvas::track::circle
+
+canvas .c -width 300 -height 200
+pack .c
+canvas::track circle tracker .c
+tracker radius 20
+}]
+
+[vset CATEGORY canvas]
+[include ../../support/devel/doc/feedback.inc]
+[manpage_end]
