@@ -31,6 +31,11 @@ if {[lsearch [namespace children] ::tcltest] == -1} {
 
 source [file join [file dirname [info script]] history.tcl]
 
+# The tests need a mapped main window (the test harness may withdraw it).
+set mainWindowState [wm state .]
+wm deiconify .
+update
+
 # -------------------------------------------------------------------------
 # Helpers
 
@@ -653,5 +658,8 @@ rename cleanEntry {}
 rename recordAlerts {}
 rename key {}
 unset origAlert
+
+if {$mainWindowState eq "withdrawn"} {wm withdraw .}
+unset mainWindowState
 
 ::tcltest::cleanupTests
