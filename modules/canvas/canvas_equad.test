@@ -1,0 +1,500 @@
+# -*- tcl -*-
+# Tests for the canvas::edit::quadrilateral package
+#
+# See the file "license.terms" for information on usage and redistribution
+# of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2
+    namespace import ::tcltest::*
+} else {
+    if {![package vsatisfies [package present tcltest] 2.2]} {
+	puts "    Aborting the tests found in \"[file tail [info script]]\"."
+	puts "    Requiring tcltest 2.2, have [package present tcltest]"
+	return
+    }
+}
+
+::tcltest::testConstraint tk 1
+
+lappend auto_path [file dirname [file dirname [file normalize [info script]]]]
+package require canvas::edit::quadrilateral
+
+# -------------------------------------------------------------------------
+
+proc mkCanvas {} {
+    canvas .c -width 300 -height 200 -highlightthickness 0 -borderwidth 0
+    pack .c
+    update
+    event generate .c <Enter> -x 290 -y 190
+    event generate .c <Motion> -x 290 -y 190
+    set ::log {}
+}
+
+# Editors cannot be destroyed cleanly while their canvas exists (see
+# canvas::edit::points), so destroy the canvas first.
+proc cleanup {args} {
+    destroy .c
+    foreach e $args {
+	catch {$e destroy}
+    }
+    unset -nocomplain ::log
+    namespace eval ::canvas::drag {
+	unset -nocomplain active clientdata lastx lasty
+    }
+}
+
+proc click {button x y {state 0}} {
+    event generate .c <Motion> -x $x -y $y -state $state
+    event generate .c <ButtonPress-$button> -x $x -y $y -state $state
+    event generate .c <ButtonRelease-$button> -x $x -y $y \
+	-state [expr {$state | (1 << ($button + 7))}]
+    event generate .c <Motion> -x 290 -y 190
+    update
+}
+
+proc drag {button state x0 y0 args} {
+    set bmask [expr {1 << ($button + 7)}]
+    event generate .c <Motion> -x $x0 -y $y0 -state $state
+    event generate .c <ButtonPress-$button> -x $x0 -y $y0 -state $state
+    set x $x0
+    set y $y0
+    foreach {x y} $args {
+	event generate .c <Motion> -x $x -y $y -state [expr {$state | $bmask}]
+    }
+    event generate .c <ButtonRelease-$button> -x $x -y $y \
+	-state [expr {$state | $bmask}]
+    event generate .c <Motion> -x 290 -y 190
+    update
+}
+
+# Centers of the point markers (default markers) with the given tag.
+proc points {tag} {
+    lsort -dictionary [lmap item [.c find withtag $tag] {
+	lassign [.c coords $item] x0 y0 x1 y1
+	list [expr {($x0 + $x1) / 2}] [expr {($y0 + $y1) / 2}]
+    }]
+}
+
+proc logcb {args} {
+    lappend ::log $args
+    return
+}
+
+# Coordinates of the helper lines (items of type line), sorted.
+proc lines {} {
+    lsort [lmap i [.c find all] {
+	if {[.c type $i] ne "line"} continue
+	.c coords $i
+    }]
+}
+
+# Create a quadrilateral interactively, clockwise from top left.
+proc mkQuad {args} {
+    mkCanvas
+    ::canvas::edit quadrilateral E .c {*}$args
+    E enable
+    click 1 50 50
+    click 1 150 50
+    click 1 150 150
+    click 1 50 150
+}
+
+test canvas::edit::quadrilateral-1.0 {package version} -body {
+    package present canvas::edit::quadrilateral
+} -result 0.2
+
+# -------------------------------------------------------------------------
+
+test canvas::edit::quadrilateral-2.1 {create: wrong # args} -body {
+    ::canvas::edit quadrilateral E
+} -returnCodes error -match glob -result {Error in constructor: wrong # args: should be "*"}
+
+test canvas::edit::quadrilateral-2.2 {create: result is the qualified name} -setup mkCanvas -body {
+    ::canvas::edit quadrilateral E .c
+} -cleanup {cleanup E} -result ::E
+
+test canvas::edit::quadrilateral-2.3 {create: unknown option} -setup mkCanvas -body {
+    ::canvas::edit quadrilateral E .c -foo 1
+} -cleanup {cleanup E} -returnCodes error -result {Error in constructor: unknown option "-foo"}
+
+test canvas::edit::quadrilateral-2.4 {create: active by default} -constraints {
+    knownBug
+} -setup mkCanvas -body {
+    ::canvas::edit quadrilateral E .c
+    E active
+} -cleanup {cleanup E} -result 1
+
+test canvas::edit::quadrilateral-2.5 {default options} -setup mkCanvas -body {
+    ::canvas::edit quadrilateral E .c
+    lmap o {-tag -convex -data-cmd} {E cget $o}
+} -cleanup {cleanup E} -result {QUADRILATERAL 0 {}}
+
+test canvas::edit::quadrilateral-2.6 {readonly options} -setup mkCanvas -body {
+    ::canvas::edit quadrilateral E .c
+    lmap o {-tag -convex -create-cmd -highlight-cmd -data-cmd} {
+	list [catch {E configure $o x} m] $m
+    }
+} -cleanup {
+    cleanup E
+    unset -nocomplain m
+} -result {{1 {option -tag can only be set at instance creation}} {1 {option -convex can only be set at instance creation}} {1 {option -create-cmd can only be set at instance creation}} {1 {option -highlight-cmd can only be set at instance creation}} {1 {option -data-cmd can only be set at instance creation}}}
+
+test canvas::edit::quadrilateral-2.7 {-convex: not a boolean} -setup mkCanvas -body {
+    ::canvas::edit quadrilateral E .c -convex maybe
+} -cleanup {cleanup E} -returnCodes error -match glob -result {Error in constructor: invalid -convex value: *}
+
+test canvas::edit::quadrilateral-2.8 {-highlight-cmd} -constraints {
+    knownBug
+} -setup {
+    mkCanvas
+    proc hl {method c arg} {
+	lappend ::log $method
+	if {$method eq "on"} {return state}
+    }
+} -body {
+    # The option is passed to canvas::edit::points, which does not
+    # support it.
+    ::canvas::edit quadrilateral E .c -highlight-cmd hl
+    E enable
+    E add 50 50
+    event generate .c <Motion> -x 50 -y 50
+    event generate .c <Motion> -x 290 -y 190
+    update
+    set ::log
+} -cleanup {
+    cleanup E
+    rename hl {}
+} -result {on off}
+
+test canvas::edit::quadrilateral-2.9 {destroy after canvas destruction} -setup mkCanvas -body {
+    ::canvas::edit quadrilateral E .c
+    destroy .c
+    list [E destroy] [info commands ::E]
+} -cleanup {cleanup E} -result {{} {}}
+
+# -------------------------------------------------------------------------
+
+test canvas::edit::quadrilateral-3.1 {enable, disable, active} -setup mkCanvas -body {
+    ::canvas::edit quadrilateral E .c
+    set r [list [E enable] [E active]]
+    lappend r [E disable] [E active]
+} -cleanup {
+    cleanup E
+    unset r
+} -result {{} 1 {} 0}
+
+test canvas::edit::quadrilateral-3.2 {disabled editor ignores clicks} -setup mkCanvas -body {
+    ::canvas::edit quadrilateral E .c
+    E enable
+    E disable
+    click 1 50 50
+    points QUADRILATERAL
+} -cleanup {cleanup E} -result {}
+
+# -------------------------------------------------------------------------
+# Interactive creation
+
+test canvas::edit::quadrilateral-4.1 {vertices and helper lines} -setup mkCanvas -body {
+    ::canvas::edit quadrilateral E .c -data-cmd logcb
+    E enable
+    click 1 50 50
+    set r [list [lines]]
+    click 1 150 50
+    lappend r [lines]
+    click 1 150 150
+    lappend r [lines] $::log
+} -cleanup {
+    cleanup E
+    unset r
+} -result {{} {{50.0 50.0 150.0 50.0}} {{150.0 50.0 150.0 150.0} {50.0 50.0 150.0 50.0}} {}}
+
+test canvas::edit::quadrilateral-4.2 {fourth vertex completes and reports the quad} -setup {
+    mkQuad -data-cmd logcb
+} -body {
+    list [points QUADRILATERAL] [lines] $::log
+} -cleanup {cleanup E} -result {{{50.0 50.0} {50.0 150.0} {150.0 50.0} {150.0 150.0}} {{150.0 150.0 50.0 150.0} {150.0 50.0 150.0 150.0} {50.0 150.0 50.0 50.0} {50.0 50.0 150.0 50.0}} {{::E {{50.0 50.0} {150.0 50.0} {150.0 150.0} {50.0 150.0}}}}}
+
+test canvas::edit::quadrilateral-4.3 {at most four vertices} -setup {
+    mkQuad -data-cmd logcb
+} -body {
+    set ::log {}
+    click 1 250 100
+    list [llength [points QUADRILATERAL]] $::log
+} -cleanup {cleanup E} -result {4 {}}
+
+test canvas::edit::quadrilateral-4.4 {helper lines are below the vertices} -setup {
+    mkQuad
+} -body {
+    set all [.c find all]
+    set vmin [tcl::mathfunc::min {*}[lmap i [.c find withtag QUADRILATERAL] {lsearch $all $i}]]
+    set lmax [tcl::mathfunc::max {*}[lmap i $all {
+	if {[.c type $i] ne "line"} continue
+	lsearch $all $i
+    }]]
+    expr {$lmax < $vmin}
+} -cleanup {
+    cleanup E
+    unset all lmax vmin
+} -result 1
+
+test canvas::edit::quadrilateral-4.5 {default vertex markers distinguish the vertices} -setup {
+    mkQuad
+} -body {
+    lmap i [.c find withtag QUADRILATERAL] {
+	list [.c type $i] [.c itemcget $i -fill] [.c itemcget $i -outline]
+    }
+} -cleanup {cleanup E} -result {{oval SkyBlue2 black} {oval Green black} {rectangle SkyBlue2 black} {rectangle Green black}}
+
+test canvas::edit::quadrilateral-4.6 {default vertex marker: circle of radius 3} -constraints {
+    knownBug
+} -setup {
+    mkQuad
+} -body {
+    # The code uses radius 5.
+    .c coords [lindex [.c find withtag QUADRILATERAL] 0]
+} -cleanup {cleanup E} -result {47.0 47.0 53.0 53.0}
+
+test canvas::edit::quadrilateral-4.7 {default highlight recolors in red} -constraints {
+    knownBug
+} -setup {
+    mkQuad
+} -body {
+    event generate .c <Motion> -x 50 -y 50
+    update
+    set item [lindex [.c find withtag QUADRILATERAL] 0]
+    .c itemcget $item [expr {[.c itemcget $item -activefill] ne "" ? "-activefill" : "-fill"}]
+} -cleanup {
+    cleanup E
+    unset -nocomplain item
+} -result red
+
+test canvas::edit::quadrilateral-4.8 {-create-cmd} -setup {
+    proc mk {c x y} {
+	lappend ::log [list mk $x $y]
+	list [$c create text $x $y -text V]
+    }
+    mkQuad -create-cmd mk
+} -body {
+    list $::log [lmap i [.c find withtag QUADRILATERAL] {.c type $i}]
+} -cleanup {
+    cleanup E
+    rename mk {}
+} -result {{{mk 50.0 50.0} {mk 150.0 50.0} {mk 150.0 150.0} {mk 50.0 150.0}} {text text text text}}
+
+test canvas::edit::quadrilateral-4.9 {-create-cmd veto} -setup {
+    proc mk {c x y} {
+	if {$x > 200} {return {}}
+	list [$c create text $x $y -text V]
+    }
+    mkCanvas
+} -body {
+    ::canvas::edit quadrilateral E .c -create-cmd mk -data-cmd logcb
+    E enable
+    click 1 250 50
+    click 1 50 50
+    click 1 150 50
+    click 1 150 150
+    click 1 50 150
+    list [llength [.c find withtag QUADRILATERAL]] [llength $::log]
+} -cleanup {
+    cleanup E
+    rename mk {}
+} -result {4 1}
+
+test canvas::edit::quadrilateral-4.10 {-tag} -setup mkCanvas -body {
+    ::canvas::edit quadrilateral E .c -tag Q
+    E enable
+    click 1 50 50
+    list [llength [.c find withtag Q]] [.c find withtag QUADRILATERAL]
+} -cleanup {cleanup E} -result {1 {}}
+
+test canvas::edit::quadrilateral-4.11 {-color of the helper lines} -setup {
+    mkQuad -color red
+} -body {
+    lsort -unique [lmap i [.c find all] {
+	if {[.c type $i] ne "line"} continue
+	.c itemcget $i -fill
+    }]
+} -cleanup {cleanup E} -result red
+
+# -------------------------------------------------------------------------
+# Removal
+
+test canvas::edit::quadrilateral-5.1 {removing a vertex reports no quad} -setup {
+    mkQuad -data-cmd logcb
+} -body {
+    set ::log {}
+    click 2 150 50
+    list [points QUADRILATERAL] [lines] $::log
+} -cleanup {cleanup E} -result {{{50.0 50.0} {50.0 150.0} {150.0 150.0}} {{150.0 150.0 50.0 150.0} {50.0 150.0 50.0 50.0}} {{::E {}}}}
+
+test canvas::edit::quadrilateral-5.2 {removing a second vertex reports nothing} -setup {
+    mkQuad -data-cmd logcb
+} -body {
+    click 2 150 50
+    set ::log {}
+    click 2 150 150
+    list [llength [points QUADRILATERAL]] $::log
+} -cleanup {cleanup E} -result {2 {}}
+
+test canvas::edit::quadrilateral-5.3 {a new vertex fills the gap} -setup {
+    mkQuad -data-cmd logcb
+} -body {
+    click 2 150 50
+    set ::log {}
+    click 1 160 40
+    list [lines] $::log
+} -cleanup {cleanup E} -result {{{150.0 150.0 50.0 150.0} {160.0 40.0 150.0 150.0} {50.0 150.0 50.0 50.0} {50.0 50.0 160.0 40.0}} {{::E {{50.0 50.0} {160.0 40.0} {150.0 150.0} {50.0 150.0}}}}}
+
+# -------------------------------------------------------------------------
+# Dragging
+
+test canvas::edit::quadrilateral-6.1 {dragging a vertex} -setup {
+    mkQuad -data-cmd logcb
+} -body {
+    set ::log {}
+    drag 3 0 150 150 160 160 170 180
+    list [lines] $::log
+} -cleanup {cleanup E} -result {{{150.0 50.0 170.0 180.0} {170.0 180.0 50.0 150.0} {50.0 150.0 50.0 50.0} {50.0 50.0 150.0 50.0}} {{::E {{50.0 50.0} {150.0 50.0} {170.0 180.0} {50.0 150.0}}}}}
+
+test canvas::edit::quadrilateral-6.2 {dragging a vertex of an incomplete quad} -setup mkCanvas -body {
+    ::canvas::edit quadrilateral E .c -data-cmd logcb
+    E enable
+    click 1 50 50
+    click 1 150 50
+    drag 3 0 150 50 160 60
+    list [lines] $::log
+} -cleanup {cleanup E} -result {{{50.0 50.0 160.0 60.0}} {}}
+
+test canvas::edit::quadrilateral-6.3 {rubberband lines are removed after the drag} -setup {
+    mkQuad
+} -body {
+    set n [llength [.c find all]]
+    drag 3 0 150 150 160 160
+    expr {[llength [.c find all]] == $n}
+} -cleanup {
+    cleanup E
+    unset n
+} -result 1
+
+# -------------------------------------------------------------------------
+# Convexity
+
+test canvas::edit::quadrilateral-7.1 {-convex: concave fourth vertex is rejected} -setup mkCanvas -body {
+    ::canvas::edit quadrilateral E .c -convex 1 -data-cmd logcb
+    E enable
+    click 1 50 50
+    click 1 150 50
+    click 1 150 150
+    click 1 120 80
+    set r [list [llength [points QUADRILATERAL]] $::log]
+    click 1 50 150
+    lappend r [llength [points QUADRILATERAL]] [llength $::log]
+} -cleanup {
+    cleanup E
+    unset r
+} -result {3 {} 4 1}
+
+test canvas::edit::quadrilateral-7.2 {-convex: counter-clockwise order is rejected} -setup mkCanvas -body {
+    ::canvas::edit quadrilateral E .c -convex 1
+    E enable
+    click 1 50 50
+    click 1 50 150
+    click 1 150 150
+    click 1 150 50
+    llength [points QUADRILATERAL]
+} -cleanup {cleanup E} -result 3
+
+test canvas::edit::quadrilateral-7.3 {without -convex any quad is accepted} -setup mkCanvas -body {
+    ::canvas::edit quadrilateral E .c
+    E enable
+    click 1 50 50
+    click 1 150 50
+    click 1 150 150
+    click 1 120 80
+    llength [points QUADRILATERAL]
+} -cleanup {cleanup E} -result 4
+
+test canvas::edit::quadrilateral-7.4 {-convex: drag violating convexity is rolled back} -setup {
+    mkQuad -convex 1 -data-cmd logcb
+} -body {
+    set ::log {}
+    drag 3 0 150 150 100 60
+    list [points QUADRILATERAL] [lines] $::log
+} -cleanup {cleanup E} -result {{{50.0 50.0} {50.0 150.0} {150.0 50.0} {150.0 150.0}} {{150.0 150.0 50.0 150.0} {150.0 50.0 150.0 150.0} {50.0 150.0 50.0 50.0} {50.0 50.0 150.0 50.0}} {}}
+
+test canvas::edit::quadrilateral-7.5 {-convex: convex drag accepted} -setup {
+    mkQuad -convex 1
+} -body {
+    drag 3 0 150 150 170 170
+    points QUADRILATERAL
+} -cleanup {cleanup E} -result {{50.0 50.0} {50.0 150.0} {150.0 50.0} {170.0 170.0}}
+
+# -------------------------------------------------------------------------
+# add, clear
+
+test canvas::edit::quadrilateral-8.1 {add: programmatic vertices} -setup mkCanvas -body {
+    ::canvas::edit quadrilateral E .c -data-cmd logcb
+    E add 10 10
+    E add 20 10
+    E add 20 20
+    set r $::log
+    E add 10 20
+    list $r $::log [llength [lines]]
+} -cleanup {
+    cleanup E
+    unset r
+} -result {{} {{::E {{10 10} {20 10} {20 20} {10 20}}}} 4}
+
+test canvas::edit::quadrilateral-8.2 {add: wrong # args} -setup mkCanvas -body {
+    ::canvas::edit quadrilateral E .c
+    E add 10
+} -cleanup {cleanup E} -returnCodes error -match glob -result {wrong # args: should be "*add x y"}
+
+test canvas::edit::quadrilateral-8.3 {add: fifth vertex ignored} -setup mkCanvas -body {
+    ::canvas::edit quadrilateral E .c
+    foreach {x y} {10 10 20 10 20 20 10 20 30 30} {E add $x $y}
+    llength [.c find withtag QUADRILATERAL]
+} -cleanup {cleanup E} -result 4
+
+test canvas::edit::quadrilateral-8.4 {clear} -setup {
+    mkQuad -data-cmd logcb
+} -body {
+    set ::log {}
+    list [E clear] [.c find all] $::log
+} -cleanup {cleanup E} -result {{} {} {{::E {}}}}
+
+test canvas::edit::quadrilateral-8.5 {clear, then a new quad} -setup {
+    mkQuad -data-cmd logcb
+} -body {
+    E clear
+    set ::log {}
+    foreach {x y} {10 10 20 10 20 20 10 20} {E add $x $y}
+    set ::log
+} -cleanup {cleanup E} -result {{::E {{10 10} {20 10} {20 20} {10 20}}}}
+
+# -------------------------------------------------------------------------
+
+rename mkCanvas {}
+rename cleanup {}
+rename click {}
+rename drag {}
+rename points {}
+rename logcb {}
+rename lines {}
+rename mkQuad {}
+
+::tcltest::cleanupTests
