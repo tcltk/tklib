@@ -1,0 +1,398 @@
+# -*- tcl -*-
+# Tests for the canvas::zoom package
+#
+# See the file "license.terms" for information on usage and redistribution
+# of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2
+    namespace import ::tcltest::*
+} else {
+    if {![package vsatisfies [package present tcltest] 2.2]} {
+	puts "    Aborting the tests found in \"[file tail [info script]]\"."
+	puts "    Requiring tcltest 2.2, have [package present tcltest]"
+	return
+    }
+}
+
+::tcltest::testConstraint tk 1
+
+lappend auto_path [file dirname [file dirname [file normalize [info script]]]]
+package require canvas::zoom
+
+# -------------------------------------------------------------------------
+
+# Collect background errors instead of showing a dialog.
+set oldBgerror [interp bgerror {}]
+set bgerrors {}
+proc collectBgerror {msg opts} {
+    lappend ::bgerrors $msg
+}
+interp bgerror {} collectBgerror
+
+proc mkZoom {args} {
+    canvas::zoom .z {*}$args
+    pack .z
+    update
+}
+
+proc cleanZoom {} {
+    destroy .z
+    update
+    unset -nocomplain ::zl ::log
+    set ::bgerrors {}
+}
+
+proc logcb {args} {
+    lappend ::log $args
+}
+
+test canvas::zoom-1.0 {package version} -body {
+    package present canvas::zoom
+} -result 0.2.1
+
+# -------------------------------------------------------------------------
+# Creation and options
+
+test canvas::zoom-2.1 {create: result is the path name} -body {
+    set r [canvas::zoom .z]
+    update
+    list $r [winfo class .z] $::bgerrors
+} -cleanup {
+    cleanZoom
+    unset r
+} -result {.z Zoom {}}
+
+test canvas::zoom-2.2 {create: no path name} -body {
+    canvas::zoom
+} -returnCodes error -match glob -result {wrong # args: should be "*"}
+
+test canvas::zoom-2.3 {create: unknown option} -body {
+    canvas::zoom .z -foo 1
+} -cleanup {
+    cleanZoom
+} -returnCodes error -result {Error in constructor: unknown option "-foo"}
+
+test canvas::zoom-2.4 {create: failed creation leaves no window} -body {
+    catch {canvas::zoom .z -foo 1}
+    update
+    list [winfo exists .z] [info commands .z] $::bgerrors
+} -cleanup {
+    cleanZoom
+} -result {0 {} {}}
+
+test canvas::zoom-2.5 {default options} -setup mkZoom -body {
+    list [.z cget -orient] [.z cget -levels] [.z cget -command]
+} -cleanup cleanZoom -result {vertical {0 10} {}}
+
+test canvas::zoom-2.10 {create with options not changing the display} -constraints {
+    knownBug
+} -body {
+    # The user interface is only built if no options are given or an
+    # option changing the display (-orient, -levels, -variable) is given
+    # with a non-default value.
+    canvas::zoom .z -command logcb
+    canvas::zoom .z2 -orient vertical
+    update
+    list [winfo exists .z.z.plus] [winfo exists .z2.z.plus]
+} -cleanup {
+    destroy .z2
+    cleanZoom
+} -result {1 1}
+
+test canvas::zoom-2.6 {configure: all options} -setup mkZoom -body {
+    lsort [lmap o [.z configure] {lindex $o 0}]
+} -cleanup cleanZoom -result {-command -levels -orient -variable}
+
+test canvas::zoom-2.7 {configure: unknown option} -setup mkZoom -body {
+    .z configure -foo 1
+} -cleanup cleanZoom -returnCodes error -result {unknown option "-foo"}
+
+test canvas::zoom-2.8 {cget: unknown option} -setup mkZoom -body {
+    .z cget -foo
+} -cleanup cleanZoom -returnCodes error -result {unknown option "-foo"}
+
+test canvas::zoom-2.9 {unknown method} -setup mkZoom -body {
+    .z foo
+} -cleanup cleanZoom -returnCodes error -match glob -result {unknown subcommand "foo": must be *}
+
+# -orient
+
+test canvas::zoom-3.1 {-orient vertical (default): buttons stacked vertically} -setup {
+    mkZoom
+} -body {
+    list [expr {[winfo y .z.z.plus] < [winfo y .z.z.val]}] \
+	[expr {[winfo y .z.z.val] < [winfo y .z.z.minus]}] \
+	[expr {[winfo x .z.z.minus] == [winfo x .z.z.plus]}]
+} -cleanup cleanZoom -result {1 1 1}
+
+test canvas::zoom-3.2 {-orient horizontal: buttons side by side} -setup {
+    mkZoom -orient horizontal
+} -body {
+    list [.z cget -orient] \
+	[expr {[winfo x .z.z.plus] < [winfo x .z.z.val]}] \
+	[expr {[winfo x .z.z.val] < [winfo x .z.z.minus]}] \
+	[expr {[winfo y .z.z.minus] == [winfo y .z.z.plus]}]
+} -cleanup cleanZoom -result {horizontal 1 1 1}
+
+test canvas::zoom-3.3 {-orient: change after creation} -setup mkZoom -body {
+    .z configure -orient horizontal
+    update
+    list [.z cget -orient] [expr {[winfo x .z.z.plus] < [winfo x .z.z.minus]}]
+} -cleanup cleanZoom -result {horizontal 1}
+
+test canvas::zoom-3.4 {-orient: bad value} -body {
+    canvas::zoom .z -orient diagonal
+} -cleanup cleanZoom -returnCodes error -result {Error in constructor: invalid -orient value: invalid value "diagonal", should be one of: vertical, horizontal}
+
+test canvas::zoom-3.5 {-orient: bad value in configure} -setup mkZoom -body {
+    .z configure -orient diagonal
+} -cleanup cleanZoom -returnCodes error -result {invalid -orient value: invalid value "diagonal", should be one of: vertical, horizontal}
+
+# -levels
+
+test canvas::zoom-4.1 {-levels: single value is the maximum} -setup {
+    mkZoom -levels 5
+} -body {
+    .z cget -levels
+} -cleanup cleanZoom -result {0 5}
+
+test canvas::zoom-4.2 {-levels: minimum and maximum} -setup {
+    mkZoom -levels {2 5}
+} -body {
+    .z cget -levels
+} -cleanup cleanZoom -result {2 5}
+
+test canvas::zoom-4.3 {-levels: change after creation} -setup mkZoom -body {
+    .z configure -levels 7
+    update
+    .z cget -levels
+} -cleanup cleanZoom -result {0 7}
+
+test canvas::zoom-4.4 {-levels: not an integer} -body {
+    canvas::zoom .z -levels a
+} -cleanup cleanZoom -returnCodes error -result {Error in constructor: invalid -levels value: invalid value "a", expected integer}
+
+test canvas::zoom-4.5 {-levels: not an integer in configure} -setup mkZoom -body {
+    .z configure -levels 1.5
+} -cleanup cleanZoom -returnCodes error -result {invalid -levels value: invalid value "1.5", expected integer}
+
+test canvas::zoom-4.6 {-levels: too many elements} -body {
+    canvas::zoom .z -levels {1 2 3}
+} -cleanup cleanZoom -returnCodes error -result {Error in constructor: invalid -levels value: value has too many elements; no more than 2 expected}
+
+test canvas::zoom-4.7 {-levels: empty} -body {
+    canvas::zoom .z -levels {}
+} -cleanup cleanZoom -returnCodes error -match glob -result {Error in constructor: invalid -levels value: *}
+
+test canvas::zoom-4.8 {-levels: negative value} -constraints {
+    knownBug
+} -body {
+    # Documented as a non-negative integer.
+    canvas::zoom .z -levels -1
+} -cleanup cleanZoom -returnCodes error -match glob -result {*invalid -levels value*}
+
+test canvas::zoom-4.9 {-levels: limits the zoom level} -setup {
+    mkZoom -levels {2 4} -variable ::zl
+} -body {
+    set r $::zl
+    foreach i {1 2 3 4} {.z.z.plus invoke}
+    lappend r $::zl
+    foreach i {1 2 3 4} {.z.z.minus invoke}
+    lappend r $::zl
+} -cleanup {
+    cleanZoom
+    unset r i
+} -result {2 4 2}
+
+# -variable
+
+test canvas::zoom-5.1 {-variable: default is an internal variable} -setup mkZoom -body {
+    set v [.z cget -variable]
+    list [info exists $v] [set $v] [.z.z.val cget -text]
+} -cleanup {
+    cleanZoom
+    unset v
+} -result {1 0 0}
+
+test canvas::zoom-5.2 {-variable: global variable created at the minimum} -setup {
+    mkZoom -variable ::zl -levels {3 8}
+} -body {
+    list [.z cget -variable] $::zl [.z.z.val cget -text]
+} -cleanup cleanZoom -result {::zl 3 3}
+
+test canvas::zoom-5.3 {-variable: existing value is kept} -setup {
+    set ::zl 6
+    mkZoom -variable ::zl
+} -body {
+    list $::zl [.z.z.val cget -text]
+} -cleanup cleanZoom -result {6 6}
+
+test canvas::zoom-5.4 {-variable: widget changes are propagated} -setup {
+    mkZoom -variable ::zl
+} -body {
+    .z.z.plus invoke
+    .z.z.plus invoke
+    set r $::zl
+    .z.z.minus invoke
+    lappend r $::zl
+} -cleanup {
+    cleanZoom
+    unset r
+} -result {2 1}
+
+test canvas::zoom-5.5 {-variable: variable changes are imported} -setup {
+    mkZoom -variable ::zl
+} -body {
+    set ::zl 4
+    update
+    set r [.z.z.val cget -text]
+    .z.z.plus invoke
+    lappend r $::zl
+} -cleanup {
+    cleanZoom
+    unset r
+} -result {4 5}
+
+test canvas::zoom-5.6 {-variable: values out of range are clamped} -setup {
+    mkZoom -variable ::zl -levels {2 5}
+} -body {
+    set ::zl 20
+    update
+    set r $::zl
+    set ::zl 0
+    update
+    lappend r $::zl
+} -cleanup {
+    cleanZoom
+    unset r
+} -result {5 2}
+
+test canvas::zoom-5.7 {-variable: namespace variable} -setup {
+    namespace eval ::zoomtest {variable level 2}
+    mkZoom -variable ::zoomtest::level
+} -body {
+    .z.z.plus invoke
+    set ::zoomtest::level
+} -cleanup {
+    cleanZoom
+    namespace delete ::zoomtest
+} -result 3
+
+test canvas::zoom-5.8 {-variable: change after creation} -setup {
+    set ::zl 7
+    mkZoom
+} -body {
+    .z configure -variable ::zl
+    update
+    .z.z.minus invoke
+    list [.z cget -variable] $::zl [.z.z.val cget -text]
+} -cleanup cleanZoom -result {::zl 6 6}
+
+# -command
+
+test canvas::zoom-6.1 {-command: called with widget and new level} -setup {
+    mkZoom
+    .z configure -command logcb
+} -body {
+    .z.z.plus invoke
+    .z.z.plus invoke
+    .z.z.minus invoke
+    set ::log
+} -cleanup cleanZoom -result {{.z 1} {.z 2} {.z 1}}
+
+test canvas::zoom-6.2 {-command: not called at the limits} -setup {
+    mkZoom -levels 1
+    .z configure -command logcb
+} -body {
+    .z.z.minus invoke
+    .z.z.plus invoke
+    .z.z.plus invoke
+    set ::log
+} -cleanup cleanZoom -result {{.z 1}}
+
+test canvas::zoom-6.3 {-command: multi-word prefix, evaluated at global level} -setup {
+    proc ::cb2 {a b w level} {
+	lappend ::log [list $a $b $w $level [info level]]
+    }
+    mkZoom
+    .z configure -command {::cb2 {x y} z}
+} -body {
+    .z.z.plus invoke
+    set ::log
+} -cleanup {
+    cleanZoom
+    rename ::cb2 {}
+} -result {{{x y} z .z 1 1}}
+
+test canvas::zoom-6.4 {-command: set after creation, and removed} -setup mkZoom -body {
+    .z configure -command logcb
+    .z.z.plus invoke
+    .z configure -command {}
+    .z.z.plus invoke
+    list [.z cget -command] $::log
+} -cleanup cleanZoom -result {{} {{.z 1}}}
+
+test canvas::zoom-6.5 {-command: with -variable} -setup {
+    set ::zl 4
+    mkZoom -command logcb -variable ::zl
+} -body {
+    .z.z.plus invoke
+    set ::log
+} -cleanup cleanZoom -result {{.z 5}}
+
+# -------------------------------------------------------------------------
+# Misc
+
+test canvas::zoom-7.1 {buttons have the plus and minus images} -setup mkZoom -body {
+    list [.z.z.plus cget -image] [.z.z.minus cget -image]
+} -cleanup cleanZoom -result {::canvas::zoom::plus ::canvas::zoom::minus}
+
+test canvas::zoom-7.2 {destroy right after creation} -constraints {
+    knownBug
+} -body {
+    # The pending idle redraw is not cancelled on destruction and fails
+    # in the background.
+    canvas::zoom .z
+    destroy .z
+    update
+    set ::bgerrors
+} -cleanup cleanZoom -result {}
+
+test canvas::zoom-7.3 {several widgets are independent} -setup {
+    mkZoom
+    .z configure -command logcb
+    canvas::zoom .z2 -levels {5 9} -command logcb
+    pack .z2
+    update
+} -body {
+    .z.z.plus invoke
+    .z2.z.plus invoke
+    list $::log [set [.z cget -variable]] [set [.z2 cget -variable]]
+} -cleanup {
+    destroy .z2
+    cleanZoom
+} -result {{{.z 1} {.z2 6}} 1 6}
+
+# -------------------------------------------------------------------------
+
+interp bgerror {} $oldBgerror
+unset oldBgerror bgerrors
+rename collectBgerror {}
+rename mkZoom {}
+rename cleanZoom {}
+rename logcb {}
+
+::tcltest::cleanupTests
