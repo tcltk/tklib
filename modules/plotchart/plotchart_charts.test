@@ -1,0 +1,2417 @@
+# -*- tcl -*-
+# plotchart_charts.test --
+#
+#	Tests for the Plotchart package: charts other than XY plots
+#	(piecharts, spiral pies, radial charts, polar plots, wind roses,
+#	vertical, horizontal and 3D barcharts, 3D ribbon charts, boxplots,
+#	timecharts, Gantt charts, table charts, ternary diagrams, status
+#	timelines and dendrograms).
+#
+# The output of Plotchart is drawn on a canvas, so the tests check the
+# canvas items (types, tags, coordinates relative to each other, colours
+# and texts), not pixels.
+#
+# The tests in this file are numbered Plotchart-301.M to Plotchart-399.M
+# (plotchart.test uses the numbers below 100).
+
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2
+    namespace import ::tcltest::*
+}
+
+::tcltest::testConstraint tk 1
+
+source [file join [file dirname [file normalize [info script]]] plotchart.tcl]
+
+# -------------------------------------------------------------------------
+# Helpers
+#
+# Plotchart keeps its state in namespace arrays keyed by the name of the
+# canvas (or of its per-plot alias, "00.c", "01.c", ...).  The canvases
+# are normally not mapped, so that the size of the plot is determined by
+# the -width and -height options only.
+
+# Collect background errors instead of showing a dialog
+set ::bgErrors {}
+proc ::testBgError {msg opts} {
+    lappend ::bgErrors $msg
+}
+set ::oldBgError [interp bgerror {}]
+interp bgerror {} ::testBgError
+
+set ::oldRootState [wm state .]
+
+proc mkCanvas {{width 400} {height 300} {c .c}} {
+    canvas $c -width $width -height $height -background white \
+	-highlightthickness 0 -borderwidth 0
+    return $c
+}
+
+proc cleanupPlot {{c .c}} {
+    if {[winfo exists $c]} {
+	::Plotchart::clearcanvas $c
+	destroy $c
+    }
+    set pat [string map {. \\.} $c]
+    foreach a [interp aliases {}] {
+	if {[regexp "^(.+_)?r?\[0-9\]\[0-9\]$pat\$" $a] ||
+	    [regexp "^\[a-z0-9\]+_$pat\$" $a]} {
+	    interp alias {} $a {}
+	}
+    }
+    foreach v {scaling config data_series legend settings packing} {
+	if {[info exists ::Plotchart::$v]} {
+	    array unset ::Plotchart::$v *$c,*
+	}
+    }
+}
+
+# Return the item ids having all given tags, in display order.
+# An element "type=T" selects only items of type T, "notype=T" excludes
+# items of type T.
+proc items {tags {c .c}} {
+    set t {}
+    set type {}
+    set notype {}
+    foreach x $tags {
+	if {[string match type=* $x]} {
+	    set type [string range $x 5 end]
+	} elseif {[string match notype=* $x]} {
+	    set notype [string range $x 7 end]
+	} else {
+	    lappend t $x
+	}
+    }
+    set ids {}
+    foreach i [$c find withtag [join $t " && "]] {
+	if {($type eq "" || [$c type $i] eq $type) &&
+	    ($notype eq "" || [$c type $i] ne $notype)} {
+	    lappend ids $i
+	}
+    }
+    return $ids
+}
+
+# Return the types of the items having all given tags, sorted and unique
+proc itemTypes {tags {c .c}} {
+    set types {}
+    foreach i [items $tags $c] {
+	lappend types [$c type $i]
+    }
+    lsort -unique $types
+}
+
+# Return the texts of the text items having all given tags
+proc itemTexts {tags {c .c}} {
+    set texts {}
+    foreach i [items $tags $c] {
+	if {[$c type $i] eq "text"} {
+	    lappend texts [$c itemcget $i -text]
+	}
+    }
+    return $texts
+}
+
+# Return the given option for all items having the given tags (unique)
+proc itemOption {tags option {c .c}} {
+    set values {}
+    foreach i [items $tags $c] {
+	lappend values [$c itemcget $i $option]
+    }
+    lsort -unique $values
+}
+
+# Round the numbers in a list to the given number of decimals
+proc R {value {digits 1}} {
+    set r {}
+    foreach v $value {
+	if {[string is double -strict $v]} {
+	    set v [format %.${digits}f $v]
+	    if {$v == 0} {set v [format %.${digits}f 0]}
+	}
+	lappend r $v
+    }
+    return $r
+}
+
+# Centre of the bounding box of the items with the given tags
+proc centre {tags {c .c}} {
+    lassign [$c bbox [join $tags " && "]] x1 y1 x2 y2
+    list [expr {($x1+$x2)/2.0}] [expr {($y1+$y2)/2.0}]
+}
+
+# Pixel coordinates of a world point in the given plot
+proc pix {p x y} {
+    ::Plotchart::coordsToPixel [$p canvas] $x $y
+}
+
+proc approx {a b {eps 1.0}} {
+    expr {abs($a-$b) <= $eps}
+}
+
+proc restoreRoot {} {
+    if {$::oldRootState eq "withdrawn"} {
+	wm withdraw .
+    }
+}
+
+proc samePixels {a b {eps 0.51}} {
+    if {[llength $a] != [llength $b]} {
+	return 0
+    }
+    foreach u $a v $b {
+	if {abs($u-$v) > $eps} {
+	    return 0
+	}
+    }
+    return 1
+}
+
+proc brightness {colour} {
+    lassign [winfo rgb . $colour] r g b
+    expr {$r + $g + $b}
+}
+
+# Items created by a script
+proc newItems {script} {
+    set before [.c find all]
+    uplevel 1 $script
+    set new {}
+    foreach i [.c find all] {
+	if {$i ni $before} {lappend new $i}
+    }
+    return $new
+}
+
+# Pixel coordinates of the plot area (from the scaling information)
+proc plotArea {p} {
+    set w [$p canvas]
+    list $::Plotchart::scaling($w,pxmin) $::Plotchart::scaling($w,pymin) \
+	$::Plotchart::scaling($w,pxmax) $::Plotchart::scaling($w,pymax)
+}
+
+# Direction of a point relative to a centre: n, ne, e, ...
+proc direction {x y xc yc} {
+    set h [expr {$x < $xc - 1 ? "w" : ($x > $xc + 1 ? "e" : "")}]
+    set v [expr {$y < $yc - 1 ? "n" : ($y > $yc + 1 ? "s" : "")}]
+    return $v$h
+}
+
+# -------------------------------------------------------------------------
+# Piecharts
+
+test Plotchart-301.1 {piechart: one segment per value} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createPiechart .c]
+    $p plot {A 1 B 1 C 2}
+    set arcs [items {data type=arc}]
+    set r {}
+    foreach a $arcs {
+	lappend r [R [.c itemcget $a -extent] 0]
+    }
+    list [string match piechart_* $p] [llength $arcs] $r \
+	[lsort -unique [lmap a $arcs {.c itemcget $a -style}]] \
+	[lmap a $arcs {.c itemcget $a -fill}] \
+	[itemTexts segment_0] [itemTexts segment_1] [itemTexts segment_2]
+} -cleanup {
+    cleanupPlot
+} -result {1 3 {90 90 180} pieslice {blue lightblue green} A B C}
+
+test Plotchart-301.2 {piechart: segments are contiguous, starting at angle 0} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createPiechart .c]
+    $p plot {A 1 B 1 C 2}
+    lmap a [items {data type=arc}] {R [.c itemcget $a -start] 0}
+} -cleanup {
+    cleanupPlot
+} -result {0 90 180}
+
+test Plotchart-301.3 {piechart: default direction is clockwise} -constraints {
+    knownBug
+} -setup {
+    mkCanvas 400 400
+} -body {
+    # The segments are drawn counter-clockwise
+    set p [::Plotchart::createPiechart .c]
+    $p plot {A 1 B 1 C 2}
+    lassign [plotArea $p] x1 y1 x2 y2
+    lassign [centre {segment_0 type=arc}] x y
+    direction $x $y [expr {($x1+$x2)/2.0}] [expr {($y1+$y2)/2.0}]
+} -cleanup {
+    cleanupPlot
+} -result {se}
+
+test Plotchart-301.4 {piechart: labels outside the circle} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createPiechart .c]
+    $p plot {A 1 B 1 C 2}
+    lassign [plotArea $p] x1 y1 x2 y2
+    set xc [expr {($x1+$x2)/2.0}]
+    set yc [expr {($y1+$y2)/2.0}]
+    set r [expr {($x2-$x1)/2.0}]
+    set out {}
+    foreach seg {0 1 2} {
+	set t [items [list segment_$seg type=text]]
+	lassign [.c coords $t] x y
+	lappend out [expr {hypot($x-$xc, $y-$yc) > $r}]
+    }
+    set out
+} -cleanup {
+    cleanupPlot
+} -result {1 1 1}
+
+test Plotchart-301.5 {piechart: colours} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createPiechart .c]
+    $p colours red green blue
+    $p plot {A 1 B 1 C 1}
+    lmap a [items {data type=arc}] {.c itemcget $a -fill}
+} -cleanup {
+    cleanupPlot
+} -result {red green blue}
+
+test Plotchart-301.5a {piechart: colours are reused for more segments} -constraints {
+    knownBug
+} -setup {
+    mkCanvas 400 400
+} -body {
+    # The fourth segment is not filled
+    set p [::Plotchart::createPiechart .c]
+    $p colours red green blue
+    $p plot {A 1 B 1 C 1 D 1}
+    expr {"" ni [lmap a [items {data type=arc}] {.c itemcget $a -fill}]}
+} -cleanup {
+    cleanupPlot
+} -result 1
+
+test Plotchart-301.6 {piechart: one value gives a full circle} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createPiechart .c]
+    $p plot {Everything 10}
+    set new [.c find all]
+    list [lsort [lmap i $new {.c type $i}]] [lmap i $new {expr {[.c type $i] eq "text" ? [.c itemcget $i -text] : [continue]}}]
+} -cleanup {
+    cleanupPlot
+} -result {{oval text} Everything}
+
+test Plotchart-301.7 {piechart: explode a segment} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createPiechart .c]
+    $p plot {A 1 B 1 C 2}
+    set c0 [.c coords [items {segment_0 type=arc}]]
+    set c1 [.c coords [items {segment_1 type=arc}]]
+    $p explode 0
+    set d0 [.c coords [items {segment_0 type=arc}]]
+    # Segment 0 (0-90 degrees) moves to the upper right
+    set r [list [expr {[lindex $d0 0] > [lindex $c0 0]}] [expr {[lindex $d0 1] < [lindex $c0 1]}] \
+	       [expr {$c1 eq [.c coords [items {segment_1 type=arc}]]}]]
+    # Exploding another segment moves the first back
+    $p explode 2
+    lappend r [samePixels [.c coords [items {segment_0 type=arc}]] $c0 0.01] \
+	[expr {[.c coords [items {segment_2 type=arc}]] ne $c0}]
+    # Exploding the same segment again moves it back
+    $p explode 2
+    lappend r [expr {[lindex [.c coords [items {segment_2 type=arc}]] 0] == [lindex $c0 0]}]
+} -cleanup {
+    cleanupPlot
+} -result {1 1 1 1 1 1}
+
+test Plotchart-301.8 {piechart: explode auto, click on a segment} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createPiechart .c]
+    $p plot {A 1 B 1 C 2}
+    set w [$p canvas]
+    set c1 [.c coords [items {segment_1 type=arc}]]
+    # Without "auto" a click does nothing
+    ::Plotchart::PieExplodeSegment $w 1 1
+    set r [list [expr {$c1 eq [.c coords [items {segment_1 type=arc}]]}]]
+    $p explode auto
+    ::Plotchart::PieExplodeSegment $w 1 1
+    lappend r [expr {$c1 ne [.c coords [items {segment_1 type=arc}]]}]
+} -cleanup {
+    cleanupPlot
+} -result {1 1}
+
+test Plotchart-301.9 {piechart: labels and slice configuration} -setup {
+    ::Plotchart::plotconfig piechart labels textcolor red
+    ::Plotchart::plotconfig piechart labels font {Courier 12}
+    ::Plotchart::plotconfig piechart labels shownumbers 1
+    ::Plotchart::plotconfig piechart slice outline blue
+    ::Plotchart::plotconfig piechart slice outlinewidth 3
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createPiechart .c]
+    $p plot {A 1 B 3}
+    list [itemTexts data] [lsort -unique [lmap t [items {all type=text}] {.c itemcget $t -fill}]] \
+	[lsort -unique [lmap t [items {all type=text}] {.c itemcget $t -font}]] \
+	[itemOption {data type=arc} -outline] [itemOption {data type=arc} -width]
+} -cleanup {
+    cleanupPlot
+    foreach {comp prop} {labels textcolor labels font labels shownumbers slice outline slice outlinewidth} {
+	::Plotchart::plotconfig piechart $comp $prop default
+    }
+} -result {{} red {{Courier 12}} blue 3.0}
+
+test Plotchart-301.10 {piechart: shownumbers with format and formatright} -setup {
+    ::Plotchart::plotconfig piechart labels shownumbers 1
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createPiechart .c]
+    $p plot {A 1 B 3}
+    set r [list [lmap s {0 1} {itemTexts segment_$s}]]
+    cleanupPlot
+    ::Plotchart::plotconfig piechart labels format "%s: %g"
+    ::Plotchart::plotconfig piechart labels formatright "%g = %s"
+    mkCanvas 400 400
+    set p [::Plotchart::createPiechart .c]
+    $p plot {A 1 B 3}
+    lappend r [lmap s {0 1} {itemTexts segment_$s}]
+} -cleanup {
+    cleanupPlot
+    foreach prop {shownumbers format formatright} {
+	::Plotchart::plotconfig piechart labels $prop default
+    }
+} -result {{{{A (1)}} {{B (3)}}} {{{1 = A}} {{B: 3}}}}
+
+test Plotchart-301.11 {piechart: labels sorted and placed inside} -setup {
+    ::Plotchart::plotconfig piechart labels sorted 1
+    ::Plotchart::plotconfig piechart labels placement in
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createPiechart .c]
+    $p plot {A 3 B 1 C 2}
+    lassign [plotArea $p] x1 y1 x2 y2
+    set xc [expr {($x1+$x2)/2.0}]
+    set yc [expr {($y1+$y2)/2.0}]
+    set r [expr {($x2-$x1)/2.0}]
+    set in {}
+    foreach seg {0 1 2} {
+	lassign [.c coords [items [list segment_$seg type=text]]] x y
+	lappend in [expr {hypot($x-$xc, $y-$yc) < $r}]
+    }
+    list [lmap s {0 1 2} {itemTexts segment_$s}] $in [itemOption {all type=text} -anchor]
+} -cleanup {
+    cleanupPlot
+    ::Plotchart::plotconfig piechart labels sorted default
+    ::Plotchart::plotconfig piechart labels placement default
+} -result {{B C A} {1 1 1} center}
+
+test Plotchart-301.12 {piechart: start angle and direction} -setup {
+    ::Plotchart::plotconfig piechart slice startangle 90
+    ::Plotchart::plotconfig piechart slice direction -
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createPiechart .c]
+    $p plot {A 1 B 1}
+    lmap a [items {data type=arc}] {list [R [.c itemcget $a -start] 0] [R [.c itemcget $a -extent] 0]}
+} -cleanup {
+    cleanupPlot
+    ::Plotchart::plotconfig piechart slice startangle default
+    ::Plotchart::plotconfig piechart slice direction default
+} -result {{90 -180} {270 -180}}
+
+test Plotchart-301.13 {piechart: wrong # args} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createPiechart .c]
+    $p plot
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {wrong # args: should be "DrawPie w data"}
+
+# -------------------------------------------------------------------------
+# Spiral pies
+
+test Plotchart-302.1 {spiralpie: equal angles, radius from the value} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createSpiralPie .c]
+    $p plot {A 4 B 1 C 9}
+    set arcs [items {data type=arc}]
+    set radii {}
+    foreach a $arcs {
+	lassign [.c coords $a] x1 y1 x2 y2
+	lappend radii [expr {($x2-$x1)/2.0}]
+    }
+    list [string match spiralpie_* $p] [llength $arcs] \
+	[lmap a $arcs {R [.c itemcget $a -extent] 0}] \
+	[expr {[lindex $radii 1] < [lindex $radii 0] && [lindex $radii 0] < [lindex $radii 2]}]
+} -cleanup {
+    cleanupPlot
+} -result {1 3 {120 120 120} 1}
+
+test Plotchart-302.2 {spiralpie: data sorted by default} -constraints {
+    knownBug
+} -setup {
+    mkCanvas 400 400
+} -body {
+    # The data are only sorted if "plotconfig spiralpie labels sorted 1"
+    set p [::Plotchart::createSpiralPie .c]
+    $p plot {A 4 B 1 C 9}
+    lmap s {0 1 2} {itemTexts segment_$s}
+} -cleanup {
+    cleanupPlot
+} -result {B A C}
+
+test Plotchart-302.3 {spiralpie: sorted via plotconfig, colours} -setup {
+    ::Plotchart::plotconfig spiralpie labels sorted 1
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createSpiralPie .c]
+    $p colours red green blue
+    $p plot {A 4 B 1 C 9}
+    list [lmap s {0 1 2} {itemTexts segment_$s}] [lmap a [items {data type=arc}] {.c itemcget $a -fill}]
+} -cleanup {
+    cleanupPlot
+    ::Plotchart::plotconfig spiralpie labels sorted default
+} -result {{B A C} {red green blue}}
+
+# -------------------------------------------------------------------------
+# Radial charts
+
+test Plotchart-303.1 {radialchart: spokes with names} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createRadialchart .c {A B LongerName C} 10]
+    set texts [lmap i [.c find all] {expr {[.c type $i] eq "text" ? [.c itemcget $i -text] : [continue]}}]
+    set lines [lmap i [.c find all] {expr {[.c type $i] eq "line" ? $i : [continue]}}]
+    list [string match radialchart_* $p] $texts [llength $lines]
+} -cleanup {
+    cleanupPlot
+} -result {1 {A B LongerName C} 4}
+
+test Plotchart-303.2 {radialchart plot: polyline through the spokes} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createRadialchart .c {A B C D} 10]
+    $p plot {10 5 0 5} red 2
+    set d [items data]
+    lassign [plotArea $p] x1 y1 x2 y2
+    set xc [expr {($x1+$x2)/2.0}]
+    set yc [expr {($y1+$y2)/2.0}]
+    set r [expr {($x2-$x1)/2.0}]
+    list [.c type $d] [.c itemcget $d -outline] [.c itemcget $d -fill] [.c itemcget $d -width] \
+	[samePixels [.c coords $d] [list [expr {$xc+$r}] $yc $xc [expr {$yc-$r/2}] $xc $yc $xc [expr {$yc+$r/2}]] 1]
+} -cleanup {
+    cleanupPlot
+} -result {polygon red {} 2.0 1}
+
+test Plotchart-303.3 {radialchart plot: default thickness 1} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createRadialchart .c {A B C} 10]
+    $p plot {1 2 3} green
+    itemOption data -width
+} -cleanup {
+    cleanupPlot
+} -result {1.0}
+
+test Plotchart-303.4 {radialchart cumulative: data accumulated} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createRadialchart .c {A B C D} 10 cumulative]
+    $p plot {2 2 2 2} red
+    $p plot {3 3 3 3} blue
+    lassign [plotArea $p] x1 y1 x2 y2
+    set xc [expr {($x1+$x2)/2.0}]
+    set r [expr {($x2-$x1)/2.0}]
+    lassign [items data] d1 d2
+    list [R [expr {([lindex [.c coords $d1] 0]-$xc)/$r}] 2] [R [expr {([lindex [.c coords $d2] 0]-$xc)/$r}] 2] \
+	[.c itemcget $d2 -fill]
+} -cleanup {
+    cleanupPlot
+} -result {0.50 0.20 {}}
+
+test Plotchart-303.5 {radialchart filled: filled polygons, accumulated} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createRadialchart .c {A B C D} 10 filled]
+    $p plot {2 2 2 2} red
+    $p plot {3 3 3 3} blue
+    lassign [plotArea $p] x1 y1 x2 y2
+    set xc [expr {($x1+$x2)/2.0}]
+    set r [expr {($x2-$x1)/2.0}]
+    set ds [items data]
+    list [lmap d $ds {.c itemcget $d -fill}] \
+	[lmap d $ds {R [expr {([lindex [.c coords $d] 0]-$xc)/$r}] 2}]
+} -cleanup {
+    cleanupPlot
+} -result {{blue red} {0.50 0.20}}
+
+test Plotchart-303.6 {radialchart lines: independent polylines (default)} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createRadialchart .c {A B C D} 10 lines]
+    $p plot {2 2 2 2} red
+    $p plot {3 3 3 3} blue
+    lassign [plotArea $p] x1 y1 x2 y2
+    set xc [expr {($x1+$x2)/2.0}]
+    set r [expr {($x2-$x1)/2.0}]
+    lsort [lmap d [items data] {R [expr {([lindex [.c coords $d] 0]-$xc)/$r}] 2}]
+} -cleanup {
+    cleanupPlot
+} -result {0.20 0.30}
+
+test Plotchart-303.7 {radialchart plot: wrong number of data} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createRadialchart .c {A B C D} 10]
+    $p plot {1 2 3} red
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {Incorrect number of data given - should be 4}
+
+# -------------------------------------------------------------------------
+# Polar plots
+
+test Plotchart-304.1 {polarplot: circles and radial lines} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createPolarplot .c {3.0 1.0}]
+    set circles [items {polar type=oval}]
+    set labels [itemTexts polar]
+    list [string match polarplot_* $p] [llength $circles] \
+	[lrange $labels 0 11] [lrange $labels 12 end] \
+	[llength [lmap i [.c find all] {expr {[.c type $i] eq "line" ? $i : [continue]}}]] \
+	[lsort -unique [lmap i $circles {.c itemcget $i -outline}]]
+} -cleanup {
+    cleanupPlot
+} -result {1 3 {0.0 30.0 60.0 90.0 120.0 150.0 180.0 210.0 240.0 270.0 300.0 330.0} {1 2 3} 12 gray}
+
+test Plotchart-304.2 {polarplot: the plot area is square} -setup {
+    mkCanvas 500 300
+} -body {
+    set p [::Plotchart::createPolarplot .c {3.0 1.0}]
+    lassign [plotArea $p] x1 y1 x2 y2
+    approx [expr {$x2-$x1}] [expr {$y2-$y1}] 1
+} -cleanup {
+    cleanupPlot
+} -result 1
+
+test Plotchart-304.3 {polarplot plot: radius and angle in degrees} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createPolarplot .c {3.0 1.0}]
+    $p plot s 2 0
+    $p plot s 2 90
+    lassign [plotArea $p] x1 y1 x2 y2
+    set xc [expr {($x1+$x2)/2.0}]
+    set yc [expr {($y1+$y2)/2.0}]
+    set r3 [expr {($x2-$x1)/2.0}]
+    set l [items data_s]
+    samePixels [.c coords $l] [list [expr {$xc+2*$r3/3}] $yc $xc [expr {$yc-2*$r3/3}]] 1
+} -cleanup {
+    cleanupPlot
+} -result 1
+
+test Plotchart-304.4 {polarplot: dataconfig and legend} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createPolarplot .c {3.0 1.0}]
+    $p dataconfig s -colour red -type both -symbol circle
+    $p plot s 1 0
+    $p plot s 2 45
+    $p legend s "Spiral"
+    list [lsort [itemTypes data_s]] [itemOption {data_s type=line} -fill] [itemTexts legend]
+} -cleanup {
+    cleanupPlot
+} -result {{line oval} red Spiral}
+
+test Plotchart-304.5 {polarplot: invalid radius data} -setup {
+    mkCanvas 400 400
+} -body {
+    list [catch {::Plotchart::createPolarplot .c {3.0 0}} m1] $m1 \
+	[catch {::Plotchart::createPolarplot .c {-1 1}} m2] $m2
+} -cleanup {
+    cleanupPlot
+} -result {1 {Step size can not be zero or negative} 1 {Maximum radius can not be zero or negative}}
+
+test Plotchart-304.6 {polarplot: documented name createPolarPlot} -constraints {
+    knownBug
+} -setup {
+    mkCanvas 400 400
+} -body {
+    # The command is called createPolarplot
+    set p [::Plotchart::createPolarPlot .c {3.0 1.0}]
+    string match polarplot_* $p
+} -cleanup {
+    cleanupPlot
+} -result 1
+
+test Plotchart-304.7 {polarplot: axis configuration} -setup {
+    ::Plotchart::plotconfig polarplot axis color red
+    ::Plotchart::plotconfig polarplot axis textcolor blue
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createPolarplot .c {3.0 1.0}]
+    list [itemOption {polar type=oval} -outline] [itemOption {polar type=text} -fill]
+} -cleanup {
+    cleanupPlot
+    ::Plotchart::plotconfig polarplot axis color default
+    ::Plotchart::plotconfig polarplot axis textcolor default
+} -result {red blue}
+
+# -------------------------------------------------------------------------
+# Wind roses
+
+test Plotchart-305.1 {windrose: circles and compass directions} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createWindRose .c {30 10} 4]
+    set texts [lmap i [.c find all] {expr {[.c type $i] eq "text" ? [.c itemcget $i -text] : [continue]}}]
+    list [string match windrose_* $p] $texts \
+	[llength [lmap i [.c find all] {expr {[.c type $i] eq "oval" ? $i : [continue]}}]]
+} -cleanup {
+    cleanupPlot
+} -result {1 {North West South East 10 20 30} 3}
+
+test Plotchart-305.2 {windrose plot: sectors clockwise from north} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createWindRose .c {30 10} 4]
+    $p plot {20 10 5 3} red
+    set arcs [items data_0]
+    set w [$p canvas]
+    lassign [::Plotchart::PolarToPixelPriv $w 0 0] xc yc
+    set r {}
+    foreach a $arcs {
+	set start [.c itemcget $a -start]
+	set ext [.c itemcget $a -extent]
+	lappend r [R [expr {fmod($start + $ext/2.0 + 720.0, 360.0)}] 0]
+    }
+    list [llength $arcs] $r [itemOption data_0 -fill] [itemOption data_0 -style]
+} -cleanup {
+    cleanupPlot
+} -match glob -output * -result {4 {90 0 270 180} red pieslice}
+
+test Plotchart-305.3 {windrose plot: radius from the data, accumulated} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createWindRose .c {30 10} 4]
+    $p plot {20 10 5 3} red
+    $p plot {10 10 10 3} blue
+    set w [$p canvas]
+    lassign [::Plotchart::PolarToPixelPriv $w 0 0] xc yc
+    lassign [::Plotchart::PolarToPixelPriv $w 10 0] x10 yc
+    set unit [expr {($x10-$xc)/10.0}]
+    set r {}
+    foreach tag {data_0 data_1} {
+	foreach a [items $tag] {
+	    lassign [.c coords $a] x1 y1 x2 y2
+	    lappend r [R [expr {($x2-$x1)/2.0/$unit}] 0]
+	}
+    }
+    list $r [itemOption data_1 -fill] \
+	[expr {[lsearch [.c find all] [lindex [items data_1] 0]] < [lsearch [.c find all] [lindex [items data_0] 0]]}]
+} -cleanup {
+    cleanupPlot
+} -match glob -output * -result {{20 10 5 3 30 20 15 6} blue 1}
+
+test Plotchart-305.4 {windrose plot: no output on stdout} -constraints {
+    knownBug
+} -setup {
+    mkCanvas 400 400
+} -body {
+    # A debugging statement prints the coordinates
+    set p [::Plotchart::createWindRose .c {30 10} 4]
+    $p plot {20 10 5 3} red
+} -cleanup {
+    cleanupPlot
+} -output {} -result {}
+
+test Plotchart-305.5 {windrose: default 16 sectors} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createWindRose .c {30 10}]
+    $p plot [lrepeat 16 5] green
+    list [llength [items data_0]] [R [.c itemcget [lindex [items data_0] 0] -extent] 2]
+} -cleanup {
+    cleanupPlot
+} -match glob -output * -result {16 11.25}
+
+test Plotchart-305.6 {windrose: documented name createWindrose} -constraints {
+    knownBug
+} -setup {
+    mkCanvas 400 400
+} -body {
+    # The command is called createWindRose
+    set p [::Plotchart::createWindrose .c {30 10} 4]
+    string match windrose_* $p
+} -cleanup {
+    cleanupPlot
+} -result 1
+
+test Plotchart-305.7 {windrose: invalid radius data} -setup {
+    mkCanvas 400 400
+} -body {
+    list [catch {::Plotchart::createWindRose .c {30 0}} m1] $m1 \
+	[catch {::Plotchart::createWindRose .c {0 10}} m2] $m2
+} -cleanup {
+    cleanupPlot
+} -result {1 {Step size can not be zero or negative} 1 {Maximum radius can not be zero or negative}}
+
+# -------------------------------------------------------------------------
+# Vertical barcharts
+
+proc barGeometry {bar p} {
+    # World coordinates of the bar: xleft xright ybottom ytop
+    lassign [.c coords $bar] x1 y1 x2 y2
+    set w [$p canvas]
+    lassign [::Plotchart::pixelToCoords $w $x1 $y1] wx1 wy1
+    lassign [::Plotchart::pixelToCoords $w $x2 $y2] wx2 wy2
+    R [list [expr {min($wx1,$wx2)}] [expr {max($wx1,$wx2)}] [expr {min($wy1,$wy2)}] [expr {max($wy1,$wy2)}]] 2
+}
+
+test Plotchart-306.1 {barchart: labels on the x-axis, numeric y-axis} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createBarchart .c {A B C} {0 10 2} 1]
+    list [string match barchart_* $p] [itemTexts xaxis] [itemTexts yaxis]
+} -cleanup {
+    cleanupPlot
+} -result {1 {A B C} {0 2 4 6 8 10}}
+
+test Plotchart-306.2 {barchart plot: one bar per label} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createBarchart .c {A B C} {0 10 2} 1]
+    $p plot s {2 4 6} red
+    set bars [items data_s]
+    list [llength $bars] [itemTypes data_s] [itemOption data_s -fill] [itemOption data_s -outline] \
+	[lmap b $bars {barGeometry $b $p}]
+} -cleanup {
+    cleanupPlot
+} -result {3 rectangle red black {{0.60 1.40 0.00 2.00} {1.60 2.40 0.00 4.00} {2.60 3.40 0.00 6.00}}}
+
+test Plotchart-306.3 {barchart plot: several series side by side} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createBarchart .c {A B} {0 10 2} 2]
+    $p plot s1 {2 4} red
+    $p plot s2 {3 5} blue
+    list [lmap b [items data_s1] {barGeometry $b $p}] [lmap b [items data_s2] {barGeometry $b $p}]
+} -cleanup {
+    cleanupPlot
+} -result {{{0.60 1.00 0.00 2.00} {1.60 2.00 0.00 4.00}} {{1.00 1.40 0.00 3.00} {2.00 2.40 0.00 5.00}}}
+
+test Plotchart-306.4 {barchart plot: stacked series} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createBarchart .c {A B} {0 10 2} stacked]
+    $p plot s1 {2 4} red
+    $p plot s2 {3 5} blue
+    list [lmap b [items data_s1] {barGeometry $b $p}] [lmap b [items data_s2] {barGeometry $b $p}]
+} -cleanup {
+    cleanupPlot
+} -result {{{0.60 1.40 0.00 2.00} {1.60 2.40 0.00 4.00}} {{0.60 1.40 2.00 5.00} {1.60 2.40 4.00 9.00}}}
+
+test Plotchart-306.5 {barchart: fractional number of series leaves a gap} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createBarchart .c {A B} {0 10 2} 2.5]
+    $p plot s1 {2 4} red
+    $p plot s2 {3 5} blue
+    set b1 [barGeometry [lindex [items data_s1] 0] $p]
+    set b2 [barGeometry [lindex [items data_s2] 0] $p]
+    list [R [expr {[lindex $b1 1] - [lindex $b1 0]}] 2] [lindex $b2 0] [expr {[lindex $b2 1] < 1.4}]
+} -cleanup {
+    cleanupPlot
+} -result {0.32 0.92 1}
+
+test Plotchart-306.6 {barchart plot: gradient colours} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createBarchart .c {A B} {0 10 2} 1]
+    $p plot s1 {4 8} #008000 top-down
+    set rects [items background]
+    set top {}
+    set bottom {}
+    foreach i $rects {
+	lassign [.c coords $i] x1 y1 x2 y2
+	set y [expr {($y1+$y2)/2.0}]
+	if {$top eq "" || $y < [lindex $top 0]} {set top [list $y [.c itemcget $i -fill]]}
+	if {$bottom eq "" || $y > [lindex $bottom 0]} {set bottom [list $y [.c itemcget $i -fill]]}
+    }
+    list [expr {[llength $rects] > 10}] [llength [items data_s1]] \
+	[expr {[brightness [lindex $bottom 1]] != [brightness [lindex $top 1]]}]
+} -cleanup {
+    cleanupPlot
+} -result {1 0 1}
+
+test Plotchart-306.7 {barchart plot: gradient bright and dark} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createBarchart .c {A B} {0 10 2} 1]
+    $p plot s1 {8 8} #008000 bottom-up bright
+    set b [lmap i [items background] {brightness [.c itemcget $i -fill]}]
+    .c delete background
+    $p plot s2 {8 8} #008000 bottom-up dark
+    set d [lmap i [items background] {brightness [.c itemcget $i -fill]}]
+    set g [brightness #008000]
+    list [expr {[tcl::mathfunc::max {*}$b] > $g}] [expr {[tcl::mathfunc::min {*}$b] >= $g}] \
+	[expr {[tcl::mathfunc::min {*}$d] < $g}] [expr {[tcl::mathfunc::max {*}$d] <= $g}]
+} -cleanup {
+    cleanupPlot
+} -result {1 1 1 1}
+
+test Plotchart-306.8 {barchart plot: colours cycle when no colour given} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createBarchart .c {A B C} {0 10 2} 1]
+    $p colours red green
+    $p plot s1 {2 4 6} {}
+    itemOption data_s1 -fill
+} -cleanup {
+    cleanupPlot
+} -result {green red}
+
+test Plotchart-306.9 {barchart config: show values above the bars} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createBarchart .c {A B} {0 10 2} 1]
+    $p config -showvalues 1 -valuecolour blue -valueformat %.1f -valuefont {Courier 10}
+    $p plot s {2 4} red
+    set texts [items {data_s type=text}]
+    set bars [items {data_s type=rectangle}]
+    list [lmap t $texts {.c itemcget $t -text}] [itemOption {data_s type=text} -fill] \
+	[itemOption {data_s type=text} -font] \
+	[expr {[lindex [.c bbox [lindex $texts 0]] 3] <= [lindex [.c bbox [lindex $bars 0]] 1]}]
+} -cleanup {
+    cleanupPlot
+} -result {{2.0 4.0} blue {{Courier 10}} 1}
+
+test Plotchart-306.10 {barchart config: -valuecolor synonym, values off by default} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createBarchart .c {A B} {0 10 2} 1]
+    $p plot s1 {2 4} red
+    set n [llength [items {data_s1 type=text}]]
+    $p config -showvalues 1 -valuecolor green
+    $p plot s2 {2 4} red
+    list $n [itemOption {data_s2 type=text} -fill]
+} -cleanup {
+    cleanupPlot
+} -result {0 green}
+
+test Plotchart-306.11 {barchart config: unknown option} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createBarchart .c {A B} {0 10 2} 1]
+    $p config -colour red
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {Unknown barchart option: -colour}
+
+test Plotchart-306.12 {barchart: -xlabelangle} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createBarchart .c {Alpha Beta} {0 10 2} 1 -xlabelangle 45]
+    list [itemOption {xaxis type=text} -angle] [itemOption {xaxis type=text} -anchor]
+} -cleanup {
+    cleanupPlot
+} -result {45.0 ne}
+
+test Plotchart-306.13 {barchart: legend with rectangles} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createBarchart .c {A B} {0 10 2} 2]
+    $p plot s1 {2 4} red
+    $p plot s2 {3 5} blue
+    $p legend s1 "First"
+    $p legend s2 "Second"
+    list [itemTexts legend] [lmap i [items {legend type=rectangle}] {.c itemcget $i -fill}]
+} -cleanup {
+    cleanupPlot
+} -result {{First Second} {red blue}}
+
+test Plotchart-306.14 {barchart: yconfig, yticklines, step size zero} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createBarchart .c {A B} {0 10 5} 1]
+    $p yconfig -format %.1f
+    $p yticklines grey
+    set r [list [itemTexts yaxis] [llength [items ytickline]]]
+    lappend r [catch {::Plotchart::createBarchart .c {A B} {0 10 0} 1} m] $m
+} -cleanup {
+    cleanupPlot
+} -result {{0.0 5.0 10.0} 3 1 {Step size can not be zero}}
+
+test Plotchart-306.15 {barchart plot: wrong # args} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createBarchart .c {A B} {0 10 5} 1]
+    $p plot s1
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {wrong # args: should be "DrawVertBarData w series ydata ?colour? ?dir? ?brightness?"}
+
+test Plotchart-306.16 {barchart: bar configuration via plotconfig} -setup {
+    ::Plotchart::plotconfig vertbars bar barwidth 0.5
+    ::Plotchart::plotconfig vertbars bar outline red
+    mkCanvas
+} -body {
+    set p [::Plotchart::createBarchart .c {A B} {0 10 5} 1]
+    $p plot s {2 4} green
+    list [barGeometry [lindex [items data_s] 0] $p] [itemOption data_s -outline]
+} -cleanup {
+    cleanupPlot
+    ::Plotchart::plotconfig vertbars bar barwidth default
+    ::Plotchart::plotconfig vertbars bar outline default
+} -result {{0.75 1.25 0.00 2.00} red}
+
+# -------------------------------------------------------------------------
+# Horizontal barcharts
+
+test Plotchart-307.1 {horizontal barchart: labels on the y-axis} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createHorizontalBarchart .c {0 10 2} {A B C} 1]
+    list [string match hbarchart_* $p] [itemTexts yaxis] [itemTexts xaxis]
+} -cleanup {
+    cleanupPlot
+} -result {1 {A B C} {0 2 4 6 8 10}}
+
+test Plotchart-307.2 {horizontal barchart plot: bars from the left} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createHorizontalBarchart .c {0 10 2} {A B C} 1]
+    $p plot s {2 4 6} red
+    set r {}
+    foreach b [items data_s] {
+	lassign [barGeometry $b $p] x1 x2 y1 y2
+	lappend r [list $x1 $x2 $y1 $y2]
+    }
+    list [itemOption data_s -fill] $r
+} -cleanup {
+    cleanupPlot
+} -result {red {{0.00 2.00 0.60 1.40} {0.00 4.00 1.60 2.40} {0.00 6.00 2.60 3.40}}}
+
+test Plotchart-307.3 {horizontal barchart plot: stacked} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createHorizontalBarchart .c {0 10 2} {A B} stacked]
+    $p plot s1 {2 4} red
+    $p plot s2 {3 5} blue
+    lmap b [items data_s2] {barGeometry $b $p}
+} -cleanup {
+    cleanupPlot
+} -result {{2.00 5.00 0.60 1.40} {4.00 9.00 1.60 2.40}}
+
+test Plotchart-307.4 {horizontal barchart plot: side by side, shifted upward} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createHorizontalBarchart .c {0 10 2} {A B} 2]
+    $p plot s1 {2 4} red
+    $p plot s2 {3 5} blue
+    list [lindex [barGeometry [lindex [items data_s1] 0] $p] 2] [lindex [barGeometry [lindex [items data_s2] 0] $p] 2]
+} -cleanup {
+    cleanupPlot
+} -result {0.60 1.00}
+
+test Plotchart-307.5 {horizontal barchart: values right of the bars} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createHorizontalBarchart .c {0 10 2} {A B} 1]
+    $p config -showvalues 1 -valueformat %.0f
+    $p plot s {2 4} red
+    set t [lindex [items {data_s type=text}] 0]
+    set b [lindex [items {data_s type=rectangle}] 0]
+    list [lmap i [items {data_s type=text}] {.c itemcget $i -text}] \
+	[expr {[lindex [.c bbox $t] 0] >= [lindex [.c bbox $b] 2]}]
+} -cleanup {
+    cleanupPlot
+} -result {{2 4} 1}
+
+test Plotchart-307.6 {horizontal barchart: gradient left-right} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createHorizontalBarchart .c {0 10 2} {A B} 1]
+    $p plot s {8 8} #008000 left-right
+    list [expr {[llength [items background]] > 10}] [llength [items data_s]]
+} -cleanup {
+    cleanupPlot
+} -result {1 0}
+
+test Plotchart-307.7 {horizontal barchart: xconfig and xticklines} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createHorizontalBarchart .c {0 10 5} {A B} 1]
+    $p xconfig -format %.1f
+    $p xticklines grey
+    list [itemTexts xaxis] [llength [items xtickline]]
+} -cleanup {
+    cleanupPlot
+} -result {{0.0 5.0 10.0} 3}
+
+test Plotchart-307.8 {horizontal barchart: step size zero} -setup {
+    mkCanvas
+} -body {
+    ::Plotchart::createHorizontalBarchart .c {0 10 0} {A B} 1
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {Step size can not be zero}
+
+# -------------------------------------------------------------------------
+# 3D barcharts
+
+test Plotchart-308.1 {3D barchart: platform, bars with three faces, labels and values} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::create3DBarchart .c {0 10 2} 3]
+    $p plot A 4 red
+    $p plot B 8 green
+    set texts [lmap i [.c find all] {expr {[.c type $i] eq "text" && "yaxis" ni [.c gettags $i] ? [.c itemcget $i -text] : [continue]}}]
+    list [string match 3dbarchart_* $p] [llength [items platform]] [llength [items u]] \
+	[lsort $texts] [itemTexts yaxis]
+} -cleanup {
+    cleanupPlot
+} -result {1 1 6 {4 8 A B} {0 2 4 6 8 10}}
+
+test Plotchart-308.2 {3D barchart: height of the bars and colours of the faces} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::create3DBarchart .c {0 10 2} 3]
+    $p plot A 4 #ff0000
+    $p plot B 8 #ff0000
+    set fronts [lmap i [items u] {expr {[.c type $i] eq "rectangle" ? $i : [continue]}}]
+    set heights {}
+    foreach f $fronts {
+	lassign [.c coords $f] x1 y1 x2 y2
+	lappend heights [expr {abs($y2-$y1)}]
+    }
+    set faces [lsort -unique [lmap i [items u] {.c itemcget $i -fill}]]
+    list [llength $fronts] [approx [lindex $heights 1] [expr {2*[lindex $heights 0]}] 1] \
+	[llength $faces] [expr {"#ff0000" in $faces}]
+} -cleanup {
+    cleanupPlot
+} -result {2 1 3 1}
+
+test Plotchart-308.3 {3D barchart: negative values are tagged d} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::create3DBarchart .c {-10 10 5} 2]
+    $p plot A -4 red
+    list [llength [items d]] [llength [items u]]
+} -cleanup {
+    cleanupPlot
+} -result {2 1}
+
+test Plotchart-308.4 {3D barchart config: walls} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::create3DBarchart .c {0 10 2} 3]
+    set r [list [itemOption background -fill]]
+    $p config -usebackground 1
+    lappend r [itemOption background -fill]
+    $p config -usebackground 0
+    lappend r [itemOption background -fill]
+} -cleanup {
+    cleanupPlot
+} -result {{{}} grey65 {{}}}
+
+test Plotchart-308.5 {3D barchart config: ticklines on the walls} -constraints {
+    knownBug
+} -setup {
+    mkCanvas
+} -body {
+    # No ticklines are drawn
+    set p [::Plotchart::create3DBarchart .c {0 10 2} 3]
+    $p config -usebackground 1 -useticklines 1
+    expr {[llength [items ticklines]] > 0}
+} -cleanup {
+    cleanupPlot
+} -result 1
+
+test Plotchart-308.6 {3D barchart config: labels and values} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::create3DBarchart .c {0 10 2} 3]
+    $p config -labelfont {Courier 12} -labelcolour blue -valuefont {Helvetica 9} -valuecolour red
+    $p plot A 4 green
+    set texts [lmap i [.c find all] {expr {[.c type $i] eq "text" && "yaxis" ni [.c gettags $i] ? $i : [continue]}}]
+    lmap t $texts {list [.c itemcget $t -text] [.c itemcget $t -fill] [.c itemcget $t -font]}
+} -cleanup {
+    cleanupPlot
+} -result {{4 red {Helvetica 9}} {A blue {Courier 12}}}
+
+test Plotchart-308.7 {3D barchart config: showvalues 0} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::create3DBarchart .c {0 10 2} 3]
+    $p config -showvalues 0
+    $p plot A 4 green
+    lmap i [.c find all] {expr {[.c type $i] eq "text" && "yaxis" ni [.c gettags $i] ? [.c itemcget $i -text] : [continue]}}
+} -cleanup {
+    cleanupPlot
+} -result {A}
+
+test Plotchart-308.8 {3D barchart: step size zero} -setup {
+    mkCanvas
+} -body {
+    ::Plotchart::create3DBarchart .c {0 10 0} 3
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {Step size can not be zero}
+
+# -------------------------------------------------------------------------
+# 3D ribbon charts
+
+test Plotchart-309.1 {3D ribbon chart: names along the x-axis} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::create3DRibbonChart .c {Series1 Series2} {0 10 5} {0 10 5}]
+    set texts [itemTexts axis3d]
+    list [string match 3dribbon_* $p] [expr {"Series1" in $texts && "Series2" in $texts}]
+} -cleanup {
+    cleanupPlot
+} -result {1 1}
+
+test Plotchart-309.2 {3D ribbon chart line: one polygon per segment} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::create3DRibbonChart .c {S1 S2} {0 10 5} {0 10 5}]
+    set new [newItems {$p line {0 2 5 8 10 4} #00c000}]
+    list [llength $new] [lsort -unique [lmap i $new {.c type $i}]] \
+	[expr {[llength [lsort -unique [lmap i $new {.c itemcget $i -fill}]]] >= 1}]
+} -cleanup {
+    cleanupPlot
+} -result {2 polygon 1}
+
+test Plotchart-309.3 {3D ribbon chart area: ribbon with a filled front} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::create3DRibbonChart .c {S1 S2} {0 10 5} {0 10 5}]
+    set new [newItems {$p area {0 2 5 8 10 4} #00c000}]
+    list [llength $new] [lsort -unique [lmap i $new {.c type $i}]] [.c itemcget [lindex $new end] -fill]
+} -cleanup {
+    cleanupPlot
+} -result {4 polygon #00c000}
+
+test Plotchart-309.4 {3D ribbon chart: the second series is drawn in front} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::create3DRibbonChart .c {S1 S2} {0 10 5} {0 10 5}]
+    set first [newItems {$p line {0 5 10 5} red}]
+    set second [newItems {$p line {0 5 10 5} blue}]
+    lassign [.c bbox {*}$first] x1 y1
+    lassign [.c bbox {*}$second] x2 y2
+    # Further away means more to the right and higher on the screen
+    list [expr {$x2 < $x1}] [expr {$y2 > $y1}]
+} -cleanup {
+    cleanupPlot
+} -result {1 1}
+
+# -------------------------------------------------------------------------
+# Boxplots
+
+test Plotchart-310.1 {boxplot: horizontal (default), labels on the y-axis} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createBoxplot .c {0 10 2} {A B C}]
+    $p plot s B {1 2 3 4 5 6 7 8 9}
+    set rect [items {data_s type=rectangle}]
+    lassign [.c coords $rect] x1 y1 x2 y2
+    lassign [::Plotchart::pixelToCoords [$p canvas] $x1 $y1] wx1 wy1
+    lassign [::Plotchart::pixelToCoords [$p canvas] $x2 $y2] wx2 wy2
+    list [string match boxplot_* $p] [itemTexts yaxis] [itemTexts xaxis] \
+	[R [list $wx1 $wx2] 1] [R [expr {($wy1+$wy2)/2.0}] 1]
+} -cleanup {
+    cleanupPlot
+} -result {1 {A B C} {0 2 4 6 8 10} {2.5 7.5} 2.0}
+
+test Plotchart-310.2 {boxplot: vertical, labels on the x-axis} -constraints {
+    knownBug
+} -setup {
+    mkCanvas
+} -body {
+    # Fails with: wrong # args: should be "DrawXlabels w xlabels noseries arguments"
+    set p [::Plotchart::createBoxplot .c {A B C} {0 10 2} vertical]
+    $p plot s C {1 2 3 4 5 6 7 8 9}
+    set rect [items {data_s type=rectangle}]
+    lassign [.c coords $rect] x1 y1 x2 y2
+    lassign [::Plotchart::pixelToCoords [$p canvas] $x1 $y1] wx1 wy1
+    lassign [::Plotchart::pixelToCoords [$p canvas] $x2 $y2] wx2 wy2
+    list [itemTexts xaxis] [itemTexts yaxis] [R [lsort -real [list $wy1 $wy2]] 1] [R [expr {($wx1+$wx2)/2.0}] 1]
+} -cleanup {
+    cleanupPlot
+} -result {{A B C} {0 2 4 6 8 10} {2.5 7.5} 3.0}
+
+test Plotchart-310.3 {boxplot: explicit horizontal orientation} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createBoxplot .c {0 10 2} {A B} horizontal]
+    itemTexts yaxis
+} -cleanup {
+    cleanupPlot
+} -result {A B}
+
+test Plotchart-310.4 {boxplot plot: unknown label} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createBoxplot .c {0 10 2} {A B}]
+    list [$p plot s X {1 2 3}] [llength [items data_s]]
+} -cleanup {
+    cleanupPlot
+} -result {{Label X not found on axis} 0}
+
+test Plotchart-310.5 {boxplot: dataconfig options} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createBoxplot .c {0 10 2} {A B}]
+    $p dataconfig s -fillcolour yellow -colour blue -boxwidth 20
+    $p plot s A {1 2 3 4 5 6 7 8 9}
+    set rect [items {data_s type=rectangle}]
+    lassign [.c coords $rect] x1 y1 x2 y2
+    list [.c itemcget $rect -fill] [.c itemcget $rect -outline] [R [expr {$y2-$y1}] 0]
+} -cleanup {
+    cleanupPlot
+} -result {yellow blue 20}
+
+test Plotchart-310.6 {boxplot violin} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createBoxplot .c {0 10 2} {A B}]
+    $p dataconfig v -fillcolour pink
+    set new [newItems {$p violin v B {2 3 3 4 4 4 5 5 6 8}}]
+    set ys [lmap {x y} [.c coords [lindex $new 0]] {set y}]
+    set yc [expr {([tcl::mathfunc::min {*}$ys] + [tcl::mathfunc::max {*}$ys])/2.0}]
+    list [llength $new] [.c type $new] [.c itemcget $new -fill] \
+	[R [lindex [::Plotchart::pixelToCoords [$p canvas] 0 $yc] 1] 1] \
+	[$p violin v X {1 2 3}]
+} -cleanup {
+    cleanupPlot
+} -result {1 polygon pink 2.0 {Label X not found on axis}}
+
+test Plotchart-310.7 {boxplot: step size zero} -setup {
+    mkCanvas
+} -body {
+    ::Plotchart::createBoxplot .c {0 10 0} {A B}
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {Step size can not be zero}
+
+test Plotchart-310.8 {boxplot: general methods} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createBoxplot .c {0 10 2} {A B}]
+    $p plot s A {1 2 3 4 5 6 7 8 9}
+    $p legend s "Data"
+    $p xticklines grey
+    $p xtext "Values"
+    list [itemTexts legend] [llength [items xtickline]] [itemTexts xtext]
+} -cleanup {
+    cleanupPlot
+} -result {Data 6 Values}
+
+# -------------------------------------------------------------------------
+# Timecharts
+
+test Plotchart-311.1 {timechart period: bar from begin to end with a text} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createTimechart .c "1 january 2004" "31 december 2004" 4]
+    set ids [$p period "Spring" "1 march 2004" "1 june 2004" green]
+    set bar [items {below type=rectangle}]
+    lassign [.c coords $bar] x1 y1 x2 y2
+    lassign [::Plotchart::coordsToPixel .c [clock scan "1 march 2004"] 0] px1
+    lassign [::Plotchart::coordsToPixel .c [clock scan "1 june 2004"] 0] px2
+    list [string match timechart_* $p] [expr {$ids eq $bar}] [.c itemcget $bar -fill] \
+	[approx $x1 $px1 0.5] [approx $x2 $px2 0.5] [itemTexts above]
+} -cleanup {
+    cleanupPlot
+} -result {1 1 green 1 1 Spring}
+
+test Plotchart-311.2 {timechart: rows from top to bottom} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createTimechart .c "1 january 2004" "31 december 2004" 4]
+    $p period "Spring" "1 march 2004" "1 june 2004" green
+    $p period "Summer" "1 june 2004" "1 september 2004" yellow
+    lassign [items {below type=rectangle}] b1 b2
+    list [expr {[lindex [.c coords $b2] 1] > [lindex [.c coords $b1] 1]}] \
+	[llength [items item_4]] [llength [items item_3]]
+} -cleanup {
+    cleanupPlot
+} -result {1 2 2}
+
+test Plotchart-311.3 {timechart period: default colour black} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createTimechart .c "1 january 2004" "31 december 2004" 4]
+    $p period "Spring" "1 march 2004" "1 june 2004"
+    itemOption {below type=rectangle} -fill
+} -cleanup {
+    cleanupPlot
+} -result {black}
+
+test Plotchart-311.4 {timechart addperiod: same row, no new text} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createTimechart .c "1 january 2004" "31 december 2004" 4]
+    $p period "Seasons" "1 march 2004" "1 june 2004" green
+    $p addperiod "1 september 2004" "1 december 2004" orange
+    lassign [items {below type=rectangle}] b1 b2
+    list [llength [items above]] [.c itemcget $b2 -fill] \
+	[samePixels [list [lindex [.c coords $b1] 1] [lindex [.c coords $b1] 3]] \
+	     [list [lindex [.c coords $b2] 1] [lindex [.c coords $b2] 3]] 0.01]
+} -cleanup {
+    cleanupPlot
+} -result {1 orange 1}
+
+test Plotchart-311.5 {timechart milestone: point-down triangle} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createTimechart .c "1 january 2004" "31 december 2004" 4]
+    set ids [$p milestone "Longest day" "21 june 2004" red]
+    set tri [items {below type=polygon}]
+    lassign [.c coords $tri] x1 y1 x2 y2 x3 y3
+    lassign [::Plotchart::coordsToPixel .c [clock scan "21 june 2004"] 0] px
+    list [llength $ids] [.c itemcget $tri -fill] [expr {$y1 > $y2 && $y2 == $y3}] [approx $x1 $px 0.5] \
+	[itemTexts above]
+} -cleanup {
+    cleanupPlot
+} -result {2 red 1 1 {{Longest day}}}
+
+test Plotchart-311.6 {timechart addmilestone: same row} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createTimechart .c "1 january 2004" "31 december 2004" 4]
+    $p milestone "Days" "21 june 2004"
+    $p addmilestone "21 december 2004" blue
+    lassign [items {below type=polygon}] t1 t2
+    list [llength [items above]] [.c itemcget $t1 -fill] [.c itemcget $t2 -fill] \
+	[approx [lindex [.c coords $t1] 1] [lindex [.c coords $t2] 1] 0.01]
+} -cleanup {
+    cleanupPlot
+} -result {1 black blue 1}
+
+test Plotchart-311.7 {timechart vertline: line with a text at the top} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createTimechart .c "1 january 2004" "31 december 2004" 4]
+    $p vertline "1 jul" "1 july 2004" red
+    set l [items {tline type=line}]
+    lassign [.c coords $l] x1 y1 x2 y2
+    lassign [::Plotchart::coordsToPixel .c [clock scan "1 july 2004"] 0] px
+    list [.c itemcget $l -fill] [expr {$x1 == $x2}] [approx $x1 $px 0.5] [itemTexts timeline]
+} -cleanup {
+    cleanupPlot
+} -result {red 1 1 {{1 jul}}}
+
+test Plotchart-311.8 {timechart: -barheight determines the spacing} -constraints {
+    knownBug
+} -setup {
+    mkCanvas
+} -body {
+    # The number of bars is computed from the width of the plot
+    set p [::Plotchart::createTimechart .c "1 january 2004" "31 december 2004" -barheight 20]
+    $p period "A" "1 march 2004" "1 june 2004"
+    $p period "B" "1 march 2004" "1 june 2004"
+    lassign [items {below type=rectangle}] b1 b2
+    R [expr {[lindex [.c coords $b2] 1] - [lindex [.c coords $b1] 1]}] 0
+} -cleanup {
+    cleanupPlot
+} -result {20}
+
+test Plotchart-311.9 {timechart: -ylabelwidth reserves space for the labels} -setup {
+    mkCanvas
+} -body {
+    set p1 [::Plotchart::createTimechart .c "1 january 2004" "31 december 2004" 4 -ylabelwidth 50]
+    set x1 $::Plotchart::scaling(.c,pxmin)
+    cleanupPlot
+    mkCanvas
+    set p2 [::Plotchart::createTimechart .c "1 january 2004" "31 december 2004" 4 -ylabelwidth 200]
+    set x2 $::Plotchart::scaling(.c,pxmin)
+    expr {$x2 > $x1}
+} -cleanup {
+    cleanupPlot
+} -result 1
+
+test Plotchart-311.10 {timechart: scrollbars} -setup {
+    mkCanvas
+    scrollbar .y -orient vertical
+    scrollbar .x -orient horizontal
+} -body {
+    set s [::Plotchart::createTimechart .c "1 january 2004" "31 december 2004" 4]
+    $s period "Spring" "1 march 2004" "1 june 2004" green
+    $s vscroll .y
+    $s hscroll .x
+    set r [list [.y get] [.x get]]
+    foreach i {1 2 3 4 5} {
+	$s milestone "Longest day $i" "21 july 2004"
+    }
+    $s vertline "1 jul" "1 july 2005"
+    $s period "Autumn" "1 september 2004" "1 december 2004" orange
+    lappend r [R [.y get] 3] [expr {[lindex [.x get] 1] < 1.0}]
+} -cleanup {
+    cleanupPlot
+    destroy .x .y
+} -result {{0.0 1.0} {0.0 1.0} {0.000 0.571} 1}
+
+test Plotchart-311.10a {timechart: scrollbars connected to an empty chart} -constraints {
+    knownBug
+} -setup {
+    mkCanvas
+    scrollbar .x -orient horizontal
+} -body {
+    # Fails with: can't read "xmax": no such variable
+    set s [::Plotchart::createTimechart .c "1 january 2004" "31 december 2004" 4]
+    $s hscroll .x
+    .x get
+} -cleanup {
+    cleanupPlot
+    destroy .x
+} -result {0.0 1.0}
+
+test Plotchart-311.11 {timechart: vertical scrolling moves the rows} -setup {
+    mkCanvas
+    scrollbar .y -orient vertical
+} -body {
+    set s [::Plotchart::createTimechart .c "1 january 2004" "31 december 2004" 2]
+    $s vscroll .y
+    foreach i {1 2 3 4} {
+	$s period "Item $i" "1 march 2004" "1 june 2004" green
+    }
+    set y0 [lindex [.c coords [lindex [items {below type=rectangle}] 0]] 1]
+    ::Plotchart::VertScrollChart .c moveto 0.5
+    set y1 [lindex [.c coords [lindex [items {below type=rectangle}] 0]] 1]
+    expr {$y1 < $y0}
+} -cleanup {
+    cleanupPlot
+    destroy .y
+} -result 1
+
+test Plotchart-311.12 {timechart: invalid time} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createTimechart .c "1 january 2004" "31 december 2004" 4]
+    $p period "Bad" "no such date" "1 june 2004"
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -match glob -result {unable to convert date-time string "no such date"*}
+
+test Plotchart-311.13 {timechart: wrong # args} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createTimechart .c "1 january 2004" "31 december 2004" 4]
+    $p period "Spring" "1 march 2004"
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {wrong # args: should be "DrawTimePeriod w text time_begin time_end ?colour?"}
+
+# -------------------------------------------------------------------------
+# Gantt charts
+
+test Plotchart-312.1 {ganttchart task: description, completed part, rest and percentage} -setup {
+    mkCanvas 500 300
+} -body {
+    set p [::Plotchart::createGanttchart .c "1 january 2004" "31 december 2004" 4]
+    set ids [$p task "Spring" "1 march 2004" "1 june 2004" 30]
+    lassign $ids desc comp left perc
+    lassign [.c coords $comp] cx1 cy1 cx2 cy2
+    lassign [.c coords $left] lx1 ly1 lx2 ly2
+    set tb [clock scan "1 march 2004"]
+    set te [clock scan "1 june 2004"]
+    lassign [::Plotchart::coordsToPixel .c $tb 0] px1
+    lassign [::Plotchart::coordsToPixel .c [expr {$tb + 0.3*($te-$tb)}] 0] pxc
+    lassign [::Plotchart::coordsToPixel .c $te 0] px2
+    list [string match ganttchart_* $p] [llength $ids] [.c itemcget $desc -text] [.c itemcget $perc -text] \
+	[.c itemcget $comp -fill] [.c itemcget $left -fill] \
+	[approx $cx1 $px1 0.5] [approx $cx2 $pxc 0.5] [approx $lx1 $pxc 0.5] [approx $lx2 $px2 0.5] \
+	[lsort [.c gettags $desc]] [lsort [.c gettags $comp]]
+} -cleanup {
+    cleanupPlot
+} -result {1 4 Spring 30% lightblue white 1 1 1 1 {above description vertscroll} {below completed horizscroll vertscroll}}
+
+test Plotchart-312.2 {ganttchart: odd and even rows} -setup {
+    mkCanvas 500 300
+} -body {
+    set p [::Plotchart::createGanttchart .c "1 january 2004" "31 december 2004" 4]
+    list [llength [items odd]] [llength [items even]] [itemOption odd -fill] [itemOption even -fill]
+} -cleanup {
+    cleanupPlot
+} -result {2 2 white lightgrey}
+
+test Plotchart-312.3 {ganttchart milestone} -setup {
+    mkCanvas 500 300
+} -body {
+    set p [::Plotchart::createGanttchart .c "1 january 2004" "31 december 2004" 4]
+    set ids [$p milestone "Halfway" "1 july 2004" red]
+    lassign $ids desc tri
+    lassign [.c coords $tri] x1 y1 x2 y2 x3 y3
+    list [.c itemcget $desc -text] [.c type $tri] [.c itemcget $tri -fill] [expr {$y1 > $y2 && $y2 == $y3}]
+} -cleanup {
+    cleanupPlot
+} -result {Halfway polygon red 1}
+
+test Plotchart-312.4 {ganttchart vertline} -setup {
+    mkCanvas 500 300
+} -body {
+    set p [::Plotchart::createGanttchart .c "1 january 2004" "31 december 2004" 4]
+    $p vertline "1 jul" "1 july 2004"
+    set l [items {tline type=line}]
+    lassign [.c coords $l] x1 y1 x2 y2
+    lassign [::Plotchart::coordsToPixel .c [clock scan "1 july 2004"] 0] px
+    list [expr {$x1 == $x2}] [approx $x1 $px 0.5] [itemTexts timeline] [itemOption {timeline type=text} -font]
+} -cleanup {
+    cleanupPlot
+} -result {1 1 {{1 jul}} {{times 7}}}
+
+test Plotchart-312.5 {ganttchart connect: arrow from one task to another} -setup {
+    mkCanvas 500 300
+} -body {
+    set p [::Plotchart::createGanttchart .c "1 january 2004" "31 december 2004" 4]
+    set t1 [$p task "Spring" "1 march 2004" "1 june 2004" 30]
+    set t2 [$p task "Summer" "1 june 2004" "1 september 2004" 0]
+    set a [$p connect $t1 $t2]
+    set c [.c coords $a]
+    lassign [.c coords [lindex $t1 2]] f1 - f2 -
+    lassign [.c coords [lindex $t2 1]] g1 - g2 -
+    list [.c type $a] [.c itemcget $a -arrow] [approx [lindex $c 0] $f2 0.01] [approx [lindex $c end-1] $g1 0.01]
+} -cleanup {
+    cleanupPlot
+} -result {line last 1 1}
+
+test Plotchart-312.6 {ganttchart summary: bar over the tasks, tasks shifted down} -setup {
+    mkCanvas 500 300
+} -body {
+    set p [::Plotchart::createGanttchart .c "1 january 2004" "31 december 2004" 5]
+    set t1 [$p task "Spring" "1 march 2004" "1 june 2004" 30]
+    set t2 [$p task "Summer" "1 june 2004" "1 september 2004" 0]
+    set y0 [lindex [.c coords [lindex $t1 1]] 1]
+    set ids [$p summary "Seasons" $t1 $t2]
+    lassign $ids text bar
+    lassign [.c bbox $bar] bx1 by1 bx2 by2
+    lassign [.c coords [lindex $t1 1]] x1
+    lassign [.c coords [lindex $t2 2]] - - x2
+    list [.c itemcget $text -text] [.c type $bar] [.c itemcget $bar -fill] \
+	[expr {[lindex [.c coords [lindex $t1 1]] 1] > $y0}] \
+	[expr {$bx1 <= $x1 && $bx2 >= $x2}] [lsort [.c gettags $text]]
+} -cleanup {
+    cleanupPlot
+} -result {Seasons polygon black 1 1 {above summary vertscroll}}
+
+test Plotchart-312.7 {ganttchart color: completed, left, odd, even and summarybar} -setup {
+    mkCanvas 500 300
+} -body {
+    set p [::Plotchart::createGanttchart .c "1 january 2004" "31 december 2004" 4]
+    $p color completed green
+    $p color left yellow
+    $p colour summarybar red
+    $p color odd pink
+    $p color even grey
+    set t1 [$p task "Spring" "1 march 2004" "1 june 2004" 30]
+    set s [$p summary "Sum" $t1]
+    list [.c itemcget [lindex $t1 1] -fill] [.c itemcget [lindex $t1 2] -fill] \
+	[.c itemcget [lindex $s 1] -fill] [itemOption odd -fill] [itemOption even -fill]
+} -cleanup {
+    cleanupPlot
+} -result {green yellow red pink grey}
+
+test Plotchart-312.8 {ganttchart color: existing tasks are updated} -setup {
+    mkCanvas 500 300
+} -body {
+    set p [::Plotchart::createGanttchart .c "1 january 2004" "31 december 2004" 4]
+    set t1 [$p task "Spring" "1 march 2004" "1 june 2004" 30]
+    $p color completed green
+    $p color left yellow
+    list [.c itemcget [lindex $t1 1] -fill] [.c itemcget [lindex $t1 2] -fill]
+} -cleanup {
+    cleanupPlot
+} -result {green yellow}
+
+test Plotchart-312.9 {ganttchart color: description and summary text} -constraints {
+    knownBug
+} -setup {
+    mkCanvas 500 300
+} -body {
+    # Fails with: unknown option "-foreground"
+    set p [::Plotchart::createGanttchart .c "1 january 2004" "31 december 2004" 4]
+    set t1 [$p task "Spring" "1 march 2004" "1 june 2004" 30]
+    set s [$p summary "Sum" $t1]
+    $p color description blue
+    $p color summary red
+    list [.c itemcget [lindex $t1 0] -fill] [.c itemcget [lindex $s 0] -fill]
+} -cleanup {
+    cleanupPlot
+} -result {blue red}
+
+test Plotchart-312.10 {ganttchart font: description and summary} -setup {
+    mkCanvas 500 300
+} -body {
+    set p [::Plotchart::createGanttchart .c "1 january 2004" "31 december 2004" 4]
+    set t1 [$p task "Spring" "1 march 2004" "1 june 2004" 30]
+    set s [$p summary "Sum" $t1]
+    set r [list [.c itemcget [lindex $t1 0] -font] [.c itemcget [lindex $s 0] -font]]
+    $p font description {Courier 12}
+    $p font summary {Courier 14 bold}
+    $p font scale {Courier 8}
+    $p vertline "1 jul" "1 july 2004"
+    set t2 [$p task "Summer" "1 june 2004" "1 september 2004" 0]
+    lappend r [.c itemcget [lindex $t1 0] -font] [.c itemcget [lindex $s 0] -font] \
+	[.c itemcget [lindex $t2 0] -font] [itemOption {timeline type=text} -font]
+} -cleanup {
+    cleanupPlot
+} -result {{times 10} {times 10 bold} {Courier 12} {Courier 14 bold} {Courier 12} {{Courier 8}}}
+
+test Plotchart-312.11 {ganttchart: number of items and width of the text} -setup {
+    mkCanvas 500 300
+} -body {
+    set p1 [::Plotchart::createGanttchart .c "1 january 2004" "31 december 2004" 4 10]
+    set x1 $::Plotchart::scaling(.c,pxmin)
+    set n1 [llength [items odd]]
+    cleanupPlot
+    mkCanvas 500 300
+    set p2 [::Plotchart::createGanttchart .c "1 january 2004" "31 december 2004" 6 30]
+    set x2 $::Plotchart::scaling(.c,pxmin)
+    set n2 [llength [items odd]]
+    list $n1 $n2 [expr {$x2 > $x1}]
+} -cleanup {
+    cleanupPlot
+} -result {2 3 1}
+
+test Plotchart-312.12 {ganttchart: -barheight} -constraints {
+    knownBug
+} -setup {
+    mkCanvas 500 300
+} -body {
+    # The number of bars is computed from the width of the plot
+    set p [::Plotchart::createGanttchart .c "1 january 2004" "31 december 2004" -barheight 40]
+    $p task "A" "1 march 2004" "1 june 2004" 10
+    $p task "B" "1 march 2004" "1 june 2004" 10
+    lassign [items completed] c1 c2
+    R [expr {[lindex [.c coords $c2] 1] - [lindex [.c coords $c1] 1]}] 0
+} -cleanup {
+    cleanupPlot
+} -result {40}
+
+test Plotchart-312.12a {ganttchart: -ylabelwidth} -setup {
+    mkCanvas 500 300
+} -body {
+    set p [::Plotchart::createGanttchart .c "1 january 2004" "31 december 2004" 4 -ylabelwidth 50]
+    set x1 $::Plotchart::scaling(.c,pxmin)
+    cleanupPlot
+    mkCanvas 500 300
+    set p [::Plotchart::createGanttchart .c "1 january 2004" "31 december 2004" 4 -ylabelwidth 200]
+    set x2 $::Plotchart::scaling(.c,pxmin)
+    expr {$x2 > $x1}
+} -cleanup {
+    cleanupPlot
+} -result 1
+
+test Plotchart-312.13 {ganttchart: scrollbars} -setup {
+    mkCanvas 500 300
+    scrollbar .y -orient vertical
+    scrollbar .x -orient horizontal
+} -body {
+    set p [::Plotchart::createGanttchart .c "1 january 2004" "31 december 2004" 2]
+    foreach i {1 2 3 4 5} {
+	$p task "Task $i" "1 march 2004" "1 june 2004" 50
+    }
+    $p vertline "1 jul" "1 july 2005"
+    $p vscroll .y
+    $p hscroll .x
+    list [R [.y get] 1] [expr {[lindex [.x get] 1] < 1.0}]
+} -cleanup {
+    cleanupPlot
+    destroy .x .y
+} -result {{0.0 0.4} 1}
+
+test Plotchart-312.13a {ganttchart: scrollbars updated for new tasks} -constraints {
+    knownBug
+} -setup {
+    mkCanvas 500 300
+    scrollbar .y -orient vertical
+} -body {
+    # The scrollbar is only updated when it is connected
+    set p [::Plotchart::createGanttchart .c "1 january 2004" "31 december 2004" 2]
+    $p task "Task 0" "1 march 2004" "1 june 2004" 50
+    $p vscroll .y
+    foreach i {1 2 3 4} {
+	$p task "Task $i" "1 march 2004" "1 june 2004" 50
+    }
+    R [.y get] 1
+} -cleanup {
+    cleanupPlot
+    destroy .y
+} -result {0.0 0.4}
+
+test Plotchart-312.14 {ganttchart task: wrong # args} -setup {
+    mkCanvas 500 300
+} -body {
+    set p [::Plotchart::createGanttchart .c "1 january 2004" "31 december 2004" 4]
+    $p task "A" "1 march 2004" "1 june 2004"
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {wrong # args: should be "DrawGanttPeriod w text time_begin time_end completed"}
+
+# -------------------------------------------------------------------------
+# Table charts
+
+test Plotchart-313.1 {tablechart: header row and frame} -setup {
+    mkCanvas 400 300
+} -body {
+    set t [::Plotchart::createTableChart .c {"Column 1" "Column 2" "Column 3"}]
+    set texts [lmap i [.c find all] {expr {[.c type $i] eq "text" ? [.c itemcget $i -text] : [continue]}}]
+    list [string match table_* $t] $texts [llength [items cellbg]] [itemTypes frame]
+} -cleanup {
+    cleanupPlot
+} -result {1 {{Column 1} {Column 2} {Column 3}} 3 line}
+
+test Plotchart-313.2 {tablechart row: cell texts centred in the columns} -setup {
+    mkCanvas 400 300
+} -body {
+    set t [::Plotchart::createTableChart .c {A B C} 80]
+    $t row {1 2 3}
+    $t row {4 5 6}
+    set cells [items celltext]
+    set xs [lmap c $cells {lindex [.c coords $c] 0}]
+    list [itemTexts celltext] [R [expr {[lindex $xs 1]-[lindex $xs 0]}] 0] [R [expr {[lindex $xs 2]-[lindex $xs 1]}] 0] \
+	[expr {[lindex [.c coords [lindex $cells 3]] 1] > [lindex [.c coords [lindex $cells 0]] 1]}] \
+	[itemOption celltext -anchor]
+} -cleanup {
+    cleanupPlot
+} -result {{1 2 3 4 5 6} 80 80 1 n}
+
+test Plotchart-313.3 {tablechart: widths per column} -setup {
+    mkCanvas 400 300
+} -body {
+    set t [::Plotchart::createTableChart .c {A B C} {50 100 150}]
+    $t row {1 2 3}
+    set xs [lmap c [items celltext] {lindex [.c coords $c] 0}]
+    list [R [expr {[lindex $xs 1]-[lindex $xs 0]}] 0] [R [expr {[lindex $xs 2]-[lindex $xs 1]}] 0]
+} -cleanup {
+    cleanupPlot
+} -result {75 125}
+
+test Plotchart-313.4 {tablechart: default width spread over the canvas} -setup {
+    mkCanvas 400 300
+} -body {
+    set t [::Plotchart::createTableChart .c {A B}]
+    $t row {1 2}
+    set xs [lmap c [items celltext] {lindex [.c coords $c] 0}]
+    list [expr {[lindex $xs 0] < 200 && [lindex $xs 1] > 200}] [expr {[lindex $xs 1] - [lindex $xs 0] > 50}]
+} -cleanup {
+    cleanupPlot
+} -result {1 1}
+
+test Plotchart-313.5 {tablechart: too few widths} -setup {
+    mkCanvas 400 300
+} -body {
+    ::Plotchart::createTableChart .c {A B C} {50 100}
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {Number of widths should be at least the number of columns}
+
+test Plotchart-313.6 {tablechart row: too few values} -setup {
+    mkCanvas 400 300
+} -body {
+    set t [::Plotchart::createTableChart .c {A B C}]
+    $t row {1 2}
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {Too few values to fill the row}
+
+test Plotchart-313.7 {tablechart separator: horizontal line} -setup {
+    mkCanvas 400 300
+} -body {
+    set t [::Plotchart::createTableChart .c {A B} {100 100}]
+    $t row {1 2}
+    set new [newItems {$t separator}]
+    lassign [.c coords $new] x1 y1 x2 y2
+    list [llength $new] [.c type $new] [expr {$y1 == $y2}] [R [expr {$x2-$x1}] 0] [.c gettags $new]
+} -cleanup {
+    cleanupPlot
+} -result {1 line 1 200 frame}
+
+test Plotchart-313.8 {tablechart formatcommand and cellconfigure} -setup {
+    mkCanvas 400 300
+    proc setColor {table widget row col value} {
+	$table cellconfigure -background white -color black
+	if { $value < 2.0 } {
+	    $table cellconfigure -background red -color white
+	}
+	if { $value > 6.0 } {
+	    $table cellconfigure -background green
+	}
+	return [format "%6.3f" $value]
+    }
+} -body {
+    set t [::Plotchart::createTableChart .c {A B C} 80]
+    $t formatcommand setColor
+    $t row {1 4 7}
+    set r {}
+    foreach c [items celltext] {
+	lappend r [list [.c itemcget $c -text] [.c itemcget $c -fill]]
+    }
+    set bgs [lrange [items cellbg] 3 end]
+    list $r [lmap b $bgs {.c itemcget $b -fill}]
+} -cleanup {
+    cleanupPlot
+    rename setColor {}
+} -result {{{{ 1.000} white} {{ 4.000} black} {{ 7.000} black}} {red white green}}
+
+test Plotchart-313.9 {tablechart formatcommand: arguments} -setup {
+    mkCanvas 400 300
+    set ::fmtArgs {}
+    proc fmtCmd {table widget row col value} {
+	lappend ::fmtArgs [list [string match table_* $table] $row $col $value]
+	return "<$value>"
+    }
+} -body {
+    set t [::Plotchart::createTableChart .c {A B} 80]
+    $t formatcommand fmtCmd
+    $t row {x y}
+    $t row {z w}
+    list $::fmtArgs [itemTexts celltext]
+} -cleanup {
+    cleanupPlot
+    rename fmtCmd {}
+    unset ::fmtArgs
+} -result {{{1 1 0 x} {1 1 1 y} {1 2 0 z} {1 2 1 w}} {<x> <y> <z> <w>}}
+
+test Plotchart-313.10 {tablechart formatcommand: unknown procedure} -setup {
+    mkCanvas 400 300
+} -body {
+    set t [::Plotchart::createTableChart .c {A B} 80]
+    $t formatcommand nosuchproc
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {No such command or procedure: nosuchproc}
+
+test Plotchart-313.11 {tablechart cellconfigure: -font and -anchor} -setup {
+    mkCanvas 400 300
+} -body {
+    set t [::Plotchart::createTableChart .c {A B} 100]
+    $t cellconfigure -font {Courier 12} -anchor left
+    $t row {1 2}
+    set c [lindex [items celltext] 0]
+    list [.c itemcget $c -font] [.c itemcget $c -anchor] \
+	[expr {[lindex [.c coords $c] 0] < [lindex [.c coords [lindex [items cellbg] 0]] 0] + 10}]
+} -cleanup {
+    cleanupPlot
+} -result {{Courier 12} nw 1}
+
+test Plotchart-313.12 {tablechart cellconfigure: -cell sets the foreground colour} -constraints {
+    knownBug
+} -setup {
+    mkCanvas 400 300
+} -body {
+    # Fails with: Unknown cell property: -cell (-color works)
+    set t [::Plotchart::createTableChart .c {A B} 100]
+    $t cellconfigure -cell red
+    $t row {1 2}
+    itemOption celltext -fill
+} -cleanup {
+    cleanupPlot
+} -result {red}
+
+test Plotchart-313.13 {tablechart cellconfigure: -justify for multiline text} -constraints {
+    knownBug
+} -setup {
+    mkCanvas 400 300
+} -body {
+    # The -justify option is stored but not used
+    set t [::Plotchart::createTableChart .c {A B} 100]
+    $t cellconfigure -justify right
+    $t row {"Line\nLonger line" 2}
+    itemOption celltext -justify
+} -cleanup {
+    cleanupPlot
+} -result {right}
+
+test Plotchart-313.14 {tablechart cellconfigure: unknown property} -setup {
+    mkCanvas 400 300
+} -body {
+    set t [::Plotchart::createTableChart .c {A B} 100]
+    $t cellconfigure -size 3
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {Unknown cell property: -size}
+
+test Plotchart-313.15 {tablechart: frame and header configuration} -setup {
+    ::Plotchart::plotconfig table frame outerwidth 3
+    ::Plotchart::plotconfig table frame color red
+    ::Plotchart::plotconfig table header background yellow
+    ::Plotchart::plotconfig table header color blue
+    mkCanvas 400 300
+} -body {
+    set t [::Plotchart::createTableChart .c {A B} 100]
+    $t row {1 2}
+    set head [lmap i [.c find all] {expr {[.c type $i] eq "text" && "celltext" ni [.c gettags $i] ? $i : [continue]}}]
+    list [itemOption frame -fill] [lsort -unique [lmap i [items frame] {.c itemcget $i -width}]] \
+	[.c itemcget [lindex [items cellbg] 0] -fill] [lsort -unique [lmap h $head {.c itemcget $h -fill}]]
+} -cleanup {
+    cleanupPlot
+    foreach {comp prop} {frame outerwidth frame color header background header color} {
+	::Plotchart::plotconfig table $comp $prop default
+    }
+} -result {red {1.0 3.0} yellow blue}
+
+test Plotchart-313.16 {tablechart: title} -setup {
+    mkCanvas 400 300
+} -body {
+    set t [::Plotchart::createTableChart .c {A B} 100]
+    $t title "Table title"
+    itemTexts title
+} -cleanup {
+    cleanupPlot
+} -result {{Table title}}
+
+# -------------------------------------------------------------------------
+# Ternary diagrams
+
+test Plotchart-314.1 {ternary: triangle with labels 0 to 100} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createTernaryDiagram .c]
+    set labels [lsort -unique -real [itemTexts ternaryaxis]]
+    list [string match ternary_* $p] $labels [llength [items {ternaryaxis type=line}]]
+} -cleanup {
+    cleanupPlot
+} -result {1 {0 20 40 60 80 100} 21}
+
+test Plotchart-314.2 {ternary plot: point with a label} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createTernaryDiagram .c]
+    $p dataconfig s -colour red -symbol up
+    $p plot s 100 0 0 "Corner" w
+    $p plot s 0 0 100 "Top" s
+    set syms [items {data_s type=polygon}]
+    set texts [items {data_s type=text}]
+    lassign [.c coords [lindex [items {ternaryaxis type=line}] 0]] tx ty lx ly
+    lassign [.c bbox [lindex $syms 0]] a1 b1 a2 b2
+    lassign [.c bbox [lindex $syms 1]] c1 d1 c2 d2
+    list [lmap t $texts {.c itemcget $t -text}] [lmap t $texts {.c itemcget $t -anchor}] \
+	[itemOption {data_s type=polygon} -outline] \
+	[approx [expr {($a1+$a2)/2.0}] $lx 1] [approx [expr {($c1+$c2)/2.0}] $tx 1] \
+	[expr {($d1+$d2)/2.0 < ($b1+$b2)/2.0}]
+} -cleanup {
+    cleanupPlot
+} -result {{Corner Top} {w s} red 1 1 1}
+
+test Plotchart-314.3 {ternary plot: coordinates are normalised} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createTernaryDiagram .c]
+    $p plot s 1 1 1 "A"
+    $p plot t 20 20 20 "B"
+    set s [items {data_s type=oval}]
+    set t [items {data_t type=oval}]
+    samePixels [.c coords $s] [.c coords $t] 0.01
+} -cleanup {
+    cleanupPlot
+} -result 1
+
+test Plotchart-314.4 {ternary line and fill} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createTernaryDiagram .c]
+    $p dataconfig l -colour blue -smooth 1
+    $p dataconfig f -colour green
+    $p line l {100 0 0 0 100 0 0 0 100}
+    $p fill f {50 50 0 0 50 50 50 0 50}
+    set l [items data_l]
+    set f [items data_f]
+    list [.c type $l] [.c itemcget $l -fill] [.c itemcget $l -smooth] [llength [.c coords $l]] \
+	[.c type $f] [.c itemcget $f -fill] [llength [.c coords $f]]
+} -cleanup {
+    cleanupPlot
+} -result {line blue true 6 polygon green 6}
+
+test Plotchart-314.5 {ternary line: -width of the series} -constraints {
+    knownBug
+} -setup {
+    mkCanvas 400 400
+} -body {
+    # The width is used as the colour
+    set p [::Plotchart::createTernaryDiagram .c]
+    $p dataconfig l -colour blue -width 3
+    $p line l {100 0 0 0 100 0 0 0 100}
+    list [itemOption data_l -fill] [itemOption data_l -width]
+} -cleanup {
+    cleanupPlot
+} -result {blue 3.0}
+
+test Plotchart-314.6 {ternary text: texts at the corners} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createTernaryDiagram .c]
+    $p text "Sand" "Clay" "Silt"
+    set ts [items ternarytext]
+    list [lmap t $ts {.c itemcget $t -text}] [lmap t $ts {.c itemcget $t -anchor}]
+} -cleanup {
+    cleanupPlot
+} -result {{Sand Clay Silt} {se sw s}}
+
+test Plotchart-314.7 {ternary ticklines: grey lines by default} -constraints {
+    knownBug
+} -setup {
+    mkCanvas 400 400
+} -body {
+    # Fails with: wrong # args (the colour is taken as an axis name)
+    set p [::Plotchart::createTernaryDiagram .c]
+    $p ticklines
+    list [expr {[llength [items ternarytickline]] > 0}] [itemOption ternarytickline -fill]
+} -cleanup {
+    cleanupPlot
+} -result {1 grey}
+
+test Plotchart-314.8 {ternary ticklines: given colour} -constraints {
+    knownBug
+} -setup {
+    mkCanvas 400 400
+} -body {
+    # The colour argument is ignored
+    set p [::Plotchart::createTernaryDiagram .c]
+    $p ticklines red
+    itemOption ternarytickline -fill
+} -cleanup {
+    cleanupPlot
+} -result {red}
+
+test Plotchart-314.9 {ternary ticklines: lines are drawn} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createTernaryDiagram .c]
+    $p ticklines x
+    expr {[llength [items ternarytickline]] > 0}
+} -cleanup {
+    cleanupPlot
+} -result 1
+
+test Plotchart-314.10 {ternary: -steps} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createTernaryDiagram .c -steps 4]
+    lsort -unique -real [itemTexts ternaryaxis]
+} -cleanup {
+    cleanupPlot
+} -result {0 25 50 75 100}
+
+test Plotchart-314.11 {ternary: -fractions with -steps} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createTernaryDiagram .c -fractions 1 -steps 5]
+    lsort -unique -real [itemTexts ternaryaxis]
+} -cleanup {
+    cleanupPlot
+} -result {0 0.2 0.4 0.6 0.8 1}
+
+test Plotchart-314.12 {ternary: -fractions alone shows 0 to 1} -constraints {
+    knownBug
+} -setup {
+    mkCanvas 400 400
+} -body {
+    # Only the label 0 is drawn
+    set p [::Plotchart::createTernaryDiagram .c -fractions yes]
+    lsort -unique -real [itemTexts ternaryaxis]
+} -cleanup {
+    cleanupPlot
+} -result {0 0.2 0.4 0.6 0.8 1}
+
+test Plotchart-314.13 {ternary: pixelToCoords is not supported} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createTernaryDiagram .c]
+    ::Plotchart::pixelToCoords [$p canvas] 100 100
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {pixelToCoords not supported for ternary diagrams}
+
+# -------------------------------------------------------------------------
+# Status timelines
+
+test Plotchart-315.1 {statustimeline: labels and axis} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createStatusTimeline .c {0 10 2} {A B C}]
+    list [string match statustimeline_* $p] [itemTexts yaxis] [itemTexts xaxis]
+} -cleanup {
+    cleanupPlot
+} -result {1 {A B C} {0 2 4 6 8 10}}
+
+test Plotchart-315.2 {statustimeline: -xaxis no} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createStatusTimeline .c {0 10 2} {A B C} -xaxis no]
+    list [itemTexts yaxis] [itemTexts xaxis]
+} -cleanup {
+    cleanupPlot
+} -result {{A B C} {}}
+
+test Plotchart-315.3 {statustimeline plot: documented arguments} -constraints {
+    knownBug
+} -setup {
+    mkCanvas
+} -body {
+    # The item argument is not implemented: wrong # args
+    set p [::Plotchart::createStatusTimeline .c {0 10 2} {A B C}]
+    $p plot s1 item1 0 4 red
+    itemOption {below type=rectangle} -fill
+} -cleanup {
+    cleanupPlot
+} -result {red}
+
+test Plotchart-315.4 {statustimeline plot: one row per series from the top} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createStatusTimeline .c {0 10 2} {A B C}]
+    $p plot s1 0 4 red
+    $p plot s2 2 5
+    set bars [items {below type=rectangle}]
+    set geo {}
+    foreach b $bars {
+	lassign [.c coords $b] x1 y1 x2 y2
+	lassign [::Plotchart::pixelToCoords [$p canvas] $x1 $y1] wx1 wy1
+	lassign [::Plotchart::pixelToCoords [$p canvas] $x2 $y2] wx2 wy2
+	lappend geo [list [.c itemcget $b -fill] [R [list $wx1 $wx2] 0] [R [expr {($wy1+$wy2)/2.0}] 1]]
+    }
+    set geo
+} -cleanup {
+    cleanupPlot
+} -result {{red {0 4} 3.2} {black {2 5} 2.2}}
+
+test Plotchart-315.4a {statustimeline plot: more bars in the same row} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createStatusTimeline .c {0 10 2} {A B C}]
+    $p plot s1 0 4 red
+    $p plot s1 4 7 green
+    lassign [items {below type=rectangle}] b1 b2
+    list [lindex [.c coords $b1] 1] [lindex [.c coords $b1] 3] [.c itemcget $b2 -fill] \
+	[expr {[lindex [.c coords $b1] 1] == [lindex [.c coords $b2] 1]}]
+} -cleanup {
+    cleanupPlot
+} -match glob -result {* * green 1}
+
+test Plotchart-315.4b {statustimeline plot: next series in the next row} -constraints {
+    knownBug
+} -setup {
+    mkCanvas
+} -body {
+    # Each plot call moves to the next row, even for an existing series
+    set p [::Plotchart::createStatusTimeline .c {0 10 2} {A B C}]
+    $p plot s1 0 4 red
+    $p plot s1 4 7 green
+    $p plot s2 2 5
+    lassign [items {below type=rectangle}] b1 b2 b3
+    lassign [.c coords $b3] x1 y1 x2 y2
+    R [lindex [::Plotchart::pixelToCoords [$p canvas] $x1 [expr {($y1+$y2)/2.0}]] 1] 1
+} -cleanup {
+    cleanupPlot
+} -result {2.2}
+
+test Plotchart-315.4c {statustimeline plot: items drawn from bottom to top} -constraints {
+    knownBug
+} -setup {
+    mkCanvas
+} -body {
+    # The first item is drawn at the top
+    set p [::Plotchart::createStatusTimeline .c {0 10 2} {A B C}]
+    $p plot s1 0 4 red
+    $p plot s2 2 5
+    lassign [items {below type=rectangle}] b1 b2
+    expr {[lindex [.c coords $b1] 1] > [lindex [.c coords $b2] 1]}
+} -cleanup {
+    cleanupPlot
+} -result 1
+
+test Plotchart-315.5 {statustimeline vertline: line with text and options} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createStatusTimeline .c {0 10 2} {A B C}]
+    $p vertline "Now" 5 -fill red -width 2
+    set l [items {tline type=line}]
+    lassign [.c coords $l] x1 y1 x2 y2
+    list [.c itemcget $l -fill] [.c itemcget $l -width] [expr {$x1 == $x2}] \
+	[approx $x1 [lindex [pix $p 5 1] 0] 0.5] [itemTexts timeline]
+} -cleanup {
+    cleanupPlot
+} -result {red 2.0 1 1 Now}
+
+test Plotchart-315.6 {statustimeline: dates as x values} -setup {
+    mkCanvas
+} -body {
+    set t0 [clock scan "2020-01-01" -gmt 1]
+    set t1 [clock scan "2020-01-11" -gmt 1]
+    set p [::Plotchart::createStatusTimeline .c [list $t0 $t1 86400] {A B} -xaxis 0]
+    $p plot s "2020-01-03" "2020-01-05" blue
+    set b [items {below type=rectangle}]
+    lassign [.c coords $b] x1
+    approx $x1 [lindex [pix $p [clock scan "2020-01-03"] 1] 0] 0.5
+} -cleanup {
+    cleanupPlot
+} -result 1
+
+# -------------------------------------------------------------------------
+# Dendrograms
+
+proc dendroTexts {} {
+    lmap i [.c find all] {expr {[.c type $i] eq "text" ? [.c itemcget $i -text] : [continue]}}
+}
+proc dendroLabels {} {
+    set r {}
+    foreach i [.c find all] {
+	if {[.c type $i] eq "text" && "title" ni [.c gettags $i]} {
+	    lappend r [list [.c itemcget $i -text] {*}[R [.c coords $i] 0] [.c itemcget $i -angle] [.c itemcget $i -anchor]]
+	}
+    }
+    return $r
+}
+
+test Plotchart-316.1 {dendrogram: labels at the leaves} -setup {
+    mkCanvas 500 500
+} -body {
+    set p [::Plotchart::createDendrogram .c]
+    $p plot s {{"Label1" "Label2"} {F {A B} {C {D E}}}}
+    list [string match dendrogram_* $p] [dendroTexts] \
+	[expr {[llength [lmap i [.c find all] {expr {[.c type $i] eq "line" ? $i : [continue]}}]] > 8}]
+} -cleanup {
+    cleanupPlot
+} -result {1 {Label1 Label2 F A B C D E} 1}
+
+test Plotchart-316.2 {dendrogram: top-bottom (default), labels vertical at the same level} -setup {
+    mkCanvas 500 500
+} -body {
+    set p [::Plotchart::createDendrogram .c]
+    $p plot s {{"Label1" "Label2"} {F {A B} {C {D E}}}}
+    set labels [dendroLabels]
+    list [lsort -unique [lmap l $labels {lindex $l 2}]] [lsort -unique [lmap l $labels {lindex $l 3}]] \
+	[lsort -unique [lmap l $labels {lindex $l 4}]]
+} -cleanup {
+    cleanupPlot
+} -match glob -result {[0-9]* 90.0 e}
+
+test Plotchart-316.3 {dendrogram: -extend 0, labels where the branch ends} -setup {
+    mkCanvas 500 500
+} -body {
+    set p [::Plotchart::createDendrogram .c -extend 0]
+    $p plot s {{"Label1" "Label2"} {F {A B} {C {D E}}}}
+    set labels [dendroLabels]
+    expr {[llength [lsort -unique [lmap l $labels {lindex $l 2}]]] > 1}
+} -cleanup {
+    cleanupPlot
+} -result 1
+
+test Plotchart-316.4 {dendrogram: directions} -setup {
+    mkCanvas 500 500
+} -body {
+    set r {}
+    foreach dir {left-right right-left top-bottom bottom-top} {
+	set p [::Plotchart::createDendrogram .c -direction $dir]
+	$p plot s {{A B} {C D}}
+	set labels [dendroLabels]
+	set xs [lsort -unique [lmap l $labels {lindex $l 1}]]
+	set ys [lsort -unique [lmap l $labels {lindex $l 2}]]
+	lappend r $dir [llength $xs] [llength $ys] [lsort -unique [lmap l $labels {lindex $l 4}]]
+	cleanupPlot
+	mkCanvas 500 500
+    }
+    set r
+} -cleanup {
+    cleanupPlot
+} -result {left-right 1 4 w right-left 1 4 e top-bottom 4 1 e bottom-top 4 1 w}
+
+test Plotchart-316.5 {dendrogram: left-right puts the labels at the right} -setup {
+    mkCanvas 500 500
+} -body {
+    set r {}
+    foreach dir {left-right right-left} {
+	set p [::Plotchart::createDendrogram .c -direction $dir]
+	$p plot s {{A B} {C D}}
+	lappend r [expr {[lindex [dendroLabels] 0 1] > 250 ? "right" : "left"}]
+	cleanupPlot
+	mkCanvas 500 500
+    }
+    set r
+} -cleanup {
+    cleanupPlot
+} -result {right left}
+
+test Plotchart-316.6 {dendrogram: LEAF for a label with several words} -constraints {
+    knownBug
+} -setup {
+    mkCanvas 500 500
+} -body {
+    # The label is drawn as {Label 1}
+    set p [::Plotchart::createDendrogram .c]
+    $p plot s {{LEAF "Label 1"} {F {A B} {C {D E}}}}
+    dendroTexts
+} -cleanup {
+    cleanupPlot
+} -result {{Label 1} F A B C D E}
+
+test Plotchart-316.6a {dendrogram: all elements of a LEAF list are leaves} -constraints {
+    knownBug
+} -setup {
+    mkCanvas 500 500
+} -body {
+    # The elements are drawn as a single label
+    set p [::Plotchart::createDendrogram .c]
+    $p plot s {{LEAF "Label 1" "Label 2"} {F {A B} {C {D E}}}}
+    dendroTexts
+} -cleanup {
+    cleanupPlot
+} -result {{Label 1} {Label 2} F A B C D E}
+
+test Plotchart-316.7 {dendrogram: colours and font of the series} -setup {
+    mkCanvas 500 500
+} -body {
+    set p [::Plotchart::createDendrogram .c]
+    $p dataconfig s -colour red -labelcolour blue -labelfont {Courier 10}
+    $p plot s {{A B} {C D}}
+    list [lsort -unique [lmap i [.c find all] {expr {[.c type $i] eq "line" ? [.c itemcget $i -fill] : [continue]}}]] \
+	[lsort -unique [lmap i [.c find all] {expr {[.c type $i] eq "text" ? [.c itemcget $i -fill] : [continue]}}]] \
+	[lsort -unique [lmap i [.c find all] {expr {[.c type $i] eq "text" ? [.c itemcget $i -font] : [continue]}}]]
+} -cleanup {
+    cleanupPlot
+} -result {red blue {{Courier 10}}}
+
+test Plotchart-316.8 {dendrogram: -color and -labelcolor synonyms} -setup {
+    mkCanvas 500 500
+} -body {
+    set p [::Plotchart::createDendrogram .c]
+    $p dataconfig s -color green -labelcolor orange
+    $p plot s {{A B} {C D}}
+    list [lsort -unique [lmap i [.c find all] {expr {[.c type $i] eq "line" ? [.c itemcget $i -fill] : [continue]}}]] \
+	[lsort -unique [lmap i [.c find all] {expr {[.c type $i] eq "text" ? [.c itemcget $i -fill] : [continue]}}]]
+} -cleanup {
+    cleanupPlot
+} -result {green orange}
+
+test Plotchart-316.9 {dendrogram: unknown direction} -setup {
+    mkCanvas 500 500
+} -body {
+    ::Plotchart::createDendrogram .c -direction up-down
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {Unknown direction: up-down}
+
+# -------------------------------------------------------------------------
+interp bgerror {} $::oldBgError
+restoreRoot
+test Plotchart-399.1 {no background errors} -body {
+    set ::bgErrors
+} -result {}
+::tcltest::cleanupTests
