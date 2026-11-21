@@ -1,0 +1,716 @@
+# -*- tcl -*-
+# style.test --
+#
+#	Tests for the style packages: style (names, use), style::as
+#	(init, reset, enable, disable) and style::lobster (init).
+#
+#	The module has no documentation (ticket 1006144fff); the tests
+#	follow the comments in the code and the ChangeLog.
+#
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2
+    namespace import ::tcltest::*
+} else {
+    if {![package vsatisfies [package present tcltest] 2.2]} {
+	puts "    Aborting the tests found in \"[file tail [info script]]\"."
+	puts "    Requiring tcltest 2.2, have [package present tcltest]"
+	return
+    }
+}
+
+::tcltest::testConstraint tk 1
+
+lappend auto_path [file dirname [file dirname [file normalize [info script]]]]
+package require style
+package require style::as
+package require style::lobster
+
+testConstraint x11 [expr {[tk windowingsystem] eq "x11"}]
+
+# -------------------------------------------------------------------------
+# Helpers
+
+# The tklib test harness withdraws "."; some tests need it mapped.
+set mainState [wm state .]
+wm deiconify .
+wm geometry . +0+0
+
+# Undo everything the styles change: option database, fonts,
+# bindings and remembered priorities.
+proc resetStyles {} {
+    option clear
+    foreach f [font names] {
+	if {[string match ASfont* $f] || [string match Lobster* $f]} {
+	    font delete $f
+	}
+    }
+    style::as::reset_mousewheel
+    style::as::disable control-mousewheel
+    set style::as::prio widgetDefault
+    set style::lobster::prio widgetDefault
+}
+
+proc asFonts {} {
+    lsort [lsearch -all -inline -glob [font names] ASfont*]
+}
+
+proc pointerAt {w} {
+    list -rootx [expr {[winfo rootx $w] + 5}] -rooty [expr {[winfo rooty $w] + 5}]
+}
+
+# -------------------------------------------------------------------------
+# style::names, style::use
+
+test style-1.1 {names: available styles} -body {
+    style::names
+} -result {lobster as}
+
+test style-1.2 {names: wrong # args} -body {
+    style::names foo
+} -returnCodes error -result {wrong # args: should be "style::names"}
+
+test style-1.3 {use: wrong # args} -body {
+    style::use
+} -returnCodes error -result {wrong # args: should be "style::use newstyle ?arg ...?"}
+
+test style-1.4 {use: unknown style} -body {
+    style::use nosuch
+} -returnCodes error -result {can't find package style::nosuch}
+
+test style-1.5 {use: every listed style can be loaded} -body {
+    set res {}
+    foreach s [style::names] {
+	lappend res [expr {[package require style::$s] ne ""}]
+    }
+    set res
+} -cleanup {
+    unset -nocomplain res s
+} -result {1 1}
+
+test style-1.6 {use: initializes the style} -setup {
+    resetStyles
+} -body {
+    style::use as
+    listbox .l
+    list [expr {"ASfont" in [font names]}] [.l cget -activestyle]
+} -cleanup {
+    destroy .l
+    resetStyles
+} -result {1 dotbox}
+
+test style-1.7 {use: arguments are passed to init} -setup {
+    resetStyles
+} -body {
+    style::use as -priority userDefault listbox
+    listbox .l
+    button .b
+    list [.l cget -activestyle] [option get .b highlightThickness HighlightThickness] \
+	[expr {"ASfont" in [font names]}] $style::as::prio
+} -cleanup {
+    destroy .l .b
+    resetStyles
+} -result {dotbox {} 0 userDefault}
+
+# -------------------------------------------------------------------------
+# style::as::init
+
+test style-2.1 {as::init: package version} -body {
+    package present style::as
+} -result 1.4.1
+
+test style-2.2 {as::init: creates the font set} -setup {
+    resetStyles
+} -body {
+    style::as::init
+    asFonts
+} -cleanup {
+    resetStyles
+} -result [lsort {ASfont ASfontBold ASfontFixed ASfontFixedBold
+    ASfont-2 ASfont-1 ASfont0 ASfont1 ASfont2 ASfont3 ASfont4
+    ASfontBold-2 ASfontBold-1 ASfontBold0 ASfontBold1 ASfontBold2
+    ASfontBold3 ASfontBold4
+    ASfontFixed-2 ASfontFixed-1 ASfontFixed0 ASfontFixed1 ASfontFixed2
+    ASfontFixed3 ASfontFixed4
+    ASfontFixedBold-2 ASfontFixedBold-1 ASfontFixedBold0 ASfontFixedBold1
+    ASfontFixedBold2 ASfontFixedBold3 ASfontFixedBold4}]
+
+test style-2.3 {as::init: font attributes} -setup {
+    resetStyles
+} -body {
+    style::as::init fonts
+    list [font configure ASfont -weight] [font configure ASfontBold -weight] \
+	[font configure ASfontFixedBold -weight] \
+	[expr {[font configure ASfont -size] == [font configure ASfontBold -size]}] \
+	[expr {[font configure ASfont -family] eq [font configure ASfontBold -family]}] \
+	[font metrics ASfontFixed -fixed]
+} -cleanup {
+    resetStyles
+} -result {normal bold bold 1 1 1}
+
+test style-2.4 {as::init: numbered fonts grow with the number} -setup {
+    resetStyles
+} -body {
+    style::as::init fonts
+    set res {}
+    foreach name {ASfont ASfontBold ASfontFixed} {
+	set sizes {}
+	foreach i {-2 -1 0 1 2 3 4} {
+	    lappend sizes [expr {abs([font configure $name$i -size])}]
+	}
+	lappend res [expr {$sizes eq [lsort -integer -unique $sizes]}]
+    }
+    set res
+} -cleanup {
+    resetStyles
+    unset -nocomplain res name sizes i
+} -result {1 1 1}
+
+test style-2.5 {as::init: numbered fixed bold fonts grow with the number} -setup {
+    resetStyles
+} -constraints knownBug -body {
+    # init_fonts creates all ASfontFixedBold<n> fonts with the base
+    # size instead of the size for <n>.
+    style::as::init fonts
+    set sizes {}
+    foreach i {-2 -1 0 1 2 3 4} {
+	lappend sizes [expr {abs([font configure ASfontFixedBold$i -size])}]
+    }
+    expr {$sizes eq [lsort -integer -unique $sizes]}
+} -cleanup {
+    resetStyles
+    unset -nocomplain sizes i
+} -result 1
+
+test style-2.6 {as::init: calling it again keeps the fonts} -setup {
+    resetStyles
+} -body {
+    style::as::init
+    font configure ASfont -size 20
+    style::as::init
+    list [llength [asFonts]] [font configure ASfont -size]
+} -cleanup {
+    resetStyles
+} -result {32 20}
+
+test style-2.7 {as::init: widget fonts} -setup {
+    resetStyles
+} -body {
+    style::as::init
+    text .t
+    label .l
+    button .b
+    entry .e
+    list [.t cget -font] [.l cget -font] [.b cget -font] [.e cget -font]
+} -cleanup {
+    destroy .t .l .b .e
+    resetStyles
+} -result {ASfontFixed ASfont ASfont ASfont}
+
+test style-2.8 {as::init: listbox options} -setup {
+    resetStyles
+} -constraints x11 -body {
+    style::as::init
+    listbox .l
+    list [.l cget -background] [.l cget -foreground] [.l cget -selectborderwidth] \
+	[.l cget -selectforeground] [.l cget -selectbackground] [.l cget -activestyle]
+} -cleanup {
+    destroy .l
+    resetStyles
+} -result {white black 0 white #316AC5 dotbox}
+
+test style-2.9 {as::init: entry, spinbox and text options} -setup {
+    resetStyles
+} -constraints x11 -body {
+    style::as::init
+    set res {}
+    foreach {cls w} {entry .e spinbox .s text .t} {
+	$cls $w
+	lappend res [$w cget -background] [$w cget -selectbackground] \
+	    [$w cget -selectforeground] [$w cget -selectborderwidth]
+    }
+    set res
+} -cleanup {
+    destroy .e .s .t
+    resetStyles
+    unset -nocomplain res cls w
+} -result {white #316AC5 white 0 white #316AC5 white 0 white #316AC5 white 0}
+
+test style-2.10 {as::init: button, scrollbar, panedwindow, menubutton options} -setup {
+    resetStyles
+} -constraints x11 -body {
+    style::as::init
+    button .b
+    scrollbar .s
+    panedwindow .p
+    menubutton .m
+    list [.b cget -padx] [.b cget -pady] [.b cget -highlightthickness] \
+	[.s cget -width] [.s cget -troughcolor] [.s cget -borderwidth] \
+	[.s cget -highlightthickness] \
+	[.p cget -sashwidth] [.p cget -showhandle] [.p cget -relief] \
+	[.m cget -activebackground] [.m cget -borderwidth] [.m cget -padx]
+} -cleanup {
+    destroy .b .s .p .m
+    resetStyles
+} -result {1 2 1 12 #bdb6ad 1 0 3 0 flat #316AC5 1 4}
+
+test style-2.11 {as::init: menu options} -setup {
+    resetStyles
+} -constraints x11 -body {
+    style::as::init
+    menu .m
+    list [.m cget -activebackground] [.m cget -activeforeground] [.m cget -font]
+} -cleanup {
+    destroy .m
+    resetStyles
+} -result {{#316AC5} white ASfont}
+
+test style-2.12 {as::init: options for other widget sets} -setup {
+    resetStyles
+} -body {
+    style::as::init misc
+    frame .h -class HList
+    list [option get .h borderWidth BorderWidth] \
+	[option get .h selectBorderWidth SelectBorderWidth] \
+	[option get .h background Background]
+} -cleanup {
+    destroy .h
+    resetStyles
+} -result [list 1 0 $::style::as::bg]
+
+test style-2.13 {as::init: only the given parts} -setup {
+    resetStyles
+} -body {
+    style::as::init listbox scrollbar
+    listbox .l
+    scrollbar .s
+    button .b
+    list [.l cget -activestyle] [option get .s borderWidth BorderWidth] \
+	[option get .b highlightThickness HighlightThickness] \
+	[asFonts] [bind all <MouseWheel>]
+} -cleanup {
+    destroy .l .s .b
+    resetStyles
+} -result {dotbox 1 {} {} {}}
+
+test style-2.14 {as::init: unknown part} -setup {
+    resetStyles
+} -body {
+    style::as::init nosuch
+} -cleanup {
+    resetStyles
+} -returnCodes error -result {invalid command name "style::as::init_nosuch"}
+
+test style-2.15 {as::init: default priority is widgetDefault} -setup {
+    resetStyles
+} -body {
+    option add *Listbox.activeStyle underline startupFile
+    style::as::init listbox
+    listbox .l
+    .l cget -activestyle
+} -cleanup {
+    destroy .l
+    resetStyles
+} -result underline
+
+test style-2.16 {as::init: -priority} -setup {
+    resetStyles
+} -body {
+    option add *Listbox.activeStyle underline startupFile
+    style::as::init -priority userDefault listbox
+    listbox .l
+    .l cget -activestyle
+} -cleanup {
+    destroy .l
+    resetStyles
+} -result dotbox
+
+test style-2.17 {as::init: -priority can be abbreviated} -setup {
+    resetStyles
+} -body {
+    option add *Listbox.activeStyle underline startupFile
+    style::as::init -pri 80 listbox
+    listbox .l
+    list [.l cget -activestyle] $style::as::prio
+} -cleanup {
+    destroy .l
+    resetStyles
+} -result {dotbox 80}
+
+test style-2.18 {as::init: -priority is remembered} -setup {
+    resetStyles
+} -body {
+    option add *Listbox.activeStyle underline startupFile
+    style::as::init -priority interactive scrollbar
+    style::as::init listbox
+    listbox .l
+    .l cget -activestyle
+} -cleanup {
+    destroy .l
+    resetStyles
+} -result dotbox
+
+test style-2.19 {as::init: bad priority} -setup {
+    resetStyles
+} -body {
+    style::as::init -priority foo listbox
+} -cleanup {
+    resetStyles
+} -returnCodes error -result {bad priority level "foo": must be widgetDefault, startupFile, userDefault, interactive, or a number between 0 and 100}
+
+# -------------------------------------------------------------------------
+# Mouse wheel support
+
+test style-3.1 {as::init: mousewheel installs catch-all bindings} -setup {
+    resetStyles
+} -body {
+    style::as::init mousewheel
+    list [bind all <MouseWheel>] [bind all <Shift-MouseWheel>] \
+	[bind Text <MouseWheel>] [bind Listbox <MouseWheel>]
+} -cleanup {
+    resetStyles
+} -result {{::style::as::MouseWheel %W %X %Y %D 0} {::style::as::MouseWheel %W %X %Y %D 1} {} {}}
+
+test style-3.2 {as::init: mousewheel bindings for buttons 4 and 5} -setup {
+    resetStyles
+} -constraints x11 -body {
+    style::as::init mousewheel
+    list [bind all <Button-4>] [bind all <Button-5>] [bind Text <Button-4>]
+} -cleanup {
+    resetStyles
+} -result {{::style::as::MouseWheel %W %X %Y 120} {::style::as::MouseWheel %W %X %Y -120} {}}
+
+test style-3.3 {as::reset: mousewheel restores the class bindings} -setup {
+    resetStyles
+    set saved [list [bind Text <MouseWheel>] [bind Listbox <MouseWheel>] \
+		   [bind Text <Shift-MouseWheel>]]
+} -body {
+    style::as::init mousewheel
+    style::as::reset mousewheel
+    list [bind all <MouseWheel>] [bind all <Shift-MouseWheel>] \
+	[expr {[list [bind Text <MouseWheel>] [bind Listbox <MouseWheel>] \
+		    [bind Text <Shift-MouseWheel>]] eq $saved}]
+} -cleanup {
+    resetStyles
+    unset -nocomplain saved
+} -result {{} {} 1}
+
+test style-3.4 {as::enable/disable mousewheel} -setup {
+    resetStyles
+    set saved [bind Text <MouseWheel>]
+} -body {
+    style::as::enable mousewheel
+    set res [list [bind all <MouseWheel>] [bind Text <MouseWheel>]]
+    style::as::disable mousewheel
+    lappend res [bind all <MouseWheel>] [expr {[bind Text <MouseWheel>] eq $saved}]
+} -cleanup {
+    resetStyles
+    unset -nocomplain saved res
+} -result {{::style::as::MouseWheel %W %X %Y %D 0} {} {} 1}
+
+test style-3.5 {mousewheel: scrolls the widget under the pointer} -setup {
+    resetStyles
+    listbox .l -height 5
+    for {set i 0} {$i < 50} {incr i} {.l insert end $i}
+    pack .l
+    update
+} -body {
+    style::as::init mousewheel
+    event generate .l <MouseWheel> -delta -120 {*}[pointerAt .l]
+    set res [.l nearest 0]
+    event generate .l <MouseWheel> -delta 60 {*}[pointerAt .l]
+    lappend res [.l nearest 0]
+} -cleanup {
+    destroy .l
+    resetStyles
+    unset -nocomplain res i
+} -result {4 2}
+
+test style-3.6 {mousewheel: Shift scrolls horizontally} -setup {
+    resetStyles
+    text .t -width 10 -height 5 -wrap none
+    .t insert end [string repeat x 200]
+    pack .t
+    update
+} -body {
+    style::as::init mousewheel
+    event generate .t <Shift-MouseWheel> -delta -120 {*}[pointerAt .t]
+    expr {[lindex [.t xview] 0] > 0}
+} -cleanup {
+    destroy .t
+    resetStyles
+} -result 1
+
+# -------------------------------------------------------------------------
+# style::as::enable / disable control-mousewheel
+
+test style-4.1 {as::enable: wrong # args} -body {
+    style::as::enable
+} -returnCodes error -result {wrong # args: should be "style::as::enable what ?arg ...?"}
+
+test style-4.2 {as::enable: unknown feature} -body {
+    style::as::enable foo
+} -returnCodes error -result {unknown option "foo"}
+
+test style-4.3 {as::disable: wrong # args} -body {
+    style::as::disable
+} -returnCodes error -result {wrong # args: should be "style::as::disable what ?arg ...?"}
+
+test style-4.4 {as::disable: unknown feature} -body {
+    style::as::disable foo
+} -returnCodes error -result {unknown option "foo"}
+
+test style-4.5 {as::enable control-mousewheel: bindings} -setup {
+    resetStyles
+} -body {
+    style::as::enable control-mousewheel local
+    bind all <Control-MouseWheel>
+} -cleanup {
+    resetStyles
+} -result {::style::as::CtrlMouseWheel %W %X %Y %D local}
+
+test style-4.6 {as::disable control-mousewheel: bindings removed} -setup {
+    resetStyles
+} -body {
+    style::as::enable control-mousewheel local
+    style::as::disable control-mousewheel
+    list [bind all <Control-MouseWheel>] [bind all <Control-minus>]
+} -cleanup {
+    resetStyles
+} -result {{} {}}
+
+test style-4.7 {control-mousewheel local: steps through the numbered fonts} -setup {
+    resetStyles
+    style::as::init fonts
+    label .l -text Hello -font ASfont
+    pack .l
+    update
+} -body {
+    style::as::enable control-mousewheel local
+    set res {}
+    foreach d {120 120 -120 -120 -120 -120 -120} {
+	event generate .l <Control-MouseWheel> -delta $d {*}[pointerAt .l]
+	lappend res [.l cget -font]
+    }
+    set res
+} -cleanup {
+    destroy .l
+    resetStyles
+    unset -nocomplain res d
+} -result {ASfont1 ASfont2 ASfont1 ASfont0 ASfont-1 ASfont-2 ASfont-2}
+
+test style-4.8 {control-mousewheel local: stops at the largest font} -setup {
+    resetStyles
+    style::as::init fonts
+    label .l -text Hello -font ASfontBold3
+    pack .l
+    update
+} -body {
+    style::as::enable control-mousewheel local
+    event generate .l <Control-MouseWheel> -delta 120 {*}[pointerAt .l]
+    set res [.l cget -font]
+    event generate .l <Control-MouseWheel> -delta 120 {*}[pointerAt .l]
+    lappend res [.l cget -font]
+} -cleanup {
+    destroy .l
+    resetStyles
+    unset -nocomplain res
+} -result {ASfontBold4 ASfontBold4}
+
+test style-4.9 {control-mousewheel local: widgets with other fonts are not changed} -setup {
+    resetStyles
+    style::as::init fonts
+    label .l -text Hello -font TkFixedFont
+    pack .l
+    update
+} -body {
+    style::as::enable control-mousewheel local
+    event generate .l <Control-MouseWheel> -delta 120 {*}[pointerAt .l]
+    .l cget -font
+} -cleanup {
+    destroy .l
+    resetStyles
+} -result TkFixedFont
+
+test style-4.10 {control-mousewheel global: resizes the base fonts} -setup {
+    resetStyles
+    style::as::init fonts
+    label .l -text Hello -font ASfont
+    pack .l
+    update
+} -body {
+    style::as::enable control-mousewheel global
+    set s0 [font configure ASfont -size]
+    event generate .l <Control-MouseWheel> -delta 120 {*}[pointerAt .l]
+    set s1 [font configure ASfont -size]
+    list [expr {abs($s1) - abs($s0)}] \
+	[expr {abs([font configure ASfontBold -size]) - abs($s0)}] \
+	[expr {abs([font configure ASfontFixed -size]) - abs($s1)}] \
+	[.l cget -font]
+} -cleanup {
+    destroy .l
+    resetStyles
+    unset -nocomplain s0 s1
+} -result {1 1 1 ASfont}
+
+test style-4.11 {control-mousewheel global: size limits} -setup {
+    resetStyles
+    style::as::init fonts
+    label .l -text Hello -font ASfont
+    pack .l
+    update
+} -body {
+    style::as::enable control-mousewheel global
+    for {set i 0} {$i < 20} {incr i} {
+	event generate .l <Control-MouseWheel> -delta 120 {*}[pointerAt .l]
+    }
+    set res [expr {abs([font configure ASfont -size])}]
+    for {set i 0} {$i < 20} {incr i} {
+	event generate .l <Control-MouseWheel> -delta -120 {*}[pointerAt .l]
+    }
+    lappend res [expr {abs([font configure ASfont -size])}]
+} -cleanup {
+    destroy .l
+    resetStyles
+    unset -nocomplain res i
+} -result {18 6}
+
+test style-4.12 {control-mousewheel: disabled does nothing} -setup {
+    resetStyles
+    style::as::init fonts
+    label .l -text Hello -font ASfont
+    pack .l
+    update
+} -body {
+    style::as::enable control-mousewheel local
+    style::as::disable control-mousewheel
+    event generate .l <Control-MouseWheel> -delta 120 {*}[pointerAt .l]
+    .l cget -font
+} -cleanup {
+    destroy .l
+    resetStyles
+} -result ASfont
+
+# -------------------------------------------------------------------------
+# style::as::reset
+
+test style-5.1 {as::reset: all parts} -setup {
+    resetStyles
+} -constraints knownBug -body {
+    # Without arguments reset looks for [info commands
+    # style::as::reset_*] relative to the style::as namespace and
+    # finds nothing, so it resets nothing.
+    style::as::init
+    style::as::reset
+    list [bind all <MouseWheel>] [llength [asFonts]]
+} -cleanup {
+    resetStyles
+} -result {{} 32}
+
+test style-5.2 {as::reset: fonts is a no-op} -setup {
+    resetStyles
+} -body {
+    style::as::init fonts
+    list [style::as::reset fonts] [llength [asFonts]]
+} -cleanup {
+    resetStyles
+} -result {{} 32}
+
+test style-5.3 {as::reset: unknown part} -body {
+    style::as::reset nosuch
+} -returnCodes error -result {invalid command name "style::as::reset_nosuch"}
+
+# -------------------------------------------------------------------------
+# style::lobster
+
+test style-6.1 {lobster::init: package version} -body {
+    package present style::lobster
+} -result 0.2
+
+test style-6.2 {lobster::init: fonts} -setup {
+    resetStyles
+} -constraints x11 -body {
+    style::lobster::init
+    list [expr {"LobsterFont" in [font names]}] [expr {"LobsterBold" in [font names]}] \
+	[font configure LobsterFont -weight] [font configure LobsterBold -weight] \
+	[expr {[font configure LobsterFont -size] == [font configure LobsterBold -size]}]
+} -cleanup {
+    resetStyles
+} -result {1 1 normal bold 1}
+
+test style-6.3 {lobster::init: widget options} -setup {
+    resetStyles
+} -constraints x11 -body {
+    style::lobster::init
+    label .l
+    listbox .lb
+    scrollbar .s
+    menu .m
+    list [.l cget -font] [.l cget -borderwidth] [.l cget -highlightthickness] \
+	[.lb cget -background] [.lb cget -selectbackground] \
+	[.s cget -width] [.s cget -troughcolor] \
+	[.m cget -activebackground] [.m cget -borderwidth]
+} -cleanup {
+    destroy .l .lb .s .m
+    resetStyles
+} -result {LobsterFont 1 0 white #4a6984 12 #c3c3c3 #4a6984 2}
+
+test style-6.4 {lobster::init: default priority is widgetDefault} -setup {
+    resetStyles
+} -constraints x11 -body {
+    option add *Listbox.background red startupFile
+    style::lobster::init
+    listbox .l
+    .l cget -background
+} -cleanup {
+    destroy .l
+    resetStyles
+} -result red
+
+test style-6.5 {lobster::init: -priority} -setup {
+    resetStyles
+} -constraints x11 -body {
+    option add *Listbox.background red startupFile
+    style::use lobster -prio userDefault
+    listbox .l
+    .l cget -background
+} -cleanup {
+    destroy .l
+    resetStyles
+} -result white
+
+test style-6.6 {lobster::init: calling it again} -setup {
+    resetStyles
+} -constraints {x11 knownBug} -body {
+    # The second call fails with 'named font "LobsterFont" already
+    # exists', unlike style::as::init.
+    style::use lobster
+    style::use lobster
+    label .l
+    .l cget -font
+} -cleanup {
+    destroy .l
+    resetStyles
+} -result LobsterFont
+
+# -------------------------------------------------------------------------
+
+resetStyles
+rename resetStyles {}
+rename asFonts {}
+rename pointerAt {}
+wm state . $mainState
+unset mainState
+
+::tcltest::cleanupTests
