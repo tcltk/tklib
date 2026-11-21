@@ -1,0 +1,150 @@
+# -*- tcl -*-
+# Tests for the canvas::snap package
+#
+# See the file "license.terms" for information on usage and redistribution
+# of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2
+    namespace import ::tcltest::*
+} else {
+    if {![package vsatisfies [package present tcltest] 2.2]} {
+	puts "    Aborting the tests found in \"[file tail [info script]]\"."
+	puts "    Requiring tcltest 2.2, have [package present tcltest]"
+	return
+    }
+}
+
+::tcltest::testConstraint tk 1
+
+lappend auto_path [file dirname [file dirname [file normalize [info script]]]]
+testConstraint imgWindow [expr {![catch {package require img::window}]}]
+if {[testConstraint imgWindow]} {
+    package require canvas::snap
+}
+
+# -------------------------------------------------------------------------
+
+# canvas::snap requires the img::window package (Img).  Without it the
+# tests are skipped.
+
+proc mkCanvas {} {
+    toplevel .t
+    canvas .t.c -width 200 -height 150 -background white \
+	-highlightthickness 0 -borderwidth 0
+    pack .t.c
+    .t.c create rectangle 20 20 80 60 -fill red -outline red
+    .t.c create rectangle 100 70 180 130 -fill blue -outline blue
+    update
+}
+
+proc pixel {img x y} {
+    $img get $x $y
+}
+
+test canvas::snap-1.0 {package version} -constraints imgWindow -body {
+    package present canvas::snap
+} -result 1.0.1
+
+test canvas::snap-1.1 {wrong # args} -constraints imgWindow -body {
+    ::canvas::snap
+} -returnCodes error -result {wrong # args: should be "::canvas::snap canvas"}
+
+test canvas::snap-1.2 {wrong # args} -constraints imgWindow -body {
+    ::canvas::snap .t.c extra
+} -returnCodes error -result {wrong # args: should be "::canvas::snap canvas"}
+
+test canvas::snap-1.3 {result is a new photo image} -constraints imgWindow -setup {
+    mkCanvas
+} -body {
+    set img [::canvas::snap .t.c]
+    list [expr {$img in [image names]}] [image type $img]
+} -cleanup {
+    image delete $img
+    destroy .t
+    unset img
+} -result {1 photo}
+
+test canvas::snap-1.4 {image size: bounding box with a margin} -constraints imgWindow -setup {
+    mkCanvas
+} -body {
+    set img [::canvas::snap .t.c]
+    lassign [.t.c bbox all] x1 y1 x2 y2
+    list [expr {[image width $img] - ($x2 - $x1)}] \
+	[expr {[image height $img] - ($y2 - $y1)}]
+} -cleanup {
+    image delete $img
+    destroy .t
+    unset img x1 y1 x2 y2
+} -result {20 20}
+
+test canvas::snap-1.5 {image contents} -constraints imgWindow -setup {
+    mkCanvas
+} -body {
+    set img [::canvas::snap .t.c]
+    lassign [.t.c bbox all] x1 y1
+    # Image origin is at bbox origin - 10
+    set ox [expr {$x1 - 10}]
+    set oy [expr {$y1 - 10}]
+    list [pixel $img [expr {50 - $ox}] [expr {40 - $oy}]] \
+	[pixel $img [expr {140 - $ox}] [expr {100 - $oy}]] \
+	[pixel $img [expr {140 - $ox}] [expr {40 - $oy}]]
+} -cleanup {
+    image delete $img
+    destroy .t
+    unset img x1 y1 ox oy
+} -result {{255 0 0} {0 0 255} {255 255 255}}
+
+test canvas::snap-1.6 {contents larger than the visible area} -constraints imgWindow -setup {
+    mkCanvas
+    .t.c create rectangle 400 300 450 350 -fill green -outline green
+    update
+} -body {
+    set img [::canvas::snap .t.c]
+    lassign [.t.c bbox all] x1 y1
+    set ox [expr {$x1 - 10}]
+    set oy [expr {$y1 - 10}]
+    list [image width $img] [image height $img] \
+	[pixel $img [expr {425 - $ox}] [expr {325 - $oy}]]
+} -cleanup {
+    image delete $img
+    destroy .t
+    unset img x1 y1 ox oy
+} -result [list 451 351 [winfo rgb . green]]
+
+test canvas::snap-1.7 {scroll state is restored} -constraints imgWindow -setup {
+    mkCanvas
+    proc ::scrollcb {args} {}
+    .t.c configure -scrollregion {0 0 500 500} \
+	-xscrollcommand ::scrollcb -yscrollcommand {::scrollcb y}
+} -body {
+    image delete [::canvas::snap .t.c]
+    list [.t.c cget -scrollregion] [.t.c cget -xscrollcommand] \
+	[.t.c cget -yscrollcommand]
+} -cleanup {
+    destroy .t
+    rename ::scrollcb {}
+} -result {{0 0 500 500} ::scrollcb {::scrollcb y}}
+
+test canvas::snap-1.8 {not a canvas} -constraints imgWindow -body {
+    ::canvas::snap .nosuchwindow
+} -returnCodes error -result {bad window path name ".nosuchwindow"}
+
+# -------------------------------------------------------------------------
+
+rename mkCanvas {}
+rename pixel {}
+
+::tcltest::cleanupTests

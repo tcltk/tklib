@@ -1,0 +1,115 @@
+# -*- tcl -*-
+# Tests for the canvas::pdf package
+#
+# See the file "license.terms" for information on usage and redistribution
+# of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2
+    namespace import ::tcltest::*
+} else {
+    if {![package vsatisfies [package present tcltest] 2.2]} {
+	puts "    Aborting the tests found in \"[file tail [info script]]\"."
+	puts "    Requiring tcltest 2.2, have [package present tcltest]"
+	return
+    }
+}
+
+::tcltest::testConstraint tk 1
+
+lappend auto_path [file dirname [file dirname [file normalize [info script]]]]
+testConstraint pdf4tcl [expr {![catch {package require pdf4tcl}]}]
+if {[testConstraint pdf4tcl]} {
+    package require canvas::pdf
+}
+
+# -------------------------------------------------------------------------
+
+# canvas::pdf requires the pdf4tcl package.  Without it the tests are
+# skipped.
+
+proc mkCanvas {} {
+    canvas .c -width 200 -height 150
+    pack .c
+    .c create rectangle 20 20 80 60 -fill red
+    .c create line 0 0 100 100 -width 2
+    .c create text 50 120 -text "Hello"
+    update
+}
+
+test canvas::pdf-1.0 {package version} -constraints pdf4tcl -body {
+    package present canvas::pdf
+} -result 1.0.1
+
+test canvas::pdf-1.1 {wrong # args} -constraints pdf4tcl -body {
+    ::canvas::pdf
+} -returnCodes error -result {wrong # args: should be "::canvas::pdf canvas"}
+
+test canvas::pdf-1.2 {wrong # args} -constraints pdf4tcl -body {
+    ::canvas::pdf .c extra
+} -returnCodes error -result {wrong # args: should be "::canvas::pdf canvas"}
+
+test canvas::pdf-1.3 {result is a PDF document} -constraints pdf4tcl -setup {
+    mkCanvas
+} -body {
+    set data [::canvas::pdf .c]
+    list [string range $data 0 4] [expr {[string first %%EOF $data] > 0}]
+} -cleanup {
+    destroy .c
+    unset data
+} -result {%PDF- 1}
+
+test canvas::pdf-1.4 {empty canvas} -constraints pdf4tcl -setup {
+    canvas .c
+    pack .c
+    update
+} -body {
+    string range [::canvas::pdf .c] 0 4
+} -cleanup {
+    destroy .c
+} -result {%PDF-}
+
+test canvas::pdf-1.5 {no temporary files are left} -constraints pdf4tcl -setup {
+    mkCanvas
+    set before [glob -nocomplain -directory [fileutil::tempdir] canvas_pdf_*]
+} -body {
+    ::canvas::pdf .c
+    set after [glob -nocomplain -directory [fileutil::tempdir] canvas_pdf_*]
+    expr {[lsort $before] eq [lsort $after]}
+} -cleanup {
+    destroy .c
+    unset before after
+} -result 1
+
+test canvas::pdf-1.6 {canvas is not modified} -constraints pdf4tcl -setup {
+    mkCanvas
+} -body {
+    set items [.c find all]
+    ::canvas::pdf .c
+    expr {[.c find all] eq $items}
+} -cleanup {
+    destroy .c
+    unset items
+} -result 1
+
+test canvas::pdf-1.7 {not a canvas} -constraints pdf4tcl -body {
+    ::canvas::pdf .nosuchwindow
+} -returnCodes error -match glob -result *
+
+# -------------------------------------------------------------------------
+
+rename mkCanvas {}
+
+::tcltest::cleanupTests

@@ -1,0 +1,255 @@
+# -*- tcl -*-
+# Tests for the canvas::gradient package
+#
+# See the file "license.terms" for information on usage and redistribution
+# of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2
+    namespace import ::tcltest::*
+} else {
+    if {![package vsatisfies [package present tcltest] 2.2]} {
+	puts "    Aborting the tests found in \"[file tail [info script]]\"."
+	puts "    Requiring tcltest 2.2, have [package present tcltest]"
+	return
+    }
+}
+
+::tcltest::testConstraint tk 1
+
+lappend auto_path [file dirname [file dirname [file normalize [info script]]]]
+package require canvas::gradient
+
+# -------------------------------------------------------------------------
+
+proc mkCanvas {{w 200} {h 100}} {
+    canvas .c -width $w -height $h -highlightthickness 0 -borderwidth 0
+    pack .c
+    update
+}
+
+# Color of the topmost item drawn at the given place.
+proc colorAt {x y} {
+    set item [lindex [.c find overlapping $x $y $x $y] end]
+    if {$item eq ""} {return ""}
+    rgb [.c itemcget $item -fill]
+}
+
+# 8-bit RGB triple of a color.
+proc rgb {color} {
+    lmap v [winfo rgb . $color] {expr {$v >> 8}}
+}
+
+# Check that two RGB triples are close.
+proc near {c1 c2 {tol 4}} {
+    foreach a $c1 b $c2 {
+	if {abs($a - $b) > $tol} {return 0}
+    }
+    return 1
+}
+
+test canvas::gradient-1.0 {package version} -body {
+    package present canvas::gradient
+} -result 0.2
+
+test canvas::gradient-1.1 {wrong # args} -body {
+    ::canvas::gradient
+} -returnCodes error -result {wrong # args: should be "::canvas::gradient canvas ?arg ...?"}
+
+test canvas::gradient-1.2 {result is empty} -setup mkCanvas -body {
+    ::canvas::gradient .c
+} -cleanup {destroy .c} -result {}
+
+test canvas::gradient-1.3 {option without value} -setup mkCanvas -body {
+    ::canvas::gradient .c -direction
+} -cleanup {destroy .c} -returnCodes error -match glob -result *
+
+test canvas::gradient-1.4 {invalid direction} -setup mkCanvas -body {
+    ::canvas::gradient .c -direction z
+} -cleanup {destroy .c} -returnCodes error -result {Invalid direction z}
+
+test canvas::gradient-1.5 {invalid color} -setup mkCanvas -body {
+    ::canvas::gradient .c -color1 nosuchcolor
+} -cleanup {destroy .c} -returnCodes error -result {unknown color name "nosuchcolor"}
+
+test canvas::gradient-1.6 {invalid color2} -setup mkCanvas -body {
+    ::canvas::gradient .c -color2 nosuchcolor2
+} -cleanup {destroy .c} -returnCodes error -result {unknown color name "nosuchcolor2"}
+
+test canvas::gradient-1.7 {bad canvas} -body {
+    ::canvas::gradient .nosuchcanvas
+} -returnCodes error -match glob -result *
+
+# -------------------------------------------------------------------------
+
+test canvas::gradient-2.1 {default: horizontal red to green} -setup mkCanvas -body {
+    ::canvas::gradient .c
+    list [near [colorAt 0 50] [rgb red]] [near [colorAt 199 50] [rgb green]] \
+	[colorAt 0 0] [colorAt 0 99]
+} -cleanup {destroy .c} -result [list 1 1 [rgb red] [rgb red]]
+
+test canvas::gradient-2.2 {items use the reserved tag} -setup mkCanvas -body {
+    ::canvas::gradient .c
+    expr {[llength [.c find withtag canvas::gradient]] == [llength [.c find all]]
+	  && [llength [.c find all]] > 0}
+} -cleanup {destroy .c} -result 1
+
+test canvas::gradient-2.3 {gradient is below other items} -setup {
+    mkCanvas
+    .c create rectangle 10 10 20 20 -tags user
+} -body {
+    ::canvas::gradient .c
+    list [lindex [.c find all] end] \
+	[expr {"canvas::gradient" in [.c gettags [lindex [.c find all] 0]]}]
+} -cleanup {destroy .c} -result {1 1}
+
+test canvas::gradient-2.4 {user items are kept} -setup {
+    mkCanvas
+    .c create rectangle 10 10 20 20 -tags user
+} -body {
+    ::canvas::gradient .c
+    ::canvas::gradient .c -direction y
+    list [.c find withtag user] [.c coords user]
+} -cleanup {destroy .c} -result {1 {10.0 10.0 20.0 20.0}}
+
+test canvas::gradient-2.5 {colors change monotonically} -setup mkCanvas -body {
+    ::canvas::gradient .c -color1 black -color2 white
+    set prev -1
+    set ok 1
+    for {set x 0} {$x < 200} {incr x 10} {
+	set r [lindex [colorAt $x 50] 0]
+	if {$r < $prev} {set ok 0}
+	set prev $r
+    }
+    list $ok [colorAt 0 50] [near [colorAt 100 50] {127 127 127}]
+} -cleanup {
+    destroy .c
+    unset prev ok x r
+} -result {1 {0 0 0} 1}
+
+test canvas::gradient-2.6 {-direction x with colors} -setup mkCanvas -body {
+    ::canvas::gradient .c -direction x -color1 yellow -color2 blue
+    list [near [colorAt 0 50] [rgb yellow]] [near [colorAt 199 50] [rgb blue]] \
+	[expr {[colorAt 100 0] eq [colorAt 100 99]}]
+} -cleanup {destroy .c} -result {1 1 1}
+
+test canvas::gradient-2.7 {-direction y: start at the top} -setup mkCanvas -body {
+    ::canvas::gradient .c -direction y -color1 #000000 -color2 #ffffff
+    list [colorAt 100 0] [near [colorAt 100 99] {255 255 255}] \
+	[expr {[colorAt 0 50] eq [colorAt 199 50]}]
+} -cleanup {destroy .c} -result {{0 0 0} 1 1}
+
+test canvas::gradient-2.8 {-direction d1: start at left+top} -setup mkCanvas -body {
+    ::canvas::gradient .c -direction d1 -color1 #000000 -color2 #ffffff
+    set tl [lindex [colorAt 0 0] 0]
+    set br [lindex [colorAt 199 99] 0]
+    set tr [lindex [colorAt 199 0] 0]
+    set bl [lindex [colorAt 0 99] 0]
+    list [expr {$tl < 10}] [expr {$br > 245}] [expr {$tl < $tr && $tr < $br}] \
+	[expr {$tl < $bl && $bl < $br}]
+} -cleanup {
+    destroy .c
+    unset tl br tr bl
+} -result {1 1 1 1}
+
+test canvas::gradient-2.9 {-direction d2: start at left+bottom} -setup mkCanvas -body {
+    ::canvas::gradient .c -direction d2 -color1 #000000 -color2 #ffffff
+    set tl [lindex [colorAt 0 0] 0]
+    set br [lindex [colorAt 199 99] 0]
+    set tr [lindex [colorAt 199 0] 0]
+    set bl [lindex [colorAt 0 99] 0]
+    list [expr {$bl < 10}] [expr {$tr > 245}] [expr {$bl < $tl && $tl < $tr}] \
+	[expr {$bl < $br && $br < $tr}]
+} -cleanup {
+    destroy .c
+    unset tl br tr bl
+} -result {1 1 1 1}
+
+test canvas::gradient-2.10 {-direction r: start at the center} -setup mkCanvas -body {
+    ::canvas::gradient .c -direction r -color1 #000000 -color2 #ffffff
+    set c [lindex [colorAt 100 50] 0]
+    set e [lindex [colorAt 199 50] 0]
+    set corner [colorAt 0 0]
+    list [expr {$c < 10}] [expr {$e > 245}] [near $corner {255 255 255}]
+} -cleanup {
+    destroy .c
+    unset c e corner
+} -result {1 1 1}
+
+test canvas::gradient-2.11 {-type linear} -setup mkCanvas -body {
+    ::canvas::gradient .c -type linear -color1 black -color2 white
+    colorAt 0 50
+} -cleanup {destroy .c} -result {0 0 0}
+
+test canvas::gradient-2.12 {same start and end color} -setup mkCanvas -body {
+    ::canvas::gradient .c -color1 blue -color2 blue
+    list [colorAt 0 50] [colorAt 100 50] [colorAt 199 50]
+} -cleanup {destroy .c} -result [lrepeat 3 [rgb blue]]
+
+# -------------------------------------------------------------------------
+
+test canvas::gradient-3.1 {replacing a gradient} -setup mkCanvas -body {
+    ::canvas::gradient .c -color1 black -color2 white
+    set n [llength [.c find all]]
+    ::canvas::gradient .c -color1 white -color2 black
+    list [expr {[llength [.c find all]] == $n}] [colorAt 0 50]
+} -cleanup {
+    destroy .c
+    unset n
+} -result {1 {255 255 255}}
+
+test canvas::gradient-3.2 {gradient follows canvas resizing} -setup mkCanvas -body {
+    ::canvas::gradient .c -color1 black -color2 white
+    .c configure -width 400
+    update
+    list [colorAt 0 50] [near [colorAt 399 50] {255 255 255}] \
+	[near [colorAt 200 50] {127 127 127}]
+} -cleanup {destroy .c} -result {{0 0 0} 1 1}
+
+test canvas::gradient-3.3 {gradient set up before the canvas is mapped} -body {
+    canvas .c -width 200 -height 100 -highlightthickness 0 -borderwidth 0
+    ::canvas::gradient .c -color1 black -color2 white
+    set n [llength [.c find all]]
+    pack .c
+    update
+    list $n [colorAt 0 50] [near [colorAt 199 50] {255 255 255}]
+} -cleanup {
+    destroy .c
+    unset n
+} -result {0 {0 0 0} 1}
+
+test canvas::gradient-3.4 {too small canvas: no gradient} -setup {
+    mkCanvas 5 5
+} -body {
+    ::canvas::gradient .c
+    .c find all
+} -cleanup {destroy .c} -result {}
+
+test canvas::gradient-3.5 {replaced gradient keeps its options on resize} -setup mkCanvas -body {
+    ::canvas::gradient .c -color1 black -color2 white
+    ::canvas::gradient .c -direction y -color1 white -color2 black
+    .c configure -height 150
+    update
+    list [colorAt 100 0] [near [colorAt 100 149] {0 0 0}]
+} -cleanup {destroy .c} -result {{255 255 255} 1}
+
+# -------------------------------------------------------------------------
+
+rename mkCanvas {}
+rename colorAt {}
+rename rgb {}
+rename near {}
+
+::tcltest::cleanupTests
