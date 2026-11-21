@@ -1,0 +1,246 @@
+# -*- tcl -*-
+# Tests for the canvas::track::circle package
+#
+# See the file "license.terms" for information on usage and redistribution
+# of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2
+    namespace import ::tcltest::*
+} else {
+    if {![package vsatisfies [package present tcltest] 2.2]} {
+	puts "    Aborting the tests found in \"[file tail [info script]]\"."
+	puts "    Requiring tcltest 2.2, have [package present tcltest]"
+	return
+    }
+}
+
+::tcltest::testConstraint tk 1
+
+lappend auto_path [file dirname [file dirname [file normalize [info script]]]]
+package require canvas::track::circle
+
+# -------------------------------------------------------------------------
+
+# canvas::track::circle has no manpage.  These tests cover the behaviour
+# visible from its code: a dashed circle following the mouse, driven by
+# bindings on the canvas, and the methods start, move, done, radius, on
+# and off.
+
+proc mkCanvas {} {
+    canvas .c -width 200 -height 200 -highlightthickness 0 -borderwidth 0
+    pack .c
+    update
+}
+
+proc circles {} {
+    lmap item [.c find all] {.c coords $item}
+}
+
+test canvas::track::circle-1.0 {package version} -body {
+    package present canvas::track::circle
+} -result 0.1
+
+test canvas::track::circle-1.1 {ensemble works together with track::lines} -setup {
+    package require canvas::track::lines
+    canvas .c
+} -body {
+    set a [::canvas::track circle A .c]
+    set b [::canvas::track lines B .c]
+    list $a $b
+} -cleanup {
+    A destroy
+    B destroy
+    destroy .c
+    unset a b
+} -result {::A ::B}
+
+test canvas::track::circle-2.1 {create: installs the bindtag} -setup {
+    canvas .c
+} -body {
+    ::canvas::track circle T .c
+    bindtags .c
+} -cleanup {
+    T destroy
+    destroy .c
+} -result {.c ::T Canvas . all}
+
+test canvas::track::circle-2.2 {destroy: removes the bindtag and the circle} -setup {
+    mkCanvas
+    ::canvas::track circle T .c
+} -body {
+    T start 50 50
+    T destroy
+    list [bindtags .c] [circles] [bind ::T]
+} -cleanup {
+    destroy .c
+} -result {{.c Canvas . all} {} {}}
+
+test canvas::track::circle-3.1 {start: circle with default radius 10} -setup {
+    mkCanvas
+    ::canvas::track circle T .c
+} -body {
+    T start 50 60
+    set item [.c find all]
+    list [circles] [.c type $item] [.c itemcget $item -dash]
+} -cleanup {
+    T destroy
+    destroy .c
+    unset item
+} -result {{{40.0 50.0 60.0 70.0}} oval .}
+
+test canvas::track::circle-3.2 {start: replaces the previous circle} -setup {
+    mkCanvas
+    ::canvas::track circle T .c
+} -body {
+    T start 50 60
+    T start 100 100
+    circles
+} -cleanup {
+    T destroy
+    destroy .c
+} -result {{90.0 90.0 110.0 110.0}}
+
+test canvas::track::circle-3.3 {move} -setup {
+    mkCanvas
+    ::canvas::track circle T .c
+} -body {
+    T start 50 60
+    T move 20 30
+    circles
+} -cleanup {
+    T destroy
+    destroy .c
+} -result {{10.0 20.0 30.0 40.0}}
+
+test canvas::track::circle-3.4 {move without start does nothing} -setup {
+    mkCanvas
+    ::canvas::track circle T .c
+} -body {
+    T move 20 30
+    circles
+} -cleanup {
+    T destroy
+    destroy .c
+} -result {}
+
+test canvas::track::circle-3.5 {done removes the circle} -setup {
+    mkCanvas
+    ::canvas::track circle T .c
+} -body {
+    T start 50 60
+    T done
+    T done
+    circles
+} -cleanup {
+    T destroy
+    destroy .c
+} -result {}
+
+test canvas::track::circle-3.6 {radius: redraws an active circle} -setup {
+    mkCanvas
+    ::canvas::track circle T .c
+} -body {
+    T start 50 60
+    T radius 20
+    set r [circles]
+    T move 100 100
+    lappend r {*}[circles]
+} -cleanup {
+    T destroy
+    destroy .c
+    unset r
+} -result {{30.0 40.0 70.0 80.0} {80.0 80.0 120.0 120.0}}
+
+test canvas::track::circle-3.7 {radius: inactive circle not drawn} -setup {
+    mkCanvas
+    ::canvas::track circle T .c
+} -body {
+    T radius 5
+    set r [circles]
+    T start 50 50
+    lappend r {*}[circles]
+} -cleanup {
+    T destroy
+    destroy .c
+    unset r
+} -result {{45.0 45.0 55.0 55.0}}
+
+test canvas::track::circle-3.8 {canvas coordinates of a scrolled canvas} -setup {
+    mkCanvas
+    .c configure -scrollregion {0 0 1000 1000} -xscrollincrement 1 -yscrollincrement 1
+    .c xview scroll 100 units
+    .c yview scroll 50 units
+    ::canvas::track circle T .c
+} -body {
+    T start 10 10
+    circles
+} -cleanup {
+    T destroy
+    destroy .c
+} -result {{100.0 50.0 120.0 70.0}}
+
+test canvas::track::circle-4.1 {mouse bindings: enter, motion, leave} -setup {
+    mkCanvas
+    ::canvas::track circle T .c
+} -body {
+    event generate .c <Enter> -x 50 -y 50
+    set r [circles]
+    event generate .c <Motion> -x 70 -y 80
+    lappend r {*}[circles]
+    event generate .c <Leave> -x 70 -y 80
+    lappend r [circles]
+} -cleanup {
+    T destroy
+    destroy .c
+    unset r
+} -result {{40.0 40.0 60.0 60.0} {60.0 70.0 80.0 90.0} {}}
+
+test canvas::track::circle-4.2 {off and on} -setup {
+    mkCanvas
+    ::canvas::track circle T .c
+} -body {
+    T off
+    set r [list [bindtags .c]]
+    event generate .c <Enter> -x 50 -y 50
+    lappend r [circles]
+    T on
+    lappend r [bindtags .c]
+    event generate .c <Enter> -x 50 -y 50
+    lappend r {*}[circles]
+} -cleanup {
+    T destroy
+    destroy .c
+    unset r
+} -result {{.c Canvas . all} {} {.c ::T Canvas . all} {40.0 40.0 60.0 60.0}}
+
+test canvas::track::circle-4.3 {off twice is harmless} -setup {
+    canvas .c
+    ::canvas::track circle T .c
+} -body {
+    T off
+    T off
+    bindtags .c
+} -cleanup {
+    T destroy
+    destroy .c
+} -result {.c Canvas . all}
+
+# -------------------------------------------------------------------------
+
+rename mkCanvas {}
+rename circles {}
+
+::tcltest::cleanupTests

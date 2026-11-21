@@ -1,0 +1,312 @@
+# -*- tcl -*-
+# Tests for the canvas::track::lines package
+#
+# See the file "license.terms" for information on usage and redistribution
+# of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2
+    namespace import ::tcltest::*
+} else {
+    if {![package vsatisfies [package present tcltest] 2.2]} {
+	puts "    Aborting the tests found in \"[file tail [info script]]\"."
+	puts "    Requiring tcltest 2.2, have [package present tcltest]"
+	return
+    }
+}
+
+::tcltest::testConstraint tk 1
+
+lappend auto_path [file dirname [file dirname [file normalize [info script]]]]
+package require canvas::track::lines
+
+# -------------------------------------------------------------------------
+
+proc mkCanvas {} {
+    canvas .c -width 200 -height 200
+    .c create rectangle 0 0 5 5 -tags other
+}
+
+proc lineCoords {} {
+    lmap item [.c find withtag !other] {.c coords $item}
+}
+
+test canvas::track::lines-1.0 {package version} -body {
+    package present canvas::track::lines
+} -result 0.1
+
+test canvas::track::lines-1.1 {ensemble} -body {
+    namespace ensemble configure ::canvas::track -namespace
+} -result ::canvas::track
+
+# -------------------------------------------------------------------------
+
+test canvas::track::lines-2.1 {create: wrong # args} -body {
+    ::canvas::track lines T
+} -returnCodes error -match glob -result {Error in constructor: wrong # args: should be "*"}
+
+test canvas::track::lines-2.2 {create: result is the qualified name} -setup mkCanvas -body {
+    ::canvas::track lines T .c
+} -cleanup {
+    T destroy
+    destroy .c
+} -result ::T
+
+test canvas::track::lines-2.3 {create: %AUTO% name} -setup mkCanvas -body {
+    set t [::canvas::track::lines %AUTO% .c]
+    list [string match ::* $t] [llength [info commands $t]]
+} -cleanup {
+    $t destroy
+    destroy .c
+    unset t
+} -result {1 1}
+
+test canvas::track::lines-2.4 {create: no items yet} -setup mkCanvas -body {
+    ::canvas::track lines T .c
+    lineCoords
+} -cleanup {
+    T destroy
+    destroy .c
+} -result {}
+
+test canvas::track::lines-2.5 {destroy: result and command removed} -setup {
+    mkCanvas
+    ::canvas::track lines T .c
+} -body {
+    list [T destroy] [info commands ::T]
+} -cleanup {
+    destroy .c
+} -result {{} {}}
+
+test canvas::track::lines-2.6 {destroy: removes tracked lines, keeps canvas} -setup {
+    mkCanvas
+    ::canvas::track lines T .c
+} -body {
+    T start {50 50} {10 10} {100 10}
+    T destroy
+    list [winfo exists .c] [lineCoords] [.c find withtag other]
+} -cleanup {
+    destroy .c
+} -result {1 {} 1}
+
+test canvas::track::lines-2.7 {unknown method} -setup {
+    mkCanvas
+    ::canvas::track lines T .c
+} -body {
+    T foo
+} -cleanup {
+    T destroy
+    destroy .c
+} -returnCodes error -match glob -result {unknown subcommand "foo": *}
+
+# -------------------------------------------------------------------------
+
+test canvas::track::lines-3.1 {start: wrong # args} -setup {
+    mkCanvas
+    ::canvas::track lines T .c
+} -body {
+    T start
+} -cleanup {
+    T destroy
+    destroy .c
+} -returnCodes error -result {wrong # args: should be "T start center ?arg ...?"}
+
+test canvas::track::lines-3.2 {start: one line per point, all ending at current} -setup {
+    mkCanvas
+    ::canvas::track lines T .c
+} -body {
+    list [T start {50 60} {10 10} {100 20} {30 150}] [lineCoords]
+} -cleanup {
+    T destroy
+    destroy .c
+} -result {{} {{10.0 10.0 50.0 60.0} {100.0 20.0 50.0 60.0} {30.0 150.0 50.0 60.0}}}
+
+test canvas::track::lines-3.3 {start: lines are dashed rubberbands} -setup {
+    mkCanvas
+    ::canvas::track lines T .c
+} -body {
+    T start {50 60} {10 10}
+    set item [lindex [.c find all] end]
+    list [.c type $item] [.c itemcget $item -dash]
+} -cleanup {
+    T destroy
+    destroy .c
+    unset item
+} -result {line .}
+
+test canvas::track::lines-3.4 {start: no points draws nothing} -setup {
+    mkCanvas
+    ::canvas::track lines T .c
+} -body {
+    list [T start {50 60}] [lineCoords]
+} -cleanup {
+    T destroy
+    destroy .c
+} -result {{} {}}
+
+test canvas::track::lines-3.5 {start: previous set of lines is removed} -setup {
+    mkCanvas
+    ::canvas::track lines T .c
+} -body {
+    T start {50 60} {10 10} {100 20}
+    T start {70 80} {0 0}
+    lineCoords
+} -cleanup {
+    T destroy
+    destroy .c
+} -result {{0.0 0.0 70.0 80.0}}
+
+test canvas::track::lines-3.6 {start: bad point} -setup {
+    mkCanvas
+    ::canvas::track lines T .c
+} -body {
+    T start {50 60} {a b}
+} -cleanup {
+    T destroy
+    destroy .c
+} -returnCodes error -match glob -result *
+
+# -------------------------------------------------------------------------
+
+test canvas::track::lines-4.1 {move: wrong # args} -setup {
+    mkCanvas
+    ::canvas::track lines T .c
+} -body {
+    T move
+} -cleanup {
+    T destroy
+    destroy .c
+} -returnCodes error -result {wrong # args: should be "T move center"}
+
+test canvas::track::lines-4.2 {move: updates the shared end-point} -setup {
+    mkCanvas
+    ::canvas::track lines T .c
+} -body {
+    T start {50 60} {10 10} {100 20}
+    set items [.c find withtag !other]
+    list [T move {150 160}] [lineCoords] [expr {[.c find withtag !other] eq $items}]
+} -cleanup {
+    T destroy
+    destroy .c
+    unset items
+} -result {{} {{10.0 10.0 150.0 160.0} {100.0 20.0 150.0 160.0}} 1}
+
+test canvas::track::lines-4.3 {move: repeatedly} -setup {
+    mkCanvas
+    ::canvas::track lines T .c
+} -body {
+    T start {50 60} {10 10}
+    T move {1 2}
+    T move {3 4}
+    lineCoords
+} -cleanup {
+    T destroy
+    destroy .c
+} -result {{10.0 10.0 3.0 4.0}}
+
+test canvas::track::lines-4.4 {move: without start does nothing} -setup {
+    mkCanvas
+    ::canvas::track lines T .c
+} -body {
+    list [T move {1 2}] [lineCoords]
+} -cleanup {
+    T destroy
+    destroy .c
+} -result {{} {}}
+
+test canvas::track::lines-4.5 {move: after done does nothing} -setup {
+    mkCanvas
+    ::canvas::track lines T .c
+} -body {
+    T start {50 60} {10 10}
+    T done
+    T move {1 2}
+    lineCoords
+} -cleanup {
+    T destroy
+    destroy .c
+} -result {}
+
+# -------------------------------------------------------------------------
+
+test canvas::track::lines-5.1 {done: wrong # args} -setup {
+    mkCanvas
+    ::canvas::track lines T .c
+} -body {
+    T done 1
+} -cleanup {
+    T destroy
+    destroy .c
+} -returnCodes error -result {wrong # args: should be "T done"}
+
+test canvas::track::lines-5.2 {done: removes the lines} -setup {
+    mkCanvas
+    ::canvas::track lines T .c
+} -body {
+    T start {50 60} {10 10} {100 20}
+    list [T done] [lineCoords] [.c find withtag other]
+} -cleanup {
+    T destroy
+    destroy .c
+} -result {{} {} 1}
+
+test canvas::track::lines-5.3 {done: twice, and without start} -setup {
+    mkCanvas
+    ::canvas::track lines T .c
+} -body {
+    T done
+    T start {50 60} {10 10}
+    T done
+    T done
+    lineCoords
+} -cleanup {
+    T destroy
+    destroy .c
+} -result {}
+
+test canvas::track::lines-5.4 {tracking can be restarted after done} -setup {
+    mkCanvas
+    ::canvas::track lines T .c
+} -body {
+    T start {50 60} {10 10}
+    T done
+    T start {5 6} {1 1}
+    lineCoords
+} -cleanup {
+    T destroy
+    destroy .c
+} -result {{1.0 1.0 5.0 6.0}}
+
+test canvas::track::lines-5.5 {two trackers on one canvas are independent} -setup {
+    mkCanvas
+    ::canvas::track lines T1 .c
+    ::canvas::track lines T2 .c
+} -body {
+    T1 start {50 60} {10 10}
+    T2 start {70 80} {20 20}
+    T1 done
+    lineCoords
+} -cleanup {
+    T1 destroy
+    T2 destroy
+    destroy .c
+} -result {{20.0 20.0 70.0 80.0}}
+
+# -------------------------------------------------------------------------
+
+rename mkCanvas {}
+rename lineCoords {}
+
+::tcltest::cleanupTests
