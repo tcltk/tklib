@@ -1,0 +1,383 @@
+# -*- tcl -*-
+# Tests for the map::area::file package
+#
+# See the file "license.terms" for information on usage and redistribution
+# of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2
+    namespace import ::tcltest::*
+} else {
+    if {![package vsatisfies [package present tcltest] 2.2]} {
+	puts "    Aborting the tests found in \"[file tail [info script]]\"."
+	puts "    Requiring tcltest 2.2, have [package present tcltest]"
+	return
+    }
+}
+
+::tcltest::testConstraint tk 1
+
+lappend auto_path [file dirname [file dirname [file normalize [info script]]]]
+package require map::area::file
+package require map::area::store::fs
+package require map::area::store::memory
+
+# -------------------------------------------------------------------------
+
+
+# The map manpages do not document any commands yet (empty API sections).
+# These tests cover the behaviour described in the comments of the code.
+
+# Scratch directory for data files.
+set dataDir [makeDirectory mapTestData]
+
+proc writeFile {name content} {
+    set path [file join $::dataDir $name]
+    set c [open $path w]
+    puts -nonewline $c $content
+    close $c
+    return $path
+}
+
+proc readFile {path} {
+    set c [open $path r]
+    set d [read $c]
+    close $c
+    return $d
+}
+
+proc cleanData {} {
+    foreach f [glob -nocomplain -directory $::dataDir *] {
+	file delete -force $f
+    }
+}
+test map::area-1.0 {package versions} -body {
+    list [package present map::area::file] [package present map::area::store::fs] \
+	[package present map::area::store::memory]
+} -result {0.1 0.1 0.1}
+
+test map::area-1.1 {ensembles} -body {
+    list [namespace ensemble exists ::map::area] \
+	[lsort [namespace eval ::map::area::file {namespace export}]] \
+	[lsort [namespace eval ::map::area::store {namespace export}]]
+} -result {1 {read write} {fs memory}}
+
+# -------------------------------------------------------------------------
+# map::area::file
+
+test map::area-2.1 {file read: wrong # args} -body {
+    map area file read
+} -returnCodes error -result {wrong # args: should be "map area file read path"}
+
+test map::area-2.2 {file write: wrong # args} -body {
+    map area file write x
+} -returnCodes error -result {wrong # args: should be "map area file write path gdata"}
+
+test map::area-2.3 {file read: basic} -setup {
+    set p [writeFile a.area "tklib/geo/area\nMy area\n10\n20\n30\n40\n50\n60\n"]
+} -body {
+    map area file read $p
+} -cleanup {
+    cleanData
+    unset p
+} -result {names {{My area}} geo {{10 20} {30 40} {50 60}}}
+
+test map::area-2.4 {file read: no name, the file name is used} -setup {
+    set p [writeFile myarea.area "tklib/geo/area\n10\n20\n30\n40\n"]
+} -body {
+    map area file read $p
+} -cleanup {
+    cleanData
+    unset p
+} -result {names myarea geo {{10 20} {30 40}}}
+
+test map::area-2.5 {file read: single location} -setup {
+    set p [writeFile a.area "tklib/geo/area\nx\n10\n20\n"]
+} -body {
+    map area file read $p
+} -cleanup {
+    cleanData
+    unset p
+} -result {names x geo {{10 20}}}
+
+test map::area-2.6 {file read: several names, comments, blank lines, whitespace} -setup {
+    set p [writeFile a.area "# comment\n// another\n\n  tklib/geo/area  \nfirst\n  second  \n10.5\n\n-20\n#x\n30\n 40 \n"]
+} -body {
+    map area file read $p
+} -cleanup {
+    cleanData
+    unset p
+} -result {names {first second} geo {{10.5 -20} {30 40}}}
+
+test map::area-2.7 {file read: bad magic} -setup {
+    set p [writeFile a.area "tklib/geo/OTHER\n10\n20\n30\n40\n"]
+} -body {
+    map area file read $p
+} -cleanup {
+    cleanData
+    unset p
+} -result {}
+
+test map::area-2.8 {file read: odd number of coordinates, no coordinates} -setup {
+    set p1 [writeFile a.area "tklib/geo/area\n10\n20\n30\n"]
+    set p2 [writeFile b.area "tklib/geo/area\nname\n"]
+} -body {
+    list [map area file read $p1] [map area file read $p2]
+} -cleanup {
+    cleanData
+    unset p1 p2
+} -result {{} {}}
+
+test map::area-2.9 {file read: invalid coordinates} -setup {
+    set p [writeFile a.area "tklib/geo/area\n10\n20\n100\n40\n"]
+} -body {
+    map area file read $p
+} -cleanup {
+    cleanData
+    unset p
+} -result {}
+
+test map::area-2.10 {file read: missing or empty file} -setup {
+    set p [writeFile empty.area ""]
+} -body {
+    list [map area file read [file join $::dataDir nosuchfile.area]] \
+	[map area file read $p]
+} -cleanup {
+    cleanData
+    unset p
+} -result {{} {}}
+
+test map::area-2.11 {file write: format} -body {
+    set p [file join $::dataDir w.area]
+    list [map area file write $p {names {b a b} geo {{10 20} {30 40}}}] [readFile $p]
+} -cleanup {
+    cleanData
+    unset p
+} -result [list {} "tklib/geo/area\na\nb\n10\n20\n30\n40\n"]
+
+test map::area-2.12 {file write and read round trip} -body {
+    set p [file join $::dataDir rt.area]
+    map area file write $p {names {{Some name} Other} geo {{-10.25 20.5} {30 40.75} {0 0}}}
+    map area file read $p
+} -cleanup {
+    cleanData
+    unset p
+} -result {names {Other {Some name}} geo {{-10.25 20.5} {30 40.75} {0 0}}}
+
+# -------------------------------------------------------------------------
+# map::area::store::fs
+
+proc mkStore {} {
+    writeFile a.area "tklib/geo/area\nA\n10\n20\n30\n40\n20\n50\n"
+    writeFile b.area "tklib/geo/area\nB\n-10\n-20\n-5\n-15\n"
+    writeFile bad.area "tklib/geo/area\n1\n2\n3\n"
+    writeFile c.txt "tklib/geo/area\nC\n10\n20\n30\n40\n"
+    file mkdir [file join $::dataDir dir.area]
+}
+
+test map::area-3.1 {store fs: wrong # args} -body {
+    map area store fs S
+} -returnCodes error -match glob -result {Error in constructor: wrong # args: should be "*"}
+
+test map::area-3.2 {store fs: ids are the paths of valid files} -setup mkStore -body {
+    map area store fs S $::dataDir
+    lmap id [S ids] {file tail $id}
+} -cleanup {
+    S destroy
+    cleanData
+} -result {a.area b.area}
+
+test map::area-3.3 {store fs: get} -setup mkStore -body {
+    map area store fs S $::dataDir
+    S get [file join $::dataDir a.area]
+} -cleanup {
+    S destroy
+    cleanData
+} -result {names A geo {{10 20} {30 40} {20 50}}}
+
+test map::area-3.4 {store fs: get unknown id} -setup mkStore -body {
+    map area store fs S $::dataDir
+    S get nosuchid
+} -cleanup {
+    S destroy
+    cleanData
+} -returnCodes error -result {key "nosuchid" not known in dictionary}
+
+test map::area-3.5 {store fs: -pattern} -constraints {
+    knownBug
+} -setup mkStore -body {
+    # -pattern is readonly, but the constructor accepts no options.
+    map area store fs S $::dataDir -pattern *.txt
+    list [lmap id [S ids] {file tail $id}] [S cget -pattern]
+} -cleanup {
+    catch {S destroy}
+    cleanData
+} -result {c.txt *.txt}
+
+test map::area-3.6 {store fs: default -pattern, readonly} -setup mkStore -body {
+    map area store fs S $::dataDir
+    list [S cget -pattern] [catch {S configure -pattern *} m] $m
+} -cleanup {
+    S destroy
+    cleanData
+    unset -nocomplain m
+} -result {*.area 1 {option -pattern can only be set at instance creation}}
+
+test map::area-3.7 {store fs: visible: a location in the view} -setup mkStore -body {
+    map area store fs S $::dataDir
+    list [lmap id [S visible {0 0 50 50}] {file tail $id}] \
+	[lmap id [S visible {-50 -50 50 50}] {file tail $id}] \
+	[lmap id [S visible {25 35 35 45}] {file tail $id}] \
+	[S visible {60 60 70 70}]
+} -cleanup {
+    S destroy
+    cleanData
+} -result {a.area {a.area b.area} a.area {}}
+
+test map::area-3.8 {store fs: empty or missing directory} -body {
+    map area store fs S $::dataDir
+    map area store fs S2 [file join $::dataDir nosuchdir]
+    list [S ids] [S visible {-90 -180 90 180}] [S2 ids]
+} -cleanup {
+    S destroy
+    S2 destroy
+} -result {{} {} {}}
+
+# -------------------------------------------------------------------------
+# map::area::store::memory
+
+test map::area-4.1 {store memory: wrong # args} -body {
+    map area store memory M
+} -returnCodes error -match glob -result {Error in constructor: wrong # args: should be "*"}
+
+test map::area-4.2 {store memory: ids and visible delegated} -setup {
+    mkStore
+    map area store fs S $::dataDir
+} -body {
+    map area store memory M S
+    list [expr {[M ids] eq [S ids]}] \
+	[expr {[M visible {0 0 50 50}] eq [S visible {0 0 50 50}]}]
+} -cleanup {
+    M destroy
+    S destroy
+    cleanData
+} -result {1 1}
+
+test map::area-4.3 {store memory: get adds derived attributes} -setup {
+    mkStore
+    map area store fs S $::dataDir
+} -body {
+    map area store memory M S
+    set attr [M get [file join $::dataDir a.area]]
+    set g {{10 20} {30 40} {20 50}}
+    list [lsort [dict keys $attr]] [dict get $attr names] [dict get $attr geo] \
+	[expr {[dict get $attr bbox] eq [map slippy geo bbox-list $g]}] \
+	[expr {[dict get $attr center] eq [map slippy geo center-list $g]}] \
+	[expr {[dict get $attr diameter] == [map slippy geo diameter-list $g]}] \
+	[expr {[dict get $attr perimeter] == [map slippy geo distance-list 1 $g]}] \
+	[dict get $attr parts]
+} -cleanup {
+    M destroy
+    S destroy
+    cleanData
+    unset attr g
+} -result {{bbox center diameter geo names parts perimeter} A {{10 20} {30 40} {20 50}} 1 1 1 1 3}
+
+test map::area-4.4 {store memory: parts} -setup {
+    writeFile one.area "tklib/geo/area\n10\n20\n"
+    writeFile two.area "tklib/geo/area\n10\n20\n30\n40\n"
+    map area store fs S $::dataDir
+} -body {
+    map area store memory M S
+    lmap n {one two} {dict get [M get [file join $::dataDir $n.area]] parts}
+} -cleanup {
+    M destroy
+    S destroy
+    cleanData
+} -result {0 1}
+
+test map::area-4.5 {store memory: get is memoized} -setup {
+    mkStore
+    map area store fs S $::dataDir
+    proc ::countingStore {args} {
+	if {[lindex $args 0] eq "get"} {incr ::gets}
+	S {*}$args
+    }
+    set ::gets 0
+} -body {
+    map area store memory M ::countingStore
+    set id [file join $::dataDir a.area]
+    M get $id
+    M get $id
+    set ::gets
+} -cleanup {
+    M destroy
+    S destroy
+    cleanData
+    rename ::countingStore {}
+    unset ::gets id
+} -result 1
+
+test map::area-4.6 {store memory: pixels (list of points) per zoom level, memoized} -setup {
+    mkStore
+    map area store fs S $::dataDir
+} -body {
+    map area store memory M S
+    set id [file join $::dataDir a.area]
+    set p3 [M pixels $id 3]
+    set p10 [M pixels $id 10]
+    list [expr {[llength $p3] >= 1 && [llength $p3] <= 3}] \
+	[expr {$p10 eq [map slippy geo 2point-list 10 {{10 20} {30 40} {20 50}}]}] \
+	[expr {[M pixels $id 3] eq $p3}]
+} -cleanup {
+    M destroy
+    S destroy
+    cleanData
+    unset id p3 p10
+} -result {1 1 1}
+
+test map::area-4.7 {store memory: pixels simplify close points} -setup {
+    writeFile a.area "tklib/geo/area\n10\n20\n10.0000001\n20.0000001\n30\n40\n"
+    map area store fs S $::dataDir
+} -body {
+    map area store memory M S
+    set id [file join $::dataDir a.area]
+    expr {[llength [M pixels $id 2]] < 3}
+} -cleanup {
+    M destroy
+    S destroy
+    cleanData
+    unset id
+} -result 1
+
+test map::area-4.8 {store memory: unknown id} -setup {
+    mkStore
+    map area store fs S $::dataDir
+} -body {
+    map area store memory M S
+    M get nosuchid
+} -cleanup {
+    M destroy
+    S destroy
+    cleanData
+} -returnCodes error -result {key "nosuchid" not known in dictionary}
+
+# -------------------------------------------------------------------------
+
+removeDirectory mapTestData
+unset dataDir
+foreach p {writeFile readFile cleanData mkStore} {rename $p {}}
+
+::tcltest::cleanupTests
