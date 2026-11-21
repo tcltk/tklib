@@ -1,0 +1,1789 @@
+# -*- tcl -*-
+# diagram.test --
+#
+#	Tests for the diagram package: the diagram class, its extension
+#	methods and the drawing language (elements, attributes, corners,
+#	directions, point arithmetic, history and variables).
+#
+# Note:
+#	Since math::geometry 1.4 the y axis of the directions is reversed
+#	(north points down on the canvas), see tickets e9c4eeae1f and
+#	ffcd8611b8.  The tests depending on the vertical component of a
+#	named direction are marked as known bugs.
+
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2
+    namespace import ::tcltest::*
+}
+
+::tcltest::testConstraint tk 1
+
+lappend auto_path [file dirname [file dirname [file normalize [info script]]]]
+if {[catch {package require diagram} msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring diagram, $msg"
+    return
+}
+
+# -------------------------------------------------------------------------
+# Helpers
+
+proc mkDiagram {args} {
+    canvas .c -width 600 -height 600
+    pack .c
+    update
+    diagram ::dia .c {*}$args
+}
+
+proc cleanupDiagram {} {
+    catch {::dia destroy}
+    destroy .c
+}
+
+# Round all numbers in a value (point, list of points, ...) to two
+# decimals, so that results can be compared exactly.
+proc R {value} {
+    if {[string is double -strict $value]} {
+	set v [format %.2f $value]
+	if {$v eq "-0.00"} {set v 0.00}
+	return $v
+    }
+    if {[llength $value] <= 1} {
+	return $value
+    }
+    set r {}
+    foreach v $value {
+	lappend r [R $v]
+    }
+    return $r
+}
+
+# Pixels per cm, as used by the package
+set CM [expr {28.3464566929 * [tk scaling]}]
+
+proc cm {n} {
+    R [expr {$n * $::CM}]
+}
+
+proc lastItem {} {
+    lindex [.c find all] end
+}
+
+proc itemTypes {} {
+    set r {}
+    foreach i [.c find all] {
+	lappend r [.c type $i]
+    }
+    return $r
+}
+
+set ClosedCorners {north northeast east southeast south southwest west northwest center width height}
+
+# -------------------------------------------------------------------------
+# Class and object API
+
+test diagram-1.1 {package versions} -body {
+    list [package present diagram] [package present diagram::basic] \
+	 [package present diagram::core]
+} -result {1 1.0.1 1}
+
+test diagram-1.2 {constructor returns the qualified object name} -setup {
+    canvas .c
+} -body {
+    namespace eval ::diagramtest {diagram dobj .c}
+} -cleanup {
+    ::diagramtest::dobj destroy
+    namespace delete ::diagramtest
+    destroy .c
+} -result ::diagramtest::dobj
+
+test diagram-1.3 {constructor: wrong # args} -body {
+    diagram ::dia
+} -returnCodes error -match glob -result {Error in constructor: wrong # args: should be "*"}
+
+test diagram-1.4 {constructor with a script draws it} -setup {
+    canvas .c
+} -body {
+    diagram ::dia .c {box; circle}
+    list [::dia draw {last}] [::dia draw {1st box}] [itemTypes]
+} -cleanup {
+    cleanupDiagram
+} -result {{element 2} {element 1} {rectangle oval}}
+
+test diagram-1.5 {draw returns the result of the script} -setup {
+    mkDiagram
+} -body {
+    list [::dia draw {box}] [::dia draw {expr {1+2}}] [::dia draw {}]
+} -cleanup {
+    cleanupDiagram
+} -result {{element 1} 3 {}}
+
+test diagram-1.6 {draw: wrong # args} -setup {
+    mkDiagram
+} -body {
+    ::dia draw
+} -cleanup {
+    cleanupDiagram
+} -returnCodes error -match glob -result {wrong # args: should be "*draw script"}
+
+test diagram-1.7 {draw: errors are propagated} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {error oops}
+} -cleanup {
+    cleanupDiagram
+} -returnCodes error -result oops
+
+test diagram-1.9 {destroying the object deletes the drawing} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {box; circle; line}
+    set n [llength [.c find all]]
+    ::dia destroy
+    list $n [llength [.c find all]] [info commands ::dia]
+} -cleanup {
+    destroy .c
+    unset n
+} -result {3 0 {}}
+
+test diagram-1.10 {two diagrams are independent} -setup {
+    mkDiagram
+    canvas .c2
+    diagram ::dia2 .c2
+} -body {
+    ::dia draw {set boxwidth 10; box}
+    ::dia2 draw {box}
+    list [R [::dia2 draw {set boxwidth}]] [llength [.c2 find all]] \
+	    [R [::dia2 draw {[last] width}]]
+} -cleanup {
+    ::dia2 destroy
+    destroy .c2
+    cleanupDiagram
+} -result [list [cm 2] 1 [cm 2]]
+
+# -------------------------------------------------------------------------
+# new direction
+
+test diagram-2.1 {new direction} -setup {
+    mkDiagram
+} -body {
+    set r [list [::dia new direction ene angle 22.5 opposite wsw]]
+    ::dia new direction wsw angle 202.5 opposite ene
+    lappend r [::dia draw {by 10 ene}] [::dia draw {ene; direction}]
+} -cleanup {
+    cleanupDiagram
+    unset r
+} -result {{} {by {10 22.5}} ene}
+
+test diagram-2.2 {new direction: horizontal layout} -setup {
+    mkDiagram
+} -body {
+    ::dia new direction ost angle 0 opposite west
+    ::dia draw {box; ost; box}
+    R [list [::dia draw {[1st box] east}] [::dia draw {[2nd box] west}]]
+} -cleanup {
+    cleanupDiagram
+} -result [list [list point [list [cm 2] 0.00]] [list point [list [cm 2] 0.00]]]
+
+test diagram-2.3 {new direction: already known} -setup {
+    mkDiagram
+} -body {
+    ::dia new direction east angle 0 opposite west
+} -cleanup {
+    cleanupDiagram
+} -returnCodes error -result {direction already known}
+
+test diagram-2.4 {new direction: an alias is already known} -setup {
+    mkDiagram
+} -body {
+    ::dia new direction NE angle 45 opposite sw
+} -cleanup {
+    cleanupDiagram
+} -returnCodes error -result {direction already known}
+
+test diagram-2.5 {new direction: missing angle} -setup {
+    mkDiagram
+} -body {
+    ::dia new direction foo opposite bar
+} -cleanup {
+    cleanupDiagram
+} -returnCodes error -result {Standard attribute 'angle' is missing}
+
+test diagram-2.6 {new direction: missing opposite} -setup {
+    mkDiagram
+} -body {
+    ::dia new direction foo angle 10
+} -cleanup {
+    cleanupDiagram
+} -returnCodes error -result {Standard attribute 'opposite' is missing}
+
+test diagram-2.7 {new direction: odd number of attribute words} -setup {
+    mkDiagram
+} -body {
+    ::dia new direction foo angle
+} -cleanup {
+    cleanupDiagram
+} -returnCodes error -result {Expected a dictionary, got "angle"}
+
+test diagram-2.8 {new direction: user attributes are accepted} -setup {
+    mkDiagram
+} -body {
+    ::dia new direction foo angle 10 opposite bar color red
+    ::dia draw {by 5 foo}
+} -cleanup {
+    cleanupDiagram
+} -result {by {5 10}}
+
+# -------------------------------------------------------------------------
+# new element, new alias, new command
+
+proc ::DrawMark {canvas attributes} {
+    lappend ::Calls [dict get $attributes color]
+    set item [$canvas create line 0 0 10 10 -fill [dict get $attributes color]]
+    return [list [list $item] [list center [diagram::point at 5 5] \
+	    west [diagram::point at 0 5] east [diagram::point at 10 5] \
+	    tip [diagram::point at 10 10]]]
+}
+
+test diagram-3.1 {new element} -setup {
+    mkDiagram
+    set Calls {}
+} -body {
+    set r [list [::dia new element mark {at with color} ::DrawMark]]
+    set e [::dia draw {mark color red at [100 100]}]
+    lappend r $e $Calls [.c type [lastItem]] [.c itemcget [lastItem] -fill] \
+	    [::dia draw [list $e names]] [R [::dia draw [list $e tip]]] \
+	    [R [::dia draw [list $e center]]] [::dia draw {last mark}]
+} -cleanup {
+    cleanupDiagram
+    unset Calls r e
+} -result {{} {element 1} red line red {center west east tip} {point {105.00 105.00}} {point {100.00 100.00}} {element 1}}
+
+test diagram-3.2 {new element: required attribute defaults} -setup {
+    mkDiagram
+    set Calls {}
+    ::dia new element mark {at with color} ::DrawMark
+} -body {
+    ::dia draw {mark; set linecolor blue; mark}
+    set Calls
+} -cleanup {
+    cleanupDiagram
+    unset Calls
+} -result {black blue}
+
+proc ::DrawAbsolute {canvas attributes} {
+    set item [$canvas create line 50 60 70 80]
+    return [list [list $item] [list center [diagram::point at 60 70] \
+	    west [diagram::point at 50 70] east [diagram::point at 70 70]] absolute]
+}
+
+test diagram-3.3 {new element: absolute placement mode} -setup {
+    mkDiagram
+    ::dia new element absline {} ::DrawAbsolute
+} -body {
+    ::dia draw {box; absline}
+    R [list [.c coords [lastItem]] [::dia draw {[last] center}]]
+} -cleanup {
+    cleanupDiagram
+} -result {{50.00 60.00 70.00 80.00} {point {60.00 70.00}}}
+
+proc ::DrawTurn {canvas attributes} {
+    set item [$canvas create line 0 0 10 0]
+    return [list [list $item] [list center [diagram::point at 5 0] west [diagram::point at 0 0] east [diagram::point at 10 0]] relative west]
+}
+
+test diagram-3.4 {new element: new layout direction} -setup {
+    mkDiagram
+    ::dia new element turner {at with} ::DrawTurn
+} -body {
+    ::dia draw {turner; direction}
+} -cleanup {
+    cleanupDiagram
+} -result west
+
+test diagram-3.5 {new alias} -setup {
+    mkDiagram
+} -body {
+    set r [list [::dia new alias sq {box width 10 height 10}]]
+    ::dia draw {sq color red}
+    lappend r [R [::dia draw {[last] width}]] [::dia draw {last box}] \
+	    [.c itemcget [lastItem] -outline]
+} -cleanup {
+    cleanupDiagram
+    unset r
+} -result {{} 10.00 {element 1} red}
+
+test diagram-3.6 {new alias runs in the language context} -setup {
+    mkDiagram
+    proc ::AliasHelper {args} {
+	uplevel 1 [list set boxwidth [lindex $args 0]]
+    }
+} -body {
+    ::dia new alias setwidth ::AliasHelper
+    ::dia draw {setwidth 15; box}
+    R [::dia draw {[last] width}]
+} -cleanup {
+    cleanupDiagram
+    rename ::AliasHelper {}
+} -result 15.00
+
+test diagram-3.7 {new command} -setup {
+    mkDiagram
+} -body {
+    set r [list [::dia new command twice {x} {expr {2*$x}}]]
+    lappend r [::dia draw {twice 21}] [R [::dia draw {twice [set boxwidth]}]]
+} -cleanup {
+    cleanupDiagram
+    unset r
+} -result [list {} 42 [cm 4]]
+
+test diagram-3.8 {new command: wrong # args in the language} -setup {
+    mkDiagram
+    ::dia new command twice {x} {expr {2*$x}}
+} -body {
+    ::dia draw {twice}
+} -cleanup {
+    cleanupDiagram
+} -returnCodes error -result {wrong # args: should be "twice x"}
+
+# -------------------------------------------------------------------------
+# new attribute, unknown attribute
+
+proc ::DrawTagged {canvas attributes} {
+    set ::Attrs $attributes
+    set item [$canvas create line 0 0 10 0]
+    return [list [list $item] [list center [diagram::point at 5 0] \
+	    west [diagram::point at 0 0] east [diagram::point at 10 0]]]
+}
+
+test diagram-4.1 {new attribute: default get, key, aggregate} -setup {
+    mkDiagram
+    set Attrs {}
+} -body {
+    ::dia new attribute label key mylabel aggregate 1
+    ::dia new attribute size
+    ::dia new element tagged {at with} ::DrawTagged
+    ::dia draw {tagged label a size 1 label b size 2}
+    list [dict get $Attrs mylabel] [dict get $Attrs size]
+} -cleanup {
+    cleanupDiagram
+    unset Attrs
+} -result {{a b} 2}
+
+test diagram-4.2 {new attribute: transform, then type validation} -setup {
+    mkDiagram
+    set Attrs {}
+    ::dia new attribute size type snit::integer transform {::apply {v {string repeat $v 2}}}
+    ::dia new element tagged {at with} ::DrawTagged
+} -body {
+    ::dia draw {tagged size 4}
+    set r [list [dict get $Attrs size]]
+    lappend r [catch {::dia draw {tagged size x}} msg] $msg
+} -cleanup {
+    cleanupDiagram
+    unset Attrs r msg
+} -result {44 1 {invalid value "xx", expected integer}}
+
+test diagram-4.3 {new attribute: get and merge} -setup {
+    mkDiagram
+    set Attrs {}
+    proc ::GetTwo {q} {
+	{*}$q get 2
+    }
+    # The documented signature is "cmdprefix value dict", the
+    # implementation also passes the key first (see diagram-4.3.1).
+    proc ::MergeSum {args} {
+	lassign [lrange $args end-1 end] value dict
+	dict set dict sum [expr {[lindex $value 0] + [lindex $value 1]}]
+	return $dict
+    }
+    ::dia new attribute pair get ::GetTwo merge ::MergeSum
+    ::dia new element tagged {at with} ::DrawTagged
+} -body {
+    ::dia draw {tagged pair 3 4}
+    dict get $Attrs sum
+} -cleanup {
+    cleanupDiagram
+    rename ::GetTwo {}
+    rename ::MergeSum {}
+    unset Attrs
+} -result 7
+
+# Bug: the merge command is called with the attribute key in front of the
+# documented arguments value and dict.
+test diagram-4.3.1 {new attribute: merge signature is "cmdprefix value dict"} -constraints knownBug -setup {
+    mkDiagram
+    set Attrs {}
+    proc ::MergeSum2 {value dict} {
+	dict set dict sum [expr {[lindex $value 0] + [lindex $value 1]}]
+	return $dict
+    }
+    ::dia new attribute pair get {::apply {q {{*}$q get 2}}} merge ::MergeSum2
+    ::dia new element tagged {at with} ::DrawTagged
+} -body {
+    ::dia draw {tagged pair 3 4}
+    dict get $Attrs sum
+} -cleanup {
+    cleanupDiagram
+    rename ::MergeSum2 {}
+    unset Attrs
+} -result 7
+
+test diagram-4.4 {new attribute: linked default} -setup {
+    mkDiagram
+    set Attrs {}
+    ::dia new attribute weight linked {weight 7}
+    ::dia new element tagged {at with weight} ::DrawTagged
+} -body {
+    ::dia draw {tagged}
+    set r [list [dict get $Attrs weight] [::dia draw {set weight}]]
+    ::dia draw {set weight 9; tagged}
+    lappend r [dict get $Attrs weight]
+    ::dia draw {tagged weight 3}
+    lappend r [dict get $Attrs weight]
+} -cleanup {
+    cleanupDiagram
+    unset Attrs r
+} -result {7 7 9 3}
+
+test diagram-4.5 {new attribute: default command prefix} -setup {
+    mkDiagram
+    set Attrs {}
+    set Log {}
+    proc ::DefWeight {method args} {
+	lappend ::Log $method
+	if {$method eq "fill"} {
+	    upvar 1 [lindex $args 0] a
+	    if {![dict exists $a weight]} {
+		dict set a weight 5
+	    }
+	    dict set a double [expr {2 * [dict get $a weight]}]
+	}
+    }
+} -body {
+    ::dia new attribute weight default ::DefWeight
+    ::dia new element tagged {at with weight} ::DrawTagged
+    ::dia draw {tagged}
+    set r [list [dict get $Attrs weight] [dict get $Attrs double]]
+    ::dia draw {tagged weight 2}
+    lappend r [dict get $Attrs weight] [dict get $Attrs double] $Log
+} -cleanup {
+    cleanupDiagram
+    rename ::DefWeight {}
+    unset Attrs Log r
+} -result {5 10 2 4 {init fill fill}}
+
+test diagram-4.6 {unknown attributes are text} -setup {
+    mkDiagram
+    set Attrs {}
+    ::dia new element tagged {at with} ::DrawTagged
+} -body {
+    ::dia draw {tagged nosuchattr {more text}}
+    dict get $Attrs text
+} -cleanup {
+    cleanupDiagram
+    unset Attrs
+} -result {nosuchattr {more text}}
+
+# Bug: the hooks registered by the user are called after the catch-all hook
+# of diagram::basic, which accepts every word as text, so they are never
+# called.
+test diagram-4.7 {unknown attribute: hook rewrites the input} -constraints knownBug -setup {
+    mkDiagram
+    set Attrs {}
+    ::dia new attribute size
+    ::dia new element tagged {at with} ::DrawTagged
+    proc ::BigHook {args} {
+	set q [lindex $args end]
+	if {[{*}$q peek] ne "big"} {return 0}
+	{*}$q get
+	{*}$q unget 100
+	{*}$q unget size
+	return 1
+    }
+} -body {
+    ::dia unknown attribute ::BigHook
+    ::dia draw {tagged big}
+    dict get $Attrs size
+} -cleanup {
+    cleanupDiagram
+    rename ::BigHook {}
+    unset Attrs
+} -result 100
+
+# Bug: the hooks are called with two arguments (shape and word queue),
+# while the documentation specifies a single argument, the word queue.
+# (This test also fails because of the bug shown by diagram-4.7.)
+test diagram-4.8 {unknown attribute: hook signature is "cmdprefix wordqueue"} -constraints knownBug -setup {
+    mkDiagram
+    set Attrs {}
+    ::dia new attribute size
+    ::dia new element tagged {at with} ::DrawTagged
+    proc ::BigHook1 {q} {
+	if {[{*}$q peek] ne "big"} {return 0}
+	{*}$q get
+	{*}$q unget 100
+	{*}$q unget size
+	return 1
+    }
+} -body {
+    ::dia unknown attribute ::BigHook1
+    ::dia draw {tagged big}
+    dict get $Attrs size
+} -cleanup {
+    cleanupDiagram
+    rename ::BigHook1 {}
+    unset Attrs
+} -result 100
+
+# -------------------------------------------------------------------------
+# Elements: box
+
+test diagram-5.1 {box: default size and corners} -setup {
+    mkDiagram
+} -body {
+    set e [::dia draw {box at [0 0]}]
+    set r {}
+    foreach c $ClosedCorners {
+	lappend r $c [R [::dia draw [list $e $c]]]
+    }
+    expr {$r eq [list \
+	north     [list point [list 0.00 -[cm 1]]] \
+	northeast [list point [list [cm 1] -[cm 1]]] \
+	east      [list point [list [cm 1] 0.00]] \
+	southeast [list point [list [cm 1] [cm 1]]] \
+	south     [list point [list 0.00 [cm 1]]] \
+	southwest [list point [list -[cm 1] [cm 1]]] \
+	west      [list point [list -[cm 1] 0.00]] \
+	northwest [list point [list -[cm 1] -[cm 1]]] \
+	center    [list point [list 0.00 0.00]] \
+	width     [cm 2] \
+	height    [cm 2]]}
+} -cleanup {
+    cleanupDiagram
+    unset e r
+} -result 1
+
+test diagram-5.2 {box: corner names} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {[box] names}
+} -cleanup {
+    cleanupDiagram
+} -result $ClosedCorners
+
+test diagram-5.3 {box: corner name abbreviations} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {set e [box width 100 height 50 at [200 200]]}
+    R [::dia draw {list [$e n] [$e ne] [$e e] [$e se] [$e s] [$e sw] [$e w] [$e nw] [$e c]}]
+} -cleanup {
+    cleanupDiagram
+} -result {{point {200.00 175.00}} {point {250.00 175.00}} {point {250.00 200.00}} {point {250.00 225.00}} {point {200.00 225.00}} {point {150.00 225.00}} {point {150.00 200.00}} {point {150.00 175.00}} {point {200.00 200.00}}}
+
+test diagram-5.4 {box: canvas item and appearance attributes} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {box width 100 height 50 color red fillcolor blue stroke 3 style dashed at [200 200]}
+    set i [lastItem]
+    list [.c type $i] [R [.c coords $i]] [.c itemcget $i -outline] \
+	    [.c itemcget $i -fill] [R [.c itemcget $i -width]] [.c itemcget $i -dash]
+} -cleanup {
+    cleanupDiagram
+    unset i
+} -result {rectangle {150.00 175.00 250.00 225.00} red blue 3.00 -}
+
+test diagram-5.5 {box: wid and ht} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {box wid 30 ht 20}
+    R [::dia draw {list [[last] width] [[last] height]}]
+} -cleanup {
+    cleanupDiagram
+} -result {30.00 20.00}
+
+test diagram-5.6 {box: slant} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {box slant 45 width 40 height 20 at [0 0]}
+    set c [.c coords [lastItem]]
+    # A parallelogram: top and bottom edges are horizontal, have the same
+    # length and are shifted against each other.
+    lassign $c x0 y0 x1 y1 x2 y2 x3 y3
+    list [.c type [lastItem]] [llength $c] [R [expr {$y0 - $y1}]] [R [expr {$y2 - $y3}]] \
+	    [R [expr {($x1 - $x0) - ($x2 - $x3)}]] [expr {abs($x0 - $x3) > 1}]
+} -cleanup {
+    cleanupDiagram
+    unset c x0 y0 x1 y1 x2 y2 x3 y3
+} -result {polygon 8 0.00 0.00 0.00 1}
+
+test diagram-5.7 {box: bad width} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {box width abc}
+} -cleanup {
+    cleanupDiagram
+} -returnCodes error -result {invalid value "abc", expected double}
+
+test diagram-5.8 {box: bad color} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {box color nosuchcolor}
+} -cleanup {
+    cleanupDiagram
+} -returnCodes error -result {unknown color name "nosuchcolor"}
+
+test diagram-5.9 {box: text attributes} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {box text Hello text World justify right textcolor red textfont {Courier 10}}
+    set i [lastItem]
+    list [.c type $i] [.c itemcget $i -text] [.c itemcget $i -justify] \
+	    [.c itemcget $i -fill] [.c itemcget $i -font]
+} -cleanup {
+    cleanupDiagram
+    unset i
+} -result [list text "Hello\nWorld" right red {Courier 10}]
+
+test diagram-5.10 {box: the text is centered by default} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {box text Hello at [100 100]}
+    lassign [.c bbox [lastItem]] x1 y1 x2 y2
+    list [expr {abs(($x1 + $x2) / 2.0 - 100) <= 1}] [expr {abs(($y1 + $y2) / 2.0 - 100) <= 1}]
+} -cleanup {
+    cleanupDiagram
+    unset x1 y1 x2 y2
+} -result {1 1}
+
+test diagram-5.11 {box: text anchors} -setup {
+    mkDiagram
+} -body {
+    set r {}
+    foreach a {ljust rjust above below {anchor west} {anchor se}} {
+	::dia draw "box text Hello $a at \[100 100\]"
+	lassign [.c bbox [lastItem]] x1 y1 x2 y2
+	lappend r [expr {$x1 >= 98}] [expr {$x2 <= 102}] [expr {$y1 >= 98}] [expr {$y2 <= 102}]
+    }
+    set r
+} -cleanup {
+    cleanupDiagram
+    unset r a x1 y1 x2 y2
+} -result {1 0 0 0 0 1 0 0 0 0 0 1 0 0 1 0 1 0 0 0 0 1 0 1}
+
+test diagram-5.12 {box: unknown words become text} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {box "Hello world"}
+    list [itemTypes] [.c itemcget [lastItem] -text]
+} -cleanup {
+    cleanupDiagram
+} -result {{rectangle text} {Hello world}}
+
+# -------------------------------------------------------------------------
+# Elements: circle, ellipse, diamond, drum, text
+
+test diagram-6.1 {circle: default radius} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {circle at [0 0]}
+    list [R [::dia draw {[last] radius}]] [R [::dia draw {[last] east}]] \
+	    [.c type [lastItem]] [::dia draw {[last] names}]
+} -cleanup {
+    cleanupDiagram
+} -result [list [cm 1] [list point [list [cm 1] 0.00]] oval {north east south west center radius width height northeast southeast southwest northwest}]
+
+test diagram-6.2 {circle: radius, rad, diameter, diam} -setup {
+    mkDiagram
+} -body {
+    set r {}
+    foreach a {{radius 20} {rad 25} {diameter 60} {diam 70}} {
+	::dia draw "circle $a at \[0 0\]"
+	lappend r [R [::dia draw {[last] radius}]]
+    }
+    set r
+} -cleanup {
+    cleanupDiagram
+    unset r a
+} -result {20.00 25.00 30.00 35.00}
+
+# Bug: radius and diameter are stored under the same key, so the last one
+# specified wins, while the radius should take precedence.
+test diagram-6.2.1 {circle: radius has precedence over diameter} -constraints knownBug -setup {
+    mkDiagram
+} -body {
+    set r {}
+    foreach a {{rad 5 diam 60} {diam 60 rad 5}} {
+	::dia draw "circle $a at \[0 0\]"
+	lappend r [R [::dia draw {[last] radius}]]
+    }
+    set r
+} -cleanup {
+    cleanupDiagram
+    unset r a
+} -result {5.00 5.00}
+
+test diagram-6.3 {circle: alias O and canvas coordinates} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {O radius 10 at [50 50] fillcolor green}
+    list [R [.c coords [lastItem]]] [.c itemcget [lastItem] -fill] [::dia draw {last circle}]
+} -cleanup {
+    cleanupDiagram
+} -result {{40.00 40.00 60.00 60.00} green {element 1}}
+
+test diagram-6.4 {ellipse} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {ellipse wid 80 ht 20 at [0 0]}
+    list [R [::dia draw {list [[last] e] [[last] n] [[last] width] [[last] height]}]] \
+	    [.c type [lastItem]]
+} -cleanup {
+    cleanupDiagram
+} -result {{{point {40.00 0.00}} {point {0.00 -10.00}} 80.00 20.00} oval}
+
+test diagram-6.5 {ellipse: default size} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {ellipse}
+    R [::dia draw {list [[last] width] [[last] height]}]
+} -cleanup {
+    cleanupDiagram
+} -result [list [cm 2] [cm 2]]
+
+test diagram-6.6 {diamond: width, height and aspect} -setup {
+    mkDiagram
+} -body {
+    set r {}
+    foreach a {{} {width 80} {height 10} {width 80 height 10} {height 10 aspect 3} {width 60 aspect 3} {width 80 height 10 aspect 3}} {
+	::dia draw "diamond $a"
+	lappend r [R [::dia draw {list [[last] width] [[last] height]}]]
+    }
+    set r
+} -cleanup {
+    cleanupDiagram
+    unset r a
+} -result [list [list [cm 2] [cm 1]] {80.00 40.00} {20.00 10.00} {80.00 10.00} {30.00 10.00} {60.00 20.00} {80.00 10.00}]
+
+test diagram-6.7 {diamond: alias <> and corners} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {<> width 80 height 40 at [0 0]}
+    list [.c type [lastItem]] [R [::dia draw {list [[last] e] [[last] n] [[last] w] [[last] s]}]] \
+	    [::dia draw {last diamond}]
+} -cleanup {
+    cleanupDiagram
+} -result {polygon {{point {40.00 0.00}} {point {0.00 -20.00}} {point {-40.00 0.00}} {point {0.00 20.00}}} {element 1}}
+
+test diagram-6.8 {diamond: diamondaspect variable} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {set diamondaspect 4; diamond width 80}
+    R [::dia draw {[last] height}]
+} -cleanup {
+    cleanupDiagram
+} -result 20.00
+
+test diagram-6.9 {drum} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {drum width 40 height 60 at [0 0]}
+    list [R [::dia draw {list [[last] width] [[last] center]}]] \
+	    [::dia draw {[last] names}] [expr {[llength [.c find all]] >= 1}]
+} -cleanup {
+    cleanupDiagram
+} -result [list {40.00 {point {0.00 0.00}}} $ClosedCorners 1]
+
+test diagram-6.10 {drum: aspect changes the drawing} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {drum width 40 height 60 aspect 0.2 at [0 0]}
+    set a [lmap i [.c find all] {.c coords $i}]
+    .c delete all
+    ::dia draw {drum width 40 height 60 aspect 0.5 at [0 0]}
+    set b [lmap i [.c find all] {.c coords $i}]
+    expr {$a ne $b}
+} -cleanup {
+    cleanupDiagram
+    unset a b
+} -result 1
+
+test diagram-6.11 {text element: natural size} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {text text "Hello" at [100 100]}
+    lassign [.c bbox [lastItem]] x1 y1 x2 y2
+    list [.c type [lastItem]] [.c itemcget [lastItem] -text] \
+	    [R [expr {[::dia draw {[last] width}] - ($x2 - $x1)}]] \
+	    [::dia draw {[last] names}]
+} -cleanup {
+    cleanupDiagram
+    unset x1 y1 x2 y2
+} -result [list text Hello 0.00 $ClosedCorners]
+
+test diagram-6.12 {text element: explicit size and multiple texts} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {text width 100 height 50 text A text B at [0 0]}
+    list [R [::dia draw {list [[last] width] [[last] height]}]] [.c itemcget [lastItem] -text]
+} -cleanup {
+    cleanupDiagram
+} -result [list {100.00 50.00} "A\nB"]
+
+test diagram-6.13 {unknown command draws a text element} -setup {
+    mkDiagram
+} -body {
+    set e [::dia draw {nosuchcommand}]
+    list $e [.c type [lastItem]] [.c itemcget [lastItem] -text] [::dia draw {last text}]
+} -cleanup {
+    cleanupDiagram
+    unset e
+} -result {{element 1} text nosuchcommand {element 1}}
+
+# -------------------------------------------------------------------------
+# Elements: line, arrow, spline, move, arc
+
+test diagram-7.1 {line: from, then, to and corners} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {line from [0 0] then [10 0] then [10 10] to [20 10]}
+    list [::dia draw {[last] names}] \
+	    [R [::dia draw {list [[last] start] [[last] end] [[last] center] [[last] 3]}]] \
+	    [.c type [lastItem]] [R [.c coords [lastItem]]]
+} -cleanup {
+    cleanupDiagram
+} -result {{start end center 1 2 3 4} {{point {0.00 0.00}} {point {20.00 10.00}} {point {10.00 5.00}} {point {10.00 10.00}}} line {0.00 0.00 10.00 0.00 10.00 10.00 20.00 10.00}}
+
+test diagram-7.2 {line: default length is movelength in the current direction} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {line from [0 0]}
+    R [::dia draw {[last] end}]
+} -cleanup {
+    cleanupDiagram
+} -result [list point [list [cm 2] 0.00]]
+
+test diagram-7.3 {line: then with directions and distances} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {line from [0 0] then east 10 east 5 then west 3}
+    R [::dia draw {list [[last] 2] [[last] end]}]
+} -cleanup {
+    cleanupDiagram
+} -result {{point {15.00 0.00}} {point {12.00 0.00}}}
+
+test diagram-7.4 {line: directions as attributes, default distance} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {line from [0 0] west}
+    R [::dia draw {[last] end}]
+} -cleanup {
+    cleanupDiagram
+} -result [list point [list -[cm 2] 0.00]]
+
+test diagram-7.5 {line: the last direction becomes the layout direction} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {line from [0 0] west 10; direction}
+} -cleanup {
+    cleanupDiagram
+} -result west
+
+test diagram-7.6 {line: the direction of the line end becomes the layout direction} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {west; line from [0 0] to [10 0]; direction}
+} -cleanup {
+    cleanupDiagram
+} -result east
+
+test diagram-7.7 {line: noturn} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {west; line noturn from [0 0] to [10 0]; direction}
+} -cleanup {
+    cleanupDiagram
+} -result west
+
+test diagram-7.8 {line: alias -- and appearance} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {-- from [0 0] to [10 0] color red stroke 2}
+    set i [lastItem]
+    list [.c itemcget $i -fill] [R [.c itemcget $i -width]] [::dia draw {last line}]
+} -cleanup {
+    cleanupDiagram
+    unset i
+} -result {red 2.00 {element 1}}
+
+test diagram-7.9 {line: chop} -setup {
+    mkDiagram
+} -body {
+    set r {}
+    foreach a {{chop 10} {chop 10 chop 20} {chop 5 chop 10 chop 20}} {
+	::dia draw "line from \[0 0\] to \[100 0\] $a"
+	lappend r [R [.c coords [lastItem]]]
+    }
+    set r
+} -cleanup {
+    cleanupDiagram
+    unset r a
+} -result {{10.00 0.00 90.00 0.00} {10.00 0.00 80.00 0.00} {10.00 0.00 80.00 0.00}}
+
+test diagram-7.10 {line: chop without length uses circleradius} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {line from [0 0] to [100 0] chop}
+    R [.c coords [lastItem]]
+} -cleanup {
+    cleanupDiagram
+} -result [list [cm 1] 0.00 [R [expr {100 - $CM}]] 0.00]
+
+test diagram-7.11 {line: arrowhead values} -setup {
+    mkDiagram
+} -body {
+    set r {}
+    foreach a {none - start first <- end last -> both <->} {
+	::dia draw "line from \[0 0\] to \[10 0\] arrowhead $a"
+	lappend r [.c itemcget [lastItem] -arrow]
+    }
+    set r
+} -cleanup {
+    cleanupDiagram
+    unset r a
+} -result {none none first first first last last last both both}
+
+test diagram-7.12 {line: arrowhead shorthands} -setup {
+    mkDiagram
+} -body {
+    set r {}
+    foreach a {- -> <- <-> start end} {
+	::dia draw "line from \[0 0\] to \[10 0\] $a"
+	lappend r [.c itemcget [lastItem] -arrow]
+    }
+    set r
+} -cleanup {
+    cleanupDiagram
+    unset r a
+} -result {none last first both first last}
+
+test diagram-7.13 {line: arrowhead variable} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {set arrowhead both; line}
+    .c itemcget [lastItem] -arrow
+} -cleanup {
+    cleanupDiagram
+} -result both
+
+test diagram-7.14 {line: style values} -setup {
+    mkDiagram
+} -body {
+    set r {}
+    foreach s {solid {} dot dotted . dash dashed - dash-dot -. dash-dot-dot -..} {
+	::dia draw "line from \[0 0\] to \[10 0\] style [list $s]"
+	lappend r [.c itemcget [lastItem] -dash]
+    }
+    set r
+} -cleanup {
+    cleanupDiagram
+    unset r s
+} -result {{} {} . . . - - - -. -. -.. -..}
+
+test diagram-7.15 {line: style shorthands} -setup {
+    mkDiagram
+} -body {
+    set r {}
+    foreach s {solid dot dotted dash dashed dash-dot dash-dot-dot} {
+	::dia draw "line from \[0 0\] to \[10 0\] $s"
+	lappend r [.c itemcget [lastItem] -dash]
+    }
+    set r
+} -cleanup {
+    cleanupDiagram
+    unset r s
+} -result {{} . . - - -. -..}
+
+test diagram-7.16 {line: Tk dash pattern} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {line from [0 0] to [10 0] style {4 2}}
+    .c itemcget [lastItem] -dash
+} -cleanup {
+    cleanupDiagram
+} -result {4 2}
+
+test diagram-7.17 {line: bad style} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {line from [0 0] to [10 0] style bogus}
+} -cleanup {
+    cleanupDiagram
+} -returnCodes error -match glob -result {*"bogus"*}
+
+test diagram-7.18 {line: at and with} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {line from [0 0] to [10 0] with end at [100 100]}
+    R [::dia draw {list [[last] start] [[last] end]}]
+} -cleanup {
+    cleanupDiagram
+} -result {{point {90.00 100.00}} {point {100.00 100.00}}}
+
+test diagram-7.19 {line: element references as locations} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {set a [box at [0 0]]; set b [box at [200 0]]; line from $a to $b}
+    R [::dia draw {list [[last] start] [[last] end]}]
+} -cleanup {
+    cleanupDiagram
+} -result {{point {0.00 0.00}} {point {200.00 0.00}}}
+
+test diagram-7.20 {arrow, -->, <--, <--> and spline} -setup {
+    mkDiagram
+} -body {
+    set r {}
+    foreach a {arrow --> <-- <--> spline} {
+	::dia draw "$a from \[0 0\] to \[10 0\] to \[20 10\]"
+	lappend r [.c type [lastItem]] [.c itemcget [lastItem] -arrow] \
+		[expr {[.c itemcget [lastItem] -smooth] ni {0 false}}]
+    }
+    lappend r [::dia draw {last arrow}] [::dia draw {last spline}]
+} -cleanup {
+    cleanupDiagram
+    unset r a
+} -result {line last 0 line last 0 line first 0 line both 0 line none 1 {element 4} {element 5}}
+
+test diagram-7.21 {line: smooth} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {line from [0 0] to [10 0] smooth}
+    expr {[.c itemcget [lastItem] -smooth] ni {0 false}}
+} -cleanup {
+    cleanupDiagram
+} -result 1
+
+test diagram-7.22 {move: no canvas item, corners and layout} -setup {
+    mkDiagram
+} -body {
+    set e [::dia draw {move from [0 0] to [50 0]}]
+    list $e [llength [.c find all]] [::dia draw {[last] names}] \
+	    [R [::dia draw {list [[last] start] [[last] end] [here]}]] \
+	    [::dia draw {last move}]
+} -cleanup {
+    cleanupDiagram
+    unset e
+} -result {{element 1} 0 {start end 1 2} {{point {0.00 0.00}} {point {50.00 0.00}} {point {50.00 0.00}}} {element 1}}
+
+test diagram-7.23 {move: changes the location of the next element} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {box; move; box}
+    R [::dia draw {expr {[lindex [[2nd box] west] 1 0] - [lindex [[1st box] east] 1 0]}}]
+} -cleanup {
+    cleanupDiagram
+} -result [cm 2]
+
+test diagram-7.24 {arc: corners} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {arc}
+    list [::dia draw {[last] names}] [R [::dia draw {[last] radius}]] [.c type [lastItem]]
+} -cleanup {
+    cleanupDiagram
+} -result [list {north east south west center radius width height northeast southeast southwest northwest start end} [cm 1] arc]
+
+test diagram-7.25 {arc: from, to, radius} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {arc from [0 0] to [100 0] radius 100}
+    lassign [::dia draw {list [[last] start] [[last] end] [[last] center]}] s e c
+    set c [lindex $c 1]
+    list [R [list $s $e]] [R [expr {hypot([lindex $c 0], [lindex $c 1])}]] \
+	    [R [expr {hypot([lindex $c 0] - 100, [lindex $c 1])}]]
+} -cleanup {
+    cleanupDiagram
+    unset s e c
+} -result {{{point {0.00 0.00}} {point {100.00 0.00}}} 100.00 100.00}
+
+test diagram-7.26 {arc: clockwise and counterclockwise centers are opposite} -setup {
+    mkDiagram
+} -body {
+    set r {}
+    foreach a {cw clockwise ccw counterclockwise} {
+	::dia draw "arc from \[0 0\] to \[100 0\] radius 100 $a"
+	lappend r [expr {[lindex [::dia draw {[last] center}] 1 1] > 0}]
+    }
+    list [expr {[lindex $r 0] == [lindex $r 1]}] [expr {[lindex $r 2] == [lindex $r 3]}] \
+	    [expr {[lindex $r 0] != [lindex $r 2]}]
+} -cleanup {
+    cleanupDiagram
+    unset r a
+} -result {1 1 1}
+
+test diagram-7.27 {arc: clockwise variable} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {arc from [0 0] to [100 0] radius 100}
+    set a [lindex [::dia draw {[last] center}] 1 1]
+    ::dia draw {set clockwise 1; arc from [0 0] to [100 0] radius 100}
+    set b [lindex [::dia draw {[last] center}] 1 1]
+    expr {($a > 0) != ($b > 0)}
+} -cleanup {
+    cleanupDiagram
+    unset a b
+} -result 1
+
+test diagram-7.28 {arc: default is a 90 degree arc} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {arc from [0 0]}
+    lassign [::dia draw {list [[last] start] [[last] end] [[last] center]}] s e c
+    set s [lindex $s 1]; set e [lindex $e 1]; set c [lindex $c 1]
+    set v1 [list [expr {[lindex $s 0] - [lindex $c 0]}] [expr {[lindex $s 1] - [lindex $c 1]}]]
+    set v2 [list [expr {[lindex $e 0] - [lindex $c 0]}] [expr {[lindex $e 1] - [lindex $c 1]}]]
+    R [list [expr {[lindex $v1 0]*[lindex $v2 0] + [lindex $v1 1]*[lindex $v2 1]}] \
+	    [expr {hypot([lindex $v1 0], [lindex $v1 1])}] \
+	    [expr {hypot([lindex $v2 0], [lindex $v2 1])}]]
+} -cleanup {
+    cleanupDiagram
+    unset s e c v1 v2
+} -result [list 0.00 [cm 1] [cm 1]]
+
+# -------------------------------------------------------------------------
+# Placement and layout
+
+test diagram-8.1 {elements are placed east of each other} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {box; circle; box}
+    R [::dia draw {list [[1st box] east] [[1st circle] west] [[1st circle] east] [[2nd box] west]}]
+} -cleanup {
+    cleanupDiagram
+} -result [list [list point [list [cm 2] 0.00]] [list point [list [cm 2] 0.00]] [list point [list [cm 4] 0.00]] [list point [list [cm 4] 0.00]]]
+
+test diagram-8.2 {west: placement to the west} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {box; west; box}
+    R [::dia draw {list [[1st box] west] [[2nd box] east]}]
+} -cleanup {
+    cleanupDiagram
+} -result {{point {0.00 0.00}} {point {0.00 0.00}}}
+
+test diagram-8.3 {at and with} -setup {
+    mkDiagram
+} -body {
+    set r {}
+    foreach a {{at [0 0]} {at [0 0] with nw} {at [0 0] with center} {with west at [10 10]}} {
+	::dia draw "box width 40 height 20 $a"
+	lappend r [R [::dia draw {[last] center}]]
+    }
+    set r
+} -cleanup {
+    cleanupDiagram
+    unset r a
+} -result {{point {0.00 0.00}} {point {20.00 10.00}} {point {0.00 0.00}} {point {30.00 10.00}}}
+
+test diagram-8.4 {at with an element reference} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {set a [circle at [50 60]]; box at $a}
+    R [::dia draw {[last box] center}]
+} -cleanup {
+    cleanupDiagram
+} -result {point {50.00 60.00}}
+
+test diagram-8.5 {here} -setup {
+    mkDiagram
+} -body {
+    set r [list [R [::dia draw {here}]]]
+    ::dia draw {box}
+    lappend r [R [::dia draw {here}]]
+} -cleanup {
+    cleanupDiagram
+    unset r
+} -result [list {point {0.00 0.00}} [list point [list [cm 2] 0.00]]]
+
+test diagram-8.6 {block: aggregates elements, exports variables} -setup {
+    mkDiagram
+} -body {
+    set b [::dia draw {block {box at [0 0]; box; set p [here]} at [0 0]}]
+    list $b [::dia draw [list $b names]] [R [::dia draw [list $b width]]] \
+	    [R [::dia draw [list $b center]]] [R [::dia draw [list $b p]]] \
+	    [llength [.c find all]]
+} -cleanup {
+    cleanupDiagram
+    unset b
+} -result [list {element 3} [list {*}$ClosedCorners p] [cm 4] {point {0.00 0.00}} [list point [list [cm 2] 0.00]] 2]
+
+test diagram-8.7 {block: history contains only the block afterwards} -setup {
+    mkDiagram
+} -body {
+    set b [::dia draw {circle; block {box; set inner [last]}}]
+    list $b [::dia draw {last}] [::dia draw {2nd last}] [::dia draw [list $b inner]] \
+	    [catch {::dia draw {last box}}] [catch {::dia draw {set inner}}]
+} -cleanup {
+    cleanupDiagram
+} -result {{element 3} {element 3} {element 1} {element 2} 1 1}
+
+test diagram-8.8 {block: variable changes are reverted} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {block {set boxwidth 30; box}}
+    list [R [::dia draw {set boxwidth}]] [R [::dia draw {[last] width}]]
+} -cleanup {
+    cleanupDiagram
+} -result [list [cm 2] 30.00]
+
+test diagram-8.9 {block: attributes become defaults inside} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {block {box} color red}
+    list [.c itemcget [lastItem] -outline] [::dia draw {set linecolor}]
+} -cleanup {
+    cleanupDiagram
+} -result {red black}
+
+test diagram-8.10 {block: the layout is restored} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {block {box; west}; box; direction}
+} -cleanup {
+    cleanupDiagram
+} -result east
+
+# Bug: a block without elements fails with an arithmetic error.
+test diagram-8.11 {block without elements} -constraints knownBug -setup {
+    mkDiagram
+} -body {
+    ::dia draw {block {set x 1}}
+    ::dia draw {set boxwidth}
+} -cleanup {
+    cleanupDiagram
+} -result [cm 2]
+
+test diagram-8.12 {group: the layout is restored} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {box; group {west; circle}; box}
+    R [::dia draw {list [[1st box] east] [[2nd box] west]}]
+} -cleanup {
+    cleanupDiagram
+} -result [list [list point [list [cm 2] 0.00]] [list point [list [cm 2] 0.00]]]
+
+# -------------------------------------------------------------------------
+# Named directions
+
+test diagram-9.1 {direction names and aliases} -setup {
+    mkDiagram
+} -body {
+    set r {}
+    foreach {d names} {
+	west {west w left l}
+	south {south s down bottom bot b}
+	east {east e right r}
+	north {north n up top t}
+	northwest {northwest nw up-left upleft leftup}
+	northeast {northeast ne up-right upright rightup}
+	southwest {southwest sw down-left downleft leftdown}
+	southeast {southeast se down-right downright rightdown}
+    } {
+	foreach n $names {
+	    if {[::dia draw [list by 1 $n]] ne [::dia draw [list by 1 $d]]} {
+		lappend r $n
+	    }
+	}
+    }
+    set r
+} -cleanup {
+    cleanupDiagram
+    unset r d names n
+} -result {}
+
+test diagram-9.2 {direction angles} -setup {
+    mkDiagram
+} -body {
+    set r {}
+    foreach d {east northeast north northwest west southwest south southeast} {
+	lappend r [lindex [::dia draw [list by 1 $d]] 1 1]
+    }
+    set r
+} -cleanup {
+    cleanupDiagram
+    unset r d
+} -result {0 45 90 135 180 225 270 315}
+
+test diagram-9.3 {direction commands change the layout direction} -setup {
+    mkDiagram
+} -body {
+    set r {}
+    foreach d {north west south east} {
+	lappend r [::dia draw "$d; direction"]
+    }
+    set r
+} -cleanup {
+    cleanupDiagram
+    unset r d
+} -result {north west south east}
+
+test diagram-9.4 {horizontal directions} -setup {
+    mkDiagram
+} -body {
+    R [list [::dia draw {[0 0] by 10 east}] [::dia draw {[0 0] by 10 west}]]
+} -cleanup {
+    cleanupDiagram
+} -result {{point {10.00 0.00}} {point {-10.00 0.00}}}
+
+# Bug: since math::geometry 1.4 the vertical component of the directions
+# is reversed: north points down (to larger canvas y).
+# Tickets e9c4eeae1f and ffcd8611b8.
+test diagram-9.5 {north points up} -constraints knownBug -setup {
+    mkDiagram
+} -body {
+    R [list [::dia draw {[0 0] by 10 north}] [::dia draw {[0 0] by 10 south}]]
+} -cleanup {
+    cleanupDiagram
+} -result {{point {0.00 -10.00}} {point {0.00 10.00}}}
+
+# Tickets e9c4eeae1f and ffcd8611b8.
+test diagram-9.6 {diagonal directions} -constraints knownBug -setup {
+    mkDiagram
+} -body {
+    R [list [::dia draw {[0 0] by 10 northeast}] [::dia draw {[0 0] by 10 southwest}]]
+} -cleanup {
+    cleanupDiagram
+} -result {{point {7.07 -7.07}} {point {-7.07 7.07}}}
+
+# Tickets e9c4eeae1f and ffcd8611b8.
+test diagram-9.7 {line going south ends below its start} -constraints knownBug -setup {
+    mkDiagram
+} -body {
+    ::dia draw {line from [0 0] then south 20}
+    R [::dia draw {[last] end}]
+} -cleanup {
+    cleanupDiagram
+} -result {point {0.00 20.00}}
+
+test diagram-9.8 {layout to the south places elements below} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {box; south; box}
+    R [::dia draw {list [[1st box] south] [[2nd box] north]}]
+} -cleanup {
+    cleanupDiagram
+} -result [list [list point [list [cm 1] [cm 1]]] [list point [list [cm 1] [cm 1]]]]
+
+# Tickets e9c4eeae1f and ffcd8611b8.
+test diagram-9.9 {a line drawn downwards turns the layout south} -constraints knownBug -setup {
+    mkDiagram
+} -body {
+    ::dia draw {line from [0 0] to [0 50]; direction}
+} -cleanup {
+    cleanupDiagram
+} -result south
+
+# -------------------------------------------------------------------------
+# Points, distances and units
+
+test diagram-10.1 {absolute point} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {10 20}
+} -cleanup {
+    cleanupDiagram
+} -result {point {10 20}}
+
+test diagram-10.2 {relative point: by} -setup {
+    mkDiagram
+} -body {
+    list [::dia draw {by 10 east}] [::dia draw {by 10 33}]
+} -cleanup {
+    cleanupDiagram
+} -result {{by {10 0}} {by {10 33}}}
+
+test diagram-10.3 {by: wrong # args} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {by 10}
+} -cleanup {
+    cleanupDiagram
+} -returnCodes error -match glob -result {wrong # args: should be "*"}
+
+test diagram-10.4 {point addition} -setup {
+    mkDiagram
+} -body {
+    R [list [::dia draw {[10 20] + [30 40]}] [::dia draw {[10 20] + [by 5 east]}] \
+	   [::dia draw {[by 5 east] + [10 20]}] [::dia draw {[by 10 east] + [by 5 east]}]]
+} -cleanup {
+    cleanupDiagram
+} -result {{point {40.00 60.00}} {point {15.00 20.00}} {point {15.00 20.00}} {+ {15.00 0.00}}}
+
+test diagram-10.5 {point subtraction} -setup {
+    mkDiagram
+} -body {
+    R [list [::dia draw {[10 20] - [30 40]}] [::dia draw {[10 20] - [by 5 east]}] \
+	   [::dia draw {[by 10 east] - [by 5 east]}]]
+} -cleanup {
+    cleanupDiagram
+} -result {{point {-20.00 -20.00}} {point {5.00 20.00}} {+ {5.00 0.00}}}
+
+test diagram-10.6 {point projection} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {[10 20] | [30 40]}
+} -cleanup {
+    cleanupDiagram
+} -result {point {10 40}}
+
+test diagram-10.7 {point by distance direction} -setup {
+    mkDiagram
+} -body {
+    R [list [::dia draw {[10 20] by 10 east}] [::dia draw {[10 20] by 10 180}]]
+} -cleanup {
+    cleanupDiagram
+} -result {{point {20.00 20.00}} {point {0.00 20.00}}}
+
+test diagram-10.8 {interpolation: between} -setup {
+    mkDiagram
+} -body {
+    set r {}
+    foreach n {0 1 0.5 0.25 2 -1} {
+	lappend r [R [::dia draw "$n between \[0 0\] \[10 20\]"]]
+    }
+    set r
+} -cleanup {
+    cleanupDiagram
+    unset r n
+} -result {{point {0.00 0.00}} {point {10.00 20.00}} {point {5.00 10.00}} {point {2.50 5.00}} {point {20.00 40.00}} {point {-10.00 -20.00}}}
+
+test diagram-10.9 {intersect} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {set a [line from [0 0] to [100 0]]; set b [line from [50 -50] to [50 50]]}
+    R [::dia draw {intersect $a $b}]
+} -cleanup {
+    cleanupDiagram
+} -result {point {50.00 0.00}}
+
+test diagram-10.10 {intersect: extended lines} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {set a [line from [0 0] to [10 0]]; set b [line from [50 10] to [50 20]]}
+    R [::dia draw {intersect $a $b}]
+} -cleanup {
+    cleanupDiagram
+} -result {point {50.00 0.00}}
+
+test diagram-10.11 {intersect: parallel lines} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {intersect [line from [0 0] to [10 0]] [line from [0 5] to [10 5]]}
+} -cleanup {
+    cleanupDiagram
+} -returnCodes error -result {Intersection failure, parallel lines have none}
+
+test diagram-10.12 {intersect: coincident lines} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {intersect [line from [0 0] to [10 0]] [line from [20 0] to [30 0]]}
+} -cleanup {
+    cleanupDiagram
+} -returnCodes error -result {Intersection failure, unable to choose among infinite set of points of coincident lines}
+
+test diagram-10.13 {units: cm, mm, inch} -setup {
+    mkDiagram
+} -body {
+    list [R [::dia draw {1 cm}]] [R [::dia draw {10 mm}]] [R [::dia draw {1 inch}]] \
+	    [R [::dia draw {2.54 cm}]] [R [::dia draw {0.5 cm}]]
+} -cleanup {
+    cleanupDiagram
+} -result [list [cm 1] [cm 1] [cm 2.54] [cm 2.54] [cm 0.5]]
+
+test diagram-10.14 {units: based on tk scaling} -setup {
+    mkDiagram
+} -body {
+    R [expr {[::dia draw {1 inch}] / [tk scaling]}]
+} -cleanup {
+    cleanupDiagram
+} -result 72.00
+
+# Bug: the unit is implemented as "point", but documented as "pt".
+test diagram-10.15 {units: pt} -constraints knownBug -setup {
+    mkDiagram
+} -body {
+    expr {[::dia draw {72 pt}] == [::dia draw {1 inch}]}
+} -cleanup {
+    cleanupDiagram
+} -result 1
+
+test diagram-10.16 {units in attributes} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {box width [3 cm]}
+    R [::dia draw {[last] width}]
+} -cleanup {
+    cleanupDiagram
+} -result [cm 3]
+
+# -------------------------------------------------------------------------
+# Element queries and history
+
+test diagram-11.1 {element names with pattern} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {set e [box]}
+    list [::dia draw {$e names n*}] [::dia draw {$e names x*}] [::dia draw {$e names *th}]
+} -cleanup {
+    cleanupDiagram
+} -result {{north northeast northwest} {} {north south width}}
+
+test diagram-11.2 {element: unknown corner} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {set e [box]; $e nosuchcorner}
+} -cleanup {
+    cleanupDiagram
+} -returnCodes error -match glob -result {*nosuchcorner*}
+
+test diagram-11.3 {element: chained corners} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {set b [block {set inner [box at [0 0] width 20 height 10]}]}
+    list [::dia draw {$b inner}] [R [::dia draw {$b inner width}]] \
+	    [::dia draw {$b inner names w*}]
+} -cleanup {
+    cleanupDiagram
+} -result {{element 1} 20.00 {west width}}
+
+test diagram-11.4 {element: names takes at most one pattern} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {set e [box]; $e names n* extra}
+} -cleanup {
+    cleanupDiagram
+} -returnCodes error -result {wrong#args: should be "?corner...? ?names ?pattern??"}
+
+# Bug: "<n>th" without arguments fails with a wrong # args error, although
+# the corner argument is optional.
+test diagram-11.5 {history: nth} -constraints knownBug -setup {
+    mkDiagram
+} -body {
+    ::dia draw {box; circle; box; line}
+    list [::dia draw {1th}] [::dia draw {2th}] [::dia draw {4th}] \
+	    [::dia draw {1st}] [::dia draw {2nd}] [::dia draw {3rd}]
+} -cleanup {
+    cleanupDiagram
+} -result {{element 1} {element 2} {element 4} {element 1} {element 2} {element 3}}
+
+test diagram-11.6 {history: nth last} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {box; circle; box; line}
+    list [::dia draw {1st last}] [::dia draw {2nd last}] [::dia draw {4th last}] \
+	    [::dia draw {last}]
+} -cleanup {
+    cleanupDiagram
+} -result {{element 4} {element 3} {element 1} {element 4}}
+
+test diagram-11.7 {history: nth shape, nth last shape, last shape} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {box; circle; box; line; box}
+    list [::dia draw {1st box}] [::dia draw {2nd box}] [::dia draw {3rd box}] \
+	    [::dia draw {1st circle}] [::dia draw {2nd last box}] \
+	    [::dia draw {last box}] [::dia draw {last line}]
+} -cleanup {
+    cleanupDiagram
+} -result {{element 1} {element 3} {element 5} {element 2} {element 3} {element 5} {element 4}}
+
+test diagram-11.8 {history: with corner} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {box at [0 0]; circle at [100 0]}
+    R [list [::dia draw {1st center}] [::dia draw {last center}] \
+	    [::dia draw {1st box east}] [::dia draw {last box west}] \
+	    [::dia draw {1st last circle center}] [::dia draw {last circle radius}]]
+} -cleanup {
+    cleanupDiagram
+} -result [R [list {point {0 0}} {point {100 0}} [list point [list $CM 0]] [list point [list -$CM 0]] {point {100 0}} $CM]]
+
+test diagram-11.9 {history: too many arguments} -setup {
+    mkDiagram
+    ::dia draw {box}
+} -body {
+    ::dia draw {1st box east extra}
+} -cleanup {
+    cleanupDiagram
+} -returnCodes error -result {wrong#args: should be "?n'th? ?last? ?shape? ?corner?"}
+
+test diagram-11.10 {history: nth with corner} -setup {
+    mkDiagram
+    ::dia draw {box at [0 0]; circle at [100 0]}
+} -body {
+    R [list [::dia draw {2nd center}] [::dia draw {1st width}]]
+} -cleanup {
+    cleanupDiagram
+} -result [list {point {100.00 0.00}} [cm 2]]
+
+# -------------------------------------------------------------------------
+# Variables
+
+test diagram-12.1 {variable defaults} -setup {
+    mkDiagram
+} -body {
+    set r {}
+    foreach v {anchor arrowhead clockwise diamondaspect drumaspect fillcolor
+	       justify linecolor linewidth slant textcolor} {
+	lappend r $v [::dia draw [list set $v]]
+    }
+    set r
+} -cleanup {
+    cleanupDiagram
+    unset r v
+} -result {anchor center arrowhead none clockwise 0 diamondaspect 2 drumaspect 0.35 fillcolor {} justify left linecolor black linewidth 1 slant 90 textcolor black}
+
+test diagram-12.2 {variable defaults: distances} -setup {
+    mkDiagram
+} -body {
+    set r {}
+    foreach v {arcradius boxheight boxwidth circleradius movelength} {
+	lappend r $v [R [::dia draw [list set $v]]]
+    }
+    set r
+} -cleanup {
+    cleanupDiagram
+    unset r v
+} -result [list arcradius [cm 1] boxheight [cm 2] boxwidth [cm 2] circleradius [cm 1] movelength [cm 2]]
+
+test diagram-12.3 {variable defaults: linestyle is solid} -setup {
+    mkDiagram
+} -body {
+    expr {[::dia draw {set linestyle}] in {solid {}}}
+} -cleanup {
+    cleanupDiagram
+} -result 1
+
+test diagram-12.4 {variable defaults: textfont is Helvetica 12pt} -setup {
+    mkDiagram
+} -body {
+    set f [::dia draw {set textfont}]
+    list [lindex $f 0] [string trimright [lindex $f 1] pt]
+} -cleanup {
+    cleanupDiagram
+    unset f
+} -result {Helvetica 12}
+
+test diagram-12.5 {variables are used as defaults} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {
+	set boxwidth 30; set boxheight 20; set linecolor red; set fillcolor yellow
+	set linewidth 2; set linestyle -
+	box
+    }
+    set i [lastItem]
+    list [R [::dia draw {list [[last] width] [[last] height]}]] \
+	    [.c itemcget $i -outline] [.c itemcget $i -fill] \
+	    [R [.c itemcget $i -width]] [.c itemcget $i -dash]
+} -cleanup {
+    cleanupDiagram
+    unset i
+} -result {{30.00 20.00} red yellow 2.00 -}
+
+# Bug: the values of the linestyle variable are not transformed, so the
+# documented names like "dashed" are rejected by the canvas.
+test diagram-12.5.1 {variables: linestyle names} -constraints knownBug -setup {
+    mkDiagram
+} -body {
+    ::dia draw {set linestyle dashed; box}
+    .c itemcget [lastItem] -dash
+} -cleanup {
+    cleanupDiagram
+} -result -
+
+test diagram-12.6 {variables are used as defaults: circle, arc, text} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {
+	set circleradius 15; circle
+	set arcradius 25; arc
+	set textcolor blue; set textfont {Courier 9}; set justify center
+	text text A
+    }
+    list [R [::dia draw {[last circle] radius}]] [R [::dia draw {[last arc] radius}]] \
+	    [.c itemcget [lastItem] -fill] [.c itemcget [lastItem] -font] \
+	    [.c itemcget [lastItem] -justify]
+} -cleanup {
+    cleanupDiagram
+} -result {15.00 25.00 blue {Courier 9} center}
+
+test diagram-12.7 {variables: movelength} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {set movelength 40; line from [0 0]}
+    R [::dia draw {[last] end}]
+} -cleanup {
+    cleanupDiagram
+} -result {point {40.00 0.00}}
+
+test diagram-12.8 {variables: anchor} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {set anchor west; box text Hello at [100 100]}
+    lassign [.c bbox [lastItem]] x1 y1 x2 y2
+    expr {$x1 >= 98}
+} -cleanup {
+    cleanupDiagram
+    unset x1 y1 x2 y2
+} -result 1
+
+test diagram-12.9 {variables: slant} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {set slant 45; box}
+    .c type [lastItem]
+} -cleanup {
+    cleanupDiagram
+} -result polygon
+
+test diagram-12.10 {variables: drumaspect} -setup {
+    mkDiagram
+} -body {
+    ::dia draw {drum width 40 height 60 aspect 0.5 at [0 0]}
+    set a [lmap i [.c find all] {R [.c coords $i]}]
+    .c delete all
+    ::dia draw {set drumaspect 0.5; drum width 40 height 60 at [0 0]}
+    set b [lmap i [.c find all] {R [.c coords $i]}]
+    expr {$a eq $b}
+} -cleanup {
+    cleanupDiagram
+    unset a b
+} -result 1
+
+# -------------------------------------------------------------------------
+
+rename mkDiagram {}
+rename cleanupDiagram {}
+rename R {}
+rename cm {}
+rename lastItem {}
+rename itemTypes {}
+foreach p {DrawMark DrawAbsolute DrawTurn DrawTagged} {
+    rename ::$p {}
+}
+unset CM ClosedCorners p
+
+::tcltest::cleanupTests
