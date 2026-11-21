@@ -1,0 +1,252 @@
+# -*- tcl -*-
+# Tests for the notifywindow package
+#
+# See the file "license.terms" for information on usage and redistribution
+# of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2
+    namespace import ::tcltest::*
+} else {
+    if {![package vsatisfies [package present tcltest] 2.2]} {
+	puts "    Aborting the tests found in \"[file tail [info script]]\"."
+	puts "    Requiring tcltest 2.2, have [package present tcltest]"
+	return
+    }
+}
+
+::tcltest::testConstraint tk 1
+
+source [file join [file dirname [info script]] notifywindow.tcl]
+
+testConstraint x11 [expr {[tk windowingsystem] eq "x11"}]
+
+# -------------------------------------------------------------------------
+# Helpers
+
+# Destroy the notification window and cancel its pending fade events.
+proc cleanNotify {} {
+    foreach id [after info] {
+	if {[string match *notifywindow::* [lindex [after info $id] 0]]} {
+	    after cancel $id
+	}
+    }
+    destroy ._notify
+}
+
+# Wait (bounded) until a condition becomes true.
+proc waitFor {cond {ms 10000}} {
+    set end [expr {[clock milliseconds] + $ms}]
+    while {![uplevel #0 [list expr $cond]]} {
+	if {[clock milliseconds] > $end} {
+	    return 0
+	}
+	after 20 {set ::waitForDummy 1}
+	vwait ::waitForDummy
+    }
+    unset -nocomplain ::waitForDummy
+    return 1
+}
+
+image create photo notifyTestImage -width 16 -height 16
+notifyTestImage put red -to 0 0 16 16
+
+# -------------------------------------------------------------------------
+
+test notifywindow-1.0 {package version} -body {
+    package present notifywindow
+} -result 1.0.2
+
+test notifywindow-1.1 {exported commands} -body {
+    lsort [namespace eval ::notifywindow {namespace export}]
+} -result *
+
+# -------------------------------------------------------------------------
+# ::notifywindow::notifywindow
+
+test notifywindow-2.1 {wrong # args} -body {
+    ::notifywindow::notifywindow
+} -returnCodes error -result {wrong # args: should be "::notifywindow::notifywindow msg img"}
+
+test notifywindow-2.2 {wrong # args} -body {
+    ::notifywindow::notifywindow hello
+} -returnCodes error -result {wrong # args: should be "::notifywindow::notifywindow msg img"}
+
+test notifywindow-2.3 {wrong # args} -body {
+    ::notifywindow::notifywindow hello notifyTestImage extra
+} -returnCodes error -result {wrong # args: should be "::notifywindow::notifywindow msg img"}
+
+test notifywindow-2.4 {creates a toplevel with the message} -body {
+    ::notifywindow::notifywindow "Hello world" notifyTestImage
+    list [winfo class ._notify] [winfo toplevel ._notify] \
+	[winfo class ._notify.message] [._notify.message cget -text]
+} -cleanup {
+    cleanNotify
+} -result {Toplevel ._notify Message {Hello world}}
+
+test notifywindow-2.5 {image is shown} -body {
+    ::notifywindow::notifywindow "Hello" notifyTestImage
+    list [winfo exists ._notify.l] [._notify.l cget -image]
+} -cleanup {
+    cleanNotify
+} -result {1 notifyTestImage}
+
+test notifywindow-2.6 {image is optional: empty} -body {
+    ::notifywindow::notifywindow "Hello" {}
+    list [winfo exists ._notify.l] [winfo children ._notify]
+} -cleanup {
+    cleanNotify
+} -result {0 ._notify.message}
+
+test notifywindow-2.7 {image is optional: non-existing image is ignored} -body {
+    ::notifywindow::notifywindow "Hello" noSuchImage
+    list [winfo exists ._notify.l] [winfo children ._notify]
+} -cleanup {
+    cleanNotify
+} -result {0 ._notify.message}
+
+test notifywindow-2.8 {Tk built-in image} -body {
+    ::notifywindow::notifywindow "Hello" ::tk::icons::information
+    ._notify.l cget -image
+} -cleanup {
+    cleanNotify
+} -result ::tk::icons::information
+
+test notifywindow-2.9 {message with special characters} -body {
+    ::notifywindow::notifywindow "\[x\] \$y \{ їжак" {}
+    ._notify.message cget -text
+} -cleanup {
+    cleanNotify
+} -result "\[x\] \$y \{ їжак"
+
+test notifywindow-2.10 {empty and multi-line message} -body {
+    ::notifywindow::notifywindow "" {}
+    set r [list [._notify.message cget -text]]
+    cleanNotify
+    ::notifywindow::notifywindow "line 1\nline 2" {}
+    lappend r [._notify.message cget -text]
+} -cleanup {
+    cleanNotify
+} -result [list {} "line 1\nline 2"]
+
+test notifywindow-2.11 {window placed in the upper right corner} -body {
+    ::notifywindow::notifywindow "Hello" notifyTestImage
+    update
+    set x [winfo rootx ._notify]
+    set y [winfo rooty ._notify]
+    set sw [winfo screenwidth ._notify]
+    list [expr {$x > $sw / 2}] [expr {$x < $sw}] \
+	[expr {$y < [winfo screenheight ._notify] / 4}]
+} -cleanup {
+    cleanNotify
+} -result {1 1 1}
+
+test notifywindow-2.12 {window geometry} -body {
+    ::notifywindow::notifywindow "Hello" notifyTestImage
+    update
+    regexp {\+(-?\d+)\+(-?\d+)$} [wm geometry ._notify] -> x y
+    list [expr {$x == [winfo screenwidth ._notify] - 325}] $y
+} -cleanup {
+    cleanNotify
+} -result {1 30}
+
+test notifywindow-2.13 {x11: notification window without decorations} -constraints {
+    x11
+} -body {
+    ::notifywindow::notifywindow "Hello" notifyTestImage
+    list [wm overrideredirect ._notify] [wm attributes ._notify -type]
+} -cleanup {
+    cleanNotify
+} -result {1 notification}
+
+test notifywindow-2.14 {window fades in} -body {
+    ::notifywindow::notifywindow "Hello" notifyTestImage
+    set a0 [wm attributes ._notify -alpha]
+    set ok [waitFor {[wm attributes ._notify -alpha] >= 0.85}]
+    list [expr {$a0 < 0.5}] $ok [winfo exists ._notify]
+} -cleanup {
+    cleanNotify
+} -result {1 1 1}
+
+test notifywindow-2.15 {window disappears by itself} -body {
+    ::notifywindow::notifywindow "Hello" notifyTestImage
+    set ok [waitFor {![winfo exists ._notify]} 15000]
+    list $ok [winfo exists ._notify]
+} -cleanup {
+    cleanNotify
+} -result {1 0}
+
+test notifywindow-2.16 {window can be destroyed before fading out} -body {
+    ::notifywindow::notifywindow "Hello" notifyTestImage
+    update
+    destroy ._notify
+    # The pending fade_out must not fail
+    ::notifywindow::fade_out ._notify
+    ::notifywindow::fade_in ._notify
+    winfo exists ._notify
+} -cleanup {
+    cleanNotify
+} -result 0
+
+test notifywindow-2.17 {new notification after the previous one disappeared} -body {
+    ::notifywindow::notifywindow "first" {}
+    waitFor {![winfo exists ._notify]} 15000
+    ::notifywindow::notifywindow "second" {}
+    ._notify.message cget -text
+} -cleanup {
+    cleanNotify
+} -result second
+
+test notifywindow-2.18 {successive calls while the window exists} -constraints {
+    knownBug
+} -body {
+    # Ticket [79747a0cb5]
+    ::notifywindow::notifywindow "hello" {}
+    ::notifywindow::notifywindow "world" {}
+    winfo exists ._notify
+} -cleanup {
+    cleanNotify
+} -result 1
+
+test notifywindow-2.19 {does not destroy the image} -body {
+    ::notifywindow::notifywindow "Hello" notifyTestImage
+    cleanNotify
+    expr {"notifyTestImage" in [image names]}
+} -result 1
+
+# -------------------------------------------------------------------------
+# ::notifywindow::demo
+
+test notifywindow-3.1 {demo: wrong # args} -body {
+    ::notifywindow::demo extra
+} -returnCodes error -result {wrong # args: should be "::notifywindow::demo"}
+
+test notifywindow-3.2 {demo: posts a notification with an image} -body {
+    ::notifywindow::demo
+    list [winfo exists ._notify] [._notify.l cget -image] \
+	[string match "Man page for Message*" [._notify.message cget -text]] \
+	[image width flag] [image height flag]
+} -cleanup {
+    cleanNotify
+    image delete flag
+} -result {1 flag 1 20 20}
+
+# -------------------------------------------------------------------------
+
+image delete notifyTestImage
+rename cleanNotify {}
+rename waitFor {}
+
+::tcltest::cleanupTests
