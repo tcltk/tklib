@@ -1,0 +1,657 @@
+# -*- tcl -*-
+# Tests for the history package
+#
+# See the file "license.terms" for information on usage and redistribution
+# of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2
+    namespace import ::tcltest::*
+} else {
+    if {![package vsatisfies [package present tcltest] 2.2]} {
+	puts "    Aborting the tests found in \"[file tail [info script]]\"."
+	puts "    Requiring tcltest 2.2, have [package present tcltest]"
+	return
+    }
+}
+
+::tcltest::testConstraint tk 1
+
+source [file join [file dirname [info script]] history.tcl]
+
+# -------------------------------------------------------------------------
+# Helpers
+
+set origAlert [info body ::history::alert]
+
+proc mkEntry {args} {
+    entry .e
+    pack .e
+    update
+    focus -force .e
+    update
+    eval [list ::history::init .e] $args
+}
+
+proc cleanEntry {} {
+    catch {::history::remove .e}
+    destroy .e
+    proc ::history::alert w $::origAlert
+    unset -nocomplain ::alerts
+}
+
+# Record alerts instead of ringing the bell.
+proc recordAlerts {} {
+    set ::alerts 0
+    ::history::configure .e alert {incr ::alerts}
+}
+
+proc key {keysym} {
+    event generate .e <KeyPress> -keysym $keysym
+    update
+    .e get
+}
+
+# -------------------------------------------------------------------------
+
+test history-1.0 {package version} -body {
+    package present history
+} -result 0.3
+
+test history-1.1 {History bindings} -body {
+    lsort [bind History]
+} -result {<Key-Down> <Key-Up>}
+
+# -------------------------------------------------------------------------
+# ::history::init
+
+test history-2.1 {init: wrong # args} -body {
+    ::history::init
+} -returnCodes error -result {wrong # args: should be "::history::init w ?len?"}
+
+test history-2.2 {init: wrong # args} -body {
+    ::history::init .e 10 extra
+} -returnCodes error -result {wrong # args: should be "::history::init w ?len?"}
+
+test history-2.3 {init: returns the path name} -setup {
+    entry .e
+} -body {
+    ::history::init .e
+} -cleanup {
+    cleanEntry
+} -result .e
+
+test history-2.4 {init: inserts History bindtag after the widget tag} -setup {
+    entry .e
+} -body {
+    ::history::init .e
+    bindtags .e
+} -cleanup {
+    cleanEntry
+} -result {.e History Entry . all}
+
+test history-2.5 {init: custom bindtags} -setup {
+    entry .e
+    bindtags .e {Entry .e all}
+} -body {
+    ::history::init .e
+    bindtags .e
+} -cleanup {
+    cleanEntry
+} -result {Entry .e History all}
+
+test history-2.6 {init: widget tag not in bindtags} -setup {
+    entry .e
+    bindtags .e {Entry all}
+} -body {
+    ::history::init .e
+} -cleanup {
+    cleanEntry
+} -returnCodes error -result {can't find .e in bindtags}
+
+test history-2.7 {init: twice} -setup {
+    entry .e
+    ::history::init .e
+} -body {
+    ::history::init .e
+} -cleanup {
+    cleanEntry
+} -returnCodes error -result {.e already has a history}
+
+test history-2.8 {init: bad window} -body {
+    ::history::init .nosuchwindow
+} -returnCodes error -result {bad window path name ".nosuchwindow"}
+
+test history-2.9 {init: initially empty history} -setup {
+    mkEntry
+} -body {
+    ::history::get .e
+} -cleanup {
+    cleanEntry
+} -result {}
+
+test history-2.10 {init: default length} -setup {
+    mkEntry
+} -body {
+    ::history::configure .e length
+} -cleanup {
+    cleanEntry
+} -result 30
+
+test history-2.11 {init: given length} -setup {
+    mkEntry 5
+} -body {
+    ::history::configure .e length
+} -cleanup {
+    cleanEntry
+} -result 5
+
+test history-2.12 {init: ttk::entry} -setup {
+    ttk::entry .e
+} -body {
+    ::history::init .e
+    ::history::add .e foo
+    list [bindtags .e] [::history::get .e]
+} -cleanup {
+    cleanEntry
+} -result {{.e History TEntry . all} foo}
+
+test history-2.13 {init: several entries have separate histories} -setup {
+    entry .e
+    entry .e2
+    ::history::init .e
+    ::history::init .e2 3
+} -body {
+    ::history::add .e foo
+    ::history::add .e2 bar
+    list [::history::get .e] [::history::get .e2] \
+	[::history::configure .e length] [::history::configure .e2 length]
+} -cleanup {
+    ::history::remove .e2
+    destroy .e2
+    cleanEntry
+} -result {foo bar 30 3}
+
+# -------------------------------------------------------------------------
+# ::history::remove
+
+test history-3.1 {remove: wrong # args} -body {
+    ::history::remove
+} -returnCodes error -result {wrong # args: should be "::history::remove w"}
+
+test history-3.2 {remove: wrong # args} -body {
+    ::history::remove .e extra
+} -returnCodes error -result {wrong # args: should be "::history::remove w"}
+
+test history-3.3 {remove: removes the bindtag} -setup {
+    mkEntry
+} -body {
+    ::history::remove .e
+    bindtags .e
+} -cleanup {
+    cleanEntry
+} -result {.e Entry . all}
+
+test history-3.4 {remove: forgets the history} -setup {
+    mkEntry
+} -body {
+    ::history::add .e foo
+    ::history::remove .e
+    list [info exists ::history::history(.e,list)] \
+	[info exists ::history::prefs(maxlen,.e)]
+} -cleanup {
+    cleanEntry
+} -result {0 0}
+
+test history-3.5 {remove: entry without history} -setup {
+    entry .e
+} -body {
+    ::history::remove .e
+} -cleanup {
+    cleanEntry
+} -returnCodes error -result {.e has no history}
+
+test history-3.6 {remove: twice} -setup {
+    mkEntry
+    ::history::remove .e
+} -body {
+    ::history::remove .e
+} -cleanup {
+    cleanEntry
+} -returnCodes error -result {.e has no history}
+
+test history-3.7 {remove: init again gives empty history} -setup {
+    mkEntry
+} -body {
+    ::history::add .e foo
+    ::history::remove .e
+    ::history::init .e
+    list [::history::get .e] [bindtags .e]
+} -cleanup {
+    cleanEntry
+} -result {{} {.e History Entry . all}}
+
+test history-3.8 {remove: arrow keys no longer navigate the history} -setup {
+    mkEntry
+    recordAlerts
+} -body {
+    ::history::add .e foo
+    ::history::add .e bar
+    ::history::remove .e
+    .e insert end typed
+    list [key Up] [key Down] $::alerts
+} -cleanup {
+    cleanEntry
+} -result {typed typed 0}
+
+# -------------------------------------------------------------------------
+# ::history::add and ::history::get
+
+test history-4.1 {add: wrong # args} -body {
+    ::history::add .e
+} -returnCodes error -result {wrong # args: should be "::history::add w line"}
+
+test history-4.2 {get: wrong # args} -body {
+    ::history::get
+} -returnCodes error -result {wrong # args: should be "::history::get w"}
+
+test history-4.3 {add: newest first} -setup {
+    mkEntry
+} -body {
+    foreach s {one two three} {::history::add .e $s}
+    ::history::get .e
+} -cleanup {
+    cleanEntry
+} -result {three two one}
+
+test history-4.4 {add: duplicate is moved to the front} -setup {
+    mkEntry
+} -body {
+    foreach s {one two three two} {::history::add .e $s}
+    ::history::get .e
+} -cleanup {
+    cleanEntry
+} -result {two three one}
+
+test history-4.5 {add: same as the last one} -setup {
+    mkEntry
+} -body {
+    foreach s {one one one} {::history::add .e $s}
+    ::history::get .e
+} -cleanup {
+    cleanEntry
+} -result {one}
+
+test history-4.6 {add: text with spaces and special characters} -setup {
+    mkEntry
+} -body {
+    ::history::add .e {a b}
+    ::history::add .e "\{"
+    ::history::add .e {$x [y]}
+    ::history::get .e
+} -cleanup {
+    cleanEntry
+} -result [list {$x [y]} "\{" {a b}]
+
+test history-4.7 {add: glob characters do not remove other entries} -constraints {
+    knownBug
+} -setup {
+    mkEntry
+} -body {
+    # Duplicates are searched with glob matching.
+    ::history::add .e abc
+    ::history::add .e a*
+    ::history::get .e
+} -cleanup {
+    cleanEntry
+} -result {a* abc}
+
+test history-4.8 {add: duplicates differing in case are kept} -setup {
+    mkEntry
+} -body {
+    ::history::add .e abc
+    ::history::add .e ABC
+    ::history::get .e
+} -cleanup {
+    cleanEntry
+} -result {ABC abc}
+
+test history-4.9 {add: non-ASCII text} -setup {
+    mkEntry
+} -body {
+    ::history::add .e "їжак"
+    ::history::add .e "\U1F600"
+    ::history::get .e
+} -cleanup {
+    cleanEntry
+} -result [list "\U1F600" "їжак"]
+
+test history-4.10 {add: entry without history} -setup {
+    entry .e
+} -body {
+    ::history::add .e foo
+} -cleanup {
+    cleanEntry
+} -returnCodes error -match glob -result *
+
+test history-4.11 {add: history is limited to the length} -constraints {
+    knownBug
+} -setup {
+    mkEntry 3
+} -body {
+    # The code keeps one more entry than the length.
+    foreach s {1 2 3 4 5 6} {::history::add .e $s}
+    ::history::get .e
+} -cleanup {
+    cleanEntry
+} -result {6 5 4}
+
+test history-4.12 {add: oldest entries are dropped} -setup {
+    mkEntry 3
+} -body {
+    foreach s {1 2 3 4 5 6 7 8 9} {::history::add .e $s}
+    set h [::history::get .e]
+    list [lrange $h 0 2] [expr {[llength $h] <= 4}] [expr {"1" in $h}]
+} -cleanup {
+    cleanEntry
+} -result {{9 8 7} 1 0}
+
+test history-4.13 {add does not change the entry contents} -setup {
+    mkEntry
+} -body {
+    .e insert end typed
+    ::history::add .e foo
+    .e get
+} -cleanup {
+    cleanEntry
+} -result typed
+
+# -------------------------------------------------------------------------
+# ::history::clear
+
+test history-5.1 {clear: wrong # args} -body {
+    ::history::clear
+} -returnCodes error -result {wrong # args: should be "::history::clear w"}
+
+test history-5.2 {clear} -setup {
+    mkEntry
+} -body {
+    foreach s {one two three} {::history::add .e $s}
+    ::history::clear .e
+    ::history::get .e
+} -cleanup {
+    cleanEntry
+} -result {}
+
+test history-5.3 {clear: keeps bindings and length} -setup {
+    mkEntry 7
+} -body {
+    ::history::add .e one
+    ::history::clear .e
+    ::history::add .e two
+    list [::history::get .e] [bindtags .e] [::history::configure .e length]
+} -cleanup {
+    cleanEntry
+} -result {two {.e History Entry . all} 7}
+
+test history-5.4 {clear: Up after clear alerts} -setup {
+    mkEntry
+    recordAlerts
+} -body {
+    ::history::add .e one
+    ::history::add .e two
+    ::history::clear .e
+    .e insert end typed
+    list [key Up] $::alerts
+} -cleanup {
+    cleanEntry
+} -result {typed 1}
+
+# -------------------------------------------------------------------------
+# ::history::configure
+
+test history-6.1 {configure: wrong # args} -body {
+    ::history::configure .e
+} -returnCodes error -result {wrong # args: should be "::history::configure w option ?value?"}
+
+test history-6.2 {configure: wrong # args} -body {
+    ::history::configure .e length 1 2
+} -returnCodes error -result {wrong # args: should be "::history::configure w option ?value?"}
+
+test history-6.3 {configure: unknown option} -setup {
+    mkEntry
+} -body {
+    ::history::configure .e foo
+} -cleanup {
+    cleanEntry
+} -returnCodes error -result {unknown option foo, expected alert, or length}
+
+test history-6.4 {configure length: set and query} -setup {
+    mkEntry
+} -body {
+    list [::history::configure .e length 12] [::history::configure .e length]
+} -cleanup {
+    cleanEntry
+} -result {12 12}
+
+test history-6.5 {configure length: not an integer} -setup {
+    mkEntry
+} -body {
+    ::history::configure .e length abc
+} -cleanup {
+    cleanEntry
+} -returnCodes error -result {length must be an integer}
+
+test history-6.6 {configure length: not an integer, value unchanged} -setup {
+    mkEntry 4
+} -body {
+    catch {::history::configure .e length 1.5}
+    ::history::configure .e length
+} -cleanup {
+    cleanEntry
+} -result 4
+
+test history-6.7 {configure length: shorter length applies on the next add} -setup {
+    mkEntry
+} -body {
+    foreach s {1 2 3 4 5 6} {::history::add .e $s}
+    ::history::configure .e length 2
+    set r [llength [::history::get .e]]
+    ::history::add .e 7
+    set h [::history::get .e]
+    list $r [lrange $h 0 1] [expr {[llength $h] <= 3}]
+} -cleanup {
+    cleanEntry
+} -result {6 {7 6} 1}
+
+test history-6.8 {configure length: per widget} -setup {
+    mkEntry
+    entry .e2
+    ::history::init .e2
+} -body {
+    ::history::configure .e length 3
+    list [::history::configure .e length] [::history::configure .e2 length]
+} -cleanup {
+    ::history::remove .e2
+    destroy .e2
+    cleanEntry
+} -result {3 30}
+
+test history-6.9 {configure alert: default is bell} -body {
+    string trim [::history::configure .e alert]
+} -result bell
+
+test history-6.10 {configure alert: set and query} -setup {
+    mkEntry
+} -body {
+    ::history::configure .e alert {set ::alerts $w}
+    string trim [::history::configure .e alert]
+} -cleanup {
+    cleanEntry
+} -result {set ::alerts $w}
+
+test history-6.11 {configure alert: global, the path is ignored} -setup {
+    mkEntry
+    entry .e2
+    ::history::init .e2
+    set ::alerts {}
+} -body {
+    ::history::configure .nosuchwindow alert {lappend ::alerts $w}
+    ::history::up .e
+    ::history::up .e2
+    set ::alerts
+} -cleanup {
+    ::history::remove .e2
+    destroy .e2
+    cleanEntry
+} -result {.e .e2}
+
+test history-6.12 {configure alert: run at the end of the history} -setup {
+    mkEntry
+    set ::alerts {}
+    ::history::configure .e alert {lappend ::alerts $w}
+} -body {
+    key Up
+    key Down
+    set ::alerts
+} -cleanup {
+    cleanEntry
+} -result {.e .e}
+
+# -------------------------------------------------------------------------
+# Navigation with the arrow keys
+
+test history-7.1 {Up/Down with empty history alert, entry unchanged} -setup {
+    mkEntry
+    recordAlerts
+} -body {
+    .e insert end typed
+    list [key Up] [key Down] $::alerts
+} -cleanup {
+    cleanEntry
+} -result {typed typed 2}
+
+test history-7.2 {Down at the bottom of the history alerts} -setup {
+    mkEntry
+    recordAlerts
+} -body {
+    foreach s {one two three} {::history::add .e $s}
+    .e insert end typed
+    list [key Down] $::alerts
+} -cleanup {
+    cleanEntry
+} -result {typed 1}
+
+# Since version 0.2 (ticket [5e324065bf]) the current position starts at 0
+# instead of -1: Up skips the newest entry, a single entry can never be
+# recalled, and Down never restores the typed text.
+
+test history-7.3 {Up goes back through the history, newest first} -constraints {
+    knownBug
+} -setup {
+    mkEntry
+    recordAlerts
+} -body {
+    foreach s {one two three} {::history::add .e $s}
+    list [key Up] [key Up] [key Up] $::alerts
+} -cleanup {
+    cleanEntry
+} -result {three two one 0}
+
+test history-7.4 {Up at the top of the history alerts} -constraints {
+    knownBug
+} -setup {
+    mkEntry
+    recordAlerts
+} -body {
+    foreach s {one two three} {::history::add .e $s}
+    list [key Up] [key Up] [key Up] [key Up] $::alerts
+} -cleanup {
+    cleanEntry
+} -result {three two one one 1}
+
+test history-7.5 {single entry history can be recalled} -constraints {
+    knownBug
+} -setup {
+    mkEntry
+    recordAlerts
+} -body {
+    ::history::add .e one
+    list [key Up] $::alerts
+} -cleanup {
+    cleanEntry
+} -result {one 0}
+
+test history-7.6 {Down goes forward and restores the typed text} -constraints {
+    knownBug
+} -setup {
+    mkEntry
+    recordAlerts
+} -body {
+    foreach s {one two three} {::history::add .e $s}
+    .e insert end typed
+    list [key Up] [key Up] [key Down] [key Down] [key Down] $::alerts
+} -cleanup {
+    cleanEntry
+} -result {three two three typed typed 1}
+
+test history-7.7 {add resets the position to the bottom} -constraints {
+    knownBug
+} -setup {
+    mkEntry
+    recordAlerts
+} -body {
+    foreach s {one two three} {::history::add .e $s}
+    key Up
+    key Up
+    .e delete 0 end
+    ::history::add .e four
+    list [key Up] [key Up] $::alerts
+} -cleanup {
+    cleanEntry
+} -result {four three 0}
+
+test history-7.8 {Up replaces the whole entry contents} -setup {
+    mkEntry
+    recordAlerts
+} -body {
+    foreach s {one two three} {::history::add .e $s}
+    .e insert end "some typed text"
+    .e icursor 3
+    set r [key Up]
+    list [expr {$r in {one two three}}] $::alerts
+} -cleanup {
+    cleanEntry
+} -result {1 0}
+
+test history-7.9 {other keys still work with History bindtag} -setup {
+    mkEntry
+} -body {
+    key a
+    key b
+    key BackSpace
+} -cleanup {
+    cleanEntry
+} -result a
+
+# -------------------------------------------------------------------------
+
+rename mkEntry {}
+rename cleanEntry {}
+rename recordAlerts {}
+rename key {}
+unset origAlert
+
+::tcltest::cleanupTests
