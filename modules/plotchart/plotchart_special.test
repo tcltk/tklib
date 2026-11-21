@@ -1,0 +1,827 @@
+# -*- tcl -*-
+# plotchart_special.test --
+#
+#	Tests for the Plotchart package: 3D plots, 3D ribbon plots and the
+#	specialised plots (target diagrams, performance profiles, Taylor
+#	diagrams, heatmaps and circle plots).
+#
+# The output of Plotchart is drawn on a canvas, so the tests check the
+# canvas items (types, tags, coordinates relative to each other, colours
+# and texts), not pixels.
+#
+# The tests in this file are numbered Plotchart-401.M to Plotchart-499.M
+# (plotchart.test uses the numbers below 100).
+
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2
+    namespace import ::tcltest::*
+}
+
+::tcltest::testConstraint tk 1
+
+source [file join [file dirname [file normalize [info script]]] plotchart.tcl]
+
+# -------------------------------------------------------------------------
+# Helpers
+#
+# Plotchart keeps its state in namespace arrays keyed by the name of the
+# canvas (or of its per-plot alias, "00.c", "01.c", ...).  The canvases
+# are normally not mapped, so that the size of the plot is determined by
+# the -width and -height options only.
+
+# Collect background errors instead of showing a dialog
+set ::bgErrors {}
+proc ::testBgError {msg opts} {
+    lappend ::bgErrors $msg
+}
+set ::oldBgError [interp bgerror {}]
+interp bgerror {} ::testBgError
+
+set ::oldRootState [wm state .]
+
+proc mkCanvas {{width 400} {height 300} {c .c}} {
+    canvas $c -width $width -height $height -background white \
+	-highlightthickness 0 -borderwidth 0
+    return $c
+}
+
+proc cleanupPlot {{c .c}} {
+    if {[winfo exists $c]} {
+	::Plotchart::clearcanvas $c
+	destroy $c
+    }
+    set pat [string map {. \\.} $c]
+    foreach a [interp aliases {}] {
+	if {[regexp "^(.+_)?r?\[0-9\]\[0-9\]$pat\$" $a] ||
+	    [regexp "^\[a-z0-9\]+_$pat\$" $a]} {
+	    interp alias {} $a {}
+	}
+    }
+    foreach v {scaling config data_series legend settings packing} {
+	if {[info exists ::Plotchart::$v]} {
+	    array unset ::Plotchart::$v *$c,*
+	}
+    }
+}
+
+# Return the item ids having all given tags, in display order.
+# An element "type=T" selects only items of type T, "notype=T" excludes
+# items of type T.
+proc items {tags {c .c}} {
+    set t {}
+    set type {}
+    set notype {}
+    foreach x $tags {
+	if {[string match type=* $x]} {
+	    set type [string range $x 5 end]
+	} elseif {[string match notype=* $x]} {
+	    set notype [string range $x 7 end]
+	} else {
+	    lappend t $x
+	}
+    }
+    set ids {}
+    foreach i [$c find withtag [join $t " && "]] {
+	if {($type eq "" || [$c type $i] eq $type) &&
+	    ($notype eq "" || [$c type $i] ne $notype)} {
+	    lappend ids $i
+	}
+    }
+    return $ids
+}
+
+# Return the types of the items having all given tags, sorted and unique
+proc itemTypes {tags {c .c}} {
+    set types {}
+    foreach i [items $tags $c] {
+	lappend types [$c type $i]
+    }
+    lsort -unique $types
+}
+
+# Return the texts of the text items having all given tags
+proc itemTexts {tags {c .c}} {
+    set texts {}
+    foreach i [items $tags $c] {
+	if {[$c type $i] eq "text"} {
+	    lappend texts [$c itemcget $i -text]
+	}
+    }
+    return $texts
+}
+
+# Return the given option for all items having the given tags (unique)
+proc itemOption {tags option {c .c}} {
+    set values {}
+    foreach i [items $tags $c] {
+	lappend values [$c itemcget $i $option]
+    }
+    lsort -unique $values
+}
+
+# Round the numbers in a list to the given number of decimals
+proc R {value {digits 1}} {
+    set r {}
+    foreach v $value {
+	if {[string is double -strict $v]} {
+	    set v [format %.${digits}f $v]
+	    if {$v == 0} {set v [format %.${digits}f 0]}
+	}
+	lappend r $v
+    }
+    return $r
+}
+
+# Centre of the bounding box of the items with the given tags
+proc centre {tags {c .c}} {
+    lassign [$c bbox [join $tags " && "]] x1 y1 x2 y2
+    list [expr {($x1+$x2)/2.0}] [expr {($y1+$y2)/2.0}]
+}
+
+# Pixel coordinates of a world point in the given plot
+proc pix {p x y} {
+    ::Plotchart::coordsToPixel [$p canvas] $x $y
+}
+
+proc approx {a b {eps 1.0}} {
+    expr {abs($a-$b) <= $eps}
+}
+
+proc restoreRoot {} {
+    if {$::oldRootState eq "withdrawn"} {
+	wm withdraw .
+    }
+}
+
+proc samePixels {a b {eps 0.51}} {
+    if {[llength $a] != [llength $b]} {
+	return 0
+    }
+    foreach u $a v $b {
+	if {abs($u-$v) > $eps} {
+	    return 0
+	}
+    }
+    return 1
+}
+
+# Items created by a script
+proc newItems {script {c .c}} {
+    set before [$c find all]
+    uplevel 1 $script
+    set new {}
+    foreach i [$c find all] {
+	if {$i ni $before} {lappend new $i}
+    }
+    return $new
+}
+
+proc pix3d {p x y z} {
+    ::Plotchart::coords3DToPixel [$p canvas] $x $y $z
+}
+
+proc plane {x y} {
+    expr {$x + $y}
+}
+
+# -------------------------------------------------------------------------
+# 3D plots
+
+test Plotchart-401.1 {create3DPlot: axes with labels} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::create3DPlot .c {0 10 5} {0 10 5} {0 20 10}]
+    set texts [itemTexts axis3d]
+    list [string match 3dplot_* $p] [lsort -unique -integer $texts] [itemTypes axis3d]
+} -cleanup {
+    cleanupPlot
+} -result {1 {0 5 10 20} {line text}}
+
+test Plotchart-401.2 {create3DPlot: -xlabels} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::create3DPlot .c {0 10 5} {0 10 5} {0 20 10} -xlabels {Front Back}]
+    set texts [itemTexts axis3d]
+    list [expr {"Front" in $texts}] [expr {"Back" in $texts}]
+} -cleanup {
+    cleanupPlot
+} -result {1 1}
+
+test Plotchart-401.3 {3D plot plotfunc: polygons over a grid of 10x10 cells} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::create3DPlot .c {0 10 5} {0 10 5} {0 20 10}]
+    $p plotfunc plane
+    set polys [items data]
+    set ok 1
+    foreach poly $polys {
+	if {[llength [.c coords $poly]] != 10} {set ok 0}
+    }
+    list [llength $polys] [itemTypes data] $ok [itemOption data -fill] [itemOption data -outline]
+} -cleanup {
+    cleanupPlot
+} -result {100 polygon 1 grey black}
+
+test Plotchart-401.4 {3D plot plotfunc: vertices on the surface} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::create3DPlot .c {0 10 5} {0 10 5} {0 20 10}]
+    $p gridsize 2 2
+    $p plotfunc plane
+    set expected {}
+    foreach poly [items data] {
+	lappend found [R [lrange [.c coords $poly] 0 1] 1]
+    }
+    foreach {x y} {5 0 10 0 5 5 10 5} {
+	lappend expected [R [pix3d $p [expr {$x-5}] $y [plane [expr {$x-5}] $y]] 1]
+    }
+    expr {[lsort $found] eq [lsort $expected]}
+} -cleanup {
+    cleanupPlot
+} -result 1
+
+test Plotchart-401.5 {3D plot gridsize: number of polygons} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::create3DPlot .c {0 10 5} {0 10 5} {0 20 10}]
+    $p gridsize 3 4
+    $p plotfunc plane
+    llength [items data]
+} -cleanup {
+    cleanupPlot
+} -result 12
+
+test Plotchart-401.6 {3D plot colour: fill and border; color is a synonym} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::create3DPlot .c {0 10 5} {0 10 5} {0 20 10}]
+    $p gridsize 2 2
+    $p colour yellow red
+    $p plotfunc plane
+    set r [list [itemOption data -fill] [itemOption data -outline]]
+    .c delete data
+    $p color green blue
+    $p plotfunc plane
+    lappend r [itemOption data -fill] [itemOption data -outline]
+} -cleanup {
+    cleanupPlot
+} -result {yellow red green blue}
+
+test Plotchart-401.7 {3D plot plotdata: one polygon per cell of the matrix} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::create3DPlot .c {0 10 5} {0 10 5} {0 20 10}]
+    $p plotdata {{1.0 2.0 3.0} {4.0 5.0 6.0}}
+    set polys [items data]
+    # The first polygon is the cell at the high x end of the first row
+    set first [R [lrange [.c coords [lindex $polys 0]] 0 1] 1]
+    list [llength $polys] [expr {$first eq [R [pix3d $p 5 0 2.0] 1]}]
+} -cleanup {
+    cleanupPlot
+} -result {2 1}
+
+test Plotchart-401.8 {3D plot plotfuncont: coloured according to the contours} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::create3DPlot .c {0 10 5} {0 10 5} {0 20 10}]
+    $p gridsize 2 2
+    set new [newItems {$p plotfuncont plane {0 5 10 15 20}}]
+    set polys [lmap i $new {expr {[.c type $i] eq "polygon" ? $i : [continue]}}]
+    set lines [lmap i $new {expr {[.c type $i] eq "line" ? $i : [continue]}}]
+    list [expr {[llength $polys] > 4}] [expr {[llength $lines] >= 4}] \
+	[expr {[llength [lsort -unique [lmap i $polys {.c itemcget $i -fill}]]] > 1}]
+} -cleanup {
+    cleanupPlot
+    ::Plotchart::colorMap jet
+} -result {1 1 1}
+
+test Plotchart-401.9 {3D plot interpolatedata: coloured surface} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::create3DPlot .c {0 10 5} {0 10 5} {0 20 10}]
+    $p gridsize 4 4
+    set new [newItems {$p interpolatedata {{0 5 10} {5 10 15} {10 15 20}} {0 5 10 15 20}}]
+    set polys [lmap i $new {expr {[.c type $i] eq "polygon" ? $i : [continue]}}]
+    set lines [lmap i $new {expr {[.c type $i] eq "line" ? $i : [continue]}}]
+    list [expr {[llength $polys] > 16}] [expr {[llength $lines] >= 16}] \
+	[expr {[llength [lsort -unique [lmap i $polys {.c itemcget $i -fill}]]] > 1}]
+} -cleanup {
+    cleanupPlot
+    ::Plotchart::colorMap jet
+} -result {1 1 1}
+
+test Plotchart-401.10 {3D plot ribbon: polygons for the yz-pairs} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::create3DPlot .c {0 10 5} {0 10 5} {0 20 10}]
+    $p colour orange black
+    $p ribbon {{0 0} {5 10} {10 5}}
+    list [llength [items data]] [itemOption data -fill]
+} -cleanup {
+    cleanupPlot
+} -result {2 orange}
+
+test Plotchart-401.11 {3D plot: the x-axis goes into the screen} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::create3DPlot .c {0 10 5} {0 10 5} {0 20 10}]
+    lassign [pix3d $p 0 0 0] x0 y0
+    lassign [pix3d $p 10 0 0] x1 y1
+    list [expr {$x1 > $x0}] [expr {$y1 < $y0}]
+} -cleanup {
+    cleanupPlot
+} -result {1 1}
+
+test Plotchart-401.12 {3D plot: title and xconfig/yconfig/zconfig} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::create3DPlot .c {0 10 5} {0 10 5} {0 20 10}]
+    $p title "Surface"
+    itemTexts title
+} -cleanup {
+    cleanupPlot
+} -result {Surface}
+
+test Plotchart-401.13 {3D plot gridsize: wrong # args} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::create3DPlot .c {0 10 5} {0 10 5} {0 20 10}]
+    $p gridsize 3
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {wrong # args: should be "GridSize3D w nxcells nycells"}
+
+test Plotchart-401.14 {create3DPlot: equal extremes} -setup {
+    mkCanvas 400 400
+} -body {
+    ::Plotchart::create3DPlot .c {0 10 5} {0 10 5} {5 5 10}
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {Minimum and maximum must differ for world coordinates}
+
+# -------------------------------------------------------------------------
+# 3D ribbon plots
+
+test Plotchart-402.1 {create3DRibbonPlot: axes without x-axis} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::create3DRibbonPlot .c {0 10 5} {0 20 10}]
+    list [string match 3dribbonplot_* $p] [lsort -unique -integer [itemTexts axis3d]]
+} -cleanup {
+    cleanupPlot
+} -result {1 {0 5 10 20}}
+
+test Plotchart-402.2 {3D ribbon plot plot: one polygon per segment} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::create3DRibbonPlot .c {0 10 5} {0 20 10}]
+    $p plot {{0 0} {5 10} {10 5} {10 20}}
+    set polys [items data]
+    list [llength $polys] [itemTypes data] [itemOption data -fill] [itemOption data -outline]
+} -cleanup {
+    cleanupPlot
+} -result {3 polygon grey black}
+
+test Plotchart-402.3 {3D ribbon plot: background and title} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::create3DRibbonPlot .c {0 10 5} {0 20 10}]
+    $p title "Ribbon"
+    $p background plot lightyellow
+    list [itemTexts title] [.c cget -background]
+} -cleanup {
+    cleanupPlot
+} -result {Ribbon lightyellow}
+
+# -------------------------------------------------------------------------
+# Target diagrams
+
+test Plotchart-403.1 {createTargetDiagram: axes, limit circles and cross} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createTargetDiagram .c {0.5 1.0}]
+    set circles [items {limits type=oval}]
+    set radii {}
+    lassign [pix $p 0 0] xc yc
+    foreach c $circles {
+	lassign [.c coords $c] x1 y1 x2 y2
+	lappend radii [R [lindex [::Plotchart::pixelToCoords [$p canvas] $x2 $yc] 0] 1]
+	lappend centres [samePixels [list [expr {($x1+$x2)/2}] [expr {($y1+$y2)/2}]] [list $xc $yc]]
+    }
+    list [string match targetdiagram_* $p] $radii [lsort -unique $centres] \
+	[llength [items {limits type=line}]] [itemOption {limits type=oval} -outline] \
+	[lindex [itemTexts xaxis] 0] [lindex [itemTexts xaxis] end]
+} -cleanup {
+    cleanupPlot
+} -result {1 {0.5 1.0} 1 2 gray -1 1}
+
+test Plotchart-403.2 {createTargetDiagram: scale of the axes} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createTargetDiagram .c {0.5 1.0} 2.0]
+    list [lindex [itemTexts xaxis] 0] [lindex [itemTexts xaxis] end] \
+	[lindex [itemTexts yaxis] 0] [lindex [itemTexts yaxis] end]
+} -cleanup {
+    cleanupPlot
+} -result {-2 2 -2 2}
+
+test Plotchart-403.3 {target diagram plot: one symbol for the series} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createTargetDiagram .c {0.5 1.0}]
+    $p dataconfig model -colour red -symbol circle
+    $p plot model {1.0 2.0 3.0 4.0} {1.0 2.0 3.0 4.0}
+    set s [items data_model]
+    lassign [.c coords $s] x1 y1 x2 y2
+    # Identical data: bias 0 and unbiased RMSD 0
+    list [llength $s] [.c type $s] [.c itemcget $s -outline] \
+	[samePixels [list [expr {($x1+$x2)/2}] [expr {($y1+$y2)/2}]] [pix $p 0 0] 0.01]
+} -cleanup {
+    cleanupPlot
+} -result {1 oval red 1}
+
+test Plotchart-403.4 {target diagram plot: bias and RMSD} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createTargetDiagram .c {0.5 1.0} 2.0]
+    # Model = measurements + 1: normalised bias 1/stdev, RMSD 0
+    $p plot s {2.0 3.0 4.0} {1.0 2.0 3.0}
+    set s [items data_s]
+    lassign [.c coords $s] x1 y1 x2 y2
+    R [::Plotchart::pixelToCoords [$p canvas] [expr {($x1+$x2)/2}] [expr {($y1+$y2)/2}]] 2
+} -cleanup {
+    cleanupPlot
+} -result {0.00 1.00}
+
+test Plotchart-403.5 {target diagram plot: missing values are skipped} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createTargetDiagram .c {0.5 1.0} 2.0]
+    $p plot s {2.0 {} 3.0 4.0} {1.0 5.0 2.0 {}}
+    set s [items data_s]
+    lassign [.c coords $s] x1 y1 x2 y2
+    list [llength $s] [R [::Plotchart::pixelToCoords [$p canvas] [expr {($x1+$x2)/2}] [expr {($y1+$y2)/2}]] 2]
+} -cleanup {
+    cleanupPlot
+} -result {1 {0.00 1.41}}
+
+test Plotchart-403.6 {target diagram plot: lists of different length} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createTargetDiagram .c {0.5 1.0}]
+    $p plot s {1 2 3} {1 2}
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {Lists of model data and measurements should have the same length}
+
+test Plotchart-403.7 {target diagram: limits colour via plotconfig} -setup {
+    ::Plotchart::plotconfig targetdiagram limits color blue
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createTargetDiagram .c {0.5}]
+    list [itemOption {limits type=oval} -outline] [itemOption {limits type=line} -fill]
+} -cleanup {
+    cleanupPlot
+    ::Plotchart::plotconfig targetdiagram limits color default
+} -result {blue blue}
+
+test Plotchart-403.8 {target diagram: legend and texts} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createTargetDiagram .c {0.5 1.0}]
+    $p plot s {2.0 3.0 4.0} {1.0 2.0 3.0}
+    $p legend s "Model"
+    $p xtext "RMSD"
+    list [itemTexts legend] [itemTexts xtext]
+} -cleanup {
+    cleanupPlot
+} -result {Model RMSD}
+
+# -------------------------------------------------------------------------
+# Performance profiles
+
+test Plotchart-404.1 {createPerformanceProfile: axes} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createPerformanceProfile .c 3]
+    list [string match performance_* $p] [lindex [itemTexts xaxis] 0] [itemTexts yaxis]
+} -cleanup {
+    cleanupPlot
+} -result {1 1 {0 0.25 0.5 0.75 1}}
+
+test Plotchart-404.2 {performance profile plot: best method highest} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createPerformanceProfile .c 3]
+    $p dataconfig fast -colour green
+    $p dataconfig slow -colour red
+    $p plot {fast {1.0 2.0 3.0} slow {2.0 4.0 6.0}}
+    set w [$p canvas]
+    set yfast {}
+    foreach l [items data_fast] {
+	lassign [.c coords $l] x1 y1
+	lappend yfast [list [R [::Plotchart::pixelToCoords $w $x1 $y1] 2]]
+    }
+    set yslow {}
+    foreach l [items data_slow] {
+	lassign [.c coords $l] x1 y1 x2 y2
+	lappend yslow [R [::Plotchart::pixelToCoords $w $x2 $y2] 2]
+    }
+    list [itemOption data_fast -fill] [itemOption data_slow -fill] \
+	[R [lindex [::Plotchart::pixelToCoords $w {*}[lrange [.c coords [lindex [items data_fast] end]] 2 3]] 1] 2] \
+	[lindex $yslow 0]
+} -cleanup {
+    cleanupPlot
+} -result {green red 1.00 {2.00 1.00}}
+
+test Plotchart-404.3 {performance profile: legend at the bottom right} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createPerformanceProfile .c 3]
+    $p plot {a {1 2} b {2 1}}
+    $p legend a "Method A"
+    lassign [.c bbox legendbg] x1 y1 x2 y2
+    list [expr {$x1 > 200}] [expr {$y1 > 200}]
+} -cleanup {
+    cleanupPlot
+} -result {1 1}
+
+# -------------------------------------------------------------------------
+# Taylor diagrams
+
+test Plotchart-405.1 {createTaylorDiagram: quarter circles and correlation lines} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createTaylorDiagram .c {1.0 0.25}]
+    set arcs [items {limits type=arc}]
+    set labels [itemTexts limit_labels]
+    list [string match taylordiagram_* $p] [llength $arcs] \
+	[lsort -unique [lmap a $arcs {list [R [.c itemcget $a -start] 0] [R [.c itemcget $a -extent] 0]}]] \
+	[lmap l $labels {string trim $l}] [llength [items {limits type=line}]]
+} -cleanup {
+    cleanupPlot
+} -result {1 4 {{0 90}} {0.1 0.3 0.5 0.7 0.9 0.98} 6}
+
+test Plotchart-405.2 {Taylor diagram plot: stdev as distance, correlation as angle} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createTaylorDiagram .c {1.0 0.25}]
+    $p dataconfig m -colour red
+    $p plot m 0.8 0.6
+    set s [items data_m]
+    lassign [.c coords $s] x1 y1 x2 y2
+    lassign [::Plotchart::pixelToCoords [$p canvas] [expr {($x1+$x2)/2}] [expr {($y1+$y2)/2}]] x y
+    list [.c type $s] [.c itemcget $s -fill] [R [expr {hypot($x,$y)}] 2] [R [expr {$x/hypot($x,$y)}] 2]
+} -cleanup {
+    cleanupPlot
+} -result {oval red 0.80 0.60}
+
+test Plotchart-405.3 {createTaylorDiagram: -reference} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createTaylorDiagram .c {1.0 0.25} -reference 0.5]
+    set dot [items data_reference]
+    lassign [.c coords $dot] x1 y1 x2 y2
+    list [expr {[llength [items reference]] > 0}] [itemTypes reference] \
+	[R [::Plotchart::pixelToCoords [$p canvas] [expr {($x1+$x2)/2}] [expr {($y1+$y2)/2}]] 2] \
+	[.c itemcget $dot -fill]
+} -cleanup {
+    cleanupPlot
+} -result {1 arc {0.50 0.00} black}
+
+test Plotchart-405.4 {Taylor diagram: limits and reference colours} -setup {
+    ::Plotchart::plotconfig taylordiagram limits color blue
+    ::Plotchart::plotconfig taylordiagram reference color red
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createTaylorDiagram .c {1.0 0.25} -reference 0.5]
+    list [itemOption {limits type=arc} -outline] [itemOption reference -outline] \
+	[.c itemcget [items data_reference] -fill]
+} -cleanup {
+    cleanupPlot
+    ::Plotchart::plotconfig taylordiagram limits color default
+    ::Plotchart::plotconfig taylordiagram reference color default
+} -result {blue red red}
+
+test Plotchart-405.5 {createTaylorDiagram: step size zero} -setup {
+    mkCanvas 400 400
+} -body {
+    ::Plotchart::createTaylorDiagram .c {1.0 0}
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {Step size can not be zero}
+
+test Plotchart-405.6 {createTaylorDiagram: canvas not called .c} -constraints {
+    knownBug
+} -setup {
+    mkCanvas 400 400 .c2
+} -body {
+    # Fails with: invalid command name ".c"
+    set p [::Plotchart::createTaylorDiagram .c2 {1.0 0.25}]
+    llength [items limits .c2]
+} -cleanup {
+    cleanupPlot .c2
+} -result 10
+
+# -------------------------------------------------------------------------
+# Heatmaps
+
+test Plotchart-406.1 {createHeatmap: labels and cells} -setup {
+    mkCanvas 400 300
+} -body {
+    set p [::Plotchart::createHeatmap .c {r1 r2 r3} {c1 c2}]
+    set texts [lmap i [.c find all] {expr {[.c type $i] eq "text" ? [.c itemcget $i -text] : [continue]}}]
+    set rects [lmap i [.c find all] {expr {[.c type $i] eq "rectangle" && [.c gettags $i] eq "" ? $i : [continue]}}]
+    list [string match heatmap_* $p] $texts [llength $rects]
+} -cleanup {
+    cleanupPlot
+} -result {1 {r1 r2 r3 c1 c2} 6}
+
+proc heatCell {p row col} {
+    # Heatmaps have no canvas method
+    set w [lindex [interp alias {} $p] end]
+    .c itemcget $::Plotchart::data_series($w,$row,$col) -fill
+}
+
+test Plotchart-406.2 {heatmap plot row, column and cell: default yellow to blue} -setup {
+    mkCanvas 400 300
+} -body {
+    set p [::Plotchart::createHeatmap .c {r1 r2} {c1 c2}]
+    $p plot row r1 {0.0 1.0}
+    $p plot column c1 {0.0 0.5}
+    $p plot cell r2 c2 1.0
+    list [heatCell $p r1 c1] [heatCell $p r1 c2] [heatCell $p r2 c1] [heatCell $p r2 c2]
+} -cleanup {
+    cleanupPlot
+} -result [list #ffffffff0000 #00000000ffff #7fff7fff7fff #00000000ffff]
+
+test Plotchart-406.3 {heatmap scale colours} -setup {
+    mkCanvas 400 300
+} -body {
+    set p [::Plotchart::createHeatmap .c {r1} {c1 c2 c3}]
+    $p scale colours white red
+    $p plot row r1 {0.0 0.5 1.0}
+    lmap c {c1 c2 c3} {heatCell $p r1 $c}
+} -cleanup {
+    cleanupPlot
+} -result [list #ffffffffffff #ffff7fff7fff #ffff00000000]
+
+test Plotchart-406.4 {heatmap scale values: values outside are clipped} -setup {
+    mkCanvas 400 300
+} -body {
+    set p [::Plotchart::createHeatmap .c {r1} {c1 c2 c3}]
+    $p scale values 0 10
+    $p plot row r1 {-5 5 20}
+    lmap c {c1 c2 c3} {heatCell $p r1 $c}
+} -cleanup {
+    cleanupPlot
+} -result [list #ffffffff0000 #7fff7fff7fff #00000000ffff]
+
+test Plotchart-406.5 {heatmap scale values: minimum not zero} -constraints {
+    knownBug
+} -setup {
+    mkCanvas 400 300
+} -body {
+    # The colour is computed from value/(max-min) instead of (value-min)/(max-min)
+    set p [::Plotchart::createHeatmap .c {r1} {c1 c2 c3}]
+    $p scale values 10 20
+    $p plot row r1 {10 15 20}
+    lmap c {c1 c2 c3} {heatCell $p r1 $c}
+} -cleanup {
+    cleanupPlot
+} -result [list #ffffffff0000 #7fff7fff7fff #00000000ffff]
+
+test Plotchart-406.6 {heatmap plot: unknown selection} -setup {
+    mkCanvas 400 300
+} -body {
+    set p [::Plotchart::createHeatmap .c {r1} {c1}]
+    $p plot diagonal r1 {1}
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {Unknown type of selection: diagonal}
+
+test Plotchart-406.7 {heatmap scale: unknown property} -setup {
+    mkCanvas 400 300
+} -body {
+    set p [::Plotchart::createHeatmap .c {r1} {c1}]
+    $p scale range 0 1
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {Unknown type of property: range}
+
+test Plotchart-406.8 {heatmap: title} -setup {
+    mkCanvas 400 300
+} -body {
+    set p [::Plotchart::createHeatmap .c {r1} {c1}]
+    $p title "Heat"
+    itemTexts title
+} -cleanup {
+    cleanupPlot
+} -result {Heat}
+
+# -------------------------------------------------------------------------
+# Circle plots
+
+test Plotchart-407.1 {createCirclePlot: circle with labelled dots} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createCirclePlot .c {a b c d}]
+    set dots [items {circle type=oval}]
+    list [string match circle_* $p] [itemTexts circle] [llength $dots] \
+	[lsort -unique [lmap d [lrange $dots 1 end] {.c itemcget $d -fill}]]
+} -cleanup {
+    cleanupPlot
+} -result {1 {a b c d} 5 black}
+
+test Plotchart-407.2 {circle plot connect: arc between two labels} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createCirclePlot .c {a b c d}]
+    $p connect a c red 3
+    set l [items connection]
+    set dots [lrange [items {circle type=oval}] 1 end]
+    lassign [.c bbox [lindex $dots 0]] ax1 ay1 ax2 ay2
+    lassign [.c bbox [lindex $dots 2]] cx1 cy1 cx2 cy2
+    set c [.c coords $l]
+    list [.c type $l] [.c itemcget $l -fill] [.c itemcget $l -width] \
+	[samePixels [lrange $c 0 1] [list [expr {($cx1+$cx2)/2.0}] [expr {($cy1+$cy2)/2.0}]] 2] \
+	[samePixels [lrange $c end-1 end] [list [expr {($ax1+$ax2)/2.0}] [expr {($ay1+$ay2)/2.0}]] 2]
+} -cleanup {
+    cleanupPlot
+} -result {line red 3.0 1 1}
+
+test Plotchart-407.3 {circle plot connect: unknown label} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createCirclePlot .c {a b c d}]
+    $p connect a x red 1
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {Unknown label -- x}
+
+test Plotchart-407.4 {circle plot modify: text colour, font and dot colour} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createCirclePlot .c {a b c}]
+    $p modify b -textcolour red -font {Courier 12} -dotcolour blue
+    $p modify c -textcolor green -dotcolor yellow
+    set texts [items {circle type=text}]
+    set dots [lrange [items {circle type=oval}] 1 end]
+    list [lmap t $texts {winfo rgb . [.c itemcget $t -fill]}] [.c itemcget [lindex $texts 1] -font] \
+	[lmap d $dots {.c itemcget $d -fill}]
+} -cleanup {
+    cleanupPlot
+} -result [list [lmap c {black red green} {winfo rgb . $c}] {Courier 12} {black blue yellow}]
+
+test Plotchart-407.5 {circle plot modify: unknown label} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createCirclePlot .c {a b c}]
+    $p modify x -textcolour red
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {Unknown label -- x}
+
+test Plotchart-407.6 {circle plot: documented name createCircleplot} -constraints {
+    knownBug
+} -setup {
+    mkCanvas 400 400
+} -body {
+    # The command is called createCirclePlot
+    set p [::Plotchart::createCircleplot .c {a b c}]
+    string match circle_* $p
+} -cleanup {
+    cleanupPlot
+} -result 1
+
+test Plotchart-407.7 {circle plot: canvas not called .c} -constraints {
+    knownBug
+} -setup {
+    mkCanvas 400 400 .c2
+} -body {
+    # Fails with: invalid command name ".c"
+    set p [::Plotchart::createCirclePlot .c2 {a b c}]
+    llength [items circle .c2]
+} -cleanup {
+    cleanupPlot .c2
+} -result 7
+
+# -------------------------------------------------------------------------
+interp bgerror {} $::oldBgError
+restoreRoot
+test Plotchart-499.1 {no background errors} -body {
+    set ::bgErrors
+} -result {}
+::tcltest::cleanupTests
