@@ -1,0 +1,603 @@
+# -*- tcl -*-
+# Tests for the widget::validator package
+#
+# Copyright (c) 2026 Serhiy Storchaka
+#
+# See the file "license.terms" for information on usage and redistribution
+# of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+package require tcltest 2.2
+namespace import ::tcltest::*
+
+# Create a ttk::entry before the package is loaded.
+ttk::entry .before
+
+lappend auto_path [file dirname [file dirname [file normalize [info script]]]]
+package require widget::validator
+
+# -------------------------------------------------------------------------
+# Helpers
+
+proc nonEmpty {text} {
+    lappend ::validated $text
+    expr {$text ne {}}
+}
+
+proc isInvalid {w} {
+    $w instate invalid
+}
+
+# Detach (ignoring errors), destroy and forget the widgets.
+proc forget {args} {
+    foreach w $args {
+        catch {widget::validator detach $w}
+        destroy $w
+        dict unset ::widget::validator::attached $w
+        unset -nocomplain ::widget::validator::text($w)
+        bind WV_$w <FocusIn> {}
+        bind WV_$w <FocusOut> {}
+    }
+}
+
+# -------------------------------------------------------------------------
+# Ensemble
+
+test widgetv-1.1 {widget::validator: no subcommand} -body {
+    widget::validator
+} -returnCodes error -result {wrong # args: should be "widget::validator subcommand ?arg ...?"}
+
+test widgetv-1.2 {widget::validator: bad subcommand} -body {
+    widget::validator foo
+} -returnCodes error -result {unknown or ambiguous subcommand "foo": must be attach, detach, or validate}
+
+test widgetv-1.3 {attach: wrong # args} -body {
+    widget::validator attach .e red
+} -returnCodes error -result {wrong # args: should be "widget::validator attach w color vcmdprefix"}
+
+test widgetv-1.4 {detach: wrong # args} -body {
+    widget::validator detach
+} -returnCodes error -result {wrong # args: should be "widget::validator detach w"}
+
+test widgetv-1.5 {validate: wrong # args} -body {
+    widget::validator validate .e .f
+} -returnCodes error -result {wrong # args: should be "widget::validator validate w"}
+
+# -------------------------------------------------------------------------
+# attach errors
+
+test widgetv-2.1 {attach: nonexistent widget} -body {
+    widget::validator attach .nosuch red nonEmpty
+} -returnCodes error -match glob -result {* window path name ".nosuch"}
+
+test widgetv-2.2 {attach: nonexistent widget, error message} -constraints {
+    knownBug
+} -body {
+    # Typo in the message: "band window path name".
+    widget::validator attach .nosuch red nonEmpty
+} -returnCodes error -result {bad window path name ".nosuch"}
+
+test widgetv-2.3 {attach: unsupported widget} -setup {
+    entry .tke
+} -body {
+    widget::validator attach .tke red nonEmpty
+} -cleanup {
+    forget .tke
+} -returnCodes error -result {Unable to determine class of ".tke"}
+
+test widgetv-2.4 {attach: ttk::entry created before loading the package} -body {
+    widget::validator attach .before red nonEmpty
+} -returnCodes error -result {Unable to determine class of ".before"}
+
+test widgetv-2.5 {attach: already attached} -setup {
+    ttk::entry .e
+    widget::validator attach .e red nonEmpty
+} -body {
+    widget::validator attach .e blue nonEmpty
+} -cleanup {
+    forget .e
+} -returnCodes error -result {Unable to attach, .e already in use}
+
+test widgetv-2.6 {attach: failed attach leaves the widget unattached} -setup {
+    entry .tke
+} -body {
+    catch {widget::validator attach .tke red nonEmpty}
+    widget::validator detach .tke
+} -cleanup {
+    forget .tke
+} -returnCodes error -result {Unable to detach, .tke not known}
+
+test widgetv-2.7 {attach: unsupported widget reusing a ttk::entry name} -constraints {
+    knownBug
+} -setup {
+    # The class of a destroyed ttk::entry is remembered for a new widget
+    # with the same name, and the failed attachment is half-recorded.
+    ttk::entry .tke
+    destroy .tke
+    entry .tke
+} -body {
+    list [catch {widget::validator attach .tke red nonEmpty} msg] $msg \
+        [catch {widget::validator detach .tke}]
+} -cleanup {
+    forget .tke
+    unset -nocomplain msg
+} -result {1 {Unable to determine class of ".tke"} 1}
+
+test widgetv-2.8 {attach: widget destroyed without detach} -constraints {
+    knownBug
+} -setup {
+    # The attachment of a destroyed widget is not forgotten.
+    ttk::entry .e
+    widget::validator attach .e red nonEmpty
+    destroy .e
+    ttk::entry .e
+} -body {
+    widget::validator attach .e red nonEmpty
+} -cleanup {
+    forget .e
+} -result {}
+
+# -------------------------------------------------------------------------
+# ttk::entry
+
+test widgetv-3.1 {entry: attach returns empty string} -setup {
+    ttk::entry .e
+} -body {
+    widget::validator attach .e red nonEmpty
+} -cleanup {
+    forget .e
+} -result {}
+
+test widgetv-3.2 {entry: initial validation} -setup {
+    ttk::entry .e
+    set validated {}
+} -body {
+    widget::validator attach .e red nonEmpty
+    list [isInvalid .e] $validated
+} -cleanup {
+    forget .e
+    unset -nocomplain validated
+} -result {1 {{}}}
+
+test widgetv-3.3 {entry: initial validation of valid content} -setup {
+    ttk::entry .e
+    .e insert 0 abc
+    set validated {}
+} -body {
+    widget::validator attach .e red nonEmpty
+    list [isInvalid .e] $validated
+} -cleanup {
+    forget .e
+    unset -nocomplain validated
+} -result {0 abc}
+
+test widgetv-3.4 {entry: editing revalidates} -setup {
+    ttk::entry .e
+    widget::validator attach .e red nonEmpty
+    set validated {}
+} -body {
+    set res [isInvalid .e]
+    .e insert end a
+    lappend res [isInvalid .e]
+    .e insert end b
+    lappend res [isInvalid .e]
+    .e delete 0 end
+    lappend res [isInvalid .e] $validated
+} -cleanup {
+    forget .e
+    unset -nocomplain validated res
+} -result {1 0 0 1 {a ab {}}}
+
+test widgetv-3.5 {entry: invalid edits are not rejected} -setup {
+    ttk::entry .e
+    .e insert 0 abc
+    widget::validator attach .e red {apply {text {expr {[string is digit $text]}}}}
+} -body {
+    set res [isInvalid .e]
+    .e delete 0 end
+    .e insert 0 12
+    lappend res [isInvalid .e]
+    .e insert end x
+    lappend res [isInvalid .e] [.e get]
+} -cleanup {
+    forget .e
+    unset -nocomplain res
+} -result {1 0 1 12x}
+
+test widgetv-3.6 {entry: command prefix with extra arguments} -setup {
+    ttk::entry .e
+} -body {
+    widget::validator attach .e red {apply {{max text} {
+        expr {[string length $text] <= $max}
+    }} 3}
+    .e insert 0 abc
+    set res [isInvalid .e]
+    .e insert end d
+    lappend res [isInvalid .e]
+} -cleanup {
+    forget .e
+    unset -nocomplain res
+} -result {0 1}
+
+test widgetv-3.7 {entry: typing revalidates} -setup {
+    ttk::entry .e
+    pack .e
+    update
+    focus -force .e
+    update
+    widget::validator attach .e red nonEmpty
+} -body {
+    set res [isInvalid .e]
+    event generate .e <KeyPress> -keysym x
+    update
+    lappend res [isInvalid .e] [.e get]
+    event generate .e <KeyPress> -keysym BackSpace
+    update
+    lappend res [isInvalid .e] [.e get]
+} -cleanup {
+    forget .e
+    unset -nocomplain res
+} -result {1 0 x 1 {}}
+
+test widgetv-3.8 {entry: options are overridden} -setup {
+    ttk::entry .e
+} -body {
+    widget::validator attach .e red nonEmpty
+    list [.e cget -style] [.e cget -validate] \
+        [expr {[.e cget -validatecommand] ne {}}]
+} -cleanup {
+    forget .e
+} -result {%2ee.TEntry all 1}
+
+test widgetv-3.9 {entry: highlight color in the style} -setup {
+    ttk::entry .e
+} -body {
+    widget::validator attach .e #ff0000 nonEmpty
+    set map [ttk::style map [.e cget -style] -fieldbackground]
+    list [expr {[lsearch -exact $map invalid] >= 0}] \
+        [lindex $map [expr {[lsearch -exact $map invalid] + 1}]]
+} -cleanup {
+    forget .e
+    unset -nocomplain map
+} -result {1 #ff0000}
+
+test widgetv-3.10 {entry: style derived from a user style} -setup {
+    frame .f
+    ttk::style configure My.TEntry -padding 3
+    ttk::entry .f.e -style My.TEntry
+} -body {
+    widget::validator attach .f.e yellow nonEmpty
+    .f.e cget -style
+} -cleanup {
+    forget .f.e
+    destroy .f
+} -result {%2ef%2ee.My.TEntry}
+
+test widgetv-3.11 {entry: detach restores options} -setup {
+    ttk::entry .e -style My.TEntry -validate key -validatecommand {return 1}
+} -body {
+    widget::validator attach .e red nonEmpty
+    set res [list [widget::validator detach .e]]
+    lappend res [.e cget -style] [.e cget -validate] [.e cget -validatecommand]
+} -cleanup {
+    forget .e
+    unset -nocomplain res
+} -result {{} My.TEntry key {return 1}}
+
+test widgetv-3.12 {entry: no validation after detach} -setup {
+    ttk::entry .e
+    widget::validator attach .e red nonEmpty
+    widget::validator detach .e
+    set validated {}
+} -body {
+    .e insert 0 abc
+    .e delete 0 end
+    set validated
+} -cleanup {
+    forget .e
+    unset -nocomplain validated
+} -result {}
+
+test widgetv-3.13 {entry: attach again after detach} -setup {
+    ttk::entry .e
+    widget::validator attach .e red nonEmpty
+    widget::validator detach .e
+} -body {
+    widget::validator attach .e blue {apply {text {expr {$text eq {}}}}}
+    set res [isInvalid .e]
+    .e insert 0 a
+    lappend res [isInvalid .e]
+} -cleanup {
+    forget .e
+    unset -nocomplain res
+} -result {0 1}
+
+test widgetv-3.14 {entry: validate forces validation} -setup {
+    ttk::entry .e
+    set ok 0
+    widget::validator attach .e red {apply {text {set ::ok}}}
+} -body {
+    set res [isInvalid .e]
+    set ok 1
+    lappend res [isInvalid .e] [widget::validator validate .e] [isInvalid .e]
+    set ok 0
+    widget::validator validate .e
+    lappend res [isInvalid .e]
+} -cleanup {
+    forget .e
+    unset -nocomplain res ok
+} -result {1 1 {} 0 1}
+
+test widgetv-3.15 {entry: textvariable changes are validated} -constraints {
+    knownBug
+} -setup {
+    # The documentation promises validation whenever the content changes,
+    # but ttk::entry does not validate changes of the linked -textvariable
+    # (unlike the combobox, whose variable is traced).
+    set tv abc
+    ttk::entry .e -textvariable tv
+    widget::validator attach .e red nonEmpty
+} -body {
+    set res [isInvalid .e]
+    set tv {}
+    update
+    lappend res [isInvalid .e]
+} -cleanup {
+    forget .e
+    unset -nocomplain res tv
+} -result {0 1}
+
+test widgetv-3.16 {entry: detach of unattached widget} -setup {
+    ttk::entry .e
+} -body {
+    widget::validator detach .e
+} -cleanup {
+    forget .e
+} -returnCodes error -result {Unable to detach, .e not known}
+
+test widgetv-3.17 {entry: validate of unattached widget} -setup {
+    ttk::entry .e
+} -body {
+    widget::validator validate .e
+} -cleanup {
+    forget .e
+} -returnCodes error -result {Unable to validate, .e not known}
+
+test widgetv-3.18 {entry: invalid state with readonly entry} -setup {
+    ttk::entry .e
+    widget::validator attach .e red nonEmpty
+} -body {
+    .e state readonly
+    widget::validator validate .e
+    list [.e instate readonly] [isInvalid .e]
+} -cleanup {
+    forget .e
+} -result {1 1}
+
+# -------------------------------------------------------------------------
+# ttk::combobox
+
+test widgetv-4.1 {combobox: attach with textvariable} -setup {
+    set tv {}
+    ttk::combobox .c -textvariable tv -values {a b c}
+    set validated {}
+} -body {
+    list [widget::validator attach .c red nonEmpty] [isInvalid .c] $validated
+} -cleanup {
+    forget .c
+    unset -nocomplain tv validated
+} -result {{} 1 {{}}}
+
+test widgetv-4.2 {combobox: variable changes revalidate} -setup {
+    set tv {}
+    ttk::combobox .c -textvariable tv -values {a b c}
+    widget::validator attach .c red nonEmpty
+} -body {
+    set res [isInvalid .c]
+    set tv b
+    lappend res [isInvalid .c]
+    set tv {}
+    lappend res [isInvalid .c]
+} -cleanup {
+    forget .c
+    unset -nocomplain tv res
+} -result {1 0 1}
+
+test widgetv-4.3 {combobox: editing revalidates} -setup {
+    set tv abc
+    ttk::combobox .c -textvariable tv
+    widget::validator attach .c red nonEmpty
+} -body {
+    set res [isInvalid .c]
+    .c delete 0 end
+    lappend res [isInvalid .c]
+    .c insert 0 x
+    lappend res [isInvalid .c]
+    .c set {}
+    lappend res [isInvalid .c]
+} -cleanup {
+    forget .c
+    unset -nocomplain tv res
+} -result {0 1 0 1}
+
+test widgetv-4.4 {combobox: without textvariable} -setup {
+    ttk::combobox .c -values {a b c}
+    set validated {}
+} -body {
+    widget::validator attach .c red nonEmpty
+    set res [isInvalid .c]
+    .c set b
+    lappend res [isInvalid .c]
+    .c current 0
+    lappend res [isInvalid .c] [.c get] $validated
+} -cleanup {
+    forget .c
+    unset -nocomplain res validated
+} -result {1 0 0 a {{} b a}}
+
+test widgetv-4.5 {combobox: style is overridden} -setup {
+    ttk::combobox .c
+} -body {
+    widget::validator attach .c red nonEmpty
+    set map [ttk::style map [.c cget -style] -fieldbackground]
+    list [.c cget -style] [lindex $map [expr {[lsearch -exact $map invalid] + 1}]]
+} -cleanup {
+    forget .c
+    unset -nocomplain map
+} -result {%2ec.TCombobox red}
+
+test widgetv-4.6 {combobox: validate forces validation} -setup {
+    set tv abc
+    set ok 1
+    ttk::combobox .c -textvariable tv
+    widget::validator attach .c red {apply {text {set ::ok}}}
+} -body {
+    set res [isInvalid .c]
+    set ok 0
+    lappend res [isInvalid .c] [widget::validator validate .c] [isInvalid .c]
+} -cleanup {
+    forget .c
+    unset -nocomplain tv res ok
+} -result {0 0 {} 1}
+
+test widgetv-4.7 {combobox: textvariable in a namespace} -setup {
+    namespace eval ::wvtest {variable tv abc}
+    ttk::combobox .c -textvariable ::wvtest::tv
+    widget::validator attach .c red nonEmpty
+} -body {
+    set res [isInvalid .c]
+    set ::wvtest::tv {}
+    lappend res [isInvalid .c]
+} -cleanup {
+    forget .c
+    namespace delete ::wvtest
+    unset -nocomplain res
+} -result {0 1}
+
+test widgetv-4.8 {combobox: textvariable array element} -setup {
+    array set arr {x abc}
+    ttk::combobox .c -textvariable arr(x)
+    widget::validator attach .c red nonEmpty
+} -body {
+    set res [isInvalid .c]
+    set arr(x) {}
+    lappend res [isInvalid .c]
+} -cleanup {
+    forget .c
+    unset -nocomplain res arr
+} -result {0 1}
+
+test widgetv-4.9 {combobox: focus events revalidate} -setup {
+    ttk::entry .e
+    set tv {}
+    ttk::combobox .c -textvariable tv
+    pack .c .e
+    update
+    widget::validator attach .c red nonEmpty
+} -body {
+    focus -force .c
+    update
+    set res [isInvalid .c]
+    focus -force .e
+    update
+    lappend res [isInvalid .c]
+} -cleanup {
+    forget .c .e
+    unset -nocomplain tv res
+} -result {1 1}
+
+test widgetv-4.10 {combobox: detach with textvariable} -constraints {
+    knownBug
+} -setup {
+    # Combobox::Detach calls the nonexistent command "replace" and does
+    # not remove the trace on the user's variable.
+    set tv abc
+    ttk::combobox .c -textvariable tv -style My.TCombobox
+    widget::validator attach .c red nonEmpty
+    set validated {}
+} -body {
+    set res [list [widget::validator detach .c]]
+    lappend res [.c cget -style] [.c cget -textvariable] \
+        [lsearch -inline -glob [bindtags .c] WV_*]
+    set tv {}
+    lappend res [isInvalid .c] $validated
+} -cleanup {
+    forget .c
+    unset -nocomplain tv res validated
+} -result {{} My.TCombobox tv {} 0 {}}
+
+test widgetv-4.11 {combobox: detach without textvariable} -constraints {
+    knownBug
+} -setup {
+    # Combobox::Detach calls the nonexistent command "replace" and
+    # unsets the wrong variable (in ::widget::combobox).
+    ttk::combobox .c
+    widget::validator attach .c red nonEmpty
+} -body {
+    set res [list [widget::validator detach .c]]
+    lappend res [.c cget -style] [.c cget -textvariable] \
+        [info exists ::widget::validator::text(.c)]
+} -cleanup {
+    forget .c
+    unset -nocomplain res
+} -result {{} {} {} 0}
+
+test widgetv-4.12 {combobox: attach again after detach} -constraints {
+    knownBug
+} -setup {
+    set tv {}
+    ttk::combobox .c -textvariable tv
+    widget::validator attach .c red nonEmpty
+    widget::validator detach .c
+} -body {
+    widget::validator attach .c red {apply {text {expr {$text eq {}}}}}
+    set res [isInvalid .c]
+    set tv x
+    lappend res [isInvalid .c]
+} -cleanup {
+    forget .c
+    unset -nocomplain tv res
+} -result {0 1}
+
+# -------------------------------------------------------------------------
+# Theme changes
+
+test widgetv-5.1 {highlight style is propagated to a new theme} -setup {
+    set theme [ttk::style theme use]
+    ttk::entry .e
+    widget::validator attach .e #123456 nonEmpty
+} -body {
+    set res {}
+    foreach t {alt clam default} {
+        ttk::style theme use $t
+        event generate . <<ThemeChanged>>
+        update
+        set map [ttk::style map [.e cget -style] -fieldbackground]
+        lappend res $t [lindex $map [expr {[lsearch -exact $map invalid] + 1}]]
+    }
+    set res
+} -cleanup {
+    ttk::style theme use $theme
+    event generate . <<ThemeChanged>>
+    update
+    forget .e
+    unset -nocomplain theme res map t
+} -result {alt #123456 clam #123456 default #123456}
+
+# -------------------------------------------------------------------------
+destroy .before
+rename nonEmpty {}
+rename isInvalid {}
+rename forget {}
+::tcltest::cleanupTests
