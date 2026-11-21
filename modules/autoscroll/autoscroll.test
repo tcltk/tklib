@@ -1,5 +1,10 @@
 # -*- tcl -*-
 # Tests for the autoscroll package
+#
+# Copyright (c) 2026 Serhiy Storchaka
+#
+# See the file "license.terms" for information on usage and redistribution
+# of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 
 if {![package vsatisfies [package provide Tcl] 8.5-]} {
     puts "    Aborting the tests found in \"[file tail [info script]]\"."
@@ -13,78 +18,588 @@ if {[catch { package require Tk 8.5- } msg]} {
     return
 }
 
-if {[lsearch [namespace children] ::tcltest] == -1} {
-    package require tcltest 2
-    namespace import ::tcltest::*
+package require tcltest 2.2
+namespace import ::tcltest::*
+
+source [file join [file dirname [file normalize [info script]]] autoscroll.tcl]
+
+# -------------------------------------------------------------------------
+# Helpers
+
+# Create a frame .f containing a text widget and a vertical scrollbar
+# managed by the given geometry manager (pack or grid).
+proc mkText {manager} {
+    toplevel .top
+    wm geometry .top 300x200+0+0
+    frame .top.f
+    text .top.f.t -yscrollcommand {.top.f.sb set} -width 20 -height 5
+    scrollbar .top.f.sb -orient vertical -command {.top.f.t yview}
+    switch -- $manager {
+        pack {
+            pack .top.f.sb -side right -fill y
+            pack .top.f.t -side left -fill both -expand 1
+        }
+        grid {
+            grid .top.f.t -row 0 -column 0 -sticky nsew
+            grid .top.f.sb -row 0 -column 1 -sticky ns
+            grid rowconfigure .top.f 0 -weight 1
+            grid columnconfigure .top.f 0 -weight 1
+        }
+    }
+    pack .top.f -fill both -expand 1
+    update
 }
 
-source [file join [file dirname [info script]] autoscroll.tcl]
+proc fillText {t n} {
+    for {set i 1} {$i <= $n} {incr i} {
+        $t insert end "line $i\n"
+    }
+    update
+}
 
 # -------------------------------------------------------------------------
 
-test autoscroll-1.0 {grid: scrollbar hidden and shown again} -setup {
-    wm deiconify .
-    text .t -height 5 -yscrollcommand {.s set}
-    scrollbar .s -command {.t yview}
-    grid .t .s -sticky news
-    ::autoscroll::autoscroll .s
+test autoscroll-1.1 {autoscroll: wrong # args} -body {
+    ::autoscroll::autoscroll
+} -returnCodes error -result {wrong # args: should be "::autoscroll::autoscroll w"}
+
+test autoscroll-1.2 {autoscroll: too many args} -body {
+    ::autoscroll::autoscroll .a .b
+} -returnCodes error -result {wrong # args: should be "::autoscroll::autoscroll w"}
+
+test autoscroll-1.3 {autoscroll: nonexistent widget} -body {
+    ::autoscroll::autoscroll .nosuch
+} -returnCodes error -result {can't rename ".nosuch": command doesn't exist}
+
+test autoscroll-1.4 {autoscroll: returns the scrollbar path} -setup {
+    scrollbar .sb
 } -body {
-    .t insert end [string repeat "line\n" 20]
-    update
-    .t delete 1.0 end
-    update
-    set res [list [winfo manager .s]]
-    .t insert end [string repeat "line\n" 20]
-    update
-    lappend res [winfo manager .s] [dict get [grid info .s] -column]
+    ::autoscroll::autoscroll .sb
 } -cleanup {
-    destroy .t .s
-    wm withdraw .
+    destroy .sb
+} -result .sb
+
+test autoscroll-1.5 {autoscroll: adds the Autoscroll bind tag} -setup {
+    scrollbar .sb
+} -body {
+    ::autoscroll::autoscroll .sb
+    bindtags .sb
+} -cleanup {
+    destroy .sb
+} -result {.sb Autoscroll Scrollbar . all}
+
+test autoscroll-1.6 {autoscroll: calling twice is harmless} -setup {
+    scrollbar .sb
+} -body {
+    list [::autoscroll::autoscroll .sb] [::autoscroll::autoscroll .sb] \
+        [bindtags .sb]
+} -cleanup {
+    destroy .sb
+} -result {.sb .sb {.sb Autoscroll Scrollbar . all}}
+
+test autoscroll-1.7 {autoscroll: widget command keeps working} -setup {
+    scrollbar .sb -orient horizontal
+} -body {
+    ::autoscroll::autoscroll .sb
+    .sb configure -orient vertical
+    list [.sb cget -orient] [winfo class .sb]
+} -cleanup {
+    destroy .sb
+} -result {vertical Scrollbar}
+
+test autoscroll-1.8 {autoscroll: set and get pass through} -setup {
+    scrollbar .sb
+} -body {
+    ::autoscroll::autoscroll .sb
+    .sb set 0.25 0.5
+    .sb get
+} -cleanup {
+    destroy .sb
+} -result {0.25 0.5}
+
+test autoscroll-1.9 {autoscroll: widget command errors pass through} -setup {
+    scrollbar .sb
+} -body {
+    ::autoscroll::autoscroll .sb
+    .sb cget -nosuchoption
+} -cleanup {
+    destroy .sb
+} -returnCodes error -result {unknown option "-nosuchoption"}
+
+test autoscroll-1.10 {autoscroll: works with ttk::scrollbar} -setup {
+    toplevel .top
+    ttk::scrollbar .top.sb
+    pack .top.sb -side right -fill y
+    update
+} -body {
+    ::autoscroll::autoscroll .top.sb
+    set res [list [winfo manager .top.sb]]
+    .top.sb set 0.1 0.6
+    lappend res [winfo manager .top.sb] [.top.sb get]
+} -cleanup {
+    destroy .top
+} -result {{} pack {0.1 0.6}}
+
+test autoscroll-1.11 {autoscroll: not managed scrollbar is left alone} -setup {
+    scrollbar .sb
+} -body {
+    ::autoscroll::autoscroll .sb
+    .sb set 0 1
+    set res [list [winfo manager .sb]]
+    .sb set 0.1 0.2
+    lappend res [winfo manager .sb]
+} -cleanup {
+    destroy .sb
+} -result {{} {}}
+
+test autoscroll-1.12 {autoscroll: works on a placed scrollbar} -setup {
+    toplevel .top
+    scrollbar .top.sb
+    place .top.sb -x 0 -y 0
+    update
+} -body {
+    ::autoscroll::autoscroll .top.sb
+    .top.sb set 0 1
+    winfo manager .top.sb
+} -cleanup {
+    destroy .top
+} -result place
+
+# -------------------------------------------------------------------------
+# Mapping and unmapping with grid
+
+test autoscroll-2.1 {grid: scrollbar is hidden when not needed} -setup {
+    mkText grid
+} -body {
+    ::autoscroll::autoscroll .top.f.sb
+    update
+    list [winfo manager .top.f.sb] [winfo ismapped .top.f.sb]
+} -cleanup {
+    destroy .top
+} -result {{} 0}
+
+test autoscroll-2.2 {grid: scrollbar appears when needed} -setup {
+    mkText grid
+    ::autoscroll::autoscroll .top.f.sb
+    update
+} -body {
+    fillText .top.f.t 100
+    list [winfo manager .top.f.sb] [winfo ismapped .top.f.sb]
+} -cleanup {
+    destroy .top
+} -result {grid 1}
+
+test autoscroll-2.3 {grid: grid options are restored} -setup {
+    mkText grid
+    set info [grid info .top.f.sb]
+    ::autoscroll::autoscroll .top.f.sb
+    update
+} -body {
+    set res [grid slaves .top.f]
+    .top.f.sb set 0 0.5
+    lappend res [grid slaves .top.f] [expr {[grid info .top.f.sb] eq $info}]
+} -cleanup {
+    destroy .top
+    unset -nocomplain info res
+} -result {.top.f.t {.top.f.sb .top.f.t} 1}
+
+test autoscroll-2.4 {grid: scrollbar disappears again} -setup {
+    mkText grid
+    ::autoscroll::autoscroll .top.f.sb
+    fillText .top.f.t 100
+} -body {
+    set res [list [winfo manager .top.f.sb]]
+    .top.f.t delete 1.0 end
+    update
+    lappend res [winfo manager .top.f.sb]
+} -cleanup {
+    destroy .top
+} -result {grid {}}
+
+test autoscroll-2.5 {grid: repeated set while hidden} -setup {
+    mkText grid
+    set info [grid info .top.f.sb]
+    ::autoscroll::autoscroll .top.f.sb
+} -body {
+    .top.f.sb set 0 1
+    .top.f.sb set 0 1
+    .top.f.sb set 0.5 0.75
+    list [winfo manager .top.f.sb] [expr {[grid info .top.f.sb] eq $info}]
+} -cleanup {
+    destroy .top
+    unset -nocomplain info
+} -result {grid 1}
+
+test autoscroll-2.6 {grid: repeated set while shown} -setup {
+    mkText grid
+    ::autoscroll::autoscroll .top.f.sb
+} -body {
+    .top.f.sb set 0 0.5
+    .top.f.sb set 0.5 1
+    .top.f.sb set 0.25 0.75
+    set res [list [winfo manager .top.f.sb]]
+    .top.f.sb set 0 1
+    lappend res [winfo manager .top.f.sb]
+} -cleanup {
+    destroy .top
+} -result {grid {}}
+
+test autoscroll-2.7 {grid: boundary values of set} -setup {
+    mkText grid
+    ::autoscroll::autoscroll .top.f.sb
+} -body {
+    set res {}
+    foreach {first last} {0 0.999 0.001 1 -0.1 1.1 0 1.0 0.0 1} {
+        .top.f.sb set $first $last
+        lappend res [winfo manager .top.f.sb]
+    }
+    set res
+} -cleanup {
+    destroy .top
+    unset -nocomplain res first last
+} -result {grid grid {} {} {}}
+
+# -------------------------------------------------------------------------
+# Mapping and unmapping with pack
+
+test autoscroll-3.1 {pack: scrollbar is hidden when not needed} -setup {
+    mkText pack
+} -body {
+    ::autoscroll::autoscroll .top.f.sb
+    update
+    list [winfo manager .top.f.sb] [pack slaves .top.f]
+} -cleanup {
+    destroy .top
+} -result {{} .top.f.t}
+
+test autoscroll-3.2 {pack: scrollbar appears when needed} -setup {
+    mkText pack
+    ::autoscroll::autoscroll .top.f.sb
+    update
+} -body {
+    fillText .top.f.t 100
+    list [winfo manager .top.f.sb] [winfo ismapped .top.f.sb]
+} -cleanup {
+    destroy .top
+} -result {pack 1}
+
+test autoscroll-3.3 {pack: packing order and options are restored} -setup {
+    mkText pack
+    set order [pack slaves .top.f]
+    set info {}
+    foreach w $order {lappend info [pack info $w]}
+    ::autoscroll::autoscroll .top.f.sb
+    update
+} -body {
+    .top.f.sb set 0 0.5
+    set info2 {}
+    foreach w [pack slaves .top.f] {lappend info2 [pack info $w]}
+    list [expr {[pack slaves .top.f] eq $order}] [expr {$info2 eq $info}]
+} -cleanup {
+    destroy .top
+    unset -nocomplain order info info2 w
+} -result {1 1}
+
+test autoscroll-3.4 {pack: scrollbar disappears again} -setup {
+    mkText pack
+    ::autoscroll::autoscroll .top.f.sb
+    fillText .top.f.t 100
+} -body {
+    set res [list [winfo manager .top.f.sb]]
+    .top.f.t delete 1.0 end
+    update
+    lappend res [winfo manager .top.f.sb]
+} -cleanup {
+    destroy .top
+} -result {pack {}}
+
+test autoscroll-3.5 {pack: repeated set while hidden} -setup {
+    mkText pack
+    set order [pack slaves .top.f]
+    ::autoscroll::autoscroll .top.f.sb
+} -body {
+    .top.f.sb set 0 1
+    .top.f.sb set 0 1
+    .top.f.sb set 0.5 0.75
+    expr {[pack slaves .top.f] eq $order}
+} -cleanup {
+    destroy .top
+    unset -nocomplain order
+} -result 1
+
+test autoscroll-3.6 {pack: scrollbar packed with -in another master} -setup {
+    # Ticket 6da48f4579: autoscroll assumed that a packed scrollbar is
+    # managed by its parent.
+    toplevel .top
+    frame .top.f
+    pack .top.f -fill both -expand 1
+    text .top.t -yscrollcommand {.top.sb set} -width 20 -height 5
+    scrollbar .top.sb -command {.top.t yview}
+    pack .top.sb -in .top.f -side right -fill y
+    pack .top.t -in .top.f -side left -fill both -expand 1
+    update
+    set info [pack info .top.sb]
+} -body {
+    ::autoscroll::autoscroll .top.sb
+    set res [list [winfo manager .top.sb] [pack slaves .top.f]]
+    .top.sb set 0 0.5
+    lappend res [winfo manager .top.sb] [pack slaves .top.f] \
+        [expr {[pack info .top.sb] eq $info}]
+} -cleanup {
+    destroy .top
+    unset -nocomplain info res
+} -result {{} .top.t pack {.top.sb .top.t} 1}
+
+# -------------------------------------------------------------------------
+# unautoscroll
+
+test autoscroll-4.1 {unautoscroll: wrong # args} -body {
+    ::autoscroll::unautoscroll
+} -returnCodes error -result {wrong # args: should be "::autoscroll::unautoscroll w"}
+
+test autoscroll-4.2 {unautoscroll: not an autoscroll scrollbar} -setup {
+    scrollbar .sb
+} -body {
+    list [::autoscroll::unautoscroll .sb] [bindtags .sb] [info commands .sb]
+} -cleanup {
+    destroy .sb
+} -result {{} {.sb Scrollbar . all} .sb}
+
+test autoscroll-4.3 {unautoscroll: nonexistent widget} -body {
+    ::autoscroll::unautoscroll .nosuch
+} -result {}
+
+test autoscroll-4.4 {unautoscroll: removes bind tag and restores command} -setup {
+    scrollbar .sb
+    ::autoscroll::autoscroll .sb
+} -body {
+    ::autoscroll::unautoscroll .sb
+    list [bindtags .sb] [interp alias {} .sb] \
+        [info commands ::autoscroll::renamed.sb] [.sb cget -orient]
+} -cleanup {
+    destroy .sb
+} -result {{.sb Scrollbar . all} {} {} vertical}
+
+test autoscroll-4.5 {unautoscroll: remaps a hidden grid scrollbar} -setup {
+    mkText grid
+    set info [grid info .top.f.sb]
+    ::autoscroll::autoscroll .top.f.sb
+    update
+} -body {
+    set res [list [winfo manager .top.f.sb]]
+    ::autoscroll::unautoscroll .top.f.sb
+    lappend res [winfo manager .top.f.sb] \
+        [expr {[grid info .top.f.sb] eq $info}]
+} -cleanup {
+    destroy .top
+    unset -nocomplain info res
 } -result {{} grid 1}
 
-test autoscroll-1.1 {pack: scrollbar hidden and shown again} -setup {
-    wm deiconify .
-    text .t -height 5 -yscrollcommand {.s set}
-    scrollbar .s -command {.t yview}
-    pack .s -side right -fill y
-    pack .t -side left -fill both -expand 1
-    ::autoscroll::autoscroll .s
+test autoscroll-4.6 {unautoscroll: remaps a hidden pack scrollbar} -setup {
+    mkText pack
+    set order [pack slaves .top.f]
+    ::autoscroll::autoscroll .top.f.sb
+    update
 } -body {
-    .t insert end [string repeat "line\n" 20]
-    update
-    .t delete 1.0 end
-    update
-    set res [list [winfo manager .s]]
-    .t insert end [string repeat "line\n" 20]
-    update
-    lappend res [winfo manager .s] [pack slaves .]
+    set res [list [winfo manager .top.f.sb]]
+    ::autoscroll::unautoscroll .top.f.sb
+    lappend res [winfo manager .top.f.sb] \
+        [expr {[pack slaves .top.f] eq $order}]
 } -cleanup {
-    destroy .t .s
-    wm withdraw .
-} -result {{} pack {.s .t}}
+    destroy .top
+    unset -nocomplain order res
+} -result {{} pack 1}
 
-test autoscroll-1.2 {pack -in other than parent, ticket 6da48f4579} -setup {
-    wm deiconify .
-    frame .f
-    pack .f -fill both -expand 1
-    text .t -height 5 -yscrollcommand {.s set}
-    scrollbar .s -command {.t yview}
-    pack .s -in .f -side right -fill y
-    pack .t -in .f -side left -fill both -expand 1
-    ::autoscroll::autoscroll .s
+test autoscroll-4.7 {unautoscroll: scrollbar is static afterwards} -setup {
+    mkText grid
+    ::autoscroll::autoscroll .top.f.sb
+    update
+    ::autoscroll::unautoscroll .top.f.sb
 } -body {
-    .t insert end [string repeat "line\n" 20]
+    .top.f.sb set 0 1
+    set res [list [winfo manager .top.f.sb]]
+    fillText .top.f.t 100
+    .top.f.t delete 1.0 end
     update
-    .t delete 1.0 end
-    update
-    set res [list [winfo manager .s]]
-    .t insert end [string repeat "line\n" 20]
-    update
-    lappend res [winfo manager .s] [pack slaves .f] [pack slaves .]
+    lappend res [winfo manager .top.f.sb]
 } -cleanup {
-    destroy .t .s .f
-    wm withdraw .
-} -result {{} pack {.s .t} .f}
+    destroy .top
+} -result {grid grid}
+
+test autoscroll-4.8 {unautoscroll: can autoscroll again} -setup {
+    mkText grid
+    ::autoscroll::autoscroll .top.f.sb
+    update
+    ::autoscroll::unautoscroll .top.f.sb
+} -body {
+    ::autoscroll::autoscroll .top.f.sb
+    update
+    set res [list [winfo manager .top.f.sb] [bindtags .top.f.sb]]
+    fillText .top.f.t 100
+    lappend res [winfo manager .top.f.sb]
+} -cleanup {
+    destroy .top
+} -result {{} {.top.f.sb Autoscroll Scrollbar .top all} grid}
+
+test autoscroll-4.9 {unautoscroll: twice is harmless} -setup {
+    scrollbar .sb
+    ::autoscroll::autoscroll .sb
+} -body {
+    ::autoscroll::unautoscroll .sb
+    ::autoscroll::unautoscroll .sb
+    list [bindtags .sb] [.sb cget -orient]
+} -cleanup {
+    destroy .sb
+} -result {{.sb Scrollbar . all} vertical}
 
 # -------------------------------------------------------------------------
+# Destruction
+
+test autoscroll-5.1 {destroying cleans up} -setup {
+    mkText grid
+    ::autoscroll::autoscroll .top.f.sb
+    update
+} -body {
+    destroy .top.f.sb
+    list [info commands .top.f.sb] [info commands ::autoscroll::renamed.top.f.sb] \
+        [info exists ::autoscroll::grid(.top.f.sb)]
+} -cleanup {
+    destroy .top
+} -result {{} {} 0}
+
+test autoscroll-5.2 {destroying the toplevel cleans up} -setup {
+    mkText pack
+    ::autoscroll::autoscroll .top.f.sb
+    update
+} -body {
+    destroy .top
+    list [info commands .top.f.sb] [info commands ::autoscroll::renamed.top.f.sb] \
+        [info exists ::autoscroll::grid(.top.f.sb)]
+} -result {{} {} 0}
+
+test autoscroll-5.3 {recreate a destroyed autoscroll scrollbar} -setup {
+    scrollbar .sb
+    ::autoscroll::autoscroll .sb
+    destroy .sb
+} -body {
+    scrollbar .sb
+    list [::autoscroll::autoscroll .sb] [bindtags .sb] [.sb cget -orient]
+} -cleanup {
+    destroy .sb
+} -result {.sb {.sb Autoscroll Scrollbar . all} vertical}
+
+# -------------------------------------------------------------------------
+# Toplevel geometry is fixed when the scrollbar is mapped
+
+test autoscroll-6.1 {mapping fixes toplevel geometry} -setup {
+    toplevel .top
+    frame .top.f -width 100 -height 100
+    scrollbar .top.sb
+    pack .top.sb -side right -fill y
+    pack .top.f -side left
+    update
+    ::autoscroll::autoscroll .top.sb
+    .top.sb set 0 1
+    update
+} -body {
+    # Showing the scrollbar must not let the toplevel be resized
+    # automatically after the map.
+    .top.sb set 0 0.5
+    update
+    .top.f configure -width 300 -height 300
+    update
+    expr {[winfo width .top] < 300 && [winfo height .top] < 300}
+} -cleanup {
+    destroy .top
+} -result 1
+
+# -------------------------------------------------------------------------
+# wrap and unwrap
+
+test autoscroll-7.1 {wrap: wrong # args} -body {
+    ::autoscroll::wrap x
+} -returnCodes error -result {wrong # args: should be "::autoscroll::wrap"}
+
+test autoscroll-7.2 {unwrap: wrong # args} -body {
+    ::autoscroll::unwrap x
+} -returnCodes error -result {wrong # args: should be "::autoscroll::unwrap"}
+
+test autoscroll-7.3 {wrap: new scrollbars are autoscrolled} -setup {
+    ::autoscroll::wrap
+} -body {
+    list [scrollbar .sb -orient horizontal] [bindtags .sb] [.sb cget -orient]
+} -cleanup {
+    destroy .sb
+    ::autoscroll::unwrap
+} -result {.sb {.sb Autoscroll Scrollbar . all} horizontal}
+
+test autoscroll-7.4 {wrap: new scrollbars map and unmap} -setup {
+    toplevel .top
+    ::autoscroll::wrap
+} -body {
+    text .top.t -yscrollcommand {.top.sb set} -width 20 -height 5
+    scrollbar .top.sb -command {.top.t yview}
+    pack .top.sb -side right -fill y
+    pack .top.t -side left -fill both -expand 1
+    update
+    set res [list [winfo manager .top.sb]]
+    fillText .top.t 100
+    lappend res [winfo manager .top.sb]
+} -cleanup {
+    ::autoscroll::unwrap
+    destroy .top
+    unset -nocomplain res
+} -result {{} pack}
+
+test autoscroll-7.5 {wrap: errors of scrollbar creation are reported} -setup {
+    ::autoscroll::wrap
+} -body {
+    scrollbar .sb -nosuchoption 1
+} -cleanup {
+    ::autoscroll::unwrap
+    destroy .sb
+} -returnCodes error -result {unknown option "-nosuchoption"}
+
+test autoscroll-7.6 {wrap twice, unwrap once} -body {
+    ::autoscroll::wrap
+    ::autoscroll::wrap
+    ::autoscroll::unwrap
+    scrollbar .sb
+    bindtags .sb
+} -cleanup {
+    destroy .sb
+} -result {.sb Scrollbar . all}
+
+test autoscroll-7.7 {unwrap: does not affect existing scrollbars} -setup {
+    ::autoscroll::wrap
+    scrollbar .sb1
+    ::autoscroll::unwrap
+} -body {
+    scrollbar .sb2
+    list [bindtags .sb1] [bindtags .sb2]
+} -cleanup {
+    destroy .sb1 .sb2
+} -result {{.sb1 Autoscroll Scrollbar . all} {.sb2 Scrollbar . all}}
+
+test autoscroll-7.8 {unwrap without wrap is harmless} -body {
+    ::autoscroll::unwrap
+    scrollbar .sb
+    list [winfo class .sb] [bindtags .sb]
+} -cleanup {
+    destroy .sb
+} -result {Scrollbar {.sb Scrollbar . all}}
+
+test autoscroll-7.9 {wrap: ttk::scrollbar is not affected} -setup {
+    ::autoscroll::wrap
+} -body {
+    ttk::scrollbar .sb
+    bindtags .sb
+} -cleanup {
+    destroy .sb
+    ::autoscroll::unwrap
+} -result {.sb TScrollbar . all}
+
+# -------------------------------------------------------------------------
+rename mkText {}
+rename fillText {}
 ::tcltest::cleanupTests
