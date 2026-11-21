@@ -1,0 +1,168 @@
+[comment {-*- tcl -*- doctools manpage}]
+[manpage_begin style n 0.3]
+[see_also option(n)]
+[see_also font(n)]
+[keywords style option font mousewheel]
+[copyright {2004 David N. Welton <davidw@dedasys.com>}]
+[copyright {2004-2011 ActiveState Software Inc.}]
+[moddesc   {Styles for Tk}]
+[titledesc {Changeable look for Tk applications}]
+[require Tk]
+[require style [opt 0.3]]
+[require style::as [opt 1.4.1]]
+[require style::lobster [opt 0.2]]
+[description]
+
+The [package style] module changes the look of the classic Tk widgets
+(not the themed [cmd ttk] widgets).  A style adds entries to the option
+database, so that it applies to widgets created after it is set up, and
+may create named fonts and bindings.
+
+[para]
+
+Two styles are available: [const as] (package [package style::as]) and
+[const lobster] (package [package style::lobster]).  Using a style does
+not undo the changes made by a style used before.
+
+[section {COMMANDS}]
+
+[list_begin definitions]
+
+[call [cmd style::names]]
+
+Returns the list of the names of the available styles, [const lobster]
+and [const as].
+
+[call [cmd style::use] [arg style] [opt [arg "arg ..."]]]
+
+Loads the package of the style ([package style::as] or
+[package style::lobster]) and calls its [cmd init] command with the
+given arguments, i.e. it is the same as
+
+[example {
+package require style::$style
+style::${style}::init ?arg ...?
+}]
+
+[list_end]
+
+[section {THE AS STYLE}]
+
+The package [package style::as] provides a style which uses the colors
+of the system on Windows and white widgets with a blue selection
+elsewhere, smaller borders and fonts (Tahoma on Windows, Helvetica on
+X11, Lucida Grande on macOS), and a mouse wheel binding which scrolls
+the widget under the pointer.  It consists of the following parts:
+
+[list_begin definitions]
+[def [const button]] the look of buttons.
+[def [const entry]] the look of entries.
+[def [const fonts]] the fonts of the classic widgets.
+[def [const listbox]] the look of listboxes.
+[def [const menu]] the look of menus.
+[def [const menubutton]] the look of menubuttons.
+[def [const misc]] the look of some widgets of other widget sets.
+[def [const mousewheel]] the mouse wheel bindings described below.
+[def [const panedwindow]] the look of panedwindows.
+[def [const scrollbar]] the look of scrollbars.
+[def [const spinbox]] the look of spinboxes.
+[def [const text]] the look of text widgets.
+[list_end]
+
+[list_begin definitions]
+
+[call [cmd style::as::init] [opt "[option -priority] [arg priority]"] [opt [arg "part ..."]]]
+
+Sets up the given parts of the style, or all of them if no part is
+given.  The option database entries are added with the given
+[arg priority] (see [cmd option]); the default is
+[const widgetDefault].  The priority is remembered for later calls.
+
+[call [cmd style::as::reset] [opt [arg "part ..."]]]
+
+Undoes the given parts of the style, or all of them if no part is
+given.  Only the [const mousewheel] part can be undone; the option
+database entries are not removed.
+
+[call [cmd style::as::enable] [arg what] [opt [arg "arg ..."]]]
+[call [cmd style::as::disable] [arg what]]
+
+Enables or disables a feature.  [arg what] is one of:
+
+[list_begin definitions]
+
+[def [const mousewheel]]
+
+The same as [cmd {style::as::init mousewheel}] and
+[cmd {style::as::reset mousewheel}].
+
+[def "[const control-mousewheel] [arg type]"]
+
+Turning the mouse wheel with the Control key pressed (also
+Control-plus and Control-minus, Command on macOS) makes the font of
+the widget under the pointer larger or smaller, within a limited
+range.  It works only for widgets which use the fonts of the style,
+that is, classic Tk widgets created after the [const fonts] part was
+set up and not given a [option -font] of their own; it does not work
+for widgets created before, or for [cmd ttk] widgets.  [arg type] is
+[const local] to change the font of that widget only, or
+[const global] to change the fonts of the style, and so of all
+widgets which use them.
+
+[list_end]
+
+An error is raised for any other value of [arg what].
+
+[list_end]
+
+[subsection Fonts]
+
+The [const fonts] part creates named fonts for the style and adds
+them to the option database, so that the classic Tk widgets created
+afterwards use them: a fixed-width font for text widgets and a
+proportional font for the others.  The fonts are created only once,
+so the part can be set up again.  An application can get the font of
+the style for its own use from such a widget, e.g. with
+[cmd {[.t cget -font]}].
+
+[subsection {Mouse wheel}]
+
+The [const mousewheel] part binds [const <MouseWheel>] and
+[const <Shift-MouseWheel>] (also [const <Button-4>] and
+[const <Button-5>] on X11) on [const all], so that the wheel scrolls
+the widget under the pointer, or the widget with the focus if the
+pointer is outside the application, vertically or, with Shift,
+horizontally.  The class bindings of text and listbox widgets (and of
+some widgets of other widget sets) for these events are removed so
+that they do not scroll twice.  Widgets with
+their own binding for the event are not scrolled.
+
+[section {THE LOBSTER STYLE}]
+
+The package [package style::lobster] provides a style that looks like
+GTK applications ("gtklook" on the Tcl'ers wiki).  It has effect on
+X11 only.
+
+[list_begin definitions]
+
+[call [cmd style::lobster::init] [opt "[option -priority] [arg priority]"]]
+
+Adds the option database entries of the style, with the given
+[arg priority] (default [const widgetDefault]), and creates the fonts
+it uses.
+
+[list_end]
+
+[section EXAMPLE]
+
+[example {
+package require style
+style::use as
+style::as::enable control-mousewheel local
+text .t
+pack .t
+}]
+
+[vset CATEGORY style]
+[include ../../support/devel/doc/feedback.inc]
+[manpage_end]
