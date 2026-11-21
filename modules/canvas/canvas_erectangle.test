@@ -1,0 +1,404 @@
+# -*- tcl -*-
+# Tests for the canvas::edit::rectangle package
+#
+# See the file "license.terms" for information on usage and redistribution
+# of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2
+    namespace import ::tcltest::*
+} else {
+    if {![package vsatisfies [package present tcltest] 2.2]} {
+	puts "    Aborting the tests found in \"[file tail [info script]]\"."
+	puts "    Requiring tcltest 2.2, have [package present tcltest]"
+	return
+    }
+}
+
+::tcltest::testConstraint tk 1
+
+lappend auto_path [file dirname [file dirname [file normalize [info script]]]]
+package require canvas::edit::rectangle
+
+# -------------------------------------------------------------------------
+
+proc mkCanvas {} {
+    canvas .c -width 300 -height 200 -highlightthickness 0 -borderwidth 0
+    pack .c
+    update
+    event generate .c <Enter> -x 290 -y 190
+    event generate .c <Motion> -x 290 -y 190
+    set ::log {}
+}
+
+# Editors cannot be destroyed cleanly while their canvas exists (see
+# canvas::edit::points), so destroy the canvas first.
+proc cleanup {args} {
+    destroy .c
+    foreach e $args {
+	catch {$e destroy}
+    }
+    unset -nocomplain ::log
+    namespace eval ::canvas::drag {
+	unset -nocomplain active clientdata lastx lasty
+    }
+}
+
+proc click {button x y {state 0}} {
+    event generate .c <Motion> -x $x -y $y -state $state
+    event generate .c <ButtonPress-$button> -x $x -y $y -state $state
+    event generate .c <ButtonRelease-$button> -x $x -y $y \
+	-state [expr {$state | (1 << ($button + 7))}]
+    event generate .c <Motion> -x 290 -y 190
+    update
+}
+
+proc drag {button state x0 y0 args} {
+    set bmask [expr {1 << ($button + 7)}]
+    event generate .c <Motion> -x $x0 -y $y0 -state $state
+    event generate .c <ButtonPress-$button> -x $x0 -y $y0 -state $state
+    set x $x0
+    set y $y0
+    foreach {x y} $args {
+	event generate .c <Motion> -x $x -y $y -state [expr {$state | $bmask}]
+    }
+    event generate .c <ButtonRelease-$button> -x $x -y $y \
+	-state [expr {$state | $bmask}]
+    event generate .c <Motion> -x 290 -y 190
+    update
+}
+
+# Centers of the point markers (default markers) with the given tag.
+proc points {tag} {
+    lsort -dictionary [lmap item [.c find withtag $tag] {
+	lassign [.c coords $item] x0 y0 x1 y1
+	list [expr {($x0 + $x1) / 2}] [expr {($y0 + $y1) / 2}]
+    }]
+}
+
+proc logcb {args} {
+    lappend ::log $args
+    return
+}
+
+# The rectangle item coordinates, or empty.
+proc rect {{tag RECTANGLE}} {
+    set item [.c find withtag $tag/Rect]
+    if {$item eq ""} {return ""}
+    .c coords $item
+}
+
+# Create a rectangle interactively from (100,50) and (150,120).
+proc mkRect {args} {
+    mkCanvas
+    ::canvas::edit rectangle E .c {*}$args
+    E enable
+    click 1 100 50
+    click 1 150 120
+}
+
+test canvas::edit::rectangle-1.0 {package version} -body {
+    package present canvas::edit::rectangle
+} -result 0.1
+
+# -------------------------------------------------------------------------
+
+test canvas::edit::rectangle-2.1 {create: wrong # args} -body {
+    ::canvas::edit rectangle E
+} -returnCodes error -match glob -result {Error in constructor: wrong # args: should be "*"}
+
+test canvas::edit::rectangle-2.2 {create: result is the qualified name} -setup mkCanvas -body {
+    ::canvas::edit rectangle E .c
+} -cleanup {cleanup E} -result ::E
+
+test canvas::edit::rectangle-2.3 {create: unknown option} -setup mkCanvas -body {
+    ::canvas::edit rectangle E .c -foo 1
+} -cleanup {cleanup E} -returnCodes error -result {Error in constructor: unknown option "-foo"}
+
+test canvas::edit::rectangle-2.4 {create: active by default} -constraints {
+    knownBug
+} -setup mkCanvas -body {
+    ::canvas::edit rectangle E .c
+    E active
+} -cleanup {cleanup E} -result 1
+
+test canvas::edit::rectangle-2.5 {default options} -setup mkCanvas -body {
+    ::canvas::edit rectangle E .c
+    lmap o {-tag -color -hilit-color -radius -kind -active-cmd -data-cmd
+	-add-remove-point -drag-point -rect-config} {E cget $o}
+} -cleanup {cleanup E} -result {RECTANGLE SkyBlue2 red 3 oval {} {} {} 3 {}}
+
+test canvas::edit::rectangle-2.6 {cget -create-cmd} -constraints {
+    knownBug
+} -setup mkCanvas -body {
+    # -cgetmethod UnChain, but the method is named Unchain.
+    ::canvas::edit rectangle E .c
+    llength [E cget -create-cmd]
+} -cleanup {cleanup E} -result 1
+
+test canvas::edit::rectangle-2.7 {readonly options} -setup mkCanvas -body {
+    ::canvas::edit rectangle E .c
+    lmap o {-tag -add-remove-point -drag-point} {
+	list [catch {E configure $o x} m] $m
+    }
+} -cleanup {
+    cleanup E
+    unset -nocomplain m
+} -result {{1 {option -tag can only be set at instance creation}} {1 {option -add-remove-point can only be set at instance creation}} {1 {option -drag-point can only be set at instance creation}}}
+
+test canvas::edit::rectangle-2.8 {destroy after canvas destruction} -setup mkCanvas -body {
+    ::canvas::edit rectangle E .c
+    destroy .c
+    list [E destroy] [info commands ::E]
+} -cleanup {cleanup E} -result {{} {}}
+
+# -------------------------------------------------------------------------
+
+test canvas::edit::rectangle-3.1 {enable, disable, active} -setup mkCanvas -body {
+    ::canvas::edit rectangle E .c
+    set r [list [E enable] [E active]]
+    lappend r [E disable] [E active]
+} -cleanup {
+    cleanup E
+    unset r
+} -result {{} 1 {} 0}
+
+test canvas::edit::rectangle-3.2 {disabled editor ignores clicks} -setup mkCanvas -body {
+    ::canvas::edit rectangle E .c
+    E enable
+    E disable
+    click 1 100 50
+    click 1 150 120
+    list [points RECTANGLE] [rect]
+} -cleanup {cleanup E} -result {{} {}}
+
+# -------------------------------------------------------------------------
+# Interactive creation
+
+test canvas::edit::rectangle-4.1 {first click: one corner, no rectangle} -setup mkCanvas -body {
+    ::canvas::edit rectangle E .c -data-cmd logcb
+    E enable
+    click 1 100 50
+    list [points RECTANGLE] [rect] $::log
+} -cleanup {cleanup E} -result {{{100.0 50.0}} {} {}}
+
+test canvas::edit::rectangle-4.2 {second click completes the rectangle} -setup {
+    mkRect -data-cmd logcb
+} -body {
+    list [points RECTANGLE] [rect] $::log
+} -cleanup {cleanup E} -result {{{100.0 50.0} {100.0 120.0} {150.0 50.0} {150.0 120.0}} {100.0 50.0 150.0 120.0} {{::E {100.0 50.0 150.0 120.0}}}}
+
+test canvas::edit::rectangle-4.3 {corners given in any order} -setup mkCanvas -body {
+    ::canvas::edit rectangle E .c -data-cmd logcb
+    E enable
+    click 1 150 50
+    click 1 100 120
+    list [points RECTANGLE] [rect] $::log
+} -cleanup {cleanup E} -result {{{100.0 50.0} {100.0 120.0} {150.0 50.0} {150.0 120.0}} {100.0 50.0 150.0 120.0} {{::E {100.0 50.0 150.0 120.0}}}}
+
+test canvas::edit::rectangle-4.4 {more points are denied} -setup {
+    mkRect -data-cmd logcb
+} -body {
+    set ::log {}
+    click 1 200 150
+    list [llength [points RECTANGLE]] [rect] $::log
+} -cleanup {cleanup E} -result {4 {100.0 50.0 150.0 120.0} {}}
+
+test canvas::edit::rectangle-4.5 {rectangle item appearance} -setup {
+    mkRect
+} -body {
+    set item [.c find withtag RECTANGLE/Rect]
+    list [.c type $item] [.c itemcget $item -fill] [.c itemcget $item -outline] \
+	[.c itemcget $item -activeoutline] [.c itemcget $item -width] \
+	[expr {[lindex [.c find all] 0] == $item}] \
+	[expr {$item in [.c find withtag RECTANGLE]}]
+} -cleanup {
+    cleanup E
+    unset item
+} -result {rectangle {} SkyBlue2 red 2.0 1 0}
+
+test canvas::edit::rectangle-4.6 {-color, -hilit-color, -rect-config} -setup {
+    mkRect -color green -hilit-color yellow \
+	-rect-config {-width 5 -dash . -outline black}
+} -body {
+    set item [.c find withtag RECTANGLE/Rect]
+    list [.c itemcget $item -outline] [.c itemcget $item -activeoutline] \
+	[.c itemcget $item -width] [.c itemcget $item -dash] \
+	[.c itemcget [lindex [.c find withtag RECTANGLE] 0] -fill]
+} -cleanup {
+    cleanup E
+    unset item
+} -result {green yellow 5.0 . green}
+
+test canvas::edit::rectangle-4.7 {-radius and -kind for the corners} -setup {
+    mkRect -radius 5 -kind rectangle
+} -body {
+    lsort -unique [lmap i [.c find withtag RECTANGLE] {
+	lassign [.c coords $i] x0 y0 x1 y1
+	list [.c type $i] [expr {$x1 - $x0}] [expr {$y1 - $y0}]
+    }]
+} -cleanup {cleanup E} -result {{rectangle 10.0 10.0}}
+
+test canvas::edit::rectangle-4.8 {-create-cmd} -setup {
+    proc mk {c x y} {
+	lappend ::log [list mk $x $y]
+	list [$c create rectangle $x $y $x $y]
+    }
+    mkRect -create-cmd mk
+} -body {
+    list [lsort $::log] [lmap i [.c find withtag RECTANGLE] {.c type $i}]
+} -cleanup {
+    cleanup E
+    rename mk {}
+} -result {{{mk 100.0 120.0} {mk 100.0 50.0} {mk 100.0 50.0} {mk 150.0 120.0} {mk 150.0 120.0} {mk 150.0 50.0}} {rectangle rectangle rectangle rectangle}}
+
+test canvas::edit::rectangle-4.9 {-tag} -setup mkCanvas -body {
+    ::canvas::edit rectangle E .c -tag MYR
+    E enable
+    click 1 10 20
+    click 1 30 40
+    list [rect MYR] [llength [.c find withtag MYR]] [.c find withtag RECTANGLE]
+} -cleanup {cleanup E} -result {{10.0 20.0 30.0 40.0} 4 {}}
+
+# -------------------------------------------------------------------------
+# Removal and dragging
+
+test canvas::edit::rectangle-5.1 {removing a corner removes the rectangle} -setup {
+    mkRect -data-cmd logcb
+} -body {
+    set ::log {}
+    click 2 150 50
+    list [points RECTANGLE] [rect] $::log
+} -cleanup {cleanup E} -result {{} {} {{::E {}}}}
+
+test canvas::edit::rectangle-5.2 {new rectangle after removal} -setup {
+    mkRect
+} -body {
+    click 2 100 120
+    click 1 10 10
+    click 1 20 30
+    rect
+} -cleanup {cleanup E} -result {10.0 10.0 20.0 30.0}
+
+test canvas::edit::rectangle-5.3 {removing the first point of a partial rectangle} -setup mkCanvas -body {
+    ::canvas::edit rectangle E .c
+    E enable
+    click 1 100 50
+    click 2 100 50
+    click 1 10 10
+    click 1 20 30
+    list [llength [points RECTANGLE]] [rect]
+} -cleanup {cleanup E} -result {4 {10.0 10.0 20.0 30.0}}
+
+test canvas::edit::rectangle-5.4 {dragging a corner moves the adjacent corners} -setup {
+    mkRect -data-cmd logcb
+} -body {
+    set ::log {}
+    drag 3 0 150 120 160 130 170 140
+    list [points RECTANGLE] [rect] $::log
+} -cleanup {cleanup E} -result {{{100.0 50.0} {100.0 140.0} {170.0 50.0} {170.0 140.0}} {100.0 50.0 170.0 140.0} {{::E {100.0 50.0 170.0 140.0}}}}
+
+test canvas::edit::rectangle-5.5 {dragging a corner across the opposite one} -setup {
+    mkRect -data-cmd logcb
+} -body {
+    set ::log {}
+    drag 3 0 100 50 200 150
+    list [points RECTANGLE] [rect] $::log
+} -cleanup {cleanup E} -result {{{150.0 120.0} {150.0 150.0} {200.0 120.0} {200.0 150.0}} {150.0 120.0 200.0 150.0} {{::E {150.0 120.0 200.0 150.0}}}}
+
+test canvas::edit::rectangle-5.6 {consecutive drags} -setup {
+    mkRect
+} -body {
+    drag 3 0 150 120 170 140
+    drag 3 0 100 50 90 40
+    rect
+} -cleanup {cleanup E} -result {90.0 40.0 170.0 140.0}
+
+test canvas::edit::rectangle-5.7 {-active-cmd} -setup {
+    mkRect -active-cmd logcb
+} -body {
+    set ::log {}
+    foreach {x y} {100 50 150 50 100 120 150 120 125 50} {
+	event generate .c <Motion> -x $x -y $y
+	event generate .c <Motion> -x 290 -y 190
+    }
+    update
+    set ::log
+} -cleanup {cleanup E} -result {{::E tl} {::E {}} {::E tr} {::E {}} {::E bl} {::E {}} {::E br} {::E {}} {::E rect} {::E {}}}
+
+# -------------------------------------------------------------------------
+# set, clear
+
+test canvas::edit::rectangle-6.1 {set: from border coordinates} -setup mkCanvas -body {
+    ::canvas::edit rectangle E .c -data-cmd logcb
+    list [E set 10 20 30 40] [points RECTANGLE] [rect] [lindex $::log end]
+} -cleanup {cleanup E} -result {{} {{10.0 20.0} {10.0 40.0} {30.0 20.0} {30.0 40.0}} {10.0 20.0 30.0 40.0} {::E {10 20 30 40}}}
+
+test canvas::edit::rectangle-6.2 {set: replaces an existing rectangle} -setup {
+    mkRect
+} -body {
+    E set 10 20 30 40
+    list [llength [points RECTANGLE]] [rect]
+} -cleanup {cleanup E} -result {4 {10.0 20.0 30.0 40.0}}
+
+test canvas::edit::rectangle-6.3 {set: replaces a partial rectangle} -setup mkCanvas -body {
+    ::canvas::edit rectangle E .c
+    E enable
+    click 1 100 50
+    E set 10 20 30 40
+    list [llength [points RECTANGLE]] [rect]
+} -cleanup {cleanup E} -result {4 {10.0 20.0 30.0 40.0}}
+
+test canvas::edit::rectangle-6.4 {set: wrong # args} -setup mkCanvas -body {
+    ::canvas::edit rectangle E .c
+    E set 10 20 30
+} -cleanup {cleanup E} -returnCodes error -result {wrong # args: should be "E set minx miny maxx maxy"}
+
+test canvas::edit::rectangle-6.5 {set rectangle can be dragged} -setup mkCanvas -body {
+    ::canvas::edit rectangle E .c
+    E enable
+    E set 100 50 150 120
+    drag 3 0 150 120 170 140
+    rect
+} -cleanup {cleanup E} -result {100.0 50.0 170.0 140.0}
+
+test canvas::edit::rectangle-6.6 {clear} -setup {
+    mkRect -data-cmd logcb
+} -body {
+    set ::log {}
+    list [E clear] [points RECTANGLE] [rect] $::log
+} -cleanup {cleanup E} -result {{} {} {} {{::E {}}}}
+
+test canvas::edit::rectangle-6.7 {clear: new rectangle afterwards} -setup {
+    mkRect
+} -body {
+    E clear
+    click 1 10 10
+    click 1 20 30
+    rect
+} -cleanup {cleanup E} -result {10.0 10.0 20.0 30.0}
+
+# -------------------------------------------------------------------------
+
+rename mkCanvas {}
+rename cleanup {}
+rename click {}
+rename drag {}
+rename points {}
+rename logcb {}
+rename rect {}
+rename mkRect {}
+
+::tcltest::cleanupTests
