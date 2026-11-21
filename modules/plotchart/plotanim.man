@@ -1,0 +1,181 @@
+[comment {-*- tcl -*- doctools manpage}]
+[manpage_begin plotanim n 0.2]
+[see_also Plotchart]
+[keywords animation plotting]
+[moddesc   Plotchart]
+[titledesc {Simple animations in Plotchart plots}]
+[require Tcl [opt 8.5]]
+[require Tk [opt 8.5]]
+[require plotanim [opt 0.2]]
+[description]
+
+The [package plotanim] package draws simple objects in a
+[package Plotchart] plot and moves them, e.g. to show the motion of
+points in a mathematical animation.  It is based on Arjen Markus' Tcl
+wiki page "Creating Mathematical Animations".
+
+[para]
+
+The objects are given in the world coordinates of the plot, so the
+canvas must hold a plot whose scaling is set, e.g. one created with
+[cmd ::Plotchart::createXYPlot].  Each object has a name, unique for
+the canvas.  The kinds of objects are:
+
+[list_begin definitions]
+[def [const point]] An invisible point, used for example as the center
+of a rotation or as an end point of lines.
+[def [const dot]] A small dot.
+[def [const circle]] A circle with a center and a radius.  The radius
+is given in units of the x-axis.
+[def [const line]] A line between two points.
+[def [const rectangle]] A rectangle given by two opposite corners.
+[list_end]
+
+All commands are in the namespace [namespace ::Plotchart::anim] and
+take the canvas [arg w] as their first argument.  Wherever a
+[arg point] is expected, it can be given either as a list of the x and
+y coordinates or as the name of an existing object, whose first
+coordinates are then used.
+
+[section {COMMANDS}]
+
+[subsection {Describing objects}]
+
+These commands return a description of an object, to be passed to
+[cmd create] or [cmd update].  The [arg option]s are canvas item
+options (e.g. [option -fill], [option -width]); they are used only by
+[cmd create].
+
+[list_begin definitions]
+
+[call [cmd ::Plotchart::anim::point] [arg w] [arg point] [opt [arg "option value ..."]]]
+[call [cmd ::Plotchart::anim::dot] [arg w] [arg point] [opt [arg "option value ..."]]]
+
+Describe an invisible point or a dot at [arg point].
+
+[call [cmd ::Plotchart::anim::circle] [arg w] [arg center] [arg radius] [opt [arg "option value ..."]]]
+
+Describe a circle.
+
+[call [cmd ::Plotchart::anim::line] [arg w] [arg point1] [arg point2] [opt [arg "option value ..."]]]
+[call [cmd ::Plotchart::anim::rectangle] [arg w] [arg point1] [arg point2] [opt [arg "option value ..."]]]
+
+Describe a line or a rectangle.
+
+[list_end]
+
+[subsection {Creating and changing objects}]
+
+[list_begin definitions]
+
+[call [cmd ::Plotchart::anim::create] [arg w] [arg name] [arg description]]
+
+Creates the object [arg name] from the [arg description] returned by
+one of the commands above, and draws it.
+
+[call [cmd ::Plotchart::anim::update] [arg w] [arg name] [arg "description element ..."]]
+
+Moves the existing object [arg name] to the position given by a new
+description of the same kind, given as separate arguments, e.g.
+[example {::Plotchart::anim::update $w p {*}[::Plotchart::anim::point $w {1 2}]}]
+An error is raised if the description is of another kind.
+
+[call [cmd ::Plotchart::anim::coords] [arg w] [arg name]]
+
+Returns the coordinates of the object [arg name]: [arg "x y"] for a
+point, dot or circle (its center), and [arg "x1 y1 x2 y2"] for a line
+or rectangle.
+
+[call [cmd ::Plotchart::anim::id] [arg w] [arg name]]
+
+Returns the canvas item of the object [arg name] (not for points), to
+change it with ordinary canvas commands.
+
+[list_end]
+
+[subsection {Moving objects}]
+
+[list_begin definitions]
+
+[call [cmd ::Plotchart::anim::translate] [arg w] [arg names] [arg vector]]
+
+Moves the objects in the list [arg names] by [arg vector], a list of
+the x and y distances (or the name of an object, whose coordinates are
+used as the distances).
+
+[call [cmd ::Plotchart::anim::rotate] [arg w] [arg names] [arg center] [arg angle]]
+
+Rotates the objects in the list [arg names] about the point
+[arg center] by [arg angle], in radians, counterclockwise.
+
+[call [cmd ::Plotchart::anim::morph] [arg w] [arg names] [arg shift]]
+
+Changes the shape of the lines and rectangles in the list
+[arg names]: [arg shift] is a list [arg "dx1 dy1 dx2 dy2"] of the
+distances by which their two points are moved.  An error is raised for
+points and dots.
+
+[call [cmd ::Plotchart::anim::add] [arg w] [arg point] [arg vector]]
+
+Returns the coordinates of [arg point] moved by [arg vector], without
+changing anything.
+
+[call [cmd ::Plotchart::anim::track] [arg w] [method start] [arg name] [opt [arg "option value ..."]]]
+[call [cmd ::Plotchart::anim::track] [arg w] [method next] [arg name]]
+[call [cmd ::Plotchart::anim::track] [arg w] [method stop] [arg name]]
+
+Draws the path of the object [arg name].  [method start] begins a new
+line at its current position, with the given canvas line options,
+[method next] extends the line to its current position, and
+[method stop] ends the tracking; the line drawn stays on the canvas.
+
+[list_end]
+
+[subsection Timing]
+
+[list_begin definitions]
+
+[call [cmd ::Plotchart::anim::pause] [arg w] [arg ms]]
+
+Waits [arg ms] milliseconds while processing events, so that the
+display is updated and the application stays responsive, then
+returns.  Use it between the steps of an animation.
+
+[call [cmd ::Plotchart::anim::animate] [arg w] [opt "[option -duration] [arg ms]"] [opt "[option -pause] [arg ms]"] [option -body] [arg body]]
+
+Changes the shape of lines and rectangles gradually, in steps
+[option -pause] milliseconds apart (default 20), over
+[option -duration] milliseconds (default 1000), and returns when it
+is done.  [arg body] is a list of the form
+[example {morphto name point1 point2 ?morphto name point1 point2 ...?}]
+which moves the two points of the line or rectangle [arg name] to
+[arg point1] and [arg point2].
+
+[list_end]
+
+[section EXAMPLE]
+
+A dot moving on a circle, leaving a trace:
+
+[example {
+package require Plotchart
+package require plotanim
+
+pack [canvas .c -width 400 -height 400]
+set p [::Plotchart::createXYPlot .c {-2 2 1} {-2 2 1}]
+
+set A ::Plotchart::anim
+${A}::create .c centre [${A}::point .c {0 0}]
+${A}::create .c moon   [${A}::dot .c {1 0} -fill red]
+${A}::track .c start moon -fill red
+
+for {set i 0} {$i < 100} {incr i} {
+    ${A}::rotate .c moon centre [expr {3.14159 / 50}]
+    ${A}::track .c next moon
+    ${A}::pause .c 20
+}
+}]
+
+[vset CATEGORY plotchart]
+[include ../../support/devel/doc/feedback.inc]
+[manpage_end]
