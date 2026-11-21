@@ -1,0 +1,162 @@
+[comment {-*- tcl -*- doctools manpage}]
+[manpage_begin xyplot n 1.0.1]
+[see_also Plotchart]
+[keywords plotting xy-plot zooming]
+[moddesc   Plotchart]
+[titledesc {Interactive XY plot widget}]
+[require Tcl [opt 8.5]]
+[require Tk [opt 8.5]]
+[require xyplot [opt 1.0.1]]
+[description]
+
+The [package xyplot] package provides a widget showing one or more
+series of xy data as a [package Plotchart] xy-plot, with scrollbars
+and zooming with the mouse.  The axes are scaled to the data
+automatically, and the plot is redrawn when the data change or the
+widget is resized.
+
+[section COMMANDS]
+
+[list_begin definitions]
+
+[call [cmd xyplot] [arg pathName] [opt [arg options]]]
+
+Creates the widget [arg pathName] (a frame holding a canvas and two
+scrollbars) and a command of the same name, and returns
+[arg pathName].  The options are:
+
+[list_begin options]
+
+[opt_def -title [arg text]]
+The title of the plot.
+
+[opt_def -xtext [arg text]]
+[opt_def -ytext [arg text]]
+The texts of the x- and y-axis.
+
+[opt_def -xticks [arg number]]
+[opt_def -yticks [arg number]]
+The number of intervals between the tick marks on the x- and y-axis
+(default 10).  A grid is drawn at the tick marks.
+
+[opt_def -xformat [arg format]]
+[opt_def -yformat [arg format]]
+The [cmd format] specification of the labels of the x- and y-axis.
+
+[opt_def -xinteger [arg boolean]]
+[opt_def -yinteger [arg boolean]]
+If true, a zoomed view of the x- or y-axis starts at an integer
+value and spans a multiple of the number of ticks, so that the tick
+marks are at integer values (default 0).
+
+[opt_def -type [arg type]]
+How the data are drawn: [const line] (default) connects the points of
+a series with lines, [const dot] draws a dot at each point.
+
+[opt_def -background [arg color]]
+The background color of the plot area.
+
+[opt_def -canvasbackground [arg color]]
+The background color around the plot area (axes, title).
+
+[opt_def -ttk [arg boolean]]
+If true, the frame and the scrollbars are [cmd ttk] widgets
+(default 0).
+
+[list_end]
+[list_end]
+
+[section {WIDGET COMMAND}]
+
+[list_begin definitions]
+
+[call [arg pathName] [method add_data] [arg series] [arg xydata] [opt [arg options]]]
+
+Adds the data series [arg series] and returns its name.
+[arg xydata] is a flat list of x and y values,
+[arg x1] [arg y1] [arg x2] [arg y2] ...  The options are:
+
+[list_begin options]
+[opt_def -color [arg color]]
+The color of the series.
+[opt_def -legend [arg text]]
+The text for the series in the legend.  Only series with a legend text
+are shown in the legend.
+[list_end]
+
+[call [arg pathName] [method set_data] [arg series] [arg xydata]]
+
+Replaces the data of the existing series [arg series].
+
+[call [arg pathName] [method remove_data] [arg series]]
+
+Removes the series [arg series].
+
+[call [arg pathName] [method cget] [arg what] [opt [arg series]]]
+
+Returns information about the widget.  [arg what] is one of:
+
+[list_begin definitions]
+[def [const canvas]] The canvas widget the plot is drawn in.
+[def "[const data] [arg series]"] The data of [arg series], as given to
+[method add_data] or [method set_data].
+[def [const series]] The list of the names of the series.
+[def [const scale]] The list [arg "xmin xmax ymin ymax"] of the
+ranges of all data, followed by [arg "xmin xmax ymin ymax"] of the
+part shown.
+[def [const xyplot]] The [package Plotchart] xy-plot command of the
+current plot, for further changes with the methods described in
+[package Plotchart].  The plot is created anew whenever it is redrawn,
+so such changes are lost then.
+[def [const zoomstack]] The list of the zoomed views, see
+[method set_zoomstack].
+[list_end]
+
+[call [arg pathName] [method set_zoomstack] [arg stack]]
+
+Sets the list of zoomed views, as returned by [method cget]
+[const zoomstack].  Each view is a list [arg "xmin xmax ymin ymax"].
+Zooming in appends the new view to the list; unzooming removes the
+last view and shows the one before it, or the whole range of the data
+if there is none.  Setting the list does not change the view shown.
+
+[list_end]
+
+The changes made by [method add_data], [method set_data] and
+[method remove_data] are shown when the event loop becomes idle.  The
+widget is destroyed with [cmd destroy].
+
+[section {MOUSE BINDINGS}]
+
+[list_begin definitions]
+[def [const Button-1]]
+Dragging with button 1 draws a rectangle; when the button is released,
+the plot zooms in to the part inside it.  The scrollbars then move the
+view over the whole range of the data.
+[def [const Button-3]]
+Returns to the previous zoomed view, or to the whole range of the data.
+[list_end]
+
+[section EXAMPLE]
+
+[example {
+package require xyplot
+
+set sine {}
+set cosine {}
+for {set i 0} {$i <= 100} {incr i} {
+    set x [expr {$i / 10.0}]
+    lappend sine   $x [expr {sin($x)}]
+    lappend cosine $x [expr {cos($x)}]
+}
+
+set p [xyplot .p -title "Sine and cosine" -xtext x -ytext y \
+           -xformat %.1f -yformat %.1f]
+pack $p -fill both -expand true
+$p add_data sine   $sine   -color red  -legend sin
+$p add_data cosine $cosine -color blue -legend cos
+}]
+
+[vset CATEGORY plotchart]
+[include ../../support/devel/doc/feedback.inc]
+[manpage_end]
