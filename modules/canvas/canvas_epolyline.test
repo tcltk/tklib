@@ -1,0 +1,512 @@
+# -*- tcl -*-
+# Tests for the canvas::edit::polyline package
+#
+# See the file "license.terms" for information on usage and redistribution
+# of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2
+    namespace import ::tcltest::*
+} else {
+    if {![package vsatisfies [package present tcltest] 2.2]} {
+	puts "    Aborting the tests found in \"[file tail [info script]]\"."
+	puts "    Requiring tcltest 2.2, have [package present tcltest]"
+	return
+    }
+}
+
+::tcltest::testConstraint tk 1
+
+lappend auto_path [file dirname [file dirname [file normalize [info script]]]]
+package require canvas::edit::polyline
+
+# -------------------------------------------------------------------------
+
+proc mkCanvas {} {
+    canvas .c -width 300 -height 200 -highlightthickness 0 -borderwidth 0
+    pack .c
+    update
+    event generate .c <Enter> -x 290 -y 190
+    event generate .c <Motion> -x 290 -y 190
+    set ::log {}
+}
+
+# Editors cannot be destroyed cleanly while their canvas exists (see
+# canvas::edit::points), so destroy the canvas first.
+proc cleanup {args} {
+    destroy .c
+    foreach e $args {
+	catch {$e destroy}
+    }
+    unset -nocomplain ::log
+    namespace eval ::canvas::drag {
+	unset -nocomplain active clientdata lastx lasty
+    }
+}
+
+proc click {button x y {state 0}} {
+    event generate .c <Motion> -x $x -y $y -state $state
+    event generate .c <ButtonPress-$button> -x $x -y $y -state $state
+    event generate .c <ButtonRelease-$button> -x $x -y $y \
+	-state [expr {$state | (1 << ($button + 7))}]
+    event generate .c <Motion> -x 290 -y 190
+    update
+}
+
+proc drag {button state x0 y0 args} {
+    set bmask [expr {1 << ($button + 7)}]
+    event generate .c <Motion> -x $x0 -y $y0 -state $state
+    event generate .c <ButtonPress-$button> -x $x0 -y $y0 -state $state
+    set x $x0
+    set y $y0
+    foreach {x y} $args {
+	event generate .c <Motion> -x $x -y $y -state [expr {$state | $bmask}]
+    }
+    event generate .c <ButtonRelease-$button> -x $x -y $y \
+	-state [expr {$state | $bmask}]
+    event generate .c <Motion> -x 290 -y 190
+    update
+}
+
+# Centers of the point markers (default markers) with the given tag.
+proc points {tag} {
+    lsort -dictionary [lmap item [.c find withtag $tag] {
+	lassign [.c coords $item] x0 y0 x1 y1
+	list [expr {($x0 + $x1) / 2}] [expr {($y0 + $y1) / 2}]
+    }]
+}
+
+proc logcb {args} {
+    lappend ::log $args
+    return
+}
+
+# NOTE: The -data-cmd callback signature implemented since version 0.3 is
+# documented in the header of canvas_epolyline.tcl (operations clear,
+# append, prepend, insert, remove, move).  The manpage still documents
+# the older "dataCmd editorObj coordinates" form.  The tests follow the
+# implemented form.
+
+# Line/polygon item: type and coordinates, or empty.
+proc track {{tag POLYLINE}} {
+    set item [.c find withtag $tag/Segment]
+    if {$item eq ""} {return ""}
+    list [.c type $item] [.c coords $item]
+}
+
+# Open line from (50,50) to (150,50)
+proc mkLine {args} {
+    mkCanvas
+    ::canvas::edit polyline E .c {*}$args
+    E enable
+    click 1 50 50
+    click 1 150 50
+}
+
+# Closed triangle (50,50) (150,50) (100,150)
+proc mkPoly {args} {
+    mkCanvas
+    ::canvas::edit polyline E .c -closed 1 {*}$args
+    E enable
+    click 1 50 50
+    click 1 150 50
+    click 1 100 150
+}
+
+test canvas::edit::polyline-1.0 {package version} -body {
+    package present canvas::edit::polyline
+} -result 0.3
+
+# -------------------------------------------------------------------------
+
+test canvas::edit::polyline-2.1 {create: wrong # args} -body {
+    ::canvas::edit polyline E
+} -returnCodes error -match glob -result {Error in constructor: wrong # args: should be "*"}
+
+test canvas::edit::polyline-2.2 {create: result is the qualified name} -setup mkCanvas -body {
+    ::canvas::edit polyline E .c
+} -cleanup {cleanup E} -result ::E
+
+test canvas::edit::polyline-2.3 {create: unknown option} -setup mkCanvas -body {
+    ::canvas::edit polyline E .c -foo 1
+} -cleanup {cleanup E} -returnCodes error -result {Error in constructor: unknown option "-foo"}
+
+test canvas::edit::polyline-2.4 {create: active by default} -constraints {
+    knownBug
+} -setup mkCanvas -body {
+    ::canvas::edit polyline E .c
+    E active
+} -cleanup {cleanup E} -result 1
+
+test canvas::edit::polyline-2.5 {default options} -setup mkCanvas -body {
+    ::canvas::edit polyline E .c
+    lmap o {-tag -closed -convex -color -hilit-color -radius -kind -active-cmd
+	-data-cmd -add-remove-point -drag-point -line-config} {E cget $o}
+} -cleanup {cleanup E} -result {POLYLINE 0 0 SkyBlue2 red 3 oval {} {} {} 3 {}}
+
+test canvas::edit::polyline-2.6 {cget -create-cmd} -constraints {
+    knownBug
+} -setup mkCanvas -body {
+    # -cgetmethod UnChain, but the method is named Unchain.
+    ::canvas::edit polyline E .c
+    llength [E cget -create-cmd]
+} -cleanup {cleanup E} -result 1
+
+test canvas::edit::polyline-2.7 {readonly options} -setup mkCanvas -body {
+    ::canvas::edit polyline E .c
+    lmap o {-tag -closed -convex -add-remove-point -drag-point} {
+	list [catch {E configure $o 1} m] $m
+    }
+} -cleanup {
+    cleanup E
+    unset -nocomplain m
+} -result {{1 {option -tag can only be set at instance creation}} {1 {option -closed can only be set at instance creation}} {1 {option -convex can only be set at instance creation}} {1 {option -add-remove-point can only be set at instance creation}} {1 {option -drag-point can only be set at instance creation}}}
+
+test canvas::edit::polyline-2.8 {-closed, -convex: not a boolean} -setup mkCanvas -body {
+    list [catch {::canvas::edit polyline E .c -closed maybe} m] $m \
+	[catch {::canvas::edit polyline E .c -convex maybe} m] $m
+} -cleanup {
+    cleanup E
+    unset -nocomplain m
+} -match glob -result {1 {Error in constructor: invalid -closed value: *} 1 {Error in constructor: invalid -convex value: *}}
+
+test canvas::edit::polyline-2.9 {destroy after canvas destruction} -setup mkCanvas -body {
+    ::canvas::edit polyline E .c
+    destroy .c
+    list [E destroy] [info commands ::E]
+} -cleanup {cleanup E} -result {{} {}}
+
+# -------------------------------------------------------------------------
+
+test canvas::edit::polyline-3.1 {enable, disable, active} -setup mkCanvas -body {
+    ::canvas::edit polyline E .c
+    set r [list [E enable] [E active]]
+    lappend r [E disable] [E active]
+} -cleanup {
+    cleanup E
+    unset r
+} -result {{} 1 {} 0}
+
+test canvas::edit::polyline-3.2 {disabled editor ignores clicks} -setup {
+    mkLine
+} -body {
+    E disable
+    click 1 100 50
+    click 1 200 100
+    click 2 50 50
+    list [points POLYLINE] [track]
+} -cleanup {cleanup E} -result {{{50.0 50.0} {150.0 50.0}} {line {50.0 50.0 150.0 50.0}}}
+
+# -------------------------------------------------------------------------
+# Open lines
+
+test canvas::edit::polyline-4.1 {first point: no line yet} -setup mkCanvas -body {
+    ::canvas::edit polyline E .c -data-cmd logcb
+    E enable
+    click 1 50 50
+    list [points POLYLINE] [track] $::log
+} -cleanup {cleanup E} -result {{{50.0 50.0}} {} {{::E append 50.0 50.0}}}
+
+test canvas::edit::polyline-4.2 {second point: line} -setup {
+    mkLine -data-cmd logcb
+} -body {
+    list [track] $::log
+} -cleanup {cleanup E} -result {{line {50.0 50.0 150.0 50.0}} {{::E append 50.0 50.0} {::E append 150.0 50.0}}}
+
+test canvas::edit::polyline-4.3 {point near the end is appended} -setup {
+    mkLine -data-cmd logcb
+} -body {
+    set ::log {}
+    click 1 200 100
+    list [track] $::log
+} -cleanup {cleanup E} -result {{line {50.0 50.0 150.0 50.0 200.0 100.0}} {{::E append 200.0 100.0}}}
+
+test canvas::edit::polyline-4.4 {point near the start is prepended} -setup {
+    mkLine -data-cmd logcb
+} -body {
+    set ::log {}
+    click 1 20 100
+    list [track] $::log
+} -cleanup {cleanup E} -result {{line {20.0 100.0 50.0 50.0 150.0 50.0}} {{::E prepend 20.0 100.0}}}
+
+test canvas::edit::polyline-4.5 {point on a segment splits it} -setup {
+    mkLine -data-cmd logcb
+} -body {
+    click 1 200 50
+    set ::log {}
+    click 1 100 50
+    list [track] $::log
+} -cleanup {cleanup E} -result {{line {50.0 50.0 100.0 50.0 150.0 50.0 200.0 50.0}} {{::E insert 1 100.0 50.0}}}
+
+test canvas::edit::polyline-4.6 {removing an end point} -setup {
+    mkLine -data-cmd logcb
+} -body {
+    click 1 200 100
+    set ::log {}
+    click 2 50 50
+    list [track] $::log
+} -cleanup {cleanup E} -result {{line {150.0 50.0 200.0 100.0}} {{::E remove 0}}}
+
+test canvas::edit::polyline-4.7 {removing an inner point joins the neighbours} -setup {
+    mkLine -data-cmd logcb
+} -body {
+    click 1 200 100
+    set ::log {}
+    click 2 150 50
+    list [track] $::log
+} -cleanup {cleanup E} -result {{line {50.0 50.0 200.0 100.0}} {{::E remove 1}}}
+
+test canvas::edit::polyline-4.8 {removing down to one point removes the line} -setup {
+    mkLine
+} -body {
+    click 2 150 50
+    list [points POLYLINE] [track]
+} -cleanup {cleanup E} -result {{{50.0 50.0}} {}}
+
+test canvas::edit::polyline-4.9 {dragging a vertex} -setup {
+    mkLine -data-cmd logcb
+} -body {
+    set ::log {}
+    drag 3 0 150 50 160 60 170 80
+    list [track] $::log
+} -cleanup {cleanup E} -result {{line {50.0 50.0 170.0 80.0}} {{::E move 1 170.0 80.0}}}
+
+test canvas::edit::polyline-4.10 {rubberband lines are removed after the drag} -setup {
+    mkLine
+} -body {
+    set n [llength [.c find all]]
+    drag 3 0 150 50 160 60
+    expr {[llength [.c find all]] == $n}
+} -cleanup {
+    cleanup E
+    unset n
+} -result 1
+
+test canvas::edit::polyline-4.11 {line item appearance} -setup {
+    mkLine
+} -body {
+    set item [.c find withtag POLYLINE/Segment]
+    list [.c itemcget $item -fill] [.c itemcget $item -activefill] \
+	[.c itemcget $item -width] [expr {[lindex [.c find all] 0] == $item}] \
+	[expr {$item in [.c find withtag POLYLINE]}]
+} -cleanup {
+    cleanup E
+    unset item
+} -result {SkyBlue2 red 2.0 1 0}
+
+test canvas::edit::polyline-4.12 {-color, -hilit-color, -line-config} -setup {
+    mkLine -color green -hilit-color yellow -line-config {-width 4 -dash . -fill black}
+} -body {
+    set item [.c find withtag POLYLINE/Segment]
+    list [.c itemcget $item -fill] [.c itemcget $item -activefill] \
+	[.c itemcget $item -width] [.c itemcget $item -dash] \
+	[.c itemcget [lindex [.c find withtag POLYLINE] 0] -fill]
+} -cleanup {
+    cleanup E
+    unset item
+} -result {green yellow 4.0 . green}
+
+test canvas::edit::polyline-4.13 {-radius, -kind} -setup {
+    mkLine -radius 5 -kind rectangle
+} -body {
+    set item [lindex [.c find withtag POLYLINE] 0]
+    list [.c type $item] [.c coords $item]
+} -cleanup {
+    cleanup E
+    unset item
+} -result {rectangle {45.0 45.0 55.0 55.0}}
+
+test canvas::edit::polyline-4.14 {-create-cmd} -setup {
+    proc mk {c x y} {
+	lappend ::log [list mk $x $y]
+	list [$c create text $x $y -text V]
+    }
+    mkLine -create-cmd mk
+} -body {
+    list $::log [lmap i [.c find withtag POLYLINE] {.c type $i}]
+} -cleanup {
+    cleanup E
+    rename mk {}
+} -result {{{mk 50.0 50.0} {mk 150.0 50.0}} {text text}}
+
+test canvas::edit::polyline-4.15 {-tag} -setup mkCanvas -body {
+    ::canvas::edit polyline E .c -tag PL
+    E enable
+    click 1 10 10
+    click 1 20 30
+    list [track PL] [.c find withtag POLYLINE]
+} -cleanup {cleanup E} -result {{line {10.0 10.0 20.0 30.0}} {}}
+
+test canvas::edit::polyline-4.16 {-active-cmd} -setup {
+    mkLine -active-cmd logcb
+} -body {
+    click 1 250 50
+    set ::log {}
+    foreach {x y} {50 50 150 50 250 50 100 50} {
+	event generate .c <Motion> -x $x -y $y
+	event generate .c <Motion> -x 290 -y 190
+    }
+    update
+    set ::log
+} -cleanup {cleanup E} -result {{::E 0} {::E {}} {::E 1} {::E {}} {::E 2} {::E {}} {::E line} {::E {}}}
+
+# -------------------------------------------------------------------------
+# Closed lines
+
+test canvas::edit::polyline-5.1 {closed: two points give a line} -setup mkCanvas -body {
+    ::canvas::edit polyline E .c -closed 1
+    E enable
+    click 1 50 50
+    click 1 150 50
+    track
+} -cleanup {cleanup E} -result {line {50.0 50.0 150.0 50.0}}
+
+test canvas::edit::polyline-5.2 {closed: three points give a polygon} -setup {
+    mkPoly -data-cmd logcb
+} -body {
+    set item [.c find withtag POLYLINE/Segment]
+    list [track] [.c itemcget $item -fill] [.c itemcget $item -outline] \
+	[.c itemcget $item -activeoutline] $::log
+} -cleanup {
+    cleanup E
+    unset item
+} -result {{polygon {50.0 50.0 150.0 50.0 100.0 150.0}} {} SkyBlue2 red {{::E append 50.0 50.0} {::E append 150.0 50.0} {::E append 100.0 150.0}}}
+
+test canvas::edit::polyline-5.3 {closed: point not on a segment is rejected} -setup {
+    mkPoly -data-cmd logcb
+} -body {
+    set ::log {}
+    click 1 250 50
+    list [llength [points POLYLINE]] [track] $::log
+} -cleanup {cleanup E} -result {3 {polygon {50.0 50.0 150.0 50.0 100.0 150.0}} {}}
+
+test canvas::edit::polyline-5.4 {closed: point on the closing segment} -setup {
+    mkPoly -data-cmd logcb
+} -body {
+    set ::log {}
+    click 1 75 100
+    list [track] $::log
+} -cleanup {cleanup E} -result {{polygon {75.0 100.0 50.0 50.0 150.0 50.0 100.0 150.0}} {{::E insert 0 75.0 100.0}}}
+
+test canvas::edit::polyline-5.5 {closed: point on an inner segment} -setup {
+    mkPoly -data-cmd logcb
+} -body {
+    set ::log {}
+    click 1 100 50
+    list [track] $::log
+} -cleanup {cleanup E} -result {{polygon {50.0 50.0 100.0 50.0 150.0 50.0 100.0 150.0}} {{::E insert 1 100.0 50.0}}}
+
+test canvas::edit::polyline-5.6 {closed: removing a vertex} -setup {
+    mkPoly -data-cmd logcb
+} -body {
+    click 1 100 50
+    set ::log {}
+    click 2 150 50
+    list [track] $::log
+} -cleanup {cleanup E} -result {{polygon {50.0 50.0 100.0 50.0 100.0 150.0}} {{::E remove 2}}}
+
+test canvas::edit::polyline-5.7 {closed, not convex: concave drag accepted} -setup {
+    mkPoly
+} -body {
+    click 1 100 50
+    drag 3 0 100 50 100 100
+    track
+} -cleanup {cleanup E} -result {polygon {50.0 50.0 100.0 100.0 150.0 50.0 100.0 150.0}}
+
+test canvas::edit::polyline-5.8 {closed, convex: concave drag is rolled back} -setup {
+    mkPoly -convex 1 -data-cmd logcb
+} -body {
+    click 1 100 50
+    set ::log {}
+    drag 3 0 100 50 100 100
+    list [track] [points POLYLINE] $::log
+} -cleanup {cleanup E} -result {{polygon {50.0 50.0 100.0 50.0 150.0 50.0 100.0 150.0}} {{50.0 50.0} {100.0 50.0} {100.0 150.0} {150.0 50.0}} {}}
+
+test canvas::edit::polyline-5.9 {closed, convex: convex drag accepted} -setup {
+    mkPoly -convex 1 -data-cmd logcb
+} -body {
+    click 1 100 50
+    set ::log {}
+    drag 3 0 100 50 100 20
+    list [track] $::log
+} -cleanup {cleanup E} -result {{polygon {50.0 50.0 100.0 20.0 150.0 50.0 100.0 150.0}} {{::E move 1 100.0 20.0}}}
+
+# -------------------------------------------------------------------------
+# add, clear
+
+test canvas::edit::polyline-6.1 {add: always appends} -setup mkCanvas -body {
+    ::canvas::edit polyline E .c -data-cmd logcb
+    list [E add 50 50] [E add 150 50] [E add 60 60] [track] $::log
+} -cleanup {cleanup E} -result {{} {} {} {line {50.0 50.0 150.0 50.0 60.0 60.0}} {{::E append 150 50} {::E append 60 60}}}
+
+test canvas::edit::polyline-6.7 {add: first vertex is reported too} -constraints {
+    knownBug
+} -setup mkCanvas -body {
+    # Documented: add goes through the -data-cmd callback.  The first
+    # added vertex is not reported, unlike the first interactive one.
+    ::canvas::edit polyline E .c -data-cmd logcb
+    E add 50 50
+    set ::log
+} -cleanup {cleanup E} -result {{::E append 50 50}}
+
+test canvas::edit::polyline-6.2 {add: closed} -setup mkCanvas -body {
+    ::canvas::edit polyline E .c -closed 1
+    E add 50 50
+    E add 150 50
+    E add 100 150
+    E add 250 50
+    track
+} -cleanup {cleanup E} -result {polygon {50.0 50.0 150.0 50.0 100.0 150.0 250.0 50.0}}
+
+test canvas::edit::polyline-6.3 {add: wrong # args} -setup mkCanvas -body {
+    ::canvas::edit polyline E .c
+    E add 1
+} -cleanup {cleanup E} -returnCodes error -result {wrong # args: should be "E add x y"}
+
+test canvas::edit::polyline-6.4 {clear} -setup {
+    mkLine -data-cmd logcb
+} -body {
+    click 1 200 100
+    set ::log {}
+    list [E clear] [.c find all] $::log
+} -cleanup {cleanup E} -result {{} {} {{::E clear}}}
+
+test canvas::edit::polyline-6.5 {clear, then a new line} -setup {
+    mkLine
+} -body {
+    E clear
+    click 1 10 10
+    click 1 20 20
+    track
+} -cleanup {cleanup E} -result {line {10.0 10.0 20.0 20.0}}
+
+test canvas::edit::polyline-6.6 {clear: empty editor} -setup mkCanvas -body {
+    ::canvas::edit polyline E .c -data-cmd logcb
+    list [E clear] $::log
+} -cleanup {cleanup E} -result {{} {{::E clear}}}
+
+# -------------------------------------------------------------------------
+
+rename mkCanvas {}
+rename cleanup {}
+rename click {}
+rename drag {}
+rename points {}
+rename logcb {}
+rename track {}
+rename mkLine {}
+rename mkPoly {}
+
+::tcltest::cleanupTests
