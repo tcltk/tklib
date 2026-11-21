@@ -1,0 +1,1047 @@
+# -*- tcl -*-
+# tooltip.test --
+#
+#	Tests for the tooltip package: the tooltip::tooltip subcommands
+#	(clear, configure, delay, fade, disable/off, enable/on), tooltip
+#	registration for widgets and for menu, canvas, listbox, treeview,
+#	notebook and text items, and the display of the tooltips.
+#
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2
+    namespace import ::tcltest::*
+} else {
+    if {![package vsatisfies [package present tcltest] 2.2]} {
+	puts "    Aborting the tests found in \"[file tail [info script]]\"."
+	puts "    Requiring tcltest 2.2, have [package present tcltest]"
+	return
+    }
+}
+
+::tcltest::testConstraint tk 1
+
+lappend auto_path [file dirname [file dirname [file normalize [info script]]]]
+package require tooltip
+
+# -------------------------------------------------------------------------
+# Helpers
+
+# The tklib test harness withdraws "."; showing tooltips needs mapped
+# windows and the pointer over them.
+set mainState [wm state .]
+wm deiconify .
+wm geometry . 400x400+0+0
+update
+
+set savedDelay [tooltip::tooltip delay]
+set savedFade  [tooltip::tooltip fade]
+tooltip::tooltip delay 50
+tooltip::tooltip fade 0
+
+proc tip {} {
+    tooltip::wname
+}
+
+# Move the pointer away from all test widgets.
+proc away {} {
+    event generate . <Motion> -warp 1 -x 395 -y 395
+    update
+}
+
+# Move the pointer over a widget.
+proc hover {w {x 3} {y 3}} {
+    event generate $w <Motion> -warp 1 -x $x -y $y
+    update
+}
+
+# Wait (bounded) until the tooltip is shown; return whether it is.
+proc waitShown {{ms 2000}} {
+    set end [expr {[clock milliseconds] + $ms}]
+    while {[clock milliseconds] < $end} {
+	update
+	if {[winfo exists [tip]] && [winfo ismapped [tip]]} {
+	    return 1
+	}
+	after 10
+    }
+    return 0
+}
+
+# Wait (bounded) until the tooltip is hidden; return whether it is.
+proc waitHidden {{ms 1000}} {
+    set end [expr {[clock milliseconds] + $ms}]
+    while {[clock milliseconds] < $end} {
+	update
+	if {![winfo exists [tip]] || ![winfo ismapped [tip]]} {
+	    return 1
+	}
+	after 10
+    }
+    return 0
+}
+
+# Wait long enough for a tooltip that should not appear.
+proc notShown {} {
+    expr {![waitShown 300]}
+}
+
+proc tipText {} {
+    [tip].f.label cget -text
+}
+
+proc cleanTips {args} {
+    away
+    tooltip::tooltip clear
+    tooltip::hide
+    tooltip::tooltip enable
+    foreach w $args {destroy $w}
+    update
+}
+
+# -------------------------------------------------------------------------
+# tooltip::tooltip subcommands
+
+test tooltip-1.1 {tooltip: wrong # args} -body {
+    tooltip::tooltip
+} -returnCodes error -result {wrong # args: should be "tooltip::tooltip w ?arg ...?"}
+
+test tooltip-1.2 {tooltip: exported command} -body {
+    namespace eval ::tooltip {namespace export}
+} -result tooltip
+
+test tooltip-1.3 {delay: query} -body {
+    tooltip::tooltip delay
+} -result 50
+
+test tooltip-1.4 {delay: set returns the new delay} -body {
+    list [tooltip::tooltip delay 750] [tooltip::tooltip delay]
+} -cleanup {
+    tooltip::tooltip delay 50
+} -result {750 750}
+
+test tooltip-1.5 {delay: minimum 50} -body {
+    tooltip::tooltip delay 49
+} -cleanup {
+    tooltip::tooltip delay 50
+} -returnCodes error -result {tooltip delay must be an integer greater than or equal to 50 (delay is in millisecs)}
+
+test tooltip-1.6 {delay: not an integer} -body {
+    tooltip::tooltip delay 100.5
+} -cleanup {
+    tooltip::tooltip delay 50
+} -returnCodes error -result {tooltip delay must be an integer greater than or equal to 50 (delay is in millisecs)}
+
+test tooltip-1.7 {delay: bad value keeps the old delay} -body {
+    catch {tooltip::tooltip delay foo}
+    tooltip::tooltip delay
+} -result 50
+
+test tooltip-1.8 {fade: query and set} -body {
+    list [tooltip::tooltip fade] [tooltip::tooltip fade 1] [tooltip::tooltip fade] \
+	[tooltip::tooltip fade no] [tooltip::tooltip fade yes] [tooltip::tooltip fade off]
+} -cleanup {
+    tooltip::tooltip fade 0
+} -result {0 1 1 0 1 0}
+
+test tooltip-1.9 {fade: default is off on X11, on elsewhere} -body {
+    expr {$savedFade == ([tk windowingsystem] ne "x11")}
+} -result 1
+
+test tooltip-1.10 {configure: query all} -body {
+    set d [tooltip::tooltip configure]
+    lsort [dict keys $d]
+} -cleanup {
+    unset -nocomplain d
+} -result {-background -font -foreground}
+
+test tooltip-1.11 {configure: default values} -body {
+    list [tooltip::tooltip configure -background] [tooltip::tooltip configure -foreground] \
+	[tooltip::tooltip configure -font]
+} -result {lightyellow black TkTooltipFont}
+
+test tooltip-1.12 {configure: unknown option} -body {
+    tooltip::tooltip configure -foo
+} -returnCodes error -result {unknown option "-foo"}
+
+test tooltip-1.13 {configure: unknown option when setting} -body {
+    tooltip::tooltip configure -foo bar
+} -returnCodes error -result {unknown option "-foo"}
+
+test tooltip-1.14 {configure: odd number of arguments} -body {
+    tooltip::tooltip configure -background red -foreground
+} -returnCodes error -result {wrong # args. Should be "tooltip configure ?opt ?val opt val ...??"}
+
+test tooltip-1.15 {configure: set colors and font} -setup {
+    set saved [tooltip::tooltip configure]
+} -body {
+    tooltip::tooltip configure -background pink -foreground navy -font TkFixedFont
+    list [tooltip::tooltip configure -background] [tooltip::tooltip configure -foreground] \
+	[tooltip::tooltip configure -font] [[tip].f cget -background] \
+	[[tip].f.info cget -background] [[tip].f.info cget -foreground]
+} -cleanup {
+    tooltip::tooltip configure {*}$saved
+    unset -nocomplain saved
+} -result {pink navy TkFixedFont pink pink navy}
+
+test tooltip-1.16 {configure: -bg and -fg aliases} -setup {
+    set saved [tooltip::tooltip configure]
+} -body {
+    tooltip::tooltip configure -bg pink -fg navy
+    list [tooltip::tooltip configure -background] [tooltip::tooltip configure -foreground]
+} -cleanup {
+    tooltip::tooltip configure {*}$saved
+    unset -nocomplain saved
+} -result {pink navy}
+
+test tooltip-1.17 {configure: bad color} -body {
+    tooltip::tooltip configure -background nosuchcolor
+} -returnCodes error -result {unknown color name "nosuchcolor"}
+
+test tooltip-1.18 {configure: settings survive recreation of the tooltip window} -setup {
+    set saved [tooltip::tooltip configure]
+} -body {
+    tooltip::tooltip configure -background pink
+    destroy [tip]
+    tooltip::tooltip configure -background
+} -cleanup {
+    tooltip::tooltip configure {*}$saved
+    unset -nocomplain saved
+} -result pink
+
+test tooltip-1.19 {configure: result of setting is empty} -setup {
+    set saved [tooltip::tooltip configure]
+} -body {
+    tooltip::tooltip configure -background pink
+} -cleanup {
+    tooltip::tooltip configure {*}$saved
+    unset -nocomplain saved
+} -result {}
+
+test tooltip-1.20 {wname: query and change the tooltip window name} -body {
+    set old [tooltip::wname]
+    list $old [tooltip::wname .othertip] [tooltip::wname] [tooltip::wname $old]
+} -cleanup {
+    unset -nocomplain old
+} -result {.__tooltip__ .othertip .othertip .__tooltip__}
+
+# -------------------------------------------------------------------------
+# Registering tooltips
+
+test tooltip-2.1 {register: returns the tooltip details} -setup {
+    label .l
+} -body {
+    tooltip::tooltip .l "This is a label widget"
+} -cleanup {
+    cleanTips .l
+} -result {{This is a label widget} {} {}}
+
+test tooltip-2.2 {register: query} -setup {
+    label .l
+} -body {
+    tooltip::tooltip .l "msg" 
+    tooltip::tooltip .l
+} -cleanup {
+    cleanTips .l
+} -result {msg {} {}}
+
+test tooltip-2.3 {register: query without tooltip} -setup {
+    label .l
+} -body {
+    tooltip::tooltip .l
+} -cleanup {
+    cleanTips .l
+} -result {}
+
+test tooltip-2.4 {register: adds the Tooltip bind tag once} -setup {
+    label .l
+} -body {
+    tooltip::tooltip .l "one"
+    tooltip::tooltip .l "two"
+    list [bindtags .l] [tooltip::tooltip .l]
+} -cleanup {
+    cleanTips .l
+} -result {{.l Label . all Tooltip} {two {} {}}}
+
+test tooltip-2.5 {register: empty message removes the tooltip} -setup {
+    label .l
+} -body {
+    tooltip::tooltip .l "msg"
+    list [tooltip::tooltip .l ""] [tooltip::tooltip .l] [bindtags .l]
+} -cleanup {
+    cleanTips .l
+} -result {{} {} {.l Label . all}}
+
+test tooltip-2.6 {register: -image and -info} -setup {
+    label .l
+    image create photo tooltipImg -width 4 -height 4
+} -body {
+    tooltip::tooltip .l -image tooltipImg -info "more info" "msg"
+} -cleanup {
+    cleanTips .l
+    image delete tooltipImg
+} -result {msg tooltipImg {more info}}
+
+test tooltip-2.7 {register: -- allows a message starting with -} -setup {
+    label .l
+} -constraints knownBug -body {
+    # register drops the message together with "--" and then fails
+    # with "wrong # args".
+    tooltip::tooltip .l -- "-dash"
+} -cleanup {
+    cleanTips .l
+} -result {-dash {} {}}
+
+test tooltip-2.8 {register: message starting with - without --} -setup {
+    label .l
+} -body {
+    tooltip::tooltip .l "-dash"
+} -cleanup {
+    cleanTips .l
+} -returnCodes error -result {unknown option "-dash": should be -heading, -image, -index, -info, -item(s), -tab, -tag or --}
+
+test tooltip-2.9 {register: unknown option} -setup {
+    label .l
+} -body {
+    tooltip::tooltip .l -foo bar msg
+} -cleanup {
+    cleanTips .l
+} -returnCodes error -result {unknown option "-foo": should be -heading, -image, -index, -info, -item(s), -tab, -tag or --}
+
+test tooltip-2.10 {register: missing message} -setup {
+    label .l
+} -body {
+    tooltip::tooltip .l -info foo
+} -cleanup {
+    cleanTips .l
+} -returnCodes error -result {wrong # args: should be "tooltip widget ?-heading columnId? ?-image image? ?-index index? ?-info info? ?-item(s) items? ?-tab tabId? ?-tag tag? ?--? message"}
+
+test tooltip-2.11 {register: too many arguments} -setup {
+    label .l
+} -body {
+    tooltip::tooltip .l msg extra
+} -cleanup {
+    cleanTips .l
+} -returnCodes error -result {wrong # args: should be "tooltip widget ?-heading columnId? ?-image image? ?-index index? ?-info info? ?-item(s) items? ?-tab tabId? ?-tag tag? ?--? message"}
+
+test tooltip-2.12 {register: nonexistent widget} -body {
+    tooltip::tooltip .nosuch msg
+} -returnCodes error -result {bad window path name ".nosuch"}
+
+test tooltip-2.13 {register: -heading needs a treeview} -setup {
+    label .l
+} -body {
+    tooltip::tooltip .l -heading c msg
+} -cleanup {
+    cleanTips .l
+} -returnCodes error -result {widget ".l" is not a ttk::treeview widget}
+
+test tooltip-2.14 {register: -index needs a menu} -setup {
+    label .l
+} -body {
+    tooltip::tooltip .l -index 0 msg
+} -cleanup {
+    cleanTips .l
+} -returnCodes error -result {widget ".l" does not seem to be a menu, which is required for the -index switch}
+
+test tooltip-2.15 {register: -items needs a canvas, listbox or treeview} -setup {
+    label .l
+} -body {
+    tooltip::tooltip .l -items 1 msg
+} -cleanup {
+    cleanTips .l
+} -returnCodes error -result {widget ".l" is not a canvas, or item "1" does not exist in the canvas}
+
+test tooltip-2.16 {register: -tab needs a notebook} -setup {
+    label .l
+} -body {
+    tooltip::tooltip .l -tab 0 msg
+} -cleanup {
+    cleanTips .l
+} -returnCodes error -result {widget ".l" is not a ttk::notebook widget}
+
+test tooltip-2.17 {register: -tag needs a text} -setup {
+    label .l
+} -body {
+    tooltip::tooltip .l -tag t msg
+} -cleanup {
+    cleanTips .l
+} -returnCodes error -result {widget ".l" is not a text widget or "t" is not a text tag}
+
+test tooltip-2.18 {register: -tag needs an existing tag} -setup {
+    text .t
+} -body {
+    tooltip::tooltip .t -tag nosuch msg
+} -cleanup {
+    cleanTips .t
+} -returnCodes error -result {widget ".t" is not a text widget or "nosuch" is not a text tag}
+
+test tooltip-2.19 {register: -tab needs an existing tab} -setup {
+    ttk::notebook .nb
+    .nb add [frame .nb.f1] -text One
+} -body {
+    tooltip::tooltip .nb -tab 3 msg
+} -cleanup {
+    cleanTips .nb
+} -returnCodes error -match glob -result {*index*3*out of bounds}
+
+test tooltip-2.20 {register: -tab with a bad tab id} -setup {
+    ttk::notebook .nb
+    .nb add [frame .nb.f1] -text One
+} -body {
+    tooltip::tooltip .nb -tab .nosuch msg
+} -cleanup {
+    cleanTips .nb
+} -returnCodes error -match glob -result {*.nosuch*}
+
+test tooltip-2.21 {register: menu item by index and by label} -setup {
+    menu .m -tearoff 0
+    .m add command -label Open
+    .m add command -label Save
+} -body {
+    list [tooltip::tooltip .m -index 0 "first"] [tooltip::tooltip .m -index Save "second"]
+} -cleanup {
+    cleanTips .m
+} -result {{first {} {}} {second {} {}}}
+
+test tooltip-2.22 {register: menu entries need not exist} -setup {
+    menu .m -tearoff 0
+} -body {
+    tooltip::tooltip .m -index 5 "later"
+} -cleanup {
+    cleanTips .m
+} -result {later {} {}}
+
+test tooltip-2.23 {register: menu whose second entry is a separator} -constraints {
+    knownBug
+} -setup {
+    menu .m -tearoff 0
+    .m add command -label Open
+    .m add separator
+} -body {
+    # The menu check uses [$w entrycget 1 -label], which fails for a
+    # separator (and for the tearoff entry in Tk 8.6).
+    tooltip::tooltip .m -index 0 "first"
+} -cleanup {
+    cleanTips .m
+} -result {first {} {}}
+
+test tooltip-2.24 {register: canvas item must exist} -setup {
+    canvas .c
+} -body {
+    tooltip::tooltip .c -items 42 msg
+} -cleanup {
+    cleanTips .c
+} -result {}
+
+test tooltip-2.25 {register: listbox items may be created later} -setup {
+    listbox .lb
+} -body {
+    list [tooltip::tooltip .lb -items {0 1} "item"] [tooltip::tooltip .lb -item 5 "five"]
+} -cleanup {
+    cleanTips .lb
+} -result {{item {} {}} {five {} {}}}
+
+test tooltip-2.26 {register: does not change the bind tags for items} -setup {
+    listbox .lb
+    canvas .c
+    set r [.c create rectangle 1 1 5 5]
+} -body {
+    tooltip::tooltip .lb -items 0 "item"
+    tooltip::tooltip .c -items $r "item"
+    list [bindtags .lb] [bindtags .c]
+} -cleanup {
+    cleanTips .lb .c
+    unset -nocomplain r
+} -result {{.lb Listbox . all} {.c Canvas . all}}
+
+test tooltip-2.27 {register: treeview heading and item} -setup {
+    ttk::treeview .tv -columns {a b}
+    .tv insert {} end -id row1 -text Row
+} -body {
+    list [tooltip::tooltip .tv -heading a "heading a"] \
+	[tooltip::tooltip .tv -items row1 "row one"]
+} -cleanup {
+    cleanTips .tv
+} -result {{{heading a} {} {}} {{row one} {} {}}}
+
+# -------------------------------------------------------------------------
+# clear
+
+test tooltip-3.1 {clear: all widgets} -setup {
+    label .l1
+    label .l2
+} -body {
+    tooltip::tooltip .l1 one
+    tooltip::tooltip .l2 two
+    tooltip::tooltip clear
+    list [tooltip::tooltip .l1] [tooltip::tooltip .l2] [bindtags .l1] [bindtags .l2]
+} -cleanup {
+    cleanTips .l1 .l2
+} -result {{} {} {.l1 Label . all} {.l2 Label . all}}
+
+test tooltip-3.2 {clear: glob pattern} -setup {
+    frame .f
+    label .f.l1
+    label .f.l2
+    label .l3
+} -body {
+    tooltip::tooltip .f.l1 one
+    tooltip::tooltip .f.l2 two
+    tooltip::tooltip .l3 three
+    tooltip::tooltip clear .f.*
+    list [tooltip::tooltip .f.l1] [tooltip::tooltip .f.l2] [tooltip::tooltip .l3]
+} -cleanup {
+    cleanTips .f .l3
+} -result {{} {} {three {} {}}}
+
+test tooltip-3.3 {clear: exact widget} -setup {
+    label .l1
+    label .l12
+} -body {
+    tooltip::tooltip .l1 one
+    tooltip::tooltip .l12 two
+    tooltip::tooltip clear .l1
+    list [tooltip::tooltip .l1] [tooltip::tooltip .l12]
+} -cleanup {
+    cleanTips .l1 .l12
+} -result {{} {two {} {}}}
+
+test tooltip-3.4 {clear: no tooltips} -body {
+    tooltip::tooltip clear
+} -result {}
+
+test tooltip-3.5 {clear: destroyed widget} -setup {
+    label .l
+} -body {
+    tooltip::tooltip .l one
+    destroy .l
+    tooltip::tooltip clear
+} -result {}
+
+# -------------------------------------------------------------------------
+# Display of widget tooltips
+
+test tooltip-4.1 {display: shown on hover after the delay} -setup {
+    away
+    pack [label .l -text Label]
+    update
+} -body {
+    tooltip::tooltip .l "This is a label widget"
+    hover .l
+    list [waitShown] [tipText] [winfo ismapped [tip].f.info]
+} -cleanup {
+    cleanTips .l
+} -result {1 {This is a label widget} 0}
+
+test tooltip-4.2 {display: hidden when the pointer leaves} -setup {
+    away
+    pack [label .l -text Label]
+    update
+} -body {
+    tooltip::tooltip .l "tip"
+    hover .l
+    set res [waitShown]
+    away
+    lappend res [waitHidden]
+} -cleanup {
+    cleanTips .l
+    unset -nocomplain res
+} -result {1 1}
+
+test tooltip-4.3 {display: not shown before the delay} -setup {
+    away
+    pack [label .l -text Label]
+    update
+    tooltip::tooltip delay 1500
+} -body {
+    tooltip::tooltip .l "tip"
+    hover .l
+    update
+    expr {[winfo exists [tip]] && [winfo ismapped [tip]]}
+} -cleanup {
+    tooltip::tooltip delay 50
+    cleanTips .l
+} -result 0
+
+test tooltip-4.4 {display: leaving before the delay cancels it} -setup {
+    away
+    pack [label .l -text Label]
+    update
+    tooltip::tooltip delay 200
+} -body {
+    tooltip::tooltip .l "tip"
+    hover .l
+    away
+    notShown
+} -cleanup {
+    tooltip::tooltip delay 50
+    cleanTips .l
+} -result 1
+
+test tooltip-4.5 {display: -info text below the message} -setup {
+    away
+    pack [label .l -text Label]
+    update
+} -body {
+    tooltip::tooltip .l -info "Additional information" "Message"
+    hover .l
+    list [waitShown] [tipText] [[tip].f.info cget -text] [winfo ismapped [tip].f.info] \
+	[expr {[winfo y [tip].f.info] > [winfo y [tip].f.label]}]
+} -cleanup {
+    cleanTips .l
+} -result {1 Message {Additional information} 1 1}
+
+test tooltip-4.6 {display: -image left of the message} -setup {
+    away
+    pack [label .l -text Label]
+    update
+    image create photo tooltipImg -width 10 -height 10
+} -body {
+    tooltip::tooltip .l -image tooltipImg "Message"
+    hover .l
+    list [waitShown] [[tip].f.label cget -image] [[tip].f.label cget -compound]
+} -cleanup {
+    cleanTips .l
+    image delete tooltipImg
+} -result {1 tooltipImg left}
+
+test tooltip-4.7 {display: placed below the pointer} -setup {
+    away
+    pack [label .l -text Label]
+    update
+} -body {
+    tooltip::tooltip .l "tip"
+    hover .l
+    waitShown
+    lassign [winfo pointerxy .] px py
+    list [expr {[winfo rootx [tip]] - $px}] [expr {[winfo rooty [tip]] - $py}]
+} -cleanup {
+    cleanTips .l
+    unset -nocomplain px py
+} -result {0 20}
+
+test tooltip-4.8 {display: above the pointer at the bottom of the screen} -setup {
+    away
+    toplevel .top
+    wm overrideredirect .top 1
+    pack [label .top.l -text Label]
+    wm geometry .top +0-0
+    update
+} -body {
+    tooltip::tooltip .top.l "tip"
+    hover .top.l 3 [expr {[winfo height .top.l] - 3}]
+    waitShown
+    expr {[winfo rooty [tip]] + [winfo height [tip]] <= [winfo pointery .]}
+} -cleanup {
+    cleanTips .top
+} -result 1
+
+test tooltip-4.9 {display: disabled tooltips are not shown} -setup {
+    away
+    pack [label .l -text Label]
+    update
+} -body {
+    tooltip::tooltip .l "tip"
+    tooltip::tooltip disable
+    hover .l
+    set res [notShown]
+    away
+    tooltip::tooltip enable
+    hover .l
+    lappend res [waitShown]
+} -cleanup {
+    cleanTips .l
+    unset -nocomplain res
+} -result {1 1}
+
+test tooltip-4.10 {display: off and on are synonyms} -setup {
+    away
+    pack [label .l -text Label]
+    update
+} -body {
+    tooltip::tooltip .l "tip"
+    tooltip::tooltip off
+    hover .l
+    set res [notShown]
+    away
+    tooltip::tooltip on
+    hover .l
+    lappend res [waitShown]
+} -cleanup {
+    cleanTips .l
+    unset -nocomplain res
+} -result {1 1}
+
+test tooltip-4.11 {display: disable hides a visible tooltip} -setup {
+    away
+    pack [label .l -text Label]
+    update
+} -body {
+    tooltip::tooltip .l "tip"
+    hover .l
+    set res [waitShown]
+    tooltip::tooltip disable
+    lappend res [waitHidden]
+} -cleanup {
+    cleanTips .l
+    unset -nocomplain res
+} -result {1 1}
+
+test tooltip-4.12 {display: key press hides the tooltip} -setup {
+    away
+    pack [label .l -text Label]
+    update
+} -body {
+    tooltip::tooltip .l "tip"
+    hover .l
+    set res [waitShown]
+    focus -force .l
+    event generate .l <KeyPress-a>
+    lappend res [waitHidden]
+} -cleanup {
+    cleanTips .l
+    unset -nocomplain res
+} -result {1 1}
+
+test tooltip-4.13 {display: button press hides the tooltip} -setup {
+    away
+    pack [label .l -text Label]
+    update
+} -body {
+    tooltip::tooltip .l "tip"
+    hover .l
+    set res [waitShown]
+    event generate .l <ButtonPress-1> -x 3 -y 3
+    event generate .l <ButtonRelease-1> -x 3 -y 3
+    lappend res [waitHidden]
+} -cleanup {
+    cleanTips .l
+    unset -nocomplain res
+} -result {1 1}
+
+test tooltip-4.14 {display: cleared widget shows no tooltip} -setup {
+    away
+    pack [label .l -text Label]
+    update
+} -body {
+    tooltip::tooltip .l "tip"
+    tooltip::tooltip clear .l
+    hover .l
+    notShown
+} -cleanup {
+    cleanTips .l
+} -result 1
+
+test tooltip-4.15 {display: shown over a child of the widget} -setup {
+    away
+    pack [frame .f -width 100 -height 60]
+    place [frame .f.c -width 40 -height 40 -bg red] -x 10 -y 10
+    update
+} -body {
+    tooltip::tooltip .f "frame tip"
+    hover .f 2 2
+    set res [waitShown]
+    hover .f.c 5 5
+    lappend res [tipText]
+} -cleanup {
+    cleanTips .f
+    unset -nocomplain res
+} -result {1 {frame tip}}
+
+test tooltip-4.16 {display: colors from configure} -setup {
+    away
+    pack [label .l -text Label]
+    update
+    set saved [tooltip::tooltip configure]
+} -body {
+    tooltip::tooltip configure -background pink -foreground navy
+    tooltip::tooltip .l "tip"
+    hover .l
+    list [waitShown] [[tip].f.label cget -background] [[tip].f.label cget -foreground]
+} -cleanup {
+    cleanTips .l
+    tooltip::tooltip configure {*}$saved
+    unset -nocomplain saved
+} -result {1 pink navy}
+
+test tooltip-4.17 {display: fading hides the tooltip} -setup {
+    away
+    pack [label .l -text Label]
+    update
+} -body {
+    tooltip::tooltip fade 1
+    tooltip::tooltip .l "tip"
+    hover .l
+    set res [waitShown]
+    away
+    lappend res [waitHidden 3000]
+} -cleanup {
+    tooltip::tooltip fade 0
+    cleanTips .l
+    unset -nocomplain res
+} -result {1 1}
+
+test tooltip-4.18 {display: tooltip window of the right class} -setup {
+    away
+    pack [label .l -text Label]
+    update
+} -body {
+    tooltip::tooltip .l "tip"
+    hover .l
+    waitShown
+    list [winfo class [tip]] [wm overrideredirect [tip]]
+} -cleanup {
+    cleanTips .l
+} -result {Tooltip 1}
+
+test tooltip-4.19 {display: renamed tooltip window} -setup {
+    away
+    pack [label .l -text Label]
+    update
+    set old [tooltip::wname]
+} -body {
+    tooltip::wname .othertip
+    tooltip::tooltip .l "tip"
+    hover .l
+    list [waitShown] [winfo exists .othertip] [.othertip.f.label cget -text]
+} -cleanup {
+    cleanTips .l
+    tooltip::wname $old
+    unset -nocomplain old
+} -result {1 1 tip}
+
+# -------------------------------------------------------------------------
+# Display of item tooltips
+
+test tooltip-5.1 {canvas item tooltip} -setup {
+    away
+    pack [canvas .c -width 200 -height 100 -highlightthickness 0 -bd 0]
+    set item [.c create rectangle 10 10 80 80 -fill red]
+    .c create rectangle 100 10 180 80 -fill blue
+    update
+} -body {
+    tooltip::tooltip .c -item $item "Canvas item tooltip"
+    hover .c 40 40
+    set res [list [waitShown] [tipText]]
+    hover .c 140 40
+    lappend res [waitHidden] [notShown]
+} -cleanup {
+    cleanTips .c
+    unset -nocomplain res item
+} -result {1 {Canvas item tooltip} 1 1}
+
+test tooltip-5.2 {canvas item tooltip by tag} -setup {
+    away
+    pack [canvas .c -width 200 -height 100 -highlightthickness 0 -bd 0]
+    .c create rectangle 10 10 80 80 -fill red -tags tipped
+    update
+} -body {
+    tooltip::tooltip .c -items tipped "Tagged"
+    hover .c 40 40
+    list [waitShown] [tipText]
+} -cleanup {
+    cleanTips .c
+} -result {1 Tagged}
+
+test tooltip-5.3 {listbox item tooltip} -setup {
+    away
+    pack [listbox .lb]
+    .lb insert 0 "item one" "item two" "item three"
+    update
+} -body {
+    tooltip::tooltip .lb -item 0 "Listbox item tooltip"
+    tooltip::tooltip .lb -item 2 "Third item"
+    lassign [.lb bbox 0] x y w h
+    hover .lb [expr {$x + 2}] [expr {$y + $h / 2}]
+    set res [list [waitShown] [tipText]]
+    lassign [.lb bbox 1] x y w h
+    hover .lb [expr {$x + 2}] [expr {$y + $h / 2}]
+    lappend res [waitHidden] [notShown]
+    lassign [.lb bbox 2] x y w h
+    hover .lb [expr {$x + 2}] [expr {$y + $h / 2}]
+    lappend res [waitShown] [tipText]
+} -cleanup {
+    cleanTips .lb
+    unset -nocomplain res x y w h
+} -result {1 {Listbox item tooltip} 1 1 1 {Third item}}
+
+test tooltip-5.4 {treeview item tooltip} -setup {
+    away
+    pack [ttk::treeview .tv -columns {a}]
+    .tv insert {} end -id row1 -text "Row one"
+    .tv insert {} end -id row2 -text "Row two"
+    update
+} -body {
+    tooltip::tooltip .tv -items row2 "Second row"
+    lassign [.tv bbox row2] x y w h
+    hover .tv [expr {$x + 5}] [expr {$y + $h / 2}]
+    list [waitShown] [tipText]
+} -cleanup {
+    cleanTips .tv
+    unset -nocomplain x y w h
+} -result {1 {Second row}}
+
+test tooltip-5.5 {treeview column heading tooltip} -setup {
+    away
+    pack [ttk::treeview .tv -columns {a b}]
+    foreach c {#0 a b} {.tv column $c -width 100}
+    .tv heading a -text A
+    .tv heading b -text B
+    .tv insert {} end -id row1 -text "Row one"
+    update
+} -body {
+    tooltip::tooltip .tv -heading b "Column B"
+    lassign [.tv bbox row1 b] x y w h
+    hover .tv [expr {$x + $w / 2}] [expr {$y / 2}]
+    list [waitShown] [tipText]
+} -cleanup {
+    cleanTips .tv
+    unset -nocomplain x y w h
+} -result {1 {Column B}}
+
+test tooltip-5.6 {notebook tab tooltip} -setup {
+    away
+    pack [ttk::notebook .nb]
+    .nb add [frame .nb.f1 -height 50 -width 200] -text "First tab"
+    .nb add [frame .nb.f2 -height 50 -width 200] -text "Second tab"
+    update
+} -body {
+    tooltip::tooltip .nb -tab 0 "Tooltip for the 1st notebook tab"
+    tooltip::tooltip .nb -tab 1 "Tooltip for the 2nd notebook tab"
+    # Find the position of the second tab.
+    set x 0
+    while {$x < [winfo width .nb] && [.nb index @$x,5] != 1} {incr x}
+    hover .nb [expr {$x + 5}] 5
+    list [waitShown] [tipText]
+} -cleanup {
+    cleanTips .nb
+    unset -nocomplain x
+} -result {1 {Tooltip for the 2nd notebook tab}}
+
+test tooltip-5.7 {notebook tab tooltip by window} -setup {
+    away
+    pack [ttk::notebook .nb]
+    .nb add [frame .nb.f1 -height 50 -width 200] -text "First tab"
+    update
+} -body {
+    tooltip::tooltip .nb -tab .nb.f1 "First"
+    hover .nb 5 5
+    list [waitShown] [tipText]
+} -cleanup {
+    cleanTips .nb
+} -result {1 First}
+
+test tooltip-5.8 {text tag tooltip} -setup {
+    away
+    pack [text .txt -width 40 -height 5]
+    update
+} -body {
+    .txt tag configure TIP-1 -underline 1
+    tooltip::tooltip .txt -tag TIP-1 "tooltip one text"
+    .txt insert end "An example of a " {} "tooltip" TIP-1 " tag.\n" {}
+    update
+    set res {}
+    lassign [.txt bbox 1.2] x y w h
+    hover .txt $x [expr {$y + $h / 2}]
+    lappend res [notShown]
+    lassign [.txt bbox 1.18] x y w h
+    hover .txt $x [expr {$y + $h / 2}]
+    lappend res [waitShown] [tipText]
+} -cleanup {
+    cleanTips .txt
+    unset -nocomplain res x y w h
+} -result {1 1 {tooltip one text}}
+
+test tooltip-5.9 {menubar cascade item tooltip} -setup {
+    away
+    toplevel .top
+    .top configure -menu [menu .top.menu]
+    .top.menu add cascade -label Test -menu [menu .top.menu.test -tearoff 0]
+    .top.menu.test add command -label First
+    .top.menu.test add command -label Tooltip
+    update
+} -body {
+    tooltip::tooltip .top.menu.test -index 1 "This is a menu tooltip"
+    # The menu shown in the menubar is a clone.
+    set clone [lsearch -inline -glob [winfo children [lindex [winfo children .top] end]] *#test]
+    # Start with no active entry, as when the menu is posted.
+    $clone activate none
+    event generate $clone <<MenuSelect>>
+    $clone activate 1
+    event generate $clone <<MenuSelect>>
+    list [waitShown] [tipText]
+} -cleanup {
+    cleanTips .top
+    unset -nocomplain clone
+} -result {1 {This is a menu tooltip}}
+
+test tooltip-5.10 {menubar cascade item tooltip by label} -setup {
+    away
+    toplevel .top
+    .top configure -menu [menu .top.menu]
+    .top.menu add cascade -label Test -menu [menu .top.menu.test -tearoff 0]
+    .top.menu.test add command -label First
+    .top.menu.test add command -label Second
+    update
+} -body {
+    tooltip::tooltip .top.menu.test -index Second "Second item"
+    set clone [lsearch -inline -glob [winfo children [lindex [winfo children .top] end]] *#test]
+    # Start with no active entry, as when the menu is posted.
+    $clone activate none
+    event generate $clone <<MenuSelect>>
+    $clone activate 1
+    event generate $clone <<MenuSelect>>
+    list [waitShown] [tipText]
+} -cleanup {
+    cleanTips .top
+    unset -nocomplain clone
+} -result {1 {Second item}}
+
+test tooltip-5.11 {popup menu item tooltip} -constraints knownBug -setup {
+    away
+    menu .m -tearoff 0
+    .m add command -label First
+    .m add command -label Second
+} -body {
+    # menuMotion looks the tooltip up by [winfo name] of the menu,
+    # which only works for the clones used in menubars.
+    tooltip::tooltip .m -index 1 "Popup tip"
+    .m post 0 0
+    .m activate none
+    event generate .m <<MenuSelect>>
+    .m activate 1
+    event generate .m <<MenuSelect>>
+    list [waitShown] [tipText]
+} -cleanup {
+    .m unpost
+    cleanTips .m
+} -result {1 {Popup tip}}
+
+# -------------------------------------------------------------------------
+
+away
+tooltip::tooltip clear
+tooltip::hide
+tooltip::tooltip delay $savedDelay
+tooltip::tooltip fade $savedFade
+destroy [tip]
+unset savedDelay savedFade
+foreach p {tip away hover waitShown waitHidden notShown tipText cleanTips} {
+    rename $p {}
+}
+unset p
+wm state . $mainState
+unset mainState
+
+::tcltest::cleanupTests

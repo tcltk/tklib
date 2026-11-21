@@ -1,0 +1,349 @@
+# -*- tcl -*-
+# tipstack.test --
+#
+#	Tests for the tipstack package: push, pop, clear, def, defsub
+#	and clearsub.
+#
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2
+    namespace import ::tcltest::*
+} else {
+    if {![package vsatisfies [package present tcltest] 2.2]} {
+	puts "    Aborting the tests found in \"[file tail [info script]]\"."
+	puts "    Requiring tcltest 2.2, have [package present tcltest]"
+	return
+    }
+}
+
+::tcltest::testConstraint tk 1
+
+lappend auto_path [file dirname [file dirname [file normalize [info script]]]]
+package require tipstack
+
+# -------------------------------------------------------------------------
+# Helpers
+
+# Current tooltip message of a widget (or item).
+proc tipOf {args} {
+    lindex [tooltip::tooltip {*}$args] 0
+}
+
+proc cleanStack {args} {
+    foreach w $args {
+	tipstack::clearsub $w
+	destroy $w
+    }
+    tooltip::tooltip clear
+    array unset ::tipstack::db *
+}
+
+# -------------------------------------------------------------------------
+# push
+
+test tipstack-1.1 {push: wrong # args} -body {
+    tipstack::push .l
+} -returnCodes error -result {wrong#args: expected w ?-index index? text}
+
+test tipstack-1.2 {push: wrong # args, too many} -body {
+    tipstack::push .l -index 0 text extra
+} -returnCodes error -result {wrong#args: expected w ?-index index? text}
+
+test tipstack-1.3 {push: sets the tooltip, result is empty} -setup {
+    label .l
+} -body {
+    list [tipstack::push .l "base"] [tipOf .l]
+} -cleanup {
+    cleanStack .l
+} -result {{} base}
+
+test tipstack-1.4 {push: replaces the tooltip temporarily} -setup {
+    label .l
+} -body {
+    tipstack::push .l "base"
+    tipstack::push .l "error message"
+    tipOf .l
+} -cleanup {
+    cleanStack .l
+} -result {error message}
+
+test tipstack-1.5 {push: nonexistent widget} -body {
+    tipstack::push .nosuch "text"
+} -returnCodes error -result {bad window path name ".nosuch"}
+
+test tipstack-1.6 {push: menu entry with -index} -setup {
+    menu .m -tearoff 0
+    .m add command -label Open
+} -body {
+    tipstack::push .m -index 0 "base"
+    tipstack::push .m -index 0 "changed"
+    lindex [tooltip::tooltip .m,0] 0
+} -cleanup {
+    cleanStack .m
+} -result changed
+
+test tipstack-1.7 {push: listbox entry with -index} -constraints knownBug -setup {
+    listbox .lb
+    .lb insert end a b c
+} -body {
+    # -index is passed to tooltip::tooltip, which accepts it only for
+    # menus; listbox items need -items.
+    tipstack::push .lb -index 1 "base"
+    tooltip::tooltip .lb,1
+} -cleanup {
+    cleanStack .lb
+} -result {base {} {}}
+
+test tipstack-1.8 {push: widgets are independent} -setup {
+    label .a
+    label .b
+} -body {
+    tipstack::push .a "a base"
+    tipstack::push .b "b base"
+    tipstack::push .a "a changed"
+    list [tipOf .a] [tipOf .b]
+} -cleanup {
+    cleanStack .a .b
+} -result {{a changed} {b base}}
+
+# -------------------------------------------------------------------------
+# pop
+
+test tipstack-2.1 {pop: wrong # args} -body {
+    tipstack::pop
+} -returnCodes error -result {wrong#args: expected w ?-index index?}
+
+test tipstack-2.2 {pop: wrong # args, two arguments} -body {
+    tipstack::pop .l -index
+} -returnCodes error -result {wrong#args: expected w ?-index index?}
+
+test tipstack-2.3 {pop: restores the previous text, result is empty} -setup {
+    label .l
+} -body {
+    tipstack::push .l "one"
+    tipstack::push .l "two"
+    tipstack::push .l "three"
+    set res [list [tipstack::pop .l] [tipOf .l]]
+    tipstack::pop .l
+    lappend res [tipOf .l]
+} -cleanup {
+    cleanStack .l
+    unset -nocomplain res
+} -result {{} two one}
+
+test tipstack-2.4 {pop: the baseline cannot be popped} -setup {
+    label .l
+} -body {
+    tipstack::push .l "base"
+    tipstack::push .l "temp"
+    tipstack::pop .l
+    tipstack::pop .l
+    tipstack::pop .l
+    tipOf .l
+} -cleanup {
+    cleanStack .l
+} -result base
+
+test tipstack-2.5 {pop: push after pop} -setup {
+    label .l
+} -body {
+    tipstack::push .l "base"
+    tipstack::push .l "temp"
+    tipstack::pop .l
+    tipstack::push .l "other"
+    set res [tipOf .l]
+    tipstack::pop .l
+    lappend res [tipOf .l]
+} -cleanup {
+    cleanStack .l
+    unset -nocomplain res
+} -result {other base}
+
+test tipstack-2.6 {pop: widget without stack} -setup {
+    label .l
+} -body {
+    list [tipstack::pop .l] [tipOf .l]
+} -cleanup {
+    cleanStack .l
+} -result {{} {}}
+
+test tipstack-2.7 {pop: menu entry with -index} -setup {
+    menu .m -tearoff 0
+    .m add command -label Open
+} -body {
+    tipstack::push .m -index 0 "base"
+    tipstack::push .m -index 0 "changed"
+    tipstack::pop .m -index 0
+    lindex [tooltip::tooltip .m,0] 0
+} -cleanup {
+    cleanStack .m
+} -result base
+
+# -------------------------------------------------------------------------
+# clear
+
+test tipstack-3.1 {clear: wrong # args} -body {
+    tipstack::clear
+} -returnCodes error -result {wrong#args: expected w ?-index index?}
+
+test tipstack-3.2 {clear: result is empty} -setup {
+    label .l
+} -body {
+    tipstack::push .l "base"
+    tipstack::clear .l
+} -cleanup {
+    cleanStack .l
+} -result {}
+
+test tipstack-3.3 {clear: restores the baseline} -constraints knownBug -setup {
+    label .l
+} -body {
+    # clear removes the whole stack and the tooltip instead of
+    # restoring the baseline text.
+    tipstack::push .l "base"
+    tipstack::push .l "one"
+    tipstack::push .l "two"
+    tipstack::clear .l
+    set res [tipOf .l]
+    tipstack::pop .l
+    lappend res [tipOf .l]
+} -cleanup {
+    cleanStack .l
+    unset -nocomplain res
+} -result {base base}
+
+test tipstack-3.4 {clear: widget without stack} -setup {
+    label .l
+} -body {
+    list [tipstack::clear .l] [tipOf .l]
+} -cleanup {
+    cleanStack .l
+} -result {{} {}}
+
+test tipstack-3.5 {clear: other widgets keep their stacks} -setup {
+    label .a
+    label .b
+} -body {
+    tipstack::push .a "a base"
+    tipstack::push .b "b base"
+    tipstack::push .b "b temp"
+    tipstack::clear .a
+    tipstack::pop .b
+    tipOf .b
+} -cleanup {
+    cleanStack .a .b
+} -result {b base}
+
+# -------------------------------------------------------------------------
+# def
+
+test tipstack-4.1 {def: several widgets in one call} -constraints knownBug -setup {
+    label .a
+    label .b
+} -body {
+    # Documented as "def widget text ...", but the command takes a
+    # single list of widgets and texts.
+    list [tipstack::def .a "tip a" .b "tip b"] [tipOf .a] [tipOf .b]
+} -cleanup {
+    cleanStack .a .b
+} -result {{} {tip a} {tip b}}
+
+test tipstack-4.2 {def: a list of widgets and texts} -setup {
+    label .a
+    label .b
+} -body {
+    list [tipstack::def {.a "tip a" .b "tip b"}] [tipOf .a] [tipOf .b]
+} -cleanup {
+    cleanStack .a .b
+} -result {{} {tip a} {tip b}}
+
+test tipstack-4.3 {def: pushes onto the stacks} -setup {
+    label .a
+} -body {
+    tipstack::push .a "base"
+    tipstack::def {.a "temp"}
+    set res [tipOf .a]
+    tipstack::pop .a
+    lappend res [tipOf .a]
+} -cleanup {
+    cleanStack .a
+    unset -nocomplain res
+} -result {temp base}
+
+# -------------------------------------------------------------------------
+# defsub, clearsub
+
+test tipstack-5.1 {defsub: subwidgets of a base} -constraints knownBug -setup {
+    frame .f
+    label .f.a
+    label .f.b
+} -body {
+    # Documented as "defsub base widget text ...", but the command
+    # takes a single list of widgets and texts.
+    list [tipstack::defsub .f .a "tip a" .b "tip b"] [tipOf .f.a] [tipOf .f.b]
+} -cleanup {
+    cleanStack .f
+} -result {{} {tip a} {tip b}}
+
+test tipstack-5.2 {defsub: list of subwidgets with leading dot} -setup {
+    frame .f
+    label .f.a
+    label .f.b
+} -body {
+    list [tipstack::defsub .f {.a "tip a" .b "tip b"}] [tipOf .f.a] [tipOf .f.b]
+} -cleanup {
+    cleanStack .f
+} -result {{} {tip a} {tip b}}
+
+test tipstack-5.3 {defsub: base with trailing dot} -setup {
+    frame .f
+    label .f.a
+} -body {
+    tipstack::defsub .f. {a "tip a"}
+    tipOf .f.a
+} -cleanup {
+    cleanStack .f
+} -result {tip a}
+
+test tipstack-5.4 {clearsub: clears all subwidgets of the base} -setup {
+    frame .f
+    label .f.a
+    label .f.b
+    label .g
+} -body {
+    tipstack::defsub .f {.a "tip a" .b "tip b"}
+    tipstack::push .g "tip g"
+    list [tipstack::clearsub .f] [tipOf .f.a] [tipOf .f.b] [tipOf .g]
+} -cleanup {
+    cleanStack .f .g
+} -result {{} {} {} {tip g}}
+
+test tipstack-5.5 {clearsub: wrong # args} -body {
+    tipstack::clearsub
+} -returnCodes error -result {wrong # args: should be "tipstack::clearsub base"}
+
+test tipstack-5.6 {clearsub: base without stacks} -setup {
+    frame .f
+} -body {
+    tipstack::clearsub .f
+} -cleanup {
+    cleanStack .f
+} -result {}
+
+# -------------------------------------------------------------------------
+
+rename tipOf {}
+rename cleanStack {}
+
+::tcltest::cleanupTests
