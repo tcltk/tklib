@@ -1,0 +1,2308 @@
+# -*- tcl -*-
+# ntext.test --
+#
+#	Tests for the ntext package: the Ntext binding tag, its configuration
+#	variables, word boundary detection, tab coloring and indentation of
+#	wrapped display lines.
+#
+# Note:
+#	Most binding tests generate the virtual events <<Ntext...>> directly,
+#	so that they do not depend on the windowing system.  Tests of the
+#	physical key bindings are restricted to X11.
+
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2
+    namespace import ::tcltest::*
+}
+
+::tcltest::testConstraint tk 1
+
+source [file join [file dirname [info script]] ntext.tcl]
+
+testConstraint x11 [expr {[tk windowingsystem] eq "x11"}]
+testConstraint notAqua [expr {[tk windowingsystem] ne "aqua"}]
+testConstraint lmargincolor [package vsatisfies [package provide Tk] 8.6.6-]
+
+# The tests need a mapped main window (sak withdraws it).
+set OldMainState [wm state .]
+wm geometry . +0+0
+wm deiconify .
+update
+
+# -------------------------------------------------------------------------
+# Helpers
+
+# Configuration variables documented in the man pages.  Tests that change
+# them call saveVars in -setup and restoreVars in -cleanup.
+set ConfigVars {
+    classicAnchor classicExtras classicMouseSelect classicParagraphs
+    classicSelection classicWordBreak classicWrap indentColor newWrapRegexp
+    overwrite tabColor tabSelColor useBlockCursor
+}
+
+proc saveVars {} {
+    global ConfigVars SavedVars
+    foreach v $ConfigVars {
+	set SavedVars($v) [set ::ntext::$v]
+    }
+}
+
+proc restoreVars {} {
+    global ConfigVars SavedVars
+    foreach v $ConfigVars {
+	if {[set ::ntext::$v] ne $SavedVars($v)} {
+	    set ::ntext::$v $SavedVars($v)
+	}
+    }
+    ::ntext::initializeMatchPatterns
+    unset SavedVars
+}
+
+# Create a text widget .t using the Ntext binding tag, insert text, map it
+# and give it the focus.
+proc mkText {{text {}} args} {
+    text .t -font {Courier -12} {*}$args
+    bindtags .t {.t Ntext . all}
+    pack .t
+    if {$text ne {}} {
+	.t insert end $text
+    }
+    .t mark set insert 1.0
+    focus -force .t
+    update
+    return .t
+}
+
+# Generate a key event on the text widget (which has the focus).
+proc key {w event} {
+    focus -force $w
+    event generate $w $event
+    update
+}
+
+# Click with button 1 at the given index, or at the x,y coordinates.
+proc click {w x y {state 0}} {
+    event generate $w <ButtonPress-1> -x $x -y $y -state $state
+    event generate $w <ButtonRelease-1> -x $x -y $y -state $state
+    update
+}
+
+# Coordinates of the middle of a character
+proc charxy {w index} {
+    lassign [$w bbox $index] x y wd ht
+    list [expr {$x + $wd/2}] [expr {$y + $ht/2}]
+}
+
+# The canonical form of a list of event sequences, as reported by
+# "event info" (it differs between Tk versions).
+proc canonEvents {args} {
+    event add <<NtextTestCanon>> {*}$args
+    set r [lsort [event info <<NtextTestCanon>>]]
+    event delete <<NtextTestCanon>>
+    return $r
+}
+
+proc selRange {w} {
+    set r {}
+    foreach i [$w tag ranges sel] {
+	lappend r [$w index $i]
+    }
+    return $r
+}
+
+proc indentTags {w} {
+    set r {}
+    foreach tag [$w tag names] {
+	if {[string match ntextAlignLM2Indent=* $tag] &&
+		[llength [$w tag ranges $tag]]} {
+	    lappend r $tag
+	}
+    }
+    lsort -dictionary $r
+}
+
+# The -lmargin2 values in effect on each logical line of the widget.
+proc lineIndents {w} {
+    set r {}
+    set n [expr {int([$w index end-1i])}]
+    for {set i 1} {$i <= $n} {incr i} {
+	set v 0
+	foreach tag [$w tag names $i.0] {
+	    if {[string match ntextAlignLM2Indent=* $tag]} {
+		set v [$w tag cget $tag -lmargin2]
+	    }
+	}
+	lappend r $v
+    }
+    return $r
+}
+
+proc positive {list} {
+    set r {}
+    foreach v $list {
+	lappend r [expr {$v > 0}]
+    }
+    return $r
+}
+
+proc tabRanges {w} {
+    set r {}
+    foreach i [$w tag ranges NtextTab] {
+	lappend r [$w index $i]
+    }
+    return $r
+}
+
+# -------------------------------------------------------------------------
+
+test ntext-1.1 {package version} -body {
+    package present ntext
+} -result 1.0
+
+test ntext-1.2 {Ntext binding tag is defined} -body {
+    expr {[llength [bind Ntext]] > 50}
+} -result 1
+
+test ntext-1.3 {Text binding tag is left unchanged} -body {
+    string match *ntext* [bind Text <KeyPress>]
+} -result 0
+
+test ntext-1.4 {exported commands} -body {
+    lsort [namespace eval ::ntext {namespace export}]
+} -result {createMatchPatterns initializeMatchPatterns new_endOfWord new_startOfNextWord new_startOfPreviousWord new_textCopy new_textCut new_textPaste new_wordBreakAfter new_wordBreakBefore syncTabColor wrapIndent}
+
+test ntext-1.5 {documented commands exist} -body {
+    set r {}
+    foreach cmd {
+	new_textCopy new_textCut new_textPaste syncIndentColor syncTabColor
+	wrapIndent initializeMatchPatterns createMatchPatterns
+	new_wordBreakAfter new_wordBreakBefore new_endOfWord
+	new_startOfNextWord new_startOfPreviousWord
+    } {
+	if {[info commands ::ntext::$cmd] eq {}} {
+	    lappend r $cmd
+	}
+    }
+    set r
+} -result {}
+
+test ntext-1.6 {no new global commands} -body {
+    info commands ::ntext*
+} -result {}
+
+# -------------------------------------------------------------------------
+# Default values of the configuration variables
+
+test ntext-2.1 {default classicAnchor} -body {
+    set ::ntext::classicAnchor
+} -result 0
+
+test ntext-2.2 {default classicExtras} -body {
+    set ::ntext::classicExtras
+} -result 0
+
+test ntext-2.3 {default classicMouseSelect} -body {
+    set ::ntext::classicMouseSelect
+} -result 0
+
+test ntext-2.4 {default classicParagraphs} -body {
+    set ::ntext::classicParagraphs
+} -result 0
+
+test ntext-2.5 {default classicSelection} -body {
+    expr {$::ntext::classicSelection == ([tk windowingsystem] ne "aqua")}
+} -result 1
+
+test ntext-2.6 {default classicWordBreak} -body {
+    set ::ntext::classicWordBreak
+} -result 0
+
+test ntext-2.7 {default classicWrap} -body {
+    set ::ntext::classicWrap
+} -result 1
+
+test ntext-2.8 {default indentColor} -body {
+    set ::ntext::indentColor
+} -result #d9d9d9
+
+test ntext-2.9 {default overwrite} -body {
+    set ::ntext::overwrite
+} -result 0
+
+test ntext-2.10 {default tabColor} -body {
+    set ::ntext::tabColor
+} -result #ffffaa
+
+test ntext-2.11 {default tabSelColor} -body {
+    set ::ntext::tabSelColor
+} -result #418bd4
+
+test ntext-2.12 {default useBlockCursor} -body {
+    expr {$::ntext::useBlockCursor ==
+	  [package vsatisfies [package provide Tk] 8.5.12-]}
+} -result 1
+
+test ntext-2.13 {default newWrapRegexp} -body {
+    set ::ntext::newWrapRegexp
+} -result {[^[:space:]]}
+
+# -------------------------------------------------------------------------
+# Virtual events (X11 definitions)
+
+test ntext-3.1 {virtual events for clipboard operations} -constraints x11 -body {
+    list [expr {[lsort [event info <<NtextCut>>]] eq [canonEvents \
+		<Control-Key-x> <Key-F20> <Control-Lock-Key-X> \
+		<Control-Key-w> <Control-Lock-Key-W> <Shift-Key-Delete>]}] \
+	 [expr {[lsort [event info <<NtextCopy>>]] eq [canonEvents \
+		<Control-Key-c> <Key-F16> <Control-Lock-Key-C> \
+		<Meta-Key-w> <Meta-Lock-Key-W> <Control-Key-Insert>]}] \
+	 [expr {[lsort [event info <<NtextPaste>>]] eq [canonEvents \
+		<Control-Key-v> <Key-F18> <Control-Lock-Key-V> \
+		<Control-Key-y> <Control-Lock-Key-Y> <Shift-Key-Insert>]}]
+} -result {1 1 1}
+
+test ntext-3.2 {virtual events for navigation} -constraints x11 -body {
+    set r {}
+    foreach ev {
+	NextChar SelectNextChar PrevChar SelectPrevChar NextWord SelectNextWord
+	PrevWord SelectPrevWord LineStart SelectLineStart LineEnd SelectLineEnd
+	PrevLine NextLine SelectPrevLine SelectNextLine PrevPara NextPara
+	SelectPrevPara SelectNextPara SelectAll SelectNone
+    } {
+	lappend r $ev [event info <<Ntext$ev>>]
+    }
+    expr {$r eq [list \
+	NextChar [canonEvents <Key-Right>] \
+	SelectNextChar [canonEvents <Shift-Key-Right>] \
+	PrevChar [canonEvents <Key-Left>] \
+	SelectPrevChar [canonEvents <Shift-Key-Left>] \
+	NextWord [canonEvents <Control-Key-Right>] \
+	SelectNextWord [canonEvents <Control-Shift-Key-Right>] \
+	PrevWord [canonEvents <Control-Key-Left>] \
+	SelectPrevWord [canonEvents <Control-Shift-Key-Left>] \
+	LineStart [canonEvents <Key-Home>] \
+	SelectLineStart [canonEvents <Shift-Key-Home>] \
+	LineEnd [canonEvents <Key-End>] \
+	SelectLineEnd [canonEvents <Shift-Key-End>] \
+	PrevLine [canonEvents <Key-Up>] \
+	NextLine [canonEvents <Key-Down>] \
+	SelectPrevLine [canonEvents <Shift-Key-Up>] \
+	SelectNextLine [canonEvents <Shift-Key-Down>] \
+	PrevPara [canonEvents <Control-Key-Up>] \
+	NextPara [canonEvents <Control-Key-Down>] \
+	SelectPrevPara [canonEvents <Control-Shift-Key-Up>] \
+	SelectNextPara [canonEvents <Control-Shift-Key-Down>] \
+	SelectAll [canonEvents <Control-Key-slash>] \
+	SelectNone [canonEvents <Control-Key-backslash>]]}
+} -result 1
+
+test ntext-3.3 {classicExtras adds and removes the Emacs virtual events} -constraints x11 -setup {
+    saveVars
+} -body {
+    set r [list [expr {[event info <<NtextLineStart>>] eq [canonEvents <Key-Home>]}]]
+    set ::ntext::classicExtras 1
+    lappend r [expr {[lsort [event info <<NtextLineStart>>]] eq
+	    [canonEvents <Control-Key-a> <Control-Lock-Key-A> <Key-Home>]}]
+    lappend r [expr {[lsort [event info <<NtextNextLine>>]] eq
+	    [canonEvents <Control-Key-n> <Control-Lock-Key-N> <Key-Down>]}]
+    set ::ntext::classicExtras 0
+    lappend r [expr {[event info <<NtextLineStart>>] eq [canonEvents <Key-Home>]}]
+} -cleanup {
+    restoreVars
+} -result {1 1 1 1}
+
+test ntext-3.4 {tk_strictMotif removes the Emacs virtual events} -constraints x11 -setup {
+    saveVars
+    set ::ntext::classicExtras 1
+} -body {
+    set ::tk_strictMotif 1
+    set r [list [expr {[event info <<NtextLineStart>>] eq [canonEvents <Key-Home>]}]]
+    lappend r [expr {[lsort [event info <<NtextCut>>]] eq
+	    [canonEvents <Control-Key-x> <Control-Lock-Key-X> <Key-F20>]}]
+    set ::tk_strictMotif 0
+    lappend r [expr {[lsort [event info <<NtextLineStart>>]] eq
+	    [canonEvents <Control-Key-a> <Control-Lock-Key-A> <Key-Home>]}]
+} -cleanup {
+    set ::tk_strictMotif 0
+    restoreVars
+} -result {1 1 1}
+
+# -------------------------------------------------------------------------
+# ::ntext::createMatchPatterns
+
+test ntext-4.1 {createMatchPatterns: wrong # args} -body {
+    ::ntext::createMatchPatterns a
+} -returnCodes error -result {wrong # args: should be "::ntext::createMatchPatterns new_nonwordchars new_word1chars ?new_word2chars?"}
+
+test ntext-4.2 {createMatchPatterns: wrong # args} -body {
+    ::ntext::createMatchPatterns a b c d
+} -returnCodes error -result {wrong # args: should be "::ntext::createMatchPatterns new_nonwordchars new_word1chars ?new_word2chars?"}
+
+test ntext-4.3 {createMatchPatterns: one word class} -setup {
+    saveVars
+} -body {
+    set r [list [::ntext::createMatchPatterns {\W} {\w}]]
+    lappend r $::ntext::tcl_match_wordBreakAfter \
+	    $::ntext::tcl_match_wordBreakBefore \
+	    $::ntext::tcl_match_endOfWord \
+	    $::ntext::tcl_match_startOfNextWord \
+	    $::ntext::tcl_match_startOfPreviousWord
+} -cleanup {
+    restoreVars
+} -result {{} {\w\W|\W\w} {^.*(\w\W|\W\w)} {\W*\w+\W} {\w*\W+\w} {\W*(\w+)\W*$}}
+
+test ntext-4.4 {createMatchPatterns: empty third argument is unused} -setup {
+    saveVars
+} -body {
+    ::ntext::createMatchPatterns {\s} {\S} {}
+    list $::ntext::tcl_match_wordBreakAfter $::ntext::tcl_match_startOfNextWord
+} -cleanup {
+    restoreVars
+} -result {{\S\s|\s\S} {\S*\s+\S}}
+
+test ntext-4.5 {createMatchPatterns: two word classes} -setup {
+    saveVars
+} -body {
+    ::ntext::createMatchPatterns S W P
+    list $::ntext::tcl_match_wordBreakAfter \
+	    $::ntext::tcl_match_wordBreakBefore \
+	    $::ntext::tcl_match_endOfWord \
+	    $::ntext::tcl_match_startOfNextWord \
+	    $::ntext::tcl_match_startOfPreviousWord
+} -cleanup {
+    restoreVars
+} -result {PS|PW|SP|SW|WP|WS ^.*(PS|PW|SP|SW|WP|WS) S*W+S|S*W+P|S*P+S|S*P+W W*S+W|P*S+W|P+W|W*S+P|P*S+P|W+P {S*(W+)S*$|P*(W+)S*$|W*(P+)S*$|S*(P+)S*$}}
+
+test ntext-4.6 {createMatchPatterns: arguments containing pattern letters} -setup {
+    saveVars
+} -body {
+    # The substitution must be done in a single pass.
+    ::ntext::createMatchPatterns {[ s]} {[w]} {[p]}
+    set ::ntext::tcl_match_wordBreakAfter
+} -cleanup {
+    restoreVars
+} -result {[p][ s]|[p][w]|[ s][p]|[ s][w]|[w][p]|[w][ s]}
+
+test ntext-4.7 {createMatchPatterns: changes take effect immediately} -setup {
+    saveVars
+} -body {
+    set r [::ntext::new_startOfNextWord "foo.bar baz" 0]
+    ::ntext::createMatchPatterns {\s} {\S}
+    lappend r [::ntext::new_startOfNextWord "foo.bar baz" 0]
+} -cleanup {
+    restoreVars
+} -result {3 8}
+
+test ntext-4.8 {createMatchPatterns: example from the manual} -setup {
+    saveVars
+} -body {
+    ::ntext::createMatchPatterns \
+	    {[[:space:][:cntrl:]]} {[[:punct:]]} {[^[:punct:][:space:][:cntrl:]]}
+    list [::ntext::new_startOfNextWord "ab-c d" 0] \
+	 [::ntext::new_startOfNextWord "ab-c d" 2] \
+	 [::ntext::new_endOfWord "ab-c d" 0]
+} -cleanup {
+    restoreVars
+} -result {2 3 2}
+
+# -------------------------------------------------------------------------
+# ::ntext::initializeMatchPatterns
+
+test ntext-5.1 {initializeMatchPatterns: wrong # args} -body {
+    ::ntext::initializeMatchPatterns x
+} -returnCodes error -result {wrong # args: should be "::ntext::initializeMatchPatterns"}
+
+test ntext-5.2 {initializeMatchPatterns: returns empty} -body {
+    ::ntext::initializeMatchPatterns
+} -result {}
+
+test ntext-5.3 {initializeMatchPatterns: ntext patterns have two word classes} -setup {
+    saveVars
+} -body {
+    ::ntext::createMatchPatterns {\s} {\S}
+    set ::ntext::classicWordBreak 0
+    ::ntext::initializeMatchPatterns
+    list [::ntext::new_startOfNextWord "foo.bar baz" 0] \
+	 [::ntext::new_startOfNextWord "foo.bar baz" 3] \
+	 [::ntext::new_startOfNextWord "foo-bar baz" 0]
+} -cleanup {
+    restoreVars
+} -result {3 4 3}
+
+test ntext-5.4 {initializeMatchPatterns: classic patterns on X11} -constraints x11 -setup {
+    saveVars
+} -body {
+    set ::ntext::classicWordBreak 1
+    ::ntext::initializeMatchPatterns
+    list $::ntext::tcl_match_wordBreakAfter $::ntext::tcl_match_startOfNextWord
+} -cleanup {
+    restoreVars
+} -result {{\w\W|\W\w} {\w*\W+\w}}
+
+test ntext-5.5 {initializeMatchPatterns: restores the defaults} -setup {
+    saveVars
+    set ::ntext::classicWordBreak 0
+    ::ntext::initializeMatchPatterns
+    set orig $::ntext::tcl_match_startOfPreviousWord
+} -body {
+    ::ntext::createMatchPatterns a b
+    ::ntext::initializeMatchPatterns
+    expr {$::ntext::tcl_match_startOfPreviousWord eq $orig}
+} -cleanup {
+    restoreVars
+    unset orig
+} -result 1
+
+test ntext-5.6 {initializeMatchPatterns: backslash is a word character} -body {
+    list [::ntext::new_wordBreakAfter {a\b c} 0] [::ntext::new_wordBreakAfter {a/b c} 0]
+} -result {3 1}
+
+test ntext-5.7 {initializeMatchPatterns: classic word break, punctuation is not a word} -constraints x11 -setup {
+    saveVars
+    set ::ntext::classicWordBreak 1
+    ::ntext::initializeMatchPatterns
+} -body {
+    list [::ntext::new_startOfNextWord "foo.bar baz" 0] \
+	 [::ntext::new_endOfWord "foo.bar baz" 0]
+} -cleanup {
+    restoreVars
+} -result {4 3}
+
+# -------------------------------------------------------------------------
+# Word boundary functions (with the default ntext patterns)
+
+test ntext-6.1 {new_wordBreakAfter: wrong # args} -body {
+    ::ntext::new_wordBreakAfter abc
+} -returnCodes error -result {wrong # args: should be "::ntext::new_wordBreakAfter str start"}
+
+test ntext-6.2 {new_wordBreakAfter} -body {
+    set s "foo.bar  baz"
+    list [::ntext::new_wordBreakAfter $s 0] [::ntext::new_wordBreakAfter $s 3] \
+	 [::ntext::new_wordBreakAfter $s 4] [::ntext::new_wordBreakAfter $s 7] \
+	 [::ntext::new_wordBreakAfter $s 9]
+} -result {3 4 7 9 -1}
+
+test ntext-6.3 {new_wordBreakAfter: empty string} -body {
+    ::ntext::new_wordBreakAfter {} 0
+} -result -1
+
+test ntext-6.4 {new_wordBreakBefore: wrong # args} -body {
+    ::ntext::new_wordBreakBefore abc
+} -returnCodes error -result {wrong # args: should be "::ntext::new_wordBreakBefore str start"}
+
+test ntext-6.5 {new_wordBreakBefore} -body {
+    set s "foo.bar  baz"
+    list [::ntext::new_wordBreakBefore $s 11] [::ntext::new_wordBreakBefore $s 8] \
+	 [::ntext::new_wordBreakBefore $s 6] [::ntext::new_wordBreakBefore $s 3] \
+	 [::ntext::new_wordBreakBefore $s 2]
+} -result {9 7 4 3 -1}
+
+test ntext-6.6 {new_wordBreakBefore: end} -body {
+    ::ntext::new_wordBreakBefore "foo.bar  baz" end
+} -result 9
+
+test ntext-6.7 {new_endOfWord: wrong # args} -body {
+    ::ntext::new_endOfWord abc
+} -returnCodes error -result {wrong # args: should be "::ntext::new_endOfWord str start"}
+
+test ntext-6.8 {new_endOfWord} -body {
+    set s "foo.bar  baz"
+    list [::ntext::new_endOfWord $s 0] [::ntext::new_endOfWord $s 3] \
+	 [::ntext::new_endOfWord $s 4] [::ntext::new_endOfWord $s 7] \
+	 [::ntext::new_endOfWord $s 9]
+} -result {3 4 7 -1 -1}
+
+test ntext-6.9 {new_startOfNextWord: wrong # args} -body {
+    ::ntext::new_startOfNextWord abc
+} -returnCodes error -result {wrong # args: should be "::ntext::new_startOfNextWord str start"}
+
+test ntext-6.10 {new_startOfNextWord} -body {
+    set s "foo.bar  baz"
+    list [::ntext::new_startOfNextWord $s 0] [::ntext::new_startOfNextWord $s 3] \
+	 [::ntext::new_startOfNextWord $s 4] [::ntext::new_startOfNextWord $s 9]
+} -result {3 4 9 -1}
+
+test ntext-6.11 {new_startOfNextWord: hyphen is punctuation} -body {
+    list [::ntext::new_startOfNextWord "a-b" 0] [::ntext::new_startOfNextWord "a-b" 1]
+} -result {1 2}
+
+test ntext-6.12 {new_startOfPreviousWord: wrong # args} -body {
+    ::ntext::new_startOfPreviousWord abc
+} -returnCodes error -result {wrong # args: should be "::ntext::new_startOfPreviousWord str start"}
+
+test ntext-6.13 {new_startOfPreviousWord} -body {
+    set s "foo.bar  baz"
+    list [::ntext::new_startOfPreviousWord $s 12] \
+	 [::ntext::new_startOfPreviousWord $s 9] \
+	 [::ntext::new_startOfPreviousWord $s 7] \
+	 [::ntext::new_startOfPreviousWord $s 4] \
+	 [::ntext::new_startOfPreviousWord $s 3] \
+	 [::ntext::new_startOfPreviousWord $s 0]
+} -result {9 4 4 3 0 -1}
+
+test ntext-6.14 {new_startOfPreviousWord: end} -body {
+    ::ntext::new_startOfPreviousWord "foo.bar  baz" end
+} -result 9
+
+test ntext-6.15 {new_startOfPreviousWord: only whitespace} -body {
+    ::ntext::new_startOfPreviousWord "    " 4
+} -result -1
+
+test ntext-6.16 {word functions can be replaced by the developer} -setup {
+    rename ::ntext::new_startOfNextWord ::ntext::saved_startOfNextWord
+    proc ::ntext::new_startOfNextWord {str start} {
+	expr {$start + 1 < [string length $str] ? $start + 1 : -1}
+    }
+    mkText "abc def"
+} -body {
+    event generate .t <<NtextNextWord>>
+    update
+    .t index insert
+} -cleanup {
+    destroy .t
+    rename ::ntext::new_startOfNextWord {}
+    rename ::ntext::saved_startOfNextWord ::ntext::new_startOfNextWord
+} -result 1.1
+
+# -------------------------------------------------------------------------
+# ::ntext::new_textCopy
+
+test ntext-7.1 {new_textCopy: wrong # args} -body {
+    ::ntext::new_textCopy
+} -returnCodes error -result {wrong # args: should be "::ntext::new_textCopy w"}
+
+test ntext-7.2 {new_textCopy: wrong # args} -body {
+    ::ntext::new_textCopy .t .t
+} -returnCodes error -result {wrong # args: should be "::ntext::new_textCopy w"}
+
+test ntext-7.3 {new_textCopy: copies the selection} -setup {
+    mkText "Hello world"
+    clipboard clear
+} -body {
+    .t tag add sel 1.0 1.5
+    list [::ntext::new_textCopy .t] [clipboard get] [.t get 1.0 end-1i] [selRange .t]
+} -cleanup {
+    destroy .t
+    clipboard clear
+} -result {{} Hello {Hello world} {1.0 1.5}}
+
+test ntext-7.4 {new_textCopy: no selection leaves the clipboard unchanged} -setup {
+    mkText "Hello world"
+    clipboard clear
+    clipboard append old
+} -body {
+    ::ntext::new_textCopy .t
+    clipboard get
+} -cleanup {
+    destroy .t
+    clipboard clear
+} -result old
+
+test ntext-7.5 {new_textCopy: works in a disabled widget} -setup {
+    mkText "Hello world"
+    clipboard clear
+} -body {
+    .t tag add sel 1.6 end
+    .t configure -state disabled
+    ::ntext::new_textCopy .t
+    clipboard get
+} -cleanup {
+    destroy .t
+    clipboard clear
+} -result "world\n"
+
+test ntext-7.6 {new_textCopy: bound to <<NtextCopy>>} -setup {
+    mkText "Hello world"
+    clipboard clear
+} -body {
+    .t tag add sel 1.6 1.11
+    event generate .t <<NtextCopy>>
+    clipboard get
+} -cleanup {
+    destroy .t
+    clipboard clear
+} -result world
+
+test ntext-7.7 {new_textCopy: Control-c on X11} -constraints x11 -setup {
+    mkText "Hello world"
+    clipboard clear
+} -body {
+    .t tag add sel 1.0 1.4
+    key .t <Control-Key-c>
+    list [clipboard get] [.t get 1.0 end-1i]
+} -cleanup {
+    destroy .t
+    clipboard clear
+} -result {Hell {Hello world}}
+
+# -------------------------------------------------------------------------
+# ::ntext::new_textCut
+
+test ntext-8.1 {new_textCut: wrong # args} -body {
+    ::ntext::new_textCut
+} -returnCodes error -result {wrong # args: should be "::ntext::new_textCut w"}
+
+test ntext-8.2 {new_textCut: cuts the selection} -setup {
+    mkText "Hello world"
+    clipboard clear
+} -body {
+    .t tag add sel 1.5 1.11
+    list [::ntext::new_textCut .t] [clipboard get] [.t get 1.0 end-1i] [selRange .t]
+} -cleanup {
+    destroy .t
+    clipboard clear
+} -result {{} { world} Hello {}}
+
+test ntext-8.3 {new_textCut: no selection} -setup {
+    mkText "Hello world"
+    clipboard clear
+    clipboard append old
+} -body {
+    ::ntext::new_textCut .t
+    list [clipboard get] [.t get 1.0 end-1i]
+} -cleanup {
+    destroy .t
+    clipboard clear
+} -result {old {Hello world}}
+
+test ntext-8.4 {new_textCut: disabled widget copies but does not delete} -setup {
+    mkText "Hello world"
+    clipboard clear
+} -body {
+    .t tag add sel 1.0 1.6
+    .t configure -state disabled
+    ::ntext::new_textCut .t
+    list [clipboard get] [.t get 1.0 end-1i]
+} -cleanup {
+    destroy .t
+    clipboard clear
+} -result {{Hello } {Hello world}}
+
+test ntext-8.5 {new_textCut: is a single undoable operation} -setup {
+    mkText "" -undo 1
+    .t insert end "Hello world"
+    .t edit separator
+    clipboard clear
+} -body {
+    .t tag add sel 1.2 1.8
+    ::ntext::new_textCut .t
+    set r [.t get 1.0 end-1i]
+    .t edit undo
+    lappend r [.t get 1.0 end-1i] [.t cget -autoseparators]
+} -cleanup {
+    destroy .t
+    clipboard clear
+} -result {Herld {Hello world} 1}
+
+test ntext-8.6 {new_textCut: bound to <<NtextCut>>} -setup {
+    mkText "Hello world"
+    clipboard clear
+} -body {
+    .t tag add sel 1.0 1.6
+    event generate .t <<NtextCut>>
+    list [clipboard get] [.t get 1.0 end-1i]
+} -cleanup {
+    destroy .t
+    clipboard clear
+} -result {{Hello } world}
+
+test ntext-8.7 {new_textCut: maintains indentation} -setup {
+    saveVars
+    set ::ntext::classicWrap 0
+    mkText "" -wrap word -width 20
+    .t insert end "abc def    ghi jkl mno pqr stu vwx yz"
+    ::ntext::wrapIndent .t
+    update
+    clipboard clear
+} -body {
+    set r [lineIndents .t]
+    .t tag add sel 1.0 1.8
+    ::ntext::new_textCut .t
+    update
+    lappend r [lineIndents .t]
+    expr {[lindex $r 0] == 0 && [lindex $r 1] > 0}
+} -cleanup {
+    destroy .t
+    clipboard clear
+    restoreVars
+} -result 1
+
+# -------------------------------------------------------------------------
+# ::ntext::new_textPaste
+
+test ntext-9.1 {new_textPaste: wrong # args} -body {
+    ::ntext::new_textPaste
+} -returnCodes error -result {wrong # args: should be "::ntext::new_textPaste w"}
+
+test ntext-9.2 {new_textPaste: inserts at the insert mark} -setup {
+    mkText "Hello world"
+    clipboard clear
+    clipboard append "big "
+} -body {
+    .t mark set insert 1.6
+    list [::ntext::new_textPaste .t] [.t get 1.0 end-1i] [.t index insert]
+} -cleanup {
+    destroy .t
+    clipboard clear
+} -result {{} {Hello big world} 1.10}
+
+test ntext-9.3 {new_textPaste: overwrites the selection} -setup {
+    mkText "Hello world"
+    clipboard clear
+    clipboard append "there"
+} -body {
+    .t tag add sel 1.6 1.11
+    .t mark set insert 1.0
+    ::ntext::new_textPaste .t
+    .t get 1.0 end-1i
+} -cleanup {
+    destroy .t
+    clipboard clear
+} -result {Hello there}
+
+test ntext-9.4 {new_textPaste: disabled widget} -setup {
+    mkText "Hello world"
+    clipboard clear
+    clipboard append "XX"
+} -body {
+    .t configure -state disabled
+    ::ntext::new_textPaste .t
+    .t get 1.0 end-1i
+} -cleanup {
+    destroy .t
+    clipboard clear
+} -result {Hello world}
+
+test ntext-9.5 {new_textPaste: empty clipboard} -setup {
+    mkText "Hello world"
+    clipboard clear
+} -body {
+    .t mark set insert 1.5
+    ::ntext::new_textPaste .t
+    .t get 1.0 end-1i
+} -cleanup {
+    destroy .t
+} -result {Hello world}
+
+test ntext-9.6 {new_textPaste: is a single undoable operation} -setup {
+    mkText "" -undo 1
+    .t insert end "Hello world"
+    .t edit separator
+    clipboard clear
+    clipboard append "there"
+} -body {
+    .t tag add sel 1.6 1.11
+    ::ntext::new_textPaste .t
+    set r [list [.t get 1.0 end-1i]]
+    .t edit undo
+    lappend r [.t get 1.0 end-1i] [.t cget -autoseparators]
+} -cleanup {
+    destroy .t
+    clipboard clear
+} -result {{Hello there} {Hello world} 1}
+
+test ntext-9.7 {new_textPaste: bound to <<NtextPaste>>} -setup {
+    mkText "Hello world"
+    clipboard clear
+    clipboard append "!"
+} -body {
+    .t mark set insert end
+    event generate .t <<NtextPaste>>
+    .t get 1.0 end-1i
+} -cleanup {
+    destroy .t
+    clipboard clear
+} -result {Hello world!}
+
+test ntext-9.8 {new_textPaste: colors pasted tabs} -setup {
+    mkText "ab"
+    clipboard clear
+    clipboard append "\tx\t"
+} -body {
+    .t mark set insert 1.1
+    ::ntext::new_textPaste .t
+    tabRanges .t
+} -cleanup {
+    destroy .t
+    clipboard clear
+} -result {1.1 1.2 1.3 1.4}
+
+test ntext-9.9 {new_textPaste: invalid widget} -body {
+    ::ntext::new_textPaste .nosuchwidget
+} -returnCodes error -result {invalid command name ".nosuchwidget"}
+
+# -------------------------------------------------------------------------
+# ::ntext::syncTabColor and tab coloring
+
+test ntext-10.1 {syncTabColor: wrong # args} -body {
+    ::ntext::syncTabColor
+} -returnCodes error -result {wrong # args: should be "::ntext::syncTabColor w"}
+
+test ntext-10.2 {syncTabColor: colors tabs inserted by the script} -setup {
+    mkText "a\tb\n\tc\nd"
+} -body {
+    set r [list [tabRanges .t] [::ntext::syncTabColor .t]]
+    lappend r [tabRanges .t] [.t tag cget NtextTab -background] \
+	    [.t tag cget NtextTab -selectbackground]
+} -cleanup {
+    destroy .t
+} -result {{} {} {1.1 1.2 2.0 2.1} #ffffaa #418bd4}
+
+test ntext-10.3 {syncTabColor: applies changed colors} -setup {
+    saveVars
+    mkText "a\tb"
+    ::ntext::syncTabColor .t
+} -body {
+    set ::ntext::tabColor red
+    set ::ntext::tabSelColor blue
+    ::ntext::syncTabColor .t
+    list [.t tag cget NtextTab -background] [.t tag cget NtextTab -selectbackground]
+} -cleanup {
+    destroy .t
+    restoreVars
+} -result {red blue}
+
+test ntext-10.4 {syncTabColor: empty colors} -setup {
+    saveVars
+    mkText "a\tb"
+    ::ntext::syncTabColor .t
+} -body {
+    set ::ntext::tabColor {}
+    set ::ntext::tabSelColor {}
+    ::ntext::syncTabColor .t
+    list [.t tag cget NtextTab -background] [.t tag cget NtextTab -selectbackground]
+} -cleanup {
+    destroy .t
+    restoreVars
+} -result {{} {}}
+
+test ntext-10.5 {typing a tab colors it} -setup {
+    mkText "ab"
+} -body {
+    .t mark set insert 1.1
+    key .t <Key-Tab>
+    list [.t get 1.0 end-1i] [tabRanges .t]
+} -cleanup {
+    destroy .t
+} -result [list "a\tb" {1.1 1.2}]
+
+test ntext-10.6 {no tab coloring by bindings when both colors are empty} -setup {
+    saveVars
+    set ::ntext::tabColor {}
+    set ::ntext::tabSelColor {}
+    mkText "ab"
+} -body {
+    .t mark set insert 1.1
+    key .t <Key-Tab>
+    tabRanges .t
+} -cleanup {
+    destroy .t
+    restoreVars
+} -result {}
+
+test ntext-10.7 {syncTabColor: invalid color} -setup {
+    saveVars
+    mkText "a\tb"
+} -body {
+    set ::ntext::tabColor nosuchcolor
+    ::ntext::syncTabColor .t
+} -cleanup {
+    destroy .t
+    restoreVars
+} -returnCodes error -result {unknown color name "nosuchcolor"}
+
+test ntext-10.8 {syncTabColor: invalid widget} -body {
+    ::ntext::syncTabColor .nosuchwidget
+} -returnCodes error -result {invalid command name ".nosuchwidget"}
+
+# -------------------------------------------------------------------------
+# ::ntext::wrapIndent
+
+set longline "    abc def ghi jkl mno pqr stu vwx yz0 123 456 789"
+
+test ntext-11.1 {wrapIndent: wrong # args} -body {
+    ::ntext::wrapIndent
+} -returnCodes error -result {wrong # args: should be "::ntext::wrapIndent textWidget ?arg ...?"}
+
+test ntext-11.2 {wrapIndent: classicWrap 1 means no indentation} -setup {
+    saveVars
+    mkText $longline -wrap word -width 20
+} -body {
+    list [::ntext::wrapIndent .t] [indentTags .t]
+} -cleanup {
+    destroy .t
+    restoreVars
+} -result {{} {}}
+
+test ntext-11.3 {wrapIndent: indents wrapped lines with classicWrap 0} -setup {
+    saveVars
+    set ::ntext::classicWrap 0
+    mkText $longline -wrap word -width 20
+} -body {
+    ::ntext::wrapIndent .t
+    set tags [indentTags .t]
+    set pix [.t tag cget [lindex $tags 0] -lmargin2]
+    list [llength $tags] [expr {$pix == [.t count -xpixels 1.0 1.4]}] \
+	    [expr {$pix > 0}] [expr {[lindex $tags 0] eq "ntextAlignLM2Indent=$pix"}]
+} -cleanup {
+    destroy .t
+    restoreVars
+} -result {1 1 1 1}
+
+test ntext-11.4 {wrapIndent: wrapped display lines start under the first non-space} -setup {
+    saveVars
+    set ::ntext::classicWrap 0
+    mkText $longline -wrap word -width 20
+} -body {
+    ::ntext::wrapIndent .t
+    update
+    set x1 [lindex [.t bbox 1.4] 0]
+    set x2 [lindex [.t bbox "1.0 + 1 display line"] 0]
+    expr {$x1 == $x2}
+} -cleanup {
+    destroy .t
+    restoreVars
+} -result 1
+
+test ntext-11.5 {wrapIndent: line without leading whitespace} -setup {
+    saveVars
+    set ::ntext::classicWrap 0
+    mkText "abc def ghi jkl mno pqr stu vwx yz0 123" -wrap word -width 20
+} -body {
+    ::ntext::wrapIndent .t
+    lineIndents .t
+} -cleanup {
+    destroy .t
+    restoreVars
+} -result 0
+
+test ntext-11.6 {wrapIndent: only active in -wrap word mode} -setup {
+    saveVars
+    set ::ntext::classicWrap 0
+    mkText $longline -wrap char -width 20
+} -body {
+    ::ntext::wrapIndent .t
+    indentTags .t
+} -cleanup {
+    destroy .t
+    restoreVars
+} -result {}
+
+test ntext-11.7 {wrapIndent: switching to -wrap char removes indentation} -setup {
+    saveVars
+    set ::ntext::classicWrap 0
+    mkText $longline -wrap word -width 20
+    ::ntext::wrapIndent .t
+} -body {
+    set r [llength [indentTags .t]]
+    .t configure -wrap char
+    ::ntext::wrapIndent .t
+    lappend r [llength [indentTags .t]]
+} -cleanup {
+    destroy .t
+    restoreVars
+} -result {1 0}
+
+test ntext-11.8 {wrapIndent: setting classicWrap 1 and calling wrapIndent removes indentation} -setup {
+    saveVars
+    set ::ntext::classicWrap 0
+    mkText $longline -wrap word -width 20
+    ::ntext::wrapIndent .t
+} -body {
+    set r [llength [indentTags .t]]
+    set ::ntext::classicWrap 1
+    ::ntext::wrapIndent .t
+    lappend r [llength [indentTags .t]]
+} -cleanup {
+    destroy .t
+    restoreVars
+} -result {1 0}
+
+test ntext-11.9 {wrapIndent: one logical line} -setup {
+    saveVars
+    mkText "$longline\n$longline\n$longline" -wrap word -width 20
+    # The <Configure> binding indents all lines when the widget is mapped,
+    # so switch indentation on only now.
+    set ::ntext::classicWrap 0
+} -body {
+    ::ntext::wrapIndent .t 2.5
+    set r [lineIndents .t]
+    list [lindex $r 0] [expr {[lindex $r 1] > 0}] [lindex $r 2]
+} -cleanup {
+    destroy .t
+    restoreVars
+} -result {0 1 0}
+
+test ntext-11.10 {wrapIndent: range of logical lines} -setup {
+    saveVars
+    mkText "$longline\n$longline\n$longline\n$longline" -wrap word -width 20
+    # The <Configure> binding indents all lines when the widget is mapped,
+    # so switch indentation on only now.
+    set ::ntext::classicWrap 0
+} -body {
+    ::ntext::wrapIndent .t 2.3 3.0
+    set r [lineIndents .t]
+    list [lindex $r 0] [expr {[lindex $r 1] > 0}] \
+	    [expr {[lindex $r 2] > 0}] [lindex $r 3]
+} -cleanup {
+    destroy .t
+    restoreVars
+} -result {0 1 1 0}
+
+test ntext-11.11 {wrapIndent: range given in reverse order} -setup {
+    saveVars
+    mkText "$longline\n$longline\n$longline\n$longline" -wrap word -width 20
+    # The <Configure> binding indents all lines when the widget is mapped,
+    # so switch indentation on only now.
+    set ::ntext::classicWrap 0
+} -body {
+    ::ntext::wrapIndent .t 3.0 2.3
+    set r [lineIndents .t]
+    list [lindex $r 0] [expr {[lindex $r 1] > 0}] \
+	    [expr {[lindex $r 2] > 0}] [lindex $r 3]
+} -cleanup {
+    destroy .t
+    restoreVars
+} -result {0 1 1 0}
+
+test ntext-11.12 {wrapIndent: removing indentation of one line and of a range} -setup {
+    saveVars
+    set ::ntext::classicWrap 0
+    mkText "$longline\n$longline\n$longline\n$longline" -wrap word -width 20
+    ::ntext::wrapIndent .t
+} -body {
+    set ::ntext::classicWrap 1
+    ::ntext::wrapIndent .t 1.0
+    set r [positive [lineIndents .t]]
+    ::ntext::wrapIndent .t 2.0 3.0
+    lappend r {*}[positive [lineIndents .t]]
+} -cleanup {
+    destroy .t
+    restoreVars
+} -result {0 1 1 1 0 0 0 1}
+
+test ntext-11.13 {wrapIndent: text inserted by the script needs a call} -setup {
+    saveVars
+    mkText "" -wrap word -width 20
+    # The <Configure> binding indents all lines when the widget is mapped,
+    # so switch indentation on only now.
+    set ::ntext::classicWrap 0
+} -body {
+    .t insert end $longline
+    update
+    set r [llength [indentTags .t]]
+    ::ntext::wrapIndent .t 1.0 end
+    lappend r [llength [indentTags .t]]
+} -cleanup {
+    destroy .t
+    restoreVars
+} -result {0 1}
+
+# Documentation bug: the example in ntextIndent.n saves [.t index end] before
+# inserting at "end", but the inserted text goes to the line before that
+# index, so the call of wrapIndent does not indent it.
+test ntext-11.13.1 {wrapIndent: example "inject some text" from the manual} -constraints knownBug -setup {
+    saveVars
+    mkText "abc\n" -wrap word -width 20
+    # The <Configure> binding indents all lines when the widget is mapped,
+    # so switch indentation on only now.
+    set ::ntext::classicWrap 0
+} -body {
+    set foo [.t index end]
+    .t insert end $longline
+    ::ntext::wrapIndent .t $foo end
+    expr {[lindex [lineIndents .t] 1] > 0}
+} -cleanup {
+    destroy .t
+    restoreVars
+    unset -nocomplain foo
+} -result 1
+
+test ntext-11.14 {wrapIndent: typed text is indented automatically} -setup {
+    saveVars
+    mkText $longline -wrap word -width 20
+    # The <Configure> binding indents all lines when the widget is mapped,
+    # so switch indentation on only now.
+    set ::ntext::classicWrap 0
+} -body {
+    set r [llength [indentTags .t]]
+    .t mark set insert end-1i
+    key .t <Key-x>
+    lappend r [expr {[lindex [lineIndents .t] 0] > 0}]
+} -cleanup {
+    destroy .t
+    restoreVars
+} -result {0 1}
+
+test ntext-11.15 {wrapIndent: tab indentation} -setup {
+    saveVars
+    set ::ntext::classicWrap 0
+    mkText "\tabc def ghi jkl mno pqr stu vwx yz0 123 456 789" -wrap word -width 30
+} -body {
+    ::ntext::wrapIndent .t
+    expr {[lindex [lineIndents .t] 0] == [.t count -xpixels 1.0 1.1]}
+} -cleanup {
+    destroy .t
+    restoreVars
+} -result 1
+
+test ntext-11.16 {wrapIndent: newWrapRegexp selects the alignment character} -setup {
+    saveVars
+    set ::ntext::classicWrap 0
+    set ::ntext::newWrapRegexp {[[:upper:]]}
+    mkText "abc Def ghi jkl mno pqr stu vwx" -wrap word -width 20
+} -body {
+    ::ntext::wrapIndent .t
+    expr {[lindex [lineIndents .t] 0] == [.t count -xpixels 1.0 1.4]}
+} -cleanup {
+    destroy .t
+    restoreVars
+} -result 1
+
+test ntext-11.17 {wrapIndent: indentation is updated on <Configure>} -setup {
+    saveVars
+    set ::ntext::classicWrap 0
+    mkText "" -wrap word -width 20
+    .t insert end $longline
+} -body {
+    .t configure -width 25
+    update
+    llength [indentTags .t]
+} -cleanup {
+    destroy .t
+    restoreVars
+} -result 1
+
+test ntext-11.18 {wrapIndent: invalid index} -setup {
+    saveVars
+    set ::ntext::classicWrap 0
+    mkText $longline -wrap word -width 20
+} -body {
+    ::ntext::wrapIndent .t foo
+} -cleanup {
+    destroy .t
+    restoreVars
+} -returnCodes error -match glob -result {bad text index "foo*"}
+
+test ntext-11.19 {wrapIndent: invalid widget} -body {
+    ::ntext::wrapIndent .nosuchwidget
+} -returnCodes error -result {invalid command name ".nosuchwidget"}
+
+test ntext-11.20 {wrapIndent: indent tags use indentColor} -constraints lmargincolor -setup {
+    saveVars
+    set ::ntext::classicWrap 0
+    set ::ntext::indentColor black
+    mkText $longline -wrap word -width 20
+} -body {
+    ::ntext::wrapIndent .t
+    .t tag cget [lindex [indentTags .t] 0] -lmargincolor
+} -cleanup {
+    destroy .t
+    restoreVars
+} -result black
+
+# -------------------------------------------------------------------------
+# ::ntext::syncIndentColor
+
+test ntext-12.1 {syncIndentColor: wrong # args} -body {
+    ::ntext::syncIndentColor
+} -returnCodes error -result {wrong # args: should be "::ntext::syncIndentColor w"}
+
+test ntext-12.2 {syncIndentColor: default color} -constraints lmargincolor -setup {
+    saveVars
+    set ::ntext::classicWrap 0
+    mkText $longline -wrap word -width 20
+    ::ntext::wrapIndent .t
+} -body {
+    .t tag cget [lindex [indentTags .t] 0] -lmargincolor
+} -cleanup {
+    destroy .t
+    restoreVars
+} -result #d9d9d9
+
+test ntext-12.3 {syncIndentColor: applies a changed color} -constraints lmargincolor -setup {
+    saveVars
+    set ::ntext::classicWrap 0
+    mkText "$longline\n  $longline" -wrap word -width 20
+    ::ntext::wrapIndent .t
+} -body {
+    set ::ntext::indentColor black
+    set r [list [.t tag cget [lindex [indentTags .t] 0] -lmargincolor]]
+    lappend r [::ntext::syncIndentColor .t]
+    foreach tag [indentTags .t] {
+	lappend r [.t tag cget $tag -lmargincolor]
+    }
+    set r
+} -cleanup {
+    destroy .t
+    restoreVars
+} -result {{#d9d9d9} {} black black}
+
+test ntext-12.4 {syncIndentColor: empty color} -constraints lmargincolor -setup {
+    saveVars
+    set ::ntext::classicWrap 0
+    mkText $longline -wrap word -width 20
+    ::ntext::wrapIndent .t
+} -body {
+    set ::ntext::indentColor {}
+    ::ntext::syncIndentColor .t
+    .t tag cget [lindex [indentTags .t] 0] -lmargincolor
+} -cleanup {
+    destroy .t
+    restoreVars
+} -result {}
+
+test ntext-12.5 {syncIndentColor: widget without indentation} -setup {
+    mkText "abc"
+} -body {
+    ::ntext::syncIndentColor .t
+} -cleanup {
+    destroy .t
+} -result {}
+
+test ntext-12.6 {syncIndentColor: invalid widget} -body {
+    ::ntext::syncIndentColor .nosuchwidget
+} -returnCodes error -result {invalid command name ".nosuchwidget"}
+
+# -------------------------------------------------------------------------
+# Bindings: typing, insert/overwrite mode
+
+test ntext-13.1 {KeyPress inserts the character} -setup {
+    mkText "ac"
+} -body {
+    .t mark set insert 1.1
+    key .t <Key-b>
+    list [.t get 1.0 end-1i] [.t index insert]
+} -cleanup {
+    destroy .t
+} -result {abc 1.2}
+
+test ntext-13.2 {KeyPress replaces the selection} -setup {
+    mkText "Hello world"
+} -body {
+    .t tag add sel 1.0 1.5
+    .t mark set insert 1.5
+    key .t <Key-x>
+    list [.t get 1.0 end-1i] [selRange .t]
+} -cleanup {
+    destroy .t
+} -result {{x world} {}}
+
+test ntext-13.3 {KeyPress does nothing in a disabled widget} -setup {
+    mkText "abc"
+    .t configure -state disabled
+} -body {
+    key .t <Key-x>
+    .t get 1.0 end-1i
+} -cleanup {
+    destroy .t
+} -result abc
+
+test ntext-13.4 {overwrite mode} -setup {
+    saveVars
+    mkText "abcd\nef"
+} -body {
+    set ::ntext::overwrite 1
+    .t mark set insert 1.1
+    key .t <Key-x>
+    key .t <Key-y>
+    key .t <Key-z>
+    key .t <Key-w>
+    .t get 1.0 end-1i
+} -cleanup {
+    destroy .t
+    restoreVars
+} -result "axyzw\nef"
+
+test ntext-13.5 {overwrite mode: Return and Tab do not overwrite} -setup {
+    saveVars
+    mkText "abcd"
+} -body {
+    set ::ntext::overwrite 1
+    .t mark set insert 1.1
+    key .t <Key-Tab>
+    key .t <Key-Return>
+    .t get 1.0 end-1i
+} -cleanup {
+    destroy .t
+    restoreVars
+} -result "a\t\nbcd"
+
+test ntext-13.6 {Insert key toggles overwrite} -constraints notAqua -setup {
+    saveVars
+    mkText "abc"
+} -body {
+    set r $::ntext::overwrite
+    key .t <Key-Insert>
+    lappend r $::ntext::overwrite
+    key .t <Key-Insert>
+    lappend r $::ntext::overwrite
+} -cleanup {
+    destroy .t
+    restoreVars
+} -result {0 1 0}
+
+test ntext-13.7 {overwrite mode uses the block cursor} -constraints notAqua -setup {
+    saveVars
+    set ::ntext::useBlockCursor 1
+    mkText "abc"
+} -body {
+    set r [.t cget -blockcursor]
+    key .t <Key-Insert>
+    lappend r [.t cget -blockcursor]
+    key .t <Key-Insert>
+    lappend r [.t cget -blockcursor]
+} -cleanup {
+    destroy .t
+    restoreVars
+} -result {0 1 0}
+
+test ntext-13.8 {overwrite mode without the block cursor changes the cursor color} -constraints notAqua -setup {
+    saveVars
+    set ::ntext::useBlockCursor 0
+    mkText "abc"
+} -body {
+    set r [list [.t cget -insertbackground]]
+    key .t <Key-Insert>
+    lappend r [.t cget -blockcursor] [.t cget -insertbackground]
+    key .t <Key-Insert>
+    lappend r [.t cget -insertbackground]
+} -cleanup {
+    destroy .t
+    restoreVars
+} -result {{#000000} 0 red #000000}
+
+# Bug: on <FocusIn> in insert mode, ::ntext::DefineCursor replaces the
+# widget's -insertbackground by its -foreground, because it has not yet
+# recorded the original value.
+test ntext-13.8.1 {focus does not change a custom -insertbackground} -constraints {notAqua knownBug} -setup {
+    saveVars
+    set ::ntext::useBlockCursor 0
+    mkText "abc" -insertbackground green
+} -body {
+    set r [list [.t cget -insertbackground]]
+    key .t <Key-Insert>
+    lappend r [.t cget -insertbackground]
+    key .t <Key-Insert>
+    lappend r [.t cget -insertbackground]
+} -cleanup {
+    destroy .t
+    restoreVars
+} -result {green red green}
+
+test ntext-13.9 {Destroy binding cleans up internal state} -setup {
+    saveVars
+    set ::ntext::useBlockCursor 0
+    mkText "abc"
+} -body {
+    key .t <Key-Insert>
+    set r [info exists ::ntext::OldInsertBackground(.t)]
+    destroy .t
+    lappend r [info exists ::ntext::OldInsertBackground(.t)]
+} -cleanup {
+    destroy .t
+    restoreVars
+} -result {1 0}
+
+test ntext-13.10 {Return inserts a newline} -setup {
+    mkText "ab"
+} -body {
+    .t mark set insert 1.1
+    key .t <Key-Return>
+    list [.t get 1.0 end-1i] [.t index insert]
+} -cleanup {
+    destroy .t
+} -result [list "a\nb" 2.0]
+
+test ntext-13.11 {Tab inserts a tab and keeps the focus} -setup {
+    mkText "ab"
+} -body {
+    .t mark set insert 1.1
+    key .t <Key-Tab>
+    list [.t get 1.0 end-1i] [focus]
+} -cleanup {
+    destroy .t
+} -result [list "a\tb" .t]
+
+test ntext-13.12 {Control modified keys do not insert text} -setup {
+    mkText "ab"
+} -body {
+    .t mark set insert 1.1
+    key .t <Control-Key-q>
+    .t get 1.0 end-1i
+} -cleanup {
+    destroy .t
+} -result ab
+
+# -------------------------------------------------------------------------
+# Bindings: deletion
+
+test ntext-14.1 {Delete deletes the next character} -setup {
+    mkText "abc"
+} -body {
+    .t mark set insert 1.1
+    key .t <Key-Delete>
+    .t get 1.0 end-1i
+} -cleanup {
+    destroy .t
+} -result ac
+
+test ntext-14.2 {Delete deletes the selection containing the cursor} -setup {
+    mkText "Hello world"
+} -body {
+    .t tag add sel 1.0 1.6
+    .t mark set insert 1.6
+    key .t <Key-Delete>
+    .t get 1.0 end-1i
+} -cleanup {
+    destroy .t
+} -result world
+
+test ntext-14.3 {Delete with a selection not containing the cursor} -setup {
+    mkText "Hello world"
+} -body {
+    .t tag add sel 1.0 1.2
+    .t mark set insert 1.6
+    key .t <Key-Delete>
+    .t get 1.0 end-1i
+} -cleanup {
+    destroy .t
+} -result {Hello orld}
+
+test ntext-14.4 {Delete at the end does nothing} -setup {
+    mkText "abc"
+} -body {
+    .t mark set insert end
+    key .t <Key-Delete>
+    .t get 1.0 end
+} -cleanup {
+    destroy .t
+} -result "abc\n"
+
+test ntext-14.5 {BackSpace deletes the previous character} -setup {
+    mkText "abc"
+} -body {
+    .t mark set insert 1.2
+    key .t <Key-BackSpace>
+    list [.t get 1.0 end-1i] [.t index insert]
+} -cleanup {
+    destroy .t
+} -result {ac 1.1}
+
+test ntext-14.6 {BackSpace at the start does nothing} -setup {
+    mkText "abc"
+} -body {
+    .t mark set insert 1.0
+    key .t <Key-BackSpace>
+    .t get 1.0 end-1i
+} -cleanup {
+    destroy .t
+} -result abc
+
+test ntext-14.7 {BackSpace deletes the selection} -setup {
+    mkText "Hello world"
+} -body {
+    .t tag add sel 1.5 1.11
+    .t mark set insert 1.11
+    key .t <Key-BackSpace>
+    .t get 1.0 end-1i
+} -cleanup {
+    destroy .t
+} -result Hello
+
+test ntext-14.8 {Delete and BackSpace in a disabled widget} -setup {
+    mkText "abc"
+    .t configure -state disabled
+} -body {
+    .t mark set insert 1.1
+    key .t <Key-Delete>
+    key .t <Key-BackSpace>
+    .t get 1.0 end-1i
+} -cleanup {
+    destroy .t
+} -result abc
+
+test ntext-14.9 {<<Clear>> deletes the selection} -setup {
+    mkText "Hello world"
+} -body {
+    .t tag add sel 1.0 1.6
+    .t mark set insert 1.8
+    event generate .t <<Clear>>
+    .t get 1.0 end-1i
+} -cleanup {
+    destroy .t
+} -result world
+
+test ntext-14.10 {<<Clear>> without selection does nothing} -setup {
+    mkText "Hello world"
+} -body {
+    event generate .t <<Clear>>
+    .t get 1.0 end-1i
+} -cleanup {
+    destroy .t
+} -result {Hello world}
+
+# -------------------------------------------------------------------------
+# Bindings: selection
+
+test ntext-15.1 {Escape clears the selection} -setup {
+    mkText "Hello world"
+} -body {
+    .t tag add sel 1.0 1.5
+    key .t <Key-Escape>
+    list [selRange .t] [.t get 1.0 end-1i]
+} -cleanup {
+    destroy .t
+} -result {{} {Hello world}}
+
+test ntext-15.2 {<<NtextSelectAll>>} -setup {
+    mkText "Hello\nworld"
+} -body {
+    event generate .t <<NtextSelectAll>>
+    selRange .t
+} -cleanup {
+    destroy .t
+} -result {1.0 3.0}
+
+test ntext-15.3 {<<NtextSelectNone>>} -setup {
+    mkText "Hello\nworld"
+} -body {
+    .t tag add sel 1.0 end
+    event generate .t <<NtextSelectNone>>
+    selRange .t
+} -cleanup {
+    destroy .t
+} -result {}
+
+test ntext-15.4 {Control-slash and Control-backslash on X11} -constraints x11 -setup {
+    mkText "Hello\nworld"
+} -body {
+    key .t <Control-Key-slash>
+    set r [selRange .t]
+    key .t <Control-Key-backslash>
+    lappend r [selRange .t]
+} -cleanup {
+    destroy .t
+} -result {1.0 3.0 {}}
+
+test ntext-15.5 {<<NtextSelectNextChar>> extends the selection} -setup {
+    mkText "Hello world"
+} -body {
+    .t mark set insert 1.2
+    event generate .t <<NtextSelectNextChar>>
+    event generate .t <<NtextSelectNextChar>>
+    update
+    list [selRange .t] [.t index insert]
+} -cleanup {
+    destroy .t
+} -result {{1.2 1.4} 1.4}
+
+test ntext-15.6 {<<NtextSelectPrevChar>> extends the selection} -setup {
+    mkText "Hello world"
+} -body {
+    .t mark set insert 1.4
+    event generate .t <<NtextSelectPrevChar>>
+    event generate .t <<NtextSelectPrevChar>>
+    update
+    list [selRange .t] [.t index insert]
+} -cleanup {
+    destroy .t
+} -result {{1.2 1.4} 1.2}
+
+test ntext-15.7 {<<NtextSelectNextWord>>} -setup {
+    mkText "Hello world foo"
+} -body {
+    .t mark set insert 1.0
+    event generate .t <<NtextSelectNextWord>>
+    update
+    selRange .t
+} -cleanup {
+    destroy .t
+} -result {1.0 1.6}
+
+test ntext-15.8 {<<NtextSelectLineEnd>> and <<NtextSelectLineStart>>} -setup {
+    mkText "Hello world"
+} -body {
+    .t mark set insert 1.3
+    event generate .t <<NtextSelectLineEnd>>
+    update
+    set r [selRange .t]
+    event generate .t <<NtextSelectLineStart>>
+    update
+    lappend r [selRange .t]
+} -cleanup {
+    destroy .t
+} -result {1.3 1.11 {1.0 1.3}}
+
+test ntext-15.9 {<<NtextSelectNextLine>>} -setup {
+    mkText "Hello\nworld"
+} -body {
+    .t mark set insert 1.2
+    event generate .t <<NtextSelectNextLine>>
+    update
+    selRange .t
+} -cleanup {
+    destroy .t
+} -result {1.2 2.2}
+
+test ntext-15.10 {Control-Shift-Home and Control-Shift-End} -constraints notAqua -setup {
+    mkText "Hello\nworld"
+} -body {
+    .t mark set insert 1.2
+    key .t <Control-Shift-Key-End>
+    set r [selRange .t]
+    key .t <Control-Shift-Key-Home>
+    lappend r [selRange .t]
+} -cleanup {
+    destroy .t
+} -result {1.2 2.5 {1.0 1.2}}
+
+# -------------------------------------------------------------------------
+# Bindings: navigation
+
+test ntext-16.1 {<<NtextNextChar>> and <<NtextPrevChar>>} -setup {
+    mkText "abc"
+} -body {
+    .t mark set insert 1.1
+    event generate .t <<NtextNextChar>>
+    update
+    set r [.t index insert]
+    event generate .t <<NtextPrevChar>>
+    event generate .t <<NtextPrevChar>>
+    update
+    lappend r [.t index insert]
+} -cleanup {
+    destroy .t
+} -result {1.2 1.0}
+
+test ntext-16.2 {navigation clears the selection} -setup {
+    mkText "abc"
+} -body {
+    .t tag add sel 1.0 1.2
+    .t mark set insert 1.2
+    event generate .t <<NtextNextChar>>
+    update
+    list [selRange .t] [.t index insert]
+} -cleanup {
+    destroy .t
+} -result {{} 1.3}
+
+test ntext-16.3 {navigation with classicSelection 0 starts from the selection end} -setup {
+    saveVars
+    set ::ntext::classicSelection 0
+    mkText "abcdef"
+} -body {
+    .t tag add sel 1.1 1.4
+    .t mark set insert 1.1
+    event generate .t <<NtextNextChar>>
+    update
+    set r [.t index insert]
+    .t tag add sel 1.1 1.4
+    .t mark set insert 1.4
+    event generate .t <<NtextPrevChar>>
+    update
+    lappend r [.t index insert]
+} -cleanup {
+    destroy .t
+    restoreVars
+} -result {1.5 1.0}
+
+test ntext-16.4 {navigation with classicSelection 1 starts from the insert mark} -setup {
+    saveVars
+    set ::ntext::classicSelection 1
+    mkText "abcdef"
+} -body {
+    .t tag add sel 1.1 1.4
+    .t mark set insert 1.1
+    event generate .t <<NtextNextChar>>
+    update
+    .t index insert
+} -cleanup {
+    destroy .t
+    restoreVars
+} -result 1.2
+
+test ntext-16.5 {<<NtextNextWord>> moves to the start of the next word} -setup {
+    mkText "foo.bar  baz"
+} -body {
+    set r {}
+    foreach i {1 2 3 4} {
+	event generate .t <<NtextNextWord>>
+	update
+	lappend r [.t index insert]
+    }
+    set r
+} -cleanup {
+    destroy .t
+} -result {1.3 1.4 1.9 1.12}
+
+test ntext-16.6 {<<NtextPrevWord>> moves to the start of the previous word} -setup {
+    mkText "foo.bar  baz"
+} -body {
+    .t mark set insert end-1i
+    set r {}
+    foreach i {1 2 3 4 5} {
+	event generate .t <<NtextPrevWord>>
+	update
+	lappend r [.t index insert]
+    }
+    set r
+} -cleanup {
+    destroy .t
+} -result {1.9 1.4 1.3 1.0 1.0}
+
+test ntext-16.7 {<<NtextNextLine>> and <<NtextPrevLine>> keep the column} -setup {
+    mkText "abcdef\nab\nabcdef"
+} -body {
+    .t mark set insert 1.4
+    set r {}
+    foreach ev {Next Next Prev} {
+	event generate .t <<Ntext${ev}Line>>
+	update
+	lappend r [.t index insert]
+    }
+    set r
+} -cleanup {
+    destroy .t
+} -result {2.2 3.4 2.2}
+
+test ntext-16.8 {<<NtextPrevLine>> on the first line} -setup {
+    mkText "abcdef\nab"
+} -body {
+    .t mark set insert 1.3
+    event generate .t <<NtextPrevLine>>
+    update
+    .t index insert
+} -cleanup {
+    destroy .t
+} -result 1.3
+
+test ntext-16.9 {<<NtextNextPara>> and <<NtextPrevPara>>} -setup {
+    mkText "aa\nbb\n\n  cc\ndd\n\nee"
+} -body {
+    set r {}
+    foreach ev {Next Next Next Prev Prev Prev} {
+	event generate .t <<Ntext${ev}Para>>
+	update
+	lappend r [.t index insert]
+    }
+    set r
+} -cleanup {
+    destroy .t
+} -result {4.2 7.0 7.2 7.0 4.2 1.0}
+
+test ntext-16.10 {Smart Home} -setup {
+    mkText "    abc def"
+} -body {
+    .t mark set insert 1.8
+    set r {}
+    foreach i {1 2 3} {
+	event generate .t <<NtextLineStart>>
+	update
+	lappend r [.t index insert]
+    }
+    set r
+} -cleanup {
+    destroy .t
+} -result {1.4 1.0 1.4}
+
+test ntext-16.11 {Smart Home on a wrapped display line} -setup {
+    mkText "    abc def ghi jkl mno pqr stu" -wrap word -width 12
+} -body {
+    .t mark set insert "1.0 + 1 display line + 2 indices"
+    set dls [.t index "1.0 + 1 display line"]
+    set r {}
+    foreach i {1 2 3} {
+	event generate .t <<NtextLineStart>>
+	update
+	lappend r [expr {[.t index insert] eq $dls ? "dls" : [.t index insert]}]
+    }
+    set r
+} -cleanup {
+    destroy .t
+    unset dls
+} -result {dls 1.4 1.0}
+
+test ntext-16.12 {Smart End} -setup {
+    mkText "abc def   "
+} -body {
+    .t mark set insert 1.2
+    set r {}
+    foreach i {1 2 3} {
+	event generate .t <<NtextLineEnd>>
+	update
+	lappend r [.t index insert]
+    }
+    set r
+} -cleanup {
+    destroy .t
+} -result {1.10 1.7 1.10}
+
+test ntext-16.13 {Home and End keys} -constraints notAqua -setup {
+    mkText "  abc  "
+} -body {
+    .t mark set insert 1.4
+    key .t <Key-Home>
+    set r [.t index insert]
+    key .t <Key-End>
+    lappend r [.t index insert]
+} -cleanup {
+    destroy .t
+} -result {1.2 1.7}
+
+test ntext-16.14 {Control-Home and Control-End} -constraints notAqua -setup {
+    mkText "abc\ndef\nghi"
+} -body {
+    .t mark set insert 2.1
+    key .t <Control-Key-End>
+    set r [.t index insert]
+    key .t <Control-Key-Home>
+    lappend r [.t index insert]
+} -cleanup {
+    destroy .t
+} -result {3.3 1.0}
+
+test ntext-16.15 {Next and Prior move the insert mark by pages} -constraints notAqua -setup {
+    mkText [join [lrepeat 50 x] \n] -height 10
+} -body {
+    key .t <Key-Next>
+    set r [expr {[.t index insert] > 5.0}]
+    key .t <Key-Next>
+    key .t <Key-Next>
+    key .t <Key-Next>
+    key .t <Key-Next>
+    key .t <Key-Next>
+    lappend r [.t index insert]
+    key .t <Key-Prior>
+    lappend r [expr {[.t index insert] < 50.0}]
+    for {set i 0} {$i < 10} {incr i} {
+	key .t <Key-Prior>
+    }
+    lappend r [.t index insert]
+} -cleanup {
+    destroy .t
+} -result {1 50.1 1 1.0}
+
+test ntext-16.16 {X11 key bindings for navigation} -constraints x11 -setup {
+    mkText "foo bar\nbaz"
+} -body {
+    set r {}
+    foreach k {Key-Right Key-Left Control-Key-Right Key-Down Key-Up Control-Key-Left} {
+	key .t <$k>
+	lappend r [.t index insert]
+    }
+    set r
+} -cleanup {
+    destroy .t
+} -result {1.1 1.0 1.4 2.3 1.4 1.0}
+
+# -------------------------------------------------------------------------
+# Bindings: classicExtras
+
+test ntext-17.1 {classicExtras 0: Control-k does nothing} -setup {
+    saveVars
+    mkText "Hello world"
+} -body {
+    .t mark set insert 1.5
+    key .t <Control-Key-k>
+    .t get 1.0 end-1i
+} -cleanup {
+    destroy .t
+    restoreVars
+} -result {Hello world}
+
+test ntext-17.2 {classicExtras 1: Control-k deletes to the line end} -setup {
+    saveVars
+    set ::ntext::classicExtras 1
+    mkText "Hello world\nfoo"
+} -body {
+    .t mark set insert 1.5
+    key .t <Control-Key-k>
+    set r [list [.t get 1.0 end-1i]]
+    key .t <Control-Key-k>
+    lappend r [.t get 1.0 end-1i]
+} -cleanup {
+    destroy .t
+    restoreVars
+} -result [list "Hello\nfoo" Hellofoo]
+
+test ntext-17.3 {classicExtras: Control-d} -setup {
+    saveVars
+    mkText "abc"
+} -body {
+    .t mark set insert 1.1
+    key .t <Control-Key-d>
+    set r [.t get 1.0 end-1i]
+    set ::ntext::classicExtras 1
+    key .t <Control-Key-d>
+    lappend r [.t get 1.0 end-1i]
+} -cleanup {
+    destroy .t
+    restoreVars
+} -result {abc ac}
+
+test ntext-17.4 {classicExtras: Control-h} -setup {
+    saveVars
+    mkText "abc"
+} -body {
+    .t mark set insert 1.2
+    key .t <Control-Key-h>
+    set r [.t get 1.0 end-1i]
+    set ::ntext::classicExtras 1
+    key .t <Control-Key-h>
+    lappend r [.t get 1.0 end-1i]
+} -cleanup {
+    destroy .t
+    restoreVars
+} -result {abc ac}
+
+test ntext-17.5 {classicExtras: Control-o} -setup {
+    saveVars
+    mkText "abcd"
+} -body {
+    .t mark set insert 1.2
+    key .t <Control-Key-o>
+    set r [.t get 1.0 end-1i]
+    set ::ntext::classicExtras 1
+    key .t <Control-Key-o>
+    lappend r [.t get 1.0 end-1i] [.t index insert]
+} -cleanup {
+    destroy .t
+    restoreVars
+} -result [list abcd "ab\ncd" 1.2]
+
+test ntext-17.6 {classicExtras: Control-t} -setup {
+    saveVars
+    mkText "abcd"
+} -body {
+    .t mark set insert 1.2
+    key .t <Control-Key-t>
+    set r [.t get 1.0 end-1i]
+    set ::ntext::classicExtras 1
+    key .t <Control-Key-t>
+    lappend r [.t get 1.0 end-1i]
+} -cleanup {
+    destroy .t
+    restoreVars
+} -result {abcd acbd}
+
+test ntext-17.7 {classicExtras: Control-i} -setup {
+    saveVars
+    mkText "ab"
+} -body {
+    .t mark set insert 1.1
+    key .t <Control-Key-i>
+    set r [.t get 1.0 end-1i]
+    set ::ntext::classicExtras 1
+    key .t <Control-Key-i>
+    lappend r [.t get 1.0 end-1i]
+} -cleanup {
+    destroy .t
+    restoreVars
+} -result [list ab "a\tb"]
+
+test ntext-17.8 {classicExtras: Control-a and Control-e on X11} -constraints x11 -setup {
+    saveVars
+    mkText "abc def"
+} -body {
+    .t mark set insert 1.3
+    key .t <Control-Key-e>
+    set r [.t index insert]
+    set ::ntext::classicExtras 1
+    key .t <Control-Key-e>
+    lappend r [.t index insert]
+    key .t <Control-Key-a>
+    lappend r [.t index insert]
+} -cleanup {
+    destroy .t
+    restoreVars
+} -result {1.3 1.7 1.0}
+
+test ntext-17.9 {classicExtras: Control-space and Control-Shift-space} -setup {
+    saveVars
+    mkText "Hello world"
+} -body {
+    set ::ntext::classicExtras 1
+    .t mark set insert 1.2
+    key .t <Control-Key-space>
+    .t mark set insert 1.8
+    key .t <Control-Shift-Key-space>
+    selRange .t
+} -cleanup {
+    destroy .t
+    restoreVars
+} -result {1.2 1.8}
+
+test ntext-17.10 {classicExtras 0: Control-space and Control-Shift-space} -setup {
+    saveVars
+    mkText "Hello world"
+} -body {
+    .t mark set insert 1.2
+    key .t <Control-Key-space>
+    .t mark set insert 1.8
+    key .t <Control-Shift-Key-space>
+    selRange .t
+} -cleanup {
+    destroy .t
+    restoreVars
+} -result {}
+
+# -------------------------------------------------------------------------
+# Bindings: undo/redo
+
+test ntext-18.1 {<<Undo>> and <<Redo>>} -setup {
+    mkText "" -undo 1
+} -body {
+    key .t <Key-a>
+    key .t <Key-b>
+    key .t <Key-Return>
+    key .t <Key-c>
+    set r [list [.t get 1.0 end-1i]]
+    event generate .t <<Undo>>
+    lappend r [.t get 1.0 end-1i]
+    event generate .t <<Redo>>
+    lappend r [.t get 1.0 end-1i]
+} -cleanup {
+    destroy .t
+} -result [list "ab\nc" "ab\n" "ab\nc"]
+
+test ntext-18.2 {<<Undo>> with an empty undo stack} -setup {
+    mkText "abc" -undo 1
+    .t edit reset
+} -body {
+    event generate .t <<Undo>>
+    .t get 1.0 end-1i
+} -cleanup {
+    destroy .t
+} -result abc
+
+test ntext-18.3 {<<Undo>> restores tab coloring} -setup {
+    mkText "" -undo 1
+} -body {
+    key .t <Key-Tab>
+    key .t <Key-Return>
+    key .t <Key-x>
+    event generate .t <<Undo>>
+    update
+    tabRanges .t
+} -cleanup {
+    destroy .t
+} -result {1.0 1.1}
+
+# -------------------------------------------------------------------------
+# Bindings: mouse
+
+test ntext-19.1 {click sets the insert mark and clears the selection} -setup {
+    mkText "Hello world"
+} -body {
+    .t tag add sel 1.0 1.3
+    lassign [charxy .t 1.6] x y
+    click .t [expr {$x - 2}] $y
+    list [.t index insert] [selRange .t] [focus]
+} -cleanup {
+    destroy .t
+    unset x y
+} -result {1.6 {} .t}
+
+test ntext-19.2 {click near the end of a display line stays on that line} -setup {
+    mkText "aaaa bbbb cccc dddd" -wrap word -width 6
+} -body {
+    lassign [.t bbox 1.0] x y wd ht
+    click .t [expr {[winfo width .t] - 3}] [expr {$y + $ht/2}]
+    list [.t index insert] [.t count -displaylines 1.0 insert]
+} -cleanup {
+    destroy .t
+    unset x y wd ht
+} -result {1.4 0}
+
+test ntext-19.3 {click past the end of a logical line} -setup {
+    mkText "abc\ndefghi"
+} -body {
+    lassign [charxy .t 1.0] x y
+    click .t [expr {[winfo width .t] - 3}] $y
+    .t index insert
+} -cleanup {
+    destroy .t
+    unset x y
+} -result 1.3
+
+test ntext-19.4 {double click selects a word} -setup {
+    mkText "foo.bar baz"
+} -body {
+    lassign [charxy .t 1.5] x y
+    event generate .t <ButtonPress-1> -x $x -y $y -time 1000
+    event generate .t <ButtonRelease-1> -x $x -y $y -time 1010
+    event generate .t <ButtonPress-1> -x $x -y $y -time 1050
+    event generate .t <ButtonRelease-1> -x $x -y $y -time 1060
+    update
+    list [selRange .t] [.t index insert]
+} -cleanup {
+    destroy .t
+    unset x y
+} -result {{1.4 1.7} 1.7}
+
+test ntext-19.5 {double click on punctuation selects the punctuation} -setup {
+    mkText "foo..bar baz"
+} -body {
+    lassign [charxy .t 1.3] x y
+    event generate .t <ButtonPress-1> -x $x -y $y -time 2000
+    event generate .t <ButtonRelease-1> -x $x -y $y -time 2010
+    event generate .t <ButtonPress-1> -x $x -y $y -time 2050
+    event generate .t <ButtonRelease-1> -x $x -y $y -time 2060
+    update
+    selRange .t
+} -cleanup {
+    destroy .t
+    unset x y
+} -result {1.3 1.5}
+
+test ntext-19.6 {triple click selects a line} -setup {
+    mkText "foo bar\nbaz"
+} -body {
+    lassign [charxy .t 1.5] x y
+    foreach t {3000 3050 3100} {
+	event generate .t <ButtonPress-1> -x $x -y $y -time $t
+	event generate .t <ButtonRelease-1> -x $x -y $y -time [expr {$t+10}]
+    }
+    update
+    selRange .t
+} -cleanup {
+    destroy .t
+    unset x y
+} -result {1.0 2.0}
+
+test ntext-19.7 {Shift-click selects from the insert mark moved by the keyboard} -setup {
+    saveVars
+    mkText "abcdefghij"
+} -body {
+    lassign [charxy .t 1.2] x y
+    click .t [expr {$x - 2}] $y
+    event generate .t <<NtextNextChar>>
+    event generate .t <<NtextNextChar>>
+    update
+    lassign [charxy .t 1.8] x y
+    click .t [expr {$x - 2}] $y 1
+    selRange .t
+} -cleanup {
+    destroy .t
+    restoreVars
+    unset x y
+} -result {1.4 1.8}
+
+test ntext-19.8 {classicMouseSelect: Shift-click selects from the last click} -setup {
+    saveVars
+    set ::ntext::classicMouseSelect 1
+    mkText "abcdefghij"
+} -body {
+    lassign [charxy .t 1.2] x y
+    click .t [expr {$x - 2}] $y
+    event generate .t <<NtextNextChar>>
+    event generate .t <<NtextNextChar>>
+    update
+    lassign [charxy .t 1.8] x y
+    click .t [expr {$x - 2}] $y 1
+    selRange .t
+} -cleanup {
+    destroy .t
+    restoreVars
+    unset x y
+} -result {1.2 1.8}
+
+test ntext-19.9 {Shift-click does not move the anchor} -setup {
+    saveVars
+    mkText "abcdefghij"
+} -body {
+    lassign [charxy .t 1.4] x y
+    click .t [expr {$x - 2}] $y
+    lassign [charxy .t 1.8] x y
+    click .t [expr {$x - 2}] $y 1
+    lassign [charxy .t 1.2] x y
+    click .t [expr {$x - 2}] $y 1
+    selRange .t
+} -cleanup {
+    destroy .t
+    restoreVars
+    unset x y
+} -result {1.2 1.4}
+
+test ntext-19.10 {classicAnchor: Shift-click moves the anchor} -setup {
+    saveVars
+    set ::ntext::classicAnchor 1
+    mkText "abcdefghij"
+} -body {
+    lassign [charxy .t 1.4] x y
+    click .t [expr {$x - 2}] $y
+    lassign [charxy .t 1.8] x y
+    click .t [expr {$x - 2}] $y 1
+    lassign [charxy .t 1.2] x y
+    click .t [expr {$x - 2}] $y 1
+    selRange .t
+} -cleanup {
+    destroy .t
+    restoreVars
+    unset x y
+} -result {1.2 1.8}
+
+test ntext-19.11 {drag selects text} -setup {
+    mkText "abcdefghij"
+} -body {
+    lassign [charxy .t 1.2] x1 y
+    lassign [charxy .t 1.6] x2 y
+    event generate .t <ButtonPress-1> -x [expr {$x1-2}] -y $y
+    event generate .t <B1-Motion> -x [expr {$x2-2}] -y $y -state 0x100
+    event generate .t <ButtonRelease-1> -x [expr {$x2-2}] -y $y -state 0x100
+    update
+    list [selRange .t] [.t index insert]
+} -cleanup {
+    destroy .t
+    unset x1 x2 y
+} -result {{1.2 1.6} 1.6}
+
+test ntext-19.12 {Control-click moves the insert mark only} -setup {
+    mkText "abcdefghij"
+} -body {
+    .t tag add sel 1.0 1.3
+    lassign [charxy .t 1.6] x y
+    event generate .t <Control-ButtonPress-1> -x $x -y $y
+    event generate .t <Control-ButtonRelease-1> -x $x -y $y
+    update
+    list [.t index insert] [selRange .t]
+} -cleanup {
+    destroy .t
+    unset x y
+} -result {1.6 {1.0 1.3}}
+
+# -------------------------------------------------------------------------
+
+catch {unset longline}
+rename saveVars {}
+rename restoreVars {}
+rename mkText {}
+rename key {}
+rename click {}
+rename charxy {}
+rename selRange {}
+rename canonEvents {}
+rename indentTags {}
+rename lineIndents {}
+rename tabRanges {}
+rename positive {}
+unset ConfigVars
+if {$OldMainState eq "withdrawn"} {
+    wm withdraw .
+}
+unset OldMainState
+
+::tcltest::cleanupTests
