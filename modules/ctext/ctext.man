@@ -190,7 +190,7 @@ proc linemark_cmd {win type line}.
 }]
 
 See also
-ctext_test_interactive.tcl
+examples/ctext/ctext_test_interactive.tcl
 
 [tkoption_def -highlight "" ""]
 

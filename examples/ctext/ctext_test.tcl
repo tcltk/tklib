@@ -5,7 +5,7 @@ package require Tk
 #set tcl_traceExec 1
 
 proc main {} {
-	source ./ctext.tcl
+	package require ctext
 
 	pack [frame .f] -fill both -expand 1
 	#Of course this could be cscrollbar instead, but it's not as common.
@@ -42,7 +42,7 @@ proc main {} {
 	#After overloading, insertion is a little slower with the
 	#regular insert, so use fastinsert.
 	#set fi [open Ctext_Bug_Crasher.tcl r]
-	set fi [open long_test_script r]
+	set fi [open [file join [file dirname [info script]] long_test_script] r]
 	.f.t fastinsert end [read $fi]
 	close $fi
 

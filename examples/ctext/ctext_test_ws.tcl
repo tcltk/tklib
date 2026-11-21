@@ -1,5 +1,6 @@
 
-source ./ctext.tcl
+package require Tk
+package require ctext
 pack [ctext {.t blah}]
 
 ctext::addHighlightClass {.t blah} c blue [list bat ball boot cat hat]

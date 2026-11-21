@@ -23,7 +23,7 @@ proc highlight:addClasses {win} {
 }
 
 proc main {} {
-	source ./ctext.tcl
+	package require ctext
 
 	pack [frame .f] -fill both -expand 1
 	#Of course this could be cscrollbar instead, but it's not as common.
@@ -37,7 +37,7 @@ proc main {} {
 	highlight:addClasses .f.t
 	ctext::enableComments .f.t
 
-	set fi [open test.c r]
+	set fi [open [file join [file dirname [info script]] test.c] r]
 	.f.t fastinsert end [read $fi]
 	close $fi
 

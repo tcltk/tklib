@@ -14,16 +14,13 @@
 
 	o Installation
 
-	Ctext requires only one file named ctext.tcl.  You
-	can source this file or if you prefer to use
-	"package require ctext" you can use the install.tcl
-	script.  The install script can be run like so:
-	wish8.4 install.tcl
+	Ctext is installed as part of tklib; load it with
+	"package require ctext".
 
 	If you are a developer I highly recommend that you 
 	study the Usage section below.  If you need an 
-	example then see the test files (especialy 
-	ctext_test_interactive.tcl).
+	example then see the demos in examples/ctext of the
+	tklib sources (especially ctext_test_interactive.tcl).
 
 
 	o How it Works
@@ -86,7 +83,7 @@
 	either marked or unmarked, and finally the line 
 	number selected.  The proc prototype is: 
 	proc linemark_cmd {win type line}.  See also 
-	ctext_test_interactive.tcl
+	examples/ctext/ctext_test_interactive.tcl
 
 	-highlight takes a boolean value which defines
 	whether or not to highlight text which is inserted 

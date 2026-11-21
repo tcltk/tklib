@@ -1,5 +1,6 @@
 
-source ./ctext.tcl
+package require Tk
+package require ctext
 
 scrollbar .y -orient vertical -command {.t yview}
 ctext .t -xscrollcommand {.x set} -yscrollcommand {.y set} -wrap none
