@@ -1,0 +1,433 @@
+# -*- tcl -*-
+# Tests for the canvas::sqmap package
+#
+# See the file "license.terms" for information on usage and redistribution
+# of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2
+    namespace import ::tcltest::*
+} else {
+    if {![package vsatisfies [package present tcltest] 2.2]} {
+	puts "    Aborting the tests found in \"[file tail [info script]]\"."
+	puts "    Requiring tcltest 2.2, have [package present tcltest]"
+	return
+    }
+}
+
+::tcltest::testConstraint tk 1
+
+lappend auto_path [file dirname [file dirname [file normalize [info script]]]]
+package require canvas::sqmap
+
+# -------------------------------------------------------------------------
+
+# Collect background errors instead of showing a dialog.
+set oldBgerror [interp bgerror {}]
+set bgerrors {}
+proc collectBgerror {msg opts} {
+    lappend ::bgerrors $msg
+}
+interp bgerror {} collectBgerror
+
+image create photo sqTile1 -width 50 -height 50
+image create photo sqTile2 -width 50 -height 50
+image create photo sqLoad  -width 50 -height 50
+image create photo sqNone  -width 50 -height 50
+
+# Process idle callbacks and the "after 0" tile requests.
+proc settle {} {
+    for {set i 0} {$i < 3} {incr i} {
+	update
+	after 10 {set ::settleDone 1}
+	vwait ::settleDone
+    }
+    update
+    unset -nocomplain ::settleDone
+}
+
+# Map 200x100 with 50x50 cells over a 500x500 scroll region.
+proc mkMap {args} {
+    canvas::sqmap .m -width 200 -height 100 -highlightthickness 0 \
+	-borderwidth 0 -grid-cell-width 50 -grid-cell-height 50 \
+	-scrollregion {0 0 500 500} {*}$args
+    pack .m
+    settle
+    set ::log {}
+}
+
+proc cleanMap {} {
+    destroy .m
+    settle
+    unset -nocomplain ::log ::answer
+    set ::bgerrors {}
+}
+
+# Tile images: list of {x y image} for all tile items, sorted.
+proc tiles {} {
+    lsort -dictionary [lmap i [.m find withtag canvas::sqmap::cells] {
+	set img [.m itemcget $i -image]
+	if {$img eq ""} continue
+	list {*}[.m coords $i] $img
+    }]
+}
+
+# Grid cell callback.  Logs the cell, and answers according to ::answer:
+# set (sqTile1), unset, or none (no answer).
+proc cellcmd {args} {
+    lassign [lrange $args end-1 end] at result
+    lappend ::log $at
+    set mode set
+    if {[info exists ::answer]} {set mode $::answer}
+    switch -- $mode {
+	set   {{*}$result set $at sqTile1}
+	unset {{*}$result unset $at}
+	none  {}
+    }
+}
+
+proc logcb {args} {lappend ::log $args}
+
+test canvas::sqmap-1.0 {package version} -body {
+    package present canvas::sqmap
+} -result 0.3.1
+
+# -------------------------------------------------------------------------
+
+test canvas::sqmap-2.1 {create: result, class} -body {
+    list [canvas::sqmap .m -grid-cell-width 50 -grid-cell-height 50] \
+	[winfo class .m]
+} -cleanup cleanMap -result {.m Canvas}
+
+test canvas::sqmap-2.2 {create: without options} -constraints {
+    knownBug
+} -body {
+    canvas::sqmap .m
+    pack .m
+    settle
+    set ::bgerrors
+} -cleanup cleanMap -result {}
+
+test canvas::sqmap-2.3 {create: unknown option} -body {
+    canvas::sqmap .m -foo 1
+} -cleanup cleanMap -returnCodes error -result {Error in constructor: unknown option "-foo"}
+
+test canvas::sqmap-2.4 {default option values} -setup mkMap -body {
+    canvas::sqmap .m2
+    lmap o {-grid-cell-width -grid-cell-height -grid-cell-command
+	-scrollregion -viewport-command -image-on-load -image-on-unset} {
+	.m2 cget $o
+    }
+} -cleanup {
+    destroy .m2
+    cleanMap
+} -result {0 0 {} {} {} {} {}}
+
+test canvas::sqmap-2.5 {-grid-cell-width: negative} -body {
+    canvas::sqmap .m -grid-cell-width -1
+} -cleanup cleanMap -returnCodes error -match glob -result {Error in constructor: invalid -grid-cell-width value: *}
+
+test canvas::sqmap-2.6 {-grid-cell-height: not an integer} -setup mkMap -body {
+    .m configure -grid-cell-height 1.5
+} -cleanup cleanMap -returnCodes error -match glob -result {invalid -grid-cell-height value: *}
+
+test canvas::sqmap-2.7 {canvas options and methods are available} -setup mkMap -body {
+    .m configure -background red
+    set id [.m create rectangle 10 10 20 20 -tags user]
+    list [.m cget -background] [.m find withtag user] [.m type $id] \
+	[.m cget -width]
+} -cleanup {
+    cleanMap
+    unset id
+} -result {red 1 rectangle 200}
+
+test canvas::sqmap-2.8 {-scrollregion is applied to the canvas} -setup mkMap -body {
+    .m configure -scrollregion {0 0 1000 800}
+    settle
+    .m cget -scrollregion
+} -cleanup cleanMap -result {0 0 1000 800}
+
+test canvas::sqmap-2.9 {destroy right after creation} -constraints {
+    knownBug
+} -body {
+    # The pending idle callbacks are not cancelled on destruction and
+    # fail in the background.
+    canvas::sqmap .m -grid-cell-width 50 -grid-cell-height 50
+    destroy .m
+    settle
+    set ::bgerrors
+} -cleanup cleanMap -result {}
+
+# -------------------------------------------------------------------------
+# Grid cell command
+
+test canvas::sqmap-3.1 {-grid-cell-command: set after creation} -constraints {
+    knownBug
+} -setup {
+    mkMap
+} -body {
+    # The visible cells are not requested again.
+    .m configure -grid-cell-command cellcmd
+    settle
+    lsort -dictionary $::log
+} -cleanup cleanMap -result {{0 0} {0 1} {0 2} {0 3} {0 4} {1 0} {1 1} {1 2} {1 3} {1 4} {2 0} {2 1} {2 2} {2 3} {2 4}}
+
+test canvas::sqmap-3.13 {-grid-cell-command: called for visible cells} -body {
+    set ::log {}
+    canvas::sqmap .m -width 200 -height 100 -highlightthickness 0 \
+	-borderwidth 0 -grid-cell-width 50 -grid-cell-height 50 \
+	-scrollregion {0 0 500 500} -grid-cell-command cellcmd
+    pack .m
+    settle
+    lsort -dictionary $::log
+} -cleanup cleanMap -result {{0 0} {0 1} {0 2} {0 3} {0 4} {1 0} {1 1} {1 2} {1 3} {1 4} {2 0} {2 1} {2 2} {2 3} {2 4}}
+
+test canvas::sqmap-3.2 {-grid-cell-command: images placed in their cells} -setup {
+    mkMap -grid-cell-command cellcmd
+} -body {
+    lrange [tiles] 0 2
+} -cleanup cleanMap -result {{0.0 0.0 sqTile1} {0.0 50.0 sqTile1} {0.0 100.0 sqTile1}}
+
+test canvas::sqmap-3.3 {-grid-cell-command: one item per visible cell} -setup {
+    mkMap -grid-cell-command cellcmd
+} -body {
+    llength [tiles]
+} -cleanup cleanMap -result 15
+
+test canvas::sqmap-3.4 {-grid-cell-command: called with cell id and result command} -constraints {
+    knownBug
+} -setup {
+    proc cb2 {args} {lappend ::log [llength $args]}
+    mkMap
+} -body {
+    # Documented: two additional arguments.  The code passes three,
+    # "get cellid result".
+    .m configure -grid-cell-command cb2
+    settle
+    lsort -unique $::log
+} -cleanup {
+    cleanMap
+    rename cb2 {}
+} -result 2
+
+test canvas::sqmap-3.5 {-grid-cell-command: unset leaves cell empty} -setup {
+    set ::answer unset
+    mkMap -grid-cell-command cellcmd
+} -body {
+    tiles
+} -cleanup cleanMap -result {}
+
+test canvas::sqmap-3.6 {-image-on-unset} -setup {
+    set ::answer unset
+    mkMap -grid-cell-command cellcmd -image-on-unset sqNone
+} -body {
+    lsort -unique [lmap t [tiles] {lindex $t 2}]
+} -cleanup cleanMap -result sqNone
+
+test canvas::sqmap-3.7 {-image-on-load shown until the image arrives} -setup {
+    set ::answer none
+    mkMap -grid-cell-command cellcmd -image-on-load sqLoad
+} -body {
+    set r [lsort -unique [lmap t [tiles] {lindex $t 2}]]
+    .m image set {0 0} sqTile2
+    lappend r [lindex [tiles] 0]
+} -cleanup {
+    cleanMap
+    unset r
+} -result {sqLoad {0.0 0.0 sqTile2}}
+
+test canvas::sqmap-3.8 {results are cached} -setup {
+    mkMap -grid-cell-command cellcmd
+} -body {
+    .m xview moveto 0.4
+    settle
+    set ::log {}
+    .m xview moveto 0
+    settle
+    list $::log [llength [tiles]]
+} -cleanup cleanMap -result {{} 15}
+
+test canvas::sqmap-3.9 {scrolling requests the newly visible cells} -setup {
+    mkMap -grid-cell-command cellcmd
+} -body {
+    .m yview moveto 0.2
+    settle
+    lsort -dictionary $::log
+} -cleanup cleanMap -result {{3 0} {3 1} {3 2} {3 3} {3 4} {4 0} {4 1} {4 2} {4 3} {4 4}}
+
+test canvas::sqmap-3.10 {scrolling: tiles follow the view} -setup {
+    mkMap -grid-cell-command cellcmd
+} -body {
+    .m yview moveto 0.2
+    settle
+    set ys [lsort -unique -real [lmap t [tiles] {lindex $t 1}]]
+} -cleanup {
+    cleanMap
+    unset ys
+} -result {100.0 150.0 200.0}
+
+test canvas::sqmap-3.11 {flush reloads all cells} -setup {
+    mkMap -grid-cell-command cellcmd
+} -body {
+    .m flush
+    settle
+    llength $::log
+} -cleanup cleanMap -result 15
+
+test canvas::sqmap-3.12 {changing the cell size reloads} -setup {
+    mkMap -grid-cell-command cellcmd
+} -body {
+    .m configure -grid-cell-width 100 -grid-cell-height 100
+    settle
+    list [lsort -dictionary $::log] [tiles]
+} -cleanup cleanMap -result {{{0 0} {0 1} {0 2} {1 0} {1 1} {1 2}} {{0.0 0.0 sqTile1} {0.0 100.0 sqTile1} {100.0 0.0 sqTile1} {100.0 100.0 sqTile1} {200.0 0.0 sqTile1} {200.0 100.0 sqTile1}}}
+
+# -------------------------------------------------------------------------
+# image set / unset
+
+test canvas::sqmap-4.1 {image set: visible cell} -setup mkMap -body {
+    .m image set {1 2} sqTile1
+    tiles
+} -cleanup cleanMap -result {{100.0 50.0 sqTile1}}
+
+test canvas::sqmap-4.2 {image set: same image in several cells} -setup mkMap -body {
+    .m image set {0 0} sqTile1
+    .m image set {1 1} sqTile1
+    tiles
+} -cleanup cleanMap -result {{0.0 0.0 sqTile1} {50.0 50.0 sqTile1}}
+
+test canvas::sqmap-4.3 {image set: replace} -setup mkMap -body {
+    .m image set {0 0} sqTile1
+    .m image set {0 0} sqTile2
+    tiles
+} -cleanup cleanMap -result {{0.0 0.0 sqTile2}}
+
+test canvas::sqmap-4.4 {image set: invisible cell shown when scrolled into view} -setup mkMap -body {
+    .m image set {6 6} sqTile1
+    set r [tiles]
+    .m xview moveto 0.6
+    .m yview moveto 0.6
+    settle
+    lappend r {*}[tiles]
+} -cleanup {
+    cleanMap
+    unset r
+} -result {{300.0 300.0 sqTile1}}
+
+test canvas::sqmap-4.5 {image unset} -setup mkMap -body {
+    .m image set {0 0} sqTile1
+    .m image set {0 1} sqTile2
+    .m image unset {0 0}
+    tiles
+} -cleanup cleanMap -result {{50.0 0.0 sqTile2}}
+
+test canvas::sqmap-4.6 {image unset: empty cell} -setup mkMap -body {
+    .m image unset {0 0}
+    tiles
+} -cleanup cleanMap -result {}
+
+test canvas::sqmap-4.7 {image unset with -image-on-unset} -setup {
+    mkMap -image-on-unset sqNone
+} -body {
+    .m image set {0 0} sqTile1
+    .m image unset {0 0}
+    tiles
+} -cleanup cleanMap -result {{0.0 0.0 sqNone}}
+
+test canvas::sqmap-4.8 {image set: wrong # args} -setup mkMap -body {
+    .m image set {0 0}
+} -cleanup cleanMap -returnCodes error -match glob -result {wrong # args: should be "* set at image"}
+
+test canvas::sqmap-4.9 {flush without -grid-cell-command forgets images} -constraints {
+    knownBug
+} -setup mkMap -body {
+    .m image set {0 0} sqTile1
+    .m flush
+    settle
+    tiles
+} -cleanup cleanMap -result {}
+
+test canvas::sqmap-4.10 {images are not owned by the canvas} -setup mkMap -body {
+    .m image set {0 0} sqTile1
+    .m image unset {0 0}
+    .m image set {0 1} sqTile2
+    .m flush
+    destroy .m
+    settle
+    list [expr {"sqTile1" in [image names]}] [expr {"sqTile2" in [image names]}]
+} -cleanup cleanMap -result {1 1}
+
+# -------------------------------------------------------------------------
+# Stacking, viewport
+
+test canvas::sqmap-5.1 {tiles are behind other items} -setup {
+    mkMap -grid-cell-command cellcmd
+} -body {
+    set id [.m create rectangle 10 10 20 20]
+    .m create rectangle 30 30 40 40
+    set r [expr {[lindex [.m find all] end] ni [.m find withtag canvas::sqmap::cells]}]
+    .m lower $id
+    lappend r [expr {[lindex [.m find all] 0] in [.m find withtag canvas::sqmap::cells]}]
+    .m raise canvas::sqmap::cells
+    lappend r [expr {[lindex [.m find all] end] ni [.m find withtag canvas::sqmap::cells]}]
+} -cleanup {
+    cleanMap
+    unset id r
+} -result {1 1 1}
+
+test canvas::sqmap-5.2 {-viewport-command: reports the viewport} -setup mkMap -body {
+    .m configure -viewport-command logcb
+    set r $::log
+    set ::log {}
+    .m xview moveto 0.2
+    .m yview moveto 0.4
+    settle
+    list $r $::log
+} -cleanup {
+    cleanMap
+    unset r
+} -result {{{0.0 0.0 200.0 100.0}} {{100.0 0.0 300.0 100.0} {100.0 200.0 300.0 300.0}}}
+
+test canvas::sqmap-5.3 {-viewport-command: resize reports the viewport} -setup {
+    mkMap -viewport-command logcb
+} -body {
+    set ::log {}
+    .m configure -width 300
+    settle
+    lindex $::log end
+} -cleanup cleanMap -result {0.0 0.0 300.0 100.0}
+
+test canvas::sqmap-5.4 {xview/yview queries} -setup mkMap -body {
+    list [.m xview] [.m yview]
+} -cleanup cleanMap -result {{0.0 0.4} {0.0 0.2}}
+
+test canvas::sqmap-5.5 {scan mark/dragto} -setup {
+    mkMap -viewport-command logcb
+} -body {
+    set ::log {}
+    .m scan mark 100 100
+    .m scan dragto 90 80 1
+    settle
+    lindex $::log end
+} -cleanup cleanMap -result {10.0 20.0 210.0 120.0}
+
+# -------------------------------------------------------------------------
+
+image delete sqTile1 sqTile2 sqLoad sqNone
+interp bgerror {} $oldBgerror
+unset oldBgerror bgerrors
+foreach p {collectBgerror settle mkMap cleanMap tiles cellcmd logcb} {rename $p {}}
+
+::tcltest::cleanupTests
