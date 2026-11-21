@@ -1,0 +1,1112 @@
+# -*- tcl -*-
+# chatwidget.test --
+#
+#	Tests for the chatwidget package: widget creation, topic, name,
+#	message, hook, names, entry and chat subcommands, and the entry
+#	bindings (post, history, nick completion, chat state).
+#
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2
+    namespace import ::tcltest::*
+} else {
+    if {![package vsatisfies [package present tcltest] 2.2]} {
+	puts "    Aborting the tests found in \"[file tail [info script]]\"."
+	puts "    Requiring tcltest 2.2, have [package present tcltest]"
+	return
+    }
+}
+
+::tcltest::testConstraint tk 1
+
+lappend auto_path [file dirname [file dirname [file normalize [info script]]]]
+package require chatwidget
+
+# -------------------------------------------------------------------------
+# Helpers
+
+# The tklib test harness withdraws "."; the entry bindings need a
+# mapped window with the focus.
+set mainState [wm state .]
+wm deiconify .
+wm geometry . +0+0
+
+proc mkchat {{w .c} args} {
+    chatwidget::chatwidget $w {*}$args
+    pack $w
+    update
+    return $w
+}
+
+proc rmchat {{w .c}} {
+    destroy $w
+    # The widget command alias outlives the widget (see chatwidget-1.6).
+    catch {rename $w {}}
+    # Cancel pending chat state and nick completion timers.
+    foreach id [after info] {
+	if {[string match *chatwidget* [lindex [after info $id] 0]]} {
+	    after cancel $id
+	}
+    }
+    unset -nocomplain ::trace
+}
+
+proc record {args} {
+    lappend ::trace $args
+    return [lindex $args 0]
+}
+
+# Type into the entry and send a key.
+proc key {w keysym} {
+    set e [$w entry]
+    focus -force $e
+    update
+    event generate $e <Key-$keysym>
+}
+
+proc stamp {time} {
+    clock format $time -format {[%H:%M]}
+}
+
+# -------------------------------------------------------------------------
+# chatwidget::chatwidget
+
+test chatwidget-1.1 {chatwidget: wrong # args} -body {
+    chatwidget::chatwidget
+} -returnCodes error -result {wrong # args: should be "chatwidget::chatwidget w ?arg ...?"}
+
+test chatwidget-1.2 {chatwidget: returns the path, class Chatwidget} -body {
+    list [chatwidget::chatwidget .c] [winfo class .c] [winfo exists .c]
+} -cleanup {
+    rmchat
+} -result {.c Chatwidget 1}
+
+test chatwidget-1.3 {chatwidget: exported command} -body {
+    namespace eval chatwidget {namespace export}
+} -result chatwidget
+
+test chatwidget-1.4 {chatwidget: version} -body {
+    package present chatwidget
+} -result 1.1.4
+
+test chatwidget-1.5 {chatwidget: text widgets for chat, names and entry} -setup {
+    mkchat
+} -body {
+    list [winfo class [.c chat]] [winfo class [.c names]] [winfo class [.c entry]] \
+	[string match .c.* [.c chat]] [string match .c.* [.c names]] \
+	[string match .c.* [.c entry]]
+} -cleanup {
+    rmchat
+} -result {Text Text Text 1 1 1}
+
+test chatwidget-1.6 {chatwidget: widget command deleted with the widget} -constraints {
+    knownBug
+} -body {
+    # The interp alias for the widget command is not removed when the
+    # widget is destroyed.
+    mkchat
+    destroy .c
+    info commands .c
+} -cleanup {
+    rmchat
+} -result {}
+
+test chatwidget-1.7 {chatwidget: recreate after destroy} -body {
+    mkchat
+    .c message hello -nick a
+    destroy .c
+    mkchat
+    list [winfo class .c] [.c chat get 1.0 end-1c] [.c name list]
+} -cleanup {
+    rmchat
+} -result {Chatwidget {} {}}
+
+test chatwidget-1.8 {chatwidget: options go to the chat text widget} -constraints {
+    knownBug
+} -body {
+    # The options are documented to be passed to the chat text
+    # widget, but they are ignored.
+    mkchat .c -background red -width 33
+    list [.c chat cget -background] [.c chat cget -width]
+} -cleanup {
+    rmchat
+} -result {red 33}
+
+test chatwidget-1.9 {chatwidget: two independent widgets} -body {
+    mkchat .c
+    mkchat .d
+    .c name add alice
+    .d message hello -nick bob
+    list [.c name list] [.d name list] [.c chat get 1.0 end-1c] \
+	[expr {[.d chat get 1.0 end-1c] ne ""}]
+} -cleanup {
+    rmchat .c
+    rmchat .d
+} -result {alice {} {} 1}
+
+test chatwidget-1.10 {chatwidget: chat text is read-only, entry is editable} -setup {
+    mkchat
+} -body {
+    list [.c chat cget -state] [.c entry cget -state] [.c names cget -state]
+} -cleanup {
+    rmchat
+} -result {disabled normal disabled}
+
+# -------------------------------------------------------------------------
+# topic
+
+test chatwidget-2.1 {topic: wrong # args} -setup {
+    mkchat
+} -body {
+    .c topic
+} -cleanup {
+    rmchat
+} -returnCodes error -result {wrong # args: should be "::chatwidget::Topic self cmd ?arg ...?"}
+
+test chatwidget-2.2 {topic: bad subcommand} -setup {
+    mkchat
+} -body {
+    .c topic foo
+} -cleanup {
+    rmchat
+} -returnCodes error -result {bad option "foo": must be show, hide or set}
+
+test chatwidget-2.3 {topic: hidden by default} -setup {
+    mkchat
+} -body {
+    winfo manager .c.topic
+} -cleanup {
+    rmchat
+} -result {}
+
+test chatwidget-2.4 {topic: show and hide} -setup {
+    mkchat
+} -body {
+    .c topic show
+    update
+    set res [list [winfo manager .c.topic] [winfo ismapped .c.topic]]
+    .c topic hide
+    update
+    lappend res [winfo manager .c.topic] [winfo ismapped .c.topic]
+} -cleanup {
+    rmchat
+    unset -nocomplain res
+} -result {grid 1 {} 0}
+
+test chatwidget-2.5 {topic: show is above the chat} -setup {
+    mkchat
+} -body {
+    .c topic show
+    update
+    expr {[winfo rooty .c.topic] < [winfo rooty [.c chat]]}
+} -cleanup {
+    rmchat
+} -result 1
+
+test chatwidget-2.6 {topic: set} -setup {
+    mkchat
+} -body {
+    .c topic set "Chat widget demo"
+    .c topic set "Second topic"
+    list [.c.topic.text get 1.0 end-1c] [.c.topic.text cget -state]
+} -cleanup {
+    rmchat
+} -result {{Second topic} disabled}
+
+test chatwidget-2.7 {topic: set while shown} -setup {
+    mkchat
+    .c topic show
+    update
+} -body {
+    .c topic set "Topic"
+    update
+    .c.topic.text get 1.0 end-1c
+} -cleanup {
+    rmchat
+} -result Topic
+
+test chatwidget-2.8 {topic: set without a topic clears it} -setup {
+    mkchat
+} -body {
+    .c topic set foo
+    .c topic set
+    .c.topic.text get 1.0 end-1c
+} -cleanup {
+    rmchat
+} -result {}
+
+test chatwidget-2.9 {topic: long topic gets two lines and a scrollbar} -setup {
+    mkchat
+} -body {
+    .c topic set [string repeat "long topic text " 100]
+    .c topic show
+    update
+    list [.c.topic.text cget -height] [winfo exists .c.topic.vs]
+} -cleanup {
+    rmchat
+} -result {2 1}
+
+test chatwidget-2.10 {topic: short topic gets one line} -setup {
+    mkchat
+} -body {
+    .c topic set short
+    .c topic show
+    update
+    list [.c.topic.text cget -height] [winfo exists .c.topic.vs]
+} -cleanup {
+    rmchat
+} -result {1 0}
+
+# -------------------------------------------------------------------------
+# name
+
+test chatwidget-3.1 {name: wrong # args} -setup {
+    mkchat
+} -body {
+    .c name
+} -cleanup {
+    rmchat
+} -returnCodes error -result {wrong # args: should be "::chatwidget::Name self cmd ?arg ...?"}
+
+test chatwidget-3.2 {name: bad subcommand} -setup {
+    mkchat
+} -body {
+    .c name foo
+} -cleanup {
+    rmchat
+} -returnCodes error -result {bad name option "foo": must be list, names, add or delete}
+
+test chatwidget-3.3 {name list: empty} -setup {
+    mkchat
+} -body {
+    list [.c name list] [.c name list -full]
+} -cleanup {
+    rmchat
+} -result {{} {}}
+
+test chatwidget-3.4 {name add: wrong # args} -setup {
+    mkchat
+} -body {
+    .c name add
+} -cleanup {
+    rmchat
+} -returnCodes error -result {wrong # args: should be "add nick ?-group group ...?"}
+
+test chatwidget-3.5 {name add: odd option list} -setup {
+    mkchat
+} -body {
+    .c name add alice -group
+} -cleanup {
+    rmchat
+} -returnCodes error -result {wrong # args: should be "add nick ?-group group ...?"}
+
+test chatwidget-3.6 {name add, list: in order of addition} -setup {
+    mkchat
+} -body {
+    .c name add bob
+    .c name add alice -group admin
+    .c name add carol -group users -color tomato
+    .c name list
+} -cleanup {
+    rmchat
+} -result {bob alice carol}
+
+test chatwidget-3.7 {name list -full: nick followed by its options} -setup {
+    mkchat
+} -body {
+    .c name add alice -group admin -color red -role op
+    set res {}
+    foreach item [.c name list -full] {
+	lappend res [lindex $item 0] [dict get [lrange $item 1 end] -group] \
+	    [dict get [lrange $item 1 end] -color] [dict get [lrange $item 1 end] -role]
+    }
+    set res
+} -cleanup {
+    rmchat
+    unset -nocomplain res item
+} -result {alice admin red op}
+
+test chatwidget-3.8 {name add: default group and color} -setup {
+    mkchat
+} -body {
+    .c name add alice
+    set d [lrange [lindex [.c name list -full] 0] 1 end]
+    list [dict get $d -group] [expr {[dict get $d -color] eq [.c chat cget -foreground]}]
+} -cleanup {
+    rmchat
+    unset -nocomplain d
+} -result {{} 1}
+
+test chatwidget-3.9 {name add: existing nick updates its options} -setup {
+    mkchat
+} -body {
+    .c name add alice -group admin -color red
+    .c name add bob
+    .c name add alice -color blue
+    set d [lrange [lindex [.c name list -full] 0] 1 end]
+    list [.c name list] [dict get $d -group] [dict get $d -color]
+} -cleanup {
+    rmchat
+    unset -nocomplain d
+} -result {{alice bob} admin blue}
+
+test chatwidget-3.10 {name delete} -setup {
+    mkchat
+} -body {
+    .c name add alice
+    .c name add bob
+    .c name add carol
+    .c name delete bob
+    .c name list
+} -cleanup {
+    rmchat
+} -result {alice carol}
+
+test chatwidget-3.11 {name delete: unknown nick is ignored} -setup {
+    mkchat
+} -body {
+    .c name add alice
+    list [.c name delete bob] [.c name list]
+} -cleanup {
+    rmchat
+} -result {{} alice}
+
+test chatwidget-3.12 {name delete: wrong # args} -setup {
+    mkchat
+} -body {
+    .c name delete
+} -cleanup {
+    rmchat
+} -returnCodes error -result {wrong # args: should be "delete nick"}
+
+test chatwidget-3.13 {name delete: last name} -setup {
+    mkchat
+} -body {
+    .c name add alice
+    .c name delete alice
+    update
+    list [.c name list] [.c names get 1.0 end-1c]
+} -cleanup {
+    rmchat
+} -result {{} {0 nicks
+}}
+
+test chatwidget-3.14 {name get} -setup {
+    mkchat
+} -body {
+    .c name add alice -group admin
+    list [.c name get alice -group] [.c name get alice -nosuch] [.c name get bob] \
+	[lindex [.c name get alice] 0]
+} -cleanup {
+    rmchat
+} -result {admin {} {} alice}
+
+test chatwidget-3.15 {name: names view grouped and sorted} -setup {
+    mkchat
+} -body {
+    .c name add zed -group users
+    .c name add bob
+    .c name add Alice -group admin
+    .c name add carol -group users
+    .c name add alice -group admin
+    update
+    .c names get 1.0 end-1c
+} -cleanup {
+    rmchat
+} -result {
+bob
+admin
+Alice
+alice
+users
+carol
+zed
+5 nicks
+}
+
+test chatwidget-3.16 {name: names view tags and colors} -setup {
+    mkchat
+} -body {
+    .c name add alice -group admin -color red
+    update
+    set n [.c names]
+    list [lsort [$n tag names 2.0]] [$n tag cget NICK-alice -foreground] \
+	[.c chat tag cget NICK-alice -foreground] [lsort [$n tag names 1.0]]
+} -cleanup {
+    rmchat
+    unset -nocomplain n
+} -result {{GROUP-admin NICK NICK-alice} red red {GROUP-admin SUBTITLE}}
+
+test chatwidget-3.17 {name: names view updated at idle time} -setup {
+    mkchat
+} -body {
+    .c name add alice
+    set before [.c names get 1.0 end-1c]
+    update idletasks
+    list $before [.c names get 1.0 end-1c]
+} -cleanup {
+    rmchat
+    unset -nocomplain before
+} -result {{} {
+alice
+1 nicks
+}}
+
+test chatwidget-3.18 {name: names with spaces and special characters} -setup {
+    mkchat
+} -body {
+    .c name add {a b} -group {x y}
+    .c name add {[c]}
+    update
+    list [.c name list] [.c name get {a b} -group]
+} -cleanup {
+    rmchat
+} -result {{{a b} {[c]}} {x y}}
+
+# -------------------------------------------------------------------------
+# message
+
+test chatwidget-4.1 {message: wrong # args} -setup {
+    mkchat
+} -body {
+    .c message
+} -cleanup {
+    rmchat
+} -returnCodes error -result {wrong # args: should be "::chatwidget::Message self text ?arg ...?"}
+
+test chatwidget-4.2 {message: unknown option} -setup {
+    mkchat
+} -body {
+    .c message hello -foo bar
+} -cleanup {
+    rmchat
+} -returnCodes error -result {unknown option "-foo"}
+
+test chatwidget-4.3 {message: normal message} -setup {
+    mkchat
+} -body {
+    list [.c message "Hello, user" -nick admin -time 0] [.c chat get 1.0 end-1c]
+} -cleanup {
+    rmchat
+} -result [list {} "[stamp 0]\tadmin\tHello, user\n"]
+
+test chatwidget-4.4 {message: defaults} -setup {
+    mkchat
+} -body {
+    set t0 [clock seconds]
+    .c message hello
+    set t1 [clock seconds]
+    expr {[.c chat get 1.0 end-1c] in [list "[stamp $t0]\tUnknown\thello\n" \
+					   "[stamp $t1]\tUnknown\thello\n"]}
+} -cleanup {
+    rmchat
+    unset -nocomplain t0 t1
+} -result 1
+
+test chatwidget-4.5 {message: system message has no nick} -setup {
+    mkchat
+} -body {
+    .c message "Chatwidget ready" -type system -time 0 -nick admin
+    list [.c chat get 1.0 end-1c] [lsort [.c chat tag names 1.10]]
+} -cleanup {
+    rmchat
+} -result [list "[stamp 0]\tChatwidget ready\n" {TYPE-system}]
+
+test chatwidget-4.6 {message: action message} -setup {
+    mkchat
+} -body {
+    .c message "waves" -type action -nick bob -time 0
+    .c chat get 1.0 end-1c
+} -cleanup {
+    rmchat
+} -result "[stamp 0]\t   * bob waves\n"
+
+test chatwidget-4.7 {message: tags of the parts} -setup {
+    mkchat
+} -body {
+    .c message "hi" -nick bob -time 0 -tags {MINE}
+    set c [.c chat]
+    list [lsort [$c tag names 1.0]] [lsort [$c tag names 1.8]] \
+	[lsort [$c tag names "1.0 lineend - 1c"]]
+} -cleanup {
+    rmchat
+    unset -nocomplain c
+} -result {{BOOKMARK MINE NICK-bob STAMP TYPE-normal} {BOOKMARK MINE NICK NICK-bob TYPE-normal} {MINE MSG NICK-bob TYPE-normal}}
+
+test chatwidget-4.8 {message: action tags} -setup {
+    mkchat
+} -body {
+    .c message "waves" -type action -nick bob -time 0
+    lsort [.c chat tag names "1.0 lineend - 1c"]
+} -cleanup {
+    rmchat
+} -result {ACTION MSG NICK-bob TYPE-action}
+
+test chatwidget-4.9 {message: messages are appended} -setup {
+    mkchat
+} -body {
+    .c message one -nick a -time 0
+    .c message two -nick b -time 0
+    .c chat get 1.0 end-1c
+} -cleanup {
+    rmchat
+} -result "[stamp 0]\ta\tone\n[stamp 0]\tb\ttwo\n"
+
+test chatwidget-4.10 {message: -mark inserts at a mark} -setup {
+    mkchat
+} -body {
+    .c message one -nick a -time 0
+    .c chat mark set here 1.0
+    .c message two -nick b -time 0 -mark here
+    .c chat get 1.0 end-1c
+} -cleanup {
+    rmchat
+} -result "[stamp 0]\tb\ttwo\n[stamp 0]\ta\tone\n"
+
+test chatwidget-4.11 {message: URLs are tagged} -setup {
+    mkchat
+} -body {
+    .c message "see http://example.com/a and https://example.org now" -nick a -time 0
+    set c [.c chat]
+    set res {}
+    foreach {s e} [$c tag ranges URL] {
+	lappend res [$c get $s $e]
+    }
+    foreach t [lsort [lsearch -all -inline [$c tag names] URL-*]] {
+	lappend res [$c get {*}[$c tag ranges $t]]
+    }
+    lappend res [$c tag cget URL -underline]
+} -cleanup {
+    rmchat
+    unset -nocomplain c res s e t
+} -result {http://example.com/a https://example.org http://example.com/a https://example.org 1}
+
+test chatwidget-4.12 {message: text with Tcl special characters} -setup {
+    mkchat
+} -body {
+    .c message {[exit] $x \{ "} -nick {a b} -time 0
+    .c chat get 1.0 end-1c
+} -cleanup {
+    rmchat
+} -result "[stamp 0]\ta b\t\[exit\] \$x \\\{ \"\n"
+
+test chatwidget-4.13 {message: nick color applies to messages} -setup {
+    mkchat
+} -body {
+    .c name add bob -color tomato
+    update
+    .c message hi -nick bob -time 0
+    .c chat tag cget NICK-bob -foreground
+} -cleanup {
+    rmchat
+} -result tomato
+
+test chatwidget-4.14 {message: chat widget stays read-only} -setup {
+    mkchat
+} -body {
+    .c message hi -nick bob
+    .c chat cget -state
+} -cleanup {
+    rmchat
+} -result disabled
+
+test chatwidget-4.15 {message: autoscroll to the new message} -setup {
+    mkchat
+} -body {
+    for {set i 0} {$i < 100} {incr i} {
+	.c message "line $i" -nick a -time 0
+    }
+    update
+    lindex [.c chat yview] 1
+} -cleanup {
+    rmchat
+    unset -nocomplain i
+} -result 1.0
+
+# -------------------------------------------------------------------------
+# hook
+
+test chatwidget-5.1 {hook: wrong # args} -setup {
+    mkchat
+} -body {
+    .c hook add
+} -cleanup {
+    rmchat
+} -returnCodes error -result {wrong # args: should be "$widget hook add|remove|list hook_type ?script? ?priority?"}
+
+test chatwidget-5.2 {hook: unknown hook type} -setup {
+    mkchat
+} -body {
+    .c hook add foo bar
+} -cleanup {
+    rmchat
+} -returnCodes error -result {unknown hook type "foo": must be one of message,post,names_group,names_nick,chatstate,url}
+
+test chatwidget-5.3 {hook: unknown action} -setup {
+    mkchat
+} -body {
+    .c hook foo post
+} -cleanup {
+    rmchat
+} -returnCodes error -result {unknown hook action "foo": must be add, remove, list or run}
+
+test chatwidget-5.4 {hook add: wrong # args} -setup {
+    mkchat
+} -body {
+    .c hook add post a 10 extra
+} -cleanup {
+    rmchat
+} -returnCodes error -result {wrong # args: should be "add hook cmd ?priority?"}
+
+test chatwidget-5.5 {hook remove: wrong # args} -setup {
+    mkchat
+} -body {
+    .c hook remove post
+} -cleanup {
+    rmchat
+} -returnCodes error -result {wrong # args: should be "remove hook cmd"}
+
+test chatwidget-5.6 {hook list: none} -setup {
+    mkchat
+} -body {
+    .c hook list post
+} -cleanup {
+    rmchat
+} -result {}
+
+test chatwidget-5.7 {hook add, list: sorted by priority, default 50} -setup {
+    mkchat
+} -body {
+    .c hook add post {record a}
+    .c hook add post {record b} 10
+    .c hook add post {record c} 90
+    .c hook list post
+} -cleanup {
+    rmchat
+} -result {{{record b} 10} {{record a} 50} {{record c} 90}}
+
+test chatwidget-5.8 {hook add: the same hook twice is kept once} -setup {
+    mkchat
+} -body {
+    .c hook add post {record a}
+    .c hook add post {record a}
+    .c hook list post
+} -cleanup {
+    rmchat
+} -result {{{record a} 50}}
+
+test chatwidget-5.9 {hook run: in priority order, returns the results} -setup {
+    mkchat
+    set ::trace {}
+} -body {
+    .c hook add post {record a}
+    .c hook add post {record b} 10
+    list [.c hook run post x y] $::trace
+} -cleanup {
+    rmchat
+} -result {{b a} {{b x y} {a x y}}}
+
+test chatwidget-5.10 {hook run: without hooks} -setup {
+    mkchat
+} -body {
+    .c hook run post x
+} -cleanup {
+    rmchat
+} -result {}
+
+test chatwidget-5.11 {hook remove: returns the remaining hooks} -setup {
+    mkchat
+} -body {
+    .c hook add post {record a}
+    .c hook add post {record b} 10
+    list [.c hook remove post {record a}] [.c hook list post]
+} -cleanup {
+    rmchat
+} -result {{{{record b} 10}} {{{record b} 10}}}
+
+test chatwidget-5.12 {hook remove: unknown hook} -setup {
+    mkchat
+} -body {
+    list [.c hook remove post foo] [.c hook add post bar] [.c hook remove post foo]
+} -cleanup {
+    rmchat
+} -result {{} {{bar 50}} {{bar 50}}}
+
+test chatwidget-5.13 {hook run: error goes to bgerror and stops} -setup {
+    mkchat
+    set ::trace {}
+    proc bgerror {msg} {lappend ::trace $msg}
+} -body {
+    .c hook add post {error oops} 10
+    .c hook add post {record a}
+    list [.c hook run post x] $::trace
+} -cleanup {
+    rmchat
+    rename bgerror {}
+} -result {{} {{error running "post" hook: oops}}}
+
+test chatwidget-5.14 {hook message: called for each message with its options} -setup {
+    mkchat
+    set ::trace {}
+} -body {
+    .c hook add message record
+    .c message hello -nick bob -time 0 -type action -tags T
+    set ::trace
+} -cleanup {
+    rmchat
+} -result {{hello -mark end -type action -nick bob -time 0 -tags T}}
+
+test chatwidget-5.15 {hook names_group, names_nick: called on names update} -setup {
+    mkchat
+    set ::trace {}
+} -body {
+    .c hook add names_group {record group}
+    .c hook add names_nick {record nick}
+    .c name add bob -group users -color red
+    .c name add alice -group admin
+    update
+    set res {}
+    foreach item $::trace {
+	if {[lindex $item 0] eq "nick"} {
+	    set d [lrange $item 2 end]
+	    lappend res [list nick [lindex $item 1] [dict get $d -group]]
+	} else {
+	    lappend res $item
+	}
+    }
+    set res
+} -cleanup {
+    rmchat
+    unset -nocomplain res item d
+} -result {{group admin} {nick alice admin} {group users} {nick bob users}}
+
+test chatwidget-5.16 {hook: hooks are per widget} -setup {
+    mkchat .c
+    mkchat .d
+} -body {
+    .c hook add post a
+    list [.c hook list post] [.d hook list post]
+} -cleanup {
+    rmchat .c
+    rmchat .d
+} -result {{{a 50}} {}}
+
+# -------------------------------------------------------------------------
+# names, entry, chat passthrough
+
+test chatwidget-6.1 {names: without args returns the text widget} -setup {
+    mkchat
+} -body {
+    winfo class [.c names]
+} -cleanup {
+    rmchat
+} -result Text
+
+test chatwidget-6.2 {names: passthrough} -setup {
+    mkchat
+} -body {
+    .c names configure -width 20
+    list [.c names cget -width] [[.c names] cget -width]
+} -cleanup {
+    rmchat
+} -result {20 20}
+
+test chatwidget-6.3 {names: hide and show} -setup {
+    mkchat
+} -body {
+    set f [winfo parent [.c names]]
+    set p [winfo parent $f]
+    set res [list [expr {$f in [$p panes]}]]
+    lappend res [.c names hide] [expr {$f in [$p panes]}]
+    .c names hide
+    lappend res [expr {$f in [$p panes]}]
+    lappend res [.c names show] [expr {$f in [$p panes]}]
+    .c names show
+    lappend res [llength [$p panes]]
+} -cleanup {
+    rmchat
+    unset -nocomplain f p res
+} -result {1 {} 0 0 {} 1 2}
+
+test chatwidget-6.4 {names: hidden names view is not mapped} -setup {
+    mkchat
+} -body {
+    .c names hide
+    update
+    set res [winfo ismapped [.c names]]
+    .c names show
+    update
+    lappend res [winfo ismapped [.c names]]
+} -cleanup {
+    rmchat
+    unset -nocomplain res
+} -result {0 1}
+
+test chatwidget-6.5 {entry: passthrough} -setup {
+    mkchat
+} -body {
+    .c entry insert end "some text"
+    list [.c entry get 1.0 end-1c] [[.c entry] get 1.0 end-1c]
+} -cleanup {
+    rmchat
+} -result {{some text} {some text}}
+
+test chatwidget-6.6 {entry: text} -setup {
+    mkchat
+} -body {
+    .c entry insert end "line1\nline2"
+    .c entry text
+} -cleanup {
+    rmchat
+} -result "line1\nline2"
+
+test chatwidget-6.7 {chat: passthrough} -setup {
+    mkchat
+} -body {
+    .c message hi -nick a -time 0
+    list [.c chat index end] [[.c chat] index end]
+} -cleanup {
+    rmchat
+} -result {3.0 3.0}
+
+test chatwidget-6.8 {chat: errors of the text widget} -setup {
+    mkchat
+} -body {
+    .c chat foo
+} -cleanup {
+    rmchat
+} -returnCodes error -match glob -result {bad option "foo": must be *}
+
+test chatwidget-6.9 {peer: a peer of the chat widget} -setup {
+    mkchat
+} -body {
+    .c message hi -nick a -time 0
+    list [winfo class [.c peer]] [expr {[.c peer get 1.0 end] eq [.c chat get 1.0 end]}]
+} -cleanup {
+    rmchat
+} -result {Text 1}
+
+# -------------------------------------------------------------------------
+# Entry bindings
+
+test chatwidget-7.1 {Return posts the entry text to the post hook} -setup {
+    mkchat
+    set ::trace {}
+} -body {
+    .c hook add post record
+    .c entry insert end "Hello"
+    key .c Return
+    list $::trace [.c entry text] [.c cget -history]
+} -cleanup {
+    rmchat
+} -result {Hello {} Hello}
+
+test chatwidget-7.2 {Return: example from the manual} -setup {
+    mkchat
+    proc speak {w msg} {$w message $msg -nick user -time 0}
+} -body {
+    .c hook add post [list speak .c]
+    .c entry insert end "Hello, admin"
+    key .c Return
+    .c chat get 1.0 end-1c
+} -cleanup {
+    rmchat
+    rename speak {}
+} -result "[stamp 0]\tuser\tHello, admin\n"
+
+test chatwidget-7.3 {Return: empty entry is not posted} -setup {
+    mkchat
+    set ::trace {}
+} -body {
+    .c hook add post record
+    key .c Return
+    list $::trace [.c cget -history]
+} -cleanup {
+    rmchat
+} -result {{} {}}
+
+test chatwidget-7.4 {Return: no newline is inserted} -setup {
+    mkchat
+} -body {
+    .c entry insert end "Hello"
+    key .c Return
+    .c entry get 1.0 end
+} -cleanup {
+    rmchat
+} -result "\n"
+
+test chatwidget-7.5 {KP_Enter also posts} -setup {
+    mkchat
+    set ::trace {}
+} -body {
+    .c hook add post record
+    .c entry insert end "Hello"
+    key .c KP_Enter
+    set ::trace
+} -cleanup {
+    rmchat
+} -result Hello
+
+test chatwidget-7.6 {Up and Down walk the history} -setup {
+    mkchat
+} -body {
+    foreach msg {one two three} {
+	.c entry insert end $msg
+	key .c Return
+    }
+    .c entry insert end draft
+    set res {}
+    foreach k {Up Up Up Up Down Down Down Down} {
+	key .c $k
+	lappend res [.c entry text]
+    }
+    set res
+} -cleanup {
+    rmchat
+    unset -nocomplain res msg k
+} -result {three two one one two three draft draft}
+
+test chatwidget-7.7 {history is limited} -setup {
+    mkchat
+} -body {
+    for {set i 0} {$i < 60} {incr i} {
+	.c entry insert end $i
+	key .c Return
+    }
+    set h [.c cget -history]
+    list [llength $h] [lindex $h end]
+} -cleanup {
+    rmchat
+    unset -nocomplain i h
+} -result {51 59}
+
+test chatwidget-7.8 {Tab completes a nick} -setup {
+    mkchat
+} -body {
+    .c name add alice
+    .c name add bob
+    .c entry insert end "hi bo"
+    key .c Tab
+    .c entry text
+} -cleanup {
+    rmchat
+} -result {hi bob }
+
+test chatwidget-7.9 {Tab without matching nick} -setup {
+    mkchat
+    set ::trace {}
+} -body {
+    .c name add alice
+    .c entry insert end "hi zz"
+    key .c Tab
+    .c entry text
+} -cleanup {
+    rmchat
+} -result {hi zz}
+
+test chatwidget-7.10 {Tab cycles through ambiguous nicks} -constraints {
+    knownBug
+} -setup {
+    mkchat
+} -body {
+    # The second Tab leaves a leading space, the third one inserts an
+    # empty nick instead of wrapping around to the first match.
+    .c name add alice
+    .c name add alfred
+    .c entry insert end "al"
+    set res {}
+    foreach i {1 2 3} {
+	key .c Tab
+	lappend res [.c entry text]
+    }
+    set res
+} -cleanup {
+    rmchat
+    unset -nocomplain res i
+} -result {{alice } {alfred } {alice }}
+
+test chatwidget-7.11 {Tab with ambiguous nicks completes the first match} -setup {
+    mkchat
+} -body {
+    .c name add alice
+    .c name add alfred
+    .c entry insert end "al"
+    key .c Tab
+    .c entry text
+} -cleanup {
+    rmchat
+} -result {alice }
+
+test chatwidget-7.12 {typing sets the chat state to composing} -setup {
+    mkchat
+    set ::trace {}
+} -body {
+    .c hook add chatstate record
+    bind .c <<ChatwidgetChatstate>> {lappend ::trace event}
+    set res [.c cget -chatstate]
+    key .c a
+    lappend res [.c cget -chatstate] $::trace
+} -cleanup {
+    rmchat
+    unset -nocomplain res
+} -result {active composing {composing event}}
+
+test chatwidget-7.13 {configure -chatstate and -history} -setup {
+    mkchat
+} -constraints knownBug -body {
+    # Configure has "else" on a separate line after "if", so both
+    # setting and querying these options fail with 'invalid command
+    # name "else"'.
+    .c configure -chatstate paused
+    .c configure -history {a b}
+    list [.c cget -chatstate] [.c configure -chatstate] [.c cget -history] \
+	[.c configure -history]
+} -cleanup {
+    rmchat
+} -result {paused paused {a b} {a b}}
+
+test chatwidget-7.14 {configure -font changes the chatwidget fonts} -setup {
+    mkchat
+    set saved [font configure ChatwidgetFont]
+} -body {
+    .c configure -font {Courier 15}
+    list [font actual ChatwidgetFont -size] [font actual ChatwidgetBoldFont -size] \
+	[font configure ChatwidgetBoldFont -weight] [.c configure -font]
+} -cleanup {
+    rmchat
+    font configure ChatwidgetFont {*}$saved
+    font configure ChatwidgetBoldFont {*}$saved -weight bold
+    font configure ChatwidgetItalicFont {*}$saved -slant italic
+    unset -nocomplain saved
+} -result {15 15 bold ChatwidgetFont}
+
+test chatwidget-7.15 {destroy removes the widget state} -body {
+    mkchat
+    destroy .c
+    info exists ::chatwidget::.c
+} -cleanup {
+    rmchat
+} -result 0
+
+# -------------------------------------------------------------------------
+
+rename mkchat {}
+rename rmchat {}
+rename record {}
+rename key {}
+rename stamp {}
+wm state . $mainState
+unset mainState
+
+::tcltest::cleanupTests
