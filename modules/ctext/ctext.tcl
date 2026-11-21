@@ -668,7 +668,9 @@ proc ctext::comments {win {afterTriggered 0}} {
     set isComment 0
     $win tag remove _cComment 1.0 end
     while 1 {
-	set index [$win search -count length -regexp $commentRE $startIndex end]
+	# Search in the text widget itself: the widget command of ctext may
+	# be wrapped, and then -count would set the variable in the wrapper.
+	set index [$win._t search -count length -regexp $commentRE $startIndex end]
 
 	if {$index == ""} {
 	    break

@@ -1,0 +1,63 @@
+# -*- tcl -*-
+# Test cases of the ctext package
+
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+package require tcltest 2.2
+namespace import ::tcltest::*
+
+source [file join [file dirname [info script]] ctext.tcl]
+
+# -------------------------------------------------------------------------
+
+proc commentRanges {w} {
+    update
+    # The comment highlighting runs from an idle callback.
+    $w._t tag ranges _cComment
+}
+
+test ctext-comments-1.1 {C comments are highlighted} -setup {
+    ctext .t
+    ctext::enableComments .t
+} -body {
+    .t insert end "int x; /* a comment */ char *s = \"/* no comment */\";\n"
+    commentRanges .t
+} -cleanup {
+    destroy .t
+} -result {1.7 1.22}
+
+test ctext-comments-1.2 {C comments with a wrapped widget command - bug f4b9393051} -setup {
+    ctext .t
+    ctext::enableComments .t
+    # A wrapper which calls the widget command without uplevel, as some
+    # megawidgets do.
+    rename .t .t_inner
+    proc .t args {.t_inner {*}$args}
+    set ::errors {}
+    proc bgerror {msg} {lappend ::errors $msg}
+} -body {
+    .t insert end "int x; /* a comment */ char *s = \"/* no comment */\";\n"
+    list [commentRanges .t] $::errors
+} -cleanup {
+    destroy .t
+    # ctext deletes the command .t (the wrapper) when it is destroyed.
+    catch {rename .t {}}
+    catch {rename .t_inner {}}
+    rename bgerror {}
+    unset ::errors
+} -result {{1.7 1.22} {}}
+
+rename commentRanges {}
+
+# -------------------------------------------------------------------------
+::tcltest::cleanupTests
