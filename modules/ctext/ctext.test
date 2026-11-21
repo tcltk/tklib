@@ -1,0 +1,1263 @@
+# -*- tcl -*-
+# Tests for the ctext package
+#
+# Copyright (c) 2026 Serhiy Storchaka
+#
+# See the file "license.terms" for information on usage and redistribution
+# of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+package require tcltest 2.2
+namespace import ::tcltest::*
+
+source [file join [file dirname [file normalize [info script]]] ctext.tcl]
+
+# -------------------------------------------------------------------------
+# Helpers
+
+proc mkctext {args} {
+    eval [list ctext .t] $args
+    pack .t -fill both -expand 1
+    update
+    return .t
+}
+
+proc ranges {w tag} {
+    update idletasks
+    $w tag ranges $tag
+}
+
+# Destroy ctext widgets and delete their data left behind.
+proc cleanCtext {args} {
+    foreach w $args {
+        destroy $w
+        foreach v [info vars ::__ctext$w*] {
+            unset $v
+        }
+    }
+}
+
+proc countEvent {args} {
+    incr ::events
+}
+
+# Wait for the condition, at most about 2 seconds.
+proc waitFor {cond} {
+    for {set i 0} {$i < 200} {incr i} {
+        if {[uplevel #0 [list expr $cond]]} {return 1}
+        after 10
+        update
+    }
+    return 0
+}
+
+proc collectBgerror {msg opts} {
+    lappend ::bgerrors $msg
+}
+
+proc markCmd {args} {
+    lappend ::marks $args
+}
+
+# -------------------------------------------------------------------------
+# Creation
+
+test ctext-1.1 {ctext: wrong # args} -body {
+    ctext
+} -returnCodes error -result {wrong # args: should be "ctext win ?arg ...?"}
+
+test ctext-1.2 {ctext: odd number of options} -body {
+    ctext .t -bg
+} -returnCodes error -result {invalid number of arguments given to ctext (uneven number after window) : -bg}
+
+test ctext-1.3 {ctext: returns the path name} -body {
+    ctext .t
+} -cleanup {
+    cleanCtext .t
+} -result .t
+
+test ctext-1.4 {ctext: class and components} -body {
+    ctext .t
+    list [winfo class .t] [winfo class .t.l] [winfo class .t.t]
+} -cleanup {
+    cleanCtext .t
+} -result {Ctext Text Text}
+
+test ctext-1.5 {ctext: text options are accepted} -body {
+    ctext .t -width 30 -height 7 -wrap none -bg white -fg black
+    list [.t cget -width] [.t cget -height] [.t cget -wrap] \
+        [.t cget -bg] [.t cget -fg]
+} -cleanup {
+    cleanCtext .t
+} -result {30 7 none white black}
+
+test ctext-1.6 {ctext: -foreground and -background} -body {
+    ctext .t -background white -foreground black
+    list [.t cget -background] [.t cget -foreground]
+} -cleanup {
+    cleanCtext .t
+} -result {white black}
+
+test ctext-1.7 {ctext: bad text option} -body {
+    ctext .t -nosuchoption 1
+} -cleanup {
+    cleanCtext .t
+} -returnCodes error -result {unknown option "-nosuchoption"}
+
+test ctext-1.8 {ctext: default ctext options} -body {
+    ctext .t
+    list [.t cget -linemap] [.t cget -highlight] [.t cget -linemap_markable] \
+        [.t cget -linemap_select_fg] [.t cget -linemap_select_bg] \
+        [.t cget -linemap_mark_command] [.t cget -yscrollcommand]
+} -cleanup {
+    cleanCtext .t
+} -result {1 1 1 black yellow {} {}}
+
+test ctext-1.9 {ctext: linemap colors default to the text colors} -body {
+    ctext .t
+    list [expr {[.t cget -linemapfg] eq [.t cget -fg]}] \
+        [expr {[.t cget -linemapbg] eq [.t cget -bg]}] \
+        [expr {[.t.l cget -fg] eq [.t cget -fg]}] \
+        [expr {[.t.l cget -bg] eq [.t cget -bg]}]
+} -cleanup {
+    cleanCtext .t
+} -result {1 1 1 1}
+
+test ctext-1.9.1 {ctext: linemap colors default to the text colors} -constraints {
+    knownBug
+} -body {
+    # The defaults are taken from a plain text widget, ignoring
+    # the -fg and -bg options given to ctext.
+    ctext .t -foreground red -background white
+    list [.t cget -linemapfg] [.t cget -linemapbg] \
+        [.t.l cget -fg] [.t.l cget -bg]
+} -cleanup {
+    cleanCtext .t
+} -result {red white red white}
+
+test ctext-1.10 {ctext: ctext options at creation} -body {
+    ctext .t -linemap 0 -highlight 0 -linemap_markable 0 \
+        -linemapfg blue -linemapbg gray -linemap_select_fg red \
+        -linemap_select_bg green -linemap_mark_command markCmd
+    list [.t cget -linemap] [.t cget -highlight] [.t cget -linemap_markable] \
+        [.t cget -linemapfg] [.t cget -linemapbg] [.t cget -linemap_select_fg] \
+        [.t cget -linemap_select_bg] [.t cget -linemap_mark_command] \
+        [.t.l cget -fg] [.t.l cget -bg] [winfo manager .t.l]
+} -cleanup {
+    cleanCtext .t
+} -result {0 0 0 blue gray red green markCmd blue gray {}}
+
+test ctext-1.11 {ctext: -font at creation} -body {
+    ctext .t -font {Courier 14}
+    list [.t cget -font] [.t._t cget -font] [.t.l cget -font]
+} -cleanup {
+    cleanCtext .t
+} -result {{Courier 14} {Courier 14} {Courier 14}}
+
+test ctext-1.12 {ctext: the inner text command is an alias} -body {
+    ctext .t
+    .t.t insert end abc
+    list [.t get 1.0 end-1c] [.t.t get 1.0 end-1c]
+} -cleanup {
+    cleanCtext .t
+} -result {abc abc}
+
+test ctext-1.13 {ctext: unmodified after creation} -body {
+    ctext .t
+    .t edit modified
+} -cleanup {
+    cleanCtext .t
+} -result 0
+
+test ctext-1.14 {ctext: destroy deletes the commands} -body {
+    ctext .t
+    ::ctext::addHighlightClass .t kw red {set}
+    destroy .t
+    list [info commands .t] [info commands .t.t] [info commands .t._t]
+} -cleanup {
+    cleanCtext .t
+} -result {{} {} {}}
+
+test ctext-1.15 {ctext: destroy deletes the data} -constraints {
+    knownBug
+} -body {
+    # The config and linemap arrays are not deleted.
+    ctext .t
+    ::ctext::addHighlightClass .t kw red {set}
+    destroy .t
+    info vars ::__ctext.t*
+} -cleanup {
+    cleanCtext .t
+} -result {}
+
+test ctext-1.15.1 {ctext: linemap marks do not survive destroy} -constraints {
+    knownBug
+} -setup {
+    # The linemap array of a destroyed widget is not deleted.
+    mkctext
+    .t fastinsert end "a\nb\nc\n"
+    update
+    foreach {x y} [.t.l bbox 1.0] break
+    event generate .t.l <ButtonPress-1> -x 1 -y [incr y]
+    destroy .t
+} -body {
+    mkctext
+    .t fastinsert end "a\nb\nc\n"
+    update
+    .t.l tag ranges lmark
+} -cleanup {
+    cleanCtext .t
+    unset -nocomplain x y
+} -result {}
+
+test ctext-1.16 {ctext: -linemap accepts boolean values at creation} -constraints {
+    knownBug
+} -body {
+    # Only 1 shows the linemap at creation.
+    set res {}
+    foreach b {1 true yes} {
+        ctext .t -linemap $b
+        lappend res [winfo manager .t.l]
+        destroy .t
+    }
+    set res
+} -cleanup {
+    cleanCtext .t
+    unset -nocomplain res b
+} -result {grid grid grid}
+
+# -------------------------------------------------------------------------
+# configure and cget
+
+test ctext-2.1 {configure: list all options} -setup {
+    ctext .t
+} -body {
+    set res [.t configure]
+    set names {}
+    foreach item $res {lappend names [lindex $item 0]}
+    list [expr {[lsearch -exact $names -linemap] >= 0}] \
+        [expr {[lsearch -exact $names -highlight] >= 0}] \
+        [expr {[lsearch -exact $names -wrap] >= 0}] \
+        [llength [lsearch -all -exact $names -yscrollcommand]] \
+        [lsearch -inline -index 0 $res -linemap]
+} -cleanup {
+    cleanCtext .t
+    unset -nocomplain res names item
+} -result {1 1 1 1 {-linemap 1}}
+
+test ctext-2.2 {configure: query one ctext option} -setup {
+    ctext .t -linemapfg red
+} -body {
+    .t configure -linemapfg
+} -cleanup {
+    cleanCtext .t
+} -result red
+
+test ctext-2.3 {configure: query one text option} -setup {
+    ctext .t -wrap word
+} -body {
+    lindex [.t configure -wrap] end
+} -cleanup {
+    cleanCtext .t
+} -result word
+
+test ctext-2.4 {configure: -linemap} -setup {
+    mkctext
+} -body {
+    set res [list [winfo manager .t.l]]
+    .t configure -linemap 0
+    lappend res [winfo manager .t.l] [.t cget -linemap]
+    .t configure -linemap 1
+    lappend res [winfo manager .t.l] [.t cget -linemap]
+    .t configure -linemap false
+    lappend res [winfo manager .t.l] [.t cget -linemap]
+    .t configure -linemap yes
+    lappend res [winfo manager .t.l] [.t cget -linemap]
+} -cleanup {
+    cleanCtext .t
+    unset -nocomplain res
+} -result {grid {} 0 grid 1 {} 0 grid 1}
+
+test ctext-2.5 {configure: -linemap accepts all boolean values} -constraints {
+    knownBug
+} -setup {
+    # Only 0/1, false/true and no/yes are recognized, other values
+    # (on, off, ...) are silently ignored.
+    mkctext
+} -body {
+    .t configure -linemap off
+    set res [list [winfo manager .t.l] [.t cget -linemap]]
+    .t configure -linemap on
+    lappend res [winfo manager .t.l] [.t cget -linemap]
+} -cleanup {
+    cleanCtext .t
+    unset -nocomplain res
+} -result {{} 0 grid 1}
+
+test ctext-2.6 {configure: -linemapfg and -linemapbg} -setup {
+    ctext .t
+} -body {
+    .t configure -linemapfg red -linemapbg blue
+    list [.t cget -linemapfg] [.t cget -linemapbg] \
+        [.t.l cget -fg] [.t.l cget -bg] [.t cget -fg] [.t cget -bg] eq \
+        [.t._t cget -bg]
+} -cleanup {
+    cleanCtext .t
+} -match glob -result {red blue red blue * * eq *}
+
+test ctext-2.7 {configure: bad color} -setup {
+    ctext .t
+} -body {
+    list [catch {.t configure -linemapfg nosuchcolor} msg] $msg \
+        [catch {.t configure -linemapbg nosuchcolor} msg] $msg \
+        [catch {.t configure -linemap_select_fg nosuchcolor} msg] $msg \
+        [catch {.t configure -linemap_select_bg nosuchcolor} msg] $msg
+} -cleanup {
+    cleanCtext .t
+    unset -nocomplain msg
+} -result [lrepeat 4 1 {unknown color name "nosuchcolor"}]
+
+test ctext-2.8 {configure: -font} -setup {
+    ctext .t
+} -body {
+    .t configure -font {Helvetica 15}
+    list [.t cget -font] [.t._t cget -font] [.t.l cget -font]
+} -cleanup {
+    cleanCtext .t
+} -result {{Helvetica 15} {Helvetica 15} {Helvetica 15}}
+
+test ctext-2.9 {configure: -highlight} -setup {
+    ctext .t
+} -body {
+    set res {}
+    foreach b {0 1 false true no yes} {
+        .t configure -highlight $b
+        lappend res [.t cget -highlight]
+    }
+    set res
+} -cleanup {
+    cleanCtext .t
+    unset -nocomplain res b
+} -result {0 1 0 1 0 1}
+
+test ctext-2.10 {configure: -highlight accepts all boolean values} -constraints {
+    knownBug
+} -setup {
+    # Values like "off" and "on" are silently ignored.
+    ctext .t
+} -body {
+    .t configure -highlight off
+    set res [list [.t cget -highlight]]
+    .t configure -highlight on
+    lappend res [.t cget -highlight]
+} -cleanup {
+    cleanCtext .t
+    unset -nocomplain res
+} -result {0 1}
+
+test ctext-2.11 {configure: -highlight with a bad value} -constraints {
+    knownBug
+} -setup {
+    # Bad values are silently ignored.
+    ctext .t
+} -body {
+    .t configure -highlight foo
+} -cleanup {
+    cleanCtext .t
+} -returnCodes error -result {expected boolean value but got "foo"}
+
+test ctext-2.12 {configure: -linemap_markable} -setup {
+    ctext .t
+} -body {
+    .t configure -linemap_markable 0
+    set res [list [.t cget -linemap_markable]]
+    .t configure -linemap_markable 1
+    lappend res [.t cget -linemap_markable]
+} -cleanup {
+    cleanCtext .t
+    unset -nocomplain res
+} -result {0 1}
+
+test ctext-2.13 {configure: -linemap_select_fg and -linemap_select_bg} -setup {
+    ctext .t
+} -body {
+    .t configure -linemap_select_fg white -linemap_select_bg black
+    list [.t cget -linemap_select_fg] [.t cget -linemap_select_bg] \
+        [.t.l tag cget lmark -foreground] [.t.l tag cget lmark -background]
+} -cleanup {
+    cleanCtext .t
+} -result {white black white black}
+
+test ctext-2.14 {configure: -linemap_mark_command} -setup {
+    ctext .t
+} -body {
+    .t configure -linemap_mark_command {markCmd x}
+    .t cget -linemap_mark_command
+} -cleanup {
+    cleanCtext .t
+} -result {markCmd x}
+
+test ctext-2.15 {configure: -yscrollcommand} -setup {
+    ctext .t
+} -body {
+    .t configure -yscrollcommand {markCmd y}
+    list [.t cget -yscrollcommand] \
+        [string match {ctext::event:yscroll .t*} [.t._t cget -yscrollcommand]]
+} -cleanup {
+    cleanCtext .t
+} -result {{markCmd y} 1}
+
+test ctext-2.16 {configure: ctext and text options together} -setup {
+    ctext .t
+} -body {
+    .t configure -width 33 -linemapfg red -wrap char -highlight 0
+    list [.t cget -width] [.t cget -linemapfg] [.t cget -wrap] \
+        [.t cget -highlight]
+} -cleanup {
+    cleanCtext .t
+} -result {33 red char 0}
+
+test ctext-2.17 {configure: bad text option} -setup {
+    ctext .t
+} -body {
+    .t configure -nosuchoption 1
+} -cleanup {
+    cleanCtext .t
+} -returnCodes error -result {unknown option "-nosuchoption"}
+
+test ctext-2.18 {cget: text option} -setup {
+    ctext .t -width 25
+} -body {
+    .t cget -width
+} -cleanup {
+    cleanCtext .t
+} -result 25
+
+test ctext-2.19 {cget: bad option} -setup {
+    ctext .t
+} -body {
+    .t cget -nosuchoption
+} -cleanup {
+    cleanCtext .t
+} -returnCodes error -result {unknown option "-nosuchoption"}
+
+# -------------------------------------------------------------------------
+# Highlight classes
+
+test ctext-3.1 {addHighlightClass: keywords are highlighted on insert} -setup {
+    ctext .t
+} -body {
+    ::ctext::addHighlightClass .t kw red {set if}
+    .t insert insert "set x 1\nif {\$x} {set y 2}\n"
+    list [ranges .t kw] [.t tag cget kw -foreground]
+} -cleanup {
+    cleanCtext .t
+} -result {{1.0 1.3 2.0 2.2 2.9 2.12} red}
+
+test ctext-3.1.1 {addHighlightClass: inserting at end highlights} -constraints {
+    knownBug
+} -setup {
+    # The range to highlight is computed from the "end" index before
+    # the insertion, so the last line is not highlighted.
+    ctext .t
+} -body {
+    ::ctext::addHighlightClass .t kw red {set}
+    .t insert end "set x 1\nset y 2"
+    ranges .t kw
+} -cleanup {
+    cleanCtext .t
+} -result {1.0 1.3 2.0 2.3}
+
+test ctext-3.1.2 {addHighlightClass: consecutive inserts on several lines} -constraints {
+    knownBug
+} -setup {
+    # Only the first range is highlighted if several insertions are made
+    # before the idle highlighting runs.
+    ctext .t
+    .t fastinsert end "\n"
+} -body {
+    ::ctext::addHighlightClass .t kw red {set}
+    .t insert 1.0 "set x"
+    .t insert 2.0 "set y"
+    ranges .t kw
+} -cleanup {
+    cleanCtext .t
+} -result {1.0 1.3 2.0 2.3}
+
+test ctext-3.2 {addHighlightClass: only whole words} -setup {
+    ctext .t
+} -body {
+    ::ctext::addHighlightClass .t kw red {set}
+    .t insert insert "settle reset set"
+    ranges .t kw
+} -cleanup {
+    cleanCtext .t
+} -result {1.13 1.16}
+
+test ctext-3.3 {addHighlightClass: typing completes a keyword} -setup {
+    ctext .t
+} -body {
+    ::ctext::addHighlightClass .t kw red {set}
+    .t insert insert "se"
+    set res [list [ranges .t kw]]
+    .t insert insert "t"
+    lappend res [ranges .t kw]
+    .t insert insert "s"
+    lappend res [ranges .t kw]
+} -cleanup {
+    cleanCtext .t
+    unset -nocomplain res
+} -result {{} {1.0 1.3} {}}
+
+test ctext-3.4 {addHighlightClass: delete updates highlighting} -setup {
+    ctext .t
+    ::ctext::addHighlightClass .t kw red {set}
+    .t insert insert "sets"
+    update idletasks
+} -body {
+    set res [list [ranges .t kw]]
+    .t delete 1.3
+    lappend res [ranges .t kw]
+    .t delete 1.1 1.3
+    lappend res [ranges .t kw]
+} -cleanup {
+    cleanCtext .t
+    unset -nocomplain res
+} -result {{} {1.0 1.3} {}}
+
+test ctext-3.5 {addHighlightClassWithOnlyCharStart} -setup {
+    ctext .t
+} -body {
+    ::ctext::addHighlightClassWithOnlyCharStart .t vars blue \$
+    .t insert insert "puts \$foo \$bar(x) a\$b"
+    list [ranges .t vars] [.t tag cget vars -foreground]
+} -cleanup {
+    cleanCtext .t
+} -result {{1.5 1.9 1.10 1.14} blue}
+
+test ctext-3.6 {addHighlightClassForSpecialChars} -setup {
+    ctext .t
+} -body {
+    ::ctext::addHighlightClassForSpecialChars .t br green {[]{}}
+    .t insert insert "a \[b\] {c}"
+    list [ranges .t br] [.t tag cget br -foreground]
+} -cleanup {
+    cleanCtext .t
+} -result {{1.2 1.3 1.4 1.5 1.6 1.7 1.8 1.9} green}
+
+test ctext-3.7 {addHighlightClassForRegexp} -setup {
+    ctext .t
+} -body {
+    ::ctext::addHighlightClassForRegexp .t comment gray {#[^\n]*}
+    .t insert insert "set x 1 ;# a comment\n# another\nputs x"
+    list [ranges .t comment] [.t tag cget comment -foreground]
+} -cleanup {
+    cleanCtext .t
+} -result {{1.9 1.20 2.0 2.9} gray}
+
+test ctext-3.8 {getHighlightClasses} -setup {
+    ctext .t
+} -body {
+    set res [list [::ctext::getHighlightClasses .t]]
+    ::ctext::addHighlightClass .t kw red {set}
+    ::ctext::addHighlightClassWithOnlyCharStart .t vars blue \$
+    ::ctext::addHighlightClassForSpecialChars .t br green {[]}
+    ::ctext::addHighlightClassForRegexp .t re gray {#.*}
+    lappend res [lsort [::ctext::getHighlightClasses .t]]
+} -cleanup {
+    cleanCtext .t
+    unset -nocomplain res
+} -result {{} {br kw re vars}}
+
+test ctext-3.9 {deleteHighlightClass} -setup {
+    ctext .t
+    ::ctext::addHighlightClass .t kw red {set}
+    ::ctext::addHighlightClassWithOnlyCharStart .t vars blue \$
+    ::ctext::addHighlightClassForSpecialChars .t br green {[]}
+    ::ctext::addHighlightClassForRegexp .t re gray {#.*}
+} -body {
+    set res {}
+    foreach class {kw vars br re} {
+        ::ctext::deleteHighlightClass .t $class
+        lappend res [lsort [::ctext::getHighlightClasses .t]]
+    }
+    .t insert insert "set \$x \[a\] #c"
+    foreach class {kw vars br re} {
+        lappend res [ranges .t $class]
+    }
+    set res
+} -cleanup {
+    cleanCtext .t
+    unset -nocomplain res class
+} -result {{br re vars} {br re} re {} {} {} {} {}}
+
+test ctext-3.10 {deleteHighlightClass: nonexistent class} -setup {
+    ctext .t
+} -body {
+    ::ctext::deleteHighlightClass .t foo
+} -cleanup {
+    cleanCtext .t
+} -returnCodes error -result {foo doesn't exist}
+
+test ctext-3.11 {clearHighlightClasses} -setup {
+    ctext .t
+    ::ctext::addHighlightClass .t kw red {set}
+    ::ctext::addHighlightClassWithOnlyCharStart .t vars blue \$
+    ::ctext::addHighlightClassForSpecialChars .t br green {[]}
+    ::ctext::addHighlightClassForRegexp .t re gray {#.*}
+} -body {
+    ::ctext::clearHighlightClasses .t
+    .t insert insert "set \$x \[a\] #c"
+    list [::ctext::getHighlightClasses .t] [ranges .t kw] [ranges .t vars] \
+        [ranges .t br] [ranges .t re]
+} -cleanup {
+    cleanCtext .t
+} -result {{} {} {} {} {}}
+
+test ctext-3.12 {highlight classes can be configured as tags} -setup {
+    ctext .t
+} -body {
+    ::ctext::addHighlightClass .t kw red {set}
+    .t tag configure kw -underline 1
+    .t insert insert "set"
+    update idletasks
+    list [.t tag cget kw -underline] [.t tag cget kw -foreground]
+} -cleanup {
+    cleanCtext .t
+} -result {1 red}
+
+test ctext-3.13 {highlight classes are per widget} -setup {
+    ctext .t
+    ctext .t2
+} -body {
+    ::ctext::addHighlightClass .t kw red {set}
+    .t insert insert set
+    .t2 insert insert set
+    list [ranges .t kw] [ranges .t2 kw] [::ctext::getHighlightClasses .t2]
+} -cleanup {
+    cleanCtext .t .t2
+} -result {{1.0 1.3} {} {}}
+
+# -------------------------------------------------------------------------
+# highlight, fastinsert, fastdelete
+
+test ctext-4.1 {fastinsert does not highlight} -setup {
+    ctext .t
+    ::ctext::addHighlightClass .t kw red {set}
+} -body {
+    .t fastinsert end "set x 1"
+    list [.t get 1.0 end-1c] [ranges .t kw] [.t edit modified]
+} -cleanup {
+    cleanCtext .t
+} -result {{set x 1} {} 1}
+
+test ctext-4.2 {fastinsert with tags} -setup {
+    ctext .t
+} -body {
+    .t fastinsert end "abc" mytag "def"
+    list [.t get 1.0 end-1c] [.t tag ranges mytag]
+} -cleanup {
+    cleanCtext .t
+} -result {abcdef {1.0 1.3}}
+
+test ctext-4.3 {highlight method} -setup {
+    ctext .t
+    ::ctext::addHighlightClass .t kw red {set}
+    .t fastinsert end "set x\nset y\nset z"
+} -body {
+    .t highlight 2.0 2.end
+    set res [list [ranges .t kw]]
+    .t highlight 1.0 end
+    lappend res [ranges .t kw]
+} -cleanup {
+    cleanCtext .t
+    unset -nocomplain res
+} -result {{2.0 2.3} {1.0 1.3 2.0 2.3 3.0 3.3}}
+
+test ctext-4.4 {fastdelete does not update highlighting} -setup {
+    ctext .t
+    ::ctext::addHighlightClass .t kw red {set}
+    .t insert insert "set"
+    update idletasks
+    .t edit modified 0
+} -body {
+    .t fastdelete 1.2 end
+    list [.t get 1.0 end-1c] [ranges .t kw] [.t edit modified]
+} -cleanup {
+    cleanCtext .t
+} -result {se {1.0 1.2} 1}
+
+test ctext-4.5 {fastdelete one character} -setup {
+    ctext .t
+    .t fastinsert end "abc"
+} -body {
+    .t fastdelete 1.1
+    .t get 1.0 end-1c
+} -cleanup {
+    cleanCtext .t
+} -result ac
+
+test ctext-4.6 {-highlight 0 disables highlighting} -setup {
+    ctext .t -highlight 0
+    ::ctext::addHighlightClass .t kw red {set}
+} -body {
+    .t insert end "set x"
+    set res [list [ranges .t kw]]
+    .t highlight 1.0 end
+    lappend res [ranges .t kw]
+    .t configure -highlight 1
+    .t highlight 1.0 end
+    lappend res [ranges .t kw]
+} -cleanup {
+    cleanCtext .t
+    unset -nocomplain res
+} -result {{} {} {1.0 1.3}}
+
+# -------------------------------------------------------------------------
+# insert, delete
+
+test ctext-5.1 {insert: too few arguments} -setup {
+    ctext .t
+} -body {
+    .t insert end
+} -cleanup {
+    cleanCtext .t
+} -returnCodes error -result {please use at least 2 arguments to .t insert}
+
+test ctext-5.2 {insert: with tags} -setup {
+    ctext .t
+} -body {
+    .t insert end abc t1 def {t2 t3}
+    list [.t get 1.0 end-1c] [.t tag ranges t1] [.t tag ranges t3]
+} -cleanup {
+    cleanCtext .t
+} -result {abcdef {1.0 1.3} {1.3 1.6}}
+
+test ctext-5.3 {insert: sets the modified flag} -setup {
+    ctext .t
+} -body {
+    set res [.t edit modified]
+    .t insert end x
+    lappend res [.t edit modified]
+} -cleanup {
+    cleanCtext .t
+    unset -nocomplain res
+} -result {0 1}
+
+test ctext-5.4 {delete: too many arguments} -setup {
+    ctext .t
+    .t insert end abc
+} -body {
+    .t delete 1.0 1.1 1.2
+} -cleanup {
+    cleanCtext .t
+} -returnCodes error -result {invalid argument(s) sent to .t delete: 1.0 1.1 1.2}
+
+test ctext-5.5 {delete: too few arguments} -setup {
+    ctext .t
+} -body {
+    .t delete
+} -cleanup {
+    cleanCtext .t
+} -returnCodes error -result {invalid argument(s) sent to .t delete: }
+
+test ctext-5.6 {delete: one index and a range} -setup {
+    ctext .t
+    .t insert end "abcdef\nghi"
+} -body {
+    .t delete 1.0
+    set res [list [.t get 1.0 end-1c]]
+    .t delete 1.2 2.1
+    lappend res [.t get 1.0 end-1c]
+} -cleanup {
+    cleanCtext .t
+    unset -nocomplain res
+} -result [list "bcdef\nghi" bchi]
+
+test ctext-5.7 {delete: sets the modified flag} -setup {
+    ctext .t
+    .t insert end abc
+    .t edit modified 0
+} -body {
+    .t delete 1.0
+    .t edit modified
+} -cleanup {
+    cleanCtext .t
+} -result 1
+
+test ctext-5.8 {inherited text commands work} -setup {
+    ctext .t
+    .t insert end "hello world"
+} -body {
+    list [.t search world 1.0] [.t index end] [.t count -chars 1.0 end]
+} -cleanup {
+    cleanCtext .t
+} -result {1.6 2.0 12}
+
+# -------------------------------------------------------------------------
+# edit modified and <<Modified>>
+
+test ctext-6.1 {edit modified: set and get} -setup {
+    ctext .t
+} -body {
+    .t edit modified 1
+    set res [.t edit modified]
+    .t edit modified 0
+    lappend res [.t edit modified]
+} -cleanup {
+    cleanCtext .t
+    unset -nocomplain res
+} -result {1 0}
+
+test ctext-6.2 {edit modified: too many arguments} -setup {
+    ctext .t
+} -body {
+    .t edit modified 1 2
+} -cleanup {
+    cleanCtext .t
+} -returnCodes error -result {invalid arg(s) to .t edit modified: modified 1 2}
+
+test ctext-6.3 {edit: other subcommands are passed to the text} -setup {
+    ctext .t -undo 1
+} -body {
+    .t insert end abc
+    .t edit separator
+    .t insert end def
+    .t edit undo
+    .t get 1.0 end-1c
+} -cleanup {
+    cleanCtext .t
+} -result abc
+
+test ctext-6.4 {<<Modified>> is generated on change} -setup {
+    ctext .t
+    update
+    set events 0
+    bind .t <<Modified>> countEvent
+} -body {
+    .t insert end a
+    update
+    expr {$events > 0}
+} -cleanup {
+    cleanCtext .t
+    unset -nocomplain events
+} -result 1
+
+test ctext-6.5 {<<Modified>> only when the modified flag changes} -constraints {
+    knownBug
+} -setup {
+    # Ticket 3567463fff: ctext sends <<Modified>> on every change.
+    ctext .t
+    update
+    set events 0
+    bind .t <<Modified>> countEvent
+} -body {
+    .t insert end a
+    .t insert end b
+    .t delete 1.0
+    .t fastinsert end c
+    update
+    set res [list $events]
+    .t edit modified 0
+    update
+    lappend res $events
+} -cleanup {
+    cleanCtext .t
+    unset -nocomplain events res
+} -result {1 2}
+
+# -------------------------------------------------------------------------
+# C comments
+
+test ctext-7.1 {comments are disabled by default} -setup {
+    ctext .t
+} -body {
+    .t insert end "a /* b */ c"
+    .t highlight 1.0 end
+    list [ranges .t _cComment] [lsearch [.t tag names] _cComment]
+} -cleanup {
+    cleanCtext .t
+} -result {{} -1}
+
+test ctext-7.2 {enableComments} -setup {
+    ctext .t
+} -body {
+    ::ctext::enableComments .t
+    .t insert end "a /* b */ c /* d\ne */"
+    update idletasks
+    ranges .t _cComment
+} -cleanup {
+    cleanCtext .t
+} -result {1.2 1.9 1.12 2.4}
+
+test ctext-7.3 {enableComments: comments in strings are ignored} -setup {
+    ctext .t
+} -body {
+    ::ctext::enableComments .t
+    .t insert end "x = \"/* no */\"; y = '/*'; /* yes */"
+    update idletasks
+    ranges .t _cComment
+} -cleanup {
+    cleanCtext .t
+} -result {1.26 1.35}
+
+test ctext-7.4 {enableComments: highlight method} -setup {
+    ctext .t
+    ::ctext::enableComments .t
+    .t fastinsert end "a /* b */ c"
+} -body {
+    set res [list [ranges .t _cComment]]
+    .t highlight 1.0 end
+    lappend res [ranges .t _cComment]
+} -cleanup {
+    cleanCtext .t
+    unset -nocomplain res
+} -result {{} {1.2 1.9}}
+
+test ctext-7.5 {enableComments: deleting the comment end} -setup {
+    ctext .t
+    ::ctext::enableComments .t
+    .t insert end "a /* b */ c"
+    update idletasks
+} -body {
+    .t delete 1.7 1.9
+    ranges .t _cComment
+} -cleanup {
+    cleanCtext .t
+} -result {}
+
+test ctext-7.6 {disableComments} -setup {
+    ctext .t
+    ::ctext::enableComments .t
+    .t insert end "a /* b */ c"
+    update idletasks
+} -body {
+    ::ctext::disableComments .t
+    .t insert end " /* d */"
+    update idletasks
+    list [ranges .t _cComment] [lsearch [.t tag names] _cComment]
+} -cleanup {
+    cleanCtext .t
+} -result {{} -1}
+
+test ctext-7.7 {comments with a wrapped widget command} -constraints {
+    knownBug
+} -setup {
+    # Ticket f4b9393051: ctext::comments relies on the widget command
+    # setting the "length" variable in its caller's frame.
+    set bgerrors {}
+    set oldbgerror [interp bgerror {}]
+    interp bgerror {} collectBgerror
+    ctext .t
+    rename .t ::ctextTestOrig
+    proc ::.t {args} {::ctextTestOrig {*}$args}
+    ::ctext::enableComments .t
+} -body {
+    .t insert end "a /* b */ c"
+    update idletasks
+    .t highlight 1.0 end
+    list [ranges .t _cComment] $bgerrors
+} -cleanup {
+    rename ::.t {}
+    rename ::ctextTestOrig ::.t
+    cleanCtext .t
+    interp bgerror {} $oldbgerror
+    unset -nocomplain bgerrors oldbgerror
+} -result {{1.2 1.9} {}}
+
+# -------------------------------------------------------------------------
+# Clipboard
+
+test ctext-8.1 {copy} -setup {
+    ctext .t
+    .t insert end "hello world"
+    clipboard clear
+} -body {
+    .t tag add sel 1.0 1.5
+    .t copy
+    list [clipboard get] [.t get 1.0 end-1c]
+} -cleanup {
+    cleanCtext .t
+    clipboard clear
+} -result {hello {hello world}}
+
+test ctext-8.2 {cut} -setup {
+    ctext .t
+    .t insert end "hello world"
+    .t edit modified 0
+    clipboard clear
+} -body {
+    .t tag add sel 1.5 end-1c
+    .t cut
+    list [clipboard get] [.t get 1.0 end-1c] [.t edit modified]
+} -cleanup {
+    cleanCtext .t
+    clipboard clear
+} -result {{ world} hello 1}
+
+test ctext-8.3 {cut without selection} -setup {
+    ctext .t
+    .t insert end "hello"
+    .t edit modified 0
+} -body {
+    .t cut
+    list [.t get 1.0 end-1c] [.t edit modified]
+} -cleanup {
+    cleanCtext .t
+} -result {hello 0}
+
+test ctext-8.4 {paste} -setup {
+    ctext .t
+    .t insert end "hello"
+    .t edit modified 0
+    clipboard clear
+    clipboard append " world"
+} -body {
+    .t mark set insert end
+    .t paste
+    list [.t get 1.0 end-1c] [.t edit modified]
+} -cleanup {
+    cleanCtext .t
+    clipboard clear
+} -result {{hello world} 1}
+
+test ctext-8.5 {append} -setup {
+    ctext .t
+    .t insert end "hello world"
+    clipboard clear
+    clipboard append "say "
+} -body {
+    .t tag add sel 1.0 1.5
+    .t append
+    clipboard get
+} -cleanup {
+    cleanCtext .t
+    clipboard clear
+} -result {say hello}
+
+test ctext-8.6 {append without selection} -setup {
+    ctext .t
+    .t insert end "hello world"
+    clipboard clear
+    clipboard append "say"
+} -body {
+    .t append
+    clipboard get
+} -cleanup {
+    cleanCtext .t
+    clipboard clear
+} -result say
+
+test ctext-8.7 {copy highlighted text keeps highlighting} -setup {
+    ctext .t
+    ::ctext::addHighlightClass .t kw red {set}
+    .t insert insert "set x"
+    clipboard clear
+} -body {
+    .t tag add sel 1.0 1.3
+    .t copy
+    .t mark set insert end
+    .t insert insert " "
+    update idletasks
+    .t paste
+    list [.t get 1.0 end-1c] [ranges .t kw]
+} -cleanup {
+    cleanCtext .t
+    clipboard clear
+} -result {{set x set} {1.0 1.3 1.6 1.9}}
+
+# -------------------------------------------------------------------------
+# Line map
+
+test ctext-9.1 {linemap shows line numbers} -setup {
+    mkctext
+} -body {
+    .t insert end "a\nb\nc"
+    update
+    lrange [split [.t.l get 1.0 end] \n] 0 2
+} -cleanup {
+    cleanCtext .t
+} -result {1 2 3}
+
+test ctext-9.2 {linemap width follows the number of lines} -setup {
+    mkctext
+} -body {
+    .t fastinsert end [string repeat \n 150]
+    update
+    .t.l cget -width
+} -cleanup {
+    cleanCtext .t
+} -result 3
+
+test ctext-9.3 {linemap follows scrolling} -setup {
+    mkctext -height 5
+    for {set i 1} {$i <= 50} {incr i} {.t fastinsert end "line $i\n"}
+    update
+} -body {
+    .t yview 20.0
+    update
+    lindex [split [.t.l get 1.0 end] \n] 0
+} -cleanup {
+    cleanCtext .t
+    unset -nocomplain i
+} -result 20
+
+test ctext-9.4 {linemap: marking a line} -setup {
+    mkctext -linemap_mark_command markCmd
+    .t fastinsert end "a\nb\nc\n"
+    update
+    set marks {}
+} -body {
+    foreach {x y} [.t.l bbox 2.0] break
+    event generate .t.l <ButtonPress-1> -x 1 -y [incr y]
+    update
+    set res [list $marks [.t.l tag ranges lmark] \
+                 [.t.l tag cget lmark -background]]
+    event generate .t.l <ButtonPress-1> -x 1 -y $y
+    update
+    lappend res $marks [.t.l tag ranges lmark]
+} -cleanup {
+    cleanCtext .t
+    unset -nocomplain marks res x y
+} -result {{{.t marked 2}} {2.0 2.1} yellow {{.t marked 2} {.t unmarked 2}} {}}
+
+test ctext-9.5 {linemap: marks survive linemap updates} -setup {
+    mkctext
+    .t fastinsert end "a\nb\nc\n"
+    update
+} -body {
+    foreach {x y} [.t.l bbox 3.0] break
+    event generate .t.l <ButtonPress-1> -x 1 -y [incr y]
+    .t insert 1.0 "\n"
+    update
+    string trim [.t.l get {*}[.t.l tag ranges lmark]]
+} -cleanup {
+    cleanCtext .t
+    unset -nocomplain x y
+} -result 3
+
+test ctext-9.6 {linemap: -linemap_markable 0} -setup {
+    mkctext -linemap_markable 0 -linemap_mark_command markCmd
+    .t fastinsert end "a\nb\nc\n"
+    update
+    set marks {}
+} -body {
+    foreach {x y} [.t.l bbox 2.0] break
+    event generate .t.l <ButtonPress-1> -x 1 -y [incr y]
+    update
+    list $marks [.t.l tag ranges lmark]
+} -cleanup {
+    cleanCtext .t
+    unset -nocomplain marks x y
+} -result {{} {}}
+
+test ctext-9.7 {linemap: mark colors} -setup {
+    mkctext -linemap_select_fg white -linemap_select_bg blue
+    .t fastinsert end "a\nb\nc\n"
+    update
+} -body {
+    foreach {x y} [.t.l bbox 1.0] break
+    event generate .t.l <ButtonPress-1> -x 1 -y [incr y]
+    update
+    list [.t.l tag cget lmark -foreground] [.t.l tag cget lmark -background]
+} -cleanup {
+    cleanCtext .t
+    unset -nocomplain x y
+} -result {white blue}
+
+test ctext-9.8 {-yscrollcommand is called} -setup {
+    set marks {}
+    mkctext -height 5 -yscrollcommand {markCmd y}
+} -body {
+    for {set i 1} {$i <= 50} {incr i} {.t fastinsert end "line $i\n"}
+    update
+    set last [lindex $marks end]
+    list [lindex $last 0] [expr {[lindex $last 2] < 1.0}]
+} -cleanup {
+    cleanCtext .t
+    unset -nocomplain marks last i
+} -result {y 1}
+
+# -------------------------------------------------------------------------
+# Matching brackets and quotes
+
+test ctext-10.1 {inserting a closing brace blinks the pair} -setup {
+    mkctext
+    .t insert end "if \{a"
+} -body {
+    .t insert end "\}"
+    set res [list [.t tag ranges __ctext_blink]]
+    lappend res [waitFor {[lsearch [.t tag names] __ctext_blink] < 0}]
+} -cleanup {
+    cleanCtext .t
+    unset -nocomplain res
+} -result {{1.3 1.4 1.5 1.6} 1}
+
+test ctext-10.2 {inserting a closing bracket and parenthesis} -setup {
+    mkctext
+    .t insert end "\[a (b"
+} -body {
+    .t insert end ")"
+    set res [list [.t tag ranges __ctext_blink]]
+    waitFor {[lsearch [.t tag names] __ctext_blink] < 0}
+    .t insert end "\]"
+    lappend res [.t tag ranges __ctext_blink]
+    waitFor {[lsearch [.t tag names] __ctext_blink] < 0}
+    set res
+} -cleanup {
+    cleanCtext .t
+    unset -nocomplain res
+} -result {{1.3 1.4 1.5 1.6} {1.0 1.1 1.6 1.7}}
+
+test ctext-10.3 {inserting a quote blinks the string} -setup {
+    mkctext
+    .t insert end "puts \"abc"
+} -body {
+    .t insert end "\""
+    set res [list [.t tag ranges __ctext_blink]]
+    waitFor {[lsearch [.t tag names] __ctext_blink] < 0}
+    set res
+} -cleanup {
+    cleanCtext .t
+    unset -nocomplain res
+} -result {{1.5 1.10}}
+
+test ctext-10.4 {escaped closing brace does not blink} -setup {
+    mkctext
+    .t insert end "\{a\\"
+} -body {
+    .t insert end "\}"
+    .t tag ranges __ctext_blink
+} -cleanup {
+    cleanCtext .t
+} -result {}
+
+test ctext-10.5 {unmatched closing brace does not blink} -setup {
+    mkctext
+    .t insert end "a"
+} -body {
+    .t insert end "\}"
+    .t tag ranges __ctext_blink
+} -cleanup {
+    cleanCtext .t
+} -result {}
+
+# -------------------------------------------------------------------------
+rename mkctext {}
+rename ranges {}
+rename countEvent {}
+rename waitFor {}
+rename collectBgerror {}
+rename markCmd {}
+::tcltest::cleanupTests
