@@ -1,0 +1,512 @@
+# -*- tcl -*-
+# Tests for the getstring package
+#
+# See the file "license.terms" for information on usage and redistribution
+# of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2
+    namespace import ::tcltest::*
+} else {
+    if {![package vsatisfies [package present tcltest] 2.2]} {
+	puts "    Aborting the tests found in \"[file tail [info script]]\"."
+	puts "    Requiring tcltest 2.2, have [package present tcltest]"
+	return
+    }
+}
+
+::tcltest::testConstraint tk 1
+
+source [file join [file dirname [info script]] tk_getString.tcl]
+
+# -------------------------------------------------------------------------
+# Helpers
+
+# The dialog is modal (tkwait).  Schedule a script to be run as soon as
+# the dialog window is mapped.  Polls with a bounded loop.
+proc whenMapped {w script {count 500}} {
+    if {[winfo exists $w] && [winfo ismapped $w]} {
+	uplevel #0 $script
+    } elseif {$count > 0} {
+	after 10 [list whenMapped $w $script [incr count -1]]
+    } else {
+	# Give up: close the dialog to avoid hanging the test suite.
+	set ::getstring::result 0
+    }
+}
+
+# Simulate typing a string into the entry (KeyPress events).
+proc typeText {e text} {
+    focus -force $e
+    foreach c [split $text {}] {
+	event generate $e <KeyPress> -keysym $c
+    }
+    update
+}
+
+# -------------------------------------------------------------------------
+
+test getstring-1.0 {package version} -body {
+    package present getstring
+} -result 0.1
+
+test getstring-1.1 {exported commands} -body {
+    namespace eval ::getstring {namespace export}
+} -result tk_getString
+
+# -------------------------------------------------------------------------
+# Argument errors
+
+test getstring-2.1 {wrong # args} -body {
+    ::getstring::tk_getString .gs v
+} -returnCodes error -result {wrong # args: should be "::getstring::tk_getString w var text ?arg ...?"}
+
+test getstring-2.2 {wrong # args} -body {
+    ::getstring::tk_getString
+} -returnCodes error -result {wrong # args: should be "::getstring::tk_getString w var text ?arg ...?"}
+
+test getstring-2.3 {unknown option} -body {
+    ::getstring::tk_getString .gs v Text: -foo bar
+} -cleanup {
+    destroy .gs
+} -returnCodes error -result {unknown option -foo}
+
+test getstring-2.4 {option without value} -body {
+    ::getstring::tk_getString .gs v Text: -title
+} -returnCodes error -result {-title requires an argument}
+
+test getstring-2.5 {option without value} -body {
+    ::getstring::tk_getString .gs v Text: -geometry
+} -returnCodes error -result {-geometry requires an argument}
+
+test getstring-2.6 {option without value} -body {
+    ::getstring::tk_getString .gs v Text: -entryoptions
+} -returnCodes error -result {-entryoptions requires an argument}
+
+test getstring-2.7 {option without value} -body {
+    ::getstring::tk_getString .gs v Text: -allowempty
+} -returnCodes error -result {-allowempty requires an argument}
+
+test getstring-2.8 {-allowempty: not a boolean} -body {
+    ::getstring::tk_getString .gs v Text: -allowempty maybe
+} -returnCodes error -result {-allowempty requires argument of type boolean}
+
+test getstring-2.9 {option errors do not create the dialog} -body {
+    catch {::getstring::tk_getString .gs v Text: -allowempty maybe}
+    catch {::getstring::tk_getString .gs v Text: -bad 1}
+    winfo exists .gs
+} -result 0
+
+test getstring-2.10 {bad -entryoptions} -body {
+    ::getstring::tk_getString .gs v Text: -entryoptions {-nosuchoption 1}
+} -cleanup {
+    destroy .gs
+} -returnCodes error -result {unknown option "-nosuchoption"}
+
+test getstring-2.11 {bad -geometry} -body {
+    ::getstring::tk_getString .gs v Text: -geometry bad
+} -cleanup {
+    destroy .gs
+} -returnCodes error -result {bad geometry specifier "bad"}
+
+# -------------------------------------------------------------------------
+# Dialog structure
+
+test getstring-3.1 {dialog widgets} -setup {
+    unset -nocomplain ::info
+} -body {
+    whenMapped .gs {
+	set ::info [list [winfo class .gs] [winfo toplevel .gs] \
+		[winfo class .gs.entry] [winfo class .gs.label] \
+		[.gs.label cget -text] [.gs.ok cget -text] \
+		[.gs.cancel cget -text] [.gs.ok cget -default]]
+	.gs.cancel invoke
+    }
+    ::getstring::tk_getString .gs v "Feed me:"
+    set ::info
+} -cleanup {
+    unset -nocomplain ::info v
+} -result {TkSDialog .gs Entry Label {Feed me:} OK Cancel active}
+
+test getstring-3.2 {default title} -setup {
+    unset -nocomplain ::info
+} -body {
+    whenMapped .gs {
+	set ::info [list [wm title .gs] [wm iconname .gs]]
+	.gs.cancel invoke
+    }
+    ::getstring::tk_getString .gs v Text:
+    set ::info
+} -cleanup {
+    unset -nocomplain ::info v
+} -result {{Enter Information} {Enter Information}}
+
+test getstring-3.3 {-title} -setup {
+    unset -nocomplain ::info
+} -body {
+    whenMapped .gs {
+	set ::info [list [wm title .gs] [wm iconname .gs]]
+	.gs.cancel invoke
+    }
+    ::getstring::tk_getString .gs v Text: -title "My title"
+    set ::info
+} -cleanup {
+    unset -nocomplain ::info v
+} -result {{My title} {My title}}
+
+test getstring-3.4 {dialog is transient for the parent toplevel} -setup {
+    unset -nocomplain ::info
+    toplevel .top
+    frame .top.f
+} -body {
+    whenMapped .top.f.gs {
+	set ::info [wm transient .top.f.gs]
+	.top.f.gs.cancel invoke
+    }
+    ::getstring::tk_getString .top.f.gs v Text:
+    set ::info
+} -cleanup {
+    destroy .top
+    unset -nocomplain ::info v
+} -result .top
+
+test getstring-3.5 {dialog grabs the input} -setup {
+    unset -nocomplain ::info
+} -body {
+    whenMapped .gs {
+	set ::info [grab current]
+	.gs.cancel invoke
+    }
+    ::getstring::tk_getString .gs v Text:
+    list $::info [grab current] [winfo exists .gs]
+} -cleanup {
+    unset -nocomplain ::info v
+} -result {.gs {} 0}
+
+test getstring-3.6 {previous grab is restored} -setup {
+    unset -nocomplain ::info
+    toplevel .top
+    update
+    grab .top
+} -body {
+    whenMapped .gs {
+	set ::info [grab current]
+	.gs.cancel invoke
+    }
+    ::getstring::tk_getString .gs v Text:
+    list $::info [grab current]
+} -cleanup {
+    grab release .top
+    destroy .top
+    unset -nocomplain ::info v
+} -result {.gs .top}
+
+test getstring-3.7 {focus is in the entry} -setup {
+    unset -nocomplain ::info
+} -body {
+    whenMapped .gs {
+	set ::info [focus]
+	.gs.cancel invoke
+    }
+    ::getstring::tk_getString .gs v Text:
+    set ::info
+} -cleanup {
+    unset -nocomplain ::info v
+} -result .gs.entry
+
+test getstring-3.8 {an existing window with the same name is replaced} -setup {
+    unset -nocomplain ::info
+    label .gs
+} -body {
+    whenMapped .gs {
+	set ::info [winfo class .gs]
+	.gs.cancel invoke
+    }
+    ::getstring::tk_getString .gs v Text:
+    set ::info
+} -cleanup {
+    unset -nocomplain ::info v
+} -result TkSDialog
+
+test getstring-3.9 {-entryoptions passed to the entry} -setup {
+    unset -nocomplain ::info
+} -body {
+    whenMapped .gs {
+	set ::info [list [.gs.entry cget -show] [.gs.entry cget -width]]
+	.gs.cancel invoke
+    }
+    ::getstring::tk_getString .gs v Text: -entryoptions {-show * -width 33}
+    set ::info
+} -cleanup {
+    unset -nocomplain ::info v
+} -result {* 33}
+
+test getstring-3.10 {-entryoptions: validation hooks} -setup {
+    unset -nocomplain ::info
+} -body {
+    whenMapped .gs {
+	typeText .gs.entry 12a3
+	.gs.ok invoke
+    }
+    list [::getstring::tk_getString .gs v Text: \
+	    -entryoptions {-validate key -validatecommand {string is digit %P}}] $v
+} -cleanup {
+    unset -nocomplain ::info v
+} -result {1 123}
+
+test getstring-3.11 {-geometry} -setup {
+    unset -nocomplain ::info
+} -body {
+    whenMapped .gs {
+	update
+	set ::info [wm geometry .gs]
+	.gs.cancel invoke
+    }
+    ::getstring::tk_getString .gs v Text: -geometry 300x150+20+30
+    set ::info
+} -cleanup {
+    unset -nocomplain ::info v
+} -result 300x150+20+30
+
+test getstring-3.12 {child of .: centered on the screen} -setup {
+    unset -nocomplain ::info
+} -body {
+    whenMapped .gs {
+	update
+	scan [wm geometry .gs] {%dx%d+%d+%d} w h x y
+	set dx [expr {abs($x + $w/2 - [winfo screenwidth .gs]/2)}]
+	set dy [expr {abs($y + $h/2 - [winfo screenheight .gs]/2)}]
+	set ::info [list [expr {$dx <= 2}] [expr {$dy <= 2}]]
+	.gs.cancel invoke
+    }
+    ::getstring::tk_getString .gs v Text:
+    set ::info
+} -cleanup {
+    unset -nocomplain ::info v
+} -result {1 1}
+
+test getstring-3.13 {other parent: centered in the parent toplevel} -setup {
+    unset -nocomplain ::info
+    toplevel .top
+    wm geometry .top 600x400+0+0
+    update
+} -body {
+    whenMapped .top.gs {
+	update
+	scan [wm geometry .top.gs] {%dx%d+%d+%d} w h x y
+	set dx [expr {abs($x + $w/2 - [winfo rootx .top] - 300)}]
+	set dy [expr {abs($y + $h/2 - [winfo rooty .top] - 200)}]
+	set ::info [list [expr {$dx <= 2}] [expr {$dy <= 2}]]
+	.top.gs.cancel invoke
+    }
+    ::getstring::tk_getString .top.gs v Text:
+    set ::info
+} -cleanup {
+    destroy .top
+    unset -nocomplain ::info v
+} -result {1 1}
+
+# -------------------------------------------------------------------------
+# Results
+
+test getstring-4.1 {OK returns 1 and sets the variable} -body {
+    whenMapped .gs {
+	typeText .gs.entry hello
+	.gs.ok invoke
+    }
+    list [::getstring::tk_getString .gs v Text:] $v [winfo exists .gs]
+} -cleanup {
+    unset -nocomplain v
+} -result {1 hello 0}
+
+test getstring-4.2 {Cancel returns 0, the variable still gets the text} -body {
+    whenMapped .gs {
+	typeText .gs.entry hello
+	.gs.cancel invoke
+    }
+    list [::getstring::tk_getString .gs v Text:] $v [winfo exists .gs]
+} -cleanup {
+    unset -nocomplain v
+} -result {0 hello 0}
+
+test getstring-4.3 {Return key presses OK} -body {
+    whenMapped .gs {
+	typeText .gs.entry abc
+	event generate .gs.entry <Return>
+    }
+    list [::getstring::tk_getString .gs v Text:] $v
+} -cleanup {
+    unset -nocomplain v
+} -result {1 abc}
+
+test getstring-4.4 {Escape key presses Cancel} -body {
+    whenMapped .gs {
+	typeText .gs.entry abc
+	event generate .gs.entry <Escape>
+    }
+    list [::getstring::tk_getString .gs v Text:] $v
+} -cleanup {
+    unset -nocomplain v
+} -result {0 abc}
+
+test getstring-4.5 {window manager close returns 0} -body {
+    whenMapped .gs {
+	typeText .gs.entry xyz
+	uplevel #0 [wm protocol .gs WM_DELETE_WINDOW]
+    }
+    list [::getstring::tk_getString .gs v Text:] $v [winfo exists .gs]
+} -cleanup {
+    unset -nocomplain v
+} -result {0 xyz 0}
+
+test getstring-4.6 {destroying the dialog returns 0} -constraints {
+    knownBug
+} -body {
+    whenMapped .gs {
+	destroy .gs
+    }
+    list [::getstring::tk_getString .gs v Text:] $v
+} -cleanup {
+    unset -nocomplain v
+} -result {0 {}}
+
+test getstring-4.7 {variable in the caller's scope} -body {
+    proc getit {} {
+	whenMapped .gs {
+	    typeText .gs.entry local
+	    .gs.ok invoke
+	}
+	set r [::getstring::tk_getString .gs localvar Text:]
+	list $r $localvar [info exists ::localvar]
+    }
+    getit
+} -cleanup {
+    rename getit {}
+} -result {1 local 0}
+
+test getstring-4.8 {array element and namespace variable} -setup {
+    namespace eval ::gstest {variable arr}
+} -body {
+    whenMapped .gs {
+	typeText .gs.entry el
+	.gs.ok invoke
+    }
+    ::getstring::tk_getString .gs ::gstest::arr(x) Text:
+    set ::gstest::arr(x)
+} -cleanup {
+    namespace delete ::gstest
+} -result el
+
+test getstring-4.9 {initial empty: OK disabled} -setup {
+    unset -nocomplain ::info
+} -body {
+    whenMapped .gs {
+	set ::info [.gs.ok cget -state]
+	# Invoking a disabled button does nothing, neither does Return
+	.gs.ok invoke
+	event generate .gs.entry <Return>
+	update
+	lappend ::info [winfo exists .gs]
+	.gs.cancel invoke
+    }
+    list [::getstring::tk_getString .gs v Text:] $::info $v
+} -cleanup {
+    unset -nocomplain ::info v
+} -result {0 {disabled 1} {}}
+
+test getstring-4.10 {typing enables OK, deleting everything disables it} -setup {
+    unset -nocomplain ::info
+} -body {
+    whenMapped .gs {
+	typeText .gs.entry a
+	set ::info [.gs.ok cget -state]
+	event generate .gs.entry <KeyPress> -keysym BackSpace
+	update
+	lappend ::info [.gs.entry get] [.gs.ok cget -state]
+	.gs.cancel invoke
+    }
+    ::getstring::tk_getString .gs v Text:
+    set ::info
+} -cleanup {
+    unset -nocomplain ::info v
+} -result {normal {} disabled}
+
+test getstring-4.11 {-allowempty 1: OK enabled with empty entry} -setup {
+    unset -nocomplain ::info
+} -body {
+    whenMapped .gs {
+	set ::info [.gs.ok cget -state]
+	.gs.ok invoke
+    }
+    list [::getstring::tk_getString .gs v Text: -allowempty 1] $v $::info
+} -cleanup {
+    unset -nocomplain ::info v
+} -result {1 {} normal}
+
+test getstring-4.12 {-allowempty false} -setup {
+    unset -nocomplain ::info
+} -body {
+    whenMapped .gs {
+	set ::info [.gs.ok cget -state]
+	.gs.cancel invoke
+    }
+    ::getstring::tk_getString .gs v Text: -allowempty false
+    set ::info
+} -cleanup {
+    unset -nocomplain ::info v
+} -result disabled
+
+test getstring-4.13 {non-ASCII text} -body {
+    whenMapped .gs {
+	.gs.entry insert end "їжак"
+	.gs.ok configure -state normal
+	.gs.ok invoke
+    }
+    list [::getstring::tk_getString .gs v "текст"] $v
+} -cleanup {
+    unset -nocomplain v
+} -result [list 1 "їжак"]
+
+test getstring-4.14 {called twice in a row} -body {
+    set res {}
+    foreach s {one two} {
+	whenMapped .gs [list typeText .gs.entry $s]
+	whenMapped .gs {after idle {.gs.ok invoke}}
+	lappend res [::getstring::tk_getString .gs v Text:] $v
+    }
+    set res
+} -cleanup {
+    unset -nocomplain v res s
+} -result {1 one 1 two}
+
+test getstring-4.15 {options may be repeated, the last one wins} -setup {
+    unset -nocomplain ::info
+} -body {
+    whenMapped .gs {
+	set ::info [wm title .gs]
+	.gs.cancel invoke
+    }
+    ::getstring::tk_getString .gs v Text: -title A -title B
+    set ::info
+} -cleanup {
+    unset -nocomplain ::info v
+} -result B
+
+# -------------------------------------------------------------------------
+
+rename whenMapped {}
+rename typeText {}
+
+::tcltest::cleanupTests
