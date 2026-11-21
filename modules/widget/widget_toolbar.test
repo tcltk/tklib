@@ -1,0 +1,422 @@
+# -*- tcl -*-
+# Tests for the widget::toolbar package
+#
+# Copyright (c) 2026 Serhiy Storchaka
+#
+# See the file "license.terms" for information on usage and redistribution
+# of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+package require tcltest 2.2
+namespace import ::tcltest::*
+
+lappend auto_path [file dirname [file dirname [file normalize [info script]]]]
+package require widget::toolbar
+
+# Geometry tests need a viewable main window (test runners withdraw it).
+set oldmainstate [wm state .]
+wm deiconify .
+update
+
+# -------------------------------------------------------------------------
+
+proc mktb {args} {
+    eval [list widget::toolbar .tb] $args
+    pack .tb -fill x
+    return .tb
+}
+
+proc gridinfo {w key} {
+    dict get [grid info $w] $key
+}
+
+# -------------------------------------------------------------------------
+# Creation and options
+
+test widget_toolbar-1.1 {creation: returns the path name} -body {
+    widget::toolbar .tb
+} -cleanup {
+    destroy .tb
+} -result .tb
+
+test widget_toolbar-1.2 {creation: default options} -body {
+    mktb
+    list [winfo class .tb] [.tb cget -ipad] [.tb cget -separator] \
+        [.tb cget -pad] [.tb items]
+} -cleanup {
+    destroy .tb
+} -result {Toolbar 2 {} {} {}}
+
+test widget_toolbar-1.3 {creation: unknown option} -body {
+    widget::toolbar .tb -nosuchoption 1
+} -returnCodes error -match glob -result {*unknown option "-nosuchoption"}
+
+test widget_toolbar-1.4 {getframe} -setup {
+    mktb
+} -body {
+    set f [.tb getframe]
+    list [winfo class $f] [winfo parent $f]
+} -cleanup {
+    destroy .tb
+    unset -nocomplain f
+} -result {TFrame .tb}
+
+test widget_toolbar-1.5 {-separator} -setup {
+    mktb
+} -body {
+    set res {}
+    foreach side {top bottom left right {}} {
+        .tb configure -separator $side
+        lappend res [.tb cget -separator] [winfo manager .tb.separator]
+        if {$side ne {}} {
+            lappend res [.tb.separator cget -orient]
+        }
+    }
+    set res
+} -cleanup {
+    destroy .tb
+    unset -nocomplain res side
+} -result {top grid horizontal bottom grid horizontal left grid vertical right grid vertical {} {}}
+
+test widget_toolbar-1.6 {-separator: bad value} -setup {
+    mktb
+} -body {
+    .tb configure -separator middle
+} -cleanup {
+    destroy .tb
+} -returnCodes error -result {invalid -separator value: invalid value "middle", should be one of: top, left, bottom, right, }
+
+test widget_toolbar-1.7 {-ipad} -setup {
+    mktb
+    .tb add button b1 -text B1
+} -body {
+    .tb configure -ipad {3 4}
+    list [.tb cget -ipad] [gridinfo [.tb itemid b1] -padx] \
+        [gridinfo [.tb itemid b1] -pady]
+} -cleanup {
+    destroy .tb
+} -result {{3 4} 3 4}
+
+test widget_toolbar-1.8 {-ipad: bad value} -setup {
+    mktb
+} -body {
+    list [catch {.tb configure -ipad x} msg] [catch {.tb configure -ipad {1 2 3 4 5}}]
+} -cleanup {
+    destroy .tb
+    unset -nocomplain msg
+} -result {1 1}
+
+test widget_toolbar-1.9 {-pad is the frame padding} -setup {
+    mktb
+} -body {
+    .tb configure -pad 5
+    list [.tb cget -pad] [[.tb getframe] cget -padding]
+} -cleanup {
+    destroy .tb
+} -result {5 5}
+
+# -------------------------------------------------------------------------
+# add
+
+test widget_toolbar-2.1 {add: item types} -setup {
+    mktb
+} -body {
+    set res {}
+    foreach {type sym} {button b label l checkbutton c radiobutton r separator s space sp} {
+        lappend res [.tb add $type $sym -weight 0] [winfo class [.tb itemid $sym]]
+    }
+    set res
+} -cleanup {
+    destroy .tb
+    unset -nocomplain res type sym
+} -result {b TButton l TLabel c TCheckbutton r TRadiobutton s TSeparator sp TFrame}
+
+test widget_toolbar-2.2 {add: Toolbutton style} -setup {
+    mktb
+} -body {
+    .tb add button b -text B
+    list [.tb itemcget b -style] [.tb itemcget b -takefocus]
+} -cleanup {
+    destroy .tb
+} -result {Toolbutton 0}
+
+test widget_toolbar-2.3 {add: widget options} -setup {
+    mktb
+    set pressed 0
+} -body {
+    .tb add button b -text Press -command {incr ::pressed}
+    [.tb itemid b] invoke
+    list [.tb itemcget b -text] $pressed
+} -cleanup {
+    destroy .tb
+    unset -nocomplain pressed
+} -result {Press 1}
+
+test widget_toolbar-2.4 {add: symbol without options} -constraints {
+    knownBug
+} -setup {
+    # The symbol is replaced with an automatic one if no options follow.
+    mktb
+} -body {
+    .tb add button mybutton
+} -cleanup {
+    destroy .tb
+} -result mybutton
+
+test widget_toolbar-2.5 {add: automatic symbol} -setup {
+    mktb
+} -body {
+    set s1 [.tb add button]
+    set s2 [.tb add button %AUTO% -text X]
+    list [string match _button* $s1] [string match _button* $s2] \
+        [expr {$s1 ne $s2}] [lsort [.tb items]] eq [lsort [list $s1 $s2]]
+} -cleanup {
+    destroy .tb
+    unset -nocomplain s1 s2
+} -match glob -result {1 1 1 * eq *}
+
+test widget_toolbar-2.6 {add: existing widget} -setup {
+    mktb
+    ttk::button .tb.mine -text Mine
+} -body {
+    set sym [.tb add .tb.mine]
+    list $sym [.tb itemid $sym] [winfo manager .tb.mine]
+} -cleanup {
+    destroy .tb
+    unset -nocomplain sym
+} -result {.tb.mine .tb.mine grid}
+
+test widget_toolbar-2.7 {add: duplicate symbol} -setup {
+    mktb
+    .tb add button b -text B
+} -body {
+    .tb add button b -text C
+} -cleanup {
+    destroy .tb
+} -returnCodes error -result {item 'b' already exists}
+
+test widget_toolbar-2.8 {add: unknown item type} -setup {
+    mktb
+} -body {
+    .tb add foo f -text F
+} -cleanup {
+    destroy .tb
+} -returnCodes error -result {unknown item type 'foo'}
+
+test widget_toolbar-2.9 {add: bad widget option destroys the item} -setup {
+    mktb
+} -body {
+    list [catch {.tb add button b -nosuchoption 1} msg] $msg \
+        [.tb items] [winfo children [.tb getframe]]
+} -cleanup {
+    destroy .tb
+    unset -nocomplain msg
+} -result {1 {unknown option "-nosuchoption"} {} {}}
+
+test widget_toolbar-2.10 {add: items are placed left to right} -setup {
+    mktb
+} -body {
+    .tb add button a -text A
+    .tb add button b -text B
+    .tb add button c -text C
+    list [gridinfo [.tb itemid a] -column] [gridinfo [.tb itemid b] -column] \
+        [gridinfo [.tb itemid c] -column]
+} -cleanup {
+    destroy .tb
+} -result {0 1 2}
+
+test widget_toolbar-2.11 {item option -separator} -setup {
+    mktb
+} -body {
+    .tb add button a -text A -separator 1
+    .tb add button b -text B -separator 1
+    set f [.tb getframe]
+    list [gridinfo [.tb itemid a] -column] [winfo exists $f._sep_button2] \
+        [gridinfo $f._sep_button2 -column] [gridinfo [.tb itemid b] -column]
+} -cleanup {
+    destroy .tb
+    unset -nocomplain f
+} -result {0 1 1 2}
+
+test widget_toolbar-2.12 {item options -sticky, -weight and -pad} -setup {
+    mktb
+} -body {
+    .tb add button a -text A -sticky w -weight 2 -pad {1 2}
+    set w [.tb itemid a]
+    list [gridinfo $w -sticky] [grid columnconfigure [.tb getframe] 0 -weight] \
+        [gridinfo $w -padx] [gridinfo $w -pady]
+} -cleanup {
+    destroy .tb
+    unset -nocomplain w
+} -result {w 2 1 2}
+
+test widget_toolbar-2.13 {item option -pad: bad value} -setup {
+    mktb
+} -body {
+    .tb add button a -text A -pad {1 x}
+} -cleanup {
+    destroy .tb
+} -returnCodes error -result {-pad requires a list of integers}
+
+test widget_toolbar-2.14 {space items expand by default} -setup {
+    mktb
+} -body {
+    .tb add space sp -width 1
+    grid columnconfigure [.tb getframe] 0 -weight
+} -cleanup {
+    destroy .tb
+} -result 1
+
+test widget_toolbar-2.15 {add: -- ends the item options} -setup {
+    mktb
+} -body {
+    .tb add button b -- -text Hi
+    .tb itemcget b -text
+} -cleanup {
+    destroy .tb
+} -result Hi
+
+# -------------------------------------------------------------------------
+# items, itemcget, itemconfigure, itemid
+
+test widget_toolbar-3.1 {items with a pattern} -setup {
+    mktb
+    .tb add button b1 -text 1
+    .tb add button b2 -text 2
+    .tb add label l1 -text 3
+} -body {
+    list [lsort [.tb items]] [lsort [.tb items b*]] [.tb items x*]
+} -cleanup {
+    destroy .tb
+} -result {{b1 b2 l1} {b1 b2} {}}
+
+test widget_toolbar-3.2 {itemcget: unknown item} -setup {
+    mktb
+} -body {
+    .tb itemcget nosuch -text
+} -cleanup {
+    destroy .tb
+} -returnCodes error -result {unknown toolbar item 'nosuch'}
+
+test widget_toolbar-3.3 {itemcget: bad option} -setup {
+    mktb
+    .tb add button b -text B
+} -body {
+    .tb itemcget b -nosuchoption
+} -cleanup {
+    destroy .tb
+} -returnCodes error -result {unknown option "-nosuchoption"}
+
+test widget_toolbar-3.4 {itemconfigure: one item} -setup {
+    mktb
+    .tb add button b -text B
+} -body {
+    .tb itemconfigure b -text C
+    list [.tb itemcget b -text] [lindex [.tb itemconfigure b -text] end]
+} -cleanup {
+    destroy .tb
+} -result {C C}
+
+test widget_toolbar-3.5 {itemconfigure: pattern} -setup {
+    mktb
+    .tb add button b1 -text 1
+    .tb add button b2 -text 2
+    .tb add label l1 -text 3
+} -body {
+    .tb itemconfigure b* -text X
+    list [.tb itemcget b1 -text] [.tb itemcget b2 -text] [.tb itemcget l1 -text]
+} -cleanup {
+    destroy .tb
+} -result {X X 3}
+
+test widget_toolbar-3.6 {itemid} -setup {
+    mktb
+    .tb add button b -text B
+} -body {
+    list [winfo class [.tb itemid b]] [catch {.tb itemid nosuch} msg] $msg
+} -cleanup {
+    destroy .tb
+    unset -nocomplain msg
+} -result {TButton 1 {unknown toolbar item 'nosuch'}}
+
+# -------------------------------------------------------------------------
+# remove and delete
+
+test widget_toolbar-4.1 {remove: the widget is kept} -setup {
+    mktb
+    .tb add button b -text B -separator 1
+    .tb add button c -text C -separator 1
+} -body {
+    set w [.tb itemid c]
+    .tb remove c
+    list [.tb items] [winfo exists $w] [winfo manager $w] \
+        [winfo exists [.tb getframe]._sep[winfo name $w]]
+} -cleanup {
+    destroy .tb
+    unset -nocomplain w
+} -result {b 1 {} 0}
+
+test widget_toolbar-4.2 {remove -destroy} -setup {
+    mktb
+    .tb add button b -text B
+    .tb add button c -text C
+} -body {
+    set w1 [.tb itemid b]
+    set w2 [.tb itemid c]
+    .tb remove -destroy b c
+    list [.tb items] [winfo exists $w1] [winfo exists $w2]
+} -cleanup {
+    destroy .tb
+    unset -nocomplain w1 w2
+} -result {{} 0 0}
+
+test widget_toolbar-4.3 {delete} -setup {
+    mktb
+    .tb add button b -text B
+} -body {
+    set w [.tb itemid b]
+    .tb delete b
+    list [.tb items] [winfo exists $w]
+} -cleanup {
+    destroy .tb
+    unset -nocomplain w
+} -result {{} 0}
+
+test widget_toolbar-4.4 {remove: unknown item} -setup {
+    mktb
+} -body {
+    .tb remove nosuch
+} -cleanup {
+    destroy .tb
+} -returnCodes error -match glob -result {*nosuch*}
+
+test widget_toolbar-4.5 {add again after remove} -setup {
+    mktb
+    .tb add button b -text B
+    .tb remove b
+} -body {
+    .tb add button b -text C
+    .tb itemcget b -text
+} -cleanup {
+    destroy .tb
+} -result C
+
+# -------------------------------------------------------------------------
+if {$oldmainstate eq "withdrawn"} {
+    wm withdraw .
+}
+unset oldmainstate
+rename mktb {}
+rename gridinfo {}
+::tcltest::cleanupTests

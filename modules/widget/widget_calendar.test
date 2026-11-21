@@ -1,0 +1,582 @@
+# -*- tcl -*-
+# Tests for the widget::calendar package
+#
+# Copyright (c) 2026 Serhiy Storchaka
+#
+# See the file "license.terms" for information on usage and redistribution
+# of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+package require tcltest 2.2
+namespace import ::tcltest::*
+
+lappend auto_path [file dirname [file dirname [file normalize [info script]]]]
+package require widget::calendar
+
+# Keyboard tests need a viewable main window (test runners withdraw it).
+set oldmainstate [wm state .]
+wm deiconify .
+update
+
+# Background errors would show a dialog and block the tests; collect them.
+set oldbgerror [interp bgerror {}]
+set bgerrors {}
+interp bgerror {} [list apply {{msg opts} {lappend ::bgerrors $msg}}]
+
+# -------------------------------------------------------------------------
+# Helpers
+
+proc mkcal {date args} {
+    unset -nocomplain ::d
+    set ::d $date
+    eval [list widget::calendar .c] $args [list -textvariable ::d]
+    pack .c
+    update
+    focus -force .c
+    update
+    return .c
+}
+
+proc keys {args} {
+    foreach k $args {
+        if {[string match Control-* $k]} {
+            event generate .c <KeyPress> -keysym [string range $k 8 end] \
+                -state 4
+        } else {
+            event generate .c <KeyPress> -keysym $k
+        }
+    }
+    update
+    set ::d
+}
+
+# Destroy the calendar.  Let the pending refresh run first, see
+# widget_calendar-1.15.
+proc destroyCal {} {
+    update idletasks
+    destroy .c
+}
+
+proc chosen {args} {
+    lappend ::chosen $args
+}
+
+proc today {{fmt %m/%d/%Y}} {
+    clock format [clock seconds] -format $fmt
+}
+
+# Texts of the canvas items with the given tag.
+proc texts {tag} {
+    update
+    set res {}
+    foreach item [.c find withtag $tag] {
+        if {[.c type $item] eq "text"} {
+            lappend res [.c itemcget $item -text]
+        }
+    }
+    set res
+}
+
+# -------------------------------------------------------------------------
+# Creation and options
+
+test widget_calendar-1.1 {creation: returns the path name} -body {
+    widget::calendar .c
+} -cleanup {
+    destroyCal
+} -result .c
+
+test widget_calendar-1.2 {creation: default options} -body {
+    widget::calendar .c
+    list [.c cget -command] [.c cget -dateformat] [.c cget -firstday] \
+        [.c cget -font] [.c cget -highlightcolor] [.c cget -language] \
+        [.c cget -shadecolor] [.c cget -showpast] [.c cget -textvariable]
+} -cleanup {
+    destroyCal
+} -result {{} %m/%d/%Y monday {Helvetica 9} #FFCC00 en #888888 1 {}}
+
+test widget_calendar-1.3 {creation: selected date is today} -body {
+    set before [today]
+    widget::calendar .c
+    set after [today]
+    expr {[.c get] in [list $before $after]}
+} -cleanup {
+    destroyCal
+    unset -nocomplain before after
+} -result 1
+
+test widget_calendar-1.4 {creation: canvas options are delegated} -body {
+    widget::calendar .c -background gray -cursor hand2
+    list [winfo class .c] [.c cget -background] [.c cget -cursor]
+} -cleanup {
+    destroyCal
+} -result {Canvas gray hand2}
+
+test widget_calendar-1.5 {creation: unknown option} -body {
+    widget::calendar .c -nosuchoption 1
+} -returnCodes error -match glob -result {*unknown option "-nosuchoption"}
+
+test widget_calendar-1.6 {-firstday: bad value} -setup {
+    widget::calendar .c
+} -body {
+    .c configure -firstday tuesday
+} -cleanup {
+    destroyCal
+} -returnCodes error -result {invalid -firstday value: invalid value "tuesday", should be one of: sunday, monday}
+
+test widget_calendar-1.7 {-firstday: weekday header} -setup {
+    mkcal 03/15/2024
+} -body {
+    set res [list [lindex [texts title] 1]]
+    .c configure -firstday sunday
+    lappend res [lindex [texts title] 1]
+} -cleanup {
+    destroyCal
+    unset -nocomplain res
+} -result {Mo Su}
+
+test widget_calendar-1.8 {-language: bad value} -setup {
+    widget::calendar .c
+} -body {
+    .c configure -language xx
+} -cleanup {
+    destroyCal
+} -returnCodes error -result {Unsupported language. Choose one of: de en es fr gr he it ja sv pl pt zh fi tr nl ru crk crx-nak crx-lhe}
+
+test widget_calendar-1.9 {-language: all documented languages} -constraints {
+    knownBug
+} -setup {
+    # The weekday names for gr and he are garbled in the source.
+    mkcal 03/15/2024
+} -body {
+    set res {}
+    foreach lang {de en es fr gr he it ja sv pl pt zh fi tr nl ru crk crx-nak crx-lhe} {
+        if {[catch {
+            .c configure -language $lang
+            update
+            llength [texts title]
+        } n]} {
+            lappend res $lang $n
+        } elseif {$n != 8} {
+            lappend res $lang $n
+        }
+    }
+    set res
+} -cleanup {
+    destroyCal
+    unset -nocomplain res lang n
+} -result {}
+
+test widget_calendar-1.9.1 {-language: languages with valid weekday names} -setup {
+    mkcal 03/15/2024
+} -body {
+    set res {}
+    foreach lang {de en es fr it ja sv pl pt zh fi tr nl ru crk crx-nak crx-lhe} {
+        if {[catch {
+            .c configure -language $lang
+            update
+            llength [texts title]
+        } n]} {
+            lappend res $lang $n
+        } elseif {$n != 8} {
+            lappend res $lang $n
+        }
+    }
+    set res
+} -cleanup {
+    destroyCal
+    unset -nocomplain res lang n
+} -result {}
+
+test widget_calendar-1.10 {-language: month title} -setup {
+    mkcal 03/15/2024
+} -body {
+    set res [list [lindex [texts title] 0]]
+    .c configure -language de
+    lappend res [lindex [texts title] 0]
+} -cleanup {
+    destroyCal
+    unset -nocomplain res
+} -result {{March 2024} {März 2024}}
+
+test widget_calendar-1.11 {-showpast: boolean} -setup {
+    widget::calendar .c
+} -body {
+    .c configure -showpast 0
+    set res [list [.c cget -showpast]]
+    lappend res [catch {.c configure -showpast foo} msg] $msg
+} -cleanup {
+    destroyCal
+    unset -nocomplain res msg
+} -match glob -result {0 1 {invalid -showpast value: *}}
+
+test widget_calendar-1.12 {-highlightcolor and -shadecolor} -setup {
+    mkcal 03/15/2024 -highlightcolor red -shadecolor blue
+} -body {
+    update
+    set hl [lindex [.c find withtag highlight] 0]
+    set sh [lindex [.c find withtag shadetext] 0]
+    list [.c itemcget $hl -fill] [.c itemcget $sh -fill]
+} -cleanup {
+    destroyCal
+    unset -nocomplain hl sh
+} -result {red blue}
+
+test widget_calendar-1.13 {-font} -setup {
+    mkcal 03/15/2024
+} -body {
+    .c configure -font {Courier 12}
+    update
+    list [.c cget -font] [.c itemcget [lindex [.c find withtag day] 0] -font]
+} -cleanup {
+    destroyCal
+} -result {{Courier 12} {Courier 12}}
+
+test widget_calendar-1.14 {days of the month are shown} -setup {
+    mkcal 02/15/2024
+} -body {
+    set days [texts day]
+    list [llength $days] [lindex $days 0] [lindex $days end]
+} -cleanup {
+    destroyCal
+    unset -nocomplain days
+} -result {29 1 29}
+
+test widget_calendar-1.15 {destroy before the idle refresh} -constraints {
+    knownBug
+} -setup {
+    # The pending refresh is not cancelled by the destructor and fails
+    # with 'namespace "::widget::calendar::Snit_inst..." not found'.
+    set bgerrors {}
+} -body {
+    widget::calendar .c
+    destroy .c
+    update
+    set bgerrors
+} -cleanup {
+    set bgerrors {}
+} -result {}
+
+test widget_calendar-1.16 {-textvariable before -dateformat} -constraints {
+    knownBug
+} -setup {
+    # The variable is parsed with the default format.
+    set d 2024-03-05
+} -body {
+    widget::calendar .c -textvariable d -dateformat %Y-%m-%d
+    .c get
+} -cleanup {
+    destroyCal
+    unset -nocomplain d
+} -result 2024-03-05
+
+# -------------------------------------------------------------------------
+# get
+
+test widget_calendar-2.1 {get: parts of the date} -setup {
+    mkcal 03/05/2024
+} -body {
+    list [.c get] [.c get all] [.c get day] [.c get month] [.c get year]
+} -cleanup {
+    destroyCal
+} -result {03/05/2024 03/05/2024 5 3 2024}
+
+test widget_calendar-2.2 {get: bad part} -setup {
+    widget::calendar .c
+} -body {
+    .c get foo
+} -cleanup {
+    destroyCal
+} -returnCodes error -result {unknown component to retrieve "foo", must be one of day, month or year}
+
+test widget_calendar-2.3 {get: -dateformat} -setup {
+    mkcal 2024-03-05 -dateformat %Y-%m-%d
+} -body {
+    set res [list [.c get]]
+    .c configure -dateformat %d.%m.%Y
+    lappend res [.c get]
+} -cleanup {
+    destroyCal
+    unset -nocomplain res
+} -result {2024-03-05 05.03.2024}
+
+# -------------------------------------------------------------------------
+# -textvariable
+
+test widget_calendar-3.1 {-textvariable: initialized if unset} -body {
+    unset -nocomplain d
+    set before [today]
+    widget::calendar .c -textvariable d
+    set after [today]
+    list [expr {$d in [list $before $after]}] [expr {[.c get] eq $d}]
+} -cleanup {
+    destroyCal
+    unset -nocomplain d before after
+} -result {1 1}
+
+test widget_calendar-3.2 {-textvariable: setting the variable selects the date} -setup {
+    mkcal 03/05/2024
+} -body {
+    set d 12/25/2023
+    update
+    list [.c get] [.c get day] [.c get month] [.c get year]
+} -cleanup {
+    destroyCal
+} -result {12/25/2023 25 12 2023}
+
+test widget_calendar-3.3 {-textvariable: namespace variable} -setup {
+    namespace eval ::caltest {variable v 07/04/1976}
+} -body {
+    widget::calendar .c -textvariable ::caltest::v
+    set res [list [.c get]]
+    set ::caltest::v 01/01/2000
+    lappend res [.c get]
+} -cleanup {
+    destroyCal
+    namespace delete ::caltest
+    unset -nocomplain res
+} -result {07/04/1976 01/01/2000}
+
+test widget_calendar-3.4 {-textvariable: trace removed on destroy} -setup {
+    mkcal 03/05/2024
+} -body {
+    destroyCal
+    set d 01/01/2000
+    trace info variable d
+} -cleanup {
+    unset -nocomplain d
+} -result {}
+
+test widget_calendar-3.5 {-textvariable: change to another variable} -setup {
+    mkcal 03/05/2024
+    set d2 06/07/2008
+} -body {
+    .c configure -textvariable d2
+    set res [list [.c get] [.c cget -textvariable]]
+    set d 01/01/2000
+    lappend res [.c get]
+} -cleanup {
+    destroyCal
+    unset -nocomplain d2 res
+} -result {06/07/2008 ::d2 06/07/2008}
+
+# -------------------------------------------------------------------------
+# Key bindings
+
+test widget_calendar-4.1 {Left and Right} -setup {
+    mkcal 03/15/2024
+} -body {
+    list [keys Left] [keys Right Right]
+} -cleanup {
+    destroyCal
+} -result {03/14/2024 03/16/2024}
+
+test widget_calendar-4.1.1 {Left from the 1st, Right from the last day} -constraints {
+    knownBug
+} -setup {
+    # The day becomes 0 (the last day of the month before).
+    mkcal 03/01/2024
+} -body {
+    list [keys Left] [keys Right]
+} -cleanup {
+    destroyCal
+} -result {02/29/2024 03/01/2024}
+
+test widget_calendar-4.2 {Up and Down} -setup {
+    mkcal 03/15/2024
+} -body {
+    list [keys Up] [keys Down Down] [keys Down Down]
+} -cleanup {
+    destroyCal
+} -result {03/08/2024 03/22/2024 04/05/2024}
+
+test widget_calendar-4.3 {Up across a year boundary} -setup {
+    mkcal 01/03/2024
+} -body {
+    keys Up
+} -cleanup {
+    destroyCal
+} -result 12/27/2023
+
+test widget_calendar-4.4 {Down across a year boundary} -setup {
+    mkcal 12/28/2023
+} -body {
+    keys Down
+} -cleanup {
+    destroyCal
+} -result 01/04/2024
+
+test widget_calendar-4.5 {Up from the 7th} -constraints {
+    knownBug
+} -setup {
+    # The day becomes 0: 01/31/2024 with Tcl 8.6, error with Tcl 9.
+    set bgerrors {}
+    mkcal 03/07/2024
+} -body {
+    list [keys Up] $bgerrors
+} -cleanup {
+    destroyCal
+    set bgerrors {}
+} -result {02/29/2024 {}}
+
+test widget_calendar-4.6 {Control-Left and Control-Right} -setup {
+    mkcal 03/15/2024
+} -body {
+    list [keys Control-Left] [keys Control-Right Control-Right] \
+        [keys Control-Right Control-Right Control-Right Control-Right \
+             Control-Right Control-Right Control-Right Control-Right \
+             Control-Right Control-Right]
+} -cleanup {
+    destroyCal
+} -result {02/15/2024 04/15/2024 02/15/2025}
+
+test widget_calendar-4.7 {Control-Right from the 31st} -constraints {
+    knownBug
+} -setup {
+    # The day is not clamped to the end of the month: 03/02/2024.
+    mkcal 01/31/2024
+} -body {
+    keys Control-Right
+} -cleanup {
+    destroyCal
+} -result 02/29/2024
+
+test widget_calendar-4.8 {Control-Up and Control-Down} -setup {
+    mkcal 03/15/2024
+} -body {
+    list [keys Control-Up] [keys Control-Down] [keys Control-Down]
+} -cleanup {
+    destroyCal
+} -result {03/15/2023 03/15/2024 03/15/2025}
+
+test widget_calendar-4.8.1 {Control-Up from February 29} -constraints {
+    knownBug
+} -setup {
+    # The day is not clamped to the end of the month: 03/01/2023.
+    mkcal 02/29/2024
+} -body {
+    keys Control-Up
+} -cleanup {
+    destroyCal
+} -result 02/28/2023
+
+test widget_calendar-4.9 {Home moves to the current date} -setup {
+    mkcal 03/15/2000
+} -body {
+    set before [today]
+    keys Home
+    set after [today]
+    list [expr {$d in [list $before $after]}] [expr {[.c get] eq $d}]
+} -cleanup {
+    destroyCal
+    unset -nocomplain before after
+} -result {1 1}
+
+test widget_calendar-4.10 {keys invoke -command} -setup {
+    set chosen {}
+    mkcal 03/15/2024 -command chosen
+} -body {
+    keys Left Return space KP_Enter
+    set chosen
+} -cleanup {
+    destroyCal
+    unset -nocomplain chosen
+} -result {03/14/2024 03/14/2024 03/14/2024 03/14/2024}
+
+test widget_calendar-4.11 {-enablecmdonkey 0} -setup {
+    set chosen {}
+    mkcal 03/15/2024 -command chosen -enablecmdonkey 0
+} -body {
+    set res [list [keys Left]]
+    lappend res $chosen [.c get]
+    keys Return
+    lappend res $chosen $d
+} -cleanup {
+    destroyCal
+    unset -nocomplain chosen res
+} -result {03/15/2024 {} 03/14/2024 03/14/2024 03/14/2024}
+
+test widget_calendar-4.12 {-command with -dateformat} -setup {
+    set chosen {}
+    mkcal 2024-03-15 -command chosen -dateformat %Y-%m-%d
+} -body {
+    keys Right
+    set chosen
+} -cleanup {
+    destroyCal
+    unset -nocomplain chosen
+} -result 2024-03-16
+
+# -------------------------------------------------------------------------
+# Mouse
+
+test widget_calendar-5.1 {clicking a day selects it} -setup {
+    set chosen {}
+    mkcal 03/15/2024 -command chosen
+} -body {
+    foreach item [.c find withtag day] {
+        if {[.c type $item] eq "text" && [.c itemcget $item -text] eq "20"} {
+            break
+        }
+    }
+    foreach {x1 y1 x2 y2} [.c bbox $item] break
+    set x [expr {($x1 + $x2) / 2}]
+    set y [expr {($y1 + $y2) / 2}]
+    event generate .c <Motion> -x $x -y $y
+    event generate .c <ButtonPress-1> -x $x -y $y
+    event generate .c <ButtonRelease-1> -x $x -y $y
+    update
+    list $d $chosen [.c get day]
+} -cleanup {
+    destroyCal
+    unset -nocomplain chosen item x1 y1 x2 y2 x y
+} -result {03/20/2024 03/20/2024 20}
+
+test widget_calendar-5.2 {clicking the arrow buttons} -setup {
+    mkcal 03/15/2024
+} -body {
+    set res {}
+    foreach item [.c find withtag cbutton] {
+        foreach {x1 y1 x2 y2} [.c bbox $item] break
+        set x [expr {($x1 + $x2) / 2}]
+        set y [expr {($y1 + $y2) / 2}]
+        event generate .c <Motion> -x $x -y $y
+        event generate .c <ButtonPress-1> -x $x -y $y
+        event generate .c <ButtonRelease-1> -x $x -y $y
+        update
+        lappend res $d
+    }
+    set res
+} -cleanup {
+    destroyCal
+    unset -nocomplain res item x1 y1 x2 y2 x y
+} -result {03/15/2023 02/15/2023 02/15/2024 03/15/2024}
+
+# -------------------------------------------------------------------------
+
+test widget_calendar-9.1 {no background errors in the tests above} -body {
+    update
+    set bgerrors
+} -result {}
+
+# -------------------------------------------------------------------------
+if {$oldmainstate eq "withdrawn"} {
+    wm withdraw .
+}
+unset oldmainstate
+interp bgerror {} $oldbgerror
+unset oldbgerror bgerrors
+foreach p {mkcal keys chosen today texts} {rename $p {}}
+unset -nocomplain p d
+::tcltest::cleanupTests

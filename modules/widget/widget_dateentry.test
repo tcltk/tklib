@@ -1,0 +1,526 @@
+# -*- tcl -*-
+# Tests for the widget::dateentry package
+#
+# Copyright (c) 2026 Serhiy Storchaka
+#
+# See the file "license.terms" for information on usage and redistribution
+# of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+package require tcltest 2.2
+namespace import ::tcltest::*
+
+lappend auto_path [file dirname [file dirname [file normalize [info script]]]]
+package require widget::dateentry
+
+# Posting the calendar needs a viewable main window (test runners
+# withdraw it).
+set oldmainstate [wm state .]
+wm deiconify .
+update
+
+# Background errors would show a dialog and block the tests; collect them.
+set oldbgerror [interp bgerror {}]
+set bgerrors {}
+interp bgerror {} [list apply {{msg opts} {lappend ::bgerrors $msg}}]
+
+# -------------------------------------------------------------------------
+# Helpers
+
+proc mkde {args} {
+    eval [list widget::dateentry .de] $args
+    pack .de
+    update
+    return .de
+}
+
+proc destroyDe {} {
+    catch {.de unpost}
+    update idletasks
+    destroy .de
+}
+
+# Post the calendar, send keys to it and wait until it is closed.
+proc choose {args} {
+    .de post
+    update
+    foreach k $args {
+        if {[string match Control-* $k]} {
+            event generate .de.__drop.calendar <KeyPress> \
+                -keysym [string range $k 8 end] -state 4
+        } else {
+            event generate .de.__drop.calendar <KeyPress> -keysym $k
+        }
+    }
+    update
+}
+
+proc chosen {args} {
+    lappend ::chosen $args
+}
+
+proc today {{fmt %m/%d/%Y}} {
+    clock format [clock seconds] -format $fmt
+}
+
+# -------------------------------------------------------------------------
+# Creation and options
+
+test widget_dateentry-1.1 {creation: returns the path name} -body {
+    widget::dateentry .de
+} -cleanup {
+    destroyDe
+} -result .de
+
+test widget_dateentry-1.2 {creation: ttk::entry based} -body {
+    widget::dateentry .de
+    list [winfo class .de] [.de cget -style] [.de instate readonly]
+} -cleanup {
+    destroyDe
+} -result {TEntry dateentry 1}
+
+test widget_dateentry-1.3 {creation: default options} -body {
+    widget::dateentry .de
+    list [.de cget -command] [.de cget -dateformat] [.de cget -font] \
+        [.de cget -language] [.de cget -textvariable] [.de cget -firstday] \
+        [.de cget -highlightcolor] [.de cget -shadecolor] [.de cget -showpast]
+} -cleanup {
+    destroyDe
+} -result {{} %m/%d/%Y {Helvetica 9} en {} monday #FFCC00 #888888 1}
+
+test widget_dateentry-1.4 {creation: shows today} -body {
+    set before [today]
+    widget::dateentry .de
+    set after [today]
+    expr {[.de get] in [list $before $after]}
+} -cleanup {
+    destroyDe
+    unset -nocomplain before after
+} -result 1
+
+test widget_dateentry-1.5 {creation: -dateformat} -body {
+    set before [today %Y-%m-%d]
+    widget::dateentry .de -dateformat %Y-%m-%d
+    set after [today %Y-%m-%d]
+    expr {[.de get] in [list $before $after]}
+} -cleanup {
+    destroyDe
+    unset -nocomplain before after
+} -result 1
+
+test widget_dateentry-1.6 {creation: unknown option} -body {
+    widget::dateentry .de -nosuchoption 1
+} -cleanup {
+    destroyDe
+    # The calendar is destroyed with a pending refresh, which fails in
+    # the background (see widget_calendar-1.15).
+    update
+    set bgerrors {}
+} -returnCodes error -match glob -result {*unknown option "-nosuchoption"}
+
+test widget_dateentry-1.7 {options are passed to the calendar} -setup {
+    mkde
+} -body {
+    .de configure -firstday sunday -highlightcolor red -shadecolor blue \
+        -showpast 0 -language de -font {Courier 10} -dateformat %d.%m.%Y
+    set c .de.__drop.calendar
+    list [$c cget -firstday] [$c cget -highlightcolor] [$c cget -shadecolor] \
+        [$c cget -showpast] [$c cget -language] [$c cget -font] \
+        [$c cget -dateformat]
+} -cleanup {
+    destroyDe
+    unset -nocomplain c
+} -result {sunday red blue 0 de {Courier 10} %d.%m.%Y}
+
+test widget_dateentry-1.8 {entry commands are available} -setup {
+    mkde
+    .de set 05/06/2020
+} -body {
+    list [.de index end] [.de cget -width] [.de get]
+} -cleanup {
+    destroyDe
+} -match glob -result {10 * 05/06/2020}
+
+test widget_dateentry-1.9 {the entry is read-only} -setup {
+    mkde
+    .de set 05/06/2020
+} -body {
+    .de insert end x
+    .de get
+} -cleanup {
+    destroyDe
+} -result 05/06/2020
+
+# -------------------------------------------------------------------------
+# set and get
+
+test widget_dateentry-2.1 {set: wrong # args} -setup {
+    mkde
+} -body {
+    .de set
+} -cleanup {
+    destroyDe
+} -returnCodes error -result {wrong # args: should be ".de set date"}
+
+test widget_dateentry-2.2 {set and get} -setup {
+    mkde
+} -body {
+    list [.de set 12/24/1999] [.de get]
+} -cleanup {
+    destroyDe
+} -result {{} 12/24/1999}
+
+test widget_dateentry-2.3 {set: date in -dateformat} -setup {
+    mkde -dateformat %d.%m.%Y
+} -body {
+    .de set 24.12.1999
+    .de get
+} -cleanup {
+    destroyDe
+} -result 24.12.1999
+
+test widget_dateentry-2.4 {set: date in a wrong format} -setup {
+    mkde
+} -body {
+    .de set 1999-12-24
+} -cleanup {
+    destroyDe
+} -returnCodes error -result {input string does not match supplied format}
+
+test widget_dateentry-2.5 {set: the calendar follows} -setup {
+    mkde
+} -body {
+    .de set 12/24/1999
+    .de.__drop.calendar get
+} -cleanup {
+    destroyDe
+} -result 12/24/1999
+
+# -------------------------------------------------------------------------
+# -textvariable
+
+test widget_dateentry-3.1 {-textvariable: setting the variable sets the date} -setup {
+    set ::v {}
+    mkde -textvariable ::v
+} -body {
+    set ::v 07/04/1976
+    .de get
+} -cleanup {
+    destroyDe
+    unset -nocomplain ::v
+} -result 07/04/1976
+
+test widget_dateentry-3.2 {-textvariable: initial value is shown} -constraints {
+    knownBug
+} -setup {
+    # The widget shows today and ignores the value of the variable.
+    set ::v 07/04/1976
+} -body {
+    mkde -textvariable ::v
+    list [.de get] $::v
+} -cleanup {
+    destroyDe
+    unset -nocomplain ::v
+} -result {07/04/1976 07/04/1976}
+
+test widget_dateentry-3.3 {-textvariable: set method updates the variable} -constraints {
+    knownBug
+} -setup {
+    # The documentation says that the variable is linked in both
+    # directions.
+    set ::v 07/04/1976
+    mkde -textvariable ::v
+} -body {
+    .de set 01/01/2000
+    set ::v
+} -cleanup {
+    destroyDe
+    unset -nocomplain ::v
+} -result 01/01/2000
+
+test widget_dateentry-3.4 {-textvariable: choosing a date updates the variable} -setup {
+    set ::v {}
+    mkde -textvariable ::v
+    .de set 05/06/2020
+} -body {
+    choose Right Return
+    list [.de get] $::v
+} -cleanup {
+    destroyDe
+    unset -nocomplain ::v
+} -result {05/07/2020 05/07/2020}
+
+test widget_dateentry-3.5 {-textvariable: not fully qualified name} -constraints {
+    knownBug
+} -setup {
+    # The variable is linked with "upvar 0", so a name which is not
+    # fully qualified refers to a local variable.
+    set v {}
+    mkde -textvariable v
+    .de set 05/06/2020
+} -body {
+    choose Right Return
+    list [.de get] $v
+} -cleanup {
+    destroyDe
+    unset -nocomplain v
+} -result {05/07/2020 05/07/2020}
+
+test widget_dateentry-3.6 {-textvariable: array element} -constraints {
+    knownBug
+} -setup {
+    # Ticket fa6fbae045: dateentry does not accept an array element as
+    # -textvariable.
+    array set arr {}
+    mkde -textvariable arr(x)
+    .de set 05/06/2020
+} -body {
+    choose Right Return
+    set res [list [.de get] [array get arr]]
+    set arr(x) 01/02/2003
+    lappend res [.de get]
+} -cleanup {
+    destroyDe
+    unset -nocomplain arr res
+} -result {05/07/2020 {x 05/07/2020} 01/02/2003}
+
+test widget_dateentry-3.7 {-textvariable: array element, fully qualified} -setup {
+    array set ::arr {}
+    mkde -textvariable ::arr(x)
+    .de set 05/06/2020
+} -body {
+    choose Right Return
+    set res [list [.de get] [array get ::arr]]
+    set ::arr(x) 01/02/2003
+    lappend res [.de get]
+} -cleanup {
+    destroyDe
+    unset -nocomplain ::arr res
+} -result {05/07/2020 {x 05/07/2020} 01/02/2003}
+
+test widget_dateentry-3.8 {-textvariable: trace removed on destroy} -setup {
+    set ::v {}
+    mkde -textvariable ::v
+} -body {
+    destroyDe
+    trace info variable ::v
+} -cleanup {
+    unset -nocomplain ::v
+} -result {}
+
+test widget_dateentry-3.9 {-textvariable: change to another variable} -setup {
+    set ::v {}
+    set ::v2 {}
+    mkde -textvariable ::v
+} -body {
+    .de configure -textvariable ::v2
+    set ::v 01/01/2000
+    set ::v2 02/02/2002
+    list [.de get] [trace info variable ::v]
+} -cleanup {
+    destroyDe
+    unset -nocomplain ::v ::v2
+} -result {02/02/2002 {}}
+
+# -------------------------------------------------------------------------
+# Calendar popup
+
+test widget_dateentry-4.1 {post and unpost} -setup {
+    mkde
+} -body {
+    .de post
+    update
+    set res [list [wm state .de.__drop] [grab current .de]]
+    .de unpost
+    update
+    lappend res [wm state .de.__drop] [grab current .de]
+} -cleanup {
+    destroyDe
+    unset -nocomplain res
+} -result {normal .de.__drop withdrawn {}}
+
+test widget_dateentry-4.2 {post: popup is below the entry} -setup {
+    mkde
+} -body {
+    .de post
+    update
+    list [expr {[winfo rooty .de.__drop] >= [winfo rooty .de] + [winfo height .de]}] \
+        [expr {abs([winfo rootx .de.__drop] - [winfo rootx .de]) <= 1}]
+} -cleanup {
+    destroyDe
+} -result {1 1}
+
+test widget_dateentry-4.3 {post: disabled widget} -setup {
+    mkde
+} -body {
+    .de state disabled
+    .de post
+    update
+    wm state .de.__drop
+} -cleanup {
+    destroyDe
+} -result withdrawn
+
+test widget_dateentry-4.4 {Return chooses the date} -setup {
+    mkde
+    .de set 05/06/2020
+} -body {
+    choose Down Return
+    list [.de get] [wm state .de.__drop]
+} -cleanup {
+    destroyDe
+} -result {05/13/2020 withdrawn}
+
+test widget_dateentry-4.5 {space chooses the date} -setup {
+    mkde
+    .de set 05/06/2020
+} -body {
+    choose Up space
+    list [.de get] [wm state .de.__drop]
+} -cleanup {
+    destroyDe
+} -result {04/29/2020 withdrawn}
+
+test widget_dateentry-4.6 {Escape closes without choosing} -setup {
+    mkde
+    .de set 05/06/2020
+} -body {
+    choose Right Escape
+    list [.de get] [wm state .de.__drop]
+} -cleanup {
+    destroyDe
+} -result {05/06/2020 withdrawn}
+
+test widget_dateentry-4.7 {navigation keys do not choose} -setup {
+    set chosen {}
+    mkde -command chosen
+    .de set 05/06/2020
+} -body {
+    choose Right Control-Right
+    list [.de get] [wm state .de.__drop] $chosen
+} -cleanup {
+    destroyDe
+    unset -nocomplain chosen
+} -result {05/06/2020 normal {}}
+
+test widget_dateentry-4.8 {Control-space posts the calendar} -setup {
+    mkde
+    focus -force .de
+    update
+} -body {
+    event generate .de <KeyPress> -keysym space -state 4
+    update
+    wm state .de.__drop
+} -cleanup {
+    destroyDe
+} -result normal
+
+test widget_dateentry-4.9 {Button-1 posts the calendar} -setup {
+    mkde
+} -body {
+    event generate .de <ButtonPress-1> -x 5 -y 5
+    update
+    wm state .de.__drop
+} -cleanup {
+    destroyDe
+} -result normal
+
+test widget_dateentry-4.10 {Button-1 on a day chooses it} -setup {
+    mkde
+    .de set 05/06/2020
+    .de post
+    update
+} -body {
+    set c .de.__drop.calendar
+    foreach item [$c find withtag day] {
+        if {[$c type $item] eq "text" && [$c itemcget $item -text] eq "20"} {
+            break
+        }
+    }
+    foreach {x1 y1 x2 y2} [$c bbox $item] break
+    set x [expr {($x1 + $x2) / 2}]
+    set y [expr {($y1 + $y2) / 2}]
+    event generate $c <Motion> -x $x -y $y
+    event generate $c <ButtonPress-1> -x $x -y $y
+    event generate $c <ButtonRelease-1> -x $x -y $y
+    update
+    list [.de get] [wm state .de.__drop]
+} -cleanup {
+    destroyDe
+    unset -nocomplain c item x1 y1 x2 y2 x y
+} -result {05/20/2020 withdrawn}
+
+# -------------------------------------------------------------------------
+# -command
+
+test widget_dateentry-5.1 {-command: arguments} -constraints {
+    knownBug
+} -setup {
+    # The documentation says that the raw date is passed first and the
+    # formatted date second, but the order is reversed.
+    set chosen {}
+    mkde -command chosen
+    .de set 05/06/2020
+} -body {
+    choose Right Return
+    set raw [clock scan 05/07/2020 -format %m/%d/%Y]
+    expr {$chosen eq [list [list $raw 05/07/2020]]}
+} -cleanup {
+    destroyDe
+    unset -nocomplain chosen raw
+} -result 1
+
+test widget_dateentry-5.2 {-command: called once per choice} -setup {
+    set chosen {}
+    mkde -command chosen -dateformat %Y-%m-%d
+    .de set 2020-05-06
+} -body {
+    choose Right Return
+    set res [list [llength $chosen]]
+    lappend res [expr {"2020-05-07" in [lindex $chosen 0]}]
+} -cleanup {
+    destroyDe
+    unset -nocomplain chosen res
+} -result {1 1}
+
+test widget_dateentry-5.3 {-command: called in the global namespace} -setup {
+    namespace eval ::detest {
+        proc cmd {args} {set ::detest::ns [uplevel 1 {namespace current}]}
+    }
+    mkde -command ::detest::cmd
+} -body {
+    choose Return
+    set ::detest::ns
+} -cleanup {
+    destroyDe
+    namespace delete ::detest
+} -result ::
+
+# -------------------------------------------------------------------------
+
+test widget_dateentry-9.1 {no background errors in the tests above} -body {
+    update
+    set bgerrors
+} -result {}
+
+# -------------------------------------------------------------------------
+interp bgerror {} $oldbgerror
+unset oldbgerror bgerrors
+if {$oldmainstate eq "withdrawn"} {
+    wm withdraw .
+}
+unset oldmainstate
+foreach p {mkde destroyDe choose chosen today} {rename $p {}}
+unset p
+::tcltest::cleanupTests

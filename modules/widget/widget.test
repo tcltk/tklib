@@ -1,0 +1,462 @@
+# -*- tcl -*-
+# Tests for the widget package and the megawidgets listed in widget.man
+#
+# Copyright (c) 2026 Serhiy Storchaka
+#
+# See the file "license.terms" for information on usage and redistribution
+# of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+package require tcltest 2.2
+namespace import ::tcltest::*
+
+lappend auto_path [file dirname [file dirname [file normalize [info script]]]]
+package require widget
+
+# Geometry tests need a viewable main window (test runners withdraw it).
+set oldmainstate [wm state .]
+wm deiconify .
+update
+
+# -------------------------------------------------------------------------
+# widget::validate (documented) and widget::isa (implementation)
+
+test widget-1.1 {widget::validate exists} -constraints {
+    knownBug
+} -body {
+    # The man page documents widget::validate, but the command is
+    # named widget::isa.
+    widget::validate integer {0 10} -opt 5
+} -result {}
+
+test widget-1.2 {isa: no arguments} -body {
+    widget::isa
+} -returnCodes error -result {wrong # args: should be "widget::isa as ?arg ...?"}
+
+test widget-1.3 {isa: unknown type} -body {
+    widget::isa foo {} -opt 1
+} -returnCodes error -result {unknown validate type "foo"}
+
+test widget-1.4 {isa list: valid} -body {
+    widget::isa list {a b c} -opt b
+} -result {}
+
+test widget-1.5 {isa list: invalid} -body {
+    widget::isa list {a b c} -opt d
+} -returnCodes error -result {invalid -opt option "d", must be one of a, b, c}
+
+test widget-1.6 {isa list: exact match only} -body {
+    widget::isa list {a* b} -opt ab
+} -returnCodes error -result {invalid -opt option "ab", must be one of a*, b}
+
+test widget-1.7 {isa boolean: valid} -body {
+    set res {}
+    foreach v {0 1 yes no true false on off} {
+        lappend res [widget::isa boolean -opt $v] [widget::isa bool -opt $v]
+    }
+    lsort -unique $res
+} -cleanup {
+    unset -nocomplain res v
+} -result {{}}
+
+test widget-1.8 {isa boolean: invalid} -body {
+    list [catch {widget::isa boolean -opt maybe} msg] $msg \
+        [catch {widget::isa bool -opt {}} msg] $msg
+} -cleanup {
+    unset -nocomplain msg
+} -result {1 {-opt requires a boolean value} 1 {-opt requires a boolean value}}
+
+test widget-1.9 {isa integer: valid} -body {
+    list [widget::isa integer {0 10} -opt 0] [widget::isa int {0 10} -opt 10] \
+        [widget::isa integer {-5 5} -opt -5]
+} -result {{} {} {}}
+
+test widget-1.10 {isa integer: out of range} -body {
+    list [catch {widget::isa integer {0 10} -opt 11} msg] $msg \
+        [catch {widget::isa int {0 10} -opt -1} msg] $msg
+} -cleanup {
+    unset -nocomplain msg
+} -result {1 {-opt requires an integer in the range [0 .. 10]} 1 {-opt requires an integer in the range [0 .. 10]}}
+
+test widget-1.11 {isa integer: not an integer} -body {
+    list [catch {widget::isa integer {0 10} -opt 1.5} msg] $msg \
+        [catch {widget::isa integer {0 10} -opt {}} msg] $msg
+} -cleanup {
+    unset -nocomplain msg
+} -result {1 {-opt requires an integer in the range [0 .. 10]} 1 {-opt requires an integer in the range [0 .. 10]}}
+
+test widget-1.12 {isa listofinteger: valid} -body {
+    list [widget::isa listofinteger {} -opt {1 2 3}] \
+        [widget::isa listofint 2 -opt {1 2}] [widget::isa listofint 2 -opt {}]
+} -result {{} {} {}}
+
+test widget-1.13 {isa listofinteger: invalid} -body {
+    list [catch {widget::isa listofinteger {} -opt {1 a}} msg] $msg \
+        [catch {widget::isa listofint 2 -opt {1 2 3}} msg] $msg
+} -cleanup {
+    unset -nocomplain msg
+} -result {1 {-opt requires a list of integers} 1 {-opt requires a list of integers}}
+
+test widget-1.14 {isa double: valid} -body {
+    list [widget::isa double {0 1} -opt 0.5] [widget::isa double {0 1} -opt 1] \
+        [widget::isa double {0 1} -opt 0]
+} -result {{} {} {}}
+
+test widget-1.15 {isa double: invalid} -body {
+    list [catch {widget::isa double {0 1} -opt 1.5} msg] $msg \
+        [catch {widget::isa double {0 1} -opt x} msg] $msg
+} -cleanup {
+    unset -nocomplain msg
+} -result {1 {-opt requires a double in the range [0 .. 1]} 1 {-opt requires a double in the range [0 .. 1]}}
+
+test widget-1.16 {isa window: valid} -body {
+    list [widget::isa window -opt .] [widget::isa window -opt {}]
+} -result {{} {}}
+
+test widget-1.17 {isa window: invalid} -body {
+    widget::isa window -opt .nosuch
+} -returnCodes error -result {invalid window ".nosuch"}
+
+# -------------------------------------------------------------------------
+# widget::tkresource
+
+test widget-2.1 {tkresource: default option value of a widget class} -body {
+    set bd [widget::tkresource frame -borderwidth]
+    update idletasks
+    list $bd [winfo exists .#widget#frame]
+} -cleanup {
+    unset -nocomplain bd
+} -result {0 0}
+
+test widget-2.2 {tkresource: bad option} -body {
+    widget::tkresource label -nosuchoption
+} -cleanup {
+    update idletasks
+} -returnCodes error -result {unknown option "-nosuchoption"}
+
+# -------------------------------------------------------------------------
+# widget::propagate macro
+
+test widget-3.1 {propagate: option propagated to components} -setup {
+    snit::widget ::widgettest {
+        hulltype ttk::frame
+        component a
+        component b
+        widget::propagate {-fg fg Fg} -default black to {a b} as -foreground
+        constructor args {
+            install a using label $win.a
+            install b using label $win.b
+            $self configurelist $args
+        }
+    }
+} -body {
+    ::widgettest .wt -fg red
+    set res [list [.wt cget -fg] [.wt.a cget -fg] [.wt.b cget -fg]]
+    .wt configure -fg blue
+    lappend res [.wt cget -fg] [.wt.a cget -fg] [.wt.b cget -fg]
+} -cleanup {
+    destroy .wt
+    rename ::widgettest {}
+    unset -nocomplain res
+} -result {red red red blue blue blue}
+
+# -------------------------------------------------------------------------
+# Example from the man page
+
+test widget-4.1 {example from the man page} -constraints {
+    knownBug
+} -setup {
+    package require widget::superframe
+} -body {
+    # The example uses -type, but the option is named -style.
+    pack [widget::superframe .f -type separator -text "SuperFrame:"]
+    winfo class .f
+} -cleanup {
+    destroy .f
+} -result Labelframe
+
+# -------------------------------------------------------------------------
+# Creation of the megawidgets
+
+test widget-5.1 {scrolledwindow: creation and options} -setup {
+    package require widget::scrolledwindow
+} -body {
+    widget::scrolledwindow .sw
+    list [winfo class .sw] [.sw cget -scrollbar] [.sw cget -auto] \
+        [.sw cget -sides] [.sw cget -size] [.sw cget -ipad] [.sw getframe]
+} -cleanup {
+    destroy .sw
+} -result {Scrolledwindow both both se 0 0 .sw}
+
+test widget-5.2 {scrolledwindow: bad option values} -setup {
+    package require widget::scrolledwindow
+    widget::scrolledwindow .sw
+} -body {
+    list [catch {.sw configure -scrollbar foo} msg] $msg \
+        [catch {.sw configure -size 31} msg] $msg
+} -cleanup {
+    destroy .sw
+    unset -nocomplain msg
+} -match glob -result {1 {invalid -scrollbar value: invalid value "foo", should be one of: none, horizontal, vertical, both} 1 {invalid -size value: *}}
+
+test widget-5.3 {scrolledwindow: setwidget connects the scrollbars} -constraints {
+    knownBug
+} -setup {
+    # With -auto none the scrollbars are never shown: they are removed
+    # by the idle setup while no widget is set, and setwidget does not
+    # grid them.
+    package require widget::scrolledwindow
+    widget::scrolledwindow .sw -auto none
+    text .sw.t
+    pack .sw
+} -body {
+    .sw setwidget .sw.t
+    update
+    list [winfo manager .sw.t] [.sw.t cget -yscrollcommand] ne {} \
+        [winfo ismapped .sw.vscroll] [winfo ismapped .sw.hscroll]
+} -cleanup {
+    destroy .sw
+} -match glob -result {grid * ne {} 1 1}
+
+test widget-5.4 {scrolledwindow: -scrollbar vertical} -constraints {
+    knownBug
+} -setup {
+    # See widget-5.3.
+    package require widget::scrolledwindow
+    widget::scrolledwindow .sw -auto none -scrollbar vertical
+    text .sw.t
+    pack .sw
+} -body {
+    .sw setwidget .sw.t
+    update
+    list [winfo ismapped .sw.vscroll] [winfo ismapped .sw.hscroll]
+} -cleanup {
+    destroy .sw
+} -result {1 0}
+
+test widget-5.5 {scrolledwindow: automatic scrollbars} -setup {
+    package require widget::scrolledwindow
+    widget::scrolledwindow .sw -auto both
+    listbox .sw.l -height 5
+    pack .sw
+    .sw setwidget .sw.l
+    update
+} -body {
+    set res [list [winfo ismapped .sw.vscroll]]
+    for {set i 0} {$i < 50} {incr i} {.sw.l insert end $i}
+    update
+    lappend res [winfo ismapped .sw.vscroll]
+} -cleanup {
+    destroy .sw
+    unset -nocomplain res i
+} -result {0 1}
+
+test widget-5.6 {statusbar: creation and items} -setup {
+    package require widget::statusbar
+} -body {
+    widget::statusbar .sb
+    set l [.sb add label status -text Ready]
+    set res [list [winfo class .sb] [.sb cget -separator] [.sb cget -resize] \
+                 [winfo class [.sb getframe]] [.sb items] \
+                 [llength [winfo children [.sb getframe]]]]
+    .sb delete $l
+    lappend res [.sb items]
+} -cleanup {
+    destroy .sb
+    unset -nocomplain res l
+} -result {Statusbar 1 1 TFrame status 1 {}}
+
+test widget-5.7 {panelframe: creation and options} -setup {
+    package require widget::panelframe
+} -body {
+    widget::panelframe .pf -text Title
+    set res [list [winfo class .pf] [.pf cget -text] [.pf.title.label cget -text]]
+    .pf configure -panelbackground red -panelforeground white
+    lappend res [.pf cget -background] [.pf.title.label cget -foreground]
+} -cleanup {
+    destroy .pf
+    unset -nocomplain res
+} -result {Panelframe Title Title red white}
+
+test widget-5.8 {panelframe: add and remove items} -setup {
+    package require widget::panelframe
+    widget::panelframe .pf -text Title
+} -body {
+    button .pf.b -text X
+    .pf add .pf.b
+    set res [list [.pf items]]
+    .pf remove .pf.b
+    lappend res [.pf items] [winfo exists .pf.b]
+    .pf add .pf.b
+    .pf delete .pf.b
+    lappend res [.pf items] [winfo exists .pf.b]
+} -cleanup {
+    destroy .pf
+    unset -nocomplain res
+} -result {.pf.b {} 1 {} 0}
+
+test widget-5.9 {superframe: styles} -setup {
+    package require widget::superframe
+} -body {
+    set res {}
+    foreach style {border whitespace separator} {
+        widget::superframe .f -style $style -text Hi
+        lappend res [.f cget -style] [.f cget -text] [winfo class .f]
+        destroy .f
+    }
+    set res
+} -cleanup {
+    destroy .f
+    unset -nocomplain res style
+} -match glob -result {border Hi * whitespace Hi * separator Hi *}
+
+test widget-5.10 {superframe: bad style} -setup {
+    package require widget::superframe
+} -body {
+    widget::superframe .f -style foo
+} -returnCodes error -match glob -result {*style must be one of: border, whitespace or separator}
+
+test widget-5.11 {superframe: -style is read-only} -setup {
+    package require widget::superframe
+    widget::superframe .f
+} -body {
+    .f configure -style whitespace
+} -cleanup {
+    destroy .f
+} -returnCodes error -result {option -style can only be set at instance creation}
+
+test widget-5.12 {superframe: creation prints nothing} -constraints {
+    knownBug
+} -setup {
+    # The constructor contains a debugging "parray options".
+    package require widget::superframe
+} -body {
+    widget::superframe .f
+} -cleanup {
+    destroy .f
+} -output {} -result .f
+
+test widget-5.13 {dialog: creation and frame} -setup {
+    package require widget::dialog
+} -body {
+    widget::dialog .d -modal none -synchronous 0 -type okcancel
+    list [winfo class .d] [winfo class [.d getframe]] [wm state .d] \
+        [.d cget -synchronous] [.d cget -timeout]
+} -cleanup {
+    destroy .d
+} -result {Dialog TFrame withdrawn 0 0}
+
+test widget-5.14 {dialog: asynchronous display and close} -setup {
+    package require widget::dialog
+    set reasons {}
+    widget::dialog .d -modal none -synchronous 0 -type okcancel \
+        -command {apply {{w reason} {lappend ::reasons $reason}}}
+} -body {
+    .d display
+    update
+    set res [list [wm state .d]]
+    .d close ok
+    update
+    lappend res [wm state .d] $reasons
+} -cleanup {
+    destroy .d
+    unset -nocomplain res reasons
+} -result {normal withdrawn ok}
+
+test widget-5.15 {dialog: synchronous display returns the reason} -setup {
+    package require widget::dialog
+    widget::dialog .d -modal local -type okcancel
+} -body {
+    after 50 {.d close cancel}
+    .d display
+} -cleanup {
+    destroy .d
+} -result cancel
+
+test widget-5.16 {dialog: -timeout} -setup {
+    package require widget::dialog
+    widget::dialog .d -modal none -type ok -timeout 100
+} -body {
+    .d display
+} -cleanup {
+    destroy .d
+} -result timeout
+
+test widget-5.17 {menuentry: creation and menu} -setup {
+    package require widget::menuentry
+    menu .m -tearoff 0
+} -body {
+    widget::menuentry .me -menu .m
+    .me insert end abc
+    list [winfo class .me] [.me cget -menu] [.me get]
+} -cleanup {
+    destroy .me .m
+} -match glob -result {* .m abc}
+
+test widget-5.18 {ruler: creation and options} -setup {
+    package require widget::ruler
+} -body {
+    widget::ruler .r
+    pack .r -fill x
+    update
+    list [winfo class .r] [.r cget -measure] [.r cget -foreground] \
+        [expr {[llength [.r find all]] > 0}]
+} -cleanup {
+    destroy .r
+} -result {Canvas pixels black 1}
+
+test widget-5.19 {screenruler: creation, display and hide} -setup {
+    package require widget::screenruler
+} -body {
+    widget::screenruler .sr
+    set res [list [winfo class .sr] [wm state .sr]]
+    .sr display
+    update
+    lappend res [wm state .sr]
+    .sr hide
+    update
+    lappend res [wm state .sr]
+} -cleanup {
+    destroy .sr
+    unset -nocomplain res
+} -match glob -result {* withdrawn normal withdrawn}
+
+test widget-5.20 {scrolledtext: creation} -setup {
+    package require widget::scrolledtext
+} -body {
+    widget::scrolledtext .st -scrollbar vertical
+    .st insert end abc
+    list [.st get 1.0 end-1c] [.st cget -scrollbar]
+} -cleanup {
+    destroy .st
+} -result {abc vertical}
+
+test widget-5.21 {arrowbutton: creation and orientation} -setup {
+    package require widget::arrowbutton
+} -body {
+    widget::arrowbutton .ab
+    set res [list [winfo class .ab] [.ab cget -orientation]]
+    .ab configure -orientation left
+    lappend res [.ab cget -orientation]
+} -cleanup {
+    destroy .ab
+    unset -nocomplain res
+} -match glob -result {* * left}
+
+# -------------------------------------------------------------------------
+if {$oldmainstate eq "withdrawn"} {
+    wm withdraw .
+}
+unset oldmainstate
+::tcltest::cleanupTests
