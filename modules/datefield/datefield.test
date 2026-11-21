@@ -23,6 +23,12 @@ namespace import ::tcltest::*
 
 source [file join [file dirname [file normalize [info script]]] datefield.tcl]
 
+# Tests with focus, keyboard and geometry need a viewable main window
+# (test runners withdraw it).
+set oldmainstate [wm state .]
+wm deiconify .
+update
+
 # -------------------------------------------------------------------------
 # Helpers
 
@@ -766,4 +772,8 @@ rename mkdf {}
 rename keys {}
 rename isValid {}
 unset -nocomplain d bells
+if {$oldmainstate eq "withdrawn"} {
+    wm withdraw .
+}
+unset oldmainstate
 ::tcltest::cleanupTests
