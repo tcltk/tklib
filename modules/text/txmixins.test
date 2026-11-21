@@ -1,0 +1,964 @@
+# -*- tcl -*-
+# txmixins.test --
+#
+#	Tests for the dgw::txmixins package: dgw::txmixin, dgw::txlipsum
+#	and the text widget adaptors txautorep, txblocksel, txfileproc,
+#	txfold, txhighlight, txindent, txpopup and txrotext.
+#
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2
+    namespace import ::tcltest::*
+} else {
+    if {![package vsatisfies [package present tcltest] 2.2]} {
+	puts "    Aborting the tests found in \"[file tail [info script]]\"."
+	puts "    Requiring tcltest 2.2, have [package present tcltest]"
+	return
+    }
+}
+
+::tcltest::testConstraint tk 1
+
+lappend auto_path [file dirname [file dirname [file normalize [info script]]]]
+package require dgw::txmixins
+
+# The txautorep binding <KeyRelease-)> is rejected by Tk 8.6 (see
+# txmixins-2.1); run the other txautorep tests only where it works.
+testConstraint txautorep [expr {![catch {
+    dgw::txautorep [text .probe]
+}]}]
+destroy .probe
+
+# -------------------------------------------------------------------------
+# Helpers
+
+# The tklib test harness withdraws "."; key bindings need the focus.
+set mainState [wm state .]
+wm deiconify .
+wm geometry . +0+0
+
+# Errors in bindings must not open the Tk error dialog and block.
+set savedBgerror [interp bgerror {}]
+interp bgerror {} [list apply {{msg opts} {lappend ::bgErrors $msg}}]
+
+# txblocksel changes bindings of the Text class; save them.
+set savedTextBindings {}
+foreach seq {<Control-ButtonPress-1> <Control-Button1-Motion> <Control-Key-x> <Control-Key-c>} {
+    lappend savedTextBindings $seq [bind Text $seq]
+}
+unset seq
+
+proc restoreTextBindings {} {
+    foreach {seq script} $::savedTextBindings {
+	bind Text $seq $script
+    }
+}
+
+proc show {w} {
+    pack $w
+    update
+    focus -force $w
+    update
+}
+
+proc key {w keysym} {
+    event generate $w <KeyPress-$keysym>
+    event generate $w <KeyRelease-$keysym>
+    update
+}
+
+# Mouse coordinates of a text index.
+proc xy {w index} {
+    lassign [$w bbox $index] x y wd ht
+    list -x [expr {$x + 1}] -y [expr {$y + $ht / 2}]
+}
+
+# Capture what a script writes to stdout.
+proc captureChan {cmd ch args} {
+    switch -- $cmd {
+	initialize {return {initialize finalize write}}
+	write {append ::captured [lindex $args 0]; return ""}
+	default {return}
+    }
+}
+proc captureStdout {script} {
+    set ::captured ""
+    flush stdout
+    chan push stdout captureChan
+    try {
+	uplevel 1 $script
+	flush stdout
+    } finally {
+	chan pop stdout
+    }
+    return $::captured
+}
+
+proc tmpfile {name contents} {
+    set f [makeFile {} $name]
+    set ch [open $f w]
+    fconfigure $ch -translation lf
+    puts -nonewline $ch $contents
+    close $ch
+    return $f
+}
+
+proc readfile {f} {
+    set ch [open $f]
+    set data [read $ch]
+    close $ch
+    return $data
+}
+
+# Wait (bounded) for a text tag to get ranges.
+proc waitTag {w tag {ms 5000}} {
+    set end [expr {[clock milliseconds] + $ms}]
+    while {[$w tag ranges $tag] eq "" && [clock milliseconds] < $end} {
+	update
+	after 20
+    }
+    $w tag ranges $tag
+}
+
+# -------------------------------------------------------------------------
+# dgw::txmixin, dgw::txlipsum
+
+test txmixins-1.1 {package version} -body {
+    package present dgw::txmixins
+} -result 0.2.0
+
+test txmixins-1.2 {exported commands} -body {
+    lsort [namespace eval ::dgw {namespace export}]
+} -match glob -result {*txfold*txindent*txmixin*txrotext*}
+
+test txmixins-1.3 {txmixin: wrong # args} -body {
+    dgw::txmixin .t
+} -returnCodes error -result {wrong # args: should be "dgw::txmixin pathName mixinWidget ?arg ...?"}
+
+test txmixins-1.4 {txmixin: adds an adaptor to an existing text} -setup {
+    text .t
+} -body {
+    list [dgw::txmixin .t dgw::txrotext] [winfo class .t] [.t insert end foo] \
+	[.t get 1.0 end-1c]
+} -cleanup {
+    destroy .t
+} -result {.t Text {} {}}
+
+test txmixins-1.5 {txmixin: options are passed to the adaptor} -setup {
+    text .t
+} -body {
+    dgw::txmixin .t dgw::txfold -foldstart {^==} -background red
+    list [.t cget -foldstart] [.t cget -background]
+} -cleanup {
+    destroy .t
+} -result {^== red}
+
+test txmixins-1.6 {txmixin: several adaptors chained} -setup {
+    text .t
+} -body {
+    dgw::txmixin .t dgw::txfold
+    dgw::txmixin .t dgw::txindent
+    dgw::txmixin .t dgw::txrotext
+    .t ins end "# Header\n"
+    .t insert end "ignored"
+    list [.t get 1.0 end-1c] [.t cget -foldkey]
+} -cleanup {
+    destroy .t
+} -result [list "# Header\n" F2]
+
+test txmixins-1.7 {txmixin: unknown adaptor} -setup {
+    text .t
+} -body {
+    dgw::txmixin .t dgw::nosuch
+} -cleanup {
+    destroy .t
+} -returnCodes error -result {invalid command name "dgw::nosuch"}
+
+test txmixins-1.8 {txmixin: nonexistent widget} -body {
+    dgw::txmixin .nosuch dgw::txfold
+} -returnCodes error -match glob -result {*.nosuch*}
+
+test txmixins-1.9 {txlipsum: paragraphs} -body {
+    set one [dgw::txlipsum 1]
+    list [string match "*Lorem ipsum*" $one] [expr {[dgw::txlipsum 3] eq [string repeat $one 3]}] \
+	[dgw::txlipsum 0]
+} -cleanup {
+    unset -nocomplain one
+} -result {1 1 {}}
+
+test txmixins-1.10 {txlipsum: wrong # args} -body {
+    dgw::txlipsum
+} -returnCodes error -result {wrong # args: should be "dgw::txlipsum n"}
+
+# -------------------------------------------------------------------------
+# txautorep
+
+test txmixins-2.1 {txautorep: creation} -constraints knownBug -body {
+    # Tk 8.6 rejects the binding <KeyRelease-)>: 'bad event type or
+    # keysym ")"'.
+    dgw::txautorep [text .t]
+} -cleanup {
+    destroy .t
+} -result .t
+
+test txmixins-2.2 {txautorep: default -automap} -constraints txautorep -body {
+    dgw::txautorep [text .t]
+    .t cget -automap
+} -cleanup {
+    destroy .t
+} -result {(DG) {Detlef Groth\nUniversity of Potsdam}}
+
+test txmixins-2.3 {txautorep: abbreviation replaced after the closing parenthesis} -constraints {
+    txautorep
+} -body {
+    dgw::txautorep [text .t] -automap [list (TM) ™ (C) © D) {D Groth}]
+    show .t
+    set res {}
+    foreach abbrev {(TM (C D} {
+	.t delete 1.0 end
+	.t insert end "x $abbrev"
+	key .t parenright
+	lappend res [.t get 1.0 end-1c]
+    }
+    set res
+} -cleanup {
+    destroy .t
+    unset -nocomplain res abbrev
+} -result [list "x ™" "x ©" "x D Groth"]
+
+test txmixins-2.4 {txautorep: other text is not changed} -constraints txautorep -body {
+    dgw::txautorep [text .t] -automap [list (TM) ™]
+    show .t
+    .t insert end "f(x"
+    key .t parenright
+    .t get 1.0 end-1c
+} -cleanup {
+    destroy .t
+} -result {f(x)}
+
+test txmixins-2.5 {txautorep: other text widget options} -constraints txautorep -body {
+    dgw::txautorep [text .t] -width 33
+    .t cget -width
+} -cleanup {
+    destroy .t
+} -result 33
+
+# -------------------------------------------------------------------------
+# txblocksel
+
+test txmixins-3.1 {txblocksel: Control-drag selects a block} -setup {
+    dgw::txblocksel [text .t]
+    show .t
+    .t insert end "abcdef\nghijkl\nmnopqr\n"
+    update
+} -body {
+    event generate .t <Control-ButtonPress-1> {*}[xy .t 1.1]
+    event generate .t <Motion> {*}[xy .t 3.3] -state 0x104
+    update
+    .t tag ranges sel
+} -cleanup {
+    destroy .t
+    restoreTextBindings
+    unset -nocomplain ::spos
+} -result {1.1 1.3 2.1 2.3 3.1 3.3}
+
+test txmixins-3.2 {txblocksel: Control-c copies the block} -constraints {
+    knownBug
+} -setup {
+    dgw::txblocksel [text .t]
+    show .t
+    .t insert end "abcdef\nghijkl\nmnopqr\n"
+    update
+    clipboard clear
+} -body {
+    # The Control-c and Control-x bindings work only on a widget
+    # named .txt.
+    event generate .t <Control-ButtonPress-1> {*}[xy .t 1.1]
+    event generate .t <Motion> {*}[xy .t 3.3] -state 0x104
+    update
+    event generate .t <Control-Key-c>
+    update
+    list [clipboard get] [.t get 1.0 end-1c]
+} -cleanup {
+    destroy .t
+    restoreTextBindings
+    clipboard clear
+    unset -nocomplain ::spos ::bgErrors
+} -result [list "bc\nhi\nno\n" "abcdef\nghijkl\nmnopqr\n"]
+
+test txmixins-3.3 {txblocksel: Control-x cuts the block} -constraints {
+    knownBug
+} -setup {
+    dgw::txblocksel [text .t]
+    show .t
+    .t insert end "abcdef\nghijkl\nmnopqr\n"
+    update
+    clipboard clear
+} -body {
+    event generate .t <Control-ButtonPress-1> {*}[xy .t 1.1]
+    event generate .t <Motion> {*}[xy .t 3.3] -state 0x104
+    update
+    event generate .t <Control-Key-x>
+    update
+    list [clipboard get] [.t get 1.0 end-1c]
+} -cleanup {
+    destroy .t
+    restoreTextBindings
+    clipboard clear
+    unset -nocomplain ::spos ::bgErrors
+} -result [list "bc\nhi\nno\n" "adef\ngjkl\nmpqr\n"]
+
+test txmixins-3.4 {txblocksel: options delegated to the text} -body {
+    dgw::txblocksel [text .t] -undo 1
+    .t cget -undo
+} -cleanup {
+    destroy .t
+    restoreTextBindings
+} -result 1
+
+# -------------------------------------------------------------------------
+# txfileproc
+
+test txmixins-4.1 {txfileproc: default options} -body {
+    dgw::txfileproc [text .t]
+    list [.t cget -openkey] [.t cget -savekey] [.t cget -newkey] [.t cget -quitkey] \
+	[.t cget -filecallback] [.t cget -initdir] [llength [.t cget -filetypes]]
+} -cleanup {
+    destroy .t
+} -result {Control-o Control-s Control-n Control-q {} {} 4}
+
+test txmixins-4.2 {txfileproc: getFile of a new widget} -body {
+    dgw::txfileproc [text .t]
+    list [.t getFile] [.t fileRecent]
+} -cleanup {
+    destroy .t
+} -result {*new* {}}
+
+test txmixins-4.3 {txfileproc: fileOpen with a file name} -setup {
+    set f [tmpfile txmixins1.txt "line 1\nline 2\n"]
+} -body {
+    dgw::txfileproc [text .t]
+    list [expr {[.t fileOpen $f] eq $f}] [.t get 1.0 end-1c] [expr {[.t getFile] eq $f}] \
+	[.t edit modified] [expr {[.t fileRecent] eq [list $f]}]
+} -cleanup {
+    destroy .t
+    removeFile txmixins1.txt
+    unset -nocomplain f
+} -result [list 1 "line 1\nline 2\n" 1 0 1]
+
+test txmixins-4.4 {txfileproc: fileOpen of a missing file shows a message} -setup {
+    rename ::tk_messageBox ::txmixinsSavedMessageBox
+    proc ::tk_messageBox {args} {lappend ::msgs [dict get $args -message]; return ok}
+} -body {
+    dgw::txfileproc [text .t]
+    .t insert end keep
+    .t edit modified 0
+    set f [file join [temporaryDirectory] nosuchdir nosuchfile]
+    list [expr {[.t fileOpen $f] eq $f}] [.t get 1.0 end-1c] [.t getFile] \
+	[string match "Cannot open*" [lindex $::msgs 0]]
+} -cleanup {
+    destroy .t
+    rename ::tk_messageBox {}
+    rename ::txmixinsSavedMessageBox ::tk_messageBox
+    unset -nocomplain f ::msgs
+} -result {1 keep *new* 1}
+
+test txmixins-4.5 {txfileproc: fileSave writes the current file} -setup {
+    set f [tmpfile txmixins2.txt "old\n"]
+} -body {
+    dgw::txfileproc [text .t]
+    .t fileOpen $f
+    .t delete 1.0 end
+    .t insert end "new text"
+    # Trailing newlines are checked by txmixins-4.6.
+    list [expr {[.t fileSave] eq $f}] [.t edit modified] [string trimright [readfile $f]]
+} -cleanup {
+    destroy .t
+    removeFile txmixins2.txt
+    unset -nocomplain f
+} -result [list 1 0 "new text"]
+
+test txmixins-4.6 {txfileproc: open and save keeps the file contents} -constraints {
+    knownBug
+} -setup {
+    set f [tmpfile txmixins3.txt "a\nb\n"]
+} -body {
+    # fileOpen appends a newline to every line and fileSave writes
+    # the text including its final newline with puts, so every
+    # open/save cycle adds empty lines.
+    dgw::txfileproc [text .t]
+    .t fileOpen $f
+    .t fileSave
+    readfile $f
+} -cleanup {
+    destroy .t
+    removeFile txmixins3.txt
+    unset -nocomplain f
+} -result "a\nb\n"
+
+test txmixins-4.7 {txfileproc: fileNew clears an unmodified text} -setup {
+    set f [tmpfile txmixins4.txt "text\n"]
+} -body {
+    dgw::txfileproc [text .t]
+    .t fileOpen $f
+    list [.t fileNew] [.t get 1.0 end-1c] [.t getFile]
+} -cleanup {
+    destroy .t
+    removeFile txmixins4.txt
+    unset -nocomplain f
+} -result {*new* {} *new*}
+
+test txmixins-4.8 {txfileproc: fileNew asks about modified text} -setup {
+    rename ::tk_messageBox ::txmixinsSavedMessageBox
+    proc ::tk_messageBox {args} {lappend ::msgs [dict get $args -type]; return cancel}
+} -body {
+    dgw::txfileproc [text .t]
+    .t insert end "modified"
+    list [.t fileNew] [.t get 1.0 end-1c] $::msgs
+} -cleanup {
+    destroy .t
+    rename ::tk_messageBox {}
+    rename ::txmixinsSavedMessageBox ::tk_messageBox
+    unset -nocomplain ::msgs
+} -result {{} modified yesnocancel}
+
+test txmixins-4.9 {txfileproc: -filecallback and events} -setup {
+    set f [tmpfile txmixins5.txt "text\n"]
+    set ::trace {}
+    proc callback {type filename} {lappend ::trace [list $type [file tail $filename]]}
+} -body {
+    dgw::txfileproc [text .t] -filecallback callback
+    bind .t <<FileChanged>> {lappend ::trace changed}
+    bind .t <<FileSaved>> {lappend ::trace saved}
+    .t fileOpen $f
+    .t fileSave
+    .t fileNew
+    update
+    set ::trace
+} -cleanup {
+    destroy .t
+    removeFile txmixins5.txt
+    rename callback {}
+    unset -nocomplain f ::trace
+} -result {{open txmixins5.txt} changed {save txmixins5.txt} saved {new *new*} changed}
+
+test txmixins-4.10 {txfileproc: fileRecent lists files most recent first} -setup {
+    set f1 [tmpfile txmixins6.txt "one\n"]
+    set f2 [tmpfile txmixins7.txt "two\n"]
+} -body {
+    dgw::txfileproc [text .t]
+    .t fileOpen $f1
+    .t fileOpen $f2
+    .t fileOpen $f1
+    lmap f [.t fileRecent] {file tail $f}
+} -cleanup {
+    destroy .t
+    removeFile txmixins6.txt
+    removeFile txmixins7.txt
+    unset -nocomplain f1 f2 f
+} -result {txmixins6.txt txmixins7.txt}
+
+test txmixins-4.11 {txfileproc: fileSave of a new file uses the save dialog} -setup {
+    set f [makeFile {} txmixins8.txt]
+    rename ::tk_getSaveFile ::txmixinsSavedGetSaveFile
+    proc ::tk_getSaveFile {args} {return $::f}
+} -body {
+    dgw::txfileproc [text .t]
+    .t insert end "saved"
+    list [expr {[.t fileSave] eq $f}] [expr {[.t getFile] eq $f}] \
+	[string trimright [readfile $f]]
+} -cleanup {
+    destroy .t
+    rename ::tk_getSaveFile {}
+    rename ::txmixinsSavedGetSaveFile ::tk_getSaveFile
+    removeFile txmixins8.txt
+    unset -nocomplain f
+} -result {1 1 saved}
+
+test txmixins-4.12 {txfileproc: fileSaveAs} -constraints knownBug -setup {
+    set f [makeFile {} txmixins9.txt]
+    rename ::tk_getSaveFile ::txmixinsSavedGetSaveFile
+    proc ::tk_getSaveFile {args} {return $::f}
+} -body {
+    # fileSaveAs uses the undefined variables $text and $file.
+    dgw::txfileproc [text .t]
+    .t insert end "saved as"
+    list [expr {[.t fileSaveAs] eq $f}] [expr {[.t getFile] eq $f}] \
+	[string trimright [readfile $f]]
+} -cleanup {
+    destroy .t
+    rename ::tk_getSaveFile {}
+    rename ::txmixinsSavedGetSaveFile ::tk_getSaveFile
+    removeFile txmixins9.txt
+    unset -nocomplain f
+} -result {1 1 {saved as}}
+
+test txmixins-4.13 {txfileproc: Control-s key saves} -setup {
+    set f [tmpfile txmixins10.txt "old\n"]
+} -body {
+    dgw::txfileproc [text .t]
+    show .t
+    .t fileOpen $f
+    .t delete 1.0 end
+    .t insert end "by key"
+    event generate .t <Control-Key-s>
+    update
+    string trimright [readfile $f]
+} -cleanup {
+    destroy .t
+    removeFile txmixins10.txt
+    unset -nocomplain f
+} -result {by key}
+
+test txmixins-4.14 {txfileproc: key bindings can be disabled} -body {
+    dgw::txfileproc [text .t] -openkey "" -savekey "" -newkey "" -quitkey ""
+    bind .t
+} -cleanup {
+    destroy .t
+} -result {}
+
+test txmixins-4.15 {txfileproc: custom key bindings} -body {
+    dgw::txfileproc [text .t] -openkey F5 -savekey F6 -newkey F7 -quitkey F8
+    lsort [bind .t]
+} -cleanup {
+    destroy .t
+} -result {<Key-F5> <Key-F6> <Key-F7> <Key-F8>}
+
+# -------------------------------------------------------------------------
+# txfold
+
+proc foldText {} {
+    .t insert end "# A\n\ntext a\n\n# B\n\ntext b\n"
+}
+
+test txmixins-5.1 {txfold: default options and tags} -body {
+    dgw::txfold [text .t]
+    list [.t cget -foldkey] [.t cget -foldstart] [.t cget -foldend] \
+	[.t tag cget fold -background] [string is true [.t tag cget folded -elide]]
+} -cleanup {
+    destroy .t
+} -result {F2 ^# ^# #ffbbaa 1}
+
+test txmixins-5.2 {txfold: -foldallkey option} -constraints knownBug -body {
+    # The option is called -foldall in the code.
+    dgw::txfold [text .t]
+    list [.t cget -foldallkey] [.t configure -foldallkey F4] [.t cget -foldallkey]
+} -cleanup {
+    destroy .t
+} -result {F3 {} F4}
+
+test txmixins-5.3 {txfold: F2 folds and unfolds the current section} -setup {
+    dgw::txfold [text .t]
+    show .t
+    foldText
+} -body {
+    .t mark set insert 1.0
+    captureStdout {
+	key .t F2
+	set res [list [.t tag ranges fold] [.t tag ranges folded]]
+	key .t F2
+	lappend res [.t tag ranges fold] [.t tag ranges folded]
+    }
+    set res
+} -cleanup {
+    destroy .t
+    unset -nocomplain res
+} -result {{1.0 2.0} {2.0 5.0} {} {}}
+
+test txmixins-5.4 {txfold: folding from inside a section} -setup {
+    dgw::txfold [text .t]
+    show .t
+    foldText
+} -body {
+    .t mark set insert 7.2
+    captureStdout {key .t F2}
+    list [.t tag ranges fold] [.t tag ranges folded] [.t index insert]
+} -cleanup {
+    destroy .t
+} -result {{5.0 6.0} {6.0 9.0} 5.0}
+
+test txmixins-5.5 {txfold: folded text is hidden} -setup {
+    dgw::txfold [text .t]
+    show .t
+    foldText
+} -body {
+    .t mark set insert 1.0
+    set res [.t count -displaylines 1.0 end]
+    captureStdout {key .t F2}
+    lappend res [.t count -displaylines 1.0 end]
+} -cleanup {
+    destroy .t
+    unset -nocomplain res
+} -result {8 5}
+
+test txmixins-5.6 {txfold: F3 folds and unfolds everything} -setup {
+    dgw::txfold [text .t]
+    show .t
+    foldText
+} -body {
+    captureStdout {
+	key .t F3
+	set res [list [.t tag ranges fold] [.t tag ranges folded]]
+	key .t F3
+	lappend res [.t tag ranges fold] [.t tag ranges folded]
+    }
+    set res
+} -cleanup {
+    destroy .t
+    unset -nocomplain res
+} -result {{1.0 2.0 5.0 6.0} {2.0 5.0 6.0 9.0} {} {}}
+
+test txmixins-5.7 {txfold: -foldkey and -foldall can be changed} -setup {
+    dgw::txfold [text .t]
+    show .t
+    foldText
+} -body {
+    .t configure -foldkey F5 -foldall F6
+    .t mark set insert 1.0
+    captureStdout {
+	key .t F2
+	set res [list [.t tag ranges fold]]
+	key .t F5
+	lappend res [.t tag ranges fold]
+	key .t F5
+	key .t F6
+	lappend res [.t tag ranges fold]
+    }
+    lappend res [.t cget -foldkey] [.t cget -foldall]
+} -cleanup {
+    destroy .t
+    unset -nocomplain res
+} -result {{} {1.0 2.0} {1.0 2.0 5.0 6.0} F5 F6}
+
+test txmixins-5.8 {txfold: different start and end markers} -setup {
+    dgw::txfold [text .t] -foldstart "^\[A-Za-z\].+\{" -foldend "^\}"
+    show .t
+    .t insert end "package require Tk\nproc test {} {\n    puts Hi\n}\n\nproc b {} {\n}\n"
+} -body {
+    .t mark set insert 3.2
+    captureStdout {key .t F2}
+    list [.t tag ranges fold] [.t tag ranges folded]
+} -cleanup {
+    destroy .t
+} -result {{2.0 3.0} {3.0 5.0}}
+
+test txmixins-5.9 {txfold: no debug output on stdout} -constraints knownBug -setup {
+    dgw::txfold [text .t]
+    show .t
+    foldText
+} -body {
+    # FoldCurrent prints the fold range with puts.
+    .t mark set insert 1.0
+    captureStdout {key .t F2}
+} -cleanup {
+    destroy .t
+} -result {}
+
+test txmixins-5.10 {txfold: tag fold can be configured} -setup {
+    dgw::txfold [text .t]
+} -body {
+    .t tag configure fold -background #cceeff
+    .t tag cget fold -background
+} -cleanup {
+    destroy .t
+} -result #cceeff
+
+# -------------------------------------------------------------------------
+# txhighlight
+
+test txmixins-6.1 {txhighlight: default options and tags} -body {
+    dgw::txhighlight [text .t]
+    list [.t cget -highlightcommand] [.t cget -mode] \
+	[expr {[lsearch -index 0 -all [.t cget -highlights] sql] ne ""}] \
+	[.t tag cget comment -foreground] [.t tag cget header -underline]
+} -cleanup {
+    destroy .t
+} -result {{} {} 1 #999999 1}
+
+test txmixins-6.2 {txhighlight: Markdown highlighting as in the manual} -body {
+    text .top
+    dgw::txmixin .top dgw::txhighlight
+    .top configure -highlights {{md header ^#.+}
+	{md comment ^>.+}
+	{md keyword _{1,2}[^_]+_{1,2}}
+	{md string {"[^"]+"}}}
+    .top configure -mode md
+    .top insert end "# Header example\n"
+    .top insert end "_keyword_ example\n"
+    .top insert end "Some not highlighted text\n"
+    .top insert end "> some markdown quote text\n"
+    .top insert end "Two \"strings\" here\n"
+    waitTag .top header
+    list [.top tag ranges header] [.top tag ranges keyword] [.top tag ranges comment] \
+	[.top tag ranges string]
+} -cleanup {
+    destroy .top
+} -result {{1.0 1.16} {2.0 2.9} {4.0 4.26} {5.4 5.13}}
+
+test txmixins-6.3 {txhighlight: -highlights replaces the rules of a mode} -body {
+    dgw::txhighlight [text .t]
+    .t configure -highlights {{sql comment ^#.+}}
+    lsearch -all -inline -index 0 [.t cget -highlights] sql
+} -cleanup {
+    destroy .t
+} -result {{sql comment ^#.+}}
+
+test txmixins-6.4 {txhighlight: embedded SQL highlighting} -body {
+    dgw::txhighlight [text .t] -mode sql
+    .t insert end "select * from temp limit 10;\n -- a comment in SQL\n"
+    waitTag .t comment
+    list [.t tag ranges comment] [lrange [.t tag ranges highlight] 0 1]
+} -cleanup {
+    destroy .t
+} -result {{2.0 2.20} {1.0 1.6}}
+
+test txmixins-6.5 {txhighlight: no highlighting without -mode} -body {
+    dgw::txhighlight [text .t]
+    .t insert end "select * from temp;\n# comment\n"
+    after 1200 {set ::waited 1}
+    vwait ::waited
+    update
+    list [.t tag ranges highlight] [.t tag ranges comment]
+} -cleanup {
+    destroy .t
+    unset -nocomplain ::waited
+} -result {{} {}}
+
+test txmixins-6.6 {txhighlight: -highlightcommand} -constraints knownBug -setup {
+    set ::trace {}
+    proc hl {w} {lappend ::trace $w}
+} -body {
+    # doHilights calls the command with the undefined variable $text.
+    dgw::txhighlight [text .t] -highlightcommand hl -mode md
+    .t insert end "text\n"
+    set end [expr {[clock milliseconds] + 3000}]
+    while {$::trace eq "" && [clock milliseconds] < $end} {update; after 20}
+    set ::trace
+} -cleanup {
+    destroy .t
+    rename hl {}
+    unset -nocomplain ::trace end ::bgErrors
+} -result .t
+
+# -------------------------------------------------------------------------
+# txindent
+
+test txmixins-7.1 {txindent: Return keeps the indentation} -setup {
+    dgw::txindent [text .t]
+    show .t
+} -body {
+    .t insert end "  * item 1"
+    key .t Return
+    .t insert insert "* item 2"
+    .t get 1.0 end-1c
+} -cleanup {
+    destroy .t
+} -result "  * item 1\n  * item 2"
+
+test txmixins-7.2 {txindent: no indentation} -setup {
+    dgw::txindent [text .t]
+    show .t
+} -body {
+    .t insert end "line"
+    key .t Return
+    .t get 1.0 end-1c
+} -cleanup {
+    destroy .t
+} -result "line\n"
+
+test txmixins-7.3 {txindent: extra indentation after an opening brace} -setup {
+    dgw::txindent [text .t]
+    show .t
+} -body {
+    .t insert end "  proc a \{"
+    key .t Return
+    .t insert insert "body"
+    key .t Return
+    .t get 1.0 end-1c
+} -cleanup {
+    destroy .t
+} -result "  proc a \{\n      body\n      "
+
+test txmixins-7.4 {txindent: tabs are kept} -setup {
+    dgw::txindent [text .t]
+    show .t
+} -body {
+    .t insert end "\tx"
+    key .t Return
+    .t get 1.0 end-1c
+} -cleanup {
+    destroy .t
+} -result "\tx\n\t"
+
+test txmixins-7.5 {txindent: options are delegated to the text} -body {
+    dgw::txindent [text .t] -wrap none
+    .t cget -wrap
+} -cleanup {
+    destroy .t
+} -result none
+
+# -------------------------------------------------------------------------
+# txpopup
+
+test txmixins-8.1 {txpopup: Button-3 shows the popup menu} -setup {
+    dgw::txpopup [text .t -undo true]
+    show .t
+} -body {
+    .t insert end "Some text"
+    .t tag add sel 1.0 1.4
+    event generate .t <Button-3> -x 5 -y 5
+    update
+    set res {}
+    for {set i 0} {$i <= [.editormenu index end]} {incr i} {
+	if {[.editormenu type $i] eq "command"} {
+	    lappend res [.editormenu entrycget $i -label] \
+		[expr {[.editormenu entrycget $i -state] ne "disabled"}]
+	}
+    }
+    set res
+} -cleanup {
+    catch {tk::MenuUnpost .editormenu}
+    destroy .editormenu .t
+    unset -nocomplain res i
+} -result {Undo 1 Redo 0 Cut 1 Copy 1 Paste 1 Delete 1 {Select All} 1}
+
+test txmixins-8.2 {txpopup: entries disabled without selection} -setup {
+    dgw::txpopup [text .t]
+    show .t
+} -body {
+    event generate .t <Button-3> -x 5 -y 5
+    update
+    set res {}
+    for {set i 0} {$i <= [.editormenu index end]} {incr i} {
+	if {[.editormenu type $i] eq "command"} {
+	    lappend res [.editormenu entrycget $i -label] \
+		[expr {[.editormenu entrycget $i -state] ne "disabled"}]
+	}
+    }
+    set res
+} -cleanup {
+    catch {tk::MenuUnpost .editormenu}
+    destroy .editormenu .t
+    unset -nocomplain res i
+} -result {Cut 0 Copy 0 Paste 1 Delete 0 {Select All} 1}
+
+test txmixins-8.3 {txpopup: menu method} -constraints knownBug -setup {
+    dgw::txpopup [text .t]
+    show .t
+} -body {
+    # The method is called Menu in the code.
+    .t menu
+    update
+    winfo ismapped .editormenu
+} -cleanup {
+    catch {tk::MenuUnpost .editormenu}
+    destroy .editormenu .t
+} -result 1
+
+test txmixins-8.4 {txpopup: -redokey and -popupkey options} -constraints knownBug -body {
+    # The documented options are not implemented.
+    dgw::txpopup [text .t] -redokey Control-r -popupkey Button-2
+    list [.t cget -redokey] [.t cget -popupkey]
+} -cleanup {
+    destroy .t
+} -result {Control-r Button-2}
+
+test txmixins-8.5 {txpopup: Control-y redoes} -setup {
+    dgw::txpopup [text .t -undo true]
+    show .t
+} -body {
+    .t insert end "abc"
+    .t edit separator
+    .t edit undo
+    set res [list [.t get 1.0 end-1c]]
+    event generate .t <Control-Key-y>
+    update
+    lappend res [.t get 1.0 end-1c]
+} -cleanup {
+    destroy .t
+    unset -nocomplain res
+} -result {{} abc}
+
+test txmixins-8.6 {txpopup: -toolcommand option} -body {
+    dgw::txpopup [text .t] -toolcommand foo
+    .t cget -toolcommand
+} -cleanup {
+    destroy .t
+} -result foo
+
+# -------------------------------------------------------------------------
+# txrotext
+
+test txmixins-9.1 {txrotext: insert and delete do nothing} -body {
+    dgw::txrotext [text .t]
+    .t ins end "Header\n"
+    .t insert end "ignored"
+    .t delete 1.0 end
+    .t get 1.0 end-1c
+} -cleanup {
+    destroy .t
+} -result "Header\n"
+
+test txmixins-9.2 {txrotext: ins and del} -body {
+    dgw::txrotext [text .t]
+    .t ins end "abcdef"
+    .t del 1.1 1.3
+    .t get 1.0 end-1c
+} -cleanup {
+    destroy .t
+} -result adef
+
+test txmixins-9.3 {txrotext: typing does not change the text} -body {
+    dgw::txrotext [text .t]
+    show .t
+    .t ins end "abc"
+    key .t x
+    key .t BackSpace
+    .t get 1.0 end-1c
+} -cleanup {
+    destroy .t
+} -result abc
+
+test txmixins-9.4 {txrotext: no insertion cursor, options delegated} -body {
+    dgw::txrotext [text .t] -width 20
+    list [.t cget -insertwidth] [.t cget -width]
+} -cleanup {
+    destroy .t
+} -result {0 20}
+
+test txmixins-9.5 {txrotext: example from the manual} -body {
+    dgw::txrotext [text .t]
+    foreach col [list A B C] {
+	.t ins end "# Header $col\n\nSome text\n\n"
+    }
+    .t get 1.0 3.0
+} -cleanup {
+    destroy .t
+    unset -nocomplain col
+} -result "# Header A\n\n"
+
+# -------------------------------------------------------------------------
+
+restoreTextBindings
+interp bgerror {} $savedBgerror
+unset -nocomplain savedBgerror savedTextBindings ::bgErrors ::captured
+foreach p {restoreTextBindings show key xy captureChan captureStdout tmpfile
+    readfile waitTag foldText} {
+    rename $p {}
+}
+unset p
+wm state . $mainState
+unset mainState
+
+::tcltest::cleanupTests
