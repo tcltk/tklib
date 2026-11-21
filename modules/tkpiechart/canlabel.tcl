@@ -55,10 +55,10 @@ package require stooop
 
     proc set-borderwidth {this value} {
         if {\
-            ![string equal $switched::($this,-selectrelief) flat] &&\
+            ![string equal $::switched::($this,-selectrelief) flat] &&\
             ($value > 1)\
         } {
-            error "border width greater than 1 is not supported with $switched::($this,-selectrelief) select relief"
+            error "border width greater than 1 is not supported with $::switched::($this,-selectrelief) select relief"
         }
         $($this,canvas) itemconfigure $($this,selectRectangle) -width $value
         $($this,canvas) itemconfigure $($this,rectangle) -width $value
@@ -98,7 +98,7 @@ package require stooop
         if {[string equal $value flat]} {
             eventuallyDeleteRelief $this
         } else {
-            if {$switched::($this,-borderwidth) > 1} {
+            if {$::switched::($this,-borderwidth) > 1} {
                 error "border width greater than 1 is not supported with $value select relief"
             }
         }
@@ -113,8 +113,8 @@ package require stooop
     }
 
     proc updateRelief {this coordinates} {
-        if {$switched::($this,-select)} {
-            set relief $switched::($this,-selectrelief)
+        if {$::switched::($this,-select)} {
+            set relief $::switched::($this,-selectrelief)
             if {[string equal $relief flat]} {
                 eventuallyDeleteRelief $this
             } else {
@@ -129,7 +129,7 @@ package require stooop
                         $canvas addtag $tag withtag $reliefTag
                     }
                 }
-                set background $switched::($this,-textbackground)
+                set background $::switched::($this,-textbackground)
                 if {[string length $background] == 0} {
                     # emulate transparent background
                     set background [$canvas cget -background]
@@ -154,8 +154,8 @@ package require stooop
         set border [$canvas itemcget $rectangle -width]
         set textBox [$canvas bbox $text]
         set textWidth [expr {[lindex $textBox 2] - [lindex $textBox 0]}]
-        set padding [winfo fpixels $canvas $switched::($this,-padding)]
-        set bulletWidth [winfo fpixels $canvas $switched::($this,-bulletwidth)]
+        set padding [winfo fpixels $canvas $::switched::($this,-padding)]
+        set bulletWidth [winfo fpixels $canvas $::switched::($this,-bulletwidth)]
 
         $canvas itemconfigure $selectRectangle -fill {} -outline {}
 
@@ -164,8 +164,8 @@ package require stooop
         set halfHeight [expr {\
             (([lindex $textBox 3] - [lindex $textBox 1]) / 2.0) + $border\
         }]
-        if {$width < $switched::($this,-minimumwidth)} {
-            set width $switched::($this,-minimumwidth)
+        if {$width < $::switched::($this,-minimumwidth)} {
+            set width $::switched::($this,-minimumwidth)
         }
         set halfWidth [expr {$width / 2.0}]
         set left [expr {$x - $halfWidth}]
@@ -179,12 +179,12 @@ package require stooop
         $canvas coords $rectangle $left $top\
             [expr {$left + $bulletWidth}] $bottom
         $canvas itemconfigure $selectRectangle\
-            -fill $switched::($this,-textbackground)\
-            -outline $switched::($this,-textbackground)
+            -fill $::switched::($this,-textbackground)\
+            -outline $::switched::($this,-textbackground)
         updateRelief $this\
             [list [expr {$left + $bulletWidth + 1}] $top $right $bottom]
         # now move rectangle and text according to anchor
-        set anchor $switched::($this,-anchor)
+        set anchor $::switched::($this,-anchor)
         set xDelta [expr {\
             ([string match *w $anchor] - [string match *e $anchor]) *\
             $halfWidth\
@@ -200,7 +200,7 @@ package require stooop
             $canvas move canvasReliefRectangle($($this,relief)) $xDelta $yDelta
         }
         # finally apply scale
-        eval $canvas scale canvasLabel($this) $x $y $switched::($this,-scale)
+        eval $canvas scale canvasLabel($this) $x $y $::switched::($this,-scale)
     }
 
 }

@@ -86,10 +86,10 @@ package require stooop
     }
 
     proc update {this} {
-        switch $switched::($this,-relief) {
+        switch $::switched::($this,-relief) {
             flat {
                 $($this,canvas) itemconfigure canvasReliefRectangle($this)\
-                    -fill $switched::($this,-background)
+                    -fill $::switched::($this,-background)
             }
             raised {
                 $($this,canvas) itemconfigure $($this,topLeft)\

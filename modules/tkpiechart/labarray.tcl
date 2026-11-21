@@ -30,7 +30,7 @@ package require stooop
     }
 
     proc set-justify {this value} {
-        if {$switched::($this,complete)} {
+        if {$::switched::($this,complete)} {
             error {option -justify cannot be set dynamically}
         }
     }

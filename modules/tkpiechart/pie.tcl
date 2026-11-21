@@ -55,7 +55,7 @@ foreach option {\
     -background -colors -labeler -selectable -title -titlefont -titleoffset\
 } {
     proc pie::set$option {this value} "
-        if {\$switched::(\$this,complete)} {
+        if {\$::switched::(\$this,complete)} {
             error {option $option cannot be set dynamically}
         }
     "
@@ -63,7 +63,7 @@ foreach option {\
 
 proc pie::set-thickness {this value} {
     ##nagelfar ignore
-    if {$switched::($this,complete)} {
+    if {$::switched::($this,complete)} {
         error {option -thickness cannot be set dynamically}
     }
     # convert to pixels
@@ -76,7 +76,7 @@ proc pie::set-height {this value} {
     # value is height is slices height not counting thickness
     set ($this,height) [expr {[winfo fpixels $($this,canvas) $value] - 1}]
     ##nagelfar ignore
-    if {$switched::($this,complete)} {
+    if {$::switched::($this,complete)} {
         update $this
     } else {      ;# keep track of initial value for latter scaling calculations
         set ($this,initialHeight) $($this,height)
@@ -85,7 +85,7 @@ proc pie::set-height {this value} {
 proc pie::set-width {this value} {
     set ($this,width) [expr {[winfo fpixels $($this,canvas) $value] - 1}]
     ##nagelfar ignore
-    if {$switched::($this,complete)} {
+    if {$::switched::($this,complete)} {
         update $this
     } else {      ;# keep track of initial value for latter scaling calculations
         set ($this,initialWidth) $($this,width)
@@ -96,23 +96,23 @@ proc pie::complete {this} {                          ;# no user slices exist yet
     set canvas $($this,canvas)
 
     ##nagelfar ignore
-    if {$switched::($this,-labeler) == 0} {
+    if {$::switched::($this,-labeler) == 0} {
         # use default labeler if user defined none
         set ($this,labeler) [::stooop::new pieBoxLabeler $canvas]
     } else {                                         ;# use user defined labeler
 	##nagelfar ignore
-        set ($this,labeler) $switched::($this,-labeler)
+        set ($this,labeler) $::switched::($this,-labeler)
     }
     $canvas addtag pie($this) withtag pieLabeler($($this,labeler))
     ##nagelfar ignore
-    if {[string length $switched::($this,-background)] == 0} {
+    if {[string length $::switched::($this,-background)] == 0} {
         set bottomColor {}
     } else {
 	##nagelfar ignore
-        set bottomColor [darken $switched::($this,-background) 60]
+        set bottomColor [darken $::switched::($this,-background) 60]
     }
     ##nagelfar ignore
-    set bg $switched::($this,-background)
+    set bg $::switched::($this,-background)
     set slice [::stooop::new slice\
         $canvas [expr {$($this,initialWidth) / 2}]\
         [expr {$($this,initialHeight) / 2}]\
@@ -123,20 +123,20 @@ proc pie::complete {this} {                          ;# no user slices exist yet
     $canvas addtag pieSlices($this) withtag slice($slice)
     set ($this,backgroundSlice) $slice
     ##nagelfar ignore
-    if {[string length $switched::($this,-title)] == 0} {
+    if {[string length $::switched::($this,-title)] == 0} {
         set ($this,titleRoom) 0
     } else {
 	##nagelfar ignore
-	set title $switched::($this,-title)
+	set title $::switched::($this,-title)
 	##nagelfar ignore
-	set font $switched::($this,-titlefont)
+	set font $::switched::($this,-titlefont)
         set ($this,title) [$canvas create text 0 0 \
 			       -anchor n \
 			       -text $title \
 			       -font $font \
 			       -tags pie($this)]
 	##nagelfar ignore
-	set offset $switched::($this,-titleoffset)
+	set offset $::switched::($this,-titleoffset)
         set ($this,titleRoom) [expr { [font metrics $font -ascent] + [winfo fpixels $canvas $offset] }]
     }
     update $this
@@ -150,15 +150,15 @@ proc pie::newSlice {this {text {}} {color {}}} {
     set start 90
     foreach slice $($this,slices) {
 	##nagelfar ignore
-        set start [expr {$start - $slice::($slice,extent)}]
+        set start [expr {$start - $::slice::($slice,extent)}]
     }
     if {[string length $color] == 0} {
         # get a new color
 	##nagelfar ignore
-        set color [lindex $switched::($this,-colors) $($this,colorIndex)]
+        set color [lindex $::switched::($this,-colors) $($this,colorIndex)]
 	# circle through colors
 	##nagelfar ignore
-        set ($this,colorIndex) [expr { ($($this,colorIndex) + 1) % [llength $switched::($this,-colors)] }]
+        set ($this,colorIndex) [expr { ($($this,colorIndex) + 1) % [llength $::switched::($this,-colors)] }]
     }
     # darken slice top color by 40% to obtain bottom color, as it is done for
     # Tk buttons shadow, for example
@@ -183,7 +183,7 @@ proc pie::newSlice {this {text {}} {color {}}} {
     $canvas addtag pie($this) withtag pieLabeler($labeler)
     update $this
     ##nagelfar ignore
-    if {$switched::($this,-selectable)} {
+    if {$::switched::($this,-selectable)} {
         # toggle select state at every button release
         if {![info exists ($this,selector)]} {   ;# create selector if necessary
             set ($this,selector) [::stooop::new objectSelector\
@@ -227,7 +227,7 @@ proc pie::deleteSlice {this slice} {
     }
     set ($this,slices) [lreplace $($this,slices) $index $index]
     ##nagelfar ignore
-    set extent $slice::($slice,extent)
+    set extent $::slice::($slice,extent)
     ::stooop::delete $slice
     foreach following [lrange $($this,slices) $index end] {
         # rotate the following slices counterclockwise
@@ -237,7 +237,7 @@ proc pie::deleteSlice {this slice} {
     # repositionned according to remaining slices placement
     pieLabeler::delete $($this,labeler) $($this,sliceLabel,$slice)
     ##nagelfar ignore
-    if {$switched::($this,-selectable)} {
+    if {$::switched::($this,-selectable)} {
         selector::remove $($this,selector) $($this,sliceLabel,$slice)
     }
     unset ($this,sliceLabel,$slice)
@@ -252,9 +252,9 @@ proc pie::sizeSlice {this slice unitShare {valueToDisplay {}}} {
     # cannot display slices that occupy more than whole pie and less than zero
     set newExtent [expr {[maximum [minimum $unitShare 1] 0] * 360}]
     ##nagelfar ignore
-    set growth [expr {$newExtent - $slice::($slice,extent)}]
+    set growth [expr {$newExtent - $::slice::($slice,extent)}]
     ##nagelfar ignore
-    switched::configure $slice -startandextent "[expr {$slice::($slice,start) - $growth}] $newExtent" ;# grow clockwise
+    switched::configure $slice -startandextent "[expr {$::slice::($slice,start) - $growth}] $newExtent" ;# grow clockwise
     if {[string length $valueToDisplay] > 0} {
         # update label after slice for it may need slice latest configuration
         pieLabeler::set $($this,labeler) $($this,sliceLabel,$slice)\
@@ -267,7 +267,7 @@ proc pie::sizeSlice {this slice unitShare {valueToDisplay {}}} {
         slice::rotate $slice $value
     }
     ##nagelfar ignore
-    if {$switched::($this,-autoupdate)} {
+    if {$::switched::($this,-autoupdate)} {
         # since label was changed, labeler may need to reorganize labels,
         # for example
         update $this

@@ -12,19 +12,19 @@ package require stooop
         switched {$args} {
         switched::complete $this
         ::set ($this,array) [::stooop::new canvasLabelsArray $canvas\
-            -justify $switched::($this,-justify)\
+            -justify $::switched::($this,-justify)\
         ]
         ::set ($this,valueWidth) [font measure\
-            $switched::($this,-smallfont) $switched::($this,-widestvaluetext)\
+            $::switched::($this,-smallfont) $::switched::($this,-widestvaluetext)\
         ]
         ::set ($this,valueHeight)\
-            [font metrics $switched::($this,-smallfont) -ascent]
+            [font metrics $::switched::($this,-smallfont) -ascent]
     }
 
     proc ~piePeripheralLabeler {this} {
         ::stooop::delete $($this,array)
         # delete remaining items (should be in pieLabeler destructor)
-        $pieLabeler::($this,canvas) delete pieLabeler($this)
+        $::pieLabeler::($this,canvas) delete pieLabeler($this)
     }
 
     proc options {this} {
@@ -34,7 +34,7 @@ package require stooop
         return [list\
             [list -bulletwidth 20 20]\
             [list -font\
-                $pieLabeler::(default,font) $pieLabeler::(default,font)\
+                $::pieLabeler::(default,font) $::pieLabeler::(default,font)\
             ]\
             [list -justify left left]\
             [list -offset 5 5]\
@@ -47,30 +47,30 @@ package require stooop
         -bulletwidth -font -justify -offset -smallfont -widestvaluetext\
     } {                                            ;# no dynamic options allowed
         proc set$option {this value} "
-            if {\$switched::(\$this,complete)} {
+            if {\$::switched::(\$this,complete)} {
                 error {option $option cannot be set dynamically}
             }
         "
     }
 
     proc set-smallfont {this value} {
-        if {$switched::($this,complete)} {
+        if {$::switched::($this,complete)} {
             error {option -smallfont cannot be set dynamically}
         }
     }
 
     proc new {this slice args} {
         # variable arguments are for the created canvas label object
-        ::set canvas $pieLabeler::($this,canvas)
+        ::set canvas $::pieLabeler::($this,canvas)
         ::set text [$canvas create text 0 0\
-            -font $switched::($this,-smallfont) -tags pieLabeler($this)\
+            -font $::switched::($this,-smallfont) -tags pieLabeler($this)\
         ]                                                  ;# create value label
         ::set label [eval ::stooop::new canvasLabel\
-            $pieLabeler::($this,canvas) $args\
+            $::pieLabeler::($this,canvas) $args\
             [list\
-                -justify $switched::($this,-justify)\
-                -bulletwidth $switched::($this,-bulletwidth)\
-                -font $switched::($this,-font) -selectrelief sunken\
+                -justify $::switched::($this,-justify)\
+                -bulletwidth $::switched::($this,-bulletwidth)\
+                -font $::switched::($this,-font) -selectrelief sunken\
             ]\
         ]
         canvasLabelsArray::manage $($this,array) $label
@@ -98,7 +98,7 @@ package require stooop
     proc set {this label value} {
         ::set text $($this,textItem,$label)
         position $this $text $($this,slice,$label)
-        $pieLabeler::($this,canvas) itemconfigure $text -text $value
+        $::pieLabeler::($this,canvas) itemconfigure $text -text $value
     }
 
     proc label {this label args} {
@@ -137,17 +137,17 @@ package require stooop
         ::set midAngle [expr {$data(start) + ($data(extent) / 2.0)}]
         ::set radians [expr {$midAngle * $PI / 180}]
         ::set x [expr {\
-            ($data(xRadius) + $switched::($this,-offset)) * cos($radians)\
+            ($data(xRadius) + $::switched::($this,-offset)) * cos($radians)\
         }]
         ::set y [expr {\
-            ($data(yRadius) + $switched::($this,-offset)) * sin($radians)\
+            ($data(yRadius) + $::switched::($this,-offset)) * sin($radians)\
         }]
         ::set angle [expr {round($midAngle) % 360}]
         if {$angle > 180} {
             ::set y [expr {$y - $data(height)}]     ;# account for pie thickness
         }
 
-        ::set canvas $pieLabeler::($this,canvas)
+        ::set canvas $::pieLabeler::($this,canvas)
         # now transform coordinates according to canvas coordinates system
         ::set coordinates [$canvas coords $text]
         $canvas move $text\
@@ -160,7 +160,7 @@ package require stooop
 
     proc delete {this label} {
         canvasLabelsArray::delete $($this,array) $label
-        $pieLabeler::($this,canvas) delete $($this,textItem,$label)
+        $::pieLabeler::($this,canvas) delete $($this,textItem,$label)
         unset\
             ($this,textItem,$label) ($this,slice,$label) ($this,selected,$label)
         # finally reposition the remaining value text items next to their slices
@@ -180,7 +180,7 @@ package require stooop
 
     proc update {this left top right bottom} {
         # arguments: whole pie coordinates, includings labeler labels
-        ::set canvas $pieLabeler::($this,canvas)
+        ::set canvas $::pieLabeler::($this,canvas)
         # first reposition labels array below pie graphics
         ::set array $($this,array)
         ::set width [expr {$right - $left}]
@@ -205,12 +205,12 @@ package require stooop
         upvar 1 $arrayName data
 
         ::set data(left)\
-            [expr {$($this,valueWidth) + $switched::($this,-offset)}]
+            [expr {$($this,valueWidth) + $::switched::($this,-offset)}]
         ::set data(right) $data(left)
         ::set data(top)\
-            [expr {$switched::($this,-offset) + $($this,valueHeight)}]
+            [expr {$::switched::($this,-offset) + $($this,valueHeight)}]
         ::set box\
-            [$pieLabeler::($this,canvas) bbox canvasLabelsArray($($this,array))]
+            [$::pieLabeler::($this,canvas) bbox canvasLabelsArray($($this,array))]
         if {[llength $box] == 0} {                              ;# no labels yet
             ::set data(bottom) $data(top)
         } else {                    ;# room taken by all labels including offset

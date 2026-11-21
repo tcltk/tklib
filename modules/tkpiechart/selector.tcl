@@ -54,12 +54,12 @@ package require stooop
     }
 
     proc update {this selected deselected} {
-        if {[string length $switched::($this,-selectcommand)] == 0} return
+        if {[string length $::switched::($this,-selectcommand)] == 0} return
         if {[llength $selected] > 0} {
-            uplevel #0 $switched::($this,-selectcommand) [::list $selected] 1
+            uplevel #0 $::switched::($this,-selectcommand) [::list $selected] 1
         }
         if {[llength $deselected] > 0} {
-            uplevel #0 $switched::($this,-selectcommand) [::list $deselected] 0
+            uplevel #0 $::switched::($this,-selectcommand) [::list $deselected] 0
         }
     }
 

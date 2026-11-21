@@ -22,10 +22,10 @@ proc slice::slice {this canvas xRadius yRadius args} switched {$args} {
 
 proc slice::~slice {this} {
     ##nagelfar ignore
-    if {[string length $switched::($this,-deletecommand)] > 0} {
+    if {[string length $::switched::($this,-deletecommand)] > 0} {
         # always invoke command at global level
 	##nagelfar ignore
-        uplevel #0 $switched::($this,-deletecommand)
+        uplevel #0 $::switched::($this,-deletecommand)
     }
     $($this,canvas) delete slice($this)
 }
@@ -43,7 +43,7 @@ proc slice::options {this} {
 
 proc slice::set-height {this value} {      ;# not a dynamic option: see complete
     ##nagelfar ignore
-    if {$switched::($this,complete)} {
+    if {$::switched::($this,complete)} {
         error {option -height cannot be set dynamically}
     }
 }
@@ -68,7 +68,7 @@ proc slice::set-deletecommand {this value} {}
 
 proc slice::set-scale {this value} {
     ##nagelfar ignore
-    if {$switched::($this,complete) && ($value > 0)} {
+    if {$::switched::($this,complete) && ($value > 0)} {
         # check for valid value following a non reproducible bug report
         update $this                   ;# requires initialization to be complete
     }
@@ -82,12 +82,12 @@ proc slice::set-startandextent {this value} {
     } elseif {$extent >= 360} {
         # get as close as possible to 360, which would not work as it is
         # equivalent to 0
-        set ($this,extent) [expr {360 - pow(10, -$::tcl_precision + 3)}]
+        set ($this,extent) [expr {360 - 1e-9}]
     } else {
         set ($this,extent) $extent
     }
     ##nagelfar ignore
-    if {$switched::($this,complete)} {
+    if {$::switched::($this,complete)} {
         update $this                   ;# requires initialization to be complete
     }
 }
@@ -108,12 +108,12 @@ proc slice::complete {this} {
     set xRadius $($this,xRadius)
     set yRadius $($this,yRadius)
     ##nagelfar ignore
-    set bottomColor $switched::($this,-bottomcolor)
+    set bottomColor $::switched::($this,-bottomcolor)
     # use an empty image as an origin marker with only 2 coordinates
     set ($this,origin)\
         [$canvas create image -$xRadius -$yRadius -tags slice($this)]
     ##nagelfar ignore
-    if {$switched::($this,-height) > 0} {                                  ;# 3D
+    if {$::switched::($this,-height) > 0} {                                  ;# 3D
         set ($this,startBottomArcFill) [$canvas create arc\
             0 0 0 0 -style chord -extent 0 -fill $bottomColor\
             -outline $bottomColor -tags slice($this)\
@@ -143,7 +143,7 @@ proc slice::complete {this} {
             [$canvas create line 0 0 0 0 -tags slice($this)]
     }
     ##nagelfar ignore
-    set fill $switched::($this,-topcolor)
+    set fill $::switched::($this,-topcolor)
     set ($this,topArc) [$canvas create arc\
         -$xRadius -$yRadius $xRadius $yRadius\
         -fill $fill -tags slice($this)\
@@ -163,7 +163,7 @@ proc slice::update {this} {
     $canvas itemconfigure $($this,topArc)\
         -start $($this,start) -extent $($this,extent)
     ##nagelfar ignore
-    if {$switched::($this,-height) > 0} {                                  ;# 3D
+    if {$::switched::($this,-height) > 0} {                                  ;# 3D
         updateBottom $this
     }
     # now position slice at the correct coordinates
@@ -171,7 +171,7 @@ proc slice::update {this} {
         [expr {[lindex $coordinates 1] + $yRadius}]
     # finally apply scale
     ##nagelfar ignore
-    eval $canvas scale slice($this) $coordinates $switched::($this,-scale)
+    eval $canvas scale slice($this) $coordinates $::switched::($this,-scale)
 }
 
 proc slice::updateBottom {this} {
@@ -184,7 +184,7 @@ proc slice::updateBottom {this} {
     set xRadius $($this,xRadius)
     set yRadius $($this,yRadius)
     ##nagelfar ignore
-    set height $switched::($this,-height)
+    set height $::switched::($this,-height)
 
     # first make all bottom parts invisible
     $canvas itemconfigure $($this,startBottomArcFill) -extent 0
@@ -315,11 +315,11 @@ proc slice::data {this arrayName} {
     set data(start) $($this,start)
     set data(extent) $($this,extent)
     ##nagelfar ignore
-    foreach {x y} $switched::($this,-scale) {}
+    foreach {x y} $::switched::($this,-scale) {}
     set data(xRadius) [expr {$x * $($this,xRadius)}]
     set data(yRadius) [expr {$y * $($this,yRadius)}]
     ##nagelfar ignore
-    set data(height) [expr {$y * $switched::($this,-height)}]
+    set data(height) [expr {$y * $::switched::($this,-height)}]
     foreach {x y} [$($this,canvas) coords $($this,origin)] {}
     set data(xCenter) [expr {$x + $data(xRadius)}]
     set data(yCenter) [expr {$y + $data(yRadius)}]

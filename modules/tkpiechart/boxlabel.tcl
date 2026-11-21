@@ -22,7 +22,7 @@ package require stooop
         # justify option is used for both the labels array and the labels
         return [list\
             [list -font\
-                $pieLabeler::(default,font) $pieLabeler::(default,font)\
+                $::pieLabeler::(default,font) $::pieLabeler::(default,font)\
             ]\
             [list -justify left left]\
             [list -offset 5 5]\
@@ -33,7 +33,7 @@ package require stooop
     foreach option {-font -justify -offset -xoffset} {
         # no dynamic options allowed
         proc set$option {this value} "
-            if {\$switched::(\$this,complete)} {
+            if {\$::switched::(\$this,complete)} {
                 error {option $option cannot be set dynamically}
             }
         "
@@ -42,15 +42,15 @@ package require stooop
     proc new {this slice args} {
         # variable arguments are for the created canvas label object
         ::set label [eval ::stooop::new canvasLabel\
-            $pieLabeler::($this,canvas) $args\
+            $::pieLabeler::($this,canvas) $args\
             [list\
-                -justify $switched::($this,-justify)\
-                -font $switched::($this,-font) -selectrelief sunken\
+                -justify $::switched::($this,-justify)\
+                -font $::switched::($this,-font) -selectrelief sunken\
             ]\
         ]
         canvasLabelsArray::manage $($this,array) $label
         # refresh our tags
-        $pieLabeler::($this,canvas) addtag pieLabeler($this)\
+        $::pieLabeler::($this,canvas) addtag pieLabeler($this)\
             withtag canvasLabelsArray($($this,array))
         # always append semi-column to label:
         switched::configure $label -text [switched::cget $label -text]:
@@ -107,7 +107,7 @@ package require stooop
 
     proc update {this left top right bottom} {
         # whole pie coordinates, includings labeler labels
-        ::set canvas $pieLabeler::($this,canvas)
+        ::set canvas $::pieLabeler::($this,canvas)
         # first reposition labels array below pie graphics
         ::set array $($this,array)
         ::set width [expr {$right - $left}]
@@ -128,12 +128,12 @@ package require stooop
         ::set data(right) 0
         ::set data(top) 0
         ::set box\
-            [$pieLabeler::($this,canvas) bbox canvasLabelsArray($($this,array))]
+            [$::pieLabeler::($this,canvas) bbox canvasLabelsArray($($this,array))]
         if {[llength $box] == 0} {                              ;# no labels yet
             ::set data(bottom) 0
         } else {                    ;# room taken by all labels including offset
             ::set data(bottom) [expr {\
-                [lindex $box 3] - [lindex $box 1] + $switched::($this,-offset)\
+                [lindex $box 3] - [lindex $box 1] + $::switched::($this,-offset)\
             }]
         }
     }

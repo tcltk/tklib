@@ -19,9 +19,9 @@ package require stooop
     ### public procedures follow:
 
     proc extend {this id} {
-        if {[info exists selector::($this,lastSelected)]} {
+        if {[info exists ::selector::($this,lastSelected)]} {
             set list [lsort -integer [selector::list $this]]
-            set last [lsearch -exact $list $selector::($this,lastSelected)]
+            set last [lsearch -exact $list $::selector::($this,lastSelected)]
             set index [lsearch -exact $list $id]
             selector::clear $this
             if {$index > $last} {

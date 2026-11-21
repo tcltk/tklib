@@ -1,5 +1,5 @@
 # -*- tcl -*-
-tclPkgSetup [file dirname [file join [pwd] [info script]]] tkpiechart 6.6.1 {
+tclPkgSetup [file dirname [file join [pwd] [info script]]] tkpiechart 6.6.2 {
     {pie.tcl source {::pie::_copy ::pie::buttonPress ::pie::buttonRelease ::pie::complete ::pie::currentSlice ::pie::darken ::pie::deleteSlice ::pie::labelSlice ::pie::maximum ::pie::minimum ::pie::newSlice ::pie::options ::pie::pie ::pie::selectedSlices ::pie::set-autoupdate ::pie::set-background ::pie::set-colors ::pie::set-height ::pie::set-labeler ::pie::set-selectable ::pie::set-thickness ::pie::set-title ::pie::set-titlefont ::pie::set-titleoffset ::pie::set-width ::pie::setLabelsState ::pie::setSliceBackground ::pie::setSliceLabelBackground ::pie::sizeSlice ::pie::sliceLabelTag ::pie::update ::pie::~pie}}
     {slice.tcl source {::slice::_copy ::slice::complete ::slice::data ::slice::normalizedAngle ::slice::options ::slice::rotate ::slice::set-bottomcolor ::slice::set-deletecommand ::slice::set-height ::slice::set-scale ::slice::set-startandextent ::slice::set-topcolor ::slice::slice ::slice::update ::slice::updateBottom ::slice::~slice}}
     {pielabel.tcl source {::pieLabeler::_copy ::pieLabeler::_updateSlices ::pieLabeler::delete ::pieLabeler::label ::pieLabeler::labelBackground ::pieLabeler::labelTextBackground ::pieLabeler::new ::pieLabeler::pieLabeler ::pieLabeler::room ::pieLabeler::selectState ::pieLabeler::set ::pieLabeler::update ::pieLabeler::updateSlices ::pieLabeler::~pieLabeler}}
@@ -12,4 +12,4 @@ tclPkgSetup [file dirname [file join [pwd] [info script]]] tkpiechart 6.6.1 {
     {relirect.tcl source {::canvasReliefRectangle::_copy ::canvasReliefRectangle::canvasReliefRectangle ::canvasReliefRectangle::options ::canvasReliefRectangle::set-background ::canvasReliefRectangle::set-coordinates ::canvasReliefRectangle::set-relief ::canvasReliefRectangle::update ::canvasReliefRectangle::~canvasReliefRectangle}}
 }
 
-package provide tkpiechart 6.6.1
+package provide tkpiechart 6.6.2
