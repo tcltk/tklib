@@ -27,6 +27,11 @@ testConstraint x11 [expr {[tk windowingsystem] eq "x11"}]
 # 1c877f89a4).
 set tk9Bug [expr {[package vsatisfies [package provide Tk] 9-] ? "knownBug" : ""}]
 
+# The tklib test harness withdraws "."; the event tests need the widgets
+# mapped.
+set cwMainState [wm state .]
+wm deiconify .
+
 # Collect background errors (from event bindings) instead of showing
 # the bgerror dialog.
 set cwBgErrors {}
@@ -1684,6 +1689,8 @@ test controlwidget-11.3 {bindDown: returns an empty string} -body {
 # -------------------------------------------------------------------------
 
 interp bgerror {} $cwOldBgHandler
+wm state . $cwMainState
+unset cwMainState
 unset cwOldBgHandler cwBgErrors
 rename cleanupWidgets {}
 rename canvasTexts {}
