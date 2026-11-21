@@ -1,0 +1,392 @@
+# -*- tcl -*-
+# Tests for the canvas::drag package
+#
+# See the file "license.terms" for information on usage and redistribution
+# of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2
+    namespace import ::tcltest::*
+} else {
+    if {![package vsatisfies [package present tcltest] 2.2]} {
+	puts "    Aborting the tests found in \"[file tail [info script]]\"."
+	puts "    Requiring tcltest 2.2, have [package present tcltest]"
+	return
+    }
+}
+
+::tcltest::testConstraint tk 1
+
+lappend auto_path [file dirname [file dirname [file normalize [info script]]]]
+package require canvas::drag
+
+# -------------------------------------------------------------------------
+
+# Canvas: item 1 and 2 tagged "h" (handles), each also tagged with its
+# group g1/g2; item 3 in group g1 is not a handle; item 4 is untagged.
+proc mkCanvas {} {
+    canvas .c -width 300 -height 200 -highlightthickness 0 -borderwidth 0
+    pack .c
+    .c create rectangle  10 10  50 50 -fill red   -tags {h g1}
+    .c create rectangle 110 10 150 50 -fill blue  -tags {h g2}
+    .c create rectangle  10 100 50 140 -fill red  -tags {g1}
+    .c create rectangle 200 100 240 140 -fill gray
+    update
+    event generate .c <Enter> -x 280 -y 180
+    event generate .c <Motion> -x 280 -y 180
+    update
+    set ::log {}
+}
+
+proc cleanCanvas {} {
+    foreach k [array names ::canvas::drag::attached] {
+	if {[lindex $k 0] eq ".c"} {
+	    unset ::canvas::drag::attached($k)
+	}
+    }
+    destroy .c
+    unset -nocomplain ::log
+    namespace eval ::canvas::drag {
+	unset -nocomplain active clientdata lastx lasty
+    }
+}
+
+# Simulate a drag with the given button and modifier state from (x0,y0)
+# through the listed points.
+proc drag {button state x0 y0 args} {
+    set bmask [expr {1 << ($button + 7)}]
+    event generate .c <Motion> -x $x0 -y $y0 -state $state
+    event generate .c <ButtonPress-$button> -x $x0 -y $y0 -state $state
+    set x $x0
+    set y $y0
+    foreach {x y} $args {
+	event generate .c <Motion> -x $x -y $y -state [expr {$state | $bmask}]
+    }
+    event generate .c <ButtonRelease-$button> -x $x -y $y \
+	-state [expr {$state | $bmask}]
+    update
+}
+
+# Drag callback logging its calls.
+proc cb {method c args} {
+    lappend ::log [list $method {*}$args]
+    switch -- $method {
+	start {return [list cd [lindex $args 0] 0]}
+	move {
+	    lassign $args cd dx dy
+	    return [list cd [lindex $cd 1] [expr {[lindex $cd 2] + 1}]]
+	}
+	done {return ignored}
+    }
+}
+
+test canvas::drag-1.0 {package version} -body {
+    package present canvas::drag
+} -result 0.1
+
+test canvas::drag-1.1 {ensemble subcommands} -body {
+    ::canvas::drag foo .c 1
+} -returnCodes error -result {unknown or ambiguous subcommand "foo": must be group, item, off, or on}
+
+# -------------------------------------------------------------------------
+# Argument checking
+
+test canvas::drag-2.1 {on: wrong # args} -body {
+    ::canvas::drag on .c h
+} -returnCodes error -result {wrong # args: should be "::canvas::drag on c tag cmdprefix ?arg ...?"}
+
+test canvas::drag-2.2 {off: wrong # args} -body {
+    ::canvas::drag off .c
+} -returnCodes error -result {wrong # args: should be "::canvas::drag off c tag"}
+
+test canvas::drag-2.3 {item: wrong # args} -body {
+    ::canvas::drag item .c
+} -returnCodes error -result {wrong # args: should be "::canvas::drag item c tag ?arg ...?"}
+
+test canvas::drag-2.4 {group: wrong # args} -body {
+    ::canvas::drag group .c h
+} -returnCodes error -result {wrong # args: should be "::canvas::drag group c tag cmdprefix ?arg ...?"}
+
+test canvas::drag-2.5 {on: unknown option} -setup mkCanvas -body {
+    ::canvas::drag on .c h cb -foo 1
+} -cleanup cleanCanvas -returnCodes error -result {Unknown option "-foo", expected -event}
+
+test canvas::drag-2.6 {item: unknown option} -setup mkCanvas -body {
+    ::canvas::drag item .c h -foo 1
+} -cleanup cleanCanvas -returnCodes error -result {Unknown option "-foo", expected -event}
+
+test canvas::drag-2.7 {group: unknown option} -setup mkCanvas -body {
+    ::canvas::drag group .c h cb -foo 1
+} -cleanup cleanCanvas -returnCodes error -result {Unknown option "-foo", expected -event}
+
+test canvas::drag-2.8 {-event: too many parts} -setup mkCanvas -body {
+    ::canvas::drag on .c h cb -event Control-Shift-1
+} -cleanup cleanCanvas -returnCodes error -result {Bad event "Control-Shift-1"}
+
+test canvas::drag-2.9 {-event: bad modifier} -setup mkCanvas -body {
+    ::canvas::drag on .c h cb -event Foo-1
+} -cleanup cleanCanvas -returnCodes error -match glob -result *
+
+test canvas::drag-2.10 {option errors install no bindings} -setup mkCanvas -body {
+    catch {::canvas::drag on .c h cb -foo 1}
+    catch {::canvas::drag on .c h cb -event a-b-c}
+    list [.c bind h] [array names ::canvas::drag::attached]
+} -cleanup cleanCanvas -result {{} {}}
+
+test canvas::drag-2.11 {results are empty} -setup mkCanvas -body {
+    list [::canvas::drag on .c h cb] [::canvas::drag off .c h] \
+	[::canvas::drag item .c h] [::canvas::drag off .c h] \
+	[::canvas::drag group .c h cb] [::canvas::drag off .c h]
+} -cleanup cleanCanvas -result {{} {} {} {} {} {}}
+
+# -------------------------------------------------------------------------
+# on: generic drag
+
+test canvas::drag-3.1 {on: default bindings use button 3} -setup mkCanvas -body {
+    ::canvas::drag on .c h cb
+    lsort [.c bind h]
+} -cleanup cleanCanvas -result {<B3-Motion> <Button-3> <ButtonRelease-3>}
+
+test canvas::drag-3.2 {on: callback sequence start, move, done} -setup mkCanvas -body {
+    ::canvas::drag on .c h cb
+    drag 3 0 30 30 35 32 45 40
+    set ::log
+} -cleanup cleanCanvas -result {{start 1} {move {cd 1 0} 5.0 2.0} {move {cd 1 1} 10.0 8.0} {done {cd 1 2}}}
+
+test canvas::drag-3.3 {on: no motion, done gets start client data} -setup mkCanvas -body {
+    ::canvas::drag on .c h cb
+    drag 3 0 120 30
+    set ::log
+} -cleanup cleanCanvas -result {{start 2} {done {cd 2 0}}}
+
+test canvas::drag-3.4 {on: callback does not move items itself} -setup mkCanvas -body {
+    ::canvas::drag on .c h cb
+    drag 3 0 30 30 60 60
+    .c coords 1
+} -cleanup cleanCanvas -result {10.0 10.0 50.0 50.0}
+
+test canvas::drag-3.5 {on: other buttons do not drag} -setup mkCanvas -body {
+    ::canvas::drag on .c h cb
+    drag 1 0 30 30 60 60
+    drag 2 0 30 30 60 60
+    set ::log
+} -cleanup cleanCanvas -result {}
+
+test canvas::drag-3.6 {on: non-handle items do not drag} -setup mkCanvas -body {
+    ::canvas::drag on .c h cb
+    drag 3 0 30 120 60 160
+    drag 3 0 220 120 260 160
+    drag 3 0 280 180 290 190
+    set ::log
+} -cleanup cleanCanvas -result {}
+
+test canvas::drag-3.7 {on: -event with a button} -setup mkCanvas -body {
+    ::canvas::drag on .c h cb -event 1
+    set r [lsort [.c bind h]]
+    drag 3 0 30 30 40 40
+    drag 1 0 30 30 40 40
+    list $r $::log
+} -cleanup cleanCanvas -result {{<B1-Motion> <Button-1> <ButtonRelease-1>} {{start 1} {move {cd 1 0} 10.0 10.0} {done {cd 1 1}}}}
+
+test canvas::drag-3.8 {on: -event with modifier} -setup mkCanvas -body {
+    ::canvas::drag on .c h cb -event Control-2
+    set r [lsort [.c bind h]]
+    drag 2 0 30 30 40 40
+    drag 2 4 30 30 40 40
+    list $r $::log
+} -cleanup cleanCanvas -result {{<Control-B2-Motion> <Control-Button-2> <Control-ButtonRelease-2>} {{start 1} {move {cd 1 0} 10.0 10.0} {done {cd 1 1}}}}
+
+test canvas::drag-3.9 {on: last -event wins} -setup mkCanvas -body {
+    ::canvas::drag on .c h cb -event 1 -event 2
+    lsort [.c bind h]
+} -cleanup cleanCanvas -result {<B2-Motion> <Button-2> <ButtonRelease-2>}
+
+test canvas::drag-3.10 {on: deltas in canvas coordinates (scrolled canvas)} -setup {
+    mkCanvas
+    .c configure -scrollregion {0 0 1000 1000} -xscrollincrement 1 -yscrollincrement 1
+    .c xview scroll 100 units
+    .c yview scroll 0 units
+    update
+} -body {
+    ::canvas::drag on .c h cb
+    drag 3 0 20 30 25 35
+    set ::log
+} -cleanup cleanCanvas -result {{start 2} {move {cd 2 0} 5.0 5.0} {done {cd 2 1}}}
+
+test canvas::drag-3.11 {on: several handles share the binding} -setup mkCanvas -body {
+    ::canvas::drag on .c h cb
+    drag 3 0 30 30
+    drag 3 0 120 30
+    set ::log
+} -cleanup cleanCanvas -result {{start 1} {done {cd 1 0}} {start 2} {done {cd 2 0}}}
+
+test canvas::drag-3.12 {on: multi-word command prefix} -setup {
+    mkCanvas
+    proc cb2 {a b method c args} {
+	lappend ::log [list $a $b $method]
+    }
+} -body {
+    ::canvas::drag on .c h {cb2 {x y} z}
+    drag 3 0 30 30 31 31
+    set ::log
+} -cleanup {
+    cleanCanvas
+    rename cb2 {}
+} -result {{{x y} z start} {{x y} z move} {{x y} z done}}
+
+test canvas::drag-3.13 {on: drag set up on an item id} -setup mkCanvas -body {
+    ::canvas::drag on .c 3 cb
+    drag 3 0 30 30
+    drag 3 0 30 120
+    set ::log
+} -cleanup cleanCanvas -result {{start 3} {done {cd 3 0}}}
+
+# -------------------------------------------------------------------------
+# off
+
+test canvas::drag-4.1 {off: removes the bindings} -setup mkCanvas -body {
+    ::canvas::drag on .c h cb
+    ::canvas::drag off .c h
+    drag 3 0 30 30 40 40
+    list [.c bind h] $::log
+} -cleanup cleanCanvas -result {{} {}}
+
+test canvas::drag-4.2 {off: with custom event} -setup mkCanvas -body {
+    ::canvas::drag on .c h cb -event Control-1
+    ::canvas::drag off .c h
+    .c bind h
+} -cleanup cleanCanvas -result {}
+
+test canvas::drag-4.3 {off: other drags remain} -setup mkCanvas -body {
+    ::canvas::drag on .c h cb
+    ::canvas::drag on .c g1 cb -event 1
+    ::canvas::drag off .c h
+    drag 3 0 30 30
+    drag 1 0 30 120
+    set ::log
+} -cleanup cleanCanvas -result {{start 3} {done {cd 3 0}}}
+
+test canvas::drag-4.4 {off: other bindings of the tag remain} -setup mkCanvas -body {
+    .c bind h <Double-1> {lappend ::log double}
+    ::canvas::drag on .c h cb
+    ::canvas::drag off .c h
+    .c bind h
+} -cleanup cleanCanvas -result <Double-Button-1>
+
+test canvas::drag-4.5 {off: without drag set up} -constraints {
+    knownBug
+} -setup mkCanvas -body {
+    # Documented: "removes any drag operation set on the items".
+    ::canvas::drag off .c h
+} -cleanup cleanCanvas -result {}
+
+test canvas::drag-4.6 {off: drag can be set up again} -setup mkCanvas -body {
+    ::canvas::drag on .c h cb
+    ::canvas::drag off .c h
+    ::canvas::drag on .c h cb -event 1
+    drag 1 0 30 30
+    set ::log
+} -cleanup cleanCanvas -result {{start 1} {done {cd 1 0}}}
+
+# -------------------------------------------------------------------------
+# item
+
+test canvas::drag-5.1 {item: moves the dragged item only} -setup mkCanvas -body {
+    ::canvas::drag item .c h
+    drag 3 0 30 30 40 35 50 50
+    list [.c coords 1] [.c coords 2] [.c coords 3]
+} -cleanup cleanCanvas -result {{30.0 30.0 70.0 70.0} {110.0 10.0 150.0 50.0} {10.0 100.0 50.0 140.0}}
+
+test canvas::drag-5.2 {item: the other handle} -setup mkCanvas -body {
+    ::canvas::drag item .c h
+    drag 3 0 120 30 100 40
+    list [.c coords 1] [.c coords 2]
+} -cleanup cleanCanvas -result {{10.0 10.0 50.0 50.0} {90.0 20.0 130.0 60.0}}
+
+test canvas::drag-5.3 {item: -event} -setup mkCanvas -body {
+    ::canvas::drag item .c h -event Shift-1
+    drag 1 0 30 30 40 40
+    set r [.c coords 1]
+    drag 1 1 30 30 40 40
+    list $r [.c coords 1]
+} -cleanup cleanCanvas -result {{10.0 10.0 50.0 50.0} {20.0 20.0 60.0 60.0}}
+
+test canvas::drag-5.4 {item: off} -setup mkCanvas -body {
+    ::canvas::drag item .c h
+    ::canvas::drag off .c h
+    drag 3 0 30 30 40 40
+    .c coords 1
+} -cleanup cleanCanvas -result {10.0 10.0 50.0 50.0}
+
+test canvas::drag-5.5 {item: two consecutive drags} -setup mkCanvas -body {
+    ::canvas::drag item .c h
+    drag 3 0 30 30 40 40
+    drag 3 0 40 40 30 50
+    .c coords 1
+} -cleanup cleanCanvas -result {10.0 30.0 50.0 70.0}
+
+# -------------------------------------------------------------------------
+# group
+
+proc gcb {method c args} {
+    lappend ::log [list $method {*}$args]
+    if {$method eq "start"} {
+	# Convert the handle into the group tag.
+	return [lsearch -inline -glob [$c gettags [lindex $args 0]] g*]
+    }
+    return ignored
+}
+
+test canvas::drag-6.1 {group: moves the whole group} -setup mkCanvas -body {
+    ::canvas::drag group .c h gcb
+    drag 3 0 30 30 40 35 50 50
+    list [.c coords 1] [.c coords 2] [.c coords 3] [.c coords 4]
+} -cleanup cleanCanvas -result {{30.0 30.0 70.0 70.0} {110.0 10.0 150.0 50.0} {30.0 120.0 70.0 160.0} {200.0 100.0 240.0 140.0}}
+
+test canvas::drag-6.2 {group: callbacks: start and done, no move} -setup mkCanvas -body {
+    ::canvas::drag group .c h gcb
+    drag 3 0 30 30 40 35 50 50
+    set ::log
+} -cleanup cleanCanvas -result {{start 1} {done g1}}
+
+test canvas::drag-6.3 {group: non-handle group member does not start a drag} -setup mkCanvas -body {
+    ::canvas::drag group .c h gcb
+    drag 3 0 30 120 40 130
+    list $::log [.c coords 3]
+} -cleanup cleanCanvas -result {{} {10.0 100.0 50.0 140.0}}
+
+test canvas::drag-6.4 {group: -event} -setup mkCanvas -body {
+    ::canvas::drag group .c h gcb -event 1
+    drag 1 0 120 30 130 40
+    list $::log [.c coords 2]
+} -cleanup cleanCanvas -result {{{start 2} {done g2}} {120.0 20.0 160.0 60.0}}
+
+test canvas::drag-6.5 {group: off} -setup mkCanvas -body {
+    ::canvas::drag group .c h gcb
+    ::canvas::drag off .c h
+    drag 3 0 30 30 40 40
+    list $::log [.c coords 1]
+} -cleanup cleanCanvas -result {{} {10.0 10.0 50.0 50.0}}
+
+rename gcb {}
+
+# -------------------------------------------------------------------------
+
+rename mkCanvas {}
+rename cleanCanvas {}
+rename drag {}
+rename cb {}
+
+::tcltest::cleanupTests
