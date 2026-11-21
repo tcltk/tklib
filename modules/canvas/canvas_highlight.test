@@ -1,0 +1,269 @@
+# -*- tcl -*-
+# Tests for the canvas::highlight package
+#
+# See the file "license.terms" for information on usage and redistribution
+# of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2
+    namespace import ::tcltest::*
+} else {
+    if {![package vsatisfies [package present tcltest] 2.2]} {
+	puts "    Aborting the tests found in \"[file tail [info script]]\"."
+	puts "    Requiring tcltest 2.2, have [package present tcltest]"
+	return
+    }
+}
+
+::tcltest::testConstraint tk 1
+
+lappend auto_path [file dirname [file dirname [file normalize [info script]]]]
+package require canvas::highlight
+
+# -------------------------------------------------------------------------
+
+# A canvas with two rectangles tagged "a" (items 1, 2) and one tagged "b"
+# (item 3), separated by empty space.
+proc mkCanvas {} {
+    canvas .c -width 300 -height 100 -highlightthickness 0 -borderwidth 0
+    pack .c
+    .c create rectangle  10 10  50 50 -fill red   -tags a
+    .c create rectangle  60 10 100 50 -fill red   -tags a
+    .c create rectangle 150 10 190 50 -fill green -tags b
+    update
+    event generate .c <Enter> -x 250 -y 80
+    event generate .c <Motion> -x 250 -y 80
+    update
+    set ::log {}
+}
+
+proc cleanCanvas {} {
+    destroy .c
+    unset -nocomplain ::log ::veto
+    unset -nocomplain ::canvas::highlight::active ::canvas::highlight::clientdata
+}
+
+proc moveTo {x y} {
+    event generate .c <Motion> -x $x -y $y
+    update
+}
+
+# Highlight callback: logs its calls, returns client data for on and
+# a boolean for off.
+proc hl {tag method c arg} {
+    lappend ::log [list $tag $method $c $arg]
+    switch -- $method {
+	on {
+	    $c itemconfigure $arg -fill yellow
+	    return [list data $arg]
+	}
+	off {
+	    if {[info exists ::veto] && $::veto} {
+		return 0
+	    }
+	    $c itemconfigure [lindex $arg 1] -fill red
+	    return 1
+	}
+    }
+}
+
+test canvas::highlight-1.0 {package version} -body {
+    package present canvas::highlight
+} -result 0.1
+
+test canvas::highlight-1.1 {ensemble subcommands} -body {
+    ::canvas::highlight foo .c 1
+} -returnCodes error -result {unknown or ambiguous subcommand "foo": must be off, or on}
+
+# -------------------------------------------------------------------------
+
+test canvas::highlight-2.1 {on: wrong # args} -body {
+    ::canvas::highlight on .c a
+} -returnCodes error -result {wrong # args: should be "::canvas::highlight on c tagOrId cmdprefix"}
+
+test canvas::highlight-2.2 {on: wrong # args} -body {
+    ::canvas::highlight on .c a b c
+} -returnCodes error -result {wrong # args: should be "::canvas::highlight on c tagOrId cmdprefix"}
+
+test canvas::highlight-2.3 {off: wrong # args} -body {
+    ::canvas::highlight off .c
+} -returnCodes error -result {wrong # args: should be "::canvas::highlight off c tagOrId"}
+
+test canvas::highlight-2.4 {on: result} -setup mkCanvas -body {
+    ::canvas::highlight on .c a {hl A}
+} -cleanup cleanCanvas -result {}
+
+test canvas::highlight-2.5 {off: result} -setup mkCanvas -body {
+    ::canvas::highlight on .c a {hl A}
+    ::canvas::highlight off .c a
+} -cleanup cleanCanvas -result {}
+
+test canvas::highlight-2.6 {on: bad canvas} -body {
+    ::canvas::highlight on .nosuchcanvas a {hl A}
+} -returnCodes error -result {invalid command name ".nosuchcanvas"}
+
+# -------------------------------------------------------------------------
+
+test canvas::highlight-3.1 {entering an item calls "on" with the item} -setup mkCanvas -body {
+    ::canvas::highlight on .c a {hl A}
+    moveTo 30 30
+    list $::log [.c itemcget 1 -fill]
+} -cleanup cleanCanvas -result {{{A on .c 1}} yellow}
+
+test canvas::highlight-3.2 {leaving calls "off" with the client data} -setup mkCanvas -body {
+    ::canvas::highlight on .c a {hl A}
+    moveTo 30 30
+    moveTo 250 80
+    list $::log [.c itemcget 1 -fill]
+} -cleanup cleanCanvas -result {{{A on .c 1} {A off .c {data 1}}} red}
+
+test canvas::highlight-3.3 {moving between items of the group} -setup mkCanvas -body {
+    ::canvas::highlight on .c a {hl A}
+    moveTo 30 30
+    moveTo 80 30
+    moveTo 250 80
+    set ::log
+} -cleanup cleanCanvas -result {{A on .c 1} {A off .c {data 1}} {A on .c 2} {A off .c {data 2}}}
+
+test canvas::highlight-3.4 {moving inside an item does not repeat the callback} -setup mkCanvas -body {
+    ::canvas::highlight on .c a {hl A}
+    moveTo 30 30
+    moveTo 31 31
+    moveTo 40 40
+    set ::log
+} -cleanup cleanCanvas -result {{A on .c 1}}
+
+test canvas::highlight-3.5 {items not in the highlight are not affected} -setup mkCanvas -body {
+    ::canvas::highlight on .c a {hl A}
+    moveTo 170 30
+    moveTo 250 80
+    list $::log [.c itemcget 3 -fill]
+} -cleanup cleanCanvas -result {{} green}
+
+test canvas::highlight-3.6 {several highlights with different callbacks} -setup mkCanvas -body {
+    ::canvas::highlight on .c a {hl A}
+    ::canvas::highlight on .c b {hl B}
+    moveTo 30 30
+    moveTo 170 30
+    moveTo 250 80
+    set ::log
+} -cleanup cleanCanvas -result {{A on .c 1} {A off .c {data 1}} {B on .c 3} {B off .c {data 3}}}
+
+test canvas::highlight-3.7 {highlight on a single item id} -setup mkCanvas -body {
+    ::canvas::highlight on .c 2 {hl A}
+    moveTo 30 30
+    moveTo 80 30
+    moveTo 250 80
+    set ::log
+} -cleanup cleanCanvas -result {{A on .c 2} {A off .c {data 2}}}
+
+test canvas::highlight-3.8 {callback need not reconfigure the item} -setup {
+    mkCanvas
+    proc notify {method c arg} {
+	lappend ::log $method
+	if {$method eq "off"} {return yes}
+    }
+} -body {
+    ::canvas::highlight on .c a notify
+    moveTo 30 30
+    moveTo 250 80
+    list $::log [.c itemcget 1 -fill]
+} -cleanup {
+    cleanCanvas
+    rename notify {}
+} -result {{on off} red}
+
+test canvas::highlight-3.9 {off callback vetoes the unhighlight} -setup mkCanvas -body {
+    ::canvas::highlight on .c a {hl A}
+    moveTo 30 30
+    set ::veto 1
+    moveTo 250 80
+    set r [list [.c itemcget 1 -fill]]
+    # While the highlight is still active, no other highlight starts.
+    moveTo 80 30
+    lappend r [.c itemcget 2 -fill]
+    # Allow the removal now.
+    set ::veto 0
+    moveTo 250 80
+    lappend r [.c itemcget 1 -fill] $::log
+} -cleanup cleanCanvas -result {yellow red red {{A on .c 1} {A off .c {data 1}} {A off .c {data 1}}}}
+
+test canvas::highlight-3.10 {callback with a multi-word prefix} -setup {
+    mkCanvas
+    namespace eval ::hltest {
+	proc cb {a b method c arg} {
+	    lappend ::log [list $a $b $method]
+	    return 1
+	}
+    }
+} -body {
+    ::canvas::highlight on .c a {::hltest::cb {x y} z}
+    moveTo 30 30
+    moveTo 250 80
+    set ::log
+} -cleanup {
+    cleanCanvas
+    namespace delete ::hltest
+} -result {{{x y} z on} {{x y} z off}}
+
+# -------------------------------------------------------------------------
+
+test canvas::highlight-4.1 {off: no more callbacks} -setup mkCanvas -body {
+    ::canvas::highlight on .c a {hl A}
+    ::canvas::highlight off .c a
+    moveTo 30 30
+    moveTo 250 80
+    list $::log [.c bind a <Enter>] [.c bind a <Leave>]
+} -cleanup cleanCanvas -result {{} {} {}}
+
+test canvas::highlight-4.2 {off: other highlights remain} -setup mkCanvas -body {
+    ::canvas::highlight on .c a {hl A}
+    ::canvas::highlight on .c b {hl B}
+    ::canvas::highlight off .c a
+    moveTo 30 30
+    moveTo 170 30
+    moveTo 250 80
+    set ::log
+} -cleanup cleanCanvas -result {{B on .c 3} {B off .c {data 3}}}
+
+test canvas::highlight-4.3 {off: without highlight is no error} -setup mkCanvas -body {
+    ::canvas::highlight off .c a
+} -cleanup cleanCanvas -result {}
+
+test canvas::highlight-4.4 {on: replaces an existing highlight} -setup mkCanvas -body {
+    ::canvas::highlight on .c a {hl A}
+    ::canvas::highlight on .c a {hl X}
+    moveTo 30 30
+    moveTo 250 80
+    set ::log
+} -cleanup cleanCanvas -result {{X on .c 1} {X off .c {data 1}}}
+
+test canvas::highlight-4.5 {highlight can be set up again after off} -setup mkCanvas -body {
+    ::canvas::highlight on .c a {hl A}
+    ::canvas::highlight off .c a
+    ::canvas::highlight on .c a {hl B}
+    moveTo 30 30
+    moveTo 250 80
+    set ::log
+} -cleanup cleanCanvas -result {{B on .c 1} {B off .c {data 1}}}
+
+# -------------------------------------------------------------------------
+
+rename mkCanvas {}
+rename cleanCanvas {}
+rename moveTo {}
+rename hl {}
+
+::tcltest::cleanupTests
