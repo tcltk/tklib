@@ -1,0 +1,586 @@
+# -*- tcl -*-
+# persistentSelection.test --
+#
+#	Tests for the persistentSelection package: report, getPrimarySel,
+#	getClassicPrimarySel and fixText.
+#
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2
+    namespace import ::tcltest::*
+} else {
+    if {![package vsatisfies [package present tcltest] 2.2]} {
+	puts "    Aborting the tests found in \"[file tail [info script]]\"."
+	puts "    Requiring tcltest 2.2, have [package present tcltest]"
+	return
+    }
+}
+
+::tcltest::testConstraint tk 1
+
+lappend auto_path [file dirname [file dirname [file normalize [info script]]]]
+package require persistentSelection
+
+testConstraint ntext      [expr {![catch {package require ntext 1.0}]}]
+testConstraint widgetPlus [expr {![catch {package require widgetPlus}]}]
+
+# -------------------------------------------------------------------------
+# Helpers
+
+# The tklib test harness withdraws "."; mouse bindings need it mapped.
+set mainState [wm state .]
+wm deiconify .
+wm geometry . +0+0
+
+# Process the queued <<Selection>> events.
+proc settle {} {
+    for {set i 0} {$i < 10} {incr i} {
+	update
+    }
+}
+
+proc mktext {w str {monitor 1}} {
+    text $w -width 30 -height 3
+    $w insert end $str
+    pack $w
+    if {$monitor} {
+	bind $w <<Selection>> {::persistentSelection::report text %W}
+    }
+    update
+    return $w
+}
+
+proc mkentry {w str} {
+    entry $w
+    $w insert end $str
+    pack $w
+    # The classic entry does not generate <<Selection>> itself.
+    bind $w <<Selection>> {::persistentSelection::report entry %W}
+    update
+    return $w
+}
+
+proc reset {} {
+    selection clear -displayof .
+    settle
+}
+
+proc primary {} {
+    ::persistentSelection::getPrimarySel
+}
+
+proc classic {} {
+    ::persistentSelection::getClassicPrimarySel
+}
+
+# Text coordinates of a character, for mouse events.
+proc xy {w index} {
+    $w see $index
+    update
+    lassign [$w bbox $index] x y wd ht
+    list -x [expr {$x + 1}] -y [expr {$y + $ht / 2}]
+}
+
+# -------------------------------------------------------------------------
+# Package
+
+test persistentSelection-1.1 {package: version as documented} -body {
+    package vsatisfies [package present persistentSelection] 1.0
+} -result 1
+
+test persistentSelection-1.2 {package: exported commands} -body {
+    lsort [namespace eval ::persistentSelection {namespace export}]
+} -result {fixText getClassicPrimarySel getPrimarySel report}
+
+# -------------------------------------------------------------------------
+# getPrimarySel, getClassicPrimarySel without persistent selection
+
+test persistentSelection-2.1 {getPrimarySel: no selection} -setup {
+    reset
+} -body {
+    primary
+} -result {}
+
+test persistentSelection-2.2 {getClassicPrimarySel: no selection} -setup {
+    reset
+} -body {
+    classic
+} -result {}
+
+test persistentSelection-2.3 {getPrimarySel: wrong # args} -body {
+    ::persistentSelection::getPrimarySel . foo
+} -returnCodes error -result {wrong # args: should be "::persistentSelection::getPrimarySel ?displayOf?"}
+
+test persistentSelection-2.4 {getClassicPrimarySel: wrong # args} -body {
+    ::persistentSelection::getClassicPrimarySel . 0 foo
+} -returnCodes error -result {wrong # args: should be "::persistentSelection::getClassicPrimarySel ?w? ?withOthers?"}
+
+test persistentSelection-2.5 {getPrimarySel: selection of an unmonitored widget} -setup {
+    reset
+    mktext .t "hello world" 0
+} -body {
+    .t tag add sel 1.6 1.11
+    settle
+    list [primary] [classic] [::persistentSelection::getPrimarySel .t] \
+	[::persistentSelection::getClassicPrimarySel .t] \
+	[::persistentSelection::getClassicPrimarySel .t 1]
+} -cleanup {
+    destroy .t
+    reset
+} -result {world world world world world}
+
+test persistentSelection-2.6 {getPrimarySel: selection set by "selection handle"} -setup {
+    reset
+    frame .f
+    selection handle .f {apply {{off len} {string range "from handler" $off [expr {$off+$len-1}]}}}
+} -body {
+    selection own .f
+    list [primary] [classic]
+} -cleanup {
+    destroy .f
+    reset
+} -result {{from handler} {from handler}}
+
+test persistentSelection-2.7 {getPrimarySel: non-ASCII text} -setup {
+    reset
+    mktext .t "фільм žák"
+} -body {
+    .t tag add sel 1.0 1.end
+    settle
+    primary
+} -cleanup {
+    destroy .t
+    reset
+} -result "фільм žák"
+
+test persistentSelection-2.8 {getClassicPrimarySel: bad window} -body {
+    ::persistentSelection::getClassicPrimarySel .nosuch
+} -returnCodes error -result {bad window path name ".nosuch"}
+
+test persistentSelection-2.9 {getClassicPrimarySel: bad boolean} -setup {
+    reset
+} -body {
+    ::persistentSelection::getClassicPrimarySel . foo
+} -returnCodes error -result {expected boolean value but got "foo"}
+
+# -------------------------------------------------------------------------
+# report with text widgets
+
+test persistentSelection-3.1 {report: wrong # args} -body {
+    ::persistentSelection::report text
+} -returnCodes error -result {wrong # args: should be "::persistentSelection::report type w"}
+
+test persistentSelection-3.2 {report: result is empty} -setup {
+    reset
+    mktext .t "hello world" 0
+} -body {
+    .t tag add sel 1.0 1.5
+    ::persistentSelection::report text .t
+} -cleanup {
+    destroy .t
+    reset
+} -result {}
+
+test persistentSelection-3.3 {report: bad window} -body {
+    ::persistentSelection::report text .nosuch
+} -returnCodes error -result {invalid command name ".nosuch"}
+
+test persistentSelection-3.4 {report text: selection made} -setup {
+    reset
+    mktext .t "hello world"
+} -body {
+    .t tag add sel 1.0 1.5
+    settle
+    list [selection own] [primary] [classic]
+} -cleanup {
+    destroy .t
+    reset
+} -result {.t hello hello}
+
+test persistentSelection-3.5 {report text: selection survives deselection} -setup {
+    reset
+    mktext .t "hello world"
+} -body {
+    .t tag add sel 1.0 1.5
+    settle
+    .t tag remove sel 1.0 end
+    settle
+    list [.t tag ranges sel] [primary] [classic]
+} -cleanup {
+    destroy .t
+    reset
+} -result {{} hello {}}
+
+test persistentSelection-3.6 {report text: last non-empty value is kept} -setup {
+    reset
+    mktext .t "hello world"
+} -body {
+    .t tag add sel 1.0 1.5
+    settle
+    .t tag remove sel 1.0 end
+    .t tag add sel 1.6 1.11
+    settle
+    set res [primary]
+    .t tag remove sel 1.0 end
+    settle
+    lappend res [primary] [classic]
+} -cleanup {
+    destroy .t
+    reset
+} -result {world world {}}
+
+test persistentSelection-3.7 {report text: last value from several monitored widgets} -setup {
+    reset
+    mktext .t "hello world"
+    mktext .u "other text"
+} -body {
+    .t tag add sel 1.0 1.5
+    settle
+    .u tag add sel 1.0 1.5
+    settle
+    set res [list [.t tag ranges sel] [primary]]
+    .u tag remove sel 1.0 end
+    settle
+    lappend res [primary]
+} -cleanup {
+    destroy .t .u
+    reset
+} -result {{} other other}
+
+test persistentSelection-3.8 {report text: selection claimed by an unmonitored widget} -setup {
+    reset
+    mktext .t "hello world"
+    mktext .u "other text" 0
+} -body {
+    .t tag add sel 1.0 1.5
+    settle
+    .u tag add sel 1.0 1.5
+    settle
+    set res [list [selection own] [primary] [classic]]
+    .u tag remove sel 1.0 end
+    settle
+    lappend res [primary] [classic]
+} -cleanup {
+    destroy .t .u
+    reset
+} -result {.u other other {} {}}
+
+test persistentSelection-3.9 {report text: sustained selection is replaced by an unmonitored widget} -setup {
+    reset
+    mktext .t "hello world"
+    mktext .u "other text" 0
+} -body {
+    .t tag add sel 1.0 1.5
+    settle
+    .t tag remove sel 1.0 end
+    settle
+    set res [primary]
+    .u tag add sel 1.0 1.5
+    settle
+    lappend res [primary]
+    .u tag remove sel 1.0 end
+    settle
+    lappend res [primary]
+} -cleanup {
+    destroy .t .u
+    reset
+} -result {hello other {}}
+
+test persistentSelection-3.10 {report text: selection clear removes the sustained selection} -setup {
+    reset
+    mktext .t "hello world"
+} -body {
+    .t tag add sel 1.0 1.5
+    settle
+    .t tag remove sel 1.0 end
+    settle
+    selection clear
+    settle
+    list [primary] [classic]
+} -cleanup {
+    destroy .t
+    reset
+} -result {{} {}}
+
+test persistentSelection-3.11 {report text: -exportselection false is ignored} -setup {
+    reset
+    mktext .t "hello world"
+    .t configure -exportselection 0
+} -body {
+    .t tag add sel 1.0 1.5
+    settle
+    set res [list [selection own] [primary]]
+    .t tag remove sel 1.0 end
+    settle
+    lappend res [primary]
+} -cleanup {
+    destroy .t
+    reset
+} -result {{} {} {}}
+
+test persistentSelection-3.12 {report text: deleting the selected text} -setup {
+    reset
+    mktext .t "hello world"
+} -body {
+    .t tag add sel 1.0 1.5
+    settle
+    .t delete sel.first sel.last
+    settle
+    list [.t get 1.0 end-1c] [primary] [classic]
+} -cleanup {
+    destroy .t
+    reset
+} -result {{ world} hello {}}
+
+test persistentSelection-3.13 {report text: selection made with the mouse} -setup {
+    reset
+    mktext .t "hello world"
+    mktext .u "other text"
+} -body {
+    event generate .t <ButtonPress-1> {*}[xy .t 1.0]
+    event generate .t <B1-Motion> {*}[xy .t 1.4] -state 0x100
+    event generate .t <ButtonRelease-1> {*}[xy .t 1.4] -state 0x100
+    settle
+    set res [list [.t get sel.first sel.last] [primary]]
+    # A click elsewhere deselects.
+    event generate .t <ButtonPress-1> {*}[xy .t 1.8]
+    event generate .t <ButtonRelease-1> {*}[xy .t 1.8] -state 0x100
+    settle
+    lappend res [.t tag ranges sel] [primary] [classic]
+} -cleanup {
+    destroy .t .u
+    reset
+} -result {hell hell {} hell {}}
+
+test persistentSelection-3.14 {report text: sustained selection can be pasted} -setup {
+    reset
+    mktext .t "hello world"
+    mktext .u "XY"
+} -body {
+    .t tag add sel 1.0 1.5
+    settle
+    .t tag remove sel 1.0 end
+    settle
+    set tk::Priv(mouseMoved) 0
+    event generate .u <<PasteSelection>> {*}[xy .u 1.1]
+    .u get 1.0 end-1c
+} -cleanup {
+    destroy .t .u
+    reset
+} -result {XhelloY}
+
+test persistentSelection-3.15 {report text: destroyed widget with sustained selection} -setup {
+    reset
+    mktext .t "hello world"
+} -body {
+    .t tag add sel 1.0 1.5
+    settle
+    .t tag remove sel 1.0 end
+    settle
+    destroy .t
+    settle
+    primary
+} -cleanup {
+    destroy .t
+    reset
+} -result hello
+
+test persistentSelection-3.16 {report text: bind to the Text class as in the manual} -setup {
+    reset
+    set saved [bind Text <<Selection>>]
+    mktext .t "hello world" 0
+} -body {
+    ::persistentSelection::fixText
+    bind Text <<Selection>> {::persistentSelection::report text %W}
+    .t tag add sel 1.6 1.11
+    settle
+    .t tag remove sel 1.0 end
+    settle
+    list [primary] [classic]
+} -cleanup {
+    destroy .t
+    bind Text <<Selection>> $saved
+    reset
+    unset -nocomplain saved
+} -result {world {}}
+
+test persistentSelection-3.17 {report text: Ntext binding tag} -setup {
+    reset
+    mktext .t "hello world" 0
+} -constraints ntext -body {
+    bindtags .t {.t Ntext . all}
+    bind .t <<Selection>> {::persistentSelection::report text %W}
+    .t tag add sel 1.0 1.5
+    settle
+    .t tag remove sel 1.0 end
+    settle
+    list [primary] [classic]
+} -cleanup {
+    destroy .t
+    reset
+} -result {hello {}}
+
+# -------------------------------------------------------------------------
+# report with entry widgets
+
+test persistentSelection-4.1 {report entry: selection made} -setup {
+    reset
+    mkentry .e "hello world"
+} -body {
+    .e selection range 6 end
+    event generate .e <<Selection>>
+    settle
+    list [selection own] [primary] [classic]
+} -cleanup {
+    destroy .e
+    reset
+} -result {.e world world}
+
+test persistentSelection-4.2 {report entry: selection survives deselection} -setup {
+    reset
+    mkentry .e "hello world"
+} -body {
+    .e selection range 6 end
+    event generate .e <<Selection>>
+    settle
+    .e selection clear
+    event generate .e <<Selection>>
+    settle
+    list [primary] [classic]
+} -cleanup {
+    destroy .e
+    reset
+} -result {world {}}
+
+test persistentSelection-4.3 {report entry: text and entry widgets together} -setup {
+    reset
+    mkentry .e "hello world"
+    mktext .t "other text"
+} -body {
+    .e selection range 0 5
+    event generate .e <<Selection>>
+    settle
+    .t tag add sel 1.0 1.5
+    settle
+    set res [primary]
+    .t tag remove sel 1.0 end
+    settle
+    lappend res [primary]
+    .e selection range 6 end
+    event generate .e <<Selection>>
+    settle
+    .e selection clear
+    event generate .e <<Selection>>
+    settle
+    lappend res [primary] [classic]
+} -cleanup {
+    destroy .e .t
+    reset
+} -result {other other world {}}
+
+test persistentSelection-4.4 {report entry: ttk::entry} -setup {
+    reset
+    ttk::entry .e
+    .e insert end "hello world"
+    pack .e
+    bind .e <<Selection>> {::persistentSelection::report entry %W}
+    update
+} -body {
+    .e selection range 0 5
+    event generate .e <<Selection>>
+    settle
+    .e selection clear
+    event generate .e <<Selection>>
+    settle
+    list [primary] [classic]
+} -cleanup {
+    destroy .e
+    reset
+} -result {hello {}}
+
+test persistentSelection-4.5 {report entry: entryPlus as in the manual} -setup {
+    reset
+} -constraints widgetPlus -body {
+    widgetPlus::entryPlus .ep
+    .ep insert end "hello world"
+    pack .ep
+    update
+    bind .ep <<Selection>> {::persistentSelection::report entry %W}
+    .ep selection range 0 5
+    settle
+    .ep selection clear
+    settle
+    list [primary] [classic]
+} -cleanup {
+    destroy .ep
+    reset
+} -result {hello {}}
+
+test persistentSelection-4.6 {report entry: spinbox} -setup {
+    reset
+    spinbox .s
+    .s insert end "hello world"
+    pack .s
+    bind .s <<Selection>> {::persistentSelection::report entry %W}
+    update
+} -body {
+    .s selection range 6 11
+    event generate .s <<Selection>>
+    settle
+    .s selection clear
+    event generate .s <<Selection>>
+    settle
+    list [primary] [classic]
+} -cleanup {
+    destroy .s
+    reset
+} -result {world {}}
+
+# -------------------------------------------------------------------------
+# fixText
+
+test persistentSelection-5.1 {fixText: wrong # args} -body {
+    ::persistentSelection::fixText foo
+} -returnCodes error -result {wrong # args: should be "::persistentSelection::fixText"}
+
+test persistentSelection-5.2 {fixText: no effect on recent Tk} -setup {
+    catch ::tk::TextSelectTo
+    set before [list [bind Text <Delete>] [bind Text <<PasteSelection>>] \
+		    [info body ::tk::TextSelectTo] [info body ::tk_textCut]]
+} -body {
+    list [::persistentSelection::fixText] \
+	[expr {[list [bind Text <Delete>] [bind Text <<PasteSelection>>] \
+		    [info body ::tk::TextSelectTo] [info body ::tk_textCut]] eq $before}]
+} -cleanup {
+    unset -nocomplain before
+} -result {{} 1}
+
+test persistentSelection-5.3 {fixText: can be called repeatedly} -body {
+    ::persistentSelection::fixText
+    ::persistentSelection::fixText
+} -result {}
+
+# -------------------------------------------------------------------------
+
+rename settle {}
+rename mktext {}
+rename mkentry {}
+rename reset {}
+rename primary {}
+rename classic {}
+rename xy {}
+wm state . $mainState
+unset mainState
+
+::tcltest::cleanupTests
