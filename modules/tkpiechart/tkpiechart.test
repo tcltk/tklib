@@ -1,0 +1,1090 @@
+# -*- tcl -*-
+# tkpiechart.test --
+#
+#	Tests for the tkpiechart package: the pie class (options, member
+#	procedures, tags, selection), the pieBoxLabeler and
+#	piePeripheralLabeler labelers and the canvasLabel class.
+#
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2
+    namespace import ::tcltest::*
+} else {
+    if {![package vsatisfies [package present tcltest] 2.2]} {
+	puts "    Aborting the tests found in \"[file tail [info script]]\"."
+	puts "    Requiring tcltest 2.2, have [package present tcltest]"
+	return
+    }
+}
+
+::tcltest::testConstraint tk 1
+
+lappend auto_path [file dirname [file dirname [file normalize [info script]]]]
+package require stooop
+package require switched
+package require tkpiechart
+
+# -------------------------------------------------------------------------
+# Helpers
+
+# The tklib test harness withdraws "."; mouse bindings need it mapped.
+set mainState [wm state .]
+wm deiconify .
+wm geometry . +0+0
+
+# With Tcl 9, qualified names such as $switched::(...) used inside the
+# tkpiechart classes are resolved relative to the class namespace and
+# nothing can be created (see tkpiechart-1.*).  Run the other tests
+# only where pies can be created.
+canvas .probe
+testConstraint pieWorks [expr {![catch {stooop::delete [stooop::new pie .probe 0 0]}]}]
+destroy .probe
+
+proc mkcanvas {} {
+    canvas .c -width 400 -height 400 -highlightthickness 0 -borderwidth 0
+    pack .c
+    update
+    return .c
+}
+
+proc options {object} {
+    set res {}
+    foreach o [switched::configure $object] {
+	lappend res [lindex $o 0]
+    }
+    lsort $res
+}
+
+proc labelOf {pie slice} {
+    set pie::($pie,sliceLabel,$slice)
+}
+
+proc labelText {pie slice} {
+    switched::cget [labelOf $pie $slice] -text
+}
+
+proc center {tag} {
+    lassign [.c bbox $tag] x1 y1 x2 y2
+    list [expr {($x1 + $x2) / 2}] [expr {($y1 + $y2) / 2}]
+}
+
+proc click {x y {state 0}} {
+    event generate .c <Motion> -x $x -y $y
+    event generate .c <ButtonPress-1> -x $x -y $y -state $state
+    event generate .c <ButtonRelease-1> -x $x -y $y -state [expr {$state | 0x100}]
+    update
+}
+
+proc bboxWidth {tag} {
+    lassign [.c bbox $tag] x1 y1 x2 y2
+    expr {$x2 - $x1}
+}
+
+# -------------------------------------------------------------------------
+# Creation with Tcl 9
+
+test tkpiechart-1.1 {pie can be created} -constraints knownBug -setup {
+    mkcanvas
+} -body {
+    # Fails with Tcl 9: can't read "switched::(N,complete)".
+    set p [stooop::new pie .c 10 10]
+    stooop::delete $p
+} -cleanup {
+    destroy .c
+    unset -nocomplain p
+} -result {}
+
+test tkpiechart-1.2 {canvasLabel can be created} -constraints knownBug -setup {
+    mkcanvas
+} -body {
+    # Fails with Tcl 9: can't read "switched::(N,-padding)".
+    set l [stooop::new canvasLabel .c -text hello]
+    stooop::delete $l
+} -cleanup {
+    destroy .c
+    unset -nocomplain l
+} -result {}
+
+test tkpiechart-1.3 {labelers can be created} -constraints knownBug -setup {
+    mkcanvas
+} -body {
+    # Fails with Tcl 9: can't read "pieLabeler::(default,font)".
+    set b [stooop::new pieBoxLabeler .c]
+    set q [stooop::new piePeripheralLabeler .c]
+    stooop::delete $b $q
+} -cleanup {
+    destroy .c
+    unset -nocomplain b q
+} -result {}
+
+# -------------------------------------------------------------------------
+# pie: creation, options
+
+test tkpiechart-2.1 {pie: package version} -body {
+    package present tkpiechart
+} -result 6.6.1
+
+test tkpiechart-2.2 {pie: creation returns an object, items are tagged} -constraints {
+    pieWorks
+} -setup {
+    mkcanvas
+} -body {
+    set p [stooop::new pie .c 10 10]
+    list [string is integer $p] [expr {[llength [.c find withtag pie($p)]] > 0}] \
+	[expr {[llength [.c find withtag pieSlices($p)]] > 0}]
+} -cleanup {
+    stooop::delete $p
+    destroy .c
+    unset -nocomplain p
+} -result {1 1 1}
+
+test tkpiechart-2.3 {pie: wrong # args} -constraints pieWorks -setup {
+    mkcanvas
+} -body {
+    stooop::new pie .c 10
+} -cleanup {
+    destroy .c
+} -returnCodes error -match glob -result {wrong # args: should be "*pie::pie this canvas x y ?arg ...?"}
+
+test tkpiechart-2.4 {pie: unknown option} -constraints pieWorks -setup {
+    mkcanvas
+} -body {
+    stooop::new pie .c 10 10 -foo bar
+} -cleanup {
+    destroy .c
+} -returnCodes error -result {::pie: unknown option "-foo"}
+
+test tkpiechart-2.5 {pie: option value missing} -constraints pieWorks -setup {
+    mkcanvas
+} -body {
+    stooop::new pie .c 10 10 -width
+} -cleanup {
+    destroy .c
+} -returnCodes error -result {value for "-width" missing}
+
+test tkpiechart-2.6 {pie: configure lists all options} -constraints pieWorks -setup {
+    mkcanvas
+    set p [stooop::new pie .c 10 10]
+} -body {
+    options $p
+} -cleanup {
+    stooop::delete $p
+    destroy .c
+    unset -nocomplain p
+} -result {-autoupdate -background -colors -height -labeler -selectable -thickness -title -titlefont -titleoffset -width}
+
+test tkpiechart-2.7 {pie: default option values} -constraints pieWorks -setup {
+    mkcanvas
+    set p [stooop::new pie .c 10 10]
+} -body {
+    list [switched::cget $p -autoupdate] [switched::cget $p -background] \
+	[switched::cget $p -selectable] [switched::cget $p -thickness] \
+	[switched::cget $p -title] [llength [switched::cget $p -colors]]
+} -cleanup {
+    stooop::delete $p
+    destroy .c
+    unset -nocomplain p
+} -result {1 {} 0 0 {} 9}
+
+test tkpiechart-2.8 {pie: options given at creation} -constraints pieWorks -setup {
+    mkcanvas
+} -body {
+    set p [stooop::new pie .c 10 10 -width 300 -height 250 -title Hello \
+	       -background white -colors {red blue}]
+    list [switched::cget $p -width] [switched::cget $p -height] \
+	[switched::cget $p -title] [switched::cget $p -background] \
+	[switched::cget $p -colors]
+} -cleanup {
+    stooop::delete $p
+    destroy .c
+    unset -nocomplain p
+} -result {300 250 Hello white {red blue}}
+
+test tkpiechart-2.9 {pie: unknown option in cget} -constraints pieWorks -setup {
+    mkcanvas
+    set p [stooop::new pie .c 10 10]
+} -body {
+    switched::cget $p -foo
+} -cleanup {
+    stooop::delete $p
+    destroy .c
+    unset -nocomplain p
+} -returnCodes error -result {::pie: unknown option "-foo"}
+
+test tkpiechart-2.10 {pie: options that cannot be set dynamically} -constraints {
+    pieWorks
+} -setup {
+    mkcanvas
+    set p [stooop::new pie .c 10 10]
+} -body {
+    set res {}
+    foreach {option value} {-background red -colors {red} -labeler 1
+	-selectable 1 -title x -titlefont {Helvetica 10} -titleoffset 3
+	-thickness 5} {
+	lappend res [catch {switched::configure $p $option $value} msg] $msg
+    }
+    set res
+} -cleanup {
+    stooop::delete $p
+    destroy .c
+    unset -nocomplain p res option value msg
+} -result {1 {option -background cannot be set dynamically} 1 {option -colors cannot be set dynamically} 1 {option -labeler cannot be set dynamically} 1 {option -selectable cannot be set dynamically} 1 {option -title cannot be set dynamically} 1 {option -titlefont cannot be set dynamically} 1 {option -titleoffset cannot be set dynamically} 1 {option -thickness cannot be set dynamically}}
+
+test tkpiechart-2.11 {pie: -width and -height include the labels} -constraints {
+    pieWorks
+} -setup {
+    mkcanvas
+} -body {
+    set p [stooop::new pie .c 10 10 -width 300 -height 250]
+    pie::newSlice $p
+    lassign [.c bbox pie($p)] x1 y1 x2 y2
+    list [expr {abs($x2 - $x1 - 300) <= 4}] [expr {abs($y2 - $y1 - 250) <= 4}] \
+	[expr {abs($x1 - 10) <= 4}] [expr {abs($y1 - 10) <= 4}]
+} -cleanup {
+    stooop::delete $p
+    destroy .c
+    unset -nocomplain p x1 y1 x2 y2
+} -result {1 1 1 1}
+
+test tkpiechart-2.12 {pie: -width and -height can be changed} -constraints {
+    pieWorks
+} -setup {
+    mkcanvas
+    set p [stooop::new pie .c 10 10 -width 300 -height 250]
+    pie::newSlice $p
+} -body {
+    switched::configure $p -width 200 -height 150
+    lassign [.c bbox pie($p)] x1 y1 x2 y2
+    list [switched::cget $p -width] [expr {abs($x2 - $x1 - 200) <= 4}] \
+	[expr {abs($y2 - $y1 - 150) <= 4}]
+} -cleanup {
+    stooop::delete $p
+    destroy .c
+    unset -nocomplain p x1 y1 x2 y2
+} -result {200 1 1}
+
+test tkpiechart-2.13 {pie: screen distances} -constraints pieWorks -setup {
+    mkcanvas
+} -body {
+    set p [stooop::new pie .c 0 0 -width 2i -height 1i]
+    pie::newSlice $p
+    lassign [.c bbox pie($p)] x1 y1 x2 y2
+    expr {abs(($x2 - $x1) - [winfo fpixels .c 2i]) <= 4}
+} -cleanup {
+    stooop::delete $p
+    destroy .c
+    unset -nocomplain p x1 y1 x2 y2
+} -result 1
+
+test tkpiechart-2.14 {pie: title above the slices} -constraints pieWorks -setup {
+    mkcanvas
+} -body {
+    set p [stooop::new pie .c 10 10 -title "My pie" -titlefont {Helvetica -14}]
+    set t [lsearch -inline -not -exact [lmap i [.c find withtag pie($p)] {
+	expr {[.c type $i] eq "text" && [.c itemcget $i -text] eq "My pie" ? $i : ""}
+    }] {}]
+    list [llength $t] [.c itemcget $t -font] \
+	[expr {[lindex [.c bbox $t] 1] < [lindex [.c bbox pieSlices($p)] 1]}]
+} -cleanup {
+    stooop::delete $p
+    destroy .c
+    unset -nocomplain p t
+} -result {1 {Helvetica -14} 1}
+
+test tkpiechart-2.15 {pie: background slice color} -constraints pieWorks -setup {
+    mkcanvas
+} -body {
+    set p [stooop::new pie .c 10 10 -background gray]
+    lsort -unique [lmap i [.c find withtag pieSlices($p)] {
+	if {[.c type $i] in {arc polygon oval}} {.c itemcget $i -fill} else continue
+    }]
+} -cleanup {
+    stooop::delete $p
+    destroy .c
+    unset -nocomplain p
+} -result gray
+
+test tkpiechart-2.16 {pie: delete removes all items} -constraints pieWorks -setup {
+    mkcanvas
+    set r [.c create rectangle 0 0 1 1]
+} -body {
+    set p [stooop::new pie .c 10 10 -title T -selectable 1]
+    pie::newSlice $p
+    pie::sizeSlice $p [pie::newSlice $p] 0.5
+    stooop::delete $p
+    expr {[.c find all] eq $r}
+} -cleanup {
+    destroy .c
+    unset -nocomplain p r
+} -result 1
+
+test tkpiechart-2.17 {pie: whole pie moved by its tag} -constraints pieWorks -setup {
+    mkcanvas
+    set p [stooop::new pie .c 10 10]
+    pie::sizeSlice $p [pie::newSlice $p] 0.3
+} -body {
+    set before [.c bbox pie($p)]
+    .c move pie($p) 20 30
+    set after [.c bbox pie($p)]
+    list [expr {[lindex $after 0] - [lindex $before 0]}] \
+	[expr {[lindex $after 1] - [lindex $before 1]}]
+} -cleanup {
+    stooop::delete $p
+    destroy .c
+    unset -nocomplain p before after
+} -result {20 30}
+
+# -------------------------------------------------------------------------
+# pie: slices
+
+test tkpiechart-3.1 {newSlice: default label text and returned object} -constraints {
+    pieWorks
+} -setup {
+    mkcanvas
+    set p [stooop::new pie .c 10 10]
+} -body {
+    set s1 [pie::newSlice $p]
+    set s2 [pie::newSlice $p]
+    set s3 [pie::newSlice $p Third]
+    list [labelText $p $s1] [labelText $p $s2] [labelText $p $s3] \
+	[expr {[llength [lsort -unique [list $s1 $s2 $s3]]] == 3}]
+} -cleanup {
+    stooop::delete $p
+    destroy .c
+    unset -nocomplain p s1 s2 s3
+} -result {{slice 1:} {slice 2:} Third: 1}
+
+test tkpiechart-3.2 {newSlice: slice tags} -constraints pieWorks -setup {
+    mkcanvas
+    set p [stooop::new pie .c 10 10]
+} -body {
+    set s [pie::newSlice $p]
+    set items [.c find withtag slice($s)]
+    list [expr {[llength $items] > 0}] \
+	[expr {[lsort [lmap i $items {expr {"pie($p)" in [.c gettags $i] && "pieSlices($p)" in [.c gettags $i]}}]] eq [lsort [lmap i $items {expr 1}]]}]
+} -cleanup {
+    stooop::delete $p
+    destroy .c
+    unset -nocomplain p s items
+} -result {1 1}
+
+test tkpiechart-3.3 {newSlice: colors from the default list} -constraints pieWorks -setup {
+    mkcanvas
+    set p [stooop::new pie .c 10 10]
+} -body {
+    set colors {}
+    for {set i 0} {$i < 10} {incr i} {
+	set s [pie::newSlice $p]
+	lappend colors [switched::cget $s -topcolor]
+    }
+    list [lrange $colors 0 8] [lindex $colors 9] \
+	[expr {[lrange $colors 0 8] eq [switched::cget $p -colors]}]
+} -cleanup {
+    stooop::delete $p
+    destroy .c
+    unset -nocomplain p colors i s
+} -result [list [list #7FFFFF #FFFF7F #FF7F7F #7FFF7F #7F7FFF #FFBF00 #BFBFBF #FF7FFF #FFFFFF] #7FFFFF 1]
+
+test tkpiechart-3.4 {newSlice: -colors cycles through the list} -constraints pieWorks -setup {
+    mkcanvas
+    set p [stooop::new pie .c 10 10 -colors {red green}]
+} -body {
+    lmap i {1 2 3} {switched::cget [pie::newSlice $p] -topcolor}
+} -cleanup {
+    stooop::delete $p
+    destroy .c
+    unset -nocomplain p
+} -result {red green red}
+
+test tkpiechart-3.5 {newSlice: label background matches the slice} -constraints {
+    pieWorks
+} -setup {
+    mkcanvas
+    set p [stooop::new pie .c 10 10 -colors {red green}]
+} -body {
+    set s [pie::newSlice $p]
+    switched::cget [labelOf $p $s] -background
+} -cleanup {
+    stooop::delete $p
+    destroy .c
+    unset -nocomplain p s
+} -result red
+
+test tkpiechart-3.6 {sizeSlice: shares and clockwise placement} -constraints {
+    pieWorks
+} -setup {
+    mkcanvas
+    set p [stooop::new pie .c 10 10]
+} -body {
+    set s1 [pie::newSlice $p]
+    set s2 [pie::newSlice $p]
+    pie::sizeSlice $p $s1 0.25
+    pie::sizeSlice $p $s2 0.5
+    list $slice::($s1,start) $slice::($s1,extent) $slice::($s2,start) $slice::($s2,extent)
+} -cleanup {
+    stooop::delete $p
+    destroy .c
+    unset -nocomplain p s1 s2
+} -result {0.0 90.0 -180.0 180.0}
+
+test tkpiechart-3.7 {sizeSlice: following slices are moved} -constraints pieWorks -setup {
+    mkcanvas
+    set p [stooop::new pie .c 10 10]
+} -body {
+    set s1 [pie::newSlice $p]
+    set s2 [pie::newSlice $p]
+    pie::sizeSlice $p $s2 0.25
+    pie::sizeSlice $p $s1 0.5
+    list $slice::($s1,start) $slice::($s1,extent) $slice::($s2,start) $slice::($s2,extent)
+} -cleanup {
+    stooop::delete $p
+    destroy .c
+    unset -nocomplain p s1 s2
+} -result {-90.0 180.0 -180.0 90.0}
+
+test tkpiechart-3.8 {sizeSlice: negative share is 0} -constraints pieWorks -setup {
+    mkcanvas
+    set p [stooop::new pie .c 10 10]
+    set s [pie::newSlice $p]
+} -body {
+    pie::sizeSlice $p $s 0.5
+    pie::sizeSlice $p $s -0.5
+    expr {$slice::($s,extent) == 0}
+} -cleanup {
+    stooop::delete $p
+    destroy .c
+    unset -nocomplain p s
+} -result 1
+
+test tkpiechart-3.9 {sizeSlice: whole pie, share limited to 1} -constraints {
+    pieWorks knownBug
+} -setup {
+    mkcanvas
+    set p [stooop::new pie .c 10 10]
+    set s [pie::newSlice $p]
+} -body {
+    # slice::set-startandextent uses 360 - 10**(3 - $tcl_precision)
+    # for a full slice, which is -640 with the default tcl_precision 0.
+    set res {}
+    foreach share {1 1.5} {
+	pie::sizeSlice $p $s $share
+	lappend res [expr {$slice::($s,extent) > 359 && $slice::($s,extent) <= 360}]
+    }
+    set res
+} -cleanup {
+    stooop::delete $p
+    destroy .c
+    unset -nocomplain p s res share
+} -result {1 1}
+
+test tkpiechart-3.10 {sizeSlice: displayed value} -constraints pieWorks -setup {
+    mkcanvas
+    set p [stooop::new pie .c 10 10]
+    set s [pie::newSlice $p Name]
+} -body {
+    pie::sizeSlice $p $s 0.25
+    set res [list [labelText $p $s]]
+    pie::sizeSlice $p $s 0.5 "50 %"
+    lappend res [labelText $p $s]
+} -cleanup {
+    stooop::delete $p
+    destroy .c
+    unset -nocomplain p s res
+} -result {{Name: 0.25} {Name: 50 %}}
+
+test tkpiechart-3.11 {sizeSlice: invalid slice} -constraints pieWorks -setup {
+    mkcanvas
+    set p [stooop::new pie .c 10 10]
+} -body {
+    pie::sizeSlice $p 9999 0.5
+} -cleanup {
+    stooop::delete $p
+    destroy .c
+    unset -nocomplain p
+} -returnCodes error -match glob -result {invalid slice 9999 for pie *}
+
+test tkpiechart-3.12 {-autoupdate 0 and pie::update} -constraints pieWorks -setup {
+    mkcanvas
+} -body {
+    set p [stooop::new pie .c 10 10 -autoupdate 0]
+    set s [pie::newSlice $p]
+    pie::sizeSlice $p $s 0.5
+    pie::update $p
+    list [switched::cget $p -autoupdate] $slice::($s,extent) [labelText $p $s]
+} -cleanup {
+    stooop::delete $p
+    destroy .c
+    unset -nocomplain p s
+} -result {0 180.0 {slice 1: 0.5}}
+
+test tkpiechart-3.13 {deleteSlice: following slices move back} -constraints pieWorks -setup {
+    mkcanvas
+    set p [stooop::new pie .c 10 10]
+} -body {
+    set s1 [pie::newSlice $p]
+    set s2 [pie::newSlice $p]
+    pie::sizeSlice $p $s1 0.25
+    pie::sizeSlice $p $s2 0.5
+    set n [llength [.c find withtag slice($s1)]]
+    pie::deleteSlice $p $s1
+    list [expr {$n > 0}] [.c find withtag slice($s1)] $slice::($s2,start) $slice::($s2,extent)
+} -cleanup {
+    stooop::delete $p
+    destroy .c
+    unset -nocomplain p s1 s2 n
+} -result {1 {} -90.0 180.0}
+
+test tkpiechart-3.14 {deleteSlice: label is removed} -constraints pieWorks -setup {
+    mkcanvas
+    set p [stooop::new pie .c 10 10]
+} -body {
+    set s1 [pie::newSlice $p]
+    set s2 [pie::newSlice $p]
+    set tag [pie::sliceLabelTag $p $s1]
+    set n [llength [.c find withtag $tag]]
+    pie::deleteSlice $p $s1
+    list [expr {$n > 0}] [.c find withtag $tag] [labelText $p $s2]
+} -cleanup {
+    stooop::delete $p
+    destroy .c
+    unset -nocomplain p s1 s2 tag n
+} -result {1 {} {slice 2:}}
+
+test tkpiechart-3.15 {deleteSlice: invalid slice} -constraints pieWorks -setup {
+    mkcanvas
+    set p [stooop::new pie .c 10 10]
+} -body {
+    pie::deleteSlice $p 9999
+} -cleanup {
+    stooop::delete $p
+    destroy .c
+    unset -nocomplain p
+} -returnCodes error -match glob -result {invalid slice 9999 for pie *}
+
+test tkpiechart-3.16 {labelSlice: changes the label, keeps the value} -constraints {
+    pieWorks
+} -setup {
+    mkcanvas
+    set p [stooop::new pie .c 10 10]
+    set s [pie::newSlice $p Old]
+    pie::sizeSlice $p $s 0.25
+} -body {
+    pie::labelSlice $p $s New
+    labelText $p $s
+} -cleanup {
+    stooop::delete $p
+    destroy .c
+    unset -nocomplain p s
+} -result {New: 0.25}
+
+test tkpiechart-3.17 {3D look: slice edges are darker} -constraints pieWorks -setup {
+    mkcanvas
+} -body {
+    set p [stooop::new pie .c 10 10 -thickness 20 -colors {#FF0000}]
+    set s [pie::newSlice $p]
+    pie::sizeSlice $p $s 0.75
+    list [switched::cget $p -thickness] [switched::cget $s -topcolor] \
+	[expr {[switched::cget $s -bottomcolor] ni {{} #FF0000}}]
+} -cleanup {
+    stooop::delete $p
+    destroy .c
+    unset -nocomplain p s
+} -result {20 #FF0000 1}
+
+test tkpiechart-3.18 {3D look keeps the total height} -constraints pieWorks -setup {
+    mkcanvas
+} -body {
+    set p [stooop::new pie .c 10 10 -thickness 20 -width 300 -height 250]
+    pie::sizeSlice $p [pie::newSlice $p] 0.75
+    lassign [.c bbox pie($p)] x1 y1 x2 y2
+    expr {abs($y2 - $y1 - 250) <= 4}
+} -cleanup {
+    stooop::delete $p
+    destroy .c
+    unset -nocomplain p x1 y1 x2 y2
+} -result 1
+
+# -------------------------------------------------------------------------
+# pie: selection
+
+test tkpiechart-4.1 {selectedSlices: none by default} -constraints pieWorks -setup {
+    mkcanvas
+    set p [stooop::new pie .c 10 10]
+    pie::newSlice $p
+} -body {
+    pie::selectedSlices $p
+} -cleanup {
+    stooop::delete $p
+    destroy .c
+    unset -nocomplain p
+} -result {}
+
+test tkpiechart-4.2 {selection: clicking labels and slices} -constraints pieWorks -setup {
+    mkcanvas
+    set p [stooop::new pie .c 10 10 -selectable 1]
+    set s1 [pie::newSlice $p a]
+    set s2 [pie::newSlice $p b]
+    pie::sizeSlice $p $s1 0.5
+    pie::sizeSlice $p $s2 0.25
+    update
+} -body {
+    click {*}[center [pie::sliceLabelTag $p $s2]]
+    set res [list [expr {[pie::selectedSlices $p] eq $s2}]]
+    # the right half of the pie is slice 1
+    lassign [.c bbox slice($s1)] x1 y1 x2 y2
+    click [expr {$x1 + ($x2 - $x1) / 4}] [expr {($y1 + $y2) / 2}]
+    lappend res [expr {[pie::selectedSlices $p] eq $s1}]
+} -cleanup {
+    stooop::delete $p
+    destroy .c
+    unset -nocomplain p s1 s2 res x1 y1 x2 y2
+} -result {1 1}
+
+test tkpiechart-4.3 {selection: Control-click toggles, Shift-click extends} -constraints {
+    pieWorks
+} -setup {
+    mkcanvas
+    set p [stooop::new pie .c 10 10 -selectable 1]
+    set s1 [pie::newSlice $p a]
+    set s2 [pie::newSlice $p b]
+    set s3 [pie::newSlice $p c]
+    update
+} -body {
+    click {*}[center [pie::sliceLabelTag $p $s1]]
+    click {*}[center [pie::sliceLabelTag $p $s2]] 4
+    set res [list [expr {[lsort [pie::selectedSlices $p]] eq [lsort [list $s1 $s2]]}]]
+    click {*}[center [pie::sliceLabelTag $p $s1]] 4
+    lappend res [expr {[pie::selectedSlices $p] eq $s2}]
+    click {*}[center [pie::sliceLabelTag $p $s1]]
+    click {*}[center [pie::sliceLabelTag $p $s3]] 1
+    lappend res [expr {[lsort [pie::selectedSlices $p]] eq [lsort [list $s1 $s2 $s3]]}]
+} -cleanup {
+    stooop::delete $p
+    destroy .c
+    unset -nocomplain p s1 s2 s3 res
+} -result {1 1 1}
+
+test tkpiechart-4.4 {selection: label relief shows the state} -constraints pieWorks -setup {
+    mkcanvas
+    set p [stooop::new pie .c 10 10 -selectable 1]
+    set s [pie::newSlice $p a]
+    update
+} -body {
+    click {*}[center [pie::sliceLabelTag $p $s]]
+    list [switched::cget [labelOf $p $s] -select] [switched::cget [labelOf $p $s] -selectrelief]
+} -cleanup {
+    stooop::delete $p
+    destroy .c
+    unset -nocomplain p s
+} -result {1 sunken}
+
+test tkpiechart-4.5 {selection: not selectable by default} -constraints pieWorks -setup {
+    mkcanvas
+    set p [stooop::new pie .c 10 10]
+    set s [pie::newSlice $p a]
+    update
+} -body {
+    click {*}[center [pie::sliceLabelTag $p $s]]
+    pie::selectedSlices $p
+} -cleanup {
+    stooop::delete $p
+    destroy .c
+    unset -nocomplain p s
+} -result {}
+
+test tkpiechart-4.6 {selection: deleted slice is deselected} -constraints pieWorks -setup {
+    mkcanvas
+    set p [stooop::new pie .c 10 10 -selectable 1]
+    set s1 [pie::newSlice $p a]
+    set s2 [pie::newSlice $p b]
+    update
+} -body {
+    click {*}[center [pie::sliceLabelTag $p $s1]]
+    click {*}[center [pie::sliceLabelTag $p $s2]] 4
+    pie::deleteSlice $p $s1
+    expr {[pie::selectedSlices $p] eq $s2}
+} -cleanup {
+    stooop::delete $p
+    destroy .c
+    unset -nocomplain p s1 s2
+} -result 1
+
+# -------------------------------------------------------------------------
+# Labelers
+
+test tkpiechart-5.1 {pieBoxLabeler: options and defaults} -constraints pieWorks -setup {
+    mkcanvas
+} -body {
+    set b [stooop::new pieBoxLabeler .c]
+    list [options $b] [switched::cget $b -justify] [switched::cget $b -offset]
+} -cleanup {
+    stooop::delete $b
+    destroy .c
+    unset -nocomplain b
+} -match glob -result {{-font -justify -offset*} left 5}
+
+test tkpiechart-5.2 {pieBoxLabeler: options cannot be set dynamically} -constraints {
+    pieWorks
+} -setup {
+    mkcanvas
+    set b [stooop::new pieBoxLabeler .c]
+} -body {
+    switched::configure $b -justify right
+} -cleanup {
+    stooop::delete $b
+    destroy .c
+    unset -nocomplain b
+} -returnCodes error -result {option -justify cannot be set dynamically}
+
+test tkpiechart-5.3 {pieBoxLabeler: labels below the pie in two columns} -constraints {
+    pieWorks
+} -setup {
+    mkcanvas
+} -body {
+    set b [stooop::new pieBoxLabeler .c -font {Helvetica -10}]
+    set p [stooop::new pie .c 10 10 -labeler $b -width 300 -height 300]
+    set s [lmap i {1 2 3} {pie::newSlice $p "Label $i"}]
+    set y [lindex [.c bbox pieSlices($p)] 3]
+    set boxes [lmap x $s {.c bbox [pie::sliceLabelTag $p $x]}]
+    list [expr {[lindex $boxes 0 1] >= $y}] \
+	[expr {[lindex $boxes 0 0] < [lindex $boxes 1 0]}] \
+	[expr {abs([lindex $boxes 0 1] - [lindex $boxes 1 1]) <= 1}] \
+	[expr {[lindex $boxes 2 1] > [lindex $boxes 0 1]}] \
+	[switched::cget [labelOf $p [lindex $s 0]] -font]
+} -cleanup {
+    stooop::delete $p
+    destroy .c
+    unset -nocomplain b p s y boxes x i
+} -result {1 1 1 1 {Helvetica -10}}
+
+test tkpiechart-5.4 {pieBoxLabeler: documented tag} -constraints {
+    pieWorks knownBug
+} -setup {
+    mkcanvas
+} -body {
+    # The labels are tagged pieLabeler(N), not pieBoxLabeler(N).
+    set b [stooop::new pieBoxLabeler .c]
+    set p [stooop::new pie .c 10 10 -labeler $b]
+    pie::newSlice $p
+    expr {[llength [.c find withtag pieBoxLabeler($b)]] > 0}
+} -cleanup {
+    stooop::delete $p
+    destroy .c
+    unset -nocomplain b p
+} -result 1
+
+test tkpiechart-5.5 {pieBoxLabeler: -offset from the pie} -constraints pieWorks -setup {
+    mkcanvas
+} -body {
+    set res {}
+    foreach off {5 30} {
+	set b [stooop::new pieBoxLabeler .c -offset $off]
+	set p [stooop::new pie .c 10 10 -labeler $b]
+	set s [pie::newSlice $p]
+	lappend res [expr {[lindex [.c bbox [pie::sliceLabelTag $p $s]] 1] - [lindex [.c bbox pieSlices($p)] 3]}]
+	stooop::delete $p
+    }
+    expr {[lindex $res 1] - [lindex $res 0] >= 20}
+} -cleanup {
+    destroy .c
+    unset -nocomplain res off b p s
+} -result 1
+
+test tkpiechart-5.6 {piePeripheralLabeler: options and defaults} -constraints pieWorks -setup {
+    mkcanvas
+} -body {
+    set q [stooop::new piePeripheralLabeler .c]
+    list [options $q] [switched::cget $q -justify] [switched::cget $q -offset]
+} -cleanup {
+    stooop::delete $q
+    destroy .c
+    unset -nocomplain q
+} -result {{-bulletwidth -font -justify -offset -smallfont -widestvaluetext} left 5}
+
+test tkpiechart-5.7 {piePeripheralLabeler: -widestvaluetext default} -constraints {
+    pieWorks knownBug
+} -setup {
+    mkcanvas
+} -body {
+    # Documented as 00.0, the default is 0.00.
+    set q [stooop::new piePeripheralLabeler .c]
+    switched::cget $q -widestvaluetext
+} -cleanup {
+    stooop::delete $q
+    destroy .c
+    unset -nocomplain q
+} -result 00.0
+
+test tkpiechart-5.8 {piePeripheralLabeler: values follow the slices} -constraints {
+    pieWorks
+} -setup {
+    mkcanvas
+} -body {
+    set q [stooop::new piePeripheralLabeler .c -smallfont {Helvetica -9}]
+    set p [stooop::new pie .c 10 10 -labeler $q -width 300 -height 300]
+    set s [pie::newSlice $p Name]
+    pie::sizeSlice $p $s 0.25 "25%"
+    set texts [lmap i [.c find withtag pieLabeler($q)] {
+	if {[.c type $i] eq "text"} {.c itemcget $i -text} else continue
+    }]
+    set v [lsearch -inline -all -not -exact [lmap i [.c find withtag pieLabeler($q)] {
+	expr {[.c type $i] eq "text" && [.c itemcget $i -text] eq "25%" ? $i : ""}
+    }] {}]
+    # The value of a quarter from 12 to 3 o'clock is in the upper right.
+    lassign [.c bbox pieSlices($p)] x1 y1 x2 y2
+    lassign [.c bbox $v] vx1 vy1 vx2 vy2
+    list [expr {"25%" in $texts}] [expr {"Name" in $texts}] \
+	[expr {$vx1 > ($x1 + $x2) / 2}] [expr {$vy2 < ($y1 + $y2) / 2}] \
+	[.c itemcget $v -font]
+} -cleanup {
+    stooop::delete $p
+    destroy .c
+    unset -nocomplain q p s texts v x1 y1 x2 y2 vx1 vy1 vx2 vy2
+} -result {1 1 1 1 {Helvetica -9}}
+
+test tkpiechart-5.9 {piePeripheralLabeler: documented tag} -constraints {
+    pieWorks knownBug
+} -setup {
+    mkcanvas
+} -body {
+    # The labels are tagged pieLabeler(N), not piePeripheralLabeler(N).
+    set q [stooop::new piePeripheralLabeler .c]
+    set p [stooop::new pie .c 10 10 -labeler $q]
+    pie::newSlice $p
+    expr {[llength [.c find withtag piePeripheralLabeler($q)]] > 0}
+} -cleanup {
+    stooop::delete $p
+    destroy .c
+    unset -nocomplain q p
+} -result 1
+
+test tkpiechart-5.10 {labeler is deleted with the pie} -constraints pieWorks -setup {
+    mkcanvas
+} -body {
+    set q [stooop::new piePeripheralLabeler .c]
+    set p [stooop::new pie .c 10 10 -labeler $q]
+    pie::newSlice $p
+    stooop::delete $p
+    list [.c find withtag pieLabeler($q)] [catch {switched::cget $q -font}]
+} -cleanup {
+    destroy .c
+    unset -nocomplain q p
+} -result {{} 1}
+
+# -------------------------------------------------------------------------
+# canvasLabel
+
+test tkpiechart-6.1 {canvasLabel: options and documented defaults} -constraints {
+    pieWorks
+} -setup {
+    mkcanvas
+} -body {
+    set l [stooop::new canvasLabel .c]
+    list [options $l] [lmap o {-anchor -background -bordercolor -borderwidth
+	-bulletwidth -foreground -justify -scale -select -selectrelief -stipple
+	-text -textbackground -width} {switched::cget $l $o}]
+} -cleanup {
+    stooop::delete $l
+    destroy .c
+    unset -nocomplain l
+} -result {{-anchor -background -bordercolor -borderwidth -bulletwidth -font -foreground -justify -minimumwidth -padding -scale -select -selectrelief -stipple -text -textbackground -width} {center {} black 1 10 black left {1 1} 0 flat {} {} {} 0}}
+
+test tkpiechart-6.2 {canvasLabel: items and tag} -constraints pieWorks -setup {
+    mkcanvas
+} -body {
+    set l [stooop::new canvasLabel .c -text hello -background red -foreground blue \
+	       -bordercolor green -font {Helvetica -12}]
+    set items [.c find withtag canvasLabel($l)]
+    set text [lsearch -inline -all -not -exact [lmap i $items {expr {[.c type $i] eq "text" ? $i : ""}}] {}]
+    set rects [lmap i $items {if {[.c type $i] eq "rectangle" && [.c itemcget $i -fill] eq "red"} {set i} else continue}]
+    list [.c itemcget $text -text] [.c itemcget $text -fill] [.c itemcget $text -font] \
+	[llength $rects] [.c itemcget [lindex $rects 0] -outline]
+} -cleanup {
+    stooop::delete $l
+    destroy .c
+    unset -nocomplain l items text rects
+} -result {hello blue {Helvetica -12} 1 green}
+
+test tkpiechart-6.3 {canvasLabel: configure changes the items} -constraints pieWorks -setup {
+    mkcanvas
+    set l [stooop::new canvasLabel .c -text hello]
+} -body {
+    switched::configure $l -text world -foreground red
+    set text [lsearch -inline -all -not -exact [lmap i [.c find withtag canvasLabel($l)] {
+	expr {[.c type $i] eq "text" ? $i : ""}}] {}]
+    list [.c itemcget $text -text] [.c itemcget $text -fill] [switched::cget $l -text]
+} -cleanup {
+    stooop::delete $l
+    destroy .c
+    unset -nocomplain l text
+} -result {world red world}
+
+test tkpiechart-6.4 {canvasLabel: -anchor} -constraints pieWorks -setup {
+    mkcanvas
+    set l [stooop::new canvasLabel .c -text hello]
+} -body {
+    set res {}
+    foreach a {nw se center} {
+	switched::configure $l -anchor $a
+	lassign [.c bbox canvasLabel($l)] x1 y1 x2 y2
+	lappend res [expr {$x1 >= -2 && $y1 >= -2}] [expr {$x2 <= 2 && $y2 <= 4}]
+    }
+    set res
+} -cleanup {
+    stooop::delete $l
+    destroy .c
+    unset -nocomplain l res a x1 y1 x2 y2
+} -result {1 0 0 1 0 0}
+
+test tkpiechart-6.5 {canvasLabel: -minimumwidth} -constraints pieWorks -setup {
+    mkcanvas
+    set l [stooop::new canvasLabel .c -text hi]
+} -body {
+    set w0 [bboxWidth canvasLabel($l)]
+    switched::configure $l -minimumwidth 200
+    set w1 [bboxWidth canvasLabel($l)]
+    switched::configure $l -minimumwidth 1
+    list [expr {$w0 < 200}] [expr {abs($w1 - 200) <= 3}] \
+	[expr {[bboxWidth canvasLabel($l)] == $w0}]
+} -cleanup {
+    stooop::delete $l
+    destroy .c
+    unset -nocomplain l w0 w1
+} -result {1 1 1}
+
+test tkpiechart-6.6 {canvasLabel: -bulletwidth and -padding} -constraints pieWorks -setup {
+    mkcanvas
+    set l [stooop::new canvasLabel .c -text hi]
+} -body {
+    set w0 [bboxWidth canvasLabel($l)]
+    switched::configure $l -bulletwidth 30
+    set w1 [bboxWidth canvasLabel($l)]
+    switched::configure $l -padding 12
+    set w2 [bboxWidth canvasLabel($l)]
+    list [expr {$w1 - $w0}] [expr {$w2 - $w1}]
+} -cleanup {
+    stooop::delete $l
+    destroy .c
+    unset -nocomplain l w0 w1 w2
+} -result {20 10}
+
+test tkpiechart-6.7 {canvasLabel: -scale} -constraints pieWorks -setup {
+    mkcanvas
+    set l [stooop::new canvasLabel .c -text hello]
+} -body {
+    set w0 [bboxWidth canvasLabel($l)]
+    switched::configure $l -scale {2 2}
+    expr {abs([bboxWidth canvasLabel($l)] - 2 * $w0) <= 4}
+} -cleanup {
+    stooop::delete $l
+    destroy .c
+    unset -nocomplain l w0
+} -result 1
+
+test tkpiechart-6.8 {canvasLabel: -select with -selectrelief} -constraints pieWorks -setup {
+    mkcanvas
+    set l [stooop::new canvasLabel .c -text hello -selectrelief sunken]
+} -body {
+    set n0 [llength [.c find withtag canvasLabel($l)]]
+    switched::configure $l -select 1
+    set n1 [llength [.c find withtag canvasLabel($l)]]
+    switched::configure $l -select 0
+    list [expr {$n1 > $n0}] [expr {[llength [.c find withtag canvasLabel($l)]] == $n0}]
+} -cleanup {
+    stooop::delete $l
+    destroy .c
+    unset -nocomplain l n0 n1
+} -result {1 1}
+
+test tkpiechart-6.9 {canvasLabel: bad -selectrelief} -constraints pieWorks -setup {
+    mkcanvas
+    set l [stooop::new canvasLabel .c -text hello]
+} -body {
+    switched::configure $l -selectrelief groove
+} -cleanup {
+    stooop::delete $l
+    destroy .c
+    unset -nocomplain l
+} -returnCodes error -result {bad relief value "groove": must be flat, raised or sunken}
+
+test tkpiechart-6.10 {canvasLabel: -borderwidth with a select relief} -constraints {
+    pieWorks
+} -setup {
+    mkcanvas
+    set l [stooop::new canvasLabel .c -text hello -selectrelief raised]
+} -body {
+    switched::configure $l -borderwidth 2
+} -cleanup {
+    stooop::delete $l
+    destroy .c
+    unset -nocomplain l
+} -returnCodes error -result {border width greater than 1 is not supported with raised select relief}
+
+test tkpiechart-6.11 {canvasLabel: -textbackground} -constraints pieWorks -setup {
+    mkcanvas
+    set l [stooop::new canvasLabel .c -text hello]
+} -body {
+    switched::configure $l -textbackground yellow
+    llength [lmap i [.c find withtag canvasLabel($l)] {
+	if {[.c type $i] eq "rectangle" && [.c itemcget $i -fill] eq "yellow"} {set i} else continue
+    }]
+} -cleanup {
+    stooop::delete $l
+    destroy .c
+    unset -nocomplain l
+} -result 1
+
+test tkpiechart-6.12 {canvasLabel: -width wraps the text} -constraints pieWorks -setup {
+    mkcanvas
+    set l [stooop::new canvasLabel .c -text "a few words of text"]
+} -body {
+    lassign [.c bbox canvasLabel($l)] x1 y1 x2 y2
+    switched::configure $l -width 20
+    lassign [.c bbox canvasLabel($l)] a1 b1 a2 b2
+    list [expr {($a2 - $a1) < ($x2 - $x1)}] [expr {($b2 - $b1) > ($y2 - $y1)}]
+} -cleanup {
+    stooop::delete $l
+    destroy .c
+    unset -nocomplain l x1 y1 x2 y2 a1 b1 a2 b2
+} -result {1 1}
+
+test tkpiechart-6.13 {canvasLabel: delete removes its items} -constraints pieWorks -setup {
+    mkcanvas
+} -body {
+    set l [stooop::new canvasLabel .c -text hello -selectrelief sunken -select 1]
+    stooop::delete $l
+    .c find all
+} -cleanup {
+    destroy .c
+    unset -nocomplain l
+} -result {}
+
+test tkpiechart-6.14 {canvasLabel: unknown option} -constraints pieWorks -setup {
+    mkcanvas
+} -body {
+    stooop::new canvasLabel .c -foo bar
+} -cleanup {
+    destroy .c
+} -returnCodes error -result {::canvasLabel: unknown option "-foo"}
+
+# -------------------------------------------------------------------------
+
+foreach p {mkcanvas options labelOf labelText center click bboxWidth} {
+    rename $p {}
+}
+unset p
+wm state . $mainState
+unset mainState
+
+::tcltest::cleanupTests
