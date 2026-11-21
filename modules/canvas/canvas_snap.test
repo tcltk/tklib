@@ -35,6 +35,11 @@ if {[testConstraint imgWindow]} {
     package require canvas::snap
 }
 
+# The tests need a mapped main window (the test harness may withdraw it).
+set mainWindowState [wm state .]
+wm deiconify .
+update
+
 # -------------------------------------------------------------------------
 
 # canvas::snap requires the img::window package (Img).  Without it the
@@ -146,5 +151,8 @@ test canvas::snap-1.8 {not a canvas} -constraints imgWindow -body {
 
 rename mkCanvas {}
 rename pixel {}
+
+if {$mainWindowState eq "withdrawn"} {wm withdraw .}
+unset mainWindowState
 
 ::tcltest::cleanupTests

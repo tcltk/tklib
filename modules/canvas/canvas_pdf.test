@@ -35,6 +35,11 @@ if {[testConstraint pdf4tcl]} {
     package require canvas::pdf
 }
 
+# The tests need a mapped main window (the test harness may withdraw it).
+set mainWindowState [wm state .]
+wm deiconify .
+update
+
 # -------------------------------------------------------------------------
 
 # canvas::pdf requires the pdf4tcl package.  Without it the tests are
@@ -111,5 +116,8 @@ test canvas::pdf-1.7 {not a canvas} -constraints pdf4tcl -body {
 # -------------------------------------------------------------------------
 
 rename mkCanvas {}
+
+if {$mainWindowState eq "withdrawn"} {wm withdraw .}
+unset mainWindowState
 
 ::tcltest::cleanupTests

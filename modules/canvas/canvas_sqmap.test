@@ -32,6 +32,11 @@ if {[lsearch [namespace children] ::tcltest] == -1} {
 lappend auto_path [file dirname [file dirname [file normalize [info script]]]]
 package require canvas::sqmap
 
+# The tests need a mapped main window (the test harness may withdraw it).
+set mainWindowState [wm state .]
+wm deiconify .
+update
+
 # -------------------------------------------------------------------------
 
 # Collect background errors instead of showing a dialog.
@@ -429,5 +434,8 @@ image delete sqTile1 sqTile2 sqLoad sqNone
 interp bgerror {} $oldBgerror
 unset oldBgerror bgerrors
 foreach p {collectBgerror settle mkMap cleanMap tiles cellcmd logcb} {rename $p {}}
+
+if {$mainWindowState eq "withdrawn"} {wm withdraw .}
+unset mainWindowState
 
 ::tcltest::cleanupTests

@@ -32,6 +32,11 @@ if {[lsearch [namespace children] ::tcltest] == -1} {
 lappend auto_path [file dirname [file dirname [file normalize [info script]]]]
 package require canvas::gradient
 
+# The tests need a mapped main window (the test harness may withdraw it).
+set mainWindowState [wm state .]
+wm deiconify .
+update
+
 # -------------------------------------------------------------------------
 
 proc mkCanvas {{w 200} {h 100}} {
@@ -251,5 +256,8 @@ rename mkCanvas {}
 rename colorAt {}
 rename rgb {}
 rename near {}
+
+if {$mainWindowState eq "withdrawn"} {wm withdraw .}
+unset mainWindowState
 
 ::tcltest::cleanupTests

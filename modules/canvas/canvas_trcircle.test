@@ -32,6 +32,11 @@ if {[lsearch [namespace children] ::tcltest] == -1} {
 lappend auto_path [file dirname [file dirname [file normalize [info script]]]]
 package require canvas::track::circle
 
+# The tests need a mapped main window (the test harness may withdraw it).
+set mainWindowState [wm state .]
+wm deiconify .
+update
+
 # -------------------------------------------------------------------------
 
 # canvas::track::circle has no manpage.  These tests cover the behaviour
@@ -242,5 +247,8 @@ test canvas::track::circle-4.3 {off twice is harmless} -setup {
 
 rename mkCanvas {}
 rename circles {}
+
+if {$mainWindowState eq "withdrawn"} {wm withdraw .}
+unset mainWindowState
 
 ::tcltest::cleanupTests

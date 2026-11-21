@@ -32,6 +32,11 @@ if {[lsearch [namespace children] ::tcltest] == -1} {
 lappend auto_path [file dirname [file dirname [file normalize [info script]]]]
 package require canvas::edit::rectangle
 
+# The tests need a mapped main window (the test harness may withdraw it).
+set mainWindowState [wm state .]
+wm deiconify .
+update
+
 # -------------------------------------------------------------------------
 
 proc mkCanvas {} {
@@ -400,5 +405,8 @@ rename points {}
 rename logcb {}
 rename rect {}
 rename mkRect {}
+
+if {$mainWindowState eq "withdrawn"} {wm withdraw .}
+unset mainWindowState
 
 ::tcltest::cleanupTests
