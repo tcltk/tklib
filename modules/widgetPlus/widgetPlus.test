@@ -1,0 +1,2023 @@
+# -*- tcl -*-
+# Tests for the widgetPlus package: the features that widgetPlus adds to the
+# entry, spinbox, ttk::entry, ttk::spinbox and ttk::combobox widgets (Undo and
+# Redo, the edit widget command, the options -undo, -maxundo and
+# -inactiveselectbackground, the <<Undo>>/<<Redo>> bindings, the <<Selection>>
+# virtual event and EnableBWidget).
+#
+# The compatibility of the wrapped widgets with the original Tk widgets is
+# tested in entryPlus.test, spinboxPlus.test, ttkEntryPlus.test,
+# ttkSpinboxPlus.test and ttkComboboxPlus.test.
+
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2
+    namespace import ::tcltest::*
+}
+
+::tcltest::testConstraint tk 1
+
+if {[catch {package present widgetPlus}]} {
+    lappend auto_path [file dirname [file dirname [file normalize [info script]]]]
+    package require widgetPlus
+}
+
+# -------------------------------------------------------------------------
+# Constraints and helpers
+# -------------------------------------------------------------------------
+
+testConstraint x11   [expr {[tk windowingsystem] eq "x11"}]
+testConstraint win32 [expr {[tk windowingsystem] eq "win32"}]
+testConstraint aqua  [expr {[tk windowingsystem] eq "aqua"}]
+# BWidget must not be loaded before the tests of the error case.
+testConstraint noBWidget [catch {package present BWidget}]
+# A child interpreter with Tk is used to test EnableBWidget with a stand-in
+# for BWidget.
+testConstraint childTk [expr {![catch {
+    interp create widgetPlusTestChild
+    load {} Tk widgetPlusTestChild
+}]}]
+catch {interp delete widgetPlusTestChild}
+
+namespace eval ::widgetPlusTest {
+    # index command hull-command class
+    variable kinds {
+        1 entryPlus       entry         Entry
+        2 spinboxPlus     spinbox       Spinbox
+        3 ttkEntryPlus    ttk::entry    TEntry
+        4 ttkSpinboxPlus  ttk::spinbox  TSpinbox
+        5 ttkComboboxPlus ttk::combobox TCombobox
+    }
+
+    # tklib's test driver withdraws "."; some tests need mapped windows
+    # and the keyboard focus.
+    variable oldState [wm state .]
+    wm deiconify .
+
+    # Never let a background error open a dialog.
+    variable bgerrors {}
+    variable oldBgerror [interp bgerror {}]
+    proc bgerror {msg opts} {
+        variable bgerrors
+        lappend bgerrors $msg
+    }
+    interp bgerror {} ::widgetPlusTest::bgerror
+
+    # Undo repeatedly and return the successive values of the widget.
+    proc history {w} {
+        set result {}
+        while {[$w edit canundo]} {
+            $w edit undo
+            lappend result [$w get]
+        }
+        return $result
+    }
+
+    # Redo repeatedly and return the successive values of the widget.
+    proc redoHistory {w} {
+        set result {}
+        while {[$w edit canredo]} {
+            $w edit redo
+            lappend result [$w get]
+        }
+        return $result
+    }
+
+    # The hull (the wrapped Tk widget) of a widgetPlus widget.
+    proc hull {w} {
+        set [lsearch -inline [$w info vars] *::hull]
+    }
+
+    # Map the widget and give it the keyboard focus.
+    proc focusOn {w} {
+        pack $w
+        update
+        for {set i 0} {$i < 100 && ![winfo viewable $w]} {incr i} {
+            after 10
+            update
+        }
+        focus -force $w
+        update
+        for {set i 0} {$i < 100 && [focus] ne $w} {incr i} {
+            after 10
+            update
+        }
+        return [focus]
+    }
+
+    # Move the focus away from all test widgets.
+    proc focusAway {} {
+        focus -force .
+        update
+        for {set i 0} {$i < 100 && [focus] ne "."} {incr i} {
+            after 10
+            update
+        }
+    }
+
+    # Type the characters of a string as key events.
+    proc type {w str} {
+        foreach c [split $str {}] {
+            event generate $w <Key> -keysym $c
+        }
+        update
+    }
+}
+
+# =========================================================================
+# 1. Package and namespace
+# =========================================================================
+
+test widgetPlus-1.1 {package version} -body {
+    package present widgetPlus
+} -result 1.0b2
+
+test widgetPlus-1.2 {namespace exports exactly the five commands} -body {
+    lsort [namespace eval ::widgetPlus {namespace export}]
+} -result {entryPlus spinboxPlus ttkComboboxPlus ttkEntryPlus ttkSpinboxPlus}
+
+test widgetPlus-1.3 {EnableBWidget exists but is not exported} -body {
+    list [llength [info commands ::widgetPlus::EnableBWidget]] \
+        [expr {"EnableBWidget" in [namespace eval ::widgetPlus {namespace export}]}]
+} -result {1 0}
+
+test widgetPlus-1.4 {commands can be imported} -setup {
+    namespace eval ::widgetPlusTest::imp {}
+} -body {
+    namespace eval ::widgetPlusTest::imp {
+        namespace import ::widgetPlus::*
+        set r [lsort [info commands [namespace current]::*]]
+        entryPlus .wp -undo 1 -maxundo 0
+        lappend r [winfo class .wp]
+    }
+} -cleanup {
+    destroy .wp
+    namespace delete ::widgetPlusTest::imp
+} -result [list \
+    ::widgetPlusTest::imp::entryPlus ::widgetPlusTest::imp::spinboxPlus \
+    ::widgetPlusTest::imp::ttkComboboxPlus ::widgetPlusTest::imp::ttkEntryPlus \
+    ::widgetPlusTest::imp::ttkSpinboxPlus Entry]
+
+# =========================================================================
+# 2. Widget creation commands
+# =========================================================================
+
+foreach {i cmd base class} $::widgetPlusTest::kinds {
+    test widgetPlus-2.1.$i "$cmd pathName returns the path name" -body {
+        list [::widgetPlus::$cmd .wp] [winfo exists .wp] [winfo class .wp]
+    } -cleanup {
+        destroy .wp
+    } -result [list .wp 1 $class]
+
+    test widgetPlus-2.2.$i "$cmd create pathName" -body {
+        list [::widgetPlus::$cmd create .wp] [winfo class .wp]
+    } -cleanup {
+        destroy .wp
+    } -result [list .wp $class]
+
+    test widgetPlus-2.3.$i "$cmd create pathName with options" -body {
+        ::widgetPlus::$cmd create .wp -undo 0 -maxundo 7 -width 13
+        list [.wp cget -undo] [.wp cget -maxundo] [.wp cget -width]
+    } -cleanup {
+        destroy .wp
+    } -result {0 7 13}
+
+    test widgetPlus-2.4.$i "$cmd uses the bindtag ${class}Plus" -body {
+        ::widgetPlus::$cmd .wp
+        set tags [bindtags .wp]
+        list [expr {"${class}Plus" in $tags}] [expr {$class in $tags}]
+    } -cleanup {
+        destroy .wp
+    } -result {1 0}
+
+    test widgetPlus-2.5.$i "$cmd converts an existing $base" -setup {
+        $base .wp -width 11
+        .wp insert end hello
+    } -body {
+        set r [::widgetPlus::$cmd .wp -undo 1 -maxundo 0]
+        lappend r [winfo class .wp] [.wp get] [.wp cget -width] \
+            [expr {"${class}Plus" in [bindtags .wp]}] \
+            [expr {$class in [bindtags .wp]}] [.wp cget -undo]
+        .wp insert end !
+        lappend r [.wp get] [.wp edit canundo]
+    } -cleanup {
+        destroy .wp
+    } -result [list .wp $class hello 11 1 0 1 hello! 1]
+
+    test widgetPlus-2.6.$i "$cmd converting keeps -textvariable" -setup {
+        set ::wpVar abc
+        $base .wp -textvariable ::wpVar
+    } -body {
+        ::widgetPlus::$cmd .wp
+        set r [list [.wp cget -textvariable] [.wp get]]
+        .wp insert end d
+        lappend r $::wpVar
+        set ::wpVar xyz
+        lappend r [.wp get]
+    } -cleanup {
+        destroy .wp
+        unset -nocomplain ::wpVar
+    } -result {::wpVar abc abcd xyz}
+
+    test widgetPlus-2.7.$i "$cmd: no arguments" -body {
+        ::widgetPlus::$cmd
+    } -returnCodes error \
+        -result "wrong # args: should be \"$cmd pathName ?-option value ...?\""
+
+    test widgetPlus-2.8.$i "$cmd create: no path name" -body {
+        ::widgetPlus::$cmd create
+    } -returnCodes error -result {wrong # args: should be\
+        "::widgetPlus::WidgetPlusPrivateCore create name ?arg ...?"}
+
+    test widgetPlus-2.9.$i "$cmd: unknown subcommand" -body {
+        ::widgetPlus::$cmd foo
+    } -returnCodes error -result {unknown subcommand "foo": must be create}
+
+    test widgetPlus-2.10.$i "$cmd: wrap an already wrapped widget" -setup {
+        ::widgetPlus::$cmd .wp
+    } -body {
+        ::widgetPlus::$cmd .wp
+    } -cleanup {
+        destroy .wp
+    } -returnCodes error -result {Error in constructor: window .wp already\
+        exists, but it is already wrapped by widgetPlus}
+
+    test widgetPlus-2.11.$i "$cmd: existing window of another kind" -setup {
+        if {$base eq "entry"} {spinbox .wp} else {entry .wp}
+    } -body {
+        ::widgetPlus::$cmd .wp
+    } -cleanup {
+        destroy .wp
+    } -returnCodes error -result [format {Error in constructor: window .wp\
+        already exists, but it is not %s %s} \
+        [expr {$base eq "entry" ? "an" : "a"}] $base]
+
+    test widgetPlus-2.12.$i "$cmd: existing window that is not an entry" -setup {
+        frame .wp
+    } -body {
+        ::widgetPlus::$cmd .wp
+    } -cleanup {
+        destroy .wp
+    } -returnCodes error -result [format {Error in constructor: window .wp\
+        already exists, but it is not %s %s} \
+        [expr {$base eq "entry" ? "an" : "a"}] $base]
+
+    test widgetPlus-2.13.$i "$cmd: bad option, no window is left" -body {
+        list [catch {::widgetPlus::$cmd .wp -nosuchoption 1} msg] $msg \
+            [winfo exists .wp] [info commands .wp]
+    } -cleanup {
+        destroy .wp
+    } -result {1 {Error in constructor: unknown option "-nosuchoption"} 0 {}}
+
+    test widgetPlus-2.14.$i "$cmd: bad parent" -body {
+        ::widgetPlus::$cmd .wpNoSuchParent.wp
+    } -returnCodes error -match glob -result {*bad window path name ".wpNoSuchParent"}
+
+    test widgetPlus-2.15.$i "$cmd: destroying the widget" -setup {
+        ::widgetPlus::$cmd .wp
+    } -body {
+        destroy .wp
+        list [winfo exists .wp] [info commands .wp]
+    } -result {0 {}}
+}
+
+# =========================================================================
+# 3. Widget options -undo, -maxundo, -inactiveselectbackground
+# =========================================================================
+
+foreach {i cmd base class} $::widgetPlusTest::kinds {
+    test widgetPlus-3.1.$i "$cmd: configure -undo" -setup [list \
+        ::widgetPlus::$cmd .wp] -body {
+        lrange [.wp configure -undo] 0 2
+    } -cleanup {
+        destroy .wp
+    } -result {-undo undo Undo}
+
+    test widgetPlus-3.2.$i "$cmd: configure -maxundo" -setup [list \
+        ::widgetPlus::$cmd .wp] -body {
+        lrange [.wp configure -maxundo] 0 2
+    } -cleanup {
+        destroy .wp
+    } -result {-maxundo maxUndo MaxUndo}
+
+    test widgetPlus-3.3.$i "$cmd: configure -inactiveselectbackground" -setup [list \
+        ::widgetPlus::$cmd .wp] -body {
+        lrange [.wp configure -inactiveselectbackground] 0 2
+    } -cleanup {
+        destroy .wp
+    } -result {-inactiveselectbackground inactiveSelectBackground Foreground}
+
+    test widgetPlus-3.4.$i "$cmd: options are listed by configure" -setup [list \
+        ::widgetPlus::$cmd .wp] -body {
+        set names [lmap spec [.wp configure] {lindex $spec 0}]
+        lmap o {-undo -maxundo -inactiveselectbackground} {expr {$o in $names}}
+    } -cleanup {
+        destroy .wp
+    } -result {1 1 1}
+
+    test widgetPlus-3.5.$i "$cmd: -undo accepts booleans" -setup [list \
+        ::widgetPlus::$cmd .wp] -body {
+        set r {}
+        foreach v {0 1 false true no yes off on} {
+            .wp configure -undo $v
+            lappend r [.wp cget -undo]
+        }
+        set r
+    } -cleanup {
+        destroy .wp
+    } -result {0 1 false true no yes off on}
+
+    test widgetPlus-3.6.$i "$cmd: -undo bad value" -setup [list \
+        ::widgetPlus::$cmd .wp] -body {
+        .wp configure -undo maybe
+    } -cleanup {
+        destroy .wp
+    } -returnCodes error -result {invalid -undo value: invalid boolean "maybe",\
+        should be one of: 1, 0, true, false, yes, no, on, off}
+
+    test widgetPlus-3.7.$i "$cmd: -maxundo accepts integers" -setup [list \
+        ::widgetPlus::$cmd .wp] -body {
+        set r {}
+        foreach v {0 1 100 -1} {
+            .wp configure -maxundo $v
+            lappend r [.wp cget -maxundo]
+        }
+        set r
+    } -cleanup {
+        destroy .wp
+    } -result {0 1 100 -1}
+
+    test widgetPlus-3.8.$i "$cmd: -maxundo bad value" -setup [list \
+        ::widgetPlus::$cmd .wp] -body {
+        .wp configure -maxundo 1.5
+    } -cleanup {
+        destroy .wp
+    } -returnCodes error \
+        -result {invalid -maxundo value: invalid value "1.5", expected integer}
+
+    test widgetPlus-3.9.$i "$cmd: -inactiveselectbackground accepts colors and {}" -setup [list \
+        ::widgetPlus::$cmd .wp] -body {
+        set r {}
+        foreach v {red #123456 {}} {
+            .wp configure -inactiveselectbackground $v
+            lappend r [.wp cget -inactiveselectbackground]
+        }
+        set r
+    } -cleanup {
+        destroy .wp
+    } -result {red #123456 {}}
+
+    test widgetPlus-3.10.$i "$cmd: -inactiveselectbackground bad color" -setup [list \
+        ::widgetPlus::$cmd .wp] -body {
+        .wp configure -inactiveselectbackground nosuchcolor
+    } -cleanup {
+        destroy .wp
+    } -returnCodes error -result {invalid -inactiveselectbackground value:\
+        unknown color name "nosuchcolor"}
+
+    test widgetPlus-3.11.$i "$cmd: bad option value at creation" -body {
+        list [catch {::widgetPlus::$cmd .wp -maxundo x} msg] $msg [winfo exists .wp]
+    } -cleanup {
+        destroy .wp
+    } -result {1 {Error in constructor: invalid -maxundo value: invalid value\
+        "x", expected integer} 0}
+
+    # -autoseparators is documented as not implemented (TO DO section).
+    test widgetPlus-3.12.$i "$cmd: -autoseparators is not implemented" -setup [list \
+        ::widgetPlus::$cmd .wp] -body {
+        .wp configure -autoseparators 1
+    } -cleanup {
+        destroy .wp
+    } -returnCodes error -result {unknown option "-autoseparators"}
+}
+
+# =========================================================================
+# 4. The edit widget command: argument errors
+# =========================================================================
+
+foreach {i cmd base class} $::widgetPlusTest::kinds {
+    test widgetPlus-4.1.$i "$cmd: edit without subcommand" -setup [list \
+        ::widgetPlus::$cmd .wp] -body {
+        .wp edit
+    } -cleanup {
+        destroy .wp
+    } -returnCodes error -result {wrong # args: should be ".wp edit subcommand ?arg ...?"}
+
+    test widgetPlus-4.2.$i "$cmd: edit with unknown subcommand" -setup [list \
+        ::widgetPlus::$cmd .wp] -body {
+        .wp edit foo
+    } -cleanup {
+        destroy .wp
+    } -returnCodes error -match glob -result {unknown subcommand "foo"*}
+
+    test widgetPlus-4.3.$i "$cmd: edit canundo with argument" -setup [list \
+        ::widgetPlus::$cmd .wp] -body {
+        .wp edit canundo x
+    } -cleanup {
+        destroy .wp
+    } -returnCodes error -match glob -result {wrong # args: should be "*edit canundo"}
+
+    test widgetPlus-4.4.$i "$cmd: edit canredo with argument" -setup [list \
+        ::widgetPlus::$cmd .wp] -body {
+        .wp edit canredo x
+    } -cleanup {
+        destroy .wp
+    } -returnCodes error -match glob -result {wrong # args: should be "*edit canredo"}
+
+    test widgetPlus-4.5.$i "$cmd: edit undo with argument" -setup [list \
+        ::widgetPlus::$cmd .wp] -body {
+        .wp edit undo x
+    } -cleanup {
+        destroy .wp
+    } -returnCodes error -match glob -result {wrong # args: should be "*edit undo"}
+
+    test widgetPlus-4.6.$i "$cmd: edit redo with argument" -setup [list \
+        ::widgetPlus::$cmd .wp] -body {
+        .wp edit redo x
+    } -cleanup {
+        destroy .wp
+    } -returnCodes error -match glob -result {wrong # args: should be "*edit redo"}
+
+    test widgetPlus-4.7.$i "$cmd: edit reset with argument" -setup [list \
+        ::widgetPlus::$cmd .wp] -body {
+        .wp edit reset x
+    } -cleanup {
+        destroy .wp
+    } -returnCodes error -match glob -result {wrong # args: should be "*edit reset"}
+
+    test widgetPlus-4.8.$i "$cmd: edit separator with argument" -setup [list \
+        ::widgetPlus::$cmd .wp] -body {
+        .wp edit separator x
+    } -cleanup {
+        destroy .wp
+    } -returnCodes error -match glob -result {wrong # args: should be "*edit separator"}
+
+    test widgetPlus-4.9.$i "$cmd: edit modified with two arguments" -setup [list \
+        ::widgetPlus::$cmd .wp] -body {
+        .wp edit modified 1 0
+    } -cleanup {
+        destroy .wp
+    } -returnCodes error -result {usage: .wp edit modified ?value?}
+
+    test widgetPlus-4.10.$i "$cmd: edit modified with non-boolean" -setup [list \
+        ::widgetPlus::$cmd .wp] -body {
+        .wp edit modified maybe
+    } -cleanup {
+        destroy .wp
+    } -returnCodes error -result {boolean value required}
+
+    test widgetPlus-4.11.$i "$cmd: edit modified with empty string" -setup [list \
+        ::widgetPlus::$cmd .wp] -body {
+        .wp edit modified {}
+    } -cleanup {
+        destroy .wp
+    } -returnCodes error -result {boolean value required}
+}
+
+# =========================================================================
+# 5. edit undo, edit redo, edit canundo, edit canredo
+# =========================================================================
+
+foreach {i cmd base class} $::widgetPlusTest::kinds {
+    test widgetPlus-5.1.$i "$cmd: new widget has nothing to undo or redo" -setup [list \
+        ::widgetPlus::$cmd .wp] -body {
+        list [.wp edit canundo] [.wp edit canredo]
+    } -cleanup {
+        destroy .wp
+    } -result {0 0}
+
+    test widgetPlus-5.2.$i "$cmd: edit undo with empty undo stack" -setup [list \
+        ::widgetPlus::$cmd .wp] -body {
+        .wp edit undo
+    } -cleanup {
+        destroy .wp
+    } -returnCodes error -result {nothing to undo}
+
+    test widgetPlus-5.3.$i "$cmd: edit redo with empty redo stack" -setup [list \
+        ::widgetPlus::$cmd .wp] -body {
+        .wp edit redo
+    } -cleanup {
+        destroy .wp
+    } -returnCodes error -result {nothing to redo}
+
+    test widgetPlus-5.4.$i "$cmd: each insert is one undo action" -setup [list \
+        ::widgetPlus::$cmd .wp] -body {
+        .wp insert end abc
+        .wp insert end def
+        .wp insert 0 X
+        list [.wp get] [.wp edit canundo] [.wp edit canredo] \
+            [::widgetPlusTest::history .wp] [.wp edit canredo]
+    } -cleanup {
+        destroy .wp
+    } -result {Xabcdef 1 0 {abcdef abc {}} 1}
+
+    test widgetPlus-5.5.$i "$cmd: each delete is one undo action" -setup [list \
+        ::widgetPlus::$cmd .wp] -body {
+        .wp insert end abcdef
+        .wp delete 0
+        .wp delete 1 3
+        .wp delete 0 end
+        list [.wp get] [::widgetPlusTest::history .wp]
+    } -cleanup {
+        destroy .wp
+    } -result {{} {bef bcdef abcdef {}}}
+
+    test widgetPlus-5.6.$i "$cmd: redo reapplies undone edits" -setup [list \
+        ::widgetPlus::$cmd .wp] -body {
+        .wp insert end abc
+        .wp insert end def
+        .wp delete 0
+        ::widgetPlusTest::history .wp
+        list [.wp get] [.wp edit canundo] [::widgetPlusTest::redoHistory .wp] \
+            [.wp edit canredo] [.wp edit canundo]
+    } -cleanup {
+        destroy .wp
+    } -result {{} 0 {abc abcdef bcdef} 0 1}
+
+    test widgetPlus-5.7.$i "$cmd: undo and redo return empty string" -setup [list \
+        ::widgetPlus::$cmd .wp] -body {
+        .wp insert end abc
+        list [.wp edit undo] [.wp edit redo]
+    } -cleanup {
+        destroy .wp
+    } -result {{} {}}
+
+    test widgetPlus-5.8.$i "$cmd: a new edit discards the redo stack" -setup [list \
+        ::widgetPlus::$cmd .wp] -body {
+        .wp insert end abc
+        .wp insert end def
+        .wp edit undo
+        set r [.wp edit canredo]
+        .wp insert end X
+        lappend r [.wp edit canredo] [catch {.wp edit redo} msg] $msg \
+            [::widgetPlusTest::history .wp]
+    } -cleanup {
+        destroy .wp
+    } -result {1 0 1 {nothing to redo} {abc {}}}
+
+    test widgetPlus-5.9.$i "$cmd: redo after partial undo, then undo again" -setup [list \
+        ::widgetPlus::$cmd .wp] -body {
+        foreach c {a b c d} {.wp insert end $c}
+        .wp edit undo
+        .wp edit undo
+        .wp edit redo
+        set r [.wp get]
+        lappend r [::widgetPlusTest::history .wp]
+    } -cleanup {
+        destroy .wp
+    } -result {abc {ab a {}}}
+
+    test widgetPlus-5.10.$i "$cmd: edits that do not change the text are not recorded" -setup [list \
+        ::widgetPlus::$cmd .wp] -body {
+        .wp insert end abc
+        .wp edit reset
+        .wp insert end {}
+        .wp delete 1 1
+        .wp delete end
+        list [.wp get] [.wp edit canundo]
+    } -cleanup {
+        destroy .wp
+    } -result {abc 0}
+
+    test widgetPlus-5.11.$i "$cmd: undo clears the selection" -setup [list \
+        ::widgetPlus::$cmd .wp] -body {
+        .wp insert end abc
+        .wp insert end def
+        .wp selection range 0 2
+        .wp edit undo
+        list [.wp get] [.wp selection present]
+    } -cleanup {
+        destroy .wp
+    } -result {abc 0}
+
+    test widgetPlus-5.12.$i "$cmd: redo clears the selection" -setup [list \
+        ::widgetPlus::$cmd .wp] -body {
+        .wp insert end abc
+        .wp insert end def
+        .wp edit undo
+        .wp selection range 0 2
+        .wp edit redo
+        list [.wp get] [.wp selection present]
+    } -cleanup {
+        destroy .wp
+    } -result {abcdef 0}
+
+    test widgetPlus-5.13.$i "$cmd: undo of a non-ASCII and special text" -setup [list \
+        ::widgetPlus::$cmd .wp] -body {
+        .wp insert end "фé \{\["
+        .wp insert end "\$x \\"
+        list [.wp get] [::widgetPlusTest::history .wp] \
+            [::widgetPlusTest::redoHistory .wp]
+    } -cleanup {
+        destroy .wp
+    } -result [list "фé \{\[\$x \\" [list "фé \{\[" {}] \
+        [list "фé \{\[" "фé \{\[\$x \\"]]
+
+    test widgetPlus-5.14.$i "$cmd: undo stacks of different widgets are independent" -setup "
+        ::widgetPlus::$cmd .wp
+        ::widgetPlus::$cmd .wp2
+    " -body {
+        .wp insert end abc
+        .wp2 insert end xyz
+        .wp2 insert end 123
+        .wp edit undo
+        list [.wp get] [.wp2 get] [.wp edit canundo] [.wp2 edit canundo]
+    } -cleanup {
+        destroy .wp .wp2
+    } -result {{} xyz123 0 1}
+}
+
+# =========================================================================
+# 6. edit modified
+# =========================================================================
+
+foreach {i cmd base class} $::widgetPlusTest::kinds {
+    test widgetPlus-6.1.$i "$cmd: new widget is not modified" -setup [list \
+        ::widgetPlus::$cmd .wp] -body {
+        .wp edit modified
+    } -cleanup {
+        destroy .wp
+    } -result 0
+
+    test widgetPlus-6.2.$i "$cmd: edit modified sets the flag" -setup [list \
+        ::widgetPlus::$cmd .wp] -body {
+        set r {}
+        foreach v {1 0 yes no true false on off} {
+            lappend r [.wp edit modified $v] [.wp edit modified]
+        }
+        set r
+    } -cleanup {
+        destroy .wp
+    } -result {1 1 0 0 1 1 0 0 1 1 0 0 1 1 0 0}
+
+    test widgetPlus-6.3.$i "$cmd: insert sets the modified flag" -setup [list \
+        ::widgetPlus::$cmd .wp] -body {
+        .wp insert end a
+        set r [.wp edit modified]
+        .wp edit modified 0
+        .wp insert 0 b
+        lappend r [.wp edit modified]
+    } -cleanup {
+        destroy .wp
+    } -result {1 1}
+
+    test widgetPlus-6.4.$i "$cmd: delete sets the modified flag" -setup [list \
+        ::widgetPlus::$cmd .wp] -body {
+        .wp insert end abc
+        .wp edit modified 0
+        .wp delete 0
+        .wp edit modified
+    } -cleanup {
+        destroy .wp
+    } -result 1
+
+    test widgetPlus-6.5.$i "$cmd: edits that do not change the text keep the flag" -setup [list \
+        ::widgetPlus::$cmd .wp] -body {
+        .wp insert end abc
+        .wp edit modified 0
+        .wp insert end {}
+        .wp delete 1 1
+        .wp edit modified
+    } -cleanup {
+        destroy .wp
+    } -result 0
+
+    # Documented in TO DO: undo and redo always set the flag to true.
+    test widgetPlus-6.6.$i "$cmd: undo and redo set the modified flag" -setup [list \
+        ::widgetPlus::$cmd .wp] -body {
+        .wp insert end abc
+        .wp edit modified 0
+        .wp edit undo
+        set r [.wp edit modified]
+        .wp edit modified 0
+        .wp edit redo
+        lappend r [.wp edit modified]
+    } -cleanup {
+        destroy .wp
+    } -result {1 1}
+
+    test widgetPlus-6.7.$i "$cmd: failed undo and redo keep the flag" -setup [list \
+        ::widgetPlus::$cmd .wp] -body {
+        catch {.wp edit undo}
+        catch {.wp edit redo}
+        .wp edit modified
+    } -cleanup {
+        destroy .wp
+    } -result 0
+
+    test widgetPlus-6.8.$i "$cmd: edit reset keeps the flag" -setup [list \
+        ::widgetPlus::$cmd .wp] -body {
+        .wp insert end abc
+        .wp edit reset
+        set r [.wp edit modified]
+        .wp edit modified 0
+        .wp edit reset
+        lappend r [.wp edit modified]
+    } -cleanup {
+        destroy .wp
+    } -result {1 0}
+
+    test widgetPlus-6.9.$i "$cmd: query and canundo do not change the flag" -setup [list \
+        ::widgetPlus::$cmd .wp] -body {
+        .wp insert end abc
+        .wp edit modified 0
+        .wp edit canundo
+        .wp edit canredo
+        .wp get
+        .wp edit modified
+    } -cleanup {
+        destroy .wp
+    } -result 0
+}
+
+# =========================================================================
+# 7. edit reset and edit separator
+# =========================================================================
+
+foreach {i cmd base class} $::widgetPlusTest::kinds {
+    test widgetPlus-7.1.$i "$cmd: edit reset clears the undo stack" -setup [list \
+        ::widgetPlus::$cmd .wp] -body {
+        .wp insert end abc
+        .wp insert end def
+        set r [.wp edit reset]
+        lappend r [.wp get] [.wp edit canundo] [catch {.wp edit undo} msg] $msg
+    } -cleanup {
+        destroy .wp
+    } -result {abcdef 0 1 {nothing to undo}}
+
+    test widgetPlus-7.2.$i "$cmd: edit reset clears the redo stack" -setup [list \
+        ::widgetPlus::$cmd .wp] -body {
+        .wp insert end abc
+        .wp insert end def
+        .wp edit undo
+        .wp edit reset
+        list [.wp get] [.wp edit canredo] [.wp edit canundo]
+    } -cleanup {
+        destroy .wp
+    } -result {abc 0 0}
+
+    test widgetPlus-7.3.$i "$cmd: undo after edit reset stops at the reset text" -setup [list \
+        ::widgetPlus::$cmd .wp] -body {
+        .wp insert end abc
+        .wp edit reset
+        .wp insert end def
+        .wp delete 0
+        list [.wp get] [::widgetPlusTest::history .wp]
+    } -cleanup {
+        destroy .wp
+    } -result {bcdef {abcdef abc}}
+
+    test widgetPlus-7.4.$i "$cmd: edit separator has no effect" -setup [list \
+        ::widgetPlus::$cmd .wp] -body {
+        set r [.wp edit separator]
+        lappend r [.wp edit canundo]
+        .wp insert end a
+        .wp edit separator
+        .wp insert end b
+        .wp edit separator
+        .wp edit separator
+        .wp insert end c
+        lappend r [.wp get] [::widgetPlusTest::history .wp]
+    } -cleanup {
+        destroy .wp
+    } -result {0 abc {ab a {}}}
+}
+
+# =========================================================================
+# 8. Option -undo
+# =========================================================================
+
+foreach {i cmd base class} $::widgetPlusTest::kinds {
+    test widgetPlus-8.1.$i "$cmd -undo 0: undo and redo do nothing" -setup [list \
+        ::widgetPlus::$cmd .wp -undo 0] -body {
+        .wp insert end abc
+        .wp insert end def
+        list [.wp edit canundo] [.wp edit canredo] \
+            [.wp edit undo] [.wp get] [.wp edit redo] [.wp get]
+    } -cleanup {
+        destroy .wp
+    } -result {0 0 {} abcdef {} abcdef}
+
+    test widgetPlus-8.2.$i "$cmd: setting -undo 0 disables the undo stack" -setup [list \
+        ::widgetPlus::$cmd .wp] -body {
+        .wp insert end abc
+        .wp insert end def
+        .wp edit undo
+        set r [list [.wp edit canundo] [.wp edit canredo]]
+        .wp configure -undo 0
+        lappend r [.wp edit canundo] [.wp edit canredo] [.wp edit undo] [.wp get]
+    } -cleanup {
+        destroy .wp
+    } -result {1 1 0 0 {} abc}
+
+    test widgetPlus-8.3.$i "$cmd: enabling -undo starts an empty undo stack" -setup [list \
+        ::widgetPlus::$cmd .wp -undo 0] -body {
+        .wp insert end abc
+        .wp configure -undo 1
+        set r [list [.wp edit canundo] [.wp edit canredo]]
+        .wp insert end def
+        lappend r [::widgetPlusTest::history .wp]
+    } -cleanup {
+        destroy .wp
+    } -result {0 0 abc}
+
+    test widgetPlus-8.4.$i "$cmd: disabling and re-enabling -undo clears the stacks" -setup [list \
+        ::widgetPlus::$cmd .wp] -body {
+        .wp insert end abc
+        .wp insert end def
+        .wp edit undo
+        .wp configure -undo 0
+        .wp configure -undo 1
+        list [.wp get] [.wp edit canundo] [.wp edit canredo]
+    } -cleanup {
+        destroy .wp
+    } -result {abc 0 0}
+
+    test widgetPlus-8.5.$i "$cmd: -undo 0: modified flag still works" -setup [list \
+        ::widgetPlus::$cmd .wp -undo 0] -body {
+        .wp insert end abc
+        set r [.wp edit modified]
+        .wp edit modified 0
+        lappend r [.wp edit modified]
+    } -cleanup {
+        destroy .wp
+    } -result {1 0}
+}
+
+# =========================================================================
+# 9. Option -maxundo
+# =========================================================================
+
+foreach {i cmd base class} $::widgetPlusTest::kinds {
+    test widgetPlus-9.1.$i "$cmd -maxundo 2 limits the undo stack" -setup [list \
+        ::widgetPlus::$cmd .wp -maxundo 2] -body {
+        foreach c {a b c d e} {.wp insert end $c}
+        list [.wp get] [::widgetPlusTest::history .wp] \
+            [::widgetPlusTest::redoHistory .wp]
+    } -cleanup {
+        destroy .wp
+    } -result {abcde {abcd abc} {abcd abcde}}
+
+    test widgetPlus-9.2.$i "$cmd -maxundo 1" -setup [list \
+        ::widgetPlus::$cmd .wp -maxundo 1] -body {
+        foreach c {a b c} {.wp insert end $c}
+        ::widgetPlusTest::history .wp
+    } -cleanup {
+        destroy .wp
+    } -result {ab}
+
+    test widgetPlus-9.3.$i "$cmd -maxundo 0 means unlimited" -setup [list \
+        ::widgetPlus::$cmd .wp -maxundo 0] -body {
+        for {set n 0} {$n < 150} {incr n} {.wp insert end x}
+        llength [::widgetPlusTest::history .wp]
+    } -cleanup {
+        destroy .wp
+    } -result 150
+
+    test widgetPlus-9.4.$i "$cmd negative -maxundo means unlimited" -setup [list \
+        ::widgetPlus::$cmd .wp -maxundo -5] -body {
+        foreach c {a b c d e f g} {.wp insert end $c}
+        ::widgetPlusTest::history .wp
+    } -cleanup {
+        destroy .wp
+    } -result {abcdef abcde abcd abc ab a {}}
+
+    test widgetPlus-9.5.$i "$cmd: the limit counts undo actions, not redo" -setup [list \
+        ::widgetPlus::$cmd .wp -maxundo 2] -body {
+        foreach c {a b c} {.wp insert end $c}
+        .wp edit undo
+        .wp edit undo
+        list [.wp get] [.wp edit canundo] [::widgetPlusTest::redoHistory .wp]
+    } -cleanup {
+        destroy .wp
+    } -result {a 0 {ab abc}}
+
+    test widgetPlus-9.6.$i "$cmd: reducing -maxundo applies on the next edit" -setup [list \
+        ::widgetPlus::$cmd .wp] -body {
+        foreach c {a b c d e} {.wp insert end $c}
+        .wp configure -maxundo 2
+        .wp insert end f
+        ::widgetPlusTest::history .wp
+    } -cleanup {
+        destroy .wp
+    } -result {abcde abcd}
+}
+
+# =========================================================================
+# 10. Undo of other ways to change the text
+# =========================================================================
+
+# -- 10.1-10.3 replace the text with the "set", "current" and "invoke" commands
+
+test widgetPlus-10.1.2 {spinboxPlus: set is undoable} -setup {
+    ::widgetPlus::spinboxPlus .wp -from 1 -to 10
+    .wp set {}
+    .wp edit reset
+} -body {
+    .wp set 3
+    .wp set 4
+    .wp set 4
+    list [.wp get] [::widgetPlusTest::history .wp] [.wp set]
+} -cleanup {
+    destroy .wp
+} -result {4 {3 {}} {}}
+
+test widgetPlus-10.1.4 {ttkSpinboxPlus: set is undoable} -setup {
+    ::widgetPlus::ttkSpinboxPlus .wp -from 1 -to 10
+} -body {
+    .wp set 3
+    .wp set 4
+    .wp set 4
+    list [.wp get] [::widgetPlusTest::history .wp]
+} -cleanup {
+    destroy .wp
+} -result {4 {3 {}}}
+
+test widgetPlus-10.1.5 {ttkComboboxPlus: set is undoable} -setup {
+    ::widgetPlus::ttkComboboxPlus .wp -values {aa bb cc}
+} -body {
+    .wp set xx
+    .wp set bb
+    list [.wp get] [.wp current] [::widgetPlusTest::history .wp]
+} -cleanup {
+    destroy .wp
+} -result {bb 1 {xx {}}}
+
+test widgetPlus-10.2.5 {ttkComboboxPlus: current is undoable} -setup {
+    ::widgetPlus::ttkComboboxPlus .wp -values {aa bb cc}
+} -body {
+    set r [.wp current 0]
+    .wp current 2
+    .wp current 2
+    lappend r [.wp get] [.wp edit undo] [.wp current] [.wp edit undo] \
+        [.wp get] [.wp edit redo] [.wp current] [.wp edit canundo]
+} -cleanup {
+    destroy .wp
+} -result {cc {} 0 {} {} {} 0 1}
+
+test widgetPlus-10.3.2 {spinboxPlus: invoke is undoable} -setup {
+    ::widgetPlus::spinboxPlus .wp -from 1 -to 5
+    .wp edit reset
+} -body {
+    .wp invoke buttonup
+    .wp invoke buttonup
+    .wp invoke buttondown
+    list [.wp get] [::widgetPlusTest::history .wp]
+} -cleanup {
+    destroy .wp
+} -result {2 {3 2 1}}
+
+test widgetPlus-10.3.2a {spinboxPlus: invoke at the limit is not recorded} -setup {
+    ::widgetPlus::spinboxPlus .wp -from 1 -to 2
+    .wp edit reset
+} -body {
+    .wp invoke buttondown
+    set r [.wp edit canundo]
+    .wp invoke buttonup
+    .wp invoke buttonup
+    lappend r [.wp get] [::widgetPlusTest::history .wp]
+} -cleanup {
+    destroy .wp
+} -result {0 2 1}
+
+test widgetPlus-10.3.4 {ttkSpinboxPlus: <<Increment>> and <<Decrement>> are undoable} -setup {
+    ::widgetPlus::ttkSpinboxPlus .wp -from 0 -to 10
+    winfo id .wp
+    .wp set 0
+    .wp edit reset
+} -body {
+    event generate .wp <<Increment>>
+    event generate .wp <<Increment>>
+    event generate .wp <<Decrement>>
+    list [.wp get] [::widgetPlusTest::history .wp]
+} -cleanup {
+    destroy .wp
+} -result {1 {2 1 0}}
+
+test widgetPlus-10.3.5 {ttkComboboxPlus: selecting from the list is undoable} -setup {
+    ::widgetPlus::ttkComboboxPlus .wp -values {aa bb cc}
+} -body {
+    ttk::combobox::SelectEntry .wp 1
+    set r [.wp get]
+    ttk::combobox::SelectEntry .wp 2
+    update
+    lappend r [.wp get] [::widgetPlusTest::history .wp]
+} -cleanup {
+    destroy .wp
+} -result {bb cc {bb {}}}
+
+# -- 10.4 typing, BackSpace, cut and paste through the bindings
+
+foreach {i cmd base class} $::widgetPlusTest::kinds {
+    test widgetPlus-10.4.$i "$cmd: each typed character is one undo action" -setup "
+        ::widgetPlus::$cmd .wp
+        ::widgetPlusTest::focusOn .wp
+    " -body {
+        ::widgetPlusTest::type .wp abc
+        list [.wp get] [::widgetPlusTest::history .wp]
+    } -cleanup {
+        destroy .wp
+    } -result {abc {ab a {}}}
+
+    test widgetPlus-10.5.$i "$cmd: BackSpace is undoable" -setup "
+        ::widgetPlus::$cmd .wp
+        ::widgetPlusTest::focusOn .wp
+    " -body {
+        .wp insert end abc
+        .wp icursor end
+        event generate .wp <Key-BackSpace>
+        event generate .wp <Key-BackSpace>
+        update
+        list [.wp get] [::widgetPlusTest::history .wp]
+    } -cleanup {
+        destroy .wp
+    } -result {a {ab abc {}}}
+
+    test widgetPlus-10.6.$i "$cmd: typing over a selection" -setup "
+        ::widgetPlus::$cmd .wp
+        ::widgetPlusTest::focusOn .wp
+    " -body {
+        .wp insert end abcdef
+        .wp edit reset
+        .wp selection range 1 4
+        .wp icursor 4
+        ::widgetPlusTest::type .wp X
+        list [.wp get] [::widgetPlusTest::history .wp]
+    } -cleanup {
+        destroy .wp
+    } -result {aXef {aef abcdef}}
+
+    test widgetPlus-10.7.$i "$cmd: <<Cut>> is one undo action" -setup "
+        ::widgetPlus::$cmd .wp
+        ::widgetPlusTest::focusOn .wp
+    " -body {
+        .wp insert end {hello world}
+        .wp edit reset
+        .wp selection range 0 6
+        event generate .wp <<Cut>>
+        update
+        list [.wp get] [clipboard get] [::widgetPlusTest::history .wp]
+    } -cleanup {
+        destroy .wp
+        clipboard clear
+    } -result {world {hello } {{hello world}}}
+
+    test widgetPlus-10.8.$i "$cmd: <<Paste>> without selection is one undo action" -setup "
+        ::widgetPlus::$cmd .wp
+        ::widgetPlusTest::focusOn .wp
+    " -body {
+        .wp insert end world
+        .wp edit reset
+        .wp icursor 0
+        clipboard clear
+        clipboard append {hello }
+        event generate .wp <<Paste>>
+        update
+        list [.wp get] [::widgetPlusTest::history .wp]
+    } -cleanup {
+        destroy .wp
+        clipboard clear
+    } -result {{hello world} world}
+
+    # A paste that replaces the selection is a delete followed by an insert:
+    # each is recorded separately.
+    test widgetPlus-10.9.$i "$cmd: <<Paste>> replaces the selection" -setup "
+        ::widgetPlus::$cmd .wp
+        ::widgetPlusTest::focusOn .wp
+    " -body {
+        .wp insert end {hello world}
+        .wp edit reset
+        .wp selection range 0 5
+        .wp icursor 0
+        clipboard clear
+        clipboard append XY
+        event generate .wp <<Paste>>
+        update
+        list [.wp get] [::widgetPlusTest::history .wp]
+    } -cleanup {
+        destroy .wp
+        clipboard clear
+    } -result {{XY world} {{ world} {hello world}}}
+
+    test widgetPlus-10.10.$i "$cmd: <<Clear>> is undoable" -setup "
+        ::widgetPlus::$cmd .wp
+        ::widgetPlusTest::focusOn .wp
+    " -body {
+        .wp insert end abcdef
+        .wp edit reset
+        .wp selection range 2 4
+        event generate .wp <<Clear>>
+        update
+        list [.wp get] [::widgetPlusTest::history .wp]
+    } -cleanup {
+        destroy .wp
+    } -result {abef abcdef}
+}
+
+# -- 10.11 spinboxPlus: arrow keys
+
+test widgetPlus-10.11.2 {spinboxPlus: <Up> and <Down> are undoable} -setup {
+    ::widgetPlus::spinboxPlus .wp -from 1 -to 5
+    .wp edit reset
+    ::widgetPlusTest::focusOn .wp
+} -body {
+    event generate .wp <Key-Up>
+    event generate .wp <Key-Up>
+    event generate .wp <Key-Down>
+    update
+    list [.wp get] [::widgetPlusTest::history .wp]
+} -cleanup {
+    destroy .wp
+} -result {2 {3 2 1}}
+
+# -- 10.12 validation
+
+foreach {i cmd base class} $::widgetPlusTest::kinds {
+    test widgetPlus-10.12.$i "$cmd: rejected edits are not recorded" -setup [list \
+        ::widgetPlus::$cmd .wp -validate key -validatecommand {string is digit %P}] -body {
+        .wp insert end 12
+        .wp insert end x
+        .wp insert 0 y
+        .wp insert end 3
+        list [.wp get] [::widgetPlusTest::history .wp] [.wp cget -validate]
+    } -cleanup {
+        destroy .wp
+    } -result {123 {12 {}} key}
+
+    test widgetPlus-10.13.$i "$cmd: undo and redo with accepting validation" -setup [list \
+        ::widgetPlus::$cmd .wp -validate key -validatecommand {string is digit %P}] -body {
+        .wp insert end 12
+        .wp insert end 34
+        set r [::widgetPlusTest::history .wp]
+        lappend r [::widgetPlusTest::redoHistory .wp] [.wp cget -validate]
+    } -cleanup {
+        destroy .wp
+    } -result {12 {} {12 1234} key}
+
+    # Bug: undo and redo replace the text by a "delete 0 end" followed by an
+    # "insert", which are both validated.  If the validation rejects the
+    # intermediate empty text, the old text is not deleted and the result of
+    # undo is a text that never existed ("aab" instead of "a").
+    test widgetPlus-10.14.$i "$cmd: undo when validation rejects an empty text" -constraints {
+        knownBug
+    } -setup [list ::widgetPlus::$cmd .wp -validate key \
+        -validatecommand {expr {[string length %P] > 0}}] -body {
+        .wp insert end a
+        .wp insert end b
+        .wp edit undo
+        set r [.wp get]
+        .wp edit redo
+        lappend r [.wp get] [.wp cget -validate]
+    } -cleanup {
+        destroy .wp
+    } -result {a ab key}
+}
+
+# -- 10.15 -textvariable
+
+foreach {i cmd base class} $::widgetPlusTest::kinds {
+    test widgetPlus-10.15.$i "$cmd: setting the -textvariable is undoable" -setup "
+        unset -nocomplain ::wpVar
+        ::widgetPlus::$cmd .wp -textvariable ::wpVar
+        .wp edit reset
+    " -body {
+        set ::wpVar abc
+        set ::wpVar xyz
+        set r [list [.wp get] [.wp edit canundo]]
+        .wp edit undo
+        lappend r [.wp get] $::wpVar
+        .wp edit undo
+        lappend r [.wp get] $::wpVar [.wp edit canundo]
+        .wp edit redo
+        lappend r [.wp get] $::wpVar
+    } -cleanup {
+        destroy .wp
+        unset -nocomplain ::wpVar
+    } -result {xyz 1 abc abc {} {} 0 abc abc}
+
+    test widgetPlus-10.16.$i "$cmd: insert and delete with -textvariable" -setup "
+        set ::wpVar abc
+        ::widgetPlus::$cmd .wp -textvariable ::wpVar
+        .wp edit reset
+    " -body {
+        .wp insert end def
+        .wp delete 0
+        set r [list $::wpVar]
+        .wp edit undo
+        lappend r [.wp get] $::wpVar
+        .wp edit undo
+        lappend r [.wp get] $::wpVar [.wp edit canundo]
+    } -cleanup {
+        destroy .wp
+        unset -nocomplain ::wpVar
+    } -result {bcdef abcdef abcdef abc abc 0}
+
+    test widgetPlus-10.17.$i "$cmd: setting the -textvariable to the same value" -setup "
+        set ::wpVar abc
+        ::widgetPlus::$cmd .wp -textvariable ::wpVar
+        .wp edit reset
+        .wp edit modified 0
+    " -body {
+        set ::wpVar abc
+        set r [list [.wp edit canundo] [.wp edit modified]]
+        set ::wpVar abcd
+        lappend r [.wp edit canundo] [.wp edit modified]
+    } -cleanup {
+        destroy .wp
+        unset -nocomplain ::wpVar
+    } -result {0 0 1 1}
+
+    test widgetPlus-10.18.$i "$cmd: undo does not record itself via the -textvariable" -setup "
+        set ::wpVar {}
+        ::widgetPlus::$cmd .wp -textvariable ::wpVar
+        .wp edit reset
+    " -body {
+        .wp insert end a
+        .wp insert end b
+        .wp edit undo
+        list $::wpVar [.wp edit canundo] [.wp edit canredo] \
+            [::widgetPlusTest::history .wp] [::widgetPlusTest::redoHistory .wp]
+    } -cleanup {
+        destroy .wp
+        unset -nocomplain ::wpVar
+    } -result {a 1 1 {{}} {a ab}}
+
+    test widgetPlus-10.19.$i "$cmd: a new value of the -textvariable discards the redo stack" -setup "
+        set ::wpVar {}
+        ::widgetPlus::$cmd .wp -textvariable ::wpVar
+        .wp edit reset
+    " -body {
+        .wp insert end a
+        .wp insert end b
+        .wp edit undo
+        set ::wpVar z
+        list [.wp edit canredo] [::widgetPlusTest::history .wp]
+    } -cleanup {
+        destroy .wp
+        unset -nocomplain ::wpVar
+    } -result {0 {a {}}}
+
+    test widgetPlus-10.20.$i "$cmd: unsetting the -textvariable keeps the undo stack" -setup "
+        set ::wpVar {}
+        ::widgetPlus::$cmd .wp -textvariable ::wpVar
+        .wp edit reset
+    " -body {
+        .wp insert end a
+        .wp insert end b
+        unset ::wpVar
+        set r [.wp edit canundo]
+        set ::wpVar xyz
+        lappend r [.wp get] [::widgetPlusTest::history .wp]
+    } -cleanup {
+        destroy .wp
+        unset -nocomplain ::wpVar
+    } -result {1 xyz {ab a {}}}
+
+    test widgetPlus-10.21.$i "$cmd: changing the -textvariable" -setup "
+        set ::wpVar abc
+        set ::wpVar2 xyz
+        ::widgetPlus::$cmd .wp -textvariable ::wpVar
+        .wp edit reset
+    " -body {
+        .wp configure -textvariable ::wpVar2
+        set r [list [.wp get] [.wp cget -textvariable]]
+        set ::wpVar ignored
+        lappend r [.wp get] [.wp edit canundo]
+        .wp edit undo
+        lappend r [.wp get] $::wpVar2 $::wpVar
+    } -cleanup {
+        destroy .wp
+        unset -nocomplain ::wpVar ::wpVar2
+    } -result {xyz ::wpVar2 xyz 1 abc abc ignored}
+
+    test widgetPlus-10.22.$i "$cmd: the trace is removed when the widget is destroyed" -setup "
+        set ::wpVar abc
+        ::widgetPlus::$cmd .wp -textvariable ::wpVar
+    " -body {
+        destroy .wp
+        set ::wpVar xyz
+        unset ::wpVar
+        set ::wpVar 123
+        trace info variable ::wpVar
+    } -cleanup {
+        destroy .wp
+        unset -nocomplain ::wpVar
+    } -result {}
+
+    # Bug: removing the -textvariable pushes an empty text on the undo stack
+    # although the text does not change: undo then has no visible effect, and
+    # redo clears the widget.
+    test widgetPlus-10.23.$i "$cmd: removing the -textvariable is not an edit" -constraints {
+        knownBug
+    } -setup "
+        set ::wpVar abc
+        ::widgetPlus::$cmd .wp -textvariable ::wpVar
+        .wp edit reset
+    " -body {
+        .wp configure -textvariable {}
+        list [.wp get] [.wp edit canundo] [.wp edit canredo]
+    } -cleanup {
+        destroy .wp
+        unset -nocomplain ::wpVar
+    } -result {abc 0 0}
+
+    # Bug: the undo stack of a new widget starts with an empty text, not with
+    # the initial text, so the initial value of the -textvariable can be
+    # "undone", and the new widget is marked as modified.
+    test widgetPlus-10.24.$i "$cmd: the initial -textvariable value is not undoable" -constraints {
+        knownBug
+    } -setup "
+        set ::wpVar abc
+    " -body {
+        ::widgetPlus::$cmd .wp -textvariable ::wpVar
+        set r [list [.wp get] [.wp edit canundo] [.wp edit modified]]
+        .wp insert end d
+        lappend r [::widgetPlusTest::history .wp]
+    } -cleanup {
+        destroy .wp
+        unset -nocomplain ::wpVar
+    } -result {abc 0 0 abc}
+
+    # Bug: when an existing widget with text is converted, the undo stack
+    # starts with an empty text instead of the existing text, so the first
+    # undo goes back to an empty widget.
+    test widgetPlus-10.25.$i "$cmd: undo after converting a widget with text" -constraints {
+        knownBug
+    } -setup "
+        $base .wp
+        .wp insert end hello
+    " -body {
+        ::widgetPlus::$cmd .wp
+        .wp insert end !
+        list [.wp get] [::widgetPlusTest::history .wp]
+    } -cleanup {
+        destroy .wp
+    } -result {hello! hello}
+}
+
+# Same bug as 10.25: the initial text of a spinbox is not on the undo stack.
+test widgetPlus-10.26.2 {spinboxPlus: undo back to the initial value} -constraints {
+    knownBug
+} -setup {
+    ::widgetPlus::spinboxPlus .wp -from 1 -to 5
+} -body {
+    .wp invoke buttonup
+    list [.wp get] [::widgetPlusTest::history .wp]
+} -cleanup {
+    destroy .wp
+} -result {2 1}
+
+# =========================================================================
+# 11. Bindings
+# =========================================================================
+
+# -- 11.1 bindtags: the Plus tag has the bindings of the original tag plus
+#    the documented additions.
+
+foreach {i cmd base class} $::widgetPlusTest::kinds {
+    if {$class in {Entry Spinbox}} {
+        set added {<<Redo>> <<Undo>> <FocusIn> <FocusOut>}
+    } else {
+        set added {<<Redo>> <<Undo>>}
+    }
+    test widgetPlus-11.1.$i "bindtag ${class}Plus has the bindings of $class" -body {
+        list [lsort [lmap e [bind ${class}Plus] {
+                if {$e in [bind $class]} continue
+                set e
+            }]] \
+            [lmap e [bind $class] {
+                if {$e in [bind ${class}Plus]} continue
+                set e
+            }]
+    } -result [list $added {}]
+
+    test widgetPlus-11.2.$i "$cmd: <<Undo>> and <<Redo>> virtual events" -setup "
+        ::widgetPlus::$cmd .wp
+        winfo id .wp
+    " -body {
+        .wp insert end abc
+        .wp insert end def
+        event generate .wp <<Undo>>
+        set r [.wp get]
+        event generate .wp <<Undo>>
+        lappend r [.wp get]
+        event generate .wp <<Redo>>
+        lappend r [.wp get]
+    } -cleanup {
+        destroy .wp
+    } -result {abc {} abc}
+
+    test widgetPlus-11.3.$i "$cmd: <<Undo>> and <<Redo>> with empty stacks do nothing" -setup "
+        ::widgetPlus::$cmd .wp
+        winfo id .wp
+    " -body {
+        set ::widgetPlusTest::bgerrors {}
+        .wp insert end abc
+        event generate .wp <<Redo>>
+        set r [.wp get]
+        event generate .wp <<Undo>>
+        event generate .wp <<Undo>>
+        update
+        lappend r [.wp get] $::widgetPlusTest::bgerrors
+    } -cleanup {
+        destroy .wp
+    } -result {abc {} {}}
+
+    test widgetPlus-11.4.$i "$cmd: <<Undo>> clears the selection" -setup "
+        ::widgetPlus::$cmd .wp
+        winfo id .wp
+    " -body {
+        .wp insert end abc
+        .wp insert end def
+        .wp selection range 0 2
+        event generate .wp <<Undo>>
+        set r [list [.wp get] [.wp selection present]]
+        .wp selection range 0 2
+        event generate .wp <<Redo>>
+        lappend r [.wp get] [.wp selection present]
+    } -cleanup {
+        destroy .wp
+    } -result {abc 0 abcdef 0}
+
+    test widgetPlus-11.5.$i "$cmd: <<Undo>> with -undo 0 does nothing" -setup "
+        ::widgetPlus::$cmd .wp -undo 0
+        winfo id .wp
+    " -body {
+        .wp insert end abc
+        event generate .wp <<Undo>>
+        .wp get
+    } -cleanup {
+        destroy .wp
+    } -result abc
+
+    test widgetPlus-11.6.$i "$cmd: Undo and Redo keys on X11" -constraints {
+        x11
+    } -setup "
+        ::widgetPlus::$cmd .wp
+        ::widgetPlusTest::focusOn .wp
+    " -body {
+        .wp insert end abc
+        .wp insert end def
+        event generate .wp <Control-Key-z>
+        update
+        set r [.wp get]
+        event generate .wp <Control-Shift-Key-Z>
+        update
+        lappend r [.wp get]
+    } -cleanup {
+        destroy .wp
+    } -result {abc abcdef}
+
+    test widgetPlus-11.7.$i "$cmd: Undo and Redo keys on Windows" -constraints {
+        win32
+    } -setup "
+        ::widgetPlus::$cmd .wp
+        ::widgetPlusTest::focusOn .wp
+    " -body {
+        .wp insert end abc
+        .wp insert end def
+        event generate .wp <Control-Key-z>
+        update
+        set r [.wp get]
+        event generate .wp <Control-Key-y>
+        update
+        lappend r [.wp get]
+    } -cleanup {
+        destroy .wp
+    } -result {abc abcdef}
+
+    test widgetPlus-11.8.$i "$cmd: Undo and Redo keys on Aqua" -constraints {
+        aqua
+    } -setup "
+        ::widgetPlus::$cmd .wp
+        ::widgetPlusTest::focusOn .wp
+    " -body {
+        .wp insert end abc
+        .wp insert end def
+        event generate .wp <Command-Key-z>
+        update
+        set r [.wp get]
+        event generate .wp <Command-Shift-Key-z>
+        update
+        lappend r [.wp get]
+    } -cleanup {
+        destroy .wp
+    } -result {abc abcdef}
+}
+
+test widgetPlus-11.9 {<<Undo>> and <<Redo>> key mapping on X11} -constraints {
+    x11
+} -body {
+    list [expr {"<Control-Key-z>" in [event info <<Undo>>]}] \
+        [expr {"<Control-Key-Z>" in [event info <<Redo>>]}]
+} -result {1 1}
+
+test widgetPlus-11.10 {<<Undo>> and <<Redo>> key mapping on Windows} -constraints {
+    win32
+} -body {
+    list [expr {"<Control-Key-z>" in [event info <<Undo>>]}] \
+        [expr {"<Control-Key-y>" in [event info <<Redo>>]}]
+} -result {1 1}
+
+# -- 11.11 EntryPlus and SpinboxPlus: <<Paste>> deletes the selection on
+#    every windowing system; <Insert> does not insert the PRIMARY selection.
+
+foreach {i cmd base class} {1 entryPlus entry Entry 2 spinboxPlus spinbox Spinbox} {
+    test widgetPlus-11.11.$i "$cmd: <<Paste>> deletes the selection" -setup "
+        ::widgetPlus::$cmd .wp
+        ::widgetPlusTest::focusOn .wp
+    " -body {
+        .wp insert end {hello world}
+        .wp selection range 6 end
+        .wp icursor 0
+        clipboard clear
+        clipboard append XY
+        event generate .wp <<Paste>>
+        update
+        .wp get
+    } -cleanup {
+        destroy .wp
+        clipboard clear
+    } -result {XYhello }
+
+    test widgetPlus-11.12.$i "$cmd: <<Paste>> with empty clipboard" -setup "
+        ::widgetPlus::$cmd .wp
+        ::widgetPlusTest::focusOn .wp
+    " -body {
+        set ::widgetPlusTest::bgerrors {}
+        .wp insert end {hello world}
+        .wp edit reset
+        clipboard clear
+        event generate .wp <<Paste>>
+        update
+        list [.wp get] [.wp edit canundo] $::widgetPlusTest::bgerrors
+    } -cleanup {
+        destroy .wp
+    } -result {{hello world} 0 {}}
+
+    test widgetPlus-11.13.$i "$cmd: <Insert> does not insert the selection" -setup "
+        ::widgetPlus::$cmd .wp
+        ::widgetPlusTest::focusOn .wp
+    " -body {
+        .wp insert end abc
+        .wp selection range 0 2
+        .wp icursor end
+        event generate .wp <Key-Insert>
+        update
+        set r [.wp get]
+        # Check that key events reach the widget.
+        .wp selection clear
+        ::widgetPlusTest::type .wp x
+        lappend r [.wp get]
+    } -cleanup {
+        destroy .wp
+    } -result {abc abcx}
+}
+
+# -- 11.14 bindings of the bindtags
+
+foreach tag {EntryPlus SpinboxPlus TEntryPlus TSpinboxPlus TComboboxPlus} {
+    test widgetPlus-11.14.$tag "$tag has <<Undo>> and <<Redo>> bindings" -body {
+        list [string match {*edit undo*} [bind $tag <<Undo>>]] \
+            [string match {*edit redo*} [bind $tag <<Redo>>]]
+    } -result {1 1}
+}
+
+# =========================================================================
+# 12. -inactiveselectbackground
+# =========================================================================
+
+foreach {i cmd base class} {1 entryPlus entry Entry 2 spinboxPlus spinbox Spinbox} {
+    test widgetPlus-12.1.$i "$cmd: selection color follows the focus" -setup "
+        ::widgetPlus::$cmd .wp -selectbackground #102030 \
+            -inactiveselectbackground #405060
+        pack .wp
+        ::widgetPlusTest::focusAway
+    " -body {
+        set h [::widgetPlusTest::hull .wp]
+        set r [$h cget -selectbackground]
+        ::widgetPlusTest::focusOn .wp
+        lappend r [$h cget -selectbackground]
+        ::widgetPlusTest::focusAway
+        lappend r [$h cget -selectbackground] \
+            [.wp cget -selectbackground] [.wp cget -inactiveselectbackground]
+    } -cleanup {
+        destroy .wp
+    } -result [list #405060 #102030 #405060 #102030 #405060]
+
+    test widgetPlus-12.2.$i "$cmd: changing -inactiveselectbackground without focus" -setup "
+        ::widgetPlus::$cmd .wp
+        pack .wp
+        ::widgetPlusTest::focusAway
+    " -body {
+        set h [::widgetPlusTest::hull .wp]
+        .wp configure -inactiveselectbackground #abcdef
+        $h cget -selectbackground
+    } -cleanup {
+        destroy .wp
+    } -result #abcdef
+
+    test widgetPlus-12.3.$i "$cmd: changing -inactiveselectbackground with focus" -setup "
+        ::widgetPlus::$cmd .wp -selectbackground #102030
+        ::widgetPlusTest::focusOn .wp
+    " -body {
+        set h [::widgetPlusTest::hull .wp]
+        .wp configure -inactiveselectbackground #abcdef
+        set r [$h cget -selectbackground]
+        ::widgetPlusTest::focusAway
+        lappend r [$h cget -selectbackground]
+    } -cleanup {
+        destroy .wp
+    } -result [list #102030 #abcdef]
+
+    test widgetPlus-12.4.$i "$cmd: empty -inactiveselectbackground hides the selection" -setup "
+        ::widgetPlus::$cmd .wp -background #fedcba -selectbackground #102030
+        pack .wp
+        ::widgetPlusTest::focusAway
+    " -body {
+        set h [::widgetPlusTest::hull .wp]
+        .wp configure -inactiveselectbackground {}
+        set r [$h cget -selectbackground]
+        ::widgetPlusTest::focusOn .wp
+        lappend r [$h cget -selectbackground]
+        ::widgetPlusTest::focusAway
+        lappend r [$h cget -selectbackground]
+    } -cleanup {
+        destroy .wp
+    } -result [list #fedcba #102030 #fedcba]
+
+    test widgetPlus-12.5.$i "$cmd: changing -selectbackground with focus" -setup "
+        ::widgetPlus::$cmd .wp -inactiveselectbackground #405060
+        ::widgetPlusTest::focusOn .wp
+    " -body {
+        set h [::widgetPlusTest::hull .wp]
+        .wp configure -selectbackground #102030
+        list [$h cget -selectbackground] [.wp cget -selectbackground]
+    } -cleanup {
+        destroy .wp
+    } -result [list #102030 #102030]
+
+    test widgetPlus-12.6.$i "$cmd: converted widget keeps its -selectbackground" -setup "
+        $base .wp -selectbackground #102030
+        ::widgetPlusTest::focusOn .wp
+    " -body {
+        ::widgetPlus::$cmd .wp -inactiveselectbackground #405060
+        set h [::widgetPlusTest::hull .wp]
+        set r [list [.wp cget -selectbackground] [$h cget -selectbackground]]
+        ::widgetPlusTest::focusAway
+        lappend r [$h cget -selectbackground]
+    } -cleanup {
+        destroy .wp
+    } -result [list #102030 #102030 #405060]
+}
+
+foreach {i cmd base class} $::widgetPlusTest::kinds {
+    if {$class in {Entry Spinbox}} continue
+    test widgetPlus-12.7.$i "$cmd: -inactiveselectbackground has no effect" -setup "
+        ::widgetPlus::$cmd .wp
+        ::widgetPlusTest::focusOn .wp
+    " -body {
+        set ::widgetPlusTest::bgerrors {}
+        .wp configure -inactiveselectbackground #abcdef
+        set h [::widgetPlusTest::hull .wp]
+        set r [list [.wp cget -inactiveselectbackground] \
+            [catch {$h cget -selectbackground}]]
+        ::widgetPlusTest::focusAway
+        .wp configure -inactiveselectbackground {}
+        ::widgetPlusTest::focusOn .wp
+        lappend r [.wp cget -inactiveselectbackground] \
+            [expr {"<FocusIn>" in [bind ${class}Plus]}] \
+            $::widgetPlusTest::bgerrors
+    } -cleanup {
+        destroy .wp
+    } -result [list #abcdef 1 {} 0 {}]
+}
+
+# =========================================================================
+# 13. The <<Selection>> virtual event
+# =========================================================================
+
+foreach {i cmd base class} $::widgetPlusTest::kinds {
+    test widgetPlus-13.1.$i "$cmd: selection range and clear generate <<Selection>>" -setup "
+        ::widgetPlus::$cmd .wp
+        .wp insert end abcdef
+        set ::wpCount 0
+        bind .wp <<Selection>> {incr ::wpCount}
+    " -body {
+        .wp selection range 1 3
+        set r $::wpCount
+        .wp selection clear
+        lappend r $::wpCount
+    } -cleanup {
+        destroy .wp
+        unset -nocomplain ::wpCount
+    } -result {1 2}
+
+    test widgetPlus-13.2.$i "$cmd: selection range with equal indices clears" -setup "
+        ::widgetPlus::$cmd .wp
+        .wp insert end abcdef
+        .wp selection range 1 3
+        set ::wpCount 0
+        bind .wp <<Selection>> {incr ::wpCount}
+    " -body {
+        .wp selection range 2 2
+        list $::wpCount [.wp selection present]
+    } -cleanup {
+        destroy .wp
+        unset -nocomplain ::wpCount
+    } -result {1 0}
+
+    test widgetPlus-13.3.$i "$cmd: selection present does not generate <<Selection>>" -setup "
+        ::widgetPlus::$cmd .wp
+        .wp insert end abcdef
+        .wp selection range 1 3
+        set ::wpCount 0
+        bind .wp <<Selection>> {incr ::wpCount}
+    " -body {
+        list [.wp selection present] $::wpCount
+    } -cleanup {
+        destroy .wp
+        unset -nocomplain ::wpCount
+    } -result {1 0}
+
+    test widgetPlus-13.4.$i "$cmd: deleting the selected text generates <<Selection>>" -setup "
+        ::widgetPlus::$cmd .wp
+        .wp insert end abcdef
+        .wp selection range 1 3
+        set ::wpCount 0
+        bind .wp <<Selection>> {incr ::wpCount}
+    " -body {
+        .wp delete 0 end
+        list $::wpCount [.wp selection present]
+    } -cleanup {
+        destroy .wp
+        unset -nocomplain ::wpCount
+    } -result {1 0}
+
+    test widgetPlus-13.5.$i "$cmd: inserting into the selection generates <<Selection>>" -setup "
+        ::widgetPlus::$cmd .wp
+        .wp insert end abcdef
+        .wp selection range 1 4
+        set ::wpCount 0
+        bind .wp <<Selection>> {incr ::wpCount}
+    " -body {
+        .wp insert 2 X
+        list $::wpCount [.wp selection present]
+    } -cleanup {
+        destroy .wp
+        unset -nocomplain ::wpCount
+    } -result {1 1}
+
+    test widgetPlus-13.6.$i "$cmd: edits without a selection do not generate <<Selection>>" -setup "
+        ::widgetPlus::$cmd .wp
+        set ::wpCount 0
+        bind .wp <<Selection>> {incr ::wpCount}
+    " -body {
+        .wp insert end abc
+        .wp delete 0
+        set ::wpCount
+    } -cleanup {
+        destroy .wp
+        unset -nocomplain ::wpCount
+    } -result 0
+
+    test widgetPlus-13.7.$i "$cmd: selection subcommand errors" -setup [list \
+        ::widgetPlus::$cmd .wp] -body {
+        set r {}
+        foreach args {{} {range 0} {clear 1} {present 1}} {
+            catch {.wp selection {*}$args} msg
+            lappend r $msg
+        }
+        set r
+    } -cleanup {
+        destroy .wp
+    } -result {{wrong # args: should be ".wp selection option ?index?"}\
+        {wrong # args: should be ".wp selection range start end"}\
+        {wrong # args: should be ".wp selection clear"}\
+        {wrong # args: should be ".wp selection present"}}
+}
+
+foreach {i cmd base class} {1 entryPlus entry Entry 2 spinboxPlus spinbox Spinbox} {
+    test widgetPlus-13.8.$i "$cmd: selection to and adjust generate <<Selection>>" -setup "
+        ::widgetPlus::$cmd .wp
+        .wp insert end abcdef
+        set ::wpCount 0
+        bind .wp <<Selection>> {incr ::wpCount}
+    " -body {
+        .wp selection from 1
+        set r $::wpCount
+        .wp selection to 3
+        lappend r $::wpCount
+        .wp selection adjust 5
+        lappend r $::wpCount [.wp index sel.first] [.wp index sel.last]
+    } -cleanup {
+        destroy .wp
+        unset -nocomplain ::wpCount
+    } -result {0 1 2 1 5}
+}
+
+test widgetPlus-13.9.1 {entryPlus: bad selection option} -setup {
+    ::widgetPlus::entryPlus .wp
+} -body {
+    .wp selection foo
+} -cleanup {
+    destroy .wp
+} -returnCodes error -result {bad selection option "foo": must be adjust,\
+    clear, from, present, range, or to}
+
+test widgetPlus-13.9.2 {spinboxPlus: bad selection option} -setup {
+    ::widgetPlus::spinboxPlus .wp
+} -body {
+    .wp selection foo
+} -cleanup {
+    destroy .wp
+} -returnCodes error -result {bad selection option "foo": must be adjust,\
+    clear, element, from, present, range, or to}
+
+foreach {i cmd} {3 ttkEntryPlus 4 ttkSpinboxPlus 5 ttkComboboxPlus} {
+    test widgetPlus-13.9.$i "$cmd: bad selection option" -setup [list \
+        ::widgetPlus::$cmd .wp] -body {
+        .wp selection from 1
+    } -cleanup {
+        destroy .wp
+    } -returnCodes error \
+        -result {bad selection option "from": must be clear, present, or range}
+}
+
+test widgetPlus-13.10 {spinboxPlus: invoke that changes the selected text generates <<Selection>>} -setup {
+    ::widgetPlus::spinboxPlus .wp -from 1 -to 5
+    .wp selection range 0 end
+    set ::wpCount 0
+    bind .wp <<Selection>> {incr ::wpCount}
+} -body {
+    .wp invoke buttonup
+    list [.wp get] [.wp selection present] $::wpCount
+} -cleanup {
+    destroy .wp
+    unset -nocomplain ::wpCount
+} -result {2 1 1}
+
+# =========================================================================
+# 14. EnableBWidget
+# =========================================================================
+
+test widgetPlus-14.1 {EnableBWidget without BWidget} -constraints {
+    noBWidget
+} -body {
+    ::widgetPlus::EnableBWidget
+} -returnCodes error -result {package BWidget has not been loaded}
+
+test widgetPlus-14.2 {EnableBWidget: wrong # args} -body {
+    ::widgetPlus::EnableBWidget x
+} -returnCodes error -result {wrong # args: should be "::widgetPlus::EnableBWidget"}
+
+test widgetPlus-14.3 {EnableBWidget without BWidget creates no bindtag} -constraints {
+    noBWidget
+} -body {
+    catch {::widgetPlus::EnableBWidget}
+    list [bind BwEntryPlus] $::widgetPlus::BWidgetEnabled
+} -result {{} 0}
+
+# Tests 14.4-14.5 use a stand-in for BWidget (a BwEntry bindtag) in a child
+# interpreter, so that they do not need BWidget and do not affect this
+# interpreter.
+
+test widgetPlus-14.4 {EnableBWidget creates BwEntryPlus from BwEntry} -constraints {
+    childTk
+} -setup {
+    interp create widgetPlusTestChild
+    load {} Tk widgetPlusTestChild
+    widgetPlusTestChild eval [list set auto_path $auto_path]
+    widgetPlusTestChild eval {
+        wm withdraw .
+        package require widgetPlus
+        package provide BWidget 0.0
+        bind BwEntry <Key-Return> {set ::returnPressed 1}
+        bind BwEntry <Key-Insert> {set ::insertPressed 1}
+    }
+} -body {
+    widgetPlusTestChild eval {
+        set r [::widgetPlus::EnableBWidget]
+        lappend r [lsort [bind BwEntryPlus]] [bind BwEntryPlus <Key-Return>] \
+            [string match {*edit undo*} [bind BwEntryPlus <<Undo>>]] \
+            [string match {*edit redo*} [bind BwEntryPlus <<Redo>>]] \
+            [string match {*SelectColorIn*} [bind BwEntryPlus <FocusIn>]] \
+            [string match {*SelectColorOut*} [bind BwEntryPlus <FocusOut>]] \
+            [string match {*sel.first*} [bind BwEntryPlus <<Paste>>]] \
+            [string match {*insert*} [bind BwEntryPlus <Key-Insert>]]
+    }
+} -cleanup {
+    interp delete widgetPlusTestChild
+} -result {{<<Paste>> <<Redo>> <<Undo>> <FocusIn> <FocusOut> <Key-Insert>\
+    <Key-Return>} {set ::returnPressed 1} 1 1 1 1 1 0}
+
+test widgetPlus-14.5 {after EnableBWidget, entryPlus replaces BwEntry} -constraints {
+    childTk
+} -setup {
+    interp create widgetPlusTestChild
+    load {} Tk widgetPlusTestChild
+    widgetPlusTestChild eval [list set auto_path $auto_path]
+    widgetPlusTestChild eval {
+        wm withdraw .
+        package require widgetPlus
+        package provide BWidget 0.0
+        bind BwEntry <Key-Return> {set ::returnPressed 1}
+    }
+} -body {
+    widgetPlusTestChild eval {
+        entry .before
+        bindtags .before {.before BwEntry . all}
+        ::widgetPlus::entryPlus .before
+        ::widgetPlus::EnableBWidget
+        entry .after
+        bindtags .after {.after BwEntry . all}
+        ::widgetPlus::entryPlus .after -undo 1 -maxundo 0
+        winfo id .after
+        .after insert end abc
+        .after insert end def
+        event generate .after <<Undo>>
+        list [lrange [bindtags .before] 2 end] [lrange [bindtags .after] 2 end] \
+            [.after get]
+    }
+} -cleanup {
+    interp delete widgetPlusTestChild
+} -result {{BwEntry . all} {BwEntryPlus . all} abc}
+
+# Tests with the real BWidget package.  BWidget is loaded here, after the
+# tests that need it not to be loaded.
+testConstraint bwidget [expr {![catch {package require BWidget}]}]
+
+test widgetPlus-14.6 {EnableBWidget with BWidget} -constraints {
+    bwidget
+} -body {
+    list [::widgetPlus::EnableBWidget] $::widgetPlus::BWidgetEnabled \
+        [lsort [lmap e [bind BwEntryPlus] {
+            if {$e in [bind BwEntry]} continue
+            set e
+        }]] \
+        [lmap e [bind BwEntry] {
+            if {$e in [bind BwEntryPlus]} continue
+            set e
+        }]
+} -result {{} 1 {<<Redo>> <<Undo>> <FocusIn> <FocusOut>} {}}
+
+test widgetPlus-14.7 {BWidget Entry converted to entryPlus} -constraints {
+    bwidget
+} -setup {
+    ::widgetPlus::EnableBWidget
+    Entry .wp
+} -body {
+    ::widgetPlus::entryPlus .wp -undo 1 -maxundo 0
+    winfo id .wp
+    set r [list [expr {"BwEntryPlus" in [bindtags .wp]}] \
+        [expr {"BwEntry" in [bindtags .wp]}]]
+    .wp insert end abc
+    .wp insert end def
+    event generate .wp <<Undo>>
+    lappend r [.wp get]
+} -cleanup {
+    destroy .wp
+} -result {1 0 abc}
+
+test widgetPlus-14.8 {BWidget ComboBox entry converted to entryPlus} -constraints {
+    bwidget
+} -setup {
+    ::widgetPlus::EnableBWidget
+    ComboBox .wp -values {aa bb cc}
+} -body {
+    ::widgetPlus::entryPlus .wp.e -undo 1 -maxundo 0
+    set r [list [expr {"BwEntryPlus" in [bindtags .wp.e]}] \
+        [expr {"BwEntry" in [bindtags .wp.e]}]]
+    .wp.e insert end abc
+    .wp.e insert end def
+    .wp.e edit undo
+    lappend r [.wp.e get] [.wp get]
+} -cleanup {
+    destroy .wp
+} -result {1 0 abc abc}
+
+# -------------------------------------------------------------------------
+# Cleanup
+# -------------------------------------------------------------------------
+
+# Variables of the loops above and of the test bodies (run in the global
+# namespace).
+unset -nocomplain i cmd base class added tag r h msg n names o spec tags c e v args
+interp bgerror {} $::widgetPlusTest::oldBgerror
+if {$::widgetPlusTest::oldState eq "withdrawn"} {
+    wm withdraw .
+}
+namespace delete ::widgetPlusTest
+
+::tcltest::cleanupTests
