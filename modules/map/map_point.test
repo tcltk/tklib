@@ -1,0 +1,346 @@
+# -*- tcl -*-
+# Tests for the map::point::file package
+#
+# See the file "license.terms" for information on usage and redistribution
+# of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2
+    namespace import ::tcltest::*
+} else {
+    if {![package vsatisfies [package present tcltest] 2.2]} {
+	puts "    Aborting the tests found in \"[file tail [info script]]\"."
+	puts "    Requiring tcltest 2.2, have [package present tcltest]"
+	return
+    }
+}
+
+::tcltest::testConstraint tk 1
+
+lappend auto_path [file dirname [file dirname [file normalize [info script]]]]
+package require map::point::file
+package require map::point::store::fs
+package require map::point::store::memory
+
+# -------------------------------------------------------------------------
+
+# -------------------------------------------------------------------------
+
+# The map manpages do not document any commands yet (empty API sections).
+# These tests cover the behaviour described in the comments of the code.
+
+# Scratch directory for data files.
+set dataDir [makeDirectory mapTestData]
+
+proc writeFile {name content} {
+    set path [file join $::dataDir $name]
+    set c [open $path w]
+    puts -nonewline $c $content
+    close $c
+    return $path
+}
+
+proc readFile {path} {
+    set c [open $path r]
+    set d [read $c]
+    close $c
+    return $d
+}
+
+proc cleanData {} {
+    foreach f [glob -nocomplain -directory $::dataDir *] {
+	file delete -force $f
+    }
+}
+
+test map::point-1.0 {package versions} -body {
+    list [package present map::point::file] [package present map::point::store::fs] \
+	[package present map::point::store::memory]
+} -result {0.1 0.1 0.1}
+
+test map::point-1.1 {ensembles} -body {
+    list [namespace ensemble exists ::map::point] \
+	[lsort [namespace eval ::map::point::file {namespace export}]] \
+	[lsort [namespace eval ::map::point::store {namespace export}]]
+} -result {1 {read write} {fs memory}}
+
+# -------------------------------------------------------------------------
+# map::point::file
+
+test map::point-2.1 {file read: wrong # args} -body {
+    map point file read
+} -returnCodes error -result {wrong # args: should be "map point file read path"}
+
+test map::point-2.2 {file write: wrong # args} -body {
+    map point file write x
+} -returnCodes error -result {wrong # args: should be "map point file write path gdata"}
+
+test map::point-2.3 {file read: several points} -setup {
+    set p [writeFile a.points "tklib/geo/point\nFirst\n10\n20\nkind:city\nSecond\nAlias\n30\n40\n"]
+} -body {
+    map point file read $p
+} -cleanup {
+    cleanData
+    unset p
+} -result {{names First geo {10 20} kind point} {names {Second Alias} geo {30 40} kind city}}
+
+test map::point-2.4 {file read: unnamed points get file name and number} -setup {
+    set p [writeFile pts.points "tklib/geo/point\n10\n20\n30\n40\nNamed\n50\n60\n70\n80\n"]
+} -body {
+    lmap pt [map point file read $p] {dict get $pt names}
+} -cleanup {
+    cleanData
+    unset p
+} -result {pts/1 pts/2 Named pts/3}
+
+test map::point-2.5 {file read: comments, blank lines, whitespace, kind with spaces} -setup {
+    set p [writeFile a.points "# c\n// c\n\n tklib/geo/point \n kind:  big city \n  X  \n\n10\n#\n20\n"]
+} -body {
+    map point file read $p
+} -cleanup {
+    cleanData
+    unset p
+} -result {{names X geo {10 20} kind {big city}}}
+
+test map::point-2.6 {file read: bad magic} -setup {
+    set p [writeFile a.points "tklib/geo/box\nX\n10\n20\n"]
+} -body {
+    map point file read $p
+} -cleanup {
+    cleanData
+    unset p
+} -output "*no magic/bad magic\n" -match glob -result {}
+
+test map::point-2.7 {file read: incomplete point at end} -setup {
+    set p1 [writeFile a.points "tklib/geo/point\nX\n10\n20\n30\n"]
+    set p2 [writeFile b.points "tklib/geo/point\nX\n10\n20\nY\n"]
+} -body {
+    list [map point file read $p1] [map point file read $p2]
+} -cleanup {
+    cleanData
+    unset p1 p2
+} -output "*incomplete point at end\n*incomplete point at end\n" -match glob -result {{} {}}
+
+test map::point-2.8 {file read: invalid location} -setup {
+    set p [writeFile a.points "tklib/geo/point\nX\n100\n20\n"]
+} -body {
+    map point file read $p
+} -cleanup {
+    cleanData
+    unset p
+} -output "*bad geo 100 20\n" -match glob -result {}
+
+test map::point-2.9 {file read: missing file} -body {
+    map point file read [file join $::dataDir nosuchfile.points]
+} -result {}
+
+test map::point-2.10 {file read: empty file} -constraints {
+    knownBug
+} -setup {
+    set p [writeFile empty.points ""]
+} -body {
+    # Fails with: can't read "magic": no such variable
+    map point file read $p
+} -cleanup {
+    cleanData
+    unset p
+} -match glob -output * -result {}
+
+test map::point-2.11 {file read: only the magic line} -setup {
+    set p [writeFile a.points "tklib/geo/point\n"]
+} -body {
+    map point file read $p
+} -cleanup {
+    cleanData
+    unset p
+} -result {}
+
+test map::point-2.12 {file write and read round trip} -constraints {
+    knownBug
+} -body {
+    # The code refers to an undefined variable "data" instead of "gdata".
+    set p [file join $::dataDir rt.points]
+    map point file write $p {
+	{names {B A} geo {10 20} kind city}
+	{names C geo {-30.5 40.25} kind point}
+    }
+    map point file read $p
+} -cleanup {
+    cleanData
+    unset p
+} -result {{names {A B} geo {10 20} kind city} {names C geo {-30.5 40.25} kind point}}
+
+# -------------------------------------------------------------------------
+# map::point::store::fs
+
+proc mkStore {} {
+    writeFile a.points "tklib/geo/point\nA1\n10\n20\nkind:x\nA2\n30\n40\n"
+    writeFile b.points "tklib/geo/point\nB\n-10\n-20\n"
+    writeFile c.txt "tklib/geo/point\nC\n10\n20\n"
+    file mkdir [file join $::dataDir dir.points]
+}
+
+test map::point-3.1 {store fs: wrong # args} -body {
+    map point store fs S
+} -returnCodes error -match glob -result {Error in constructor: wrong # args: should be "*"}
+
+test map::point-3.2 {store fs: ids are path/number} -setup mkStore -body {
+    map point store fs S $::dataDir
+    lmap id [S ids] {file tail $id}
+} -cleanup {
+    S destroy
+    cleanData
+} -result {1 2 1}
+
+test map::point-3.3 {store fs: ids and get} -setup mkStore -body {
+    map point store fs S $::dataDir
+    list [lsort [lmap id [S ids] {
+	file join [file tail [file dirname $id]] [file tail $id]
+    }]] [S get [file join $::dataDir a.points 2]]
+} -cleanup {
+    S destroy
+    cleanData
+} -result {{a.points/1 a.points/2 b.points/1} {names A2 geo {30 40} kind x}}
+
+test map::point-3.4 {store fs: get unknown id} -setup mkStore -body {
+    map point store fs S $::dataDir
+    S get nosuchid
+} -cleanup {
+    S destroy
+    cleanData
+} -returnCodes error -result {key "nosuchid" not known in dictionary}
+
+test map::point-3.5 {store fs: visible} -setup mkStore -body {
+    map point store fs S $::dataDir
+    lmap box {{0 0 50 50} {-50 -50 50 50} {25 35 35 45} {60 60 70 70}} {
+	lmap id [S visible $box 5] {string range $id [string length $::dataDir]+1 end}
+    }
+} -cleanup {
+    S destroy
+    cleanData
+} -result {{a.points/1 a.points/2} {a.points/1 a.points/2 b.points/1} a.points/2 {}}
+
+test map::point-3.6 {store fs: default -pattern, readonly} -setup mkStore -body {
+    map point store fs S $::dataDir
+    list [S cget -pattern] [catch {S configure -pattern *} m] $m
+} -cleanup {
+    S destroy
+    cleanData
+    unset -nocomplain m
+} -result {*.points 1 {option -pattern can only be set at instance creation}}
+
+test map::point-3.7 {store fs: -pattern} -constraints {
+    knownBug
+} -setup mkStore -body {
+    # -pattern is readonly, but the constructor accepts no options.
+    map point store fs S $::dataDir -pattern *.txt
+    llength [S ids]
+} -cleanup {
+    catch {S destroy}
+    cleanData
+} -result 1
+
+# -------------------------------------------------------------------------
+# map::point::store::memory
+
+# Two points very close to each other, one far away.
+proc mkClusterStore {} {
+    writeFile a.points "tklib/geo/point\nP1\n10\n20\nP2\n10.001\n20.001\nFar\n-40\n-100\n"
+    map point store fs S $::dataDir
+}
+
+test map::point-4.1 {store memory: wrong # args} -body {
+    map point store memory M S
+} -returnCodes error -match glob -result {Error in constructor: wrong # args: should be "*"}
+
+test map::point-4.2 {store memory: ids delegated, get adds bbox} -setup mkStore -body {
+    map point store fs S $::dataDir
+    map point store memory M S 5
+    set id [file join $::dataDir a.points 1]
+    set attr [M get $id]
+    list [expr {[M ids] eq [S ids]}] [lsort [dict keys $attr]] \
+	[dict get $attr names] \
+	[expr {[dict get $attr bbox] eq [map slippy geo bbox {10 20}]}]
+} -cleanup {
+    M destroy
+    S destroy
+    cleanData
+    unset id attr
+} -result {1 {bbox geo kind names} A1 1}
+
+test map::point-4.3 {store memory: pixels for each zoom level up to max} -setup mkStore -body {
+    map point store fs S $::dataDir
+    map point store memory M S 3
+    set id [file join $::dataDir a.points 1]
+    list [expr {[M pixels $id 0] eq [map slippy geo 2point 0 {10 20}]}] \
+	[expr {[M pixels $id 3] eq [map slippy geo 2point 3 {10 20}]}] \
+	[catch {M pixels $id 4}]
+} -cleanup {
+    M destroy
+    S destroy
+    cleanData
+    unset id
+} -result {1 1 1}
+
+test map::point-4.4 {store memory: close points are clustered at low zoom} -setup mkClusterStore -body {
+    map point store memory M S 18
+    set v [M visible {-90 -180 90 180} 2]
+    set c [lsearch -inline -glob $v c/*]
+    set cattr [M get $c]
+    list [llength $v] [dict get $cattr kind] [dict get $cattr count] \
+	[dict get $cattr names] [llength [M pixels $c 2]]
+} -cleanup {
+    M destroy
+    S destroy
+    cleanData
+    unset v c cattr
+} -result {2 cluster 2 {} 2}
+
+test map::point-4.5 {store memory: no clustering at high zoom} -setup mkClusterStore -body {
+    map point store memory M S 18
+    lmap id [M visible {-90 -180 90 180} 18] {file tail $id}
+} -cleanup {
+    M destroy
+    S destroy
+    cleanData
+} -result {1 2 3}
+
+test map::point-4.6 {store memory: visible restricted to the view} -setup mkClusterStore -body {
+    map point store memory M S 18
+    lmap id [M visible {0 0 50 50} 18] {file tail $id}
+} -cleanup {
+    M destroy
+    S destroy
+    cleanData
+} -result {1 2}
+
+test map::point-4.7 {store memory: empty store} -constraints {
+    knownBug
+} -body {
+    map point store fs S $::dataDir
+    map point store memory M S 5
+    M visible {-90 -180 90 180} 3
+} -cleanup {
+    catch {M destroy}
+    S destroy
+} -result {}
+
+# -------------------------------------------------------------------------
+
+removeDirectory mapTestData
+unset dataDir
+foreach p {writeFile readFile cleanData mkStore mkClusterStore} {rename $p {}}
+
+::tcltest::cleanupTests
