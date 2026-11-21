@@ -29,6 +29,22 @@ namespace import ::widgetPlus::spinboxPlus
 testConstraint x11 [expr {[tk windowingsystem] eq "x11" }]
 testConstraint TkAbove8.6 [expr {[package vsatisfies [package provide Tk] 8.7-]}]
 
+# Tk 9 changed some error messages and keeps the fraction of screen
+# distances.
+set tk9 [package vsatisfies [package provide Tk] 9-]
+proc badDistance {value} {
+    if {$::tk9} {
+	return "expected screen distance but got \"$value\""
+    }
+    return "bad screen distance \"$value\""
+}
+proc noFont {name} {
+    if {$::tk9} {
+	return "font \"$name\" does not exist"
+    }
+    return "font \"$name\" doesn't exist"
+}
+
 # ------------------------------------------------------------------------------
 # This file is copied from Tk trunk (8.7) checkin 127ff912ed,
 # file spinbox.test, with addition of the four lines above,
@@ -169,7 +185,7 @@ test spinbox-1.6 {configuration option: "bd" for spinbox} -setup {
     .e configure -bd badValue
 } -cleanup {
     destroy .e
-} -returnCodes {error} -result {bad screen distance "badValue"}
+} -returnCodes {error} -result [badDistance badValue]
 
 test spinbox-1.7 {configuration option: "bg"} -setup {
         spinboxPlus .e -borderwidth 2 -highlightthickness 2 -font {Helvetica -12} \
@@ -203,7 +219,7 @@ test spinbox-1.9 {configuration option: "borderwidth"} -setup {
     .e cget -borderwidth
 } -cleanup {
     destroy .e
-} -result 1
+} -result [expr {$tk9 ? 1.3 : 1}]
 test spinbox-1.10 {configuration option: "borderwidth" for spinbox} -setup {
         spinboxPlus .e -borderwidth 2 -highlightthickness 2 -font {Helvetica -12} \
         -relief sunken
@@ -213,7 +229,7 @@ test spinbox-1.10 {configuration option: "borderwidth" for spinbox} -setup {
     .e configure -borderwidth badValue
 } -cleanup {
     destroy .e
-} -returnCodes {error} -result {bad screen distance "badValue"}
+} -returnCodes {error} -result [badDistance badValue]
 
 test spinbox-1.11 {configuration option: "buttonbackground"} -setup {
         spinboxPlus .e -borderwidth 2 -highlightthickness 2 -font {Helvetica -12} \
@@ -401,7 +417,7 @@ test spinbox-1.27 {configuration option: "font" for spinbox} -setup {
     .e configure -font {}
 } -cleanup {
     destroy .e
-} -returnCodes {error} -result {font "" doesn't exist}
+} -returnCodes {error} -result [noFont ""]
 
 test spinbox-1.28 {configuration option: "foreground"} -setup {
         spinboxPlus .e -borderwidth 2 -highlightthickness 2 -font {Helvetica -12} \
@@ -533,7 +549,7 @@ test spinbox-1.39 {configuration option: "highlightthickness" for spinbox} -setu
     .e configure -highlightthickness bogus
 } -cleanup {
     destroy .e
-} -returnCodes {error} -result {bad screen distance "bogus"}
+} -returnCodes {error} -result [badDistance bogus]
 
 test spinbox-1.40 {configuration option: "highlightthickness"} -setup {
         spinboxPlus .e -borderwidth 2 -highlightthickness 2 -font {Helvetica -12} \
@@ -545,7 +561,7 @@ test spinbox-1.40 {configuration option: "highlightthickness"} -setup {
     .e cget -highlightthickness
 } -cleanup {
     destroy .e
-} -result 0
+} -returnCodes [expr {$tk9 ? "error" : "ok"}] -result [expr {$tk9 ? [badDistance -2] : 0}]
 
 test spinbox-1.41 {configuration option: "increment"} -setup {
         spinboxPlus .e -borderwidth 2 -highlightthickness 2 -font {Helvetica -12} \
@@ -601,7 +617,7 @@ test spinbox-1.45 {configuration option: "insertborderwidth"} -setup {
     .e cget -insertborderwidth
 } -cleanup {
     destroy .e
-} -result 1
+} -result [expr {$tk9 ? 1.3 : 1}]
 test spinbox-1.46 {configuration option: "insertborderwidth" for spinbox} -setup {
         spinboxPlus .e -borderwidth 2 -highlightthickness 2 -font {Helvetica -12} \
         -relief sunken
@@ -611,7 +627,7 @@ test spinbox-1.46 {configuration option: "insertborderwidth" for spinbox} -setup
     .e configure -insertborderwidth 2.6x
 } -cleanup {
     destroy .e
-} -returnCodes {error} -result {bad screen distance "2.6x"}
+} -returnCodes {error} -result [badDistance 2.6x]
 
 test spinbox-1.47 {configuration option: "insertofftime"} -setup {
         spinboxPlus .e -borderwidth 2 -highlightthickness 2 -font {Helvetica -12} \
@@ -835,7 +851,7 @@ test spinbox-1.65 {configuration option: "selectborderwidth"} -setup {
     .e cget -selectborderwidth
 } -cleanup {
     destroy .e
-} -result 1
+} -result [expr {$tk9 ? 1.3 : 1}]
 test spinbox-1.66 {configuration option: "selectborderwidth" for spinbox} -setup {
         spinboxPlus .e -borderwidth 2 -highlightthickness 2 -font {Helvetica -12} \
         -relief sunken
@@ -845,7 +861,7 @@ test spinbox-1.66 {configuration option: "selectborderwidth" for spinbox} -setup
     .e configure -selectborderwidth badValue
 } -cleanup {
     destroy .e
-} -returnCodes {error} -result {bad screen distance "badValue"}
+} -returnCodes {error} -result [badDistance badValue]
 
 test spinbox-1.67 {configuration option: "selectforeground"} -setup {
         spinboxPlus .e -borderwidth 2 -highlightthickness 2 -font {Helvetica -12} \
@@ -1288,8 +1304,8 @@ test spinbox-3.15 {SpinboxWidgetCmd procedure, "configure" widget command} -setu
     llength [.e configure]
 } -cleanup {
     destroy .e
-} -result [expr {[package vsatisfies [package present Tk] 8.7-]
-    ? 54
+} -result [expr {$tk9 ? 55
+    : [package vsatisfies [package present Tk] 8.7-] ? 54
     : 52 }]
 test spinbox-3.16 {SpinboxWidgetCmd procedure, "configure" widget command} -setup {
     spinboxPlus .e
@@ -4268,6 +4284,9 @@ test spinbox-25.1 {textvariable lives in a non-existing namespace} -setup {
 
 # option clear
 # cleanup
+rename badDistance {}
+rename noFont {}
+unset tk9
 cleanupTests
 return
 

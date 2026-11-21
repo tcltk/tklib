@@ -7,7 +7,6 @@ package require tcltest 2.2
 namespace import -force tcltest::*
 loadTestedCommands
 
-testConstraint failsOnUbuntu [expr {![info exists ::env(CI)] || ![string match Linux $::tcl_platform(os)]}]
 testConstraint failsOnXQuarz [expr {$tcl_platform(os) ne "Darwin" || [tk windowingsystem] ne "x11" }]
 
 variable scrollInfo
@@ -118,7 +117,7 @@ test entry-2.1 "Create entry before scrollbar" -body {
 }  -cleanup {destroy .te .tsb}
 
 test entry-2.1.1 "Create entry before scrollbar - scrollbar catches up" -constraints {
-  failsOnUbuntu failsOnXQuarz
+  failsOnXQuarz
 } -setup {
     set st [wm state .]
     wm deiconify .
@@ -128,6 +127,7 @@ test entry-2.1.1 "Create entry before scrollbar - scrollbar catches up" -constra
     .te insert end [string repeat "abc" 50]
     catch {update} ; # error triggers because the -xscrollcommand callback
                      # errors out: invalid command name ".tsb"
+    focus -force .te ; # needed on some systems such as Ubuntu (see Tk ticket 3c2a3a988f)
     pack [ttk::scrollbar .tsb -orient horizontal -command [list .te xview]] \
 	-expand false -fill x
     update ; # no error
