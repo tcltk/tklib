@@ -17,16 +17,128 @@
 [require map::box::map-display [opt [vset VERSION]]]
 [description]
 
-This package provides a [package map::display] attachment extending the map's behaviour. This
-attachment shows a set of [term geo/box] definitions. It ensures that only the visible boxes use
-canvas resources (items).
+This package provides an engine attachable to a [package map::display] widget, extending the map's
+behaviour. The engine shows a set of [term geo/box] definitions taken from a store on the map,
+each as a canvas rectangle managed by a [package canvas::edit::rectangle] instance (used for display only, not for
+editing).
 
-[section API]
+It tracks the visible part of the map, ensuring that only the visible boxes use canvas
+resources (items).
+
+[section {Class API}]
 
 [list_begin definitions]
+[call [cmd ::map::box::map-display] [arg objectName] [arg map] [arg store] [opt "[arg option] [arg value]..."]]
+[call [cmd {::map box map-display}] [arg objectName] [arg map] [arg store] [opt "[arg option] [arg value]..."]]
+
+This command creates a new engine named [arg objectName], attaches it to the [package map::display]
+widget [arg map], and returns the fully qualified name of the object command. The name
+[const %AUTO%] generates a unique name.
+
+[para] The engine starts disabled, i.e. it shows nothing until its method [method enable] is
+called.
+
+[para] The [arg store] is a command prefix providing the boxes to show, with the API of
+[package map::box::store::memory]. The engine uses its methods [method visible] to query the boxes in the
+visible part of the map, [method get] for the keys [const geo] (the box) and [const center] of their attributes, and
+[method pixels] for their location on the map, a [term pointbox]. The store is invoked at the global
+level.
+
+[para] The engine attaches to the map by chaining the option [option -on-view-change] of the
+widget, see the section [emph {Attaching behaviours}] in the manpage of [package map::display].
+[list_end]
+
+[section Options]
+
+All options can only be set at creation time.
+
+The appearance options, if specified, are passed to the [package canvas::edit::rectangle] instances;
+when not specified, the defaults of that package apply.
+
+[list_begin options]
+[opt_def -on-active [arg command-prefix]]
+
+A command prefix invoked at the global level, with the id of a box as additional argument,
+whenever the mouse pointer enters the outline of a box. Leaving it is not reported.
+
+The result of the command is ignored. The default is the empty string, i.e. no reporting.
+
+[opt_def -color [arg color]]
+
+The color of the boxes.
+
+[opt_def -hilit-color [arg color]]
+
+The color of a box while the mouse pointer is over it.
+
+[opt_def -rect-config [arg list]]
+
+A list of options and their values applied to the canvas rectangle items, see [package canvas::edit::rectangle].
+
+[opt_def -kind [arg itemtype]]
+[opt_def -create-cmd [arg command-prefix]]
+
+The appearance of the markers shown at the corner points of the boxes, see
+[package canvas::edit::rectangle].
+
+[opt_def -radius [arg integer]]
+
+The radius of the default markers shown at the corner points.
+
+The engine always sets the radius of the default corner markers to [const 0], hiding them,
+so setting this option has no visible effect.
+[list_end]
+
+[section Methods]
+
+[list_begin definitions]
+[call [arg objectName] [method enable]]
+
+This method enables the engine: it shows the boxes in the visible part of the map and from now
+on follows changes of the visible part. Enabling an enabled engine does nothing.
+
+The result of the method is the empty string.
+
+[call [arg objectName] [method disable]]
+
+This method disables the engine: it removes all boxes from the map and stops following the
+changes of the visible part. Disabling a disabled engine does nothing.
+
+The result of the method is the empty string.
+
+[call [arg objectName] [method focus] [arg id]]
+
+This method moves the map so that the box with the given [arg id] is at its center, and
+chooses the largest zoom level at which the whole box is visible.
+
+The result of the method is the empty string.
+
+[call [arg objectName] [method destroy]]
+
+This method disables the engine, detaches it from the map, and destroys it.
 [list_end]
 
 [section EXAMPLE]
+
+Showing the boxes read from the [file *.box] files in directory [file boxes]:
+
+[example {
+package require map::display
+package require map::provider::osm
+package require map::box::store::fs
+package require map::box::store::memory
+package require map::box::map-display
+
+file mkdir tiles
+set provider [map provider osm %AUTO% tiles]
+map display .map -provider $provider -initial-geo {48.137 11.575} -initial-zoom 10
+pack .map -fill both -expand 1
+
+map box store fs     files  boxes
+map box store memory store  files
+map box map-display  layer  .map store -on-active puts
+layer enable
+}]
 
 [vset CATEGORY map]
 [include ../../support/devel/doc/feedback.inc]

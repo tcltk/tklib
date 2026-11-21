@@ -25,18 +25,117 @@
 [require map::point::store::memory [opt [vset VERSION]]]
 [description]
 
-This package provides an in-memory store for [term geo/point] definitions, with memoized calculation
-of extended attributes.
+This package provides an in-memory store for [term geo/point] definitions, which groups points
+lying close to each other on the map into clusters.
 
-[para] The base data is pulled from a backing store. A [package map::point::store::fs] or anything
-API-compatible to it.
+[para] The base data is pulled from a backing store, a [package map::point::store::fs] or any other
+object providing the API described in section [term {Store API}] of
+[package map::point::store::fs]. All points are loaded from the backing store at creation, and their
+pixel coordinates and clusters are computed for all zoom levels from [const 0] up to a given
+maximum. It is the store expected by [package map::point::map-display], and can also be used with
+[package map::point::table-display].
+
+[para] The clustering is computed with a simple algorithm whose run time grows quadratically with
+the number of points. The package is intended for demonstration, and for small to medium sets of
+points.
 
 [section API]
 
 [list_begin definitions]
+
+[call [cmd ::map::point::store::memory] [arg storeName] [arg store] [arg maxzoom]]
+
+Creates a new store object named [arg storeName] on top of the backing store [arg store], and
+returns the fully qualified name of its command. The [arg storeName] can be [const %AUTO%] to
+generate a unique name.
+
+[para] The [arg store] is the name of the command of the backing store, an object providing the
+methods [method ids] and [method get] as described in section [term {Store API}] of
+[package map::point::store::fs]. It is not destroyed together with the memory store.
+
+[para] All points of the backing store are loaded, and their pixel coordinates and clusters are
+computed for the zoom levels [const 0] to [arg maxzoom]. The latter should be the highest zoom
+level of the map the points are shown in, i.e. the number of levels of the map's tile provider minus
+one. Later changes to the backing store are not seen.
+
+[para] At zoom levels below [const 18] points which are within a few tens of pixels of each other
+are grouped into a [term cluster], shown in their place. At zoom level [const 18] and above no
+clustering is done.
+
+[call [arg storeName] [method ids]]
+
+Returns the list of the ids of all [term geo/point]s. Clusters are not included. This method is
+delegated to the backing store.
+
+[call [arg storeName] [method visible] [arg geobox] [arg zoom]]
+
+Returns the list of the ids of the points and clusters to show at the given [arg zoom] level, which
+are located inside the geographical box [arg geobox] (a list of minimal latitude, minimal longitude,
+maximal latitude and maximal longitude). The points which are members of a cluster at this zoom
+level are not included, the cluster is reported instead. The [arg zoom] level must be in the range
+[const 0] to [arg maxzoom], otherwise an error is thrown.
+
+[call [arg storeName] [method get] [arg id]]
+
+Returns the attributes of the point or cluster with the given [arg id], a dictionary. Throws an
+error if the [arg id] is not known.
+
+[para] For a point it contains all the keys returned by the backing store, i.e. at least
+[const names], [const kind], and [const geo] (see [package map::point::file]), extended with the
+key [const bbox], the geographical box of the point (minimal and maximal coordinates both equal to
+the location).
+
+[para] The ids of clusters have the form [const c/][var N], where [var N] is a number. Each cluster
+belongs to a single zoom level. For a cluster the dictionary contains the keys:
+
+[list_begin definitions]
+[def [const names]] An empty list.
+[def [const kind]]  The string [const cluster].
+[def [const geo]]   The location of the center of the cluster, a list of latitude and longitude.
+[def [const count]] The number of points in the cluster.
 [list_end]
 
+[call [arg storeName] [method pixels] [arg id] [arg zoom]]
+
+Returns the location of the point or cluster with the given [arg id] in pixel coordinates of the
+map at the given [arg zoom] level, a list of x and y coordinates (see [package map::slippy]). For a
+point the [arg zoom] level must be in the range [const 0] to [arg maxzoom], for a cluster it must be
+the zoom level the cluster belongs to. Otherwise an error is thrown.
+
+[call [arg storeName] [method destroy]]
+
+Destroys the store.
+
+[list_end]
+
+[para] All other methods are delegated to the backing store as well.
+
+[para] The methods [method ids], [method get], [method visible], and [method pixels] are the API
+used by [package map::point::map-display]. [package map::point::table-display] uses only
+[method ids] and [method get]. Any object providing these methods with the same results can be used
+in place of a [package map::point::store::memory].
+
 [section EXAMPLE]
+
+[example_begin]
+package require map::point::store::fs
+package require map::point::store::memory
+
+map point store fs     PointFiles /path/to/directory
+map point store memory Points     PointFiles 18
+
+# What to show of the whole world at zoom level 3
+foreach id [lb]Points visible {-85 -180 85 180} 3[rb] {
+    set point [lb]Points get $id[rb]
+    if {[lb]dict get $point kind[rb] eq "cluster"} {
+        puts "cluster of [lb]dict get $point count[rb] points at [lb]Points pixels $id 3[rb]"
+    } else {
+        puts "[lb]join [lb]dict get $point names[rb] {, }[rb] at [lb]Points pixels $id 3[rb]"
+    }
+}
+[example_end]
+
+[see_also map::point::store::fs map::point::file map::point::map-display map::point::table-display map::slippy]
 
 [vset CATEGORY map]
 [include ../../support/devel/doc/feedback.inc]

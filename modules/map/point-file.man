@@ -14,14 +14,145 @@
 [require map::point::file [opt [vset VERSION]]]
 [description]
 
-This package provides read/write functions for Tklib [term geo/point] files.
+This package provides commands to read and write Tklib [term geo/point] files. Unlike the files for
+areas, boxes and tracks, a single [term geo/point] file can hold any number of points. The format
+of these files is described in section [sectref {File format}], the value of a single point in
+section [sectref {geo/point value}].
+
+[para] Packages using these files are [package map::point::store::fs], which loads all
+[term geo/point] files of a directory, and through it [package map::point::store::memory].
 
 [section API]
 
 [list_begin definitions]
+
+[call [cmd {::map point file read}] [arg path]]
+
+Reads the [term geo/point] file [arg path] and returns its contents as a list of
+[term geo/point] values, one per point in the file, in the order of the file. See section
+[sectref {geo/point value}] for the format of the elements.
+
+[para] If the file cannot be opened, or is not a valid [term geo/point] file, the result is the
+empty string, i.e. an empty list. No error is thrown in these cases. For an invalid file a short
+message describing the problem is written to [const stdout]. A file containing only the magic line
+is valid, and contains no points.
+
+[para] A point which does not specify any name gets a single name, built from the name of the file
+without directory and extension, a slash, and a sequence number counting the unnamed points of the
+file, starting at [const 1]. For example, the second unnamed point in file
+[file /data/cafes.points] is named [const cafes/2].
+
+[para] A point which does not specify a kind gets the kind [const point].
+
+[call [cmd {::map point file write}] [arg path] [arg points]]
+
+Writes the list of [term geo/point] values [arg points] (see section [sectref {geo/point value}])
+to the file [arg path], replacing any previous contents. Identical points are written only once,
+and the order of the points in the file may differ from their order in the list. For each point
+the kind (if not empty) is written first, followed by the names in dictionary order, with duplicates
+removed, followed by the coordinates. The coordinates are not validated.
+
+[para] The result of the command is the empty string. Failure to open the file is reported as an
+error.
+
 [list_end]
 
+[section {geo/point value}]
+
+A [term geo/point] is a single location on the surface of Earth, together with a kind and a list of
+names. It is represented by a Tcl dictionary with the following keys:
+
+[list_begin definitions]
+[def [const names]]
+A list of strings, the names of the point. Several names can be specified, e.g. aliases or names in
+different languages.
+
+[def [const kind]]
+A string classifying the point. [package map::point::map-display] uses the kind as the name of the
+style to show the point with. The kinds known to it by default are [const point],
+[const feature], and [const cluster]. The kind [const cluster] is used by
+[package map::point::store::memory] for the clusters of points it creates, and should not be used
+for ordinary points.
+
+[def [const geo]]
+The location of the point, a list of two numbers, the latitude and the longitude in degrees, in this
+order (the [term geo] of [package map::slippy]).
+[list_end]
+
+For example:
+
+[example {names {{Prospect Point} Lookout} geo {49.3134 -123.1416} kind feature}]
+
+[section {File format}]
+
+A [term geo/point] file is a text file, read line by line:
+
+[list_begin itemized]
+[item] Leading and trailing whitespace of each line is ignored.
+
+[item] Empty lines are ignored.
+
+[item] Lines starting with [const #] or [const //] are comments, and ignored.
+
+[item] The first line which is neither empty nor a comment must be the magic line
+[const tklib/geo/point], identifying the file.
+
+[item] The remaining lines describe the points, one after the other. Each point is described by
+zero or more lines with its kind and names, followed by exactly two lines with the latitude and the
+longitude of its location, in this order.
+
+[item] A line which is a number is a coordinate. The latitude must be in the range -90 to 90, the
+longitude in the range -180 to 180 degrees. After the second coordinate of a point the next line
+starts a new point.
+
+[item] A line starting with [const kind:] specifies the kind of the point. The kind is the rest of
+the line, without leading and trailing whitespace. If several such lines are given for a point, the
+last one is used.
+
+[item] Every other line is a name of the point. A name cannot look like a floating point number, it
+would be read as a coordinate, and cannot start with [const kind:].
+
+[item] The file must not end with an incomplete point, i.e. with names or kind without coordinates,
+or with a single coordinate.
+
+[list_end]
+
+[para] Files conventionally use the extension [file .points]. This is also the default file pattern
+of [package map::point::store::fs].
+
+[para] For example, a file with two points, the second of them without a name:
+
+[example {tklib/geo/point
+
+kind: feature
+Prospect Point
+Lookout
+49.3134
+-123.1416
+
+# kind "point", named after the file
+49.3000
+-123.1300}]
+
 [section EXAMPLE]
+
+[example_begin]
+package require map::point::file
+
+set f [lb]open sights.points w[rb]
+puts $f "tklib/geo/point"
+puts $f "kind:feature\nProspect Point\n49.3134\n-123.1416"
+puts $f "Siwash Rock\n49.3105\n-123.1530"
+close $f
+
+foreach point [lb]map point file read sights.points[rb] {
+    dict with point {
+        puts "[lb]join $names /[rb] ($kind) at $geo"
+    }
+}
+[example_end]
+
+[see_also map::point::store::fs map::point::store::memory map::point::map-display map::slippy]
 
 [vset CATEGORY map]
 [include ../../support/devel/doc/feedback.inc]

@@ -19,12 +19,81 @@
 
 This package provides a widget to show the information of a single [term geo/area] definition.
 
+[para] The widget shows the statistics of the area, i.e. its center, number of parts, perimeter and
+diameter, above a table of its vertices. Each row of the table shows the number of the vertex
+(counting from 1), its latitude and longitude, the distance from the previous vertex, and the total
+distance along the perimeter so far. A last row closes the perimeter, showing the distance from the
+last vertex back to the first, and the total perimeter.
+
+[para] The number of parts is the number of edges of the area, i.e. the number of vertices for an
+area of three or more vertices, and one less than that otherwise.
+
+[para] Distances are formatted for display with [cmd {map slippy pretty-distance}] of package
+[package map::slippy].
+
 [section API]
 
 [list_begin definitions]
+[call [cmd ::map::area::display] [arg pathName] [opt [arg options]...]]
+
+Creates a new area display widget [arg pathName], configured with the specified options. The result
+of the command is [arg pathName]. The command is also available as [cmd {map area display}].
+
+[para] The widget initially shows nothing. Use method [method set] to show an area.
+
+[para] The widget supports the following option:
+
+[list_begin options]
+[opt_def -on-selection [arg cmdprefix]]
+
+A command prefix which is invoked when the user selects a row of the table. It is invoked at idle
+time, at the global level, with one additional argument, the index of the vertex shown in the
+selected row, counting from 0. Selecting the last row, which closes the perimeter, reports the
+first vertex, i.e. index 0. The result of the command is ignored.
+
+[para] Selections made through method [method focus] are not reported.
+
+[para] The default is the empty string, i.e. selections are not reported.
+
+[list_end]
+[list_end]
+
+The widget supports the standard methods [method cget] and [method configure], and the
+following methods:
+
+[list_begin definitions]
+[call [arg pathName] [method set] [arg geos]]
+
+Shows the area specified by [arg geos], a list of geo locations, i.e. latitude/longitude pairs,
+the vertices of the area in order. This is the [const geo] element of a [term geo/area] value as
+described in [package map::area::file]. An empty list clears the display.
+
+[para] The result of the method is the empty string.
+
+[call [arg pathName] [method focus] [arg index]]
+
+Selects the row with the specified [arg index] in the table, counting from 0, and scrolls the
+table to make it visible. The row index of a vertex is its index in the list given to method
+[method set].
+
+[para] The result of the method is the empty string.
+
 [list_end]
 
 [section EXAMPLE]
+
+[example {
+package require map::area::display
+
+map area display .area -on-selection {apply {{index} {
+    puts "selected vertex $index"
+}}}
+pack .area -fill both -expand 1
+
+.area set {{48.0 11.0} {48.1 11.0} {48.1 11.2}}
+}]
+
+[see_also map::area::table-display map::area::map-display map::area::file]
 
 [vset CATEGORY map]
 [include ../../support/devel/doc/feedback.inc]

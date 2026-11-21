@@ -17,20 +17,269 @@
 [require map::display [opt [vset VERSION]]]
 [description]
 
-This package provides a map display widget with basic behaviour (Drag, Center, Zoom +/-).
+This package provides a map display widget with basic behaviour: panning, centering, and zooming.
 
-The map tiles are fetched from a configurable provider like [package map::provider::osm]
-or anything API compatible.
+The map tiles are fetched from a configurable tile provider like [package map::provider::osm], or
+anything API compatible, see section [sectref {Tile provider}].
 
-The widget is extensible with attachable engines providing additional behaviours, like the
-display of geo/* resources, and/or editing of geo/* resources.
+The widget is extensible with attachable engines providing additional behaviours, like the display
+of geo/* resources, and/or the editing of geo/* resources, see section
+[sectref {Attaching behaviours}].
 
-[section API]
+[para] The widget uses the conventions of package [package map::slippy] for locations and zoom
+levels:
 
 [list_begin definitions]
+[def [term geo]]
+A geographical location, a 2-element list of latitude and longitude, in degrees.
+
+[def [term geobox]]
+A geographical box, a 4-element list of the minimal latitude and longitude, and the maximal
+latitude and longitude, in this order.
+
+[def [term {zoom level}]]
+An integer between [const 0] and the number of levels supported by the provider minus one, see
+method [method levels]. At zoom level [var z] the whole world is a square of
+[const 256]*2**[var z] pixels.
+
+[def [term point]]
+A pixel location at a given zoom level, a 2-element list of x and y coordinates. These are also
+the coordinates on the canvas returned by method [method canvas].
+
+[def [term pointbox]]
+A box of pixel locations at a given zoom level, a 4-element list of the minimal x and y, and the
+maximal x and y coordinates, in this order.
 [list_end]
 
+[section {Class API}]
+
+[list_begin definitions]
+[call [cmd ::map::display] [arg pathName] [opt "[arg option] [arg value]..."]]
+[call [cmd {::map display}] [arg pathName] [opt "[arg option] [arg value]..."]]
+
+This command creates a new map display widget named [arg pathName], configured with the specified
+options, and returns the [arg pathName].
+
+The option [option -provider] is required.
+
+[para] The widget consists of a label at the top showing the geographical location under the mouse
+pointer, and the map itself, with a zoom control in its top left corner.
+[list_end]
+
+[section Options]
+
+[list_begin options]
+[opt_def -provider [arg command-prefix]]
+
+The tile provider used to retrieve the map tiles, see section [sectref {Tile provider}].
+
+This option is required and cannot be set to the empty string.
+
+The command prefix is not invoked at the global level, so its command name should be fully
+qualified, like the names returned by the constructors of [package snit] types.
+
+[para] The tile size and the number of zoom levels are taken from the provider when the widget is
+created. When the option is changed afterwards, only the tiles requested from then on come from the
+new provider.
+
+[opt_def -on-view-change [arg command-prefix]]
+
+A command prefix invoked when the map has moved to a new location: after the map has been moved by
+method [method center] or by option [option -initial-geo], after a zoom change, after the map
+has been re-centered because its size changed or it was locked, and after the user finished
+panning the map.
+
+[para] It is invoked at the global level with the three elements of the result of method
+[method view] (zoom level, [term pointbox], and [term geobox] of the visible part of the map) as
+additional arguments. Its result is ignored.
+
+[para] The default is the empty string, i.e. no reporting.
+
+[para] Attached engines like [package map::box::map-display] use this option to track the
+visible part of the map, see section [sectref {Attaching behaviours}].
+
+[opt_def -initial-geo [arg geo]]
+
+The [term geo] location to show at the center of the map after the widget was created.
+
+If not specified (the default) the map starts at its top left corner.
+
+This option can only be set at creation time.
+
+[opt_def -initial-zoom [arg zoom]]
+
+The initial zoom level. The default is [const 12].
+
+This option can only be set at creation time.
+
+[opt_def -locked [arg boolean]]
+
+When true the user cannot pan the map. The center of the map can then only be changed by the
+method [method center]; it is kept when the widget is resized.
+
+When the option is set to true while the widget exists, the map moves back to the last center set
+by the method [method center], the option [option -initial-geo], or a finished panning operation.
+
+Zooming is not affected by this option.
+
+The default is [const 0].
+
+[opt_def -center-mark [arg image]]
+
+The name of an image to show at the center of the map. The empty string (the default) shows no
+mark.
+[list_end]
+
+[section Methods]
+
+[list_begin definitions]
+[call [arg pathName] [method levels]]
+
+This method returns the number of zoom levels supported by the tile provider. The valid zoom
+levels are [const 0] to this number minus one.
+
+[call [arg pathName] [method zoom-to] [arg zoom]]
+
+This method sets the zoom level of the map to [arg zoom], like the zoom control does.
+
+Invalid zoom levels are ignored.
+
+The result of the method is the empty string.
+
+[call [arg pathName] [method center] [arg geo] [opt [arg zoom]]]
+
+This method moves the map so that the [term geo] location is shown at its center, and when the
+[arg zoom] level is specified and valid, switches to that level as well.
+
+The move is done asynchronously, after a short delay; the option [option -on-view-change]
+reports it when done.
+
+This is the only way to move a locked map, see option [option -locked].
+
+The result of the method is the empty string.
+
+[call [arg pathName] [method canvas]]
+
+This method returns the path of the canvas widget (a [package canvas::sqmap]) showing the map.
+
+The canvas coordinates are the [term point] coordinates for the current zoom level.
+
+Attached engines use it to place their items.
+
+[call [arg pathName] [method at]]
+
+This method returns the [term geo] location under the mouse pointer, i.e. the location of the
+crosshair, as last seen while the pointer was over the map. The latitude and longitude are
+rounded to 6 decimal places.
+
+[call [arg pathName] [method view]]
+
+This method returns a 3-element list describing the visible part of the map: the current zoom
+level, the visible part as a [term pointbox], and the visible part as a [term geobox].
+
+[list_end]
+
+[section Interaction]
+
+[list_begin itemized]
+[item] Dragging the map with mouse button 3 pressed pans the map.
+[item] Clicking with mouse button 3 while the [const Shift] key is pressed centers the map at the
+       clicked location.
+[item] The mouse wheel, or the zoom control, zooms the map in and out. When zooming in, the
+       location under the mouse pointer becomes the new center of the map; when zooming out the
+       center is kept.
+[item] The label above the map shows the [term geo] location under the mouse pointer.
+[list_end]
+
+Panning and centering by click are disabled when the map is locked, see option [option -locked].
+
+[section {Tile provider}]
+
+A tile provider is a command prefix, typically a [package snit] object like those created by
+[package map::provider::osm], supporting the methods listed below.
+
+The widget assumes the standard tile size of [package map::slippy] ([const 256] pixels) for its
+geographical computations, so the provider has to deliver tiles of that size.
+
+[list_begin definitions]
+[call [arg provider] [method levels]]
+
+This method has to return the number of zoom levels supported by the provider.
+
+[call [arg provider] [method tilewidth]]
+[call [arg provider] [method tileheight]]
+
+These methods have to return the width and the height of the tiles, in pixels.
+
+[call [arg provider] [method get] [arg tile] [arg donecmd]]
+
+This method is invoked to request the image of a [arg tile], a 3-element list of zoom level, row,
+and column, in this order.
+
+The result of the method is ignored.
+
+The provider has to invoke the command prefix [arg donecmd], immediately or later, in one of the
+following forms:
+
+[example {
+    {*}$donecmd set   $tile $image  ;# The image for the tile is available
+    {*}$donecmd unset $tile         ;# There is no image for the tile
+}]
+
+where [arg tile] is the requested tile and [arg image] the name of a Tk image of the tile.
+[list_end]
+
+[section {Attaching behaviours}]
+
+The behaviour of the widget is extended by engines attached to it, like
+[package map::area::map-display], [package map::box::map-display],
+[package map::point::map-display], [package map::track::map-display], [package map::box::entry],
+[package map::track::entry], and [package map::mark].
+
+An engine is an object created with the map widget as an argument. It uses only the public API of
+the widget: the canvas returned by method [method canvas] for drawing its items and binding its
+events, the methods [method view], [method levels], [method center], and [method at] to query and
+change the map, and the option [option -on-view-change] to track the visible part of the map.
+
+[para] To share the option [option -on-view-change] the engines chain their callbacks: on
+creation an engine saves the current value of the option, replaces it with its own callback, and
+forwards every report to the saved command prefix; on destruction it restores the saved value.
+
+Hence a command prefix set before creating the engines keeps working, and when engines are
+destroyed, this must happen in the reverse order of their creation.
+
 [section EXAMPLE]
+
+A map using a provider which creates its tiles locally, showing each tile as an outlined white
+square:
+
+[example {
+package require map::display
+
+proc localtiles {method args} {
+    switch -exact -- $method {
+        levels     { return 6 }
+        tilewidth  -
+        tileheight { return 256 }
+        get {
+            lassign $args tile donecmd
+            set image [image create photo -width 256 -height 256]
+            $image put black -to 0 0 256 256
+            $image put white -to 1 1 255 255
+            # Report the image asynchronously, as a real provider would.
+            after idle [list {*}$donecmd set $tile $image]
+        }
+    }
+}
+
+proc show {zoom pointbox geobox} {
+    puts "zoom $zoom, showing $geobox"
+}
+
+map display .map -provider ::localtiles -on-view-change show \
+    -initial-geo {48.137 11.575} -initial-zoom 4
+pack .map -fill both -expand 1
+}]
 
 [vset CATEGORY map]
 [include ../../support/devel/doc/feedback.inc]

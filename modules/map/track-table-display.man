@@ -20,12 +20,103 @@
 This package provides a widget showing the information of many [term geo/track] definitions in a
 table.
 
+[para] The widget takes the tracks to show from a store, see section [sectref Store]. Each row of the table
+shows a row number, followed by the name, the latitude and longitude of the center, the number of parts, the diameter, and the length of the track. Distances are formatted for display with [cmd {map slippy pretty-distance}] of
+package [package map::slippy]. The table has the columns [const #], [const Name], [const Lat], [const Lon], [const Parts], [const Diameter], and [const Length].
+
+[para] A track with several names is shown in several rows, one per name. A track without names is
+shown in a single row with an empty name.
+
+[para] Clicking on a column label sorts the table by that column, clicking again reverses the
+order. A click with the [const Shift] key held adds the column to the sort columns.
+
 [section API]
 
 [list_begin definitions]
+[call [cmd ::map::track::table-display] [arg pathName] [arg store] [opt [arg options]...]]
+
+Creates a new table widget [arg pathName] showing the tracks held by [arg store], and configures it
+with the specified options. The result of the command is [arg pathName]. The command is also
+available as [cmd {map track table-display}].
+
+[para] [arg store] is a command prefix for the store, see section [sectref Store].
+
+[para] The widget supports the following option:
+
+[list_begin options]
+[opt_def -on-selection [arg cmdprefix]]
+
+A command prefix which is invoked when the user selects a row of the table. It is invoked at idle
+time, at the global level, with one additional argument, the id of the track shown in the selected
+row. The result of the command is ignored.
+
+[para] Selections made through method [method focus] are not reported.
+
+[para] The default is the empty string, i.e. selections are not reported.
+
+[list_end]
+[list_end]
+
+The widget supports the standard methods [method cget] and [method configure], and the
+following method:
+
+[list_begin definitions]
+[call [arg pathName] [method focus] [arg id]]
+
+Selects all rows showing the track with the specified [arg id], and scrolls the table to make
+them visible. It is an error if the table does not show the track [arg id].
+
+[para] The result of the method is the empty string.
+
+[list_end]
+
+[section Store]
+
+The widget reads the tracks to show from [arg store] once, about 100 milliseconds after its
+creation. Later changes in the store are not shown.
+
+[para] The widget uses the following methods of the store, invoked at the global level by
+appending them to the [arg store] command prefix. They are a subset of the store API described in
+[package map::track::store::memory].
+
+[list_begin definitions]
+[call [arg store] [method ids]]
+
+Returns a list of the ids of all tracks in the store.
+
+[call [arg store] [method get] [arg id]]
+
+Returns a dictionary describing the track with the specified [arg id]. The widget uses the following
+keys of the dictionary, and ignores any others:
+
+[list_begin definitions]
+[def [const names]] A list of the names of the track.
+[def [const center]] The center of the track, a latitude/longitude pair.
+[def [const parts]] The number of segments of the track.
+[def [const diameter]] The diameter of the track, in meters.
+[def [const length]] The length of the track, in meters.
+[list_end]
+
+[package map::track::store::memory] provides these.
+
 [list_end]
 
 [section EXAMPLE]
+
+[example {
+package require map::track::store::fs
+package require map::track::store::memory
+package require map::track::table-display
+
+map track store fs     tracks-fs /path/to/directory/of/track/files
+map track store memory tracks    tracks-fs
+map track table-display .tracks tracks -on-selection {apply {{id} {
+    puts "selected track $id"
+}}}
+pack .tracks -fill both -expand 1
+}]
+
+[see_also map::track::store::memory map::track::display map::track::map-display]
 
 [vset CATEGORY map]
 [include ../../support/devel/doc/feedback.inc]

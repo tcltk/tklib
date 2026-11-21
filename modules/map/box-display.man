@@ -19,12 +19,48 @@
 
 This package provides a widget to show the information of a single [term geo/box] definition.
 
+[para] The widget shows a table with the corners of the box, its center, as latitude and
+longitude, and its diameter and perimeter. Distances are formatted for display with
+[cmd {map slippy pretty-distance}] of package [package map::slippy].
+
 [section API]
 
 [list_begin definitions]
+[call [cmd ::map::box::display] [arg pathName]]
+
+Creates a new box display widget [arg pathName]. The widget has no options. The result of the
+command is [arg pathName]. The command is also available as [cmd {map box display}].
+
+[para] The widget initially shows nothing. Use method [method set] to show a box.
+
+[list_end]
+
+The widget supports the following method:
+
+[list_begin definitions]
+[call [arg pathName] [method set] [arg geobox]]
+
+Shows the box specified by [arg geobox], a list of four numbers, the minimal latitude, minimal
+longitude, maximal latitude, and maximal longitude, in this order. This is the [const geo] element
+of a [term geo/box] value as described in [package map::box::file]. An empty list clears the
+display.
+
+[para] The result of the method is the empty string.
+
 [list_end]
 
 [section EXAMPLE]
+
+[example {
+package require map::box::display
+
+map box display .box
+pack .box -fill both -expand 1
+
+.box set {48.0 11.0 48.1 11.2}
+}]
+
+[see_also map::box::table-display map::box::map-display map::box::entry map::box::file]
 
 [vset CATEGORY map]
 [include ../../support/devel/doc/feedback.inc]

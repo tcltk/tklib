@@ -29,15 +29,103 @@
 This package provides an in-memory store for [term geo/track] definitions, with memoized calculation
 of extended attributes.
 
-[para] The base data is pulled from a backing store. A [package map::track::store::fs] or anything
-API-compatible to it.
+[para] The base data is pulled from a backing store, a [package map::track::store::fs] or any other
+object providing the API described in section [term {Store API}] of [package map::track::store::fs]. The memory store adds derived attributes, like the length or the
+center of a [term geo/track], and the pixel coordinates needed to draw the [term geo/track] on a map at
+the various zoom levels. It is the store expected by [package map::track::map-display] and
+[package map::track::table-display].
 
 [section API]
 
 [list_begin definitions]
+
+[call [cmd ::map::track::store::memory] [arg storeName] [arg store]]
+
+Creates a new store object named [arg storeName] on top of the backing store [arg store], and
+returns the fully qualified name of its command. The [arg storeName] can be [const %AUTO%] to
+generate a unique name.
+
+[para] The [arg store] is the name of the command of the backing store, an object providing the
+methods [method ids], [method get], and [method visible] as described in section
+[term {Store API}] of [package map::track::store::fs]. It is not destroyed together with the memory
+store.
+
+[call [arg storeName] [method ids]]
+
+Returns the list of the ids of all [term geo/track]s. This method is delegated to the backing
+store.
+
+[call [arg storeName] [method visible] [arg geobox]]
+
+Returns the list of the ids of the [term geo/track]s visible in the geographical box [arg geobox].
+This method is delegated to the backing store.
+
+[call [arg storeName] [method get] [arg id]]
+
+Returns the attributes of the [term geo/track] with the given [arg id], a dictionary. The attributes
+are computed on the first request for an [arg id] and then cached. Throws an error if the [arg id]
+is not known to the backing store.
+
+[para] The dictionary contains
+all the keys returned by the backing store, i.e. at least [const names] and [const geo] (see
+[package map::track::file]), extended with the following derived attributes:
+
+[list_begin definitions]
+[def [const bbox]]
+The geographical bounding box of the track, a list of minimal latitude, minimal longitude, maximal
+latitude, and maximal longitude.
+
+[def [const center]]
+The center of the bounding box, a list of latitude and longitude.
+
+[def [const diameter]]
+The largest distance between any two vertices of the track, in meters.
+
+[def [const length]]
+The length of the track, from its first to its last vertex, in meters.
+
+[def [const parts]]
+The number of segments of the track, i.e. the number of vertices minus one.
 [list_end]
 
+[call [arg storeName] [method pixels] [arg id] [arg zoom]]
+
+Returns the track with the given [arg id] in pixel coordinates of the map at the given [arg zoom]
+level, as a list of points, each a list of x and y coordinates (see [package map::slippy]). The
+track is simplified for display: vertices which are only a few pixels apart are merged, and
+vertices which do not visibly change the shape are dropped. The result is cached for each
+combination of [arg id] and [arg zoom].
+
+[call [arg storeName] [method destroy]]
+
+Destroys the store.
+
+[list_end]
+
+[para] All other methods are delegated to the backing store as well.
+
+[para] The methods [method ids], [method get], [method visible], and [method pixels] are the API
+used by [package map::track::map-display]. [package map::track::table-display] uses [method ids] and
+[method get], and requires the derived attributes. Any object providing these methods with the
+same results can be used in place of a [package map::track::store::memory].
+
 [section EXAMPLE]
+
+[example_begin]
+package require map::track::store::fs
+package require map::track::store::memory
+
+map track store fs     TrackFiles /path/to/directory
+map track store memory Tracks     TrackFiles
+
+foreach id [lb]Tracks ids[rb] {
+    set track [lb]Tracks get $id[rb]
+    puts "[lb]lindex [lb]dict get $track names[rb] 0[rb]: [lb]format %.1f [lb]expr {[lb]dict get $track length[rb] / 1000.}[rb][rb] km"
+    puts "  [lb]llength [lb]Tracks pixels $id 15[rb][rb] points to draw at zoom level 15"
+}
+[example_end]
+
+[see_also map::track::store::fs map::track::file map::track::map-display map::track::table-display map::slippy]
 
 [vset CATEGORY map]
 [include ../../support/devel/doc/feedback.inc]

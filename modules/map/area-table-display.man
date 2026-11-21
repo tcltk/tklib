@@ -20,12 +20,103 @@
 This package provides a widget showing the information of many [term geo/area] definitions in a
 table.
 
+[para] The widget takes the areas to show from a store, see section [sectref Store]. Each row of the table
+shows a row number, followed by the name, the latitude and longitude of the center, the number of parts, the diameter, and the perimeter of the area. Distances are formatted for display with [cmd {map slippy pretty-distance}] of
+package [package map::slippy]. The table has the columns [const #], [const Name], [const Lat], [const Lon], [const Parts], [const Diameter], and [const Perimeter].
+
+[para] A area with several names is shown in several rows, one per name. A area without names is
+shown in a single row with an empty name.
+
+[para] Clicking on a column label sorts the table by that column, clicking again reverses the
+order. A click with the [const Shift] key held adds the column to the sort columns.
+
 [section API]
 
 [list_begin definitions]
+[call [cmd ::map::area::table-display] [arg pathName] [arg store] [opt [arg options]...]]
+
+Creates a new table widget [arg pathName] showing the areas held by [arg store], and configures it
+with the specified options. The result of the command is [arg pathName]. The command is also
+available as [cmd {map area table-display}].
+
+[para] [arg store] is a command prefix for the store, see section [sectref Store].
+
+[para] The widget supports the following option:
+
+[list_begin options]
+[opt_def -on-selection [arg cmdprefix]]
+
+A command prefix which is invoked when the user selects a row of the table. It is invoked at idle
+time, at the global level, with one additional argument, the id of the area shown in the selected
+row. The result of the command is ignored.
+
+[para] Selections made through method [method focus] are not reported.
+
+[para] The default is the empty string, i.e. selections are not reported.
+
+[list_end]
+[list_end]
+
+The widget supports the standard methods [method cget] and [method configure], and the
+following method:
+
+[list_begin definitions]
+[call [arg pathName] [method focus] [arg id]]
+
+Selects all rows showing the area with the specified [arg id], and scrolls the table to make
+them visible. It is an error if the table does not show the area [arg id].
+
+[para] The result of the method is the empty string.
+
+[list_end]
+
+[section Store]
+
+The widget reads the areas to show from [arg store] once, about 100 milliseconds after its
+creation. Later changes in the store are not shown.
+
+[para] The widget uses the following methods of the store, invoked at the global level by
+appending them to the [arg store] command prefix. They are a subset of the store API described in
+[package map::area::store::memory].
+
+[list_begin definitions]
+[call [arg store] [method ids]]
+
+Returns a list of the ids of all areas in the store.
+
+[call [arg store] [method get] [arg id]]
+
+Returns a dictionary describing the area with the specified [arg id]. The widget uses the following
+keys of the dictionary, and ignores any others:
+
+[list_begin definitions]
+[def [const names]] A list of the names of the area.
+[def [const center]] The center of the area, a latitude/longitude pair.
+[def [const parts]] The number of parts (edges) of the area.
+[def [const diameter]] The diameter of the area, in meters.
+[def [const perimeter]] The perimeter of the area, in meters.
+[list_end]
+
+[package map::area::store::memory] provides these.
+
 [list_end]
 
 [section EXAMPLE]
+
+[example {
+package require map::area::store::fs
+package require map::area::store::memory
+package require map::area::table-display
+
+map area store fs     areas-fs /path/to/directory/of/area/files
+map area store memory areas    areas-fs
+map area table-display .areas areas -on-selection {apply {{id} {
+    puts "selected area $id"
+}}}
+pack .areas -fill both -expand 1
+}]
+
+[see_also map::area::store::memory map::area::display map::area::map-display]
 
 [vset CATEGORY map]
 [include ../../support/devel/doc/feedback.inc]

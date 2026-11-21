@@ -15,14 +15,105 @@
 [require map::box::store::fs [opt [vset VERSION]]]
 [description]
 
-This package provides a store loading [term geo/box] definitions from a directory in the filesystem.
+This package provides a store of [term geo/box] definitions, loaded from the [term geo/box] files
+(see [package map::box::file]) found in a directory of the filesystem.
+
+[para] The store is a basic example of a [term geo/box] store, and defines the [sectref {Store API}]
+expected from the backing store of a [package map::box::store::memory].
 
 [section API]
 
 [list_begin definitions]
+
+[call [cmd ::map::box::store::fs] [arg storeName] [arg directory] [opt [arg options]...]]
+
+Creates a new store object named [arg storeName], and returns the fully qualified name of its
+command. The [arg storeName] can be [const %AUTO%] to generate a unique name.
+
+[para] All files in [arg directory] matching the [option -pattern] are read with
+[cmd {map box file read}]. Files which cannot be read, or are not valid [term geo/box] files, are
+ignored. Subdirectories are not searched. The files are read only once, at creation, later changes
+to the directory are not seen by the store.
+
+[para] The only option is
+
+[list_begin options]
+[opt_def -pattern [arg pattern]]
+The glob pattern selecting the files to read in [arg directory]. Defaults to [const *.box]. This
+option is read-only, it can only be set at creation.
 [list_end]
 
+[call [arg storeName] [method ids]]
+
+Returns a list of the ids of all [term geo/box]es in the store, in dictionary order. The id of a
+[term geo/box] is the path of the file it was read from, i.e. [arg directory] joined with the name of
+the file.
+
+[call [arg storeName] [method get] [arg id]]
+
+Returns the [term geo/box] with the given [arg id], a dictionary with keys [const names] and
+[const geo], as described in [package map::box::file]. Throws an error if the [arg id] is not known.
+
+[call [arg storeName] [method visible] [arg geobox]]
+
+Returns a list of the ids of all [term geo/box]es which have at least one of their four corners
+inside the geographical box [arg geobox] (a list of minimal latitude, minimal longitude, maximal
+latitude and maximal longitude). Note that a [term geo/box] overlapping [arg geobox] is not
+reported if none of its corners is inside, e.g. when it contains [arg geobox] completely.
+
+[call [arg storeName] [method cget] [arg option]]
+
+Returns the value of the [arg option].
+
+[call [arg storeName] [method destroy]]
+
+Destroys the store.
+
+[list_end]
+
+[section {Store API}]
+
+The methods [method ids], [method get], and [method visible] described above are the API of a
+[term geo/box] store, used by [package map::box::store::memory] to access its backing store. Any object providing these methods can be used in place of
+[package map::box::store::fs], for example a store backed by a database. Such a store must
+satisfy:
+
+[list_begin definitions]
+[def "[arg store] [method ids]"]
+Returns a list of the ids of all [term geo/box]es in the store. The ids are arbitrary strings,
+unique within the store.
+
+[def "[arg store] [method get] [arg id]"]
+Returns the [term geo/box] with the given [arg id], a dictionary containing at least the keys
+[const names] (a list of names) and [const geo] (a list of minimal latitude, minimal longitude,
+maximal latitude and maximal longitude), see [package map::box::file]. Further keys are allowed, and
+are passed through by [package map::box::store::memory].
+
+[def "[arg store] [method visible] [arg geobox]"]
+Returns a list of the ids of the [term geo/box]es to show in a map whose visible part is the
+geographical box [arg geobox].
+[list_end]
+
+[para] The store must be given to the users as the name of a single command, a command prefix with
+arguments is not supported.
+
 [section EXAMPLE]
+
+[example_begin]
+package require map::box::store::fs
+
+map box store fs Boxes /path/to/directory
+
+foreach id [lb]Boxes ids[rb] {
+    set box [lb]Boxes get $id[rb]
+    puts "$id: [lb]join [lb]dict get $box names[rb] {, }[rb] [lb]dict get $box geo[rb]"
+}
+
+# The boxes with a corner in the area of Vancouver
+puts [lb]Boxes visible {49.19 -123.27 49.32 -123.02}[rb]
+[example_end]
+
+[see_also map::box::file map::box::store::memory map::box::table-display]
 
 [vset CATEGORY map]
 [include ../../support/devel/doc/feedback.inc]

@@ -18,13 +18,143 @@
 
 This package provides a [package map::display] attachment extending the map's behaviour.
 This attachment enables the user to enter an open series of points, i.e. a [term geo/track].
+Optionally the series can be closed, i.e. a loop, as needed for a [term geo/area].
+
+[para] While editing is enabled the user edits the track with the mouse:
+
+[list_begin itemized]
+[item] Clicking mouse button 1 on a segment of the track inserts a new point into that segment.
+[item] Clicking mouse button 1 elsewhere on the map adds a new point, attached to the nearer end of
+the track. For a closed track the first three points are added this way. After that new points
+can be added only on segments.
+[item] Dragging a point with mouse button 2 moves it.
+[item] Clicking mouse button 1 on a point removes it.
+[list_end]
+
+[para] Panning and zooming the map work as usual. On zoom changes the track is redrawn at its
+geographical location.
+
+[para] The attachment knows the zoom level and the viewport of the map only from the view changes
+the map reports through its option [option -on-view-change]. Therefore create the attachment
+before the map reports its view for the first time, i.e. right after creating the map, or move or
+zoom the map (e.g. with its method [method center]) afterwards. Until the attachment knows the zoom
+level of the map, no track can be entered or set.
 
 [section API]
 
 [list_begin definitions]
+[call [cmd ::map::track::entry] [arg objectName] [arg map] [opt [arg options]...]]
+
+Creates a new track entry attachment [arg objectName] for the [package map::display] widget
+[arg map], configured with the specified options. The result of the command is the fully
+qualified name of the new object. The command is also available as [cmd {map track entry}].
+
+[para] The attachment takes over the option [option -on-view-change] of [arg map]. The previous
+value of that option is remembered and still invoked for each view change. Do not change that
+option of the map after creating the attachment.
+
+[para] Editing is initially enabled.
+
+[para] The attachment supports the following options. All of them can be set only at creation
+time.
+
+[list_begin options]
+[opt_def -closed [arg boolean]]
+
+If true, the edited series of points is closed, i.e. a loop. A loop requires at least three
+points. The default is [const false], i.e. an open track.
+
+[opt_def -on-track-change [arg cmdprefix]]
+
+A command prefix which is invoked when the track was changed, with one additional argument, the
+new track. The track is a list of geo locations, i.e. latitude/longitude pairs, the points of the
+track in order, as in the [const geo] element of a [term geo/track] value described in
+[package map::track::file]. The result of the command is ignored.
+
+[para] The command is invoked for changes made by the user, and by method [method clear], but not
+by method [method set].
+
+[para] The default is the empty string, i.e. changes are not reported.
+
+[opt_def -on-active [arg cmdprefix]]
+
+A command prefix which is invoked when the mouse pointer enters or leaves a point or the line of
+the track. It is invoked with two additional arguments, a handle of the internal editor, to be
+ignored, and an identifier of the entered element: the index of the point, counting from 0, the
+string [const line] for the line, or the empty string when the last entered element was left.
+The result of the command is ignored.
+
+[para] The default is the empty string, i.e. nothing is reported.
+
+[list_end]
+[list_end]
+
+The attachment supports the standard methods [method cget] and [method configure], and the
+following methods:
+
+[list_begin definitions]
+[call [arg objectName] [method enable]]
+
+Enables editing of the track by the user. The result of the method is the empty string.
+
+[call [arg objectName] [method disable]]
+
+Disables editing of the track by the user. The track stays visible. The result of the method is
+the empty string.
+
+[call [arg objectName] [method active]]
+
+Returns a boolean value, [const true] if editing is enabled, and [const false] otherwise.
+
+[call [arg objectName] [method track]]
+
+Returns the current track, in the format described for option [option -on-track-change].
+
+[call [arg objectName] [method set] [arg geos]]
+
+Shows the track [arg geos], in the format described for option [option -on-track-change],
+replacing the current track, and then centers and zooms the map to fit the track, as method
+[method fit] does.
+
+[para] The result of the method is the empty string.
+
+[call [arg objectName] [method clear]]
+
+Removes the current track. The result of the method is the empty string.
+
+[call [arg objectName] [method fit]]
+
+Centers the map on the current track, at the highest zoom level at which the whole track is
+visible. Does nothing if the track has less than two points.
+
+[para] The result of the method is the empty string.
+
+[call [arg objectName] [method focus] [arg index]]
+
+Centers the map on the point of the track with the specified [arg index], counting from 0, at the
+highest zoom level at which this point and its neighbours in the track are visible.
+
+[para] The result of the method is the empty string.
+
 [list_end]
 
 [section EXAMPLE]
+
+[example {
+package require map::provider::osm
+package require map::display
+package require map::track::entry
+
+map provider osm tiles [file join $env(HOME) .cache osm-tiles]
+map display .map -provider tiles -initial-geo {48.05 11.1} -initial-zoom 10
+pack .map -fill both -expand 1
+
+map track entry trackentry .map -on-track-change {apply {{geos} {
+    puts "track: $geos"
+}}}
+}]
+
+[see_also map::display map::track::display map::track::map-display map::track::file]
 
 [vset CATEGORY map]
 [include ../../support/devel/doc/feedback.inc]

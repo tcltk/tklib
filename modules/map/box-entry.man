@@ -19,12 +19,119 @@
 This package provides a [package map::display] attachment extending the map's behaviour.
 This attachment enables the user to enter a (bounding) [term geo/box].
 
+[para] While editing is enabled the user creates the box with the mouse:
+
+[list_begin itemized]
+[item] Clicking mouse button 1 on the map places a corner. After two corners the box is complete:
+the editor adds the missing corners and draws the box. No further corners can be placed while the
+box exists.
+[item] Dragging a corner with mouse button 2 moves it, resizing the box.
+[item] Clicking mouse button 1 on a corner removes the whole box, making way for a new one.
+[list_end]
+
+[para] Panning and zooming the map work as usual. On zoom changes the box is redrawn at its
+geographical location.
+
+[para] The attachment knows the zoom level and the viewport of the map only from the view changes
+the map reports through its option [option -on-view-change]. Therefore create the attachment
+before the map reports its view for the first time, i.e. right after creating the map, or move or
+zoom the map (e.g. with its method [method center]) afterwards. Until the attachment knows the zoom
+level of the map, no box can be entered or set.
+
 [section API]
 
 [list_begin definitions]
+[call [cmd ::map::box::entry] [arg objectName] [arg map] [opt [arg options]...]]
+
+Creates a new box entry attachment [arg objectName] for the [package map::display] widget
+[arg map], configured with the specified options. The result of the command is the fully
+qualified name of the new object. The command is also available as [cmd {map box entry}].
+
+[para] The attachment takes over the option [option -on-view-change] of [arg map]. The previous
+value of that option is remembered and still invoked for each view change. Do not change that
+option of the map after creating the attachment.
+
+[para] Editing is initially disabled. Use method [method enable] to enable it.
+
+[para] The attachment supports the following option:
+
+[list_begin options]
+[opt_def -on-box-change [arg cmdprefix]]
+
+A command prefix which is invoked when the box was changed, with one additional argument, the new
+box. The box is a list of four numbers, the minimal latitude, minimal longitude, maximal latitude,
+and maximal longitude, in this order, as in the [const geo] element of a [term geo/box] value
+described in [package map::box::file]. It is the empty list when the box was removed. The result
+of the command is ignored.
+
+[para] The command is invoked for changes made by the user, and by method [method clear], but not
+by method [method set].
+
+[para] The default is the empty string, i.e. changes are not reported.
+
+[list_end]
+[list_end]
+
+The attachment supports the standard methods [method cget] and [method configure], and the
+following methods:
+
+[list_begin definitions]
+[call [arg objectName] [method enable]]
+
+Enables editing of the box by the user. The result of the method is the empty string.
+
+[call [arg objectName] [method disable]]
+
+Disables editing of the box by the user. The box stays visible. The result of the method is the
+empty string.
+
+[call [arg objectName] [method active]]
+
+Returns a boolean value, [const true] if editing is enabled, and [const false] otherwise.
+
+[call [arg objectName] [method box]]
+
+Returns the current box, in the format described for option [option -on-box-change], or the empty
+list if there is no box.
+
+[call [arg objectName] [method set] [arg geobox]]
+
+Shows the box [arg geobox], in the format described for option [option -on-box-change], replacing
+the current box, and then centers and zooms the map to fit the box, as method [method fit] does.
+
+[para] The result of the method is the empty string.
+
+[call [arg objectName] [method clear]]
+
+Removes the current box. The result of the method is the empty string.
+
+[call [arg objectName] [method fit]]
+
+Centers the map on the current box, at the highest zoom level at which the whole box is visible.
+Does nothing if there is no box.
+
+[para] The result of the method is the empty string.
+
 [list_end]
 
 [section EXAMPLE]
+
+[example {
+package require map::provider::osm
+package require map::display
+package require map::box::entry
+
+map provider osm tiles [file join $env(HOME) .cache osm-tiles]
+map display .map -provider tiles -initial-geo {48.05 11.1} -initial-zoom 10
+pack .map -fill both -expand 1
+
+map box entry boxentry .map -on-box-change {apply {{geobox} {
+    puts "box: $geobox"
+}}}
+boxentry enable
+}]
+
+[see_also map::display map::box::display map::box::map-display map::box::file]
 
 [vset CATEGORY map]
 [include ../../support/devel/doc/feedback.inc]

@@ -28,15 +28,104 @@
 This package provides an in-memory store for [term geo/area] definitions, with memoized calculation
 of extended attributes.
 
-[para] The base data is pulled from a backing store. A [package map::area::store::fs] or anything
-API-compatible to it.
+[para] The base data is pulled from a backing store, a [package map::area::store::fs] or any other
+object providing the API described in section [term {Store API}] of [package map::area::store::fs]. The memory store adds derived attributes, like the perimeter or the
+center of a [term geo/area], and the pixel coordinates needed to draw the [term geo/area] on a map at
+the various zoom levels. It is the store expected by [package map::area::map-display] and
+[package map::area::table-display].
 
 [section API]
 
 [list_begin definitions]
+
+[call [cmd ::map::area::store::memory] [arg storeName] [arg store]]
+
+Creates a new store object named [arg storeName] on top of the backing store [arg store], and
+returns the fully qualified name of its command. The [arg storeName] can be [const %AUTO%] to
+generate a unique name.
+
+[para] The [arg store] is the name of the command of the backing store, an object providing the
+methods [method ids], [method get], and [method visible] as described in section
+[term {Store API}] of [package map::area::store::fs]. It is not destroyed together with the memory
+store.
+
+[call [arg storeName] [method ids]]
+
+Returns the list of the ids of all [term geo/area]s. This method is delegated to the backing store.
+
+[call [arg storeName] [method visible] [arg geobox]]
+
+Returns the list of the ids of the [term geo/area]s visible in the geographical box [arg geobox].
+This method is delegated to the backing store.
+
+[call [arg storeName] [method get] [arg id]]
+
+Returns the attributes of the [term geo/area] with the given [arg id], a dictionary. The attributes
+are computed on the first request for an [arg id] and then cached. Throws an error if the [arg id]
+is not known to the backing store.
+
+[para] The dictionary contains
+all the keys returned by the backing store, i.e. at least [const names] and [const geo] (see
+[package map::area::file]), extended with the following derived attributes:
+
+[list_begin definitions]
+[def [const bbox]]
+The geographical bounding box of the area, a list of minimal latitude, minimal longitude, maximal
+latitude, and maximal longitude.
+
+[def [const center]]
+The center of the bounding box, a list of latitude and longitude.
+
+[def [const diameter]]
+The largest distance between any two vertices of the area, in meters.
+
+[def [const perimeter]]
+The length of the outline of the area, including the edge from the last vertex back to the first,
+in meters.
+
+[def [const parts]]
+The number of edges of the outline. This is the number of vertices, except for areas with less than
+three vertices, where it is one less.
 [list_end]
 
+[call [arg storeName] [method pixels] [arg id] [arg zoom]]
+
+Returns the outline of the [term geo/area] with the given [arg id] in pixel coordinates of the map
+at the given [arg zoom] level, as a list of points, each a list of x and y coordinates (see
+[package map::slippy]). The outline is simplified for display: vertices which are only a few pixels
+apart are merged, and vertices which do not visibly change the shape are dropped. The result is
+cached for each combination of [arg id] and [arg zoom].
+
+[call [arg storeName] [method destroy]]
+
+Destroys the store.
+
+[list_end]
+
+[para] All other methods are delegated to the backing store as well.
+
+[para] The methods [method ids], [method get], [method visible], and [method pixels] are the API
+used by [package map::area::map-display]. [package map::area::table-display] uses [method ids] and
+[method get], and requires the derived attributes. Any object providing these methods with the
+same results can be used in place of a [package map::area::store::memory].
+
 [section EXAMPLE]
+
+[example_begin]
+package require map::area::store::fs
+package require map::area::store::memory
+
+map area store fs     AreaFiles /path/to/directory
+map area store memory Areas     AreaFiles
+
+foreach id [lb]Areas ids[rb] {
+    set area [lb]Areas get $id[rb]
+    puts "[lb]lindex [lb]dict get $area names[rb] 0[rb]: perimeter [lb]format %.0f [lb]dict get $area perimeter[rb][rb] m"
+    puts "  [lb]llength [lb]Areas pixels $id 15[rb][rb] points to draw at zoom level 15"
+}
+[example_end]
+
+[see_also map::area::store::fs map::area::file map::area::map-display map::area::table-display map::slippy]
 
 [vset CATEGORY map]
 [include ../../support/devel/doc/feedback.inc]

@@ -17,16 +17,147 @@
 [require map::point::map-display [opt [vset VERSION]]]
 [description]
 
-This package provides a [package map::display] attachment extending the map's behaviour. This
-attachment shows a set of [term geo/point] definitions. It ensures that only the visible points use
-canvas resources (items).
+This package provides an engine attachable to a [package map::display] widget, extending the map's
+behaviour. The engine shows a set of [term geo/point] definitions taken from a store on the map,
+as markers managed by [package canvas::edit::points] instances (used for display only, not for
+editing).
 
-[section API]
+It tracks the visible part of the map, ensuring that only the visible points use canvas resources
+(items).
+
+[para] The appearance of a point is determined by its [term style], selected by the
+[const kind] attribute of the point. The engine predefines the styles
 
 [list_begin definitions]
+[def [const point]] A small circle.
+[def [const feature]] A larger circle.
+[def [const cluster]] A large circle labeled with the value of the point's [const count]
+attribute, if it has one. [package map::point::store::memory] delivers clusters of points with
+this kind and attribute.
+[list_end]
+
+Further styles are defined with the method [method add-style]. Every point shown must have a
+[const kind] for which a style is defined.
+
+[section {Class API}]
+
+[list_begin definitions]
+[call [cmd ::map::point::map-display] [arg objectName] [arg map] [arg store] [opt "[arg option] [arg value]..."]]
+[call [cmd {::map point map-display}] [arg objectName] [arg map] [arg store] [opt "[arg option] [arg value]..."]]
+
+This command creates a new engine named [arg objectName], attaches it to the [package map::display]
+widget [arg map], and returns the fully qualified name of the object command. The name
+[const %AUTO%] generates a unique name.
+
+[para] The engine starts disabled, i.e. it shows nothing until its method [method enable] is
+called.
+
+[para] The [arg store] is a command prefix providing the points to show, with the API of
+[package map::point::store::memory]. The engine uses its methods [method visible] to query the
+points in the visible part of the map at the current zoom level, [method get] for their attributes
+(of which it uses [const geo] and [const kind], passing the attributes other than [const names],
+[const geo], and [const kind] to the style callbacks), and [method pixels] for their location on
+the map, a [term point]. The store is invoked at the global level.
+
+[para] The engine attaches to the map by chaining the option [option -on-view-change] of the
+widget, see the section [emph {Attaching behaviours}] in the manpage of [package map::display].
+[list_end]
+
+[section Options]
+
+[list_begin options]
+[opt_def -on-active [arg command-prefix]]
+
+A command prefix invoked at the global level, with the id of a point as additional argument,
+whenever the mouse pointer enters the marker of that point. Leaving it is not reported.
+
+The result of the command is ignored. The default is the empty string, i.e. no reporting.
+
+This option can only be set at creation time.
+[list_end]
+
+[section Methods]
+
+[list_begin definitions]
+[call [arg objectName] [method add-style] [arg name] [opt "[arg option] [arg value]..."]]
+
+This method defines the style [arg name], for the points whose [const kind] attribute is
+[arg name]. An existing style can be redefined only while no point of that style has been shown
+yet; otherwise an error is thrown.
+
+The result of the method is the empty string.
+
+[para] The options are those of [package canvas::edit::points] determining the appearance of the
+markers, i.e. [option -color], [option -hilit-color], [option -radius], [option -kind], and
+[option -create-cmd], plus the following pair of options, which have to be specified together:
+
+[list_begin options]
+[opt_def -hide-cmd [arg command-prefix]]
+[opt_def -unhide-cmd [arg command-prefix]]
+
+When these options are specified, the markers of points of this style leaving the visible part of
+the map are not deleted, but hidden by invoking the [option -hide-cmd], and reused for other
+points of the style. The [option -unhide-cmd] is invoked whenever a point of the style is placed
+on the map, i.e. when it becomes visible and when the zoom level changes.
+
+[para] Both are invoked at the global level with three additional arguments: the
+[package canvas::edit::points] instance managing the markers of the style, the id of the marker
+in that instance (which is also the canvas tag of its items), and the dictionary of the point's
+attributes other than [const names], [const geo], and [const kind]. Their results are ignored.
+
+[para] As the [option -create-cmd] does not get the attributes of the point, the
+[option -unhide-cmd] is the place to adapt a marker to its point.
+[list_end]
+
+[call [arg objectName] [method enable]]
+
+This method enables the engine: it shows the points in the visible part of the map and from now
+on follows changes of the visible part. Enabling an enabled engine does nothing.
+
+The result of the method is the empty string.
+
+[call [arg objectName] [method disable]]
+
+This method disables the engine: it removes all points from the map and stops following the
+changes of the visible part. Disabling a disabled engine does nothing.
+
+The result of the method is the empty string.
+
+[call [arg objectName] [method focus] [arg id]]
+
+This method moves the map so that the point with the given [arg id] is at its center, at the
+highest zoom level.
+
+The result of the method is the empty string.
+
+[call [arg objectName] [method destroy]]
+
+This method disables the engine, detaches it from the map, and destroys it.
 [list_end]
 
 [section EXAMPLE]
+
+Showing the points read from the [file *.points] files in directory [file points], with an
+additional style for points of kind [const station]:
+
+[example {
+package require map::display
+package require map::provider::osm
+package require map::point::store::fs
+package require map::point::store::memory
+package require map::point::map-display
+
+file mkdir tiles
+set provider [map provider osm %AUTO% tiles]
+map display .map -provider $provider -initial-geo {48.137 11.575} -initial-zoom 10
+pack .map -fill both -expand 1
+
+map point store fs     files  points
+map point store memory store  files [expr {[.map levels] - 1}]
+map point map-display  layer  .map store -on-active puts
+layer add-style station -color blue -radius 5
+layer enable
+}]
 
 [vset CATEGORY map]
 [include ../../support/devel/doc/feedback.inc]

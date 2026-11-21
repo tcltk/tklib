@@ -12,15 +12,89 @@
 [description]
 
 This package provides a [package map::display] attachment extending the map's behaviour.
-This attachment enables the user to mark locations, i.e. [term geo/point]s.
-The marked locations are reported via a callback.
+This attachment enables the user to mark locations, i.e. [term geo/point]s, by double-clicking on
+the map. The marked locations are reported via a callback.
 
 [section API]
 
 [list_begin definitions]
+
+[call [cmd ::map::mark] [arg objectName] [arg map] [opt [arg options]...]]
+
+Creates a new mark engine named [arg objectName], attaches it to the [arg map], and returns the
+fully qualified name of its command. The [arg objectName] can be [const %AUTO%] to generate a
+unique name. The engine is active after creation, see method [method enable].
+
+[para] The [arg map] is a [package map::display] widget, or any other command providing the methods
+[method canvas], returning the canvas widget showing the map, and [method at], returning the
+geographical location under the mouse pointer.
+
+[para] When the [option -on-event] occurs on the map, the location under the mouse pointer is
+reported through the [option -command]. The options are:
+
+[list_begin options]
+[opt_def -command [arg cmdprefix]]
+The command prefix called when a location is marked. It is called with one argument appended, the
+marked location, a list of latitude and longitude in degrees (see [package map::slippy]). The
+result of the callback is ignored. If empty (the default), marks are ignored.
+
+[opt_def -on-event [arg event]]
+The event marking a location, an event pattern as accepted by [cmd bind], without the enclosing
+angle brackets. Defaults to [const Double-Button-1], i.e. a double-click with mouse button 1. This
+option is read-only, it can only be set at creation.
+[list_end]
+
+
+[call [arg objectName] [method enable]]
+
+Activates the engine, i.e. binds the [option -on-event] on the canvas of the map, replacing any
+binding of the same event the canvas may have had. The call is ignored if the engine is already
+active. The result is the empty string.
+
+[call [arg objectName] [method disable]]
+
+Deactivates the engine, i.e. removes the binding of the [option -on-event] from the map canvas.
+The call is ignored if the engine is already inactive. The result is the empty string.
+
+[call [arg objectName] [method active]]
+
+Returns a boolean value, true if the engine is active, and false otherwise.
+
+[call [arg objectName] [method configure] [opt [arg option]] [opt [arg value]]...]
+[call [arg objectName] [method cget] [arg option]]
+
+The standard methods to change and query the options.
+
+[call [arg objectName] [method destroy]]
+
+Destroys the engine, after deactivating it. The map is not destroyed.
+
 [list_end]
 
 [section EXAMPLE]
+
+[example_begin]
+package require Tk
+package require map::display
+package require map::provider::osm
+package require map::mark
+
+set cache [lb]file join $env(HOME) .cache map-tiles[rb]
+file mkdir $cache
+map provider osm Tiles $cache
+
+map display .map -provider Tiles -initial-geo {49.2827 -123.1207} -initial-zoom 12
+pack .map -fill both -expand 1
+
+proc marked {geo} {
+    lassign $geo lat lon
+    puts "Marked $lat, $lon"
+}
+
+map mark Marker .map -command marked
+[example_end]
+
+[see_also map::display map::provider::osm]
 
 [vset CATEGORY map]
 [include ../../support/devel/doc/feedback.inc]

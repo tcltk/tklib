@@ -15,14 +15,116 @@
 [require map::box::file [opt [vset VERSION]]]
 [description]
 
-This package provides read/write functions for Tklib [term geo/box] files.
+This package provides commands to read and write Tklib [term geo/box] files. The format of these
+files is described in section [sectref {File format}], the value returned by [cmd {map box file read}]
+and accepted by [cmd {map box file write}] in section [sectref {geo/box value}].
+
+[para] Packages using these files are [package map::box::store::fs], which loads all
+[term geo/box] files of a directory, and through it [package map::box::store::memory].
 
 [section API]
 
 [list_begin definitions]
+
+[call [cmd {::map box file read}] [arg path]]
+
+Reads the [term geo/box] file [arg path] and returns its contents as a [term geo/box] value, see
+section [sectref {geo/box value}].
+
+[para] If the file cannot be opened, or is not a valid [term geo/box] file, the result is the empty
+string. No error is thrown in these cases.
+
+[para] If the file does not specify any name, the box gets a single name, the name of the file
+without directory and extension. For example, an unnamed box in file [file /data/campus.box] is
+named [const campus].
+
+[call [cmd {::map box file write}] [arg path] [arg box]]
+
+Writes the [term geo/box] value [arg box] (see section [sectref {geo/box value}]) to the file
+[arg path], replacing any previous contents. The names are written in dictionary order, with
+duplicates removed. The coordinates are written in the order given, and are not validated.
+
+[para] The result of the command is the empty string. Failure to open the file is reported as an
+error.
+
 [list_end]
 
+[section {geo/box value}]
+
+A [term geo/box] is a rectangle on the map, bounded by two parallels and two meridians, together
+with a list of names. It is represented by a Tcl dictionary with the following keys:
+
+[list_begin definitions]
+[def [const names]]
+A list of strings, the names of the box. Several names can be specified, e.g. aliases or names in
+different languages.
+
+[def [const geo]]
+The box, a list of four numbers in degrees: the minimal latitude, the minimal longitude, the maximal
+latitude, and the maximal longitude, in this order. This is the geographical bounding box
+([term geobox]) of [package map::slippy].
+[list_end]
+
+For example:
+
+[example {names {{Stanley Park}} geo {49.2897 -123.1572 49.3149 -123.1176}}]
+
+[section {File format}]
+
+A [term geo/box] file is a text file, read line by line:
+
+[list_begin itemized]
+[item] Leading and trailing whitespace of each line is ignored.
+
+[item] Empty lines are ignored.
+
+[item] Lines starting with [const #] or [const //] are comments, and ignored.
+
+[item] The first line which is neither empty nor a comment must be the magic line
+[const tklib/geo/box], identifying the file.
+
+[item] Every other line which is not a number is a name of the box. There may be any number of
+names, including none. A name cannot look like a floating point number, it would be read as a
+coordinate.
+
+[item] Exactly four lines must be numbers, the coordinates of the box: the minimal latitude, the
+minimal longitude, the maximal latitude, and the maximal longitude, in this order. Latitudes must
+be in the range -90 to 90, longitudes in the range -180 to 180 degrees. The reader does not check
+that the minimum is not greater than the maximum.
+
+[list_end]
+
+[para] By convention the names are written after the magic line and before the coordinates, and
+files use the extension [file .box]. This is also the default file pattern of
+[package map::box::store::fs].
+
+[para] For example:
+
+[example {tklib/geo/box
+Stanley Park
+# south-west corner
+49.2897
+-123.1572
+# north-east corner
+49.3149
+-123.1176}]
+
 [section EXAMPLE]
+
+[example_begin]
+package require map::box::file
+
+map box file write stanley.box {
+    names {{Stanley Park}}
+    geo   {49.2897 -123.1572 49.3149 -123.1176}
+}
+
+set box [lb]map box file read stanley.box[rb]
+lassign [lb]dict get $box geo[rb] latmin lonmin latmax lonmax
+puts "$latmin $lonmin - $latmax $lonmax"
+[example_end]
+
+[see_also map::box::store::fs map::box::store::memory map::slippy]
 
 [vset CATEGORY map]
 [include ../../support/devel/doc/feedback.inc]

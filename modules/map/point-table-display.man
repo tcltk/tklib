@@ -14,18 +14,104 @@
 [require scrollutil]
 [require snit]
 [require tablelist]
-[require .map::point::table-display [opt [vset VERSION]]]
+[require map::point::table-display [opt [vset VERSION]]]
 [description]
 
 This package provides a widget showing the information of many [term geo/point] definitions in a
 table.
 
+[para] The widget takes the points to show from a store, see section [sectref Store]. Each row of the table
+shows a row number, followed by the name, the kind, and the latitude and longitude of the point. The table has the columns [const #], [const Name], [const Kind], [const Lat], and [const Lon].
+
+[para] A point with several names is shown in several rows, one per name. A point without names is
+shown in a single row with an empty name.
+
+[para] Clicking on a column label sorts the table by that column, clicking again reverses the
+order. A click with the [const Shift] key held adds the column to the sort columns.
+
 [section API]
 
 [list_begin definitions]
+[call [cmd ::map::point::table-display] [arg pathName] [arg store] [opt [arg options]...]]
+
+Creates a new table widget [arg pathName] showing the points held by [arg store], and configures it
+with the specified options. The result of the command is [arg pathName]. The command is also
+available as [cmd {map point table-display}].
+
+[para] [arg store] is a command prefix for the store, see section [sectref Store].
+
+[para] The widget supports the following option:
+
+[list_begin options]
+[opt_def -on-selection [arg cmdprefix]]
+
+A command prefix which is invoked when the user selects a row of the table. It is invoked at idle
+time, at the global level, with one additional argument, the id of the point shown in the selected
+row. The result of the command is ignored.
+
+[para] Selections made through method [method focus] are not reported.
+
+[para] The default is the empty string, i.e. selections are not reported.
+
+[list_end]
+[list_end]
+
+The widget supports the standard methods [method cget] and [method configure], and the
+following method:
+
+[list_begin definitions]
+[call [arg pathName] [method focus] [arg id]]
+
+Selects all rows showing the point with the specified [arg id], and scrolls the table to make
+them visible. It is an error if the table does not show the point [arg id].
+
+[para] The result of the method is the empty string.
+
+[list_end]
+
+[section Store]
+
+The widget reads the points to show from [arg store] once, about 100 milliseconds after its
+creation. Later changes in the store are not shown.
+
+[para] The widget uses the following methods of the store, invoked at the global level by
+appending them to the [arg store] command prefix. They are a subset of the store API described in
+[package map::point::store::memory].
+
+[list_begin definitions]
+[call [arg store] [method ids]]
+
+Returns a list of the ids of all points in the store.
+
+[call [arg store] [method get] [arg id]]
+
+Returns a dictionary describing the point with the specified [arg id]. The widget uses the following
+keys of the dictionary, and ignores any others:
+
+[list_begin definitions]
+[def [const names]] A list of the names of the point.
+[def [const kind]] The kind of the point.
+[def [const geo]] The location of the point, a latitude/longitude pair.
+[list_end]
+
+Both [package map::point::store::fs] and [package map::point::store::memory] provide these.
+
 [list_end]
 
 [section EXAMPLE]
+
+[example {
+package require map::point::store::fs
+package require map::point::table-display
+
+map point store fs points /path/to/directory/of/point/files
+map point table-display .points points -on-selection {apply {{id} {
+    puts "selected point $id"
+}}}
+pack .points -fill both -expand 1
+}]
+
+[see_also map::point::store::fs map::point::store::memory map::point::map-display]
 
 [vset CATEGORY map]
 [include ../../support/devel/doc/feedback.inc]

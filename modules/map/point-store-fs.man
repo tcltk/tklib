@@ -15,15 +15,111 @@
 [require map::point::store::fs [opt [vset VERSION]]]
 [description]
 
-This package provides a store loading [term geo/point] definitions from a directory in the
-filesystem.
+This package provides a store of [term geo/point] definitions, loaded from the [term geo/point]
+files (see [package map::point::file]) found in a directory of the filesystem.
+
+[para] The store is a basic example of a [term geo/point] store, and defines the
+[sectref {Store API}] expected from the backing store of a [package map::point::store::memory]. It
+can also be used directly with [package map::point::table-display].
 
 [section API]
 
 [list_begin definitions]
+
+[call [cmd ::map::point::store::fs] [arg storeName] [arg directory] [opt [arg options]...]]
+
+Creates a new store object named [arg storeName], and returns the fully qualified name of its
+command. The [arg storeName] can be [const %AUTO%] to generate a unique name.
+
+[para] All files in [arg directory] matching the [option -pattern] are read with
+[cmd {map point file read}]. Files which cannot be read, or are not valid [term geo/point] files,
+are ignored. Subdirectories are not searched. The files are read only once, at creation, later
+changes to the directory are not seen by the store.
+
+[para] The only option is
+
+[list_begin options]
+[opt_def -pattern [arg pattern]]
+The glob pattern selecting the files to read in [arg directory]. Defaults to [const *.points]. This
+option is read-only, it can only be set at creation.
 [list_end]
 
+[call [arg storeName] [method ids]]
+
+Returns a list of the ids of all [term geo/point]s in the store, in dictionary order. As a file can
+contain several points, the id of a [term geo/point] is the path of the file it was read from
+([arg directory] joined with the name of the file), followed by a slash and the position of the
+point in the file, starting at [const 1]. For example, [const /data/cafes.points/3] is the third
+point of file [file /data/cafes.points].
+
+[call [arg storeName] [method get] [arg id]]
+
+Returns the [term geo/point] with the given [arg id], a dictionary with keys [const names],
+[const kind], and [const geo], as described in [package map::point::file]. Throws an error if the
+[arg id] is not known.
+
+[call [arg storeName] [method visible] [arg geobox] [arg zoom]]
+
+Returns a list of the ids of all [term geo/point]s located inside the geographical box
+[arg geobox] (a list of minimal latitude, minimal longitude, maximal latitude and maximal
+longitude). The [arg zoom] level is ignored.
+
+[call [arg storeName] [method cget] [arg option]]
+
+Returns the value of the [arg option].
+
+[call [arg storeName] [method destroy]]
+
+Destroys the store.
+
+[list_end]
+
+[section {Store API}]
+
+The methods [method ids] and [method get] described above are the API of a [term geo/point] store
+used by [package map::point::store::memory] to access its backing store, and by
+[package map::point::table-display]. Any object providing these methods can be used in place of
+[package map::point::store::fs], for example a store backed by a database. Such a store must
+satisfy:
+
+[list_begin definitions]
+[def "[arg store] [method ids]"]
+Returns a list of the ids of all [term geo/point]s in the store. The ids are arbitrary strings,
+unique within the store. They should not start with [const c/], which
+[package map::point::store::memory] uses for the ids of the clusters it creates.
+
+[def "[arg store] [method get] [arg id]"]
+Returns the [term geo/point] with the given [arg id], a dictionary containing at least the keys
+[const names] (a list of names), [const kind] (a string), and [const geo] (a list of latitude and
+longitude), see [package map::point::file]. Further keys are allowed, and are passed through by
+[package map::point::store::memory].
+[list_end]
+
+[para] The method [method visible] is not used by [package map::point::store::memory], which
+computes the visible points itself.
+
+[para] The store must be given to the users as the name of a single command, a command prefix with
+arguments is not supported.
+
 [section EXAMPLE]
+
+[example_begin]
+package require map::point::store::fs
+
+map point store fs Points /path/to/directory
+
+foreach id [lb]Points ids[rb] {
+    set point [lb]Points get $id[rb]
+    dict with point {
+        puts "$id: [lb]join $names {, }[rb] ($kind) at $geo"
+    }
+}
+
+# The points in the area of Vancouver
+puts [lb]Points visible {49.19 -123.27 49.32 -123.02} 0[rb]
+[example_end]
+
+[see_also map::point::file map::point::store::memory map::point::table-display]
 
 [vset CATEGORY map]
 [include ../../support/devel/doc/feedback.inc]

@@ -15,15 +15,84 @@
 [require map::provider::osm [opt [vset VERSION]]]
 [description]
 
-This package provides a tile provider suitable for use with [package map::display].
-It uses OpenStreetMap Mapnik as origin and caches fetched tiles in the local filesystem.
+This package provides a tile provider suitable for use with [package map::display], see the
+section [emph {Tile provider}] of its manpage for the API every tile provider has to support.
 
-[section API]
+It uses the OpenStreetMap Mapnik tile server ([uri https://tile.openstreetmap.org]) as origin and
+caches fetched tiles in the local filesystem, using the packages [package map::slippy::fetcher] and
+[package map::slippy::cache].
+
+[para] As the tile server is accessed via [const https], creating a provider requires that the
+[package http] package supports this protocol: either it is already registered with
+[cmd http::register], or the package [package tls] (or, on Windows, [package twapi_crypto]) is
+available and is used to register it.
+
+[section {Class API}]
 
 [list_begin definitions]
+[call [cmd ::map::provider::osm] [arg objectName] [arg cachedir]]
+[call [cmd {::map provider osm}] [arg objectName] [arg cachedir]]
+
+This command creates a new tile provider named [arg objectName] and returns the fully qualified
+name of the object command. The name [const %AUTO%] generates a unique name.
+
+[para] The directory [arg cachedir] holds the cached tiles. It has to exist. The tile for zoom
+level [var z], row [var r] and column [var c] is stored in the PNG file
+[file [var cachedir]/[var z]/[var c]/[var r].png].
+[list_end]
+
+[section Methods]
+
+[list_begin definitions]
+[call [arg objectName] [method levels]]
+
+This method returns the number of zoom levels supported by the provider, [const 20].
+
+[call [arg objectName] [method tilewidth]]
+[call [arg objectName] [method tileheight]]
+
+These methods return the width and the height of the tiles, in pixels ([const 256]).
+
+[call [arg objectName] [method get] [arg tile] [arg donecmd]]
+
+This method requests the image of the [arg tile], a 3-element list of zoom level, row, and
+column, in this order. The result of the method is the empty string.
+
+[para] The command prefix [arg donecmd] is invoked at the global level, in one of the forms
+
+[example {
+    {*}$donecmd set   $tile $image  ;# The image for the tile is available
+    {*}$donecmd unset $tile         ;# There is no image for the tile
+}]
+
+where [arg image] is the name of a new photo image showing the tile.
+
+[para] A tile found in the cache is reported asynchronously, from the event loop. A tile not in
+the cache is fetched from the tile server, stored in the cache, and then reported; a tile which
+cannot be fetched is reported as [const unset]. An invalid tile
+(i.e. one outside of the map at its zoom level, or with an unsupported zoom level) is reported as
+[const unset] immediately, before the method returns.
+
+[para] Errors thrown by [arg donecmd] are not propagated; their stack trace is printed to
+[const stdout].
+
+[call [arg objectName] [method destroy]]
+
+This method destroys the provider.
+
 [list_end]
 
 [section EXAMPLE]
+
+[example {
+package require map::display
+package require map::provider::osm
+
+file mkdir tiles
+set provider [map provider osm %AUTO% tiles]
+map display .map -provider $provider -initial-geo {48.137 11.575} -initial-zoom 12
+pack .map -fill both -expand 1
+}]
 
 [vset CATEGORY map]
 [include ../../support/devel/doc/feedback.inc]

@@ -15,14 +15,119 @@
 [require map::track::file [opt [vset VERSION]]]
 [description]
 
-This package provides read/write functions for Tklib [term geo/track] files.
+This package provides commands to read and write Tklib [term geo/track] files. The format of these
+files is described in section [sectref {File format}], the value returned by
+[cmd {map track file read}] and accepted by [cmd {map track file write}] in section
+[sectref {geo/track value}].
+
+[para] Packages using these files are [package map::track::store::fs], which loads all
+[term geo/track] files of a directory, and through it [package map::track::store::memory].
 
 [section API]
 
 [list_begin definitions]
+
+[call [cmd {::map track file read}] [arg path]]
+
+Reads the [term geo/track] file [arg path] and returns its contents as a [term geo/track] value,
+see section [sectref {geo/track value}].
+
+[para] If the file cannot be opened, or is not a valid [term geo/track] file, the result is the
+empty string. No error is thrown in these cases.
+
+[para] If the file does not specify any name, the track gets a single name, the name of the file
+without directory and extension. For example, an unnamed track in file [file /data/walk.track] is
+named [const walk].
+
+[call [cmd {::map track file write}] [arg path] [arg track]]
+
+Writes the [term geo/track] value [arg track] (see section [sectref {geo/track value}]) to the file
+[arg path], replacing any previous contents. The names are written in dictionary order, with
+duplicates removed. The coordinates are written in the order given, and are not validated.
+
+[para] The result of the command is the empty string. Failure to open the file is reported as an
+error.
+
 [list_end]
 
+[section {geo/track value}]
+
+A [term geo/track] is a path on the surface of Earth, a polyline, together with a list of names. It
+is represented by a Tcl dictionary with the following keys:
+
+[list_begin definitions]
+[def [const names]]
+A list of strings, the names of the track. Several names can be specified, e.g. aliases or names in
+different languages.
+
+[def [const geo]]
+A list of geographical locations, the vertices of the polyline, in order from one end of the track
+to the other. Each location is a list of two numbers, the latitude and the longitude in degrees, in
+this order (the [term geo] of [package map::slippy]). Unlike for a [term geo/area] the polyline is
+not closed.
+[list_end]
+
+For example:
+
+[example {names {{Seawall Walk}} geo {{49.2873 -123.1218} {49.2905 -123.1250} {49.2951 -123.1271}}}]
+
+[section {File format}]
+
+A [term geo/track] file is a text file, read line by line:
+
+[list_begin itemized]
+[item] Leading and trailing whitespace of each line is ignored.
+
+[item] Empty lines are ignored.
+
+[item] Lines starting with [const #] or [const //] are comments, and ignored.
+
+[item] The first line which is neither empty nor a comment must be the magic line
+[const tklib/geo/track], identifying the file.
+
+[item] Every other line which is not a number is a name of the track. There may be any number of
+names, including none. A name cannot look like a floating point number, it would be read as a
+coordinate.
+
+[item] Every line which is a number is a coordinate. The coordinates are taken in pairs, the latitude
+followed by the longitude of a vertex of the track. The latitude must be in the range -90 to 90,
+the longitude in the range -180 to 180 degrees. At least one vertex (two coordinates) is required,
+and the number of coordinates must be even.
+
+[list_end]
+
+[para] By convention the names are written after the magic line and before the coordinates, and
+files use the extension [file .track]. This is also the default file pattern of
+[package map::track::store::fs].
+
+[para] For example:
+
+[example {tklib/geo/track
+// Along the seawall, Vancouver
+Seawall Walk
+49.2873
+-123.1218
+49.2905
+-123.1250
+49.2951
+-123.1271}]
+
 [section EXAMPLE]
+
+[example_begin]
+package require map::track::file
+
+map track file write seawall.track {
+    names {{Seawall Walk} Seawall}
+    geo   {{49.2873 -123.1218} {49.2905 -123.1250} {49.2951 -123.1271}}
+}
+
+set track [lb]map track file read seawall.track[rb]
+puts [lb]dict get $track names[rb]       ;# -> Seawall {Seawall Walk}
+puts [lb]lindex [lb]dict get $track geo[rb] end[rb] ;# -> 49.2951 -123.1271
+[example_end]
+
+[see_also map::track::store::fs map::track::store::memory map::slippy]
 
 [vset CATEGORY map]
 [include ../../support/devel/doc/feedback.inc]
