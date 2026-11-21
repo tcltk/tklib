@@ -1,0 +1,690 @@
+# -*- tcl -*-
+# Tests for the widget::listsimple package
+#
+# Copyright (c) 2026 Serhiy Storchaka
+#
+# See the file "license.terms" for information on usage and redistribution
+# of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+package require tcltest 2.2
+namespace import ::tcltest::*
+
+lappend auto_path [file dirname [file dirname [file normalize [info script]]]]
+
+# The package requires img::png (see ticket d74509223b), but Tk 8.6 and
+# later read PNG images natively.  Provide a placeholder if Img is not
+# installed, so that the rest of the package can be tested.
+testConstraint haveImg [expr {![catch {package require img::png}]}]
+if {![testConstraint haveImg]} {
+    package provide img::png 0
+}
+
+# -------------------------------------------------------------------------
+
+test widget_listsimple-0.1 {package can be loaded without Img} -constraints {
+    knownBug
+} -setup {
+    # Ticket d74509223b: the package requires img::png instead of png.
+    interp create child
+    load {} Tk child
+    child eval [list set auto_path $auto_path]
+} -body {
+    child eval {package require widget::listsimple}
+} -cleanup {
+    interp delete child
+} -result 0.1.2
+
+package require widget::listsimple
+
+# Keyboard tests need a viewable main window (test runners withdraw it).
+set oldmainstate [wm state .]
+wm deiconify .
+update
+
+set oldlocale [msgcat::mclocale]
+msgcat::mclocale en
+
+# -------------------------------------------------------------------------
+# Helpers
+
+proc mk {args} {
+    eval [list widget::listsimple .ls] $args
+    pack .ls
+    update
+    return .ls
+}
+
+# Destroy the widget.  The validator attached to the entry field is not
+# detached when the widget is destroyed (see widget_listsimple-1.14), so
+# forget it explicitly.
+proc cleanupLs {} {
+    destroy .ls
+    dict unset ::widget::validator::attached .ls.e
+}
+
+# Put the text into the entry field.
+proc type {text} {
+    .ls.e delete 0 end
+    .ls.e insert 0 $text
+}
+
+# Enter the text and press the Add button.
+proc add {text} {
+    type $text
+    .ls.add invoke
+}
+
+proc states {args} {
+    set res {}
+    foreach b $args {
+        lappend res [expr {[.ls$b instate disabled] ? "disabled" : "normal"}]
+    }
+    set res
+}
+
+proc tipOf {w} {
+    lindex $::tooltip::tooltip($w) 0
+}
+
+proc values {cmd args} {
+    switch -exact -- $cmd {
+        get {return $::mru}
+        set {lappend ::saved [lindex $args 0]}
+    }
+}
+
+# -------------------------------------------------------------------------
+# Creation and options
+
+test widget_listsimple-1.1 {creation: returns the path name} -body {
+    widget::listsimple .ls
+} -cleanup {
+    cleanupLs
+} -result .ls
+
+test widget_listsimple-1.2 {creation: components} -body {
+    widget::listsimple .ls
+    list [winfo class .ls.e] [winfo class .ls.l] [winfo class .ls.add] \
+        [winfo class .ls.rem] [.ls.l cget -height]
+} -cleanup {
+    cleanupLs
+} -result {TEntry Listbox TButton TButton 20}
+
+test widget_listsimple-1.3 {creation: default options} -body {
+    widget::listsimple .ls
+    list [.ls cget -listvariable] [.ls cget -values] [.ls cget -validate] \
+        [.ls cget -skin-invalid-color] [.ls cget -skin-add]
+} -cleanup {
+    cleanupLs
+} -result {{} {} {} {} wle.add}
+
+test widget_listsimple-1.4 {creation: unknown option} -body {
+    widget::listsimple .ls -foo 1
+} -returnCodes error -match glob -result {*unknown option "-foo"}
+
+test widget_listsimple-1.7 {creation: initial state of buttons} -body {
+    mk
+    states .add .rem
+} -cleanup {
+    cleanupLs
+} -result {disabled disabled}
+
+test widget_listsimple-1.8 {construction-time only options} -setup {
+    mk
+} -body {
+    set res {}
+    foreach o {-values -validate} {
+        lappend res [catch {.ls configure $o 1} msg] $msg
+    }
+    set res
+} -cleanup {
+    cleanupLs
+    unset -nocomplain res o msg
+} -result {1 {option -values can only be set at instance creation} 1 {option -validate can only be set at instance creation}}
+
+test widget_listsimple-1.9 {configure: list all options} -setup {
+    mk
+} -body {
+    set names {}
+    foreach item [.ls configure] {lappend names [lindex $item 0]}
+    lsort $names
+} -cleanup {
+    cleanupLs
+    unset -nocomplain names item
+} -result [lsort {-listvariable -skin-add -skin-img-add -skin-img-remove
+    -skin-invalid-color -skin-remove -skin-tip-add -skin-tip-add-none
+    -skin-tip-duplicate -skin-tip-empty -skin-tip-entry -skin-tip-list
+    -skin-tip-main -skin-tip-remove -skin-tip-remove-none -validate -values}]
+
+test widget_listsimple-1.10 {configure option is an alias of cget} -constraints {
+    knownBug
+} -setup {
+    # The documentation says that "configure option" is identical to
+    # "cget option", but it returns the full option description.
+    mk -skin-tip-main Main
+} -body {
+    .ls configure -skin-tip-main
+} -cleanup {
+    cleanupLs
+} -result Main
+
+test widget_listsimple-1.11 {configure returns empty string} -setup {
+    mk
+} -body {
+    .ls configure -skin-remove Minus -skin-add Plus
+} -cleanup {
+    cleanupLs
+} -result {}
+
+test widget_listsimple-1.12 {destroy method} -constraints {
+    knownBug
+} -setup {
+    # The documented destroy method does not exist.
+    mk
+} -body {
+    list [.ls destroy] [winfo exists .ls] [info commands .ls]
+} -cleanup {
+    cleanupLs
+} -result {{} 0 {}}
+
+test widget_listsimple-1.13 {cget: unknown option} -setup {
+    mk
+} -body {
+    .ls cget -foo
+} -cleanup {
+    cleanupLs
+} -returnCodes error -result {unknown option "-foo"}
+
+test widget_listsimple-1.14 {create again after destroy} -constraints {
+    knownBug
+} -setup {
+    # The validator is not detached from the entry field, because it is
+    # already destroyed when the destructor runs.
+    widget::listsimple .ls
+    destroy .ls
+} -body {
+    widget::listsimple .ls
+} -cleanup {
+    cleanupLs
+} -result .ls
+
+# -------------------------------------------------------------------------
+# Adding and removing
+
+test widget_listsimple-2.1 {entering text enables Add} -setup {
+    mk
+} -body {
+    set res [list [states .add]]
+    type foo
+    lappend res [states .add] [.ls.e instate invalid]
+    type {}
+    lappend res [states .add] [.ls.e instate invalid]
+} -cleanup {
+    cleanupLs
+    unset -nocomplain res
+} -result {disabled normal 0 disabled 1}
+
+test widget_listsimple-2.2 {Add moves the text into the list} -setup {
+    set L {}
+    mk -listvariable ::L
+} -body {
+    add foo
+    add bar
+    list $L [.ls.l get 0 end] [.ls.e get] [states .add]
+} -cleanup {
+    cleanupLs
+    unset -nocomplain L
+} -result {{foo bar} {foo bar} {} disabled}
+
+test widget_listsimple-2.3 {Add ignores empty text} -setup {
+    set L {}
+    mk -listvariable ::L
+} -body {
+    add {}
+    .ls.l get 0 end
+} -cleanup {
+    cleanupLs
+    unset -nocomplain L
+} -result {}
+
+test widget_listsimple-2.4 {duplicates are refused} -setup {
+    set L {foo}
+    mk -listvariable ::L
+} -body {
+    type foo
+    set res [list [states .add] [.ls.e instate invalid]]
+    .ls.add invoke
+    lappend res $L
+} -cleanup {
+    cleanupLs
+    unset -nocomplain L res
+} -result {disabled 1 foo}
+
+test widget_listsimple-2.6 {Return key adds} -setup {
+    set L {}
+    mk -listvariable ::L
+    focus -force .ls.e
+    update
+} -body {
+    type foo
+    event generate .ls.e <Key-Return>
+    event generate .ls.e <Key-KP_Enter>
+    type bar
+    event generate .ls.e <Key-KP_Enter>
+    update
+    set L
+} -cleanup {
+    cleanupLs
+    unset -nocomplain L
+} -result {foo bar}
+
+test widget_listsimple-2.7 {selection enables Remove} -setup {
+    set L {a b c}
+    mk -listvariable ::L
+} -body {
+    set res [states .rem]
+    .ls.l selection set 1
+    event generate .ls.l <<ListboxSelect>>
+    update
+    lappend res [states .rem]
+} -cleanup {
+    cleanupLs
+    unset -nocomplain L res
+} -result {disabled normal}
+
+test widget_listsimple-2.8 {Remove deletes the selected elements} -setup {
+    set L {a b c d}
+    mk -listvariable ::L
+} -body {
+    .ls.l selection set 0
+    .ls.l selection set 2
+    event generate .ls.l <<ListboxSelect>>
+    update
+    .ls.rem invoke
+    list $L [states .rem]
+} -cleanup {
+    cleanupLs
+    unset -nocomplain L
+} -result {{b d} disabled}
+
+test widget_listsimple-2.9 {Delete key removes} -setup {
+    set L {a b c}
+    mk -listvariable ::L
+    focus -force .ls.l
+    update
+} -body {
+    .ls.l selection set 1
+    event generate .ls.l <<ListboxSelect>>
+    update
+    event generate .ls.l <Key-Delete>
+    update
+    set L
+} -cleanup {
+    cleanupLs
+    unset -nocomplain L
+} -result {a c}
+
+test widget_listsimple-2.10 {removed element can be added again} -setup {
+    set L {a b}
+    mk -listvariable ::L
+} -body {
+    type a
+    set res [states .add]
+    .ls.l selection set 0
+    event generate .ls.l <<ListboxSelect>>
+    update
+    .ls.rem invoke
+    # The entry is revalidated only when it changes.
+    type a
+    lappend res [states .add]
+    .ls.add invoke
+    lappend res $L
+} -cleanup {
+    cleanupLs
+    unset -nocomplain L res
+} -result {disabled normal {b a}}
+
+# -------------------------------------------------------------------------
+# -listvariable
+
+test widget_listsimple-3.1 {-listvariable: initial contents} -setup {
+    set L {x y z}
+} -body {
+    mk -listvariable ::L
+    .ls.l get 0 end
+} -cleanup {
+    cleanupLs
+    unset -nocomplain L
+} -result {x y z}
+
+test widget_listsimple-3.2 {-listvariable: external changes are imported} -setup {
+    set L {x y z}
+    mk -listvariable ::L
+} -body {
+    set L {p q}
+    .ls.l get 0 end
+} -cleanup {
+    cleanupLs
+    unset -nocomplain L
+} -result {p q}
+
+test widget_listsimple-3.3 {-listvariable: namespace variable} -setup {
+    namespace eval ::lstest {variable L {a}}
+    mk -listvariable ::lstest::L
+} -body {
+    add b
+    set ::lstest::L
+} -cleanup {
+    cleanupLs
+    namespace delete ::lstest
+} -result {a b}
+
+test widget_listsimple-3.4 {-listvariable: change at runtime} -setup {
+    set L1 {a b}
+    set L2 {c d}
+    mk -listvariable ::L1
+} -body {
+    type c
+    set res [list [states .add]]
+    .ls configure -listvariable ::L2
+    lappend res [.ls cget -listvariable] [.ls.l get 0 end] [states .add]
+    .ls.e delete 0 end
+    add e
+    lappend res $L1 $L2
+} -cleanup {
+    cleanupLs
+    unset -nocomplain L1 L2 res
+} -result {normal ::L2 {c d} disabled {a b} {c d e}}
+
+test widget_listsimple-3.5 {-listvariable: unset at creation} -body {
+    mk -listvariable ::L
+    add a
+    set L
+} -cleanup {
+    cleanupLs
+    unset -nocomplain L
+} -result a
+
+test widget_listsimple-6.1 {-validate: custom validation} -setup {
+    proc validate {text errvar} {
+        upvar #0 $errvar err
+        lappend ::validated $text
+        if {![string is integer -strict $text]} {
+            set err "Not an integer"
+            return 0
+        }
+        return 1
+    }
+    set validated {}
+    set L {}
+    mk -listvariable ::L -validate validate
+} -body {
+    type abc
+    set res [list [states .add] [.ls.e instate invalid] \
+                 [lindex [split [tipOf .ls.e] \n] end]]
+    type 12
+    lappend res [states .add] [.ls.e instate invalid]
+    .ls.add invoke
+    lappend res $L [expr {"abc" in $validated}]
+} -cleanup {
+    cleanupLs
+    rename validate {}
+    unset -nocomplain validated L res
+} -result [list disabled 1 "* Not an integer" normal 0 12 1]
+
+test widget_listsimple-6.2 {-validate: empty text can be valid} -setup {
+    set L {}
+    mk -listvariable ::L -validate {apply {{text errvar} {return 1}}}
+} -body {
+    add {}
+    set L
+} -cleanup {
+    cleanupLs
+    unset -nocomplain L
+} -result {{}}
+
+test widget_listsimple-6.3 {-validate: duplicates are refused anyway} -setup {
+    set L {a}
+    mk -listvariable ::L -validate {apply {{text errvar} {return 1}}}
+} -body {
+    type a
+    list [states .add] [.ls.e instate invalid]
+} -cleanup {
+    cleanupLs
+    unset -nocomplain L
+} -result {disabled 1}
+
+test widget_listsimple-7.1 {-values: combobox filled from the callback} -setup {
+    set mru {one two}
+} -body {
+    mk -values values
+    list [winfo class .ls.e] [.ls.e cget -values]
+} -cleanup {
+    cleanupLs
+    unset -nocomplain mru
+} -result {TCombobox {one two}}
+
+test widget_listsimple-7.2 {-values: new values are saved} -setup {
+    set mru {one two}
+    set saved {}
+    set L {}
+    mk -values values -listvariable ::L
+} -body {
+    add three
+    add two
+    list $L $saved [.ls.e cget -values]
+} -cleanup {
+    cleanupLs
+    unset -nocomplain mru saved L
+} -result {{three two} {{three one two} {two three one}} {two three one}}
+
+test widget_listsimple-7.3 {-values: selecting from the combobox} -setup {
+    set mru {one two}
+    set saved {}
+    set L {}
+    mk -values values -listvariable ::L
+} -body {
+    .ls.e current 1
+    set res [list [.ls.e get] [states .add]]
+    .ls.add invoke
+    lappend res $L
+} -cleanup {
+    cleanupLs
+    unset -nocomplain mru saved L res
+} -result {two normal two}
+
+test widget_listsimple-9.1 {skin: default texts} -constraints {
+    knownBug
+} -body {
+    # The message catalogs define the messages in the namespace
+    # ::widget::listentry, so they are not found by widget::listsimple.
+    mk
+    list [.ls.add cget -text] [.ls.rem cget -text]
+} -cleanup {
+    cleanupLs
+} -result {Add Remove}
+
+test widget_listsimple-9.2 {skin: default texts in German} -constraints {
+    knownBug
+} -setup {
+    # See 9.1.
+    msgcat::mclocale de
+} -body {
+    mk
+    list [.ls.add cget -text] [.ls.rem cget -text]
+} -cleanup {
+    cleanupLs
+    msgcat::mclocale en
+} -result {Hinzufuegen Entfernen}
+
+test widget_listsimple-9.3 {skin: texts at runtime} -body {
+    mk
+    .ls configure -skin-add Plus -skin-remove Minus
+    set res [list [.ls.add cget -text] [.ls.rem cget -text]]
+    .ls configure -skin-add P -skin-remove M
+    lappend res [.ls.add cget -text] [.ls.rem cget -text] [.ls cget -skin-add]
+} -cleanup {
+    cleanupLs
+    unset -nocomplain res
+} -result {Plus Minus P M P}
+
+test widget_listsimple-9.4 {skin: texts are message catalog keys} -setup {
+    namespace eval ::widget::listsimple {
+        msgcat::mcset en test.plus {Plus key}
+    }
+} -body {
+    mk
+    .ls configure -skin-add test.plus
+    .ls.add cget -text
+} -cleanup {
+    cleanupLs
+} -result {Plus key}
+
+test widget_listsimple-9.6 {skin: default tooltips} -constraints {
+    knownBug
+} -setup {
+    # See 9.1.
+    set L {}
+    mk -listvariable ::L
+} -body {
+    list [tipOf .ls] [tipOf .ls.add] [tipOf .ls.rem] [tipOf .ls.e] \
+        [tipOf .ls.l]
+} -cleanup {
+    cleanupLs
+    unset -nocomplain L
+} -result [list {List of values} \
+               "Add a new value to the list\n* Nothing to enter" \
+               "Remove the selected values from the list\n* Nothing selected for removal" \
+               "Enter a new value\n* Empty" \
+               "List of values\n* Empty"]
+
+test widget_listsimple-9.7 {skin: tooltip options} -setup {
+    set L {a}
+    mk -listvariable ::L
+    .ls configure -skin-tip-main Main
+} -body {
+    set res [list [tipOf .ls]]
+    .ls configure -skin-tip-main M -skin-tip-add A -skin-tip-add-none N \
+        -skin-tip-entry E -skin-tip-empty Y -skin-tip-list L
+    lappend res [tipOf .ls] [tipOf .ls.add] [tipOf .ls.e] [tipOf .ls.l]
+    type a
+    .ls configure -skin-tip-duplicate Dup
+    lappend res [tipOf .ls.add] [tipOf .ls.e]
+} -cleanup {
+    cleanupLs
+    unset -nocomplain L res
+} -result [list Main M "A\n* N" "E\n* Y" L "A\n* Dup" "E\n* Dup"]
+
+test widget_listsimple-9.8 {skin: default images} -body {
+    mk
+    set res {}
+    foreach b {add rem} {
+        set img [.ls.$b cget -image]
+        lappend res [image type $img] [expr {[image width $img] > 0}]
+    }
+    set res
+} -cleanup {
+    cleanupLs
+    unset -nocomplain res b img
+} -result {photo 1 photo 1}
+
+test widget_listsimple-9.9 {skin: custom images} -setup {
+    image create photo testimg1 -width 4 -height 4
+    image create photo testimg2 -width 4 -height 4
+} -body {
+    mk
+    .ls configure -skin-img-add testimg1
+    set res [list [.ls.add cget -image]]
+    .ls configure -skin-img-remove testimg2
+    lappend res [.ls.rem cget -image]
+} -cleanup {
+    cleanupLs
+    image delete testimg1 testimg2
+    unset -nocomplain res
+} -result {testimg1 testimg2}
+
+test widget_listsimple-9.10 {skin: invalid color} -body {
+    mk
+    set map [ttk::style map [.ls.e cget -style] -fieldbackground]
+    set res [list [lindex $map [expr {[lsearch -exact $map invalid] + 1}]]]
+    .ls configure -skin-invalid-color pink
+    set map [ttk::style map [.ls.e cget -style] -fieldbackground]
+    lappend res [lindex $map [expr {[lsearch -exact $map invalid] + 1}]] \
+        [.ls.e instate invalid]
+} -cleanup {
+    cleanupLs
+    unset -nocomplain res map
+} -result {yellow pink 1}
+
+test widget_listsimple-9.11 {skin: invalid color at creation} -constraints {
+    knownBug
+} -body {
+    # Skin options can not be specified at creation, see 9.12.
+    mk -skin-invalid-color pink
+    set map [ttk::style map [.ls.e cget -style] -fieldbackground]
+    lindex $map [expr {[lsearch -exact $map invalid] + 1}]
+} -cleanup {
+    cleanupLs
+    unset -nocomplain map
+} -result pink
+
+test widget_listsimple-9.12 {skin: texts at creation} -constraints {
+    knownBug
+} -body {
+    # The configure methods of the skin options access the internal
+    # widgets before they are created.
+    mk -skin-add Plus -skin-remove Minus
+    list [.ls.add cget -text] [.ls.rem cget -text]
+} -cleanup {
+    cleanupLs
+} -result {Plus Minus}
+
+test widget_listsimple-9.13 {skin: tooltips at creation} -constraints {
+    knownBug
+} -body {
+    # See 9.12.
+    mk -skin-tip-main Main -skin-tip-entry Entry
+    list [tipOf .ls] [tipOf .ls.e]
+} -cleanup {
+    cleanupLs
+} -result [list Main "Entry\n* Empty"]
+
+test widget_listsimple-9.14 {skin: images at creation} -constraints {
+    knownBug
+} -setup {
+    # See 9.12.
+    image create photo testimg1 -width 4 -height 4
+} -body {
+    mk -skin-img-add testimg1 -skin-img-remove testimg1
+    list [.ls.add cget -image] [.ls.rem cget -image]
+} -cleanup {
+    cleanupLs
+    image delete testimg1
+} -result {testimg1 testimg1}
+
+
+# -------------------------------------------------------------------------
+msgcat::mclocale $oldlocale
+unset oldlocale
+if {$oldmainstate eq "withdrawn"} {
+    wm withdraw .
+}
+unset oldmainstate
+foreach p {cleanupLs mk type add states tipOf values} {rename $p {}}
+unset p
+if {![testConstraint haveImg]} {
+    package forget img::png
+}
+::tcltest::cleanupTests
