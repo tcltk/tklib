@@ -1,0 +1,2545 @@
+# -*- tcl -*-
+# plotchart_xy.test --
+#
+#	Tests for the Plotchart package: XY plots and their relatives
+#	(stripcharts, time-x plots, logarithmic plots, isometric plots,
+#	histograms, right axes and normal plots) and the methods to draw
+#	data in them (plot, plotlist, region, minmax, plotcumulative,
+#	trend, rchart, interval, box-and-whiskers, violin, vector, dot,
+#	contours, grid, bands, labeldot and dataconfig).
+#
+# The output of Plotchart is drawn on a canvas, so the tests check the
+# canvas items (types, tags, coordinates relative to each other, colours
+# and texts), not pixels.
+#
+# The tests in this file are numbered Plotchart-201.M to Plotchart-299.M
+# (plotchart.test uses the numbers below 100).
+
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2
+    namespace import ::tcltest::*
+}
+
+::tcltest::testConstraint tk 1
+
+source [file join [file dirname [file normalize [info script]]] plotchart.tcl]
+
+# -------------------------------------------------------------------------
+# Helpers
+#
+# Plotchart keeps its state in namespace arrays keyed by the name of the
+# canvas (or of its per-plot alias, "00.c", "01.c", ...).  The canvases
+# are normally not mapped, so that the size of the plot is determined by
+# the -width and -height options only.
+
+# Collect background errors instead of showing a dialog
+set ::bgErrors {}
+proc ::testBgError {msg opts} {
+    lappend ::bgErrors $msg
+}
+set ::oldBgError [interp bgerror {}]
+interp bgerror {} ::testBgError
+
+set ::oldRootState [wm state .]
+
+proc mkCanvas {{width 400} {height 300} {c .c}} {
+    canvas $c -width $width -height $height -background white \
+	-highlightthickness 0 -borderwidth 0
+    return $c
+}
+
+proc cleanupPlot {{c .c}} {
+    if {[winfo exists $c]} {
+	::Plotchart::clearcanvas $c
+	destroy $c
+    }
+    set pat [string map {. \\.} $c]
+    foreach a [interp aliases {}] {
+	if {[regexp "^(.+_)?r?\[0-9\]\[0-9\]$pat\$" $a] ||
+	    [regexp "^\[a-z0-9\]+_$pat\$" $a]} {
+	    interp alias {} $a {}
+	}
+    }
+    foreach v {scaling config data_series legend settings packing} {
+	if {[info exists ::Plotchart::$v]} {
+	    array unset ::Plotchart::$v *$c,*
+	}
+    }
+}
+
+# Return the item ids having all given tags, in display order.
+# An element "type=T" selects only items of type T, "notype=T" excludes
+# items of type T.
+proc items {tags {c .c}} {
+    set t {}
+    set type {}
+    set notype {}
+    foreach x $tags {
+	if {[string match type=* $x]} {
+	    set type [string range $x 5 end]
+	} elseif {[string match notype=* $x]} {
+	    set notype [string range $x 7 end]
+	} else {
+	    lappend t $x
+	}
+    }
+    set ids {}
+    foreach i [$c find withtag [join $t " && "]] {
+	if {($type eq "" || [$c type $i] eq $type) &&
+	    ($notype eq "" || [$c type $i] ne $notype)} {
+	    lappend ids $i
+	}
+    }
+    return $ids
+}
+
+# Return the types of the items having all given tags, sorted and unique
+proc itemTypes {tags {c .c}} {
+    set types {}
+    foreach i [items $tags $c] {
+	lappend types [$c type $i]
+    }
+    lsort -unique $types
+}
+
+# Return the texts of the text items having all given tags
+proc itemTexts {tags {c .c}} {
+    set texts {}
+    foreach i [items $tags $c] {
+	if {[$c type $i] eq "text"} {
+	    lappend texts [$c itemcget $i -text]
+	}
+    }
+    return $texts
+}
+
+# Return the given option for all items having the given tags (unique)
+proc itemOption {tags option {c .c}} {
+    set values {}
+    foreach i [items $tags $c] {
+	lappend values [$c itemcget $i $option]
+    }
+    lsort -unique $values
+}
+
+# Round the numbers in a list to the given number of decimals
+proc R {value {digits 1}} {
+    set r {}
+    foreach v $value {
+	if {[string is double -strict $v]} {
+	    set v [format %.${digits}f $v]
+	    if {$v == 0} {set v [format %.${digits}f 0]}
+	}
+	lappend r $v
+    }
+    return $r
+}
+
+# Centre of the bounding box of the items with the given tags
+proc centre {tags {c .c}} {
+    lassign [$c bbox [join $tags " && "]] x1 y1 x2 y2
+    list [expr {($x1+$x2)/2.0}] [expr {($y1+$y2)/2.0}]
+}
+
+# Pixel coordinates of a world point in the given plot
+proc pix {p x y} {
+    ::Plotchart::coordsToPixel [$p canvas] $x $y
+}
+
+proc approx {a b {eps 1.0}} {
+    expr {abs($a-$b) <= $eps}
+}
+
+proc restoreRoot {} {
+    if {$::oldRootState eq "withdrawn"} {
+	wm withdraw .
+    }
+}
+
+::tcltest::testConstraint normalplot \
+    [llength [info commands ::Plotchart::createNormalPlot]]
+
+# Pixel coordinates of a list of world points
+proc pixList {p coords} {
+    set r {}
+    foreach {x y} $coords {
+	lappend r {*}[pix $p $x $y]
+    }
+    return $r
+}
+
+# Compare two lists of pixel coordinates with a tolerance
+proc samePixels {a b {eps 0.51}} {
+    if {[llength $a] != [llength $b]} {
+	return 0
+    }
+    foreach u $a v $b {
+	if {abs($u-$v) > $eps} {
+	    return 0
+	}
+    }
+    return 1
+}
+
+# -------------------------------------------------------------------------
+# createXYPlot
+
+test Plotchart-201.1 {createXYPlot: axes with ticks and labels} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 100 20} {0 50 10}]
+    list [string match xyplot_* $p] [itemTexts xaxis] [itemTexts yaxis] \
+	[itemTypes xaxis] [itemTypes yaxis] [llength [items mask]]
+} -cleanup {
+    cleanupPlot
+} -result {1 {0 20 40 60 80 100} {0 10 20 30 40 50} {line text} {line text} 4}
+
+test Plotchart-201.2 {createXYPlot: plot area fills the canvas minus the margins} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 100 20} {0 50 10}]
+    lassign [pix $p 0 0] x0 y0
+    lassign [pix $p 100 50] x1 y1
+    list [expr {$x0 > 0 && $x0 < 200}] [expr {$x1 > 200 && $x1 < 400}] \
+	[expr {$y1 > 0 && $y1 < 150}] [expr {$y0 > 150 && $y0 < 300}] \
+	[samePixels [lrange [.c coords [lindex [items xaxis] 0]] 0 3] [list $x0 $y0 $x1 $y0]]
+} -cleanup {
+    cleanupPlot
+} -result {1 1 1 1 1}
+
+test Plotchart-201.3 {createXYPlot: inverted axes} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {100 0 -20} {50 0 -10}]
+    lassign [pix $p 100 50] x0 y0
+    lassign [pix $p 0 0] x1 y1
+    # The maximum appears at the left and at the bottom
+    list [expr {$x0 < $x1}] [expr {$y0 > $y1}] [lsort -integer [itemTexts xaxis]] \
+	[lsort -integer [itemTexts yaxis]]
+} -cleanup {
+    cleanupPlot
+} -result {1 1 {0 20 40 60 80 100} {0 10 20 30 40 50}}
+
+test Plotchart-201.4 {createXYPlot: inverted axis with a positive step} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {100 0 20} {0 50 10}]
+    lassign [pix $p 100 0] x0
+    lassign [pix $p 0 0] x1
+    list [expr {$x0 < $x1}] [lsort -integer [itemTexts xaxis]]
+} -cleanup {
+    cleanupPlot
+} -result {1 {0 20 40 60 80 100}}
+
+test Plotchart-201.5 {createXYPlot: step size zero} -setup {
+    mkCanvas
+} -body {
+    ::Plotchart::createXYPlot .c {0 100 0} {0 50 10}
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {Step size can not be zero}
+
+test Plotchart-201.6 {createXYPlot: equal extremes} -setup {
+    mkCanvas
+} -body {
+    ::Plotchart::createXYPlot .c {0 0 10} {0 50 10}
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {Minimum and maximum must differ for world coordinates}
+
+test Plotchart-201.7 {createXYPlot: wrong # args} -body {
+    ::Plotchart::createXYPlot .c {0 100 10}
+} -returnCodes error -result {wrong # args: should be "::Plotchart::createXYPlot w xscale yscale ?arg ...?"}
+
+test Plotchart-201.8 {createXYPlot: -xlabels with numeric labels} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 100 {}} {0 50 10} -xlabels {0 10 50 100}]
+    set xs {}
+    foreach t [items {xaxis type=text}] {
+	lappend xs [R [lindex [::Plotchart::pixelToCoords [$p canvas] {*}[.c coords $t]] 0] 0]
+    }
+    list [itemTexts xaxis] $xs
+} -cleanup {
+    cleanupPlot
+} -result {{0 10 50 100} {0 10 50 100}}
+
+test Plotchart-201.9 {createXYPlot: -xlabels with text labels at equal distances} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 90 {}} {0 50 10} -xlabels {Jan Feb Mar Apr}]
+    set xs {}
+    foreach t [items {xaxis type=text}] {
+	lappend xs [R [lindex [::Plotchart::pixelToCoords [$p canvas] {*}[.c coords $t]] 0] 0]
+    }
+    list [itemTexts xaxis] $xs
+} -cleanup {
+    cleanupPlot
+} -result {{Jan Feb Mar Apr} {0 30 60 90}}
+
+test Plotchart-201.10 {createXYPlot: -ylabels} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 100 20} {0 2 {}} -ylabels {Low Medium High}]
+    set ys {}
+    foreach t [items {yaxis type=text}] {
+	lappend ys [R [lindex [::Plotchart::pixelToCoords [$p canvas] {*}[.c coords $t]] 1] 0]
+    }
+    list [itemTexts yaxis] $ys [itemTexts xaxis]
+} -cleanup {
+    cleanupPlot
+} -result {{Low Medium High} {0 1 2} {0 20 40 60 80 100}}
+
+test Plotchart-201.11 {createXYPlot: unknown option with custom labels} -setup {
+    mkCanvas
+} -body {
+    ::Plotchart::createXYPlot .c {0 100 {}} {0 50 10} -xlabels {A B} -colour red
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {Argument -colour not recognized}
+
+test Plotchart-201.12 {createXYPlot: -timeformat for the x labels} -setup {
+    mkCanvas
+} -body {
+    set start [clock scan "2020-01-01 00:00" -gmt 1]
+    set stop  [clock scan "2020-01-01 10:00" -gmt 1]
+    set p [::Plotchart::createXYPlot .c [list $start $stop 7200] {0 10 2} \
+	-timeformat "%H:%M" -gmt 1]
+    itemTexts xaxis
+} -cleanup {
+    cleanupPlot
+} -result {00:00 02:00 04:00 06:00 08:00 10:00}
+
+test Plotchart-201.13 {createXYPlot: -timeformat and -locale} -setup {
+    mkCanvas
+} -body {
+    set start [clock scan "2020-01-01" -gmt 1]
+    set stop  [clock scan "2020-03-01" -gmt 1]
+    set p [::Plotchart::createXYPlot .c [list $start $stop [expr {31*86400}]] {0 10 2} \
+	-timeformat "%b" -gmt 1 -locale C]
+    itemTexts xaxis
+} -cleanup {
+    cleanupPlot
+} -result {Jan Feb}
+
+test Plotchart-201.14 {createXYPlot: -axestozero draws the axes through the origin} -constraints {
+    knownBug
+} -setup {
+    mkCanvas
+} -body {
+    # The implemented option is called -axesatzero
+    set p [::Plotchart::createXYPlot .c {-10 10 5} {-10 10 5} -axestozero 1]
+    lassign [pix $p 0 0] x0 y0
+    set xaxle [lindex [items xaxis] 0]
+    set yaxle [lindex [items yaxis] 0]
+    list [approx [lindex [.c coords $xaxle] 1] $y0 0.5] [approx [lindex [.c coords $yaxle] 0] $x0 0.5]
+} -cleanup {
+    cleanupPlot
+} -result {1 1}
+
+test Plotchart-201.15 {createXYPlot: -axesatzero draws the axes through the origin} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {-10 10 5} {-10 10 5} -axesatzero 1]
+    lassign [pix $p 0 0] x0 y0
+    set xaxle [lindex [items xaxis] 0]
+    set yaxle [lindex [items yaxis] 0]
+    list [approx [lindex [.c coords $xaxle] 1] $y0 0.5] [approx [lindex [.c coords $yaxle] 0] $x0 0.5]
+} -cleanup {
+    cleanupPlot
+} -result {1 1}
+
+test Plotchart-201.16 {createXYPlot: -axesatzero 0 keeps the axes at the sides} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {-10 10 5} {-10 10 5} -axesatzero 0]
+    lassign [pix $p -10 -10] x0 y0
+    set xaxle [lindex [items xaxis] 0]
+    approx [lindex [.c coords $xaxle] 1] $y0 0.5
+} -cleanup {
+    cleanupPlot
+} -result 1
+
+test Plotchart-201.17 {createXYPlot: -isometric 1} -setup {
+    mkCanvas 400 300
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2} -isometric 1]
+    lassign [pix $p 0 0] x0 y0
+    lassign [pix $p 1 1] x1 y1
+    approx [expr {$x1-$x0}] [expr {$y0-$y1}] 0.01
+} -cleanup {
+    cleanupPlot
+} -result 1
+
+test Plotchart-201.18 {createXYPlot: -isometric 0 (default) uses the extremes} -setup {
+    mkCanvas 400 300
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2} -isometric 0]
+    lassign [pix $p 0 0] x0 y0
+    lassign [pix $p 1 1] x1 y1
+    approx [expr {$x1-$x0}] [expr {$y0-$y1}] 0.01
+} -cleanup {
+    cleanupPlot
+} -result 0
+
+# -------------------------------------------------------------------------
+# plot method and dataconfig
+
+test Plotchart-202.1 {plot: line segments between consecutive points} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 100 20} {0 100 20}]
+    foreach {x y} {0 32 10 50 25 60 78 11} {
+	$p plot series1 $x $y
+    }
+    set lines [items data_series1]
+    set coords {}
+    foreach l $lines {lappend coords {*}[.c coords $l]}
+    list [llength $lines] [itemTypes data_series1] [itemOption data_series1 -fill] \
+	[samePixels $coords [pixList $p {0 32 10 50 10 50 25 60 25 60 78 11}]] \
+	[expr {[llength [items data]] == 3}]
+} -cleanup {
+    cleanupPlot
+} -result {3 line black 1 1}
+
+test Plotchart-202.2 {plot: data below the axes and the mask} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 100 20} {0 100 20}]
+    $p plot s 0 0
+    $p plot s 50 150
+    set all [.c find all]
+    list [expr {[lsearch $all [items data]] < [lsearch $all [lindex [items mask] 0]]}] \
+	[expr {[lsearch $all [items data]] < [lsearch $all [lindex [items xaxis] 0]]}]
+} -cleanup {
+    cleanupPlot
+} -result {1 1}
+
+test Plotchart-202.3 {plot: several series are independent} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 100 20} {0 100 20}]
+    $p dataconfig a -colour red
+    $p dataconfig b -colour blue
+    $p plot a 0 0
+    $p plot b 0 100
+    $p plot a 100 100
+    $p plot b 100 0
+    list [llength [items data_a]] [llength [items data_b]] [itemOption data_a -fill] \
+	[itemOption data_b -fill] [samePixels [.c coords [items data_b]] [pixList $p {0 100 100 0}]]
+} -cleanup {
+    cleanupPlot
+} -result {1 1 red blue 1}
+
+test Plotchart-202.4 {dataconfig -type symbol: symbols only} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 100 20} {0 100 20}]
+    $p dataconfig s -type symbol
+    $p plot s 10 10
+    $p plot s 20 20
+    list [itemTypes data_s] [llength [items data_s]] [itemOption data_s -fill]
+} -cleanup {
+    cleanupPlot
+} -result {oval 2 black}
+
+test Plotchart-202.5 {dataconfig -type both: lines and symbols} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 100 20} {0 100 20}]
+    $p dataconfig s -type both -colour green
+    $p plot s 10 10
+    $p plot s 20 20
+    list [itemTypes data_s] [llength [items data_s]] [itemOption {data_s type=line} -fill]
+} -cleanup {
+    cleanupPlot
+} -result {{line oval} 3 green}
+
+test Plotchart-202.6 {dataconfig -symbol: all symbol types} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 100 20} {0 100 20}]
+    set r {}
+    foreach sym {plus cross circle up down dot upfilled downfilled} {
+	$p dataconfig $sym -type symbol -symbol $sym -colour red
+	$p plot $sym 50 50
+	set i [items data_$sym]
+	set fill [.c itemcget $i -fill]
+	set outline [expr {[.c type $i] eq "line" ? "-" : [.c itemcget $i -outline]}]
+	lappend r [list $sym [.c type $i] $fill $outline]
+    }
+    join $r \n
+} -cleanup {
+    cleanupPlot
+} -result {plus line red -
+cross line red -
+circle oval {} red
+up polygon {} red
+down polygon {} red
+dot oval red red
+upfilled polygon red red
+downfilled polygon red red}
+
+test Plotchart-202.7 {dataconfig -symbol: shapes and orientation} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 100 20} {0 100 20}]
+    lassign [pix $p 50 50] px py
+    set r {}
+    foreach sym {up down} {
+	$p dataconfig $sym -type symbol -symbol $sym
+	$p plot $sym 50 50
+	set c [.c coords [items data_$sym]]
+	# y-coordinate of the apex (third vertex) relative to the centre
+	lappend r [expr {[lindex $c 5] < $py ? "above" : "below"}]
+    }
+    set r
+} -cleanup {
+    cleanupPlot
+} -result {above below}
+
+test Plotchart-202.8 {dataconfig -radius: size of the symbols (default 4)} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 100 20} {0 100 20}]
+    $p dataconfig a -type symbol -symbol circle
+    $p dataconfig b -type symbol -symbol circle -radius 10
+    $p plot a 20 20
+    $p plot b 60 60
+    lassign [.c coords [items data_a]] x1 y1 x2 y2
+    lassign [.c coords [items data_b]] u1 v1 u2 v2
+    list [R [expr {$x2-$x1}] 0] [R [expr {$u2-$u1}] 0] \
+	[samePixels [list [expr {($u1+$u2)/2}] [expr {($v1+$v2)/2}]] [pix $p 60 60]]
+} -cleanup {
+    cleanupPlot
+} -result {8 20 1}
+
+test Plotchart-202.9 {dataconfig -width: width of the line} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 100 20} {0 100 20}]
+    $p dataconfig s -width 3
+    $p plot s 10 10
+    $p plot s 20 20
+    itemOption data_s -width
+} -cleanup {
+    cleanupPlot
+} -result {3.0}
+
+test Plotchart-202.10 {dataconfig -filled up/down with -fillcolour} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 100 20} {0 100 20}]
+    $p dataconfig u -filled up -fillcolour yellow
+    $p dataconfig d -filled down -fillcolor green
+    $p plot u 10 40
+    $p plot u 20 60
+    $p plot d 10 40
+    $p plot d 20 60
+    lassign [pix $p 0 100] xtop ytop
+    lassign [pix $p 0 0] xbot ybot
+    set pu [items {data_u type=polygon}]
+    set pd [items {data_d type=polygon}]
+    set yu [lmap {x y} [.c coords $pu] {set y}]
+    set yd [lmap {x y} [.c coords $pd] {set y}]
+    list [.c itemcget $pu -fill] [.c itemcget $pd -fill] \
+	[approx [tcl::mathfunc::min {*}$yu] $ytop 0.5] [approx [tcl::mathfunc::max {*}$yd] $ybot 0.5] \
+	[llength [items {data_u type=line}]]
+} -cleanup {
+    cleanupPlot
+} -result {yellow green 1 1 1}
+
+test Plotchart-202.11 {dataconfig: -color is a synonym of -colour} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 100 20} {0 100 20}]
+    $p dataconfig s -color magenta
+    $p plot s 10 10
+    $p plot s 20 20
+    itemOption data_s -fill
+} -cleanup {
+    cleanupPlot
+} -result {magenta}
+
+test Plotchart-202.12 {dataconfig: unknown option} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 100 20} {0 100 20}]
+    $p dataconfig s -size 3
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {Unknown or invalid option: -size (value: 3)}
+
+test Plotchart-202.13 {dataconfig: invalid value for -type} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 100 20} {0 100 20}]
+    $p dataconfig s -type dots
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {Unknown or invalid value: dots for option -type - line symbol both rectangle}
+
+test Plotchart-202.14 {dataconfig: invalid value for -symbol} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 100 20} {0 100 20}]
+    $p dataconfig s -symbol star
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {Unknown or invalid value: star for option -symbol - plus cross circle up down dot upfilled downfilled}
+
+test Plotchart-202.15 {dataconfig: invalid value for -filled} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 100 20} {0 100 20}]
+    $p dataconfig s -filled left
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {Unknown or invalid value: left for option -filled - no up down}
+
+test Plotchart-202.16 {dataconfig: wrong # args} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 100 20} {0 100 20}]
+    $p dataconfig
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {wrong # args: should be "DataConfig w series ?arg ...?"}
+
+test Plotchart-202.17 {plot: wrong # args} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 100 20} {0 100 20}]
+    $p plot s 1
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {wrong # args: should be "DrawData w series xcrd ycrd"}
+
+test Plotchart-202.18 {plot: missing x-coordinate also causes a gap} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 100 20} {0 100 20}]
+    foreach {x y} {0 10 10 20 {} 30 40 40 50 50} {
+	$p plot s $x $y
+    }
+    llength [items data_s]
+} -cleanup {
+    cleanupPlot
+} -result 2
+
+# -------------------------------------------------------------------------
+# plotlist
+
+test Plotchart-203.1 {plotlist: one line for the whole series} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 100 20} {0 100 20}]
+    $p plotlist s {0 10 20 30} {5 15 10 20}
+    set l [items data_s]
+    list [llength $l] [.c type $l] [samePixels [.c coords $l] [pixList $p {0 5 10 15 20 10 30 20}]]
+} -cleanup {
+    cleanupPlot
+} -result {1 line 1}
+
+test Plotchart-203.2 {plotlist: symbols every Nth point} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 100 20} {0 100 20}]
+    $p dataconfig s -type symbol -symbol circle
+    set xs {}
+    set ys {}
+    for {set i 0} {$i < 20} {incr i} {lappend xs [expr {$i*5}]; lappend ys 50}
+    $p plotlist s $xs $ys 5
+    set n1 [llength [items data_s]]
+    .c delete data
+    $p dataconfig t -type symbol -symbol circle
+    $p plotlist t $xs $ys
+    list $n1 [llength [items data_t]]
+} -cleanup {
+    cleanupPlot
+} -result {4 5}
+
+test Plotchart-203.3 {plotlist: less than 10 points, a symbol for every point} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 100 20} {0 100 20}]
+    $p dataconfig s -type both
+    $p plotlist s {0 10 20 30 40} {1 2 3 4 5}
+    list [llength [items {data_s type=line}]] [llength [items {data_s type=oval}]]
+} -cleanup {
+    cleanupPlot
+} -result {1 5}
+
+test Plotchart-203.4 {plotlist: missing values split the line} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 100 20} {0 100 20}]
+    $p plotlist s {0 10 20 30 40 50} {5 15 {} 20 25 30}
+    set l [items data_s]
+    list [llength $l] [samePixels [.c coords [lindex $l 0]] [pixList $p {0 5 10 15}]] \
+	[samePixels [.c coords [lindex $l 1]] [pixList $p {30 20 40 25 50 30}]]
+} -cleanup {
+    cleanupPlot
+} -result {2 1 1}
+
+test Plotchart-203.5 {plotlist: logarithmic plots} -setup {
+    mkCanvas
+} -body {
+    set r {}
+    foreach cmd {
+	{::Plotchart::createXLogYPlot .c {0 100 20} {1 1000}}
+	{::Plotchart::createLogXYPlot .c {1 1000} {0 100 20}}
+	{::Plotchart::createLogXLogYPlot .c {1 1000} {1 1000}}
+    } {
+	set p [{*}$cmd]
+	$p plotlist s {1 10 100} {1 10 100}
+	lappend r [samePixels [.c coords [items data_s]] [pixList $p {1 1 10 10 100 100}]]
+	cleanupPlot
+	mkCanvas
+    }
+    set r
+} -cleanup {
+    cleanupPlot
+} -result {1 1 1}
+
+test Plotchart-203.6 {plotlist: wrong # args} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 100 20} {0 100 20}]
+    $p plotlist s {1 2}
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {wrong # args: should be "DrawDataList w series xlist ylist ?every?"}
+
+# -------------------------------------------------------------------------
+# region and minmax
+
+test Plotchart-204.1 {region: filled polygon with the series options} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 100 20} {0 100 20}]
+    $p dataconfig r -fillcolour pink -colour red -width 2
+    $p region r {10 50 90} {10 90 10}
+    set i [items data_r]
+    list [.c type $i] [.c itemcget $i -fill] [.c itemcget $i -outline] [.c itemcget $i -width] \
+	[samePixels [.c coords $i] [pixList $p {10 10 50 90 90 10}]]
+} -cleanup {
+    cleanupPlot
+} -result {polygon pink red 2.0 1}
+
+test Plotchart-204.2 {region: empty -colour means no boundary} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 100 20} {0 100 20}]
+    $p dataconfig r -fillcolour pink -colour {}
+    $p region r {10 50 90} {10 90 10}
+    itemOption data_r -outline
+} -cleanup {
+    cleanupPlot
+} -result {{}}
+
+test Plotchart-204.3 {minmax: strip between minimum and maximum} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 100 20} {0 100 20}]
+    $p dataconfig m -fillcolour lightblue -colour blue
+    $p minmax m 10 20 40
+    $p minmax m 50 30 60
+    $p minmax m 90 10 50
+    set i [items data_m]
+    list [llength $i] [.c type $i] [.c itemcget $i -fill] [.c itemcget $i -outline] \
+	[samePixels [lrange [.c coords $i] 2 end-2] [pixList $p {10 20 50 30 90 10 90 50 50 60 10 40}]]
+} -cleanup {
+    cleanupPlot
+} -result {1 polygon lightblue blue 1}
+
+test Plotchart-204.4 {minmax: both empty starts a new strip} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 100 20} {0 100 20}]
+    $p minmax m 10 20 40
+    $p minmax m 20 30 50
+    $p minmax m 30 {} {}
+    $p minmax m 60 20 40
+    $p minmax m 70 30 50
+    llength [items data_m]
+} -cleanup {
+    cleanupPlot
+} -result 2
+
+test Plotchart-204.5 {minmax: one empty value adds a vertex on one side only} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 100 20} {0 100 20}]
+    $p minmax m 10 20 40
+    set n1 [llength [.c coords [items data_m]]]
+    $p minmax m 20 30 {}
+    set n2 [llength [.c coords [items data_m]]]
+    $p minmax m 30 {} 50
+    set n3 [llength [.c coords [items data_m]]]
+    list [expr {$n2-$n1}] [expr {$n3-$n2}]
+} -cleanup {
+    cleanupPlot
+} -result {2 2}
+
+test Plotchart-204.6 {region and minmax: logarithmic and polar plots} -setup {
+    mkCanvas 400 400
+} -body {
+    set r {}
+    foreach cmd {
+	{::Plotchart::createXLogYPlot .c {0 100 20} {1 1000}}
+	{::Plotchart::createLogXYPlot .c {1 1000} {0 100 20}}
+	{::Plotchart::createLogXLogYPlot .c {1 1000} {1 1000}}
+	{::Plotchart::createPolarplot .c {10 2}}
+    } {
+	set p [{*}$cmd]
+	$p region r {1 5 9} {1 5 1}
+	$p minmax m 1 2 4
+	$p minmax m 5 3 6
+	lappend r [llength [items data_r]] [llength [items data_m]]
+	cleanupPlot
+	mkCanvas 400 400
+    }
+    set r
+} -cleanup {
+    cleanupPlot
+} -result {1 1 1 1 1 1 1 1}
+
+# -------------------------------------------------------------------------
+# trend and rchart
+
+test Plotchart-205.1 {trend: least-squares line over the full x-axis} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 20 5}]
+    $p trend t 1 3
+    $p trend t 2 5
+    $p trend t 3 7
+    set l [items data_t]
+    list [llength $l] [samePixels [.c coords $l] [pixList $p {0 1 10 21}] 0.01]
+} -cleanup {
+    cleanupPlot
+} -result {1 1}
+
+test Plotchart-205.2 {trend: single point gives a horizontal line} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 20 5}]
+    $p dataconfig t -colour red
+    $p trend t 4 6
+    set l [items data_t]
+    list [samePixels [.c coords $l] [pixList $p {0 6 10 6}] 0.01] [.c itemcget $l -fill]
+} -cleanup {
+    cleanupPlot
+} -result {1 red}
+
+test Plotchart-205.4 {rchart: data with lines at +/- 3 stdev} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 20 5}]
+    foreach {x y} {1 9 2 10 3 11} {
+	$p rchart r $x $y
+    }
+    # mean 10, standard deviation 1: lines at 7 and 13
+    set horiz {}
+    set data 0
+    foreach l [items data_r] {
+	lassign [.c coords $l] x1 y1 x2 y2
+	if {$y1 == $y2 && [llength [.c coords $l]] == 4 && [approx $x1 [lindex [pix $p 0 0] 0] 0.01]} {
+	    lappend horiz [R [lindex [::Plotchart::pixelToCoords [$p canvas] $x1 $y1] 1] 1]
+	} else {
+	    incr data
+	}
+    }
+    list [lsort -real $horiz] $data
+} -cleanup {
+    cleanupPlot
+} -result {{7.0 13.0} 2}
+
+# -------------------------------------------------------------------------
+# interval
+
+test Plotchart-206.1 {interval: vertical line with end marks} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 20 5}]
+    $p dataconfig i -colour blue
+    $p interval i 5 4 12
+    set l [items data_i]
+    lassign [pix $p 5 4] x0 y0
+    lassign [pix $p 5 12] x1 y1
+    list [llength $l] [itemTypes data_i] [itemOption data_i -fill] \
+	[samePixels [.c coords [lindex $l 0]] [list $x0 $y0 $x1 $y1]] \
+	[approx [lindex [.c coords [lindex $l 1]] 1] $y0 0.01] \
+	[approx [lindex [.c coords [lindex $l 2]] 1] $y1 0.01]
+} -cleanup {
+    cleanupPlot
+} -result {3 line blue 1 1 1}
+
+test Plotchart-206.2 {interval: symbol at the centre value} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 20 5}]
+    $p dataconfig i -symbol up
+    $p interval i 5 4 12 8
+    set sym [items {data_i type=polygon}]
+    lassign [.c bbox $sym] x1 y1 x2 y2
+    list [llength [items data_i]] [samePixels [list [expr {($x1+$x2)/2.0}] [expr {($y1+$y2)/2.0}]] [pix $p 5 8] 1.5]
+} -cleanup {
+    cleanupPlot
+} -result {4 1}
+
+test Plotchart-206.4 {interval: time-x plot} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createTXPlot .c {2006-01-01 2006-01-11 2} {0 10 2}]
+    $p interval i [clock scan 2006-01-05] 2 8
+    llength [items data_i]
+} -cleanup {
+    cleanupPlot
+} -result 3
+
+test Plotchart-206.5 {interval: wrong # args} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 20 5}]
+    $p interval i 5 4
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {wrong # args: should be "DrawInterval w series xcrd ymin ymax ?ycentr?"}
+
+# -------------------------------------------------------------------------
+# box-and-whiskers
+
+# Data with quartiles 3 and 7 (IQR 4), whiskers to 1.5 IQR (-3 and 13)
+set bwData {1 2 3 4 5 6 7 8 9}
+
+test Plotchart-207.1 {box-and-whiskers: vertical box from a list of y values} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p box-and-whiskers b 5 $bwData
+    set rect [items {data_b type=rectangle}]
+    lassign [.c coords $rect] x1 y1 x2 y2
+    lassign [::Plotchart::pixelToCoords [$p canvas] $x1 $y1] wx1 wy1
+    lassign [::Plotchart::pixelToCoords [$p canvas] $x2 $y2] wx2 wy2
+    lassign [pix $p 5 0] xc
+    list [R [lsort -real [list $wy1 $wy2]]] [R [expr {$x2-$x1}] 0] [approx [expr {($x1+$x2)/2}] $xc 0.01] \
+	[itemTypes data_b] [llength [items {data_b type=line}]]
+} -cleanup {
+    cleanupPlot
+} -result {{2.5 7.5} 10 1 {line rectangle} 5}
+
+test Plotchart-207.2 {box-and-whiskers: median and whiskers} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p box-and-whiskers b 5 $bwData
+    set ys {}
+    foreach l [items {data_b type=line}] {
+	lassign [.c coords $l] x1 y1 x2 y2
+	if {$y1 == $y2} {
+	    # Horizontal lines: whisker ends and median
+	    lappend ys [R [lindex [::Plotchart::pixelToCoords [$p canvas] $x1 $y1] 1] 1]
+	}
+    }
+    lsort -real $ys
+} -cleanup {
+    cleanupPlot
+} -result {1.0 5.0 9.0}
+
+test Plotchart-207.3 {box-and-whiskers: horizontal box from a list of x values} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p box-and-whiskers b $bwData 5
+    set rect [items {data_b type=rectangle}]
+    lassign [.c coords $rect] x1 y1 x2 y2
+    lassign [::Plotchart::pixelToCoords [$p canvas] $x1 $y1] wx1
+    lassign [::Plotchart::pixelToCoords [$p canvas] $x2 $y2] wx2
+    list [R [lsort -real [list $wx1 $wx2]]] [R [expr {$y2-$y1}] 0]
+} -cleanup {
+    cleanupPlot
+} -result {{2.5 7.5} 10}
+
+test Plotchart-207.4 {box-and-whiskers: both or neither are lists} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p box-and-whiskers b {1 2 3} {4 5 6}
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {Use either a list of x values or a list of y values - not both}
+
+test Plotchart-207.5 {box-and-whiskers: -boxwidth, -fillcolour, -colour, -mediancolour} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p dataconfig b -boxwidth 30 -fillcolour yellow -colour blue -mediancolour red \
+	-medianwidth 3 -whiskerwidth 2
+    $p box-and-whiskers b 5 $bwData
+    set rect [items {data_b type=rectangle}]
+    lassign [.c coords $rect] x1 y1 x2 y2
+    set median {}
+    set whiskers {}
+    foreach l [items {data_b type=line}] {
+	if {[.c itemcget $l -fill] eq "red"} {
+	    lappend median [.c itemcget $l -width]
+	} else {
+	    lappend whiskers [.c itemcget $l -fill] [.c itemcget $l -width]
+	}
+    }
+    list [R [expr {$x2-$x1}] 0] [.c itemcget $rect -fill] [.c itemcget $rect -outline] \
+	$median [lsort -unique $whiskers]
+} -cleanup {
+    cleanupPlot
+} -result {30 yellow blue 3.0 {2.0 blue}}
+
+test Plotchart-207.6 {box-and-whiskers: default median line width is 1} -constraints {
+    knownBug
+} -setup {
+    mkCanvas 400 400
+} -body {
+    # The default width is 2
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p dataconfig b -mediancolour red
+    $p box-and-whiskers b 5 $bwData
+    itemOption {data_b type=line} -width
+} -cleanup {
+    cleanupPlot
+} -result {1.0}
+
+test Plotchart-207.7 {box-and-whiskers: outliers as dots and stars (IQR)} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 30 5} {0 30 5}]
+    # Quartiles 3 and 9: dots between 1.5 and 3 IQR (18..27), stars beyond 27
+    $p box-and-whiskers b 5 {1 2 3 4 5 6 7 8 9 21 40}
+    list [llength [items {data_b type=oval}]] [itemTexts data_b]
+} -cleanup {
+    cleanupPlot
+} -result {1 *}
+
+test Plotchart-207.8 {box-and-whiskers: -whisker iqr shows no outliers} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 30 5} {0 30 5}]
+    $p dataconfig b -whisker iqr
+    $p box-and-whiskers b 5 {1 2 3 4 5 6 7 8 9 21 40}
+    list [llength [items {data_b type=oval}]] [itemTexts data_b]
+} -cleanup {
+    cleanupPlot
+} -result {0 {}}
+
+test Plotchart-207.9 {box-and-whiskers: -whisker extremes and none} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 30 5} {0 30 5}]
+    $p dataconfig e -whisker extremes
+    $p dataconfig n -whisker none
+    $p box-and-whiskers e 5 {1 2 3 4 5 6 7 8 9 15 25}
+    $p box-and-whiskers n 10 {1 2 3 4 5 6 7 8 9 15 25}
+    set ys {}
+    foreach l [items {data_e type=line}] {
+	lassign [.c coords $l] x1 y1 x2 y2
+	if {$y1 == $y2} {
+	    lappend ys [R [lindex [::Plotchart::pixelToCoords [$p canvas] $x1 $y1] 1] 0]
+	}
+    }
+    list [lsort -real $ys] [llength [items {data_n type=line}]] [itemTypes data_n]
+} -cleanup {
+    cleanupPlot
+} -result {{1 6 25} 1 {line rectangle}}
+
+test Plotchart-207.10 {box-and-whiskers: documented option -whiskers} -constraints {
+    knownBug
+} -setup {
+    mkCanvas 400 400
+} -body {
+    # The implemented option is called -whisker
+    set p [::Plotchart::createXYPlot .c {0 30 5} {0 30 5}]
+    $p dataconfig n -whiskers none
+    $p box-and-whiskers n 10 {1 2 3 4 5 6 7 8 9 15 25}
+    llength [items {data_n type=line}]
+} -cleanup {
+    cleanupPlot
+} -result 1
+
+test Plotchart-207.11 {box-and-whiskers: invalid -whisker value} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 30 5} {0 30 5}]
+    $p dataconfig n -whisker all
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {Unknown or invalid value: all for option -whisker - IQR iqr extremes none}
+
+# -------------------------------------------------------------------------
+# violin
+
+# Find the violin polygons (they have no tags)
+proc violins {} {
+    set r {}
+    foreach i [.c find all] {
+	if {[.c type $i] eq "polygon" && [.c itemcget $i -smooth] ne "0"} {
+	    lappend r $i
+	}
+    }
+    return $r
+}
+
+test Plotchart-208.1 {violin: vertical violin, default width 50 pixels} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p violin v 5 {2 3 3 4 4 4 5 5 6 8}
+    set v [violins]
+    set xs [lmap {x y} [.c coords $v] {set x}]
+    set x1 [tcl::mathfunc::min {*}$xs]
+    set x2 [tcl::mathfunc::max {*}$xs]
+    lassign [.c bbox $v] - y1 - y2
+    lassign [pix $p 5 0] xc
+    list [llength $v] [.c itemcget $v -fill] [.c itemcget $v -outline] \
+	[approx [expr {$x2-$x1}] 50 2] [approx [expr {($x1+$x2)/2.0}] $xc 1] \
+	[expr {$y1 < [lindex [pix $p 5 8] 1] && $y2 > [lindex [pix $p 5 2] 1]}]
+} -cleanup {
+    cleanupPlot
+} -result {1 {} black 1 1 1}
+
+test Plotchart-208.2 {violin: horizontal violin with colours} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p dataconfig v -colour blue -fillcolour lightblue
+    $p violin v {2 3 3 4 4 4 5 5 6 8} 5
+    set v [violins]
+    lassign [.c bbox $v] x1 - x2 -
+    set ys [lmap {x y} [.c coords $v] {set y}]
+    set y1 [tcl::mathfunc::min {*}$ys]
+    set y2 [tcl::mathfunc::max {*}$ys]
+    list [.c itemcget $v -fill] [.c itemcget $v -outline] [approx [expr {$y2-$y1}] 50 2] \
+	[expr {$x2-$x1 > $y2-$y1}]
+} -cleanup {
+    cleanupPlot
+} -result {lightblue blue 1 1}
+
+test Plotchart-208.3 {violin: -violinwidth} -constraints {
+    knownBug
+} -setup {
+    mkCanvas 400 400
+} -body {
+    # The violin is twice as wide as specified
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p dataconfig v -violinwidth 30
+    $p violin v 5 {2 3 3 4 4 4 5 5 6 8}
+    set xs [lmap {x y} [.c coords [violins]] {set x}]
+    approx [expr {[tcl::mathfunc::max {*}$xs] - [tcl::mathfunc::min {*}$xs]}] 30 2
+} -cleanup {
+    cleanupPlot
+} -result 1
+
+test Plotchart-208.4 {violin: data tags} -constraints {
+    knownBug
+} -setup {
+    mkCanvas 400 400
+} -body {
+    # The violin polygon has no tags
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p violin v 5 {2 3 3 4 4 4 5 5 6 8}
+    llength [items data_v]
+} -cleanup {
+    cleanupPlot
+} -result 1
+
+test Plotchart-208.5 {violin: both lists} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p violin v {1 2} {3 4}
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {Use either a list of x values or a list of y values - not both}
+
+# -------------------------------------------------------------------------
+# vector and vectorconfig
+
+test Plotchart-209.1 {vector: cartesian components (default)} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p vector v 5 5 30 40
+    set l [items data_v]
+    lassign [pix $p 5 5] x y
+    list [.c type $l] [.c itemcget $l -arrow] [.c itemcget $l -fill] \
+	[samePixels [.c coords $l] [list $x $y [expr {$x+30}] [expr {$y-40}]] 0.01]
+} -cleanup {
+    cleanupPlot
+} -result {line last black 1}
+
+test Plotchart-209.2 {vectorconfig -scale, -colour, -centred} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p vectorconfig v -scale 2 -colour red -centred 1
+    $p vector v 5 5 10 20
+    set l [items data_v]
+    lassign [pix $p 5 5] x y
+    list [.c itemcget $l -fill] \
+	[samePixels [.c coords $l] [list [expr {$x-10}] [expr {$y+20}] [expr {$x+10}] [expr {$y-20}]] 0.01]
+} -cleanup {
+    cleanupPlot
+} -result {red 1}
+
+test Plotchart-209.3 {vectorconfig: -color and -centered synonyms} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p vectorconfig v -color green -centered 1
+    $p vector v 5 5 10 0
+    set l [items data_v]
+    lassign [pix $p 5 5] x y
+    list [.c itemcget $l -fill] [samePixels [.c coords $l] [list [expr {$x-5}] $y [expr {$x+5}] $y] 0.01]
+} -cleanup {
+    cleanupPlot
+} -result {green 1}
+
+test Plotchart-209.4 {vectorconfig -type polar: angle 0 along the x-axis} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p vectorconfig v -type polar
+    $p vector v 5 5 20 0
+    $p vector w 5 5 20 90
+    $p vectorconfig w -type polar
+    .c delete data_w
+    $p vector w 5 5 20 90
+    lassign [pix $p 5 5] x y
+    list [samePixels [.c coords [items data_v]] [list $x $y [expr {$x+20}] $y] 0.01] \
+	[samePixels [.c coords [items data_w]] [list $x $y $x [expr {$y-20}]] 0.01]
+} -cleanup {
+    cleanupPlot
+} -result {1 1}
+
+test Plotchart-209.5 {vectorconfig -type nautical: 0 is north, 90 is east} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p vectorconfig n -type nautical
+    $p vectorconfig e -type nautical
+    $p vector n 5 5 20 0
+    $p vector e 5 5 20 90
+    lassign [pix $p 5 5] x y
+    list [samePixels [.c coords [items data_n]] [list $x $y $x [expr {$y-20}]] 0.01] \
+	[samePixels [.c coords [items data_e]] [list $x $y [expr {$x+20}] $y] 0.01]
+} -cleanup {
+    cleanupPlot
+} -result {1 1}
+
+test Plotchart-209.6 {vectorconfig: invalid -scale} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p vectorconfig v -scale 0
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {Scale factor must be positive}
+
+test Plotchart-209.7 {vectorconfig: invalid -type} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p vectorconfig v -type spherical
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {Unknown vector components option: spherical}
+
+test Plotchart-209.8 {vectorconfig: unknown option} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p vectorconfig v -width 2
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {Unknown vector option: -width (2)}
+
+test Plotchart-209.9 {vector: wrong # args} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p vector v 5 5 1
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {wrong # args: should be "DrawVector w series xcrd ycrd ucmp vcmp"}
+
+# -------------------------------------------------------------------------
+# dot and dotconfig
+
+proc brightness {colour} {
+    lassign [winfo rgb . $colour] r g b
+    expr {$r + $g + $b}
+}
+
+proc dotRadius {i} {
+    lassign [.c coords $i] x1 y1 x2 y2
+    R [expr {($x2-$x1)/2.0}] 1
+}
+
+test Plotchart-210.1 {dot: size scaled by the value (default)} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p dot d 3 3 5
+    $p dot d 7 7 10
+    lassign [items data_d] d1 d2
+    lassign [.c coords $d1] x1 y1 x2 y2
+    list [itemTypes data_d] [dotRadius $d1] [dotRadius $d2] [.c itemcget $d1 -fill] \
+	[.c itemcget $d1 -outline] [samePixels [list [expr {($x1+$x2)/2}] [expr {($y1+$y2)/2}]] [pix $p 3 3] 0.01]
+} -cleanup {
+    cleanupPlot
+} -result {oval 5.0 10.0 black black 1}
+
+test Plotchart-210.2 {dotconfig -scale, -colour} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p dotconfig d -scale 2 -colour red
+    $p dot d 3 3 5
+    set i [items data_d]
+    list [dotRadius $i] [.c itemcget $i -fill]
+} -cleanup {
+    cleanupPlot
+} -result {10.0 red}
+
+test Plotchart-210.3 {dotconfig -scalebyvalue 0 and -radius (default 3)} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p dotconfig a -scalebyvalue 0
+    $p dotconfig b -scalebyvalue 0 -radius 7
+    $p dot a 3 3 20
+    $p dot b 6 6 20
+    list [dotRadius [items data_a]] [dotRadius [items data_b]]
+} -cleanup {
+    cleanupPlot
+} -result {3.0 7.0}
+
+test Plotchart-210.4 {dotconfig -outline 0} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p dotconfig d -outline 0
+    $p dot d 3 3 5
+    $p dotconfig e -outline 1
+    $p dot e 6 6 5
+    list [itemOption data_d -outline] [itemOption data_e -outline]
+} -cleanup {
+    cleanupPlot
+} -result {{{}} black}
+
+test Plotchart-210.5 {dotconfig -classes: colour by value} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p dotconfig d -classes {0 blue 1 green} -colour red -scalebyvalue 0
+    foreach v {-1 0 0.5 1 5} {
+	$p dot d 5 5 $v
+    }
+    lmap i [items data_d] {.c itemcget $i -fill}
+} -cleanup {
+    cleanupPlot
+} -result {blue green green red red}
+
+test Plotchart-210.6 {dotconfig -classes combined with -scalebyvalue} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p dotconfig d -classes {5 blue 10 green} -scalebyvalue 1
+    $p dot d 3 3 4
+    $p dot d 6 6 8
+    lmap i [items data_d] {list [.c itemcget $i -fill] [dotRadius $i]}
+} -cleanup {
+    cleanupPlot
+} -result {{blue 4.0} {green 8.0}}
+
+test Plotchart-210.7 {dotconfig -3deffect: highlights in the dot} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p dotconfig d -3deffect 1 -colour #0000c0
+    $p dot d 5 5 10
+    set ids [items data_d]
+    set big [lindex $ids 0]
+    lassign [.c bbox $big] bx1 by1 bx2 by2
+    set inside 1
+    foreach i [lrange $ids 1 end] {
+	lassign [.c bbox $i] x1 y1 x2 y2
+	if {$x1 < $bx1 || $y1 < $by1 || $x2 > $bx2 || $y2 > $by2} {set inside 0}
+    }
+    list [expr {[llength $ids] > 1}] $inside \
+	[expr {[brightness [.c itemcget [lindex $ids end] -fill]] > [brightness #0000c0]}]
+} -cleanup {
+    cleanupPlot
+} -result {1 1 1}
+
+test Plotchart-210.8 {dotconfig: invalid -scale} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p dotconfig d -scale -1
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {Scale factor must be positive}
+
+test Plotchart-210.9 {dotconfig: unknown option} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p dotconfig d -size 2
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {Unknown dot option: -size (2)}
+
+test Plotchart-210.10 {dot: logarithmic and polar plots} -setup {
+    mkCanvas 400 400
+} -body {
+    set r {}
+    foreach cmd {
+	{::Plotchart::createXLogYPlot .c {0 10 2} {1 1000}}
+	{::Plotchart::createLogXYPlot .c {1 1000} {0 10 2}}
+	{::Plotchart::createLogXLogYPlot .c {1 1000} {1 1000}}
+	{::Plotchart::createPolarplot .c {10 2}}
+    } {
+	set p [{*}$cmd]
+	$p dot d 5 5 3
+	set i [items data_d]
+	lassign [.c coords $i] x1 y1 x2 y2
+	lappend r [samePixels [list [expr {($x1+$x2)/2}] [expr {($y1+$y2)/2}]] [pix $p 5 5] 0.01]
+	cleanupPlot
+	mkCanvas 400 400
+    }
+    set r
+} -cleanup {
+    cleanupPlot
+} -result {1 1 1 1}
+
+test Plotchart-210.11 {dot: wrong # args} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p dot d 1 1
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {wrong # args: should be "DrawDot w series xcrd ycrd value"}
+
+# -------------------------------------------------------------------------
+# Contours, grid, colour maps and their legends
+
+# A 3x3 grid with f = x + y
+set gridX {{0 5 10} {0 5 10} {0 5 10}}
+set gridY {{0 0 0} {5 5 5} {10 10 10}}
+set gridF {{0 5 10} {5 10 15} {10 15 20}}
+
+# Items created by a script
+proc newItems {script} {
+    set before [.c find all]
+    uplevel 1 $script
+    set new {}
+    foreach i [.c find all] {
+	if {$i ni $before} {lappend new $i}
+    }
+    return $new
+}
+
+# Check that all lines lie on one of the levels of f = x + y, that each
+# level has a single colour and that different levels have different
+# colours.  Returns the list of levels found.
+proc checkLevels {p ids levels} {
+    set colourOf {}
+    set found {}
+    foreach i $ids {
+	set col [.c itemcget $i -fill]
+	set lev {}
+	foreach {px py} [.c coords $i] {
+	    lassign [::Plotchart::pixelToCoords [$p canvas] $px $py] x y
+	    set l [lsearch -inline -all [lmap v $levels {expr {abs($x+$y-$v) < 0.1 ? $v : [continue]}}] *]
+	    if {[llength $l] != 1} {return "point not on a level"}
+	    lappend lev [lindex $l 0]
+	}
+	set lev [lsort -unique $lev]
+	if {[llength $lev] != 1} {return "line on several levels"}
+	if {[dict exists $colourOf $lev] && [dict get $colourOf $lev] ne $col} {
+	    return "several colours for level $lev"
+	}
+	dict set colourOf $lev $col
+	lappend found $lev
+    }
+    if {[llength [lsort -unique [dict values $colourOf]]] != [dict size $colourOf]} {
+	return "same colour for different levels"
+    }
+    lsort -unique -real $found
+}
+
+test Plotchart-211.1 {contourlines: lines on the given levels} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    set new [newItems {
+	$p contourlines $gridX $gridY $gridF {5 10 15}
+    }]
+    list [lsort -unique [lmap i $new {.c type $i}]] [checkLevels $p $new {5 10 15}]
+} -cleanup {
+    cleanupPlot
+} -result {line {5 10 15}}
+
+test Plotchart-211.1a {contourlines: classes with their colours} -constraints {
+    knownBug
+} -setup {
+    mkCanvas 400 400
+} -body {
+    # The colours of the classes are ignored, the colour map is used
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    set new [newItems {
+	$p contourlines $gridX $gridY $gridF {{5 red} {10 green} {15 blue}}
+    }]
+    set ok 1
+    foreach i $new {
+	set col [.c itemcget $i -fill]
+	if {![dict exists {red 5 green 10 blue 15} $col]} {set ok 0; break}
+	set level [dict get {red 5 green 10 blue 15} $col]
+	foreach {px py} [.c coords $i] {
+	    lassign [::Plotchart::pixelToCoords [$p canvas] $px $py] x y
+	    if {abs($x + $y - $level) > 0.1} {set ok 0}
+	}
+    }
+    list [lsort -unique [lmap i $new {.c itemcget $i -fill}]] $ok
+} -cleanup {
+    cleanupPlot
+} -result {{blue green red} 1}
+
+
+test Plotchart-211.3 {contourlines: missing values skip the cell} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    set f {{0 5 10} {5 {} 15} {10 15 20}}
+    set new [newItems {
+	$p contourlines $gridX $gridY $f {5 10 15}
+    }]
+    llength $new
+} -cleanup {
+    cleanupPlot
+} -result 0
+
+test Plotchart-211.4 {contourlinesfunctionvalues: same as contourlines} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    set c1 [newItems {
+	$p contourlines $gridX $gridY $gridF {5 10 15}
+    }]
+    set c1 [lmap i $c1 {list [.c itemcget $i -fill] [R [.c coords $i] 1]}]
+    .c delete {*}[lmap i [.c find all] {expr {[.c gettags $i] eq "" ? $i : ""}}]
+    set c2 [newItems {
+	$p contourlinesfunctionvalues {0 5 10} {0 5 10} $gridF {5 10 15}
+    }]
+    set c2 [lmap i $c2 {list [.c itemcget $i -fill] [R [.c coords $i] 1]}]
+    list [expr {[llength $c1] > 0}] [expr {$c1 eq $c2}]
+} -cleanup {
+    cleanupPlot
+} -result {1 1}
+
+test Plotchart-211.5 {contourlinesfunctionvalues: different number of x and y values} -constraints {
+    knownBug
+} -setup {
+    mkCanvas 400 400
+} -body {
+    # The number of rows is taken from xvec
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    set new [newItems {
+	$p contourlinesfunctionvalues {0 10} {0 5 10} {{0 10} {5 15} {10 20}} {5 10 15}
+    }]
+    list [expr {[llength $new] > 0}] [checkLevels $p $new {5 10 15}]
+} -cleanup {
+    cleanupPlot
+} -result {1 {5 10 15}}
+
+test Plotchart-211.6 {contourlinesfunctionvalues: x value outside the axis} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p contourlinesfunctionvalues {0 5 20} {0 5 10} $gridF
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {The given x value 20 at index 2 of xvec is not in the x-axis range [0.0,10.0]}
+
+test Plotchart-211.7 {contourlinesfunctionvalues: y value outside the axis} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p contourlinesfunctionvalues {0 5 10} {-1 5 10} $gridF
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {The given y value -1 at index 0 of yvec is not in the y-axis range [0.0,10.0]}
+
+test Plotchart-211.8 {contourfill: filled polygons in the colours of the map} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    set new [newItems {
+	$p contourfill $gridX $gridY $gridF {0 5 10 15 20}
+    }]
+    set polys [lmap i $new {expr {[.c type $i] eq "polygon" ? $i : [continue]}}]
+    list [expr {[llength $polys] > 0}] [lsort -unique [lmap i $new {.c type $i}]] \
+	[expr {[llength [lsort -unique [lmap i $polys {.c itemcget $i -fill}]]] >= 4}]
+} -cleanup {
+    cleanupPlot
+} -result {1 {line polygon} 1}
+
+test Plotchart-211.8a {contourfill: classes with their colours} -constraints {
+    knownBug
+} -setup {
+    mkCanvas 400 400
+} -body {
+    # The colours of the classes are ignored, the colour map is used
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    set new [newItems {
+	$p contourfill $gridX $gridY $gridF {{0 red} {10 green} {20 blue}}
+    }]
+    lsort -unique [lmap i $new {.c itemcget $i -fill}]
+} -cleanup {
+    cleanupPlot
+} -result {green red}
+
+test Plotchart-211.9 {contourbox: one quadrangle per cell, colour of the average} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    set new [newItems {
+	$p contourbox $gridX $gridY $gridF {{0 red} {8 green} {12 blue}}
+    }]
+    # Averages of the cells: 5, 10, 10, 15
+    set cells {}
+    foreach i $new {
+	set xs {}
+	set ys {}
+	foreach {px py} [.c coords $i] {
+	    lassign [::Plotchart::pixelToCoords [$p canvas] $px $py] x y
+	    lappend xs $x
+	    lappend ys $y
+	}
+	lappend cells [list [R [expr {([tcl::mathfunc::min {*}$xs] + [tcl::mathfunc::max {*}$xs])/2.0}] 1] \
+			    [R [expr {([tcl::mathfunc::min {*}$ys] + [tcl::mathfunc::max {*}$ys])/2.0}] 1] \
+			    [.c itemcget $i -fill]]
+    }
+    lsort -index 1 -real [lsort -index 0 -real $cells]
+} -cleanup {
+    cleanupPlot
+} -result {{2.5 2.5 red} {7.5 2.5 green} {2.5 7.5 green} {7.5 7.5 blue}}
+
+test Plotchart-211.9a {contourbox: list of class values} -constraints {
+    knownBug
+} -setup {
+    mkCanvas 400 400
+} -body {
+    # Fails with: value for "-fill" missing
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    set new [newItems {
+	$p contourbox $gridX $gridY $gridF {0 8 12}
+    }]
+    llength [lsort -unique [lmap i $new {.c itemcget $i -fill}]]
+} -cleanup {
+    cleanupPlot
+} -result 3
+
+test Plotchart-211.10 {grid: lines through the grid points} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    set new [newItems {
+	$p grid $gridX $gridY
+    }]
+    list [llength $new] [lsort -unique [lmap i $new {.c type $i}]] \
+	[samePixels [.c coords [lindex $new 0]] [pixList $p {0 0 5 0 10 0}]] \
+	[samePixels [.c coords [lindex $new 3]] [pixList $p {0 0 0 5 0 10}]]
+} -cleanup {
+    cleanupPlot
+} -result {6 line 1 1}
+
+test Plotchart-211.11 {colorMap: method of an XY plot} -constraints {
+    knownBug
+} -setup {
+    mkCanvas 400 400
+} -body {
+    # Fails with: No such method - colorMap
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p colorMap {red green blue yellow}
+    set new [newItems {
+	$p contourlines $gridX $gridY $gridF {5 10 15}
+    }]
+    lsort -unique [lmap i $new {.c itemcget $i -fill}]
+} -cleanup {
+    cleanupPlot
+    ::Plotchart::colorMap jet
+} -result {blue green red}
+
+test Plotchart-211.12 {colorMap: list of colours via the namespace command} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    ::Plotchart::colorMap {red green blue yellow}
+    set new [newItems {
+	$p contourlines $gridX $gridY $gridF {5 10 15}
+    }]
+    list [checkLevels $p $new {5 10 15}] \
+	[expr {[llength [lmap i $new {expr {[.c itemcget $i -fill] in {red green blue yellow} ? $i : [continue]}}]] == [llength $new]}]
+} -cleanup {
+    cleanupPlot
+    ::Plotchart::colorMap jet
+} -result {{5 10 15} 1}
+
+test Plotchart-211.12a {colorMap: colours are interpolated} -constraints {
+    knownBug
+} -setup {
+    mkCanvas 400 400
+} -body {
+    # The colours are used as they are, so that two colours are not
+    # enough for three contour levels
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    ::Plotchart::colorMap {red blue}
+    set new [newItems {
+	$p contourlines $gridX $gridY $gridF {5 10 15}
+    }]
+    checkLevels $p $new {5 10 15}
+} -cleanup {
+    cleanupPlot
+    ::Plotchart::colorMap jet
+} -result {5 10 15}
+
+test Plotchart-211.13 {colorMap: predefined maps} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    set r {}
+    set levels {2 4 6 8 10 12 14 16 18}
+    foreach map {grey gray jet hot cool} {
+	::Plotchart::colorMap $map
+	set new [newItems {
+	    $p contourlines $gridX $gridY $gridF $levels
+	}]
+	lappend r [expr {[checkLevels $p $new $levels] eq $levels}]
+	.c delete {*}$new
+    }
+    set r
+} -cleanup {
+    cleanupPlot
+    ::Plotchart::colorMap jet
+} -result {1 1 1 1 1}
+
+test Plotchart-211.13a {colorMap: hot map with few classes} -constraints {
+    knownBug
+} -setup {
+    mkCanvas 400 400
+} -body {
+    # Fails with: domain error: argument not in valid range
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    ::Plotchart::colorMap hot
+    set new [newItems {
+	$p contourlines $gridX $gridY $gridF {5 10 15}
+    }]
+    checkLevels $p $new {5 10 15}
+} -cleanup {
+    cleanupPlot
+    ::Plotchart::colorMap jet
+} -result {5 10 15}
+
+test Plotchart-211.14 {colorMap: grey map is grey from dark to light} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    ::Plotchart::colorMap grey
+    set new [newItems {
+	$p contourlines $gridX $gridY $gridF {5 10 15}
+    }]
+    set r {}
+    set levels {}
+    foreach i $new {
+	lassign [winfo rgb . [.c itemcget $i -fill]] red green blue
+	lappend r [expr {$red == $green && $green == $blue}]
+	lassign [::Plotchart::pixelToCoords [$p canvas] {*}[lrange [.c coords $i] 0 1]] x y
+	lappend levels [list [expr {round($x+$y)}] $red]
+    }
+    set levels [lsort -unique -index 0 -integer $levels]
+    list [lsort -unique $r] [expr {[lindex $levels 0 1] < [lindex $levels end 1]}]
+} -cleanup {
+    cleanupPlot
+    ::Plotchart::colorMap jet
+} -result {1 1}
+
+test Plotchart-211.14a {colorMap: unknown map name uses jet} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    ::Plotchart::colorMap jet
+    set new [newItems {$p contourlines $gridX $gridY $gridF {5 10 15}}]
+    set c1 [lmap i $new {.c itemcget $i -fill}]
+    .c delete {*}$new
+    ::Plotchart::colorMap nosuchmap
+    set new [newItems {$p contourlines $gridX $gridY $gridF {5 10 15}}]
+    expr {$c1 eq [lmap i $new {.c itemcget $i -fill}]}
+} -cleanup {
+    cleanupPlot
+    ::Plotchart::colorMap jet
+} -output "Colormap : Unknown colorMapType, nosuchmap.  Using JET\n" -result 1
+
+test Plotchart-211.15 {legendisolines: classes as coloured lines} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p legendisolines $gridF {5 10 15}
+    list [itemTexts legend] [lsort -unique [lmap i [items {legend type=line}] {.c type $i}]] \
+	[llength [items {legend type=line}]]
+} -cleanup {
+    cleanupPlot
+    ::Plotchart::colorMap jet
+} -result {{5 10 15} line 3}
+
+test Plotchart-211.16 {legendshades: classes as coloured rectangles} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p legendshades $gridF {5 10 15}
+    list [itemTexts legend] [llength [items {legend type=rectangle}]]
+} -cleanup {
+    cleanupPlot
+    ::Plotchart::colorMap jet
+} -result {{{< 5} {< 10} {< 15} {> 15}} 4}
+
+# -------------------------------------------------------------------------
+# xband, yband and labeldot
+
+test Plotchart-212.1 {xband: grey band over the full x-axis} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p xband 3 6
+    set b [items band]
+    list [.c type $b] [.c itemcget $b -fill] \
+	[samePixels [lsort -real [.c coords $b]] [lsort -real [pixList $p {0 3 10 6}]]]
+} -cleanup {
+    cleanupPlot
+} -result {rectangle grey70 1}
+
+test Plotchart-212.2 {yband: grey band over the full y-axis} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p yband 2 4
+    set b [items band]
+    list [.c type $b] [.c itemcget $b -fill] \
+	[samePixels [lsort -real [.c coords $b]] [lsort -real [pixList $p {2 0 4 10}]]]
+} -cleanup {
+    cleanupPlot
+} -result {rectangle grey70 1}
+
+test Plotchart-212.3 {xband/yband: below the data} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p plot s 0 0
+    $p plot s 10 10
+    $p xband 3 6
+    $p yband 2 4
+    set all [.c find all]
+    set d [lsearch $all [items data_s]]
+    list [expr {[lsearch $all [lindex [items band] 0]] < $d}] [expr {[lsearch $all [lindex [items band] 1]] < $d}]
+} -cleanup {
+    cleanupPlot
+} -result {1 1}
+
+test Plotchart-212.4 {labeldot: grey label and a symbol} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p labeldot 5 5 "Label"
+    set t [items {data type=text}]
+    set s [items data_labeldot]
+    lassign [.c bbox $s] x1 y1 x2 y2
+    list [.c itemcget $t -text] [.c itemcget $t -fill] [.c itemcget $t -anchor] \
+	[expr {[lindex [.c coords $t] 0] < [lindex [pix $p 5 5] 0]}] \
+	[.c type $s] [.c itemcget $s -fill] \
+	[samePixels [list [expr {($x1+$x2)/2.0}] [expr {($y1+$y2)/2.0}]] [pix $p 5 5] 1]
+} -cleanup {
+    cleanupPlot
+} -result {Label grey e 1 oval red 1}
+
+test Plotchart-212.5 {labeldot: orientations} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    lassign [pix $p 5 5] px py
+    set r {}
+    foreach orient {w e n s W} {
+	.c delete data
+	$p labeldot 5 5 "Label" $orient
+	set t [items {data type=text}]
+	lassign [.c coords $t] x y
+	set h [expr {$x < $px - 1 ? "w" : ($x > $px + 1 ? "e" : "")}]
+	set v [expr {$y < $py - 1 ? "n" : ($y > $py + 1 ? "s" : "")}]
+	lappend r $orient [.c itemcget $t -anchor] $v$h
+    }
+    set r
+} -cleanup {
+    cleanupPlot
+} -result {w e w e w e n s n s n s W e w}
+
+test Plotchart-212.6 {labeldot: appearance via dataconfig labeldot} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p dataconfig labeldot -colour blue -symbol up
+    $p labeldot 5 5 "Label"
+    set s [items data_labeldot]
+    list [.c type $s] [.c itemcget $s -outline]
+} -cleanup {
+    cleanupPlot
+} -result {polygon blue}
+
+test Plotchart-212.7 {labeldot: logarithmic and polar plots} -setup {
+    mkCanvas 400 400
+} -body {
+    set r {}
+    foreach cmd {
+	{::Plotchart::createXLogYPlot .c {0 10 2} {1 1000}}
+	{::Plotchart::createLogXYPlot .c {1 1000} {0 10 2}}
+	{::Plotchart::createLogXLogYPlot .c {1 1000} {1 1000}}
+	{::Plotchart::createPolarplot .c {10 2}}
+    } {
+	set p [{*}$cmd]
+	$p labeldot 5 5 "Label"
+	lappend r [itemTexts data] [llength [items data_labeldot]]
+	cleanupPlot
+	mkCanvas 400 400
+    }
+    set r
+} -cleanup {
+    cleanupPlot
+} -result {Label 1 Label 1 Label 1 Label 1}
+
+test Plotchart-212.8 {xband: wrong # args} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p xband 3
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {wrong # args: should be "DrawXband w ymin ymax"}
+
+# -------------------------------------------------------------------------
+# createStripchart
+
+test Plotchart-213.1 {createStripchart: like an XY plot} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createStripchart .c {0 100 20} {0 50 10}]
+    $p plot s 10 10
+    $p plot s 50 40
+    list [string match stripchart_* $p] [itemTexts xaxis] [llength [items data_s]] \
+	[samePixels [.c coords [items data_s]] [pixList $p {10 10 50 40}]]
+} -cleanup {
+    cleanupPlot
+} -result {1 {0 20 40 60 80 100} 1 1}
+
+test Plotchart-213.2 {createStripchart: x-axis shifts when the maximum is exceeded} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createStripchart .c {0 100 20} {0 50 10}]
+    $p plot s 10 10
+    $p plot s 90 20
+    $p plot s 130 30
+    set lines [items data_s]
+    list [itemTexts xaxis] [llength $lines] \
+	[samePixels [.c coords [lindex $lines end]] [pixList $p {90 20 130 30}] 1.5] \
+	[samePixels [.c coords [lindex $lines 0]] [pixList $p {10 10 90 20}] 1.5]
+} -cleanup {
+    cleanupPlot
+} -result {{40 60 80 100 120 140} 2 1 1}
+
+test Plotchart-213.3 {createStripchart: -xlabels is invalid} -setup {
+    mkCanvas
+} -body {
+    ::Plotchart::createStripchart .c {0 100 {}} {0 50 10} -xlabels {A B}
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {The option "-xlabels" is invalid - use "-timeformat" if you want date/time labels}
+
+test Plotchart-213.4 {createStripchart: -timeformat labels follow the shift} -setup {
+    mkCanvas 500 300
+} -body {
+    set start [clock scan "2020-01-01 00:00" -gmt 1]
+    set stop  [clock scan "2020-01-01 10:00" -gmt 1]
+    set s [::Plotchart::createStripchart .c [list $start $stop 7200] {0 10 1} \
+	-timeformat "%H:%M" -gmt 1]
+    set r [list [itemTexts xaxis]]
+    foreach {x y} {0 0 2 5 5 2 9 9 12 10} {
+	$s plot a [expr {$start + 3600 * $x}] $y
+    }
+    lappend r [itemTexts xaxis]
+} -cleanup {
+    cleanupPlot
+} -result {{00:00 02:00 04:00 06:00 08:00 10:00} {02:00 04:00 06:00 08:00 10:00 12:00}}
+
+test Plotchart-213.5 {createStripchart: dataconfig and yconfig} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createStripchart .c {0 100 20} {0 50 10}]
+    $p dataconfig s -colour red
+    $p plot s 10 10
+    $p plot s 50 40
+    $p yconfig -format %.1f
+    list [itemOption data_s -fill] [lindex [itemTexts yaxis] end]
+} -cleanup {
+    cleanupPlot
+} -result {red 50.0}
+
+# -------------------------------------------------------------------------
+# createTXPlot
+
+test Plotchart-214.1 {createTXPlot: time axis with dates} -setup {
+    mkCanvas 500 300
+} -body {
+    set p [::Plotchart::createTXPlot .c {2006-01-01 2006-01-11 2} {0 10 2}]
+    list [string match txplot_* $p] [itemTexts taxis] [itemTexts yaxis]
+} -cleanup {
+    cleanupPlot
+} -result {1 {2006-01-01 2006-01-03 2006-01-05 2006-01-07 2006-01-09 2006-01-11} {0 2 4 6 8 10}}
+
+test Plotchart-214.2 {createTXPlot: plot takes date/time strings} -setup {
+    mkCanvas 500 300
+} -body {
+    set p [::Plotchart::createTXPlot .c {2006-01-01 2006-01-11 2} {0 10 2}]
+    $p plot s 2006-01-02 3
+    $p plot s "2006-01-05 12:00" 7
+    samePixels [.c coords [items data_s]] \
+	[pixList $p [list [clock scan 2006-01-02] 3 [clock scan "2006-01-05 12:00"] 7]]
+} -cleanup {
+    cleanupPlot
+} -result 1
+
+test Plotchart-214.3 {createTXPlot: format of the time labels via xconfig} -setup {
+    mkCanvas 500 300
+} -body {
+    set p [::Plotchart::createTXPlot .c {2006-01-01 2006-01-11 5} {0 10 2}]
+    $p xconfig -format "%d/%m"
+    itemTexts taxis
+} -cleanup {
+    cleanupPlot
+} -result {01/01 06/01 11/01}
+
+test Plotchart-214.4 {createTXPlot: invalid date} -setup {
+    mkCanvas 500 300
+} -body {
+    set p [::Plotchart::createTXPlot .c {2006-01-01 2006-01-11 2} {0 10 2}]
+    $p plot s "no such date" 3
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -match glob -result {unable to convert date-time string "no such date"*}
+
+test Plotchart-214.5 {createTXPlot: step size zero} -setup {
+    mkCanvas 500 300
+} -body {
+    ::Plotchart::createTXPlot .c {2006-01-01 2006-01-11 2} {0 10 0}
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {Step size can not be zero}
+
+# -------------------------------------------------------------------------
+# Logarithmic plots
+
+test Plotchart-215.1 {createXLogYPlot: logarithmic y-axis} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXLogYPlot .c {0 10 2} {1 1000}]
+    set w [$p canvas]
+    lassign [pix $p 0 1] x y1
+    lassign [pix $p 0 10] x y10
+    lassign [pix $p 0 100] x y100
+    list [string match xlogyplot_* $p] [itemTexts yaxis] [itemTexts xaxis] \
+	[approx [expr {$y1-$y10}] [expr {$y10-$y100}] 0.01]
+} -cleanup {
+    cleanupPlot
+} -result {1 {1 10 100 1000} {0 2 4 6 8 10} 1}
+
+test Plotchart-215.2 {createXLogYPlot: data given as linear values} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXLogYPlot .c {0 10 2} {1 1000}]
+    $p plot s 2 10
+    $p plot s 8 100
+    samePixels [.c coords [items data_s]] [pixList $p {2 10 8 100}]
+} -cleanup {
+    cleanupPlot
+} -result 1
+
+test Plotchart-215.3 {createXLogYPlot: y extremes must be positive} -setup {
+    mkCanvas
+} -body {
+    ::Plotchart::createXLogYPlot .c {0 10 2} {0 1000}
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {Minimum and maximum for y-axis must be positive}
+
+test Plotchart-215.4 {createLogXYPlot: logarithmic x-axis} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createLogXYPlot .c {1 1000} {0 10 2}]
+    $p plot s 10 2
+    $p plot s 100 8
+    list [string match logxyplot_* $p] [itemTexts xaxis] [itemTexts yaxis] \
+	[samePixels [.c coords [items data_s]] [pixList $p {10 2 100 8}]]
+} -cleanup {
+    cleanupPlot
+} -result {1 {1 10 100 1000} {0 2 4 6 8 10} 1}
+
+test Plotchart-215.5 {createLogXYPlot: x extremes must be positive} -setup {
+    mkCanvas
+} -body {
+    ::Plotchart::createLogXYPlot .c {-1 1000} {0 10 2}
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {Minimum and maximum for x-axis must be positive}
+
+test Plotchart-215.6 {createLogXLogYPlot: both axes logarithmic} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createLogXLogYPlot .c {1 1000} {1 1000}]
+    $p plot s 10 10
+    $p plot s 100 100
+    list [string match logxlogyplot_* $p] [itemTexts xaxis] [itemTexts yaxis] \
+	[samePixels [.c coords [items data_s]] [pixList $p {10 10 100 100}]]
+} -cleanup {
+    cleanupPlot
+} -result {1 {1 10 100 1000} {1 10 100 1000} 1}
+
+test Plotchart-215.7 {createLogXLogYPlot: extremes must be positive} -setup {
+    mkCanvas
+} -body {
+    list [catch {::Plotchart::createLogXLogYPlot .c {0 1000} {1 1000}} m1] $m1 \
+	[catch {::Plotchart::createLogXLogYPlot .c {1 1000} {1 -1000}} m2] $m2
+} -cleanup {
+    cleanupPlot
+} -result {1 {Minimum and maximum for x-axis must be positive} 1 {Minimum and maximum for y-axis must be positive}}
+
+test Plotchart-215.8 {logarithmic plots: general methods} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createLogXLogYPlot .c {1 1000} {1 1000}]
+    $p title "Log-log"
+    $p xtext "X"
+    $p ytext "Y"
+    $p dataconfig s -colour red
+    $p plot s 10 10
+    $p plot s 100 100
+    $p legend s "Series"
+    $p xticklines grey
+    $p yticklines grey
+    list [itemTexts title] [itemTexts legend] [expr {[llength [items xtickline]] > 0}] \
+	[expr {[llength [items ytickline]] > 0}]
+} -cleanup {
+    cleanupPlot
+} -result {Log-log Series 1 1}
+
+# -------------------------------------------------------------------------
+# createIsometricPlot
+
+test Plotchart-216.1 {createIsometricPlot: same scale in both directions} -setup {
+    mkCanvas 400 300
+} -body {
+    set p [::Plotchart::createIsometricPlot .c {0 10} {0 10} 2]
+    lassign [pix $p 0 0] x0 y0
+    lassign [pix $p 1 1] x1 y1
+    list [string match isometric_* $p] [approx [expr {$x1-$x0}] [expr {$y0-$y1}] 0.01] \
+	[expr {[llength [items xaxis]] > 0}] [expr {[llength [items yaxis]] > 0}]
+} -cleanup {
+    cleanupPlot
+} -result {1 1 1 1}
+
+test Plotchart-216.2 {createIsometricPlot: noaxes uses the full canvas} -setup {
+    mkCanvas 400 300
+} -body {
+    set p [::Plotchart::createIsometricPlot .c {0 10} {0 10} noaxes]
+    lassign [pix $p 0 0] x0 y0
+    lassign [pix $p 1 1] x1 y1
+    list [llength [items xaxis]] [llength [items yaxis]] [llength [items mask]] \
+	[approx [expr {$x1-$x0}] [expr {$y0-$y1}] 0.01] [approx [expr {$y0-$y1}] 30 0.01]
+} -cleanup {
+    cleanupPlot
+} -result {0 0 0 1 1}
+
+test Plotchart-216.3 {createIsometricPlot: extremes must differ} -setup {
+    mkCanvas
+} -body {
+    ::Plotchart::createIsometricPlot .c {0 10} {5 5} 2
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {Extremes for axes must be different}
+
+test Plotchart-216.4 {isometric plot: rectangle and filled-rectangle} -setup {
+    mkCanvas 400 300
+} -body {
+    set p [::Plotchart::createIsometricPlot .c {0 10} {0 10} noaxes]
+    $p plot rectangle 1 1 3 4 red
+    $p plot filled-rectangle 5 5 7 6 blue
+    lassign [items data] r f
+    list [.c type $r] [.c itemcget $r -outline] [.c itemcget $r -fill] \
+	[samePixels [lsort -real [.c coords $r]] [lsort -real [pixList $p {1 1 3 4}]] 0.01] \
+	[.c type $f] [.c itemcget $f -outline] [.c itemcget $f -fill] \
+	[samePixels [lsort -real [.c coords $f]] [lsort -real [pixList $p {5 5 7 6}]] 0.01]
+} -cleanup {
+    cleanupPlot
+} -result {rectangle red {} 1 rectangle blue blue 1}
+
+test Plotchart-216.5 {isometric plot: circle and filled-circle are round} -setup {
+    mkCanvas 400 300
+} -body {
+    set p [::Plotchart::createIsometricPlot .c {0 10} {0 10} 2]
+    $p plot circle 5 5 2 green
+    $p plot filled-circle 3 3 1 yellow
+    lassign [items data] c f
+    lassign [.c coords $c] x1 y1 x2 y2
+    lassign [.c coords $f] u1 v1 u2 v2
+    list [.c type $c] [.c itemcget $c -outline] [.c itemcget $c -fill] \
+	[approx [expr {abs($x2-$x1)}] [expr {abs($y2-$y1)}] 0.01] \
+	[samePixels [list [expr {($x1+$x2)/2}] [expr {($y1+$y2)/2}]] [pix $p 5 5] 0.01] \
+	[.c type $f] [.c itemcget $f -fill] [approx [expr {abs($u2-$u1)}] [expr {abs($v2-$v1)}] 0.01]
+} -cleanup {
+    cleanupPlot
+} -result {oval green {} 1 1 oval yellow 1}
+
+test Plotchart-216.6 {isometric plot: default colour is black} -setup {
+    mkCanvas 400 300
+} -body {
+    set p [::Plotchart::createIsometricPlot .c {0 10} {0 10} noaxes]
+    $p plot rectangle 1 1 3 4
+    $p plot circle 5 5 1
+    itemOption data -outline
+} -cleanup {
+    cleanupPlot
+} -result {black}
+
+test Plotchart-216.7 {createIsometricPlot: wrong # args} -body {
+    ::Plotchart::createIsometricPlot .c {0 10} {0 10}
+} -returnCodes error -result {wrong # args: should be "::Plotchart::createIsometricPlot c xscale yscale stepsize ?arg ...?"}
+
+# -------------------------------------------------------------------------
+# createHistogram
+
+test Plotchart-217.1 {histogram: bars end at the given x-coordinate} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createHistogram .c {0 10 2} {0 10 2}]
+    $p plot h 2 4
+    $p plot h 6 8
+    set rects [items {data_h type=rectangle}]
+    lassign $rects r1 r2
+    list [string match histogram_* $p] [llength $rects] \
+	[samePixels [lsort -real [.c coords $r1]] [lsort -real [pixList $p {0 0 2 4}]]] \
+	[samePixels [lsort -real [.c coords $r2]] [lsort -real [pixList $p {2 0 6 8}]]] \
+	[.c itemcget $r1 -fill] [llength [items {data_h type=line}]]
+} -cleanup {
+    cleanupPlot
+} -result {1 2 1 1 black 2}
+
+test Plotchart-217.2 {histogram: -fillcolour and -colour} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createHistogram .c {0 10 2} {0 10 2}]
+    $p dataconfig h -fillcolour green -colour red -width 2
+    $p plot h 2 4
+    list [itemOption {data_h type=rectangle} -fill] [itemOption {data_h type=line} -fill] \
+	[itemOption {data_h type=line} -width]
+} -cleanup {
+    cleanupPlot
+} -result {green red 2.0}
+
+test Plotchart-217.3 {histogram: styles spike, symbol, plateau and stair} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createHistogram .c {0 10 2} {0 10 2}]
+    set r {}
+    foreach style {spike symbol plateau stair} {
+	$p dataconfig $style -style $style
+	$p plot $style 2 4
+	$p plot $style 4 6
+	lappend r $style [lsort -unique [lmap i [items data_$style] {.c type $i}]] \
+	    [llength [items data_$style]]
+    }
+    set r
+} -cleanup {
+    cleanupPlot
+} -result {spike line 2 symbol line 2 plateau line 2 stair line 2}
+
+test Plotchart-217.4 {histogram: spike is a vertical line at the point} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createHistogram .c {0 10 2} {0 10 2}]
+    $p dataconfig s -style spike
+    $p plot s 4 6
+    samePixels [.c coords [items data_s]] [pixList $p {4 0 4 6}]
+} -cleanup {
+    cleanupPlot
+} -result 1
+
+test Plotchart-217.5 {histogram: stair connects the data points} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createHistogram .c {0 10 2} {0 10 2}]
+    $p dataconfig s -style stair
+    $p plot s 2 4
+    $p plot s 4 6
+    set l [lindex [items data_s] 1]
+    samePixels [.c coords $l] [pixList $p {2 4 2 6 4 6}]
+} -cleanup {
+    cleanupPlot
+} -result 1
+
+test Plotchart-217.6 {histogram: symbol style uses plus by default} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createHistogram .c {0 10 2} {0 10 2}]
+    $p dataconfig s -style symbol
+    $p dataconfig c -style symbol -symbol circle
+    $p plot s 4 6
+    $p plot c 4 6
+    list [.c type [items data_s]] [.c type [items data_c]]
+} -cleanup {
+    cleanupPlot
+} -result {line oval}
+
+test Plotchart-217.7 {histogram: invalid style} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createHistogram .c {0 10 2} {0 10 2}]
+    $p dataconfig s -style bars
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {Unknown or invalid value: bars for option -style - filled spike symbol plateau stair}
+
+test Plotchart-217.8 {histogram: plotcumulative accumulates the values} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createHistogram .c {0 10 2} {0 10 2}]
+    $p plotcumulative h 2 1
+    $p plotcumulative h 4 2
+    $p plotcumulative h 6 3
+    set tops {}
+    foreach r [items {data_h type=rectangle}] {
+	lassign [.c coords $r] x1 y1 x2 y2
+	lappend tops [R [lindex [::Plotchart::pixelToCoords [$p canvas] $x2 [expr {min($y1,$y2)}]] 1] 1]
+    }
+    set tops
+} -cleanup {
+    cleanupPlot
+} -result {1.0 3.0 6.0}
+
+test Plotchart-217.9 {histogram: -xlabels with empty step} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createHistogram .c {0 10 {}} {0 10 2} -xlabels {A B C}]
+    itemTexts xaxis
+} -cleanup {
+    cleanupPlot
+} -result {A B C}
+
+test Plotchart-217.10 {histogram: missing y value starts the next bar} -constraints {
+    knownBug
+} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createHistogram .c {0 10 2} {0 10 2}]
+    $p plot h 2 {}
+    $p plot h 4 5
+    # Fails with: can't read "data_series(00.c,h,pystair)"
+    set r [items {data_h type=rectangle}]
+    samePixels [lsort -real [.c coords $r]] [lsort -real [pixList $p {2 0 4 5}]]
+} -cleanup {
+    cleanupPlot
+} -result 1
+
+test Plotchart-217.11 {histogram: step size zero} -setup {
+    mkCanvas
+} -body {
+    ::Plotchart::createHistogram .c {0 10 0} {0 10 2}
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {Step size can not be zero}
+
+# -------------------------------------------------------------------------
+# createRightAxis
+
+test Plotchart-218.1 {createRightAxis: axis at the right with its own scale} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    set r [::Plotchart::createRightAxis $p {0 100 20}]
+    lassign [pix $p 10 0] xr
+    set axle [lindex [items raxis] 0]
+    list [string match right_* $r] [itemTexts raxis] [approx [lindex [.c coords $axle] 0] $xr 0.01]
+} -cleanup {
+    cleanupPlot
+} -result {1 {0 20 40 60 80 100} 1}
+
+test Plotchart-218.2 {createRightAxis: data plotted against the right axis} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    set r [::Plotchart::createRightAxis $p {0 100 20}]
+    $r dataconfig s -colour red
+    $r plot s 0 50
+    $r plot s 10 100
+    $p plot s 0 0
+    $p plot s 10 5
+    set lines [items data_s]
+    set rl [lindex [lmap l $lines {expr {[.c itemcget $l -fill] eq "red" ? $l : [continue]}}] 0]
+    set ll [lindex [lmap l $lines {expr {[.c itemcget $l -fill] eq "black" ? $l : [continue]}}] 0]
+    list [samePixels [.c coords $rl] [pixList $p {0 5 10 10}]] \
+	[samePixels [.c coords $ll] [pixList $p {0 0 10 5}]]
+} -cleanup {
+    cleanupPlot
+} -result {1 1}
+
+test Plotchart-218.3 {createRightAxis: with the canvas name} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    set r [::Plotchart::createRightAxis .c {0 1 0.5}]
+    itemTexts raxis
+} -cleanup {
+    cleanupPlot
+} -result {0 0.5 1}
+
+test Plotchart-218.4 {createRightAxis: -ylabels with empty step} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    set r [::Plotchart::createRightAxis $p {0 2 {}} -ylabels {Low Mid High}]
+    itemTexts raxis
+} -cleanup {
+    cleanupPlot
+} -result {Low Mid High}
+
+test Plotchart-218.5 {createRightAxis: no plot yet} -setup {
+    mkCanvas
+} -body {
+    ::Plotchart::createRightAxis .c {0 100 20}
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {There should be a plot with a left axis already defined}
+
+test Plotchart-218.6 {createRightAxis: step size zero} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    ::Plotchart::createRightAxis $p {0 100 0}
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {Step size can not be zero}
+
+test Plotchart-218.7 {createRightAxis: configuration type inherited from the plot} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createHistogram .c {0 10 2} {0 10 2}]
+    set r [::Plotchart::createRightAxis $p {0 100 20}]
+    $r plot h 4 50
+    llength [items {data_h type=rectangle}]
+} -cleanup {
+    cleanupPlot
+} -result 1
+
+test Plotchart-218.8 {createRightAxis: yconfig for the right axis} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    set r [::Plotchart::createRightAxis $p {0 100 50}]
+    $r yconfig -format %.1f
+    list [itemTexts raxis] [itemTexts yaxis]
+} -cleanup {
+    cleanupPlot
+} -result {{0.0 50.0 100.0} {0 2 4 6 8 10}}
+
+# -------------------------------------------------------------------------
+# createNormalPlot
+
+# Name of the canvas alias of a plot without the canvas method
+proc plotW {p} {
+    lindex [interp alias {} $p] end
+}
+
+test Plotchart-219.1 {createNormalPlot: axes and texts} -constraints {
+    normalplot
+} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createNormalPlot .c {-3 3 1}]
+    list [itemTexts xaxis] [itemTexts yaxis] [itemTexts xtext] [itemTexts vtext]
+} -cleanup {
+    cleanupPlot
+} -result {{-3 -2 -1 0 1 2 3} {0.01 0.1 0.2 0.5 0.8 0.9 0.99} {{Normalised values}} Probability}
+
+test Plotchart-219.2 {normal plot: data on the diagonal for normal data} -constraints {
+    normalplot
+} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createNormalPlot .c {-3 3 1}]
+    $p dataconfig d -type symbol
+    $p plot d 10 2 {8 10 12}
+    $p diagonal
+    set diag [items {data type=line}]
+    set syms [items {data_d type=oval}]
+    # The median of the data lies on the diagonal at the centre
+    set mid [lindex $syms 1]
+    lassign [.c bbox $mid] x1 y1 x2 y2
+    lassign [::Plotchart::coordsToPixel [plotW $p] 0 0] xc yc
+    list [llength $syms] [llength $diag] \
+	[samePixels [list [expr {($x1+$x2)/2.0}] [expr {($y1+$y2)/2.0}]] [list $xc $yc] 1]
+} -cleanup {
+    cleanupPlot
+} -result {3 1 1}
+
+test Plotchart-219.3 {normal plot: data sorted and normalised} -constraints {
+    normalplot
+} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createNormalPlot .c {-3 3 1}]
+    $p dataconfig d -type symbol
+    $p plot d 0 1 {1 -1 0}
+    set xs {}
+    foreach i [items {data_d type=oval}] {
+	lassign [.c bbox $i] x1 y1 x2 y2
+	lappend xs [R [lindex [::Plotchart::pixelToCoords [plotW $p] [expr {($x1+$x2)/2.0}] 0] 0] 0]
+    }
+    lsort -integer $xs
+} -cleanup {
+    cleanupPlot
+} -result {-1 0 1}
+
+# -------------------------------------------------------------------------
+interp bgerror {} $::oldBgError
+restoreRoot
+test Plotchart-299.1 {no background errors} -body {
+    set ::bgErrors
+} -result {}
+::tcltest::cleanupTests
