@@ -1,0 +1,1456 @@
+# -*- tcl -*-
+# shtmlview.test --
+#
+#	Tests for the shtmlview::shtmlview widget and its converter plugins
+#	shtmlview::doctools and shtmlview::mkdoc.
+#
+# Note:
+#	All documents are local files created in a temporary directory.
+#	Nothing is fetched from the network.  The methods "open" and "close"
+#	are not tested, because they show modal dialogs.
+
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2
+    namespace import ::tcltest::*
+}
+
+::tcltest::testConstraint tk 1
+
+if {[catch {package require snit} msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring snit, $msg"
+    return
+}
+
+lappend auto_path [file dirname [file dirname [file normalize [info script]]]]
+
+# shtmlview.tcl reads ::argv when ::argv0 exists (see test shtmlview-1.8);
+# the test harness of sak defines only ::argv0.
+if {![info exists ::argv]} {
+    set ::argv {}
+    set UnsetArgv 1
+}
+package require shtmlview::shtmlview
+
+testConstraint markdown [expr {[info commands ::Markdown::convert] ne ""}]
+testConstraint doctools [expr {![catch {package require shtmlview::doctools}]}]
+testConstraint mkdoc    [expr {![catch {package require shtmlview::mkdoc}]}]
+testConstraint mkdocPkg [expr {![catch {package require mkdoc}]}]
+
+# The tests need a mapped main window (sak withdraws it).
+set OldMainState [wm state .]
+set OldTitle [wm title .]
+wm geometry . +0+0
+wm deiconify .
+update
+
+# -------------------------------------------------------------------------
+# Test documents, in a temporary directory which is also the current
+# directory (the method "render" writes temporary files there).
+
+set OldPwd [pwd]
+set TestDir [makeDirectory shtmlview-test]
+cd $TestDir
+
+proc writeFile {name content} {
+    set f [open [file join $::TestDir $name] w]
+    puts -nonewline $f $content
+    close $f
+    return [file normalize [file join $::TestDir $name]]
+}
+
+set A [writeFile a.html {<html><head><title>Page A</title></head><body>
+<h1>Header A</h1>
+<p>Some <b>bold</b> and <i>italic</i> text. Find needle here.</p>
+<a href="b.html">link to b</a> and <a href="#sec">to section</a>
+<ul><li>one</li><li>two</li></ul>
+<p>filler</p>
+<a name="sec">Section</a>
+<table><tr><th>H1</th><th>H2</th></tr><tr><td>c1</td><td>c2</td></tr></table>
+</body></html>
+}]
+set B [writeFile b.html {<html><body><h2>Page B</h2>
+<p>needle again, second needle</p>
+<a href="a.html">back to a</a>
+</body></html>
+}]
+set C [writeFile c.html {<html><body><p>Page C</p></body></html>
+}]
+set MD [writeFile d.md "# Title MD\n\nSome *text* here.\n\n- item1\n- item2\n"]
+set TXT [writeFile e.txt "Plain <b>text</b> file\n"]
+set STYLE [writeFile style.html {<html><head>
+<style>
+p {color: red}
+</style>
+</head><body><p>Styled</p></body></html>
+}]
+image create photo shtmlviewPic -width 4 -height 4
+shtmlviewPic put red -to 0 0 4 4
+shtmlviewPic write [file join $TestDir pic.gif] -format gif
+image delete shtmlviewPic
+set IMG [writeFile img.html {<html><body><p>Image: <img src="pic.gif" alt="P">
+web: <img src="http://example.invalid/x.png"></p></body></html>
+}]
+set WEB [writeFile web.html {<html><body><p><a href="http://example.invalid/">web link</a>
+<a href="c.html">local link</a></p></body></html>
+}]
+set MAN [writeFile f.man {[manpage_begin shtmltest n 1.0]
+[titledesc {Shtmlview test page}]
+[description]
+Doctools body text.
+[manpage_end]
+}]
+
+# -------------------------------------------------------------------------
+# Helpers
+
+proc mkView {args} {
+    ::shtmlview::shtmlview .h {*}$args
+    pack .h -fill both -expand 1
+    update
+    return .h
+}
+
+# Destroy the widget and cancel the timers it may have scheduled
+# (highlighting of search results and anchors).
+proc destroyView {} {
+    foreach id [after info] {
+	set script [lindex [after info $id] 0]
+	if {[string match *helptext* $script] || [string match *HMwent_to* $script]} {
+	    after cancel $id
+	}
+    }
+    destroy .h
+    wm title . $::OldTitle
+}
+
+proc viewText {} {
+    [.h getTextWidget] get 1.0 end
+}
+
+proc hasText {str} {
+    expr {[string first $str [viewText]] >= 0}
+}
+
+proc key {event} {
+    set t [.h getTextWidget]
+    focus -force $t
+    update
+    event generate $t $event
+    update
+}
+
+proc logUrl {url} {
+    lappend ::Log $url
+}
+
+# -------------------------------------------------------------------------
+
+test shtmlview-1.1 {package version} -body {
+    package present shtmlview::shtmlview
+} -result 1.1.2
+
+test shtmlview-1.2 {widget creation returns the path name} -body {
+    ::shtmlview::shtmlview .h
+} -cleanup {
+    destroyView
+} -result .h
+
+test shtmlview-1.3 {widget creation: window already exists} -setup {
+    mkView
+} -body {
+    ::shtmlview::shtmlview .h
+} -cleanup {
+    destroyView
+} -returnCodes error -match glob -result {*"h" already exists*}
+
+test shtmlview-1.4 {widget creation: parent does not exist} -body {
+    ::shtmlview::shtmlview .nosuchparent.h
+} -returnCodes error -result {bad window path name ".nosuchparent"}
+
+test shtmlview-1.5 {widget creation: unknown option} -body {
+    ::shtmlview::shtmlview .h -nosuchoption 1
+} -cleanup {
+    destroyView
+} -returnCodes error -match glob -result {*unknown option "-nosuchoption"*}
+
+test shtmlview-1.6 {unknown method} -setup {
+    mkView
+} -body {
+    .h nosuchmethod
+} -cleanup {
+    destroyView
+} -returnCodes error -match glob -result {unknown subcommand "nosuchmethod": must be *}
+
+test shtmlview-1.7 {destroying the widget} -setup {
+    mkView
+} -body {
+    destroyView
+    list [winfo exists .h] [info commands .h]
+} -result {0 {}}
+
+# Bug: the check whether shtmlview.tcl runs as an application reads ::argv
+# when ::argv0 exists, and fails if ::argv does not exist.
+test shtmlview-1.8 {loading the package when only argv0 exists} -constraints knownBug -setup {
+    interp create child
+    child eval [list set auto_path $auto_path]
+    child eval {set argv0 app.tcl; catch {unset argv}}
+} -body {
+    child eval {
+	catch {package require shtmlview::shtmlview} msg
+	set msg
+    }
+} -cleanup {
+    interp delete child
+} -result 1.1.2
+
+# -------------------------------------------------------------------------
+# Options
+
+test shtmlview-2.1 {default option values} -setup {
+    mkView
+} -body {
+    list [.h cget -browsecmd] [.h cget -historycombo] [.h cget -home] \
+	 [.h cget -tablesupport] [.h cget -toolbar]
+} -cleanup {
+    destroyView
+} -result {{} false {} true true}
+
+# Bug: the constructor does not set a default for -closebutton.
+test shtmlview-2.2 {default -closebutton is true} -constraints knownBug -setup {
+    mkView
+} -body {
+    .h cget -closebutton
+} -cleanup {
+    destroyView
+} -result true
+
+test shtmlview-2.3 {configure lists the options} -setup {
+    mkView
+} -body {
+    lsort [lmap o [.h configure] {lindex $o 0}]
+} -cleanup {
+    destroyView
+} -result {-browsecmd -closebutton -historycombo -home -tablesupport -toolbar}
+
+test shtmlview-2.4 {-toolbar} -setup {
+    mkView
+} -body {
+    set r [winfo ismapped .h.toolbar]
+    .h configure -toolbar false
+    update
+    lappend r [.h cget -toolbar] [winfo ismapped .h.toolbar]
+    .h configure -toolbar true
+    update
+    lappend r [.h cget -toolbar] [winfo ismapped .h.toolbar]
+} -cleanup {
+    destroyView
+} -result {1 false 0 true 1}
+
+test shtmlview-2.5 {-toolbar false at creation} -setup {
+    mkView -toolbar false
+} -body {
+    winfo ismapped .h.toolbar
+} -cleanup {
+    destroyView
+} -result 0
+
+test shtmlview-2.6 {-closebutton false hides the close button} -setup {
+    mkView
+} -body {
+    set r [winfo ismapped .h.toolbar.close]
+    .h configure -closebutton false
+    update
+    lappend r [winfo ismapped .h.toolbar.close]
+    .h configure -closebutton true
+    update
+    lappend r [winfo ismapped .h.toolbar.close]
+} -cleanup {
+    destroyView
+} -result {1 0 1}
+
+# Bug: configureClosebutton stores the value in options(-toolbar).
+test shtmlview-2.7 {-closebutton: cget, and -toolbar is unchanged} -constraints knownBug -setup {
+    mkView
+} -body {
+    .h configure -closebutton false
+    list [.h cget -closebutton] [.h cget -toolbar]
+} -cleanup {
+    destroyView
+} -result {false true}
+
+test shtmlview-2.8 {-historycombo false (default) hides the combobox} -setup {
+    mkView
+} -body {
+    winfo manager .h.toolbar.combo
+} -cleanup {
+    destroyView
+} -result {}
+
+test shtmlview-2.9 {-historycombo true shows the history combobox} -setup {
+    mkView -historycombo true
+} -body {
+    .h browse $A
+    .h browse $B
+    list [winfo manager .h.toolbar.combo] [.h.toolbar.combo cget -values]
+} -cleanup {
+    destroyView
+} -result {pack {{1 a.html} {2 b.html}}}
+
+test shtmlview-2.10 {-home} -setup {
+    mkView -home $B
+} -body {
+    .h cget -home
+} -cleanup {
+    destroyView
+} -result $B
+
+test shtmlview-2.11 {-home is set by the first page browsed} -setup {
+    mkView
+} -body {
+    .h browse $A
+    .h browse $B
+    .h cget -home
+} -cleanup {
+    destroyView
+} -result $A
+
+test shtmlview-2.12 {-browsecmd is called with the URL} -setup {
+    set Log {}
+    mkView -browsecmd logUrl
+} -body {
+    .h browse $A
+    .h browse $B
+    set Log
+} -cleanup {
+    destroyView
+    unset Log
+} -result [list $A $B]
+
+# Bug: -browsecmd is invoked as "$options(-browsecmd) $url", so a command
+# prefix with arguments does not work.
+test shtmlview-2.13 {-browsecmd is a command prefix} -constraints knownBug -setup {
+    set Log {}
+    mkView -browsecmd {lappend ::Log}
+} -body {
+    .h browse $A
+    set Log
+} -cleanup {
+    destroyView
+    unset Log
+} -result [list $A]
+
+test shtmlview-2.14 {-browsecmd is called for anchors} -setup {
+    set Log {}
+    mkView -browsecmd logUrl
+} -body {
+    .h browse $A
+    .h browse $A#sec
+    set Log
+} -cleanup {
+    destroyView
+    unset Log
+} -result [list $A $A#sec]
+
+test shtmlview-2.15 {-tablesupport true renders tables} -setup {
+    mkView
+} -body {
+    .h browse $A
+    set t [.h getTextWidget]
+    list [expr {[$t tag ranges tableHeader1] ne ""}] [hasText "H1\tH2"]
+} -cleanup {
+    destroyView
+    unset t
+} -result {1 1}
+
+test shtmlview-2.16 {-tablesupport false} -setup {
+    mkView -tablesupport false
+} -body {
+    .h browse $A
+    set t [.h getTextWidget]
+    list [.h cget -tablesupport] [lsearch -all -inline [$t tag names] table*] \
+	    [hasText H1H2c1c2]
+} -cleanup {
+    destroyView
+    unset t
+} -result {false {} 1}
+
+# -------------------------------------------------------------------------
+# browse, url, rendering
+
+test shtmlview-3.1 {browse: wrong # args} -setup {
+    mkView
+} -body {
+    .h browse
+} -cleanup {
+    destroyView
+} -returnCodes error -match glob -result {wrong # args: should be "*browse url ?arg ...?"}
+
+test shtmlview-3.2 {url before browsing} -setup {
+    mkView
+} -body {
+    .h url
+} -cleanup {
+    destroyView
+} -result {}
+
+test shtmlview-3.3 {browse an HTML file} -setup {
+    mkView
+} -body {
+    .h browse $A
+    list [.h url] [hasText "Header A"] [hasText "Some bold and italic text."] \
+	    [hasText "<b>"]
+} -cleanup {
+    destroyView
+} -result [list $A 1 1 0]
+
+test shtmlview-3.4 {browse: relative file name is normalized} -setup {
+    mkView
+} -body {
+    .h browse b.html
+    .h url
+} -cleanup {
+    destroyView
+} -result $B
+
+test shtmlview-3.5 {browse: fonts of bold and italic text} -setup {
+    mkView
+} -body {
+    .h browse $A
+    set t [.h getTextWidget]
+    set b [$t search bold 1.0]
+    set i [$t search italic 1.0]
+    list [string match *bold* [$t tag names $b]] [string match *:i [lindex [lsearch -inline -all [$t tag names $i] font:*] end]]
+} -cleanup {
+    destroyView
+    unset t b i
+} -result {1 1}
+
+test shtmlview-3.6 {browse: the title goes to the window title} -setup {
+    mkView
+} -body {
+    .h browse $A
+    list [wm title .] [hasText "Page A"]
+} -cleanup {
+    destroyView
+} -result {{Page A} 0}
+
+test shtmlview-3.7 {browse: list items} -setup {
+    mkView
+} -body {
+    .h browse $A
+    list [hasText "\to\tone"] [hasText "\to\ttwo"]
+} -cleanup {
+    destroyView
+} -result {1 1}
+
+test shtmlview-3.8 {browse: links are tagged} -setup {
+    mkView
+} -body {
+    .h browse $A
+    set t [.h getTextWidget]
+    set r {}
+    foreach {s e} [$t tag ranges link] {
+	lappend r [$t get $s $e]
+    }
+    list $r [expr {[$t tag ranges L:b.html] ne ""}] [expr {[$t tag ranges L:#sec] ne ""}]
+} -cleanup {
+    destroyView
+    unset t s e r
+} -result {{{link to b} {to section}} 1 1}
+
+test shtmlview-3.9 {browse: web links are not active} -setup {
+    mkView
+} -body {
+    .h browse $WEB
+    set t [.h getTextWidget]
+    set r {}
+    foreach {s e} [$t tag ranges link] {
+	lappend r [$t get $s $e]
+    }
+    set r
+} -cleanup {
+    destroyView
+    unset t s e r
+} -result {{local link}}
+
+test shtmlview-3.10 {browse: style elements are ignored} -setup {
+    mkView
+} -body {
+    .h browse $STYLE
+    list [hasText Styled] [hasText color]
+} -cleanup {
+    destroyView
+} -result {1 0}
+
+test shtmlview-3.11 {browse: local images are displayed, web images are not fetched} -setup {
+    mkView
+} -body {
+    .h browse $IMG
+    set t [.h getTextWidget]
+    set r {}
+    foreach w [$t window names] {
+	foreach opt {-image -text} {
+	    if {![catch {$w cget $opt} v] && $v ne ""} {
+		lappend r $opt [file tail $v]
+	    }
+	}
+    }
+    set r
+} -cleanup {
+    destroyView
+    foreach i [image names] {
+	if {[string match *pic.gif $i]} {
+	    image delete $i
+	}
+    }
+    unset t r w opt v
+} -result {-image pic.gif -text P -text x.png}
+
+test shtmlview-3.12 {browse: file without converter is shown as plain text} -setup {
+    mkView
+} -body {
+    .h browse $TXT
+    list [.h url] [viewText]
+} -cleanup {
+    destroyView
+} -result [list $TXT "Plain <b>text</b> file\n\n"]
+
+test shtmlview-3.13 {browse: Markdown file} -constraints markdown -setup {
+    mkView
+} -body {
+    .h browse $MD
+    list [.h url] [hasText "Title MD"] [hasText "Some text here."] \
+	    [hasText "\to\titem1"] [hasText "*"]
+} -cleanup {
+    destroyView
+} -result [list $MD 1 1 1 0]
+
+test shtmlview-3.14 {browse: missing file} -setup {
+    mkView
+} -body {
+    .h browse [file join $TestDir nosuchfile.html]
+    list [.h url] [.h getHistory] [hasText "does not exist"] \
+	    [string match *nosuchfile.html* [.h.toolbar.status cget -text]]
+} -cleanup {
+    destroyView
+} -result {{} {{}} 1 1}
+
+test shtmlview-3.15 {browse: missing file keeps the current page} -setup {
+    mkView
+    .h browse $A
+} -body {
+    .h browse [file join $TestDir nosuchfile.html]
+    list [.h url] [hasText "Header A"] [hasText "does not exist"]
+} -cleanup {
+    destroyView
+} -result [list $A 1 0]
+
+test shtmlview-3.16 {browse: anchor in the current page} -setup {
+    mkView
+    .h browse $A
+} -body {
+    .h browse $A#sec
+    set t [.h getTextWidget]
+    list [.h url] [expr {"N:sec" in [$t mark names]}] \
+	    [expr {[$t bbox N:sec] ne ""}]
+} -cleanup {
+    destroyView
+    unset t
+} -result [list $A#sec 1 1]
+
+# Bug: method browse sets lasturl to the URL with the anchor before calling
+# render, so render takes it for a jump inside the current page and
+# displays nothing.
+test shtmlview-3.16.1 {browse: file with anchor as the first page} -constraints knownBug -setup {
+    mkView
+} -body {
+    .h browse $A#sec
+    set t [.h getTextWidget]
+    list [.h url] [hasText "Header A"] [expr {"N:sec" in [$t mark names]}]
+} -cleanup {
+    destroyView
+    unset t
+} -result [list $A#sec 1 1]
+
+test shtmlview-3.17 {browse: additional files are added to the history} -setup {
+    mkView
+} -body {
+    .h browse $A $B $C
+    set r [list [.h url] [hasText "Header A"]]
+    .h forward
+    lappend r [.h url]
+    .h forward
+    lappend r [.h url]
+} -cleanup {
+    destroyView
+} -result [list $A 1 $B $C]
+
+test shtmlview-3.18 {browse: missing additional files are ignored} -setup {
+    mkView
+} -body {
+    .h browse $A [file join $TestDir nosuchfile.html] $B
+    .h forward
+    set r [list [.h url]]
+    .h forward
+    lappend r [.h url]
+} -cleanup {
+    destroyView
+    unset r
+} -result [list $B $B]
+
+# Bug: pushcurrenttopic increments the history index even when the page is
+# not appended because it is already the last one.
+test shtmlview-3.19 {browse the same page twice} -constraints knownBug -setup {
+    mkView
+} -body {
+    .h browse $A
+    .h browse $A
+    .h url
+} -cleanup {
+    destroyView
+} -result $A
+
+# -------------------------------------------------------------------------
+# render
+
+test shtmlview-4.1 {render: wrong # args} -setup {
+    mkView
+} -body {
+    .h render
+} -cleanup {
+    destroyView
+} -returnCodes error -match glob -result {wrong # args: should be "*render text ?ext?"}
+
+test shtmlview-4.2 {render: HTML string} -setup {
+    mkView
+} -body {
+    .h render "<b>Hello</b> world"
+    set t [.h getTextWidget]
+    list [hasText "Hello world"] [hasText <b>] \
+	    [string match *bold* [$t tag names [$t search Hello 1.0]]]
+} -cleanup {
+    destroyView
+    unset t
+} -result {1 0 1}
+
+test shtmlview-4.3 {render: leading whitespace before HTML} -setup {
+    mkView
+} -body {
+    .h render "  \n<p>Hello <i>world</i></p>"
+    list [hasText "Hello world"] [hasText <i>]
+} -cleanup {
+    destroyView
+} -result {1 0}
+
+test shtmlview-4.4 {render: Markdown string} -constraints markdown -setup {
+    mkView
+} -body {
+    .h render "# Heading\n\nSome *text*"
+    list [hasText Heading] [hasText "Some text"] [hasText #] [hasText *]
+} -cleanup {
+    destroyView
+} -result {1 1 0 0}
+
+test shtmlview-4.5 {render: explicit extension} -constraints markdown -setup {
+    mkView
+} -body {
+    .h render "<b>not html</b> *here*" md
+    list [hasText "not html here"] [hasText "*"]
+} -cleanup {
+    destroyView
+} -result {1 0}
+
+test shtmlview-4.6 {render: does not change the history} -setup {
+    mkView
+    .h browse $A
+} -body {
+    .h render "<p>Hello</p>"
+    list [.h url] [.h getFiles] [hasText Hello] [hasText "Header A"]
+} -cleanup {
+    destroyView
+} -result [list $A [list $A] 1 0]
+
+test shtmlview-4.7 {render: no temporary file is left} -setup {
+    mkView
+    set before [lsort [glob -nocomplain -directory $TestDir *]]
+} -body {
+    .h render "<p>Hello</p>"
+    expr {[lsort [glob -nocomplain -directory $TestDir *]] eq $before}
+} -cleanup {
+    destroyView
+    unset before
+} -result 1
+
+# Bug: method render uses "[file tempfile].$ext" as a file name: the channel
+# returned by "file tempfile" is never closed, and the file is written to
+# the current directory.
+test shtmlview-4.8 {render: no channel is leaked} -constraints knownBug -setup {
+    mkView
+    set before [lsort [chan names]]
+} -body {
+    .h render "<p>Hello</p>"
+    expr {[lsort [chan names]] eq $before}
+} -cleanup {
+    destroyView
+    foreach ch [chan names] {
+	if {$ch ni $before} {
+	    close $ch
+	}
+    }
+    unset before
+} -result 1
+
+# -------------------------------------------------------------------------
+# History: back, forward, home, getHistory, getFiles
+
+test shtmlview-5.1 {back and forward} -setup {
+    mkView
+    .h browse $A
+    .h browse $B
+    .h browse $C
+} -body {
+    set r [.h url]
+    .h back
+    lappend r [.h url] [hasText "Page B"]
+    .h back
+    lappend r [.h url] [hasText "Header A"]
+    .h forward
+    lappend r [.h url] [hasText "Page B"]
+    .h forward
+    lappend r [.h url] [hasText "Page C"]
+} -cleanup {
+    destroyView
+    unset r
+} -result [list $C $B 1 $A 1 $B 1 $C 1]
+
+test shtmlview-5.2 {back at the start of the history} -setup {
+    mkView
+    .h browse $A
+    .h browse $B
+} -body {
+    .h back
+    .h back
+    .h back
+    list [.h url] [hasText "Header A"]
+} -cleanup {
+    destroyView
+} -result [list $A 1]
+
+test shtmlview-5.3 {forward at the end of the history} -setup {
+    mkView
+    .h browse $A
+    .h browse $B
+} -body {
+    .h forward
+    list [.h url] [hasText "Page B"]
+} -cleanup {
+    destroyView
+} -result [list $B 1]
+
+test shtmlview-5.4 {back and forward with an empty history} -setup {
+    mkView
+} -body {
+    .h back
+    .h forward
+    list [.h url] [viewText]
+} -cleanup {
+    destroyView
+} -result [list {} "\n"]
+
+test shtmlview-5.5 {browsing after back inserts the page into the history} -setup {
+    mkView
+    .h browse $A
+    .h browse $B
+    .h back
+} -body {
+    .h browse $C
+    set r [list [.h url]]
+    .h forward
+    lappend r [.h url]
+    .h back
+    .h back
+    lappend r [.h url]
+} -cleanup {
+    destroyView
+    unset r
+} -result [list $C $B $A]
+
+test shtmlview-5.6 {toolbar buttons follow the history position} -setup {
+    mkView
+} -body {
+    set r {}
+    .h browse $A
+    lappend r [.h.toolbar.back cget -state] [.h.toolbar.forward cget -state]
+    .h browse $B
+    lappend r [.h.toolbar.back cget -state] [.h.toolbar.forward cget -state]
+    .h back
+    lappend r [.h.toolbar.back cget -state] [.h.toolbar.forward cget -state]
+} -cleanup {
+    destroyView
+    unset r
+} -result {disabled disabled normal disabled disabled normal}
+
+test shtmlview-5.7 {home displays the first page} -setup {
+    mkView
+    .h browse $A
+    .h browse $B
+} -body {
+    .h home
+    list [hasText "Header A"] [hasText "Page B"]
+} -cleanup {
+    destroyView
+} -result {1 0}
+
+test shtmlview-5.8 {home with an empty history} -setup {
+    mkView
+} -body {
+    list [.h home] [viewText]
+} -cleanup {
+    destroyView
+} -result [list {} "\n"]
+
+# Bug: method home always displays the first page of the history and
+# ignores the -home option.
+test shtmlview-5.9 {home displays the page set by -home} -constraints knownBug -setup {
+    mkView -home $C
+    .h browse $A
+    .h browse $B
+} -body {
+    .h home
+    list [hasText "Page C"] [hasText "Page B"]
+} -cleanup {
+    destroyView
+} -result {1 0}
+
+test shtmlview-5.10 {getHistory: empty} -setup {
+    mkView
+} -body {
+    .h getHistory
+} -cleanup {
+    destroyView
+} -result {{}}
+
+# Bug: getHistory and getFiles use [list $topicstack {*}$stack], so the
+# whole history is returned as a single element.
+test shtmlview-5.11 {getHistory returns the visited files and anchors} -constraints knownBug -setup {
+    mkView
+} -body {
+    .h browse $A
+    .h browse $B
+    .h browse $A#sec
+    .h getHistory
+} -cleanup {
+    destroyView
+} -result [list $A $B $A#sec]
+
+test shtmlview-5.12 {getFiles removes duplicates and anchors} -constraints knownBug -setup {
+    mkView
+} -body {
+    .h browse $A
+    .h browse $A#sec
+    .h browse $B
+    .h browse $A
+    .h getFiles
+} -cleanup {
+    destroyView
+} -result [list $A $B]
+
+test shtmlview-5.13 {getFiles with one page} -setup {
+    mkView
+} -body {
+    .h browse $B
+    .h getFiles
+} -cleanup {
+    destroyView
+} -result [list $B]
+
+test shtmlview-5.14 {history methods: wrong # args} -setup {
+    mkView
+} -body {
+    set r {}
+    foreach m {back forward home getHistory getFiles url reload getTextWidget editView sourceView} {
+	lappend r [catch {.h $m extra}]
+    }
+    set r
+} -cleanup {
+    destroyView
+    unset r
+} -result {1 1 1 1 1 1 1 1 1 1}
+
+# -------------------------------------------------------------------------
+# reload, getTextWidget, helptext, edittext
+
+test shtmlview-6.1 {reload shows the changed file} -setup {
+    set F [writeFile reload.html {<p>Version 1</p>}]
+    mkView
+    .h browse $F
+} -body {
+    set r [hasText "Version 1"]
+    writeFile reload.html {<p>Version 2</p>}
+    .h reload
+    lappend r [hasText "Version 1"] [hasText "Version 2"] [.h url]
+} -cleanup {
+    destroyView
+    file delete $F
+    unset F r
+} -result [list 1 0 1 [file join $TestDir reload.html]]
+
+test shtmlview-6.2 {reload with an empty history} -setup {
+    mkView
+} -body {
+    .h reload
+} -cleanup {
+    destroyView
+} -result {}
+
+test shtmlview-6.3 {getTextWidget} -setup {
+    mkView
+} -body {
+    set t [.h getTextWidget]
+    list [winfo class $t] [string match .h.* $t]
+} -cleanup {
+    destroyView
+    unset t
+} -result {Text 1}
+
+test shtmlview-6.4 {helptext configures the viewer text widget} -setup {
+    mkView
+} -body {
+    .h helptext configure -background yellow
+    list [.h helptext cget -background] [[.h getTextWidget] cget -background]
+} -cleanup {
+    destroyView
+} -result {yellow yellow}
+
+test shtmlview-6.5 {helptext without arguments returns the widget} -setup {
+    mkView
+} -body {
+    expr {[.h helptext] eq [.h getTextWidget]}
+} -cleanup {
+    destroyView
+} -result 1
+
+test shtmlview-6.6 {edittext configures the editor text widget} -setup {
+    mkView
+} -body {
+    .h edittext configure -background salmon
+    list [.h edittext cget -background] [winfo class [.h edittext]] \
+	    [expr {[.h edittext] ne [.h getTextWidget]}]
+} -cleanup {
+    destroyView
+} -result {salmon Text 1}
+
+test shtmlview-6.7 {helptext: bad subcommand} -setup {
+    mkView
+} -body {
+    .h helptext nosuchcmd
+} -cleanup {
+    destroyView
+} -returnCodes error -match glob -result {bad option "nosuchcmd": must be *}
+
+# Documentation bug: the documented method getEditWidget does not exist.
+test shtmlview-6.8 {getEditWidget} -constraints knownBug -setup {
+    mkView
+} -body {
+    expr {[.h getEditWidget] eq [.h edittext]}
+} -cleanup {
+    destroyView
+} -result 1
+
+# -------------------------------------------------------------------------
+# dosearch
+
+test shtmlview-7.1 {dosearch: wrong # args} -setup {
+    mkView
+} -body {
+    .h dosearch
+} -cleanup {
+    destroyView
+} -returnCodes error -match glob -result {wrong # args: should be "*dosearch text ?dir?"}
+
+test shtmlview-7.2 {dosearch forward} -setup {
+    mkView
+    .h browse $B
+} -body {
+    set t [.h getTextWidget]
+    $t mark set insert 1.0
+    .h dosearch needle forward
+    set p1 [$t index insert]
+    set r [list [$t get insert "insert + 6 chars"] [$t get {*}[$t tag ranges hilite]]]
+    .h dosearch needle forward
+    set p2 [$t index insert]
+    lappend r [$t compare $p2 > $p1] [$t get insert "insert + 6 chars"]
+} -cleanup {
+    destroyView
+    unset t p1 p2 r
+} -result {needle needle 1 needle}
+
+test shtmlview-7.3 {dosearch: default direction is forward} -setup {
+    mkView
+    .h browse $B
+} -body {
+    set t [.h getTextWidget]
+    $t mark set insert 1.0
+    .h dosearch needle
+    set p1 [$t index insert]
+    .h dosearch needle
+    $t compare insert > $p1
+} -cleanup {
+    destroyView
+    unset t p1
+} -result 1
+
+test shtmlview-7.4 {dosearch backwards} -setup {
+    mkView
+    .h browse $B
+} -body {
+    set t [.h getTextWidget]
+    $t mark set insert end
+    .h dosearch needle backwards
+    set p1 [$t index insert]
+    .h dosearch needle backwards
+    list [$t compare insert < $p1] [$t get insert "insert + 6 chars"]
+} -cleanup {
+    destroyView
+    unset t p1
+} -result {1 needle}
+
+test shtmlview-7.5 {dosearch wraps around} -setup {
+    mkView
+    .h browse $B
+} -body {
+    set t [.h getTextWidget]
+    $t mark set insert 1.0
+    .h dosearch needle
+    set p1 [$t index insert]
+    .h dosearch needle
+    .h dosearch needle
+    $t index insert
+    expr {[$t index insert] eq $p1}
+} -cleanup {
+    destroyView
+    unset t p1
+} -result 1
+
+test shtmlview-7.6 {dosearch is case insensitive} -setup {
+    mkView
+    .h browse $B
+} -body {
+    set t [.h getTextWidget]
+    $t mark set insert 1.0
+    .h dosearch NEEDLE
+    $t get insert "insert + 6 chars"
+} -cleanup {
+    destroyView
+    unset t
+} -result needle
+
+test shtmlview-7.7 {dosearch: not found} -setup {
+    mkView
+    .h browse $B
+} -body {
+    set t [.h getTextWidget]
+    $t mark set insert 1.0
+    .h dosearch nosuchword
+    list [$t index insert] [$t tag ranges hilite] [.h.toolbar.status cget -text]
+} -cleanup {
+    destroyView
+    unset t
+} -result {1.0 {} {nosuchword notfound}}
+
+# -------------------------------------------------------------------------
+# sourceView and editView
+
+test shtmlview-8.1 {sourceView toggles HTML source} -setup {
+    mkView
+    .h browse $B
+} -body {
+    .h sourceView
+    set r [list [hasText "<h2>Page B</h2>"]]
+    .h sourceView
+    lappend r [hasText "<h2>"] [hasText "Page B"]
+} -cleanup {
+    destroyView
+    unset r
+} -result {1 0 1}
+
+test shtmlview-8.2 {sourceView cycles Markdown source, HTML and rendering} -constraints markdown -setup {
+    mkView
+    .h browse $MD
+} -body {
+    .h sourceView
+    set r [list [hasText "# Title MD"]]
+    .h sourceView
+    lappend r [hasText "<h1>Title MD</h1>"]
+    .h sourceView
+    lappend r [hasText "Title MD"] [hasText "<h1>"] [hasText "# Title"]
+} -cleanup {
+    destroyView
+    unset r
+} -result {1 1 1 0 0}
+
+test shtmlview-8.3 {editView switches to the editor and back} -setup {
+    mkView
+    .h browse $B
+} -body {
+    .h editView
+    update
+    set r [list [winfo ismapped [.h edittext]] [winfo ismapped [.h getTextWidget]] \
+	    [string match "*<h2>Page B</h2>*" [.h edittext get 1.0 end]]]
+    .h editView
+    update
+    lappend r [winfo ismapped [.h edittext]] [winfo ismapped [.h getTextWidget]] \
+	    [hasText "Page B"]
+} -cleanup {
+    destroyView
+    unset r
+} -result {1 0 1 0 1 1}
+
+test shtmlview-8.4 {editView: Control-s saves, changes are displayed} -setup {
+    set F [writeFile edit.html {<p>Before</p>}]
+    mkView
+    .h browse $F
+} -body {
+    .h editView
+    update
+    set e [.h edittext]
+    $e delete 1.0 end
+    $e insert 1.0 {<p>After</p>}
+    focus -force $e
+    update
+    event generate $e <Control-Key-s>
+    update
+    set f [open $F]
+    set content [read $f]
+    close $f
+    .h editView
+    update
+    list [string trim $content] [hasText After] [$e edit modified]
+} -cleanup {
+    destroyView
+    file delete $F
+    unset -nocomplain F f e content
+} -result {<p>After</p> 1 0}
+
+# -------------------------------------------------------------------------
+# Key bindings
+
+test shtmlview-9.1 {keys b and f} -setup {
+    mkView
+    .h browse $A
+    .h browse $B
+} -body {
+    key <Key-b>
+    set r [list [.h url]]
+    key <Key-f>
+    lappend r [.h url]
+} -cleanup {
+    destroyView
+    unset r
+} -result [list $A $B]
+
+test shtmlview-9.2 {key q removes the page from the history} -setup {
+    mkView
+    .h browse $A
+    .h browse $B
+    .h browse $C
+    .h back
+} -body {
+    key <Key-q>
+    list [.h url] [hasText "Page C"]
+} -cleanup {
+    destroyView
+} -result [list $C 1]
+
+test shtmlview-9.3 {Tab moves to the next link} -setup {
+    mkView
+    .h browse $A
+} -body {
+    set t [.h getTextWidget]
+    $t mark set insert 1.0
+    key <Key-Tab>
+    set r [list [expr {"L:b.html" in [$t tag names insert]}]]
+    key <Key-Tab>
+    lappend r [expr {"L:#sec" in [$t tag names insert]}]
+    key <Key-Tab>
+    lappend r [expr {"L:b.html" in [$t tag names insert]}]
+} -cleanup {
+    destroyView
+    unset t r
+} -result {1 1 1}
+
+test shtmlview-9.4 {Return follows the link under the cursor} -setup {
+    mkView
+    .h browse $A
+} -body {
+    set t [.h getTextWidget]
+    $t mark set insert 1.0
+    key <Key-Tab>
+    key <Key-Return>
+    list [.h url] [hasText "Page B"]
+} -cleanup {
+    destroyView
+    unset t
+} -result [list $B 1]
+
+test shtmlview-9.5 {Return on an anchor link} -setup {
+    mkView
+    .h browse $A
+} -body {
+    set t [.h getTextWidget]
+    $t mark set insert 1.0
+    key <Key-Tab>
+    key <Key-Tab>
+    key <Key-Return>
+    list [.h url] [expr {[$t bbox N:sec] ne ""}]
+} -cleanup {
+    destroyView
+    unset t
+} -result [list $A#sec 1]
+
+test shtmlview-9.6 {Control-r reloads} -setup {
+    set F [writeFile reload.html {<p>Version 1</p>}]
+    mkView
+    .h browse $F
+} -body {
+    writeFile reload.html {<p>Version 2</p>}
+    key <Control-Key-r>
+    hasText "Version 2"
+} -cleanup {
+    destroyView
+    file delete $F
+    unset F
+} -result 1
+
+test shtmlview-9.7 {Control-u toggles the source view} -setup {
+    mkView
+    .h browse $B
+} -body {
+    key <Control-Key-u>
+    set r [list [hasText "<h2>"]]
+    key <Control-Key-u>
+    lappend r [hasText "<h2>"]
+} -cleanup {
+    destroyView
+    unset r
+} -result {1 0}
+
+test shtmlview-9.8 {Control-Shift-E toggles the edit mode} -setup {
+    mkView
+    .h browse $B
+} -body {
+    key <Control-Shift-Key-E>
+    set r [list [winfo ismapped [.h edittext]]]
+    focus -force [.h edittext]
+    update
+    event generate [.h edittext] <Control-Shift-Key-E>
+    update
+    lappend r [winfo ismapped [.h edittext]]
+} -cleanup {
+    destroyView
+    unset r
+} -result {1 0}
+
+test shtmlview-9.9 {s starts a forward search, n moves to the next match} -setup {
+    mkView
+    .h browse $B
+} -body {
+    set t [.h getTextWidget]
+    $t mark set insert 1.0
+    key <Key-s>
+    set r [list [focus] [.h.toolbar.cmdlbl cget -text]]
+    .h.toolbar.command delete 0 end
+    .h.toolbar.command insert 0 needle
+    event generate .h.toolbar.command <Key-Return>
+    update
+    set p1 [$t index insert]
+    lappend r [$t get insert "insert + 6 chars"]
+    key <Key-n>
+    lappend r [$t compare insert > $p1] [$t get insert "insert + 6 chars"]
+} -cleanup {
+    destroyView
+    unset t r p1
+} -result {.h.toolbar.command {Search Forward:} needle 1 needle}
+
+test shtmlview-9.10 {r starts a backward search} -setup {
+    mkView
+    .h browse $B
+} -body {
+    set t [.h getTextWidget]
+    $t mark set insert end
+    key <Key-r>
+    set r [list [focus] [.h.toolbar.cmdlbl cget -text]]
+    .h.toolbar.command delete 0 end
+    .h.toolbar.command insert 0 needle
+    event generate .h.toolbar.command <Key-Return>
+    update
+    lappend r [$t get insert "insert + 6 chars"]
+} -cleanup {
+    destroyView
+    unset t r
+} -result {.h.toolbar.command {Search Backward:} needle}
+
+# Documentation bug: "p" is documented to move to the previous search match,
+# but the code binds <m> instead.
+test shtmlview-9.11 {p moves to the previous search match} -constraints knownBug -setup {
+    mkView
+    .h browse $B
+} -body {
+    set t [.h getTextWidget]
+    $t mark set insert 1.0
+    .h dosearch needle
+    .h dosearch needle
+    set p2 [$t index insert]
+    key <Key-p>
+    $t compare insert < $p2
+} -cleanup {
+    destroyView
+    unset t p2
+} -result 1
+
+# -------------------------------------------------------------------------
+# ::shtmlview::converter
+
+test shtmlview-10.1 {converter: wrong # args} -body {
+    ::shtmlview::converter .x desc
+} -returnCodes error -result {wrong # args: should be "::shtmlview::converter extension description command"}
+
+test shtmlview-10.2 {converter: registering a format} -setup {
+    set F [writeFile g.upper "hello converter"]
+    proc ::upperConv {path} {
+	lappend ::Log $path
+	set f [open $path]
+	set data [read $f]
+	close $f
+	return "<p>[string toupper $data]</p>"
+    }
+    set Log {}
+} -body {
+    set r [list [::shtmlview::converter .upper {Upper files} {::upperConv}]]
+    mkView
+    .h browse $F
+    lappend r [expr {$Log eq [list $F]}] [hasText "HELLO CONVERTER"] [hasText <p>]
+} -cleanup {
+    destroyView
+    file delete $F
+    rename ::upperConv {}
+    unset F Log r
+} -result {{} 1 1 0}
+
+test shtmlview-10.3 {converter: command prefix and render with extension} -setup {
+    proc ::prefixConv {prefix path} {
+	set f [open $path]
+	set data [read $f]
+	close $f
+	return "<p>$prefix:$data</p>"
+    }
+    ::shtmlview::converter .pfx {Prefix files} {::prefixConv PFX}
+    mkView
+} -body {
+    .h render "body" pfx
+    hasText "PFX:body"
+} -cleanup {
+    destroyView
+    rename ::prefixConv {}
+} -result 1
+
+test shtmlview-10.4 {converter: error in the converter} -setup {
+    set F [writeFile g.fail "data"]
+    proc ::failConv {path} {
+	error "conversion failed"
+    }
+    ::shtmlview::converter .fail {Failing files} ::failConv
+    mkView
+} -body {
+    .h browse $F
+} -cleanup {
+    destroyView
+    file delete $F
+    rename ::failConv {}
+    unset F
+} -returnCodes error -result {conversion failed}
+
+test shtmlview-10.5 {converter: extension is case insensitive} -setup {
+    set F [writeFile G.UPPER2 "abc"]
+    proc ::upperConv2 {path} {
+	return "<p>converted</p>"
+    }
+    ::shtmlview::converter .upper2 {Upper files} ::upperConv2
+    mkView
+} -body {
+    .h browse $F
+    hasText converted
+} -cleanup {
+    destroyView
+    file delete $F
+    rename ::upperConv2 {}
+    unset F
+} -result 1
+
+# -------------------------------------------------------------------------
+# Plugins
+
+test shtmlview-11.1 {shtmlview::doctools renders doctools files} -constraints doctools -setup {
+    mkView
+} -body {
+    .h browse $MAN
+    list [package present shtmlview::doctools] [hasText "Doctools body text."] \
+	    [hasText {[description]}]
+} -cleanup {
+    destroyView
+} -result {0.1 1 0}
+
+# Bug: shtmlview::mkdoc requires the package mkdoc::mkdoc, but Tcllib
+# provides the mkdoc command in the package "mkdoc".
+test shtmlview-11.1.1 {shtmlview::mkdoc can be loaded with Tcllib's mkdoc} -constraints {mkdocPkg knownBug} -body {
+    package require shtmlview::mkdoc
+} -result 0.1
+
+test shtmlview-11.2 {shtmlview::mkdoc package} -constraints mkdoc -body {
+    list [package present shtmlview::mkdoc] [info commands ::shtmlview::mkdoc]
+} -result {0.1 ::shtmlview::mkdoc}
+
+test shtmlview-11.3 {shtmlview::mkdoc renders mkdoc files} -constraints mkdoc -setup {
+    set F [writeFile h.tcl "#' # Mkdoc Title\n#'\n#' Mkdoc body text.\nputs hello\n"]
+    mkView
+} -body {
+    .h browse $F
+    list [hasText "Mkdoc Title"] [hasText "Mkdoc body text."] [hasText "#'"]
+} -cleanup {
+    destroyView
+    file delete $F
+    unset F
+} -result {1 1 0}
+
+# -------------------------------------------------------------------------
+
+cd $OldPwd
+removeDirectory shtmlview-test
+unset OldPwd TestDir A B C MD TXT STYLE IMG WEB MAN
+foreach p {writeFile mkView destroyView viewText hasText key logUrl} {
+    rename $p {}
+}
+unset p
+wm title . $OldTitle
+if {$OldMainState eq "withdrawn"} {
+    wm withdraw .
+}
+unset OldMainState OldTitle
+if {[info exists UnsetArgv]} {
+    unset ::argv UnsetArgv
+}
+
+::tcltest::cleanupTests
