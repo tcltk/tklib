@@ -1,6 +1,11 @@
 # -*- tcl -*-
-# Test cases of the ipentry package
-
+# ipentry.test --
+#
+#	Tests for the ipentry package: ipentry and ipentry6 widgets,
+#	their methods (complete, get, insert, icursor, configure, cget),
+#	options (-textvariable, -state, standard options) and keyboard
+#	bindings.
+#
 if {![package vsatisfies [package provide Tcl] 8.5-]} {
     puts "    Aborting the tests found in \"[file tail [info script]]\"."
     puts "    Requiring Tcl 8.5, have [package present Tcl]"
@@ -13,34 +18,982 @@ if {[catch { package require Tk 8.5- } msg]} {
     return
 }
 
-package require tcltest 2.2
-namespace import ::tcltest::*
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2
+    namespace import ::tcltest::*
+} else {
+    if {![package vsatisfies [package present tcltest] 2.2]} {
+	puts "    Aborting the tests found in \"[file tail [info script]]\"."
+	puts "    Requiring tcltest 2.2, have [package present tcltest]"
+	return
+    }
+}
 
-source [file join [file dirname [info script]] ipentry.tcl]
+::tcltest::testConstraint tk 1
+
+lappend auto_path [file dirname [file dirname [file normalize [info script]]]]
+package require ipentry
 
 # -------------------------------------------------------------------------
+# Helpers
 
-test ipentry-textvariable-1.1 {array element as -textvariable} -setup {
-    set ::foo(bar) 1.1.1.1
-    ::ipentry::ipentry .ip -textvariable ::foo(bar)
-} -body {
-    set ::foo(bar) 1.1.1.2
-    list [.ip get] $::foo(bar)
-} -cleanup {
+# The tklib test harness withdraws "."; keyboard tests need the focus.
+set mainState [wm state .]
+wm deiconify .
+wm geometry . +0+0
+
+# Errors in bindings must not open the Tk error dialog and block.
+set savedBgerror [interp bgerror {}]
+interp bgerror {} [list apply {{msg opts} {lappend ::bgErrors $msg}}]
+
+proc mk {cmd args} {
+    ipentry::$cmd .ip {*}$args
+    pack .ip
+    update
+    return .ip
+}
+
+proc rm {} {
     destroy .ip
-    unset ::foo
-} -result {{1 1 1 2} 1.1.1.2}
+    # The widget leaves its -textvariable name behind, which breaks the
+    # next widget with the same path and a -textvariable (ticket
+    # 4c5222924f, see ipentry-5.12).  Forget it to keep the tests
+    # independent.
+    unset -nocomplain ::ipentry::textvars(.ip)
+    # let pending variable updates run
+    update
+}
 
-test ipentry-textvariable-1.2 {array element as -textvariable of ipentry6} -setup {
-    set ::foo(bar) 1:2:3:4:5:6:7:8
-    ::ipentry::ipentry6 .ip6 -textvariable ::foo(bar)
-} -body {
-    set ::foo(bar) 1:2:3:4:5:6:7:9
-    list [.ip6 get] $::foo(bar)
+# Send keys to the focused entry of the widget, starting in field 0.
+proc type {w keys} {
+    focus -force $w.0
+    update
+    foreach k $keys {
+	event generate [focus] <Key-$k>
+    }
+    update
+}
+
+# -------------------------------------------------------------------------
+# Creation
+
+test ipentry-1.1 {ipentry: wrong # args} -body {
+    ipentry::ipentry
+} -returnCodes error -result {wrong # args: should be "ipentry::ipentry w ?arg ...?"}
+
+test ipentry-1.2 {ipentry6: wrong # args} -body {
+    ipentry::ipentry6
+} -returnCodes error -result {wrong # args: should be "ipentry::ipentry6 w ?arg ...?"}
+
+test ipentry-1.3 {ipentry: returns the path, class IPEntry} -body {
+    list [ipentry::ipentry .ip] [winfo class .ip]
 } -cleanup {
-    destroy .ip6
-    unset ::foo
+    rm
+} -result {.ip IPEntry}
+
+test ipentry-1.4 {ipentry: four empty fields} -setup {
+    mk ipentry
+} -body {
+    list [.ip get] [.ip complete]
+} -cleanup {
+    rm
+} -result {{{} {} {} {}} 0}
+
+test ipentry-1.5 {ipentry6: eight empty fields} -setup {
+    mk ipentry6
+} -body {
+    list [.ip get] [.ip complete] [winfo class .ip]
+} -cleanup {
+    rm
+} -result {{{} {} {} {} {} {} {} {}} 0 IPEntry}
+
+test ipentry-1.6 {ipentry: exported commands} -body {
+    lsort [namespace eval ::ipentry {namespace export}]
+} -result {ipentry ipentry6}
+
+test ipentry-1.7 {ipentry: unknown option} -body {
+    ipentry::ipentry .ip -foo bar
+} -cleanup {
+    rm
+} -returnCodes error -result {unknown option "-foo"}
+
+test ipentry-1.8 {ipentry: options at creation} -body {
+    mk ipentry -fg red -relief ridge
+    list [.ip cget -fg] [.ip cget -relief]
+} -cleanup {
+    rm
+} -result {red ridge}
+
+test ipentry-1.9 {ipentry: destroy removes the widget command} -body {
+    mk ipentry
+    destroy .ip
+    info commands .ip
+} -cleanup {
+    rm
+} -result {}
+
+test ipentry-1.10 {ipentry: recreate after destroy} -body {
+    mk ipentry
+    .ip insert {1 2 3 4}
+    destroy .ip
+    mk ipentry
+    .ip get
+} -cleanup {
+    rm
+} -result {{} {} {} {}}
+
+test ipentry-1.11 {ipentry: bad subcommand} -setup {
+    mk ipentry
+} -body {
+    .ip foo
+} -cleanup {
+    rm
+} -returnCodes error -result {bad option "foo": must be get, insert, complete, cget, or configure}
+
+test ipentry-1.12 {ipentry6: bad subcommand} -setup {
+    mk ipentry6
+} -body {
+    .ip foo
+} -cleanup {
+    rm
+} -returnCodes error -result {bad option "foo": must be get, insert, complete, cget, or configure}
+
+# -------------------------------------------------------------------------
+# insert, get, complete
+
+test ipentry-2.1 {insert: four values} -setup {
+    mk ipentry
+} -body {
+    list [.ip insert {192 168 1 20}] [.ip get] [.ip complete]
+} -cleanup {
+    rm
+} -result {{} {192 168 1 20} 1}
+
+test ipentry-2.2 {insert: values are clamped to 0..255} -setup {
+    mk ipentry
+} -body {
+    .ip insert {10 300 -5 255}
+    .ip get
+} -cleanup {
+    rm
+} -result {10 255 0 255}
+
+test ipentry-2.3 {insert: empty values} -setup {
+    mk ipentry
+} -body {
+    .ip insert {10 {} 3 {}}
+    list [.ip get] [.ip complete]
+} -cleanup {
+    rm
+} -result {{10 {} 3 {}} 0}
+
+test ipentry-2.4 {insert: replaces the previous contents} -setup {
+    mk ipentry
+} -body {
+    .ip insert {1 2 3 4}
+    .ip insert {5 6 {} 8}
+    .ip get
+} -cleanup {
+    rm
+} -result {5 6 {} 8}
+
+test ipentry-2.5 {insert: leading zeros are not returned by get} -setup {
+    mk ipentry
+} -body {
+    .ip insert {010 007 000 0}
+    .ip get
+} -cleanup {
+    rm
+} -result {10 7 0 0}
+
+test ipentry-2.6 {insert: zero in the first field} -setup {
+    mk ipentry
+} -body {
+    # The first field does not allow 0.
+    .ip insert {0 0 0 0}
+    .ip get
+} -cleanup {
+    rm
+} -result {1 0 0 0}
+
+test ipentry-2.7 {insert: short list} -setup {
+    mk ipentry
+} -body {
+    .ip insert {1 2}
+    .ip get
+} -cleanup {
+    rm
+} -result {1 2 {} {}}
+
+test ipentry-2.8 {insert6: eight values} -setup {
+    mk ipentry6
+} -body {
+    .ip insert {fe80 0 0 0 202 b3ff fe1e 8329}
+    list [.ip get] [.ip complete]
+} -cleanup {
+    rm
+} -result {{fe80 0 0 0 202 b3ff fe1e 8329} 1}
+
+test ipentry-2.9 {insert6: empty values} -setup {
+    mk ipentry6
+} -body {
+    .ip insert {2001 db8 {} {} {} {} {} 1}
+    list [.ip get] [.ip complete]
+} -cleanup {
+    rm
+} -result {{2001 db8 {} {} {} {} {} 1} 0}
+
+test ipentry-2.10 {insert6: upper case hex digits} -setup {
+    mk ipentry6
+} -body {
+    .ip insert {FE80 A B C D E F 1}
+    .ip get
+} -cleanup {
+    rm
+} -result {FE80 A B C D E F 1}
+
+test ipentry-2.11 {complete: all fields filled} -setup {
+    mk ipentry
+} -body {
+    set res {}
+    foreach v {{1 2 3 4} {1 2 3 {}} {{} 2 3 4} {0 0 0 0}} {
+	.ip insert $v
+	lappend res [.ip complete]
+    }
+    set res
+} -cleanup {
+    rm
+    unset -nocomplain res v
+} -result {1 0 0 1}
+
+test ipentry-2.12 {get: fields typed with leading zeros} -setup {
+    mk ipentry
+} -body {
+    .ip.1 insert 0 007
+    lindex [.ip get] 1
+} -cleanup {
+    rm
+} -result 7
+
+# -------------------------------------------------------------------------
+# icursor
+
+test ipentry-3.1 {icursor: without focus has no effect} -setup {
+    mk ipentry
+    focus -force .
+    update
+} -body {
+    list [.ip icursor 5] [focus]
+} -cleanup {
+    rm
+} -result {{} .}
+
+test ipentry-3.2 {icursor: moves the focus and insertion cursor} -setup {
+    mk ipentry
+    .ip insert {111 222 33 4}
+    focus -force .ip.0
+    update
+} -body {
+    .ip icursor 5
+    list [focus] [.ip.1 index insert]
+} -cleanup {
+    rm
+} -result {.ip.1 1}
+
+test ipentry-3.3 {icursor: all positions} -setup {
+    mk ipentry
+    .ip insert {111 222 33 4}
+    focus -force .ip.0
+    update
+} -body {
+    set res {}
+    foreach i {0 3 4 8 14 15} {
+	.ip icursor $i
+	lappend res [list [focus] [[focus] index insert]]
+    }
+    set res
+} -cleanup {
+    rm
+    unset -nocomplain res i
+} -result {{.ip.0 0} {.ip.0 3} {.ip.1 0} {.ip.2 0} {.ip.3 1} {.ip.3 1}}
+
+test ipentry-3.4 {icursor: not an integer} -setup {
+    mk ipentry
+    focus -force .ip.0
+    update
+} -body {
+    .ip icursor end
+} -cleanup {
+    rm
+} -returnCodes error -result {argument must be an integer}
+
+test ipentry-3.5 {icursor6: positions 0 to 31} -setup {
+    mk ipentry6
+    .ip insert {1111 2222 3333 4444 5555 6666 7777 8888}
+    focus -force .ip.0
+    update
+} -constraints knownBug -body {
+    # icursor for ipentry6 divides the index by 8 instead of 4.
+    set res {}
+    foreach i {0 4 9 12 31} {
+	.ip icursor $i
+	lappend res [list [focus] [[focus] index insert]]
+    }
+    set res
+} -cleanup {
+    rm
+    unset -nocomplain res i
+} -result {{.ip.0 0} {.ip.1 0} {.ip.2 1} {.ip.3 0} {.ip.7 3}}
+
+test ipentry-3.6 {icursor6: not an integer} -setup {
+    mk ipentry6
+    focus -force .ip.0
+    update
+} -body {
+    .ip icursor end
+} -cleanup {
+    rm
+} -returnCodes error -result {argument must be an integer}
+
+# -------------------------------------------------------------------------
+# configure, cget
+
+test ipentry-4.1 {configure: standard options are applied to the parts} -setup {
+    mk ipentry
+} -body {
+    .ip configure -fg red -selectbackground blue -insertbackground green
+    list [.ip cget -fg] [.ip cget -foreground] [.ip.2 cget -fg] [.ip.d1 cget -fg] \
+	[.ip.3 cget -selectbackground] [.ip.3 cget -insertbackground]
+} -cleanup {
+    rm
+} -result {red red red red blue green}
+
+test ipentry-4.2 {configure: background of entries, dots and frame} -setup {
+    mk ipentry
+} -body {
+    .ip configure -bg pink
+    list [.ip cget -bg] [.ip cget -background] [.ip.1 cget -bg] [.ip.d2 cget -bg] \
+	[ipentry::_.ip cget -bg]
+} -cleanup {
+    rm
+} -result {pink pink pink pink pink}
+
+test ipentry-4.3 {configure: frame options} -setup {
+    mk ipentry
+} -body {
+    .ip configure -bd 3 -relief groove -highlightthickness 2 -highlightcolor red \
+	-highlightbackground blue
+    list [.ip cget -bd] [.ip cget -borderwidth] [.ip cget -relief] \
+	[ipentry::_.ip cget -highlightthickness] [ipentry::_.ip cget -highlightcolor] \
+	[ipentry::_.ip cget -highlightbackground]
+} -cleanup {
+    rm
+} -result {3 3 groove 2 red blue}
+
+test ipentry-4.4 {configure: -font} -setup {
+    mk ipentry
+} -body {
+    .ip configure -font TkFixedFont
+    list [.ip cget -font] [.ip.3 cget -font] [.ip.d3 cget -font]
+} -cleanup {
+    rm
+} -result {TkFixedFont TkFixedFont TkFixedFont}
+
+test ipentry-4.5 {configure: entry-only options} -setup {
+    mk ipentry
+} -body {
+    .ip configure -selectforeground yellow -selectborderwidth 2 \
+	-readonlybackground gray -disabledbackground gray50 -disabledforeground white
+    list [.ip cget -selectforeground] [.ip cget -selectborderwidth] \
+	[.ip cget -readonlybackground] [.ip cget -disabledbackground] \
+	[.ip cget -disabledforeground] [.ip.d1 cget -disabledforeground]
+} -cleanup {
+    rm
+} -result {yellow 2 gray gray50 white white}
+
+test ipentry-4.6 {configure: unknown option} -setup {
+    mk ipentry
+} -body {
+    .ip configure -foo bar
+} -cleanup {
+    rm
+} -returnCodes error -result {unknown option "-foo"}
+
+test ipentry-4.7 {configure: bad value} -setup {
+    mk ipentry
+} -body {
+    .ip configure -fg nosuchcolor
+} -cleanup {
+    rm
+} -returnCodes error -result {unknown color name "nosuchcolor"}
+
+test ipentry-4.8 {cget: unknown option} -setup {
+    mk ipentry
+} -body {
+    .ip cget -foo
+} -cleanup {
+    rm
+} -returnCodes error -result {unknown option "-foo"}
+
+test ipentry-4.9 {cget: -textvariable without variable} -setup {
+    mk ipentry
+} -body {
+    .ip cget -textvariable
+} -cleanup {
+    rm
+} -result {}
+
+test ipentry-4.10 {configure: -state disabled} -setup {
+    mk ipentry
+    .ip insert {1 2 3 4}
+} -body {
+    .ip configure -state disabled -disabledbackground gray50
+    .ip configure -state disabled
+    set res [list [.ip cget -state]]
+    foreach x {0 1 2 3} {lappend res [.ip.$x cget -state]}
+    lappend res [.ip.d1 cget -bg] [ipentry::_.ip cget -bg] [.ip get]
+} -cleanup {
+    rm
+    unset -nocomplain res x
+} -result {disabled disabled disabled disabled disabled gray50 gray50 {1 2 3 4}}
+
+test ipentry-4.11 {configure: -state readonly} -setup {
+    mk ipentry
+    .ip insert {1 2 3 4}
+} -body {
+    .ip configure -readonlybackground gray80
+    .ip configure -state readonly
+    list [.ip cget -state] [.ip.3 cget -state] [.ip.d1 cget -bg] [.ip get]
+} -cleanup {
+    rm
+} -result {readonly readonly gray80 {1 2 3 4}}
+
+test ipentry-4.12 {configure: -state normal after disabled} -setup {
+    mk ipentry
+} -body {
+    set bg [.ip.0 cget -bg]
+    .ip configure -state disabled
+    .ip configure -state normal
+    list [.ip cget -state] [.ip.3 cget -state] [expr {[.ip.d1 cget -bg] eq $bg}]
+} -cleanup {
+    rm
+    unset -nocomplain bg
+} -result {normal normal 1}
+
+test ipentry-4.13 {configure: disabled widget ignores typing} -setup {
+    mk ipentry
+} -body {
+    .ip configure -state disabled
+    type .ip {1 2}
+    .ip get
+} -cleanup {
+    rm
+} -result {{} {} {} {}}
+
+test ipentry-4.14 {configure: ipentry6 options} -setup {
+    mk ipentry6
+} -body {
+    .ip configure -fg red -bg pink -state readonly
+    list [.ip cget -fg] [.ip.7 cget -fg] [.ip.d7 cget -fg] [.ip.7 cget -state]
+} -cleanup {
+    rm
+} -result {red red red readonly}
+
+test ipentry-4.15 {configure: several options in one call} -setup {
+    mk ipentry
+} -body {
+    .ip configure -fg red -bd 4 -state disabled
+    list [.ip cget -fg] [.ip cget -bd] [.ip cget -state]
+} -cleanup {
+    rm
+} -result {red 4 disabled}
+
+# -------------------------------------------------------------------------
+# -textvariable
+
+test ipentry-5.1 {textvariable: initial value is shown} -setup {
+    set ::ipvar 10.0.0.1
+} -body {
+    mk ipentry -textvariable ipvar
+    list [.ip get] [.ip cget -textvariable] $::ipvar
+} -cleanup {
+    rm
+    unset -nocomplain ::ipvar
+} -result {{10 0 0 1} ipvar 10.0.0.1}
+
+test ipentry-5.2 {textvariable: created if it does not exist} -setup {
+    unset -nocomplain ::ipvar
+} -body {
+    mk ipentry -textvariable ipvar
+    list [info exists ::ipvar] $::ipvar
+} -cleanup {
+    rm
+    unset -nocomplain ::ipvar
+} -result {1 {}}
+
+test ipentry-5.3 {textvariable: setting the variable updates the widget} -setup {
+    set ::ipvar ""
+    mk ipentry -textvariable ipvar
+} -body {
+    set ::ipvar 192.168.1.20
+    update
+    .ip get
+} -cleanup {
+    rm
+    unset -nocomplain ::ipvar
+} -result {192 168 1 20}
+
+test ipentry-5.4 {textvariable: insert updates the variable} -setup {
+    set ::ipvar ""
+    mk ipentry -textvariable ipvar
+} -body {
+    .ip insert {1 2 3 4}
+    set ::ipvar
+} -cleanup {
+    rm
+    unset -nocomplain ::ipvar
+} -result 1.2.3.4
+
+test ipentry-5.5 {textvariable: invalid values are corrected} -setup {
+    set ::ipvar ""
+    mk ipentry -textvariable ipvar
+} -body {
+    set res {}
+    foreach v {300.2.3.4 0.2.3.4} {
+	set ::ipvar $v
+	update
+	lappend res $::ipvar [.ip get]
+    }
+    set res
+} -cleanup {
+    rm
+    unset -nocomplain ::ipvar res v
+} -result {255.2.3.4 {255 2 3 4} 1.2.3.4 {1 2 3 4}}
+
+test ipentry-5.6 {textvariable: non-numeric value is rejected} -setup {
+    set ::ipvar 1.2.3.4
+    mk ipentry -textvariable ipvar
+} -body {
+    set ::ipvar a.b.c.d
+    update
+    list $::ipvar [.ip get]
+} -cleanup {
+    rm
+    unset -nocomplain ::ipvar
+} -result {1.2.3.4 {1 2 3 4}}
+
+test ipentry-5.7 {textvariable: partial address} -setup {
+    set ::ipvar ""
+    mk ipentry -textvariable ipvar
+} -body {
+    set ::ipvar 10.1.
+    update
+    list $::ipvar [.ip get]
+} -cleanup {
+    rm
+    unset -nocomplain ::ipvar
+} -result {10.1. {10 1 {} {}}}
+
+test ipentry-5.8 {textvariable: unset restores the variable} -setup {
+    set ::ipvar 1.2.3.4
+    mk ipentry -textvariable ipvar
+} -body {
+    unset ::ipvar
+    set res [list [info exists ::ipvar] $::ipvar]
+    set ::ipvar 5.6.7.8
+    update
+    lappend res [.ip get]
+} -cleanup {
+    rm
+    unset -nocomplain ::ipvar res
+} -result {1 1.2.3.4 {5 6 7 8}}
+
+test ipentry-5.9 {textvariable: typing updates the variable} -setup {
+    set ::ipvar ""
+    mk ipentry -textvariable ipvar
+} -body {
+    type .ip {1 0 period 2 period 3 period 4}
+    set ::ipvar
+} -cleanup {
+    rm
+    unset -nocomplain ::ipvar
+} -result 10.2.3.4
+
+test ipentry-5.10 {textvariable: changing the variable} -setup {
+    set ::ipvar1 1.1.1.1
+    set ::ipvar2 2.2.2.2
+    mk ipentry -textvariable ipvar1
+} -constraints knownBug -body {
+    # configure -textvariable looks for the trace to remove on the new
+    # variable instead of the old one and fails with 'bad operation
+    # list ""' (same cause as ticket 4c5222924f).
+    .ip configure -textvariable ipvar2
+    set res [list [.ip get] [.ip cget -textvariable]]
+    set ::ipvar1 3.3.3.3
+    update
+    lappend res [.ip get]
+    set ::ipvar2 4.4.4.4
+    update
+    lappend res [.ip get]
+} -cleanup {
+    rm
+    unset -nocomplain ::ipvar1 ::ipvar2 res
+} -result {{2 2 2 2} ipvar2 {2 2 2 2} {4 4 4 4}}
+
+test ipentry-5.11 {textvariable: no trace left after destroy} -setup {
+    set ::ipvar 1.2.3.4
+} -body {
+    mk ipentry -textvariable ipvar
+    destroy .ip
+    update
+    set ::ipvar foo
+    list $::ipvar [trace info variable ::ipvar]
+} -cleanup {
+    rm
+    unset -nocomplain ::ipvar
+} -result {foo {}}
+
+test ipentry-5.12 {textvariable: recreate with the same variable} -constraints {
+    knownBug
+} -setup {
+    set ::ipvar 1.2.3.4
+} -body {
+    # Ticket 4c5222924f: the second creation fails with
+    # 'bad operation list "": must be one or more of array, read,
+    # unset, or write'.
+    mk ipentry -textvariable ipvar
+    destroy .ip
+    mk ipentry -textvariable ipvar
+    .ip get
+} -cleanup {
+    # With the bug, the second widget is left half-configured: clean
+    # up its trace by hand so that destroying it does not fail.
+    foreach t [trace info variable ::ipvar] {
+	trace remove variable ::ipvar {*}$t
+    }
+    unset -nocomplain ::ipentry::textvars(.ip) t
+    rm
+    unset -nocomplain ::ipvar
+} -result {1 2 3 4}
+
+test ipentry-5.13 {textvariable: array element} -setup {
+    set ::iparr(addr) 1.1.1.1
+} -body {
+    # Ticket 2962077fff: setting the element failed with
+    # 'can't read "var": variable is array'.
+    mk ipentry -textvariable iparr(addr)
+    set ::iparr(addr) 1.1.1.2
+    update
+    list $::iparr(addr) [.ip get]
+} -cleanup {
+    rm
+    unset -nocomplain ::iparr
+} -result {1.1.1.2 {1 1 1 2}}
+
+test ipentry-5.21 {textvariable6: array element} -setup {
+    set ::iparr(addr) 1:2:3:4:5:6:7:8
+} -body {
+    # Ticket 2962077fff
+    mk ipentry6 -textvariable iparr(addr)
+    set ::iparr(addr) 1:2:3:4:5:6:7:9
+    update
+    list [.ip get] $::iparr(addr)
+} -cleanup {
+    rm
+    unset -nocomplain ::iparr
 } -result {{1 2 3 4 5 6 7 9} 1:2:3:4:5:6:7:9}
 
+test ipentry-5.14 {textvariable: namespace variable} -setup {
+    namespace eval ::iptest {variable addr 9.8.7.6}
+} -body {
+    mk ipentry -textvariable ::iptest::addr
+    set res [.ip get]
+    .ip insert {1 2 3 4}
+    list $res $::iptest::addr
+} -cleanup {
+    rm
+    namespace delete ::iptest
+    unset -nocomplain res
+} -result {{9 8 7 6} 1.2.3.4}
+
+test ipentry-5.15 {textvariable6: initial value is shown} -constraints {
+    knownBug
+} -setup {
+    set ::ipvar fe80:0:0:0:202:b3ff:fe1e:8329
+} -body {
+    # configure -textvariable runs the IPv4 trace handler for ipentry6
+    # too, which cannot parse the address and clears the variable.
+    mk ipentry6 -textvariable ipvar
+    list [.ip get] $::ipvar
+} -cleanup {
+    rm
+    unset -nocomplain ::ipvar
+} -result {{fe80 0 0 0 202 b3ff fe1e 8329} fe80:0:0:0:202:b3ff:fe1e:8329}
+
+test ipentry-5.16 {textvariable6: updates in both directions} -setup {
+    set ::ipvar ""
+    mk ipentry6 -textvariable ipvar
+} -body {
+    set ::ipvar 2001:db8:1:2:3:4:5:6
+    update
+    set res [list [.ip get]]
+    .ip insert {1 2 3 4 5 6 7 8}
+    lappend res $::ipvar
+} -cleanup {
+    rm
+    unset -nocomplain ::ipvar res
+} -result {{2001 db8 1 2 3 4 5 6} 1:2:3:4:5:6:7:8}
+
+test ipentry-5.17 {textvariable6: non-hex value is rejected} -setup {
+    set ::ipvar ""
+    mk ipentry6 -textvariable ipvar
+    set ::ipvar 1:2:3:4:5:6:7:8
+    update
+} -body {
+    set ::ipvar 1:2:xyz:4:5:6:7:8
+    update
+    list $::ipvar [.ip get]
+} -cleanup {
+    rm
+    unset -nocomplain ::ipvar
+} -result {1:2:3:4:5:6:7:8 {1 2 3 4 5 6 7 8}}
+
+test ipentry-5.18 {textvariable6: values above ffff} -setup {
+    set ::ipvar ""
+    mk ipentry6 -textvariable ipvar
+} -body {
+    set ::ipvar 12345:2:3:4:5:6:7:8
+    update
+    list $::ipvar [.ip get]
+} -cleanup {
+    rm
+    unset -nocomplain ::ipvar
+} -result {ffff:2:3:4:5:6:7:8 {ffff 2 3 4 5 6 7 8}}
+
 # -------------------------------------------------------------------------
+# Keyboard bindings
+
+test ipentry-6.1 {keys: digits and dots} -setup {
+    mk ipentry
+} -body {
+    type .ip {1 9 2 period 1 6 8 period 1 period 2 3}
+    list [.ip get] [focus]
+} -cleanup {
+    rm
+} -result {{192 168 1 23} .ip.3}
+
+test ipentry-6.2 {keys: three digits advance to the next field} -setup {
+    mk ipentry
+} -body {
+    type .ip {1 9 2 1 6 8 1 0 0 2 5 5}
+    .ip get
+} -cleanup {
+    rm
+} -result {192 168 100 255}
+
+test ipentry-6.3 {keys: values above 255 become 255} -setup {
+    mk ipentry
+} -body {
+    type .ip {3 0 0}
+    list [.ip get] [focus] [.ip.0 selection present]
+} -cleanup {
+    rm
+} -result {{255 {} {} {}} .ip.0 1}
+
+test ipentry-6.4 {keys: other characters are ignored} -setup {
+    mk ipentry
+} -body {
+    type .ip {a 1 minus 2 space x}
+    .ip get
+} -cleanup {
+    rm
+} -result {12 {} {} {}}
+
+test ipentry-6.5 {keys: dot in an empty field does not advance} -setup {
+    mk ipentry
+} -body {
+    type .ip {period 1}
+    list [.ip get] [focus]
+} -cleanup {
+    rm
+} -result {{1 {} {} {}} .ip.0}
+
+test ipentry-6.6 {keys: only a single 0} -setup {
+    mk ipentry
+} -body {
+    focus -force .ip.1
+    update
+    event generate .ip.1 <Key-0>
+    event generate .ip.1 <Key-0>
+    update
+    list [.ip.1 get] [focus]
+} -cleanup {
+    rm
+} -result {0 .ip.1}
+
+test ipentry-6.7 {keys: BackSpace at the start moves to the previous field} -setup {
+    mk ipentry
+} -body {
+    type .ip {1 2 period 3}
+    set res [list [focus] [.ip get]]
+    event generate [focus] <BackSpace>
+    event generate [focus] <BackSpace>
+    update
+    lappend res [focus] [.ip get]
+} -cleanup {
+    rm
+    unset -nocomplain res
+} -result {.ip.1 {12 3 {} {}} .ip.0 {1 {} {} {}}}
+
+test ipentry-6.8 {keys: Left and Right move between fields} -setup {
+    mk ipentry
+    .ip insert {1 22 3 4}
+    foreach x {0 1 2 3} {.ip.$x icursor 0}
+} -body {
+    focus -force .ip.0
+    update
+    .ip.0 icursor end
+    set res {}
+    foreach k {Right Right Right Right Left Left Left} {
+	event generate [focus] <Key-$k>
+	update
+	lappend res [list [focus] [[focus] index insert]]
+    }
+    set res
+} -cleanup {
+    rm
+    unset -nocomplain res k x
+} -result {{.ip.1 0} {.ip.1 1} {.ip.1 2} {.ip.2 0} {.ip.1 2} {.ip.1 1} {.ip.1 0}}
+
+test ipentry-6.9 {keys: typing replaces the selection} -setup {
+    mk ipentry
+    .ip insert {123 4 5 6}
+} -body {
+    focus -force .ip.0
+    update
+    .ip.0 selection range 0 end
+    .ip.0 icursor 0
+    event generate .ip.0 <Key-9>
+    update
+    .ip get
+} -cleanup {
+    rm
+} -result {9 4 5 6}
+
+test ipentry-6.10 {keys: zero first field is corrected on focus out} -setup {
+    mk ipentry
+} -body {
+    type .ip {0}
+    focus -force .
+    update
+    .ip get
+} -cleanup {
+    rm
+} -result {1 {} {} {}}
+
+test ipentry-6.11 {keys: leading zeros trimmed on focus out} -setup {
+    mk ipentry
+} -body {
+    .ip.1 insert 0 007
+    focus -force .ip.1
+    update
+    focus -force .
+    update
+    .ip.1 get
+} -cleanup {
+    rm
+} -result 7
+
+test ipentry6-6.12 {keys6: hex digits and colons} -setup {
+    mk ipentry6
+} -body {
+    type .ip {f e 8 0 colon 1 colon a b c d e}
+    list [.ip get] [focus]
+} -cleanup {
+    rm
+} -result {{fe80 1 abcd e {} {} {} {}} .ip.3}
+
+test ipentry6-6.13 {keys6: dot and non-hex characters are ignored} -setup {
+    mk ipentry6
+} -body {
+    type .ip {1 period g 2}
+    list [.ip get] [focus]
+} -cleanup {
+    rm
+} -result {{12 {} {} {} {} {} {} {}} .ip.0}
+
+# -------------------------------------------------------------------------
+# Paste
+
+test ipentry-7.1 {paste: address from the clipboard} -setup {
+    mk ipentry
+    clipboard clear
+    clipboard append "10.20.30.40"
+} -body {
+    focus -force .ip.0
+    update
+    event generate .ip.0 <<Paste>>
+    .ip get
+} -cleanup {
+    rm
+    clipboard clear
+} -result {10 20 30 40}
+
+test ipentry-7.2 {paste: other characters are ignored, values clamped} -setup {
+    mk ipentry
+    clipboard clear
+    clipboard append "ip: 10.999.x3.4"
+} -body {
+    focus -force .ip.0
+    update
+    event generate .ip.0 <<Paste>>
+    .ip get
+} -cleanup {
+    rm
+    clipboard clear
+} -result {10 255 3 4}
+
+test ipentry-7.3 {paste: updates the textvariable} -setup {
+    set ::ipvar ""
+    mk ipentry -textvariable ipvar
+    clipboard clear
+    clipboard append "1.2.3.4"
+} -body {
+    focus -force .ip.0
+    update
+    event generate .ip.0 <<Paste>>
+    set ::ipvar
+} -cleanup {
+    rm
+    clipboard clear
+    unset -nocomplain ::ipvar
+} -result 1.2.3.4
+
+test ipentry-7.4 {paste6: IPv6 address from the clipboard} -constraints {
+    knownBug
+} -setup {
+    mk ipentry6
+    clipboard clear
+    clipboard append "fe80:1:2:3:4:5:6:7"
+} -body {
+    # ipentry6 uses the IPv4 paste handler (Paste6 is never bound).
+    focus -force .ip.0
+    update
+    event generate .ip.0 <<Paste>>
+    .ip get
+} -cleanup {
+    rm
+    clipboard clear
+} -result {fe80 1 2 3 4 5 6 7}
+
+# -------------------------------------------------------------------------
+
+interp bgerror {} $savedBgerror
+unset -nocomplain savedBgerror ::bgErrors
+rename mk {}
+rename rm {}
+rename type {}
+wm state . $mainState
+unset mainState
+
 ::tcltest::cleanupTests
