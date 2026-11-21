@@ -1,5 +1,6 @@
 # -*- tcl -*-
-# Tests for the controlwidget packages
+# Tests for the controlwidget package: meter, slider, equalizerBar,
+# thermometer, voltmeter, tachometer, rdial, led and radioMatrix.
 
 if {![package vsatisfies [package provide Tcl] 8.5-]} {
     puts "    Aborting the tests found in \"[file tail [info script]]\"."
@@ -13,59 +14,1698 @@ if {[catch { package require Tk 8.5- } msg]} {
     return
 }
 
-if {[lsearch [namespace children] ::tcltest] == -1} {
-    package require tcltest 2
-    namespace import ::tcltest::*
+package require tcltest 2.2
+namespace import ::tcltest::*
+
+lappend auto_path [file dirname [file dirname [file normalize [info script]]]]
+package require controlwidget
+
+testConstraint x11 [expr {[tk windowingsystem] eq "x11"}]
+
+# Since Tk 9 the default sizes given as screen distances (e.g. 2i, 50m)
+# make meter, thermometer and voltmeter fail (ticket 1c877f89a4).
+set tk9Bug [expr {[package vsatisfies [package provide Tk] 9-] ? "knownBug" : ""}]
+
+# Collect background errors (from event bindings) instead of showing
+# the bgerror dialog.
+set cwBgErrors {}
+set cwOldBgHandler [interp bgerror {}]
+interp bgerror {} [list apply {{msg opts} {lappend ::cwBgErrors $msg}}]
+
+proc cleanupWidgets {} {
+    set ::cwBgErrors {}
+    foreach w [winfo children .] {
+	destroy $w
+    }
+    update
 }
 
-if {[catch {package require snit} msg]} {
-    puts "    Aborting the tests found in \"[file tail [info script]]\"."
-    puts "    Requiring snit, $msg"
-    return
+# Texts of all text items of a canvas, in stacking order
+proc canvasTexts {c} {
+    set res {}
+    foreach i [$c find all] {
+	if {[$c type $i] eq "text"} {
+	    lappend res [$c itemcget $i -text]
+	}
+    }
+    return $res
 }
 
-source [file join [file dirname [info script]] tachometer.tcl]
+# Remove duplicates, keeping the order (the axis ticks are drawn twice)
+proc uniq {list} {
+    set res {}
+    foreach x $list {
+	if {$x ni $res} {lappend res $x}
+    }
+    return $res
+}
+
+# Drag canvas item(s) with the given tag by dy pixels with button 1.
+proc dragItem {c tag dy} {
+    lassign [$c bbox $tag] x0 y0 x1 y1
+    set x [expr {int(($x0 + $x1) / 2)}]
+    set y [expr {int(($y0 + $y1) / 2)}]
+    event generate $c <Enter> -x $x -y $y
+    event generate $c <Motion> -x $x -y $y
+    event generate $c <ButtonPress-1> -x $x -y $y
+    event generate $c <Motion> -x $x -y [expr {$y + $dy}] -state 0x100
+    event generate $c <ButtonRelease-1> -x $x -y [expr {$y + $dy}] -state 0x100
+}
 
 # -------------------------------------------------------------------------
 
-proc needle {w} {
-    $w.c coords [$w cget -indexid]
+test controlwidget-1.1 {package versions} -body {
+    list [package present controlwidget] [package present meter] \
+	[package present led] [package present rdial] \
+	[package present tachometer] [package present voltmeter] \
+	[package present radioMatrix] [package present bindDown]
+} -result {0.1 1.0 1.0 0.7 0.2 0.2 1.0 1.0}
+
+test controlwidget-1.2 {widget commands} -body {
+    lsort [namespace eval ::controlwidget {namespace export}]
+} -result {equalizerBar led meter radioMatrix rdial slider tachometer thermometer voltmeter}
+
+test controlwidget-1.3 {all documented widget commands exist} -body {
+    set res {}
+    foreach cmd {meter slider equalizerBar thermometer voltmeter tachometer
+		 rdial led radioMatrix} {
+	lappend res [llength [info commands ::controlwidget::$cmd]]
+    }
+    set res
+} -cleanup {
+    unset res cmd
+} -result {1 1 1 1 1 1 1 1 1}
+
+# -------------------------------------------------------------------------
+# meter
+
+test controlwidget-2.1 {meter: default creation} -constraints $tk9Bug -body {
+    controlwidget::meter .m
+} -cleanup {
+    cleanupWidgets
+} -result .m
+
+test controlwidget-2.2 {meter: creation with pixel sizes} -body {
+    controlwidget::meter .m -width 150 -height 200
+    pack .m
+    update
+    list [winfo class .m] [winfo exists .m.c] [.m cget -width] [.m cget -height]
+} -cleanup {
+    cleanupWidgets
+} -result {Meter 1 150 200}
+
+test controlwidget-2.3 {meter: initial value} -body {
+    controlwidget::meter .m -width 150 -height 200
+    .m get
+} -cleanup {
+    cleanupWidgets
+} -result 0
+
+test controlwidget-2.4 {meter: set and get} -body {
+    controlwidget::meter .m -width 150 -height 200
+    .m set 0.5
+    .m get
+} -cleanup {
+    cleanupWidgets
+} -result 0.5
+
+test controlwidget-2.5 {meter: set moves the arrow} -body {
+    controlwidget::meter .m -width 150 -height 200
+    set y {}
+    foreach v {-1 0 1} {
+	.m set $v
+	lappend y [lindex [.m.c coords arrow] 1]
+    }
+    list [expr {[lindex $y 0] > [lindex $y 1]}] [expr {[lindex $y 1] > [lindex $y 2]}]
+} -cleanup {
+    cleanupWidgets
+    unset y v
+} -result {1 1}
+
+test controlwidget-2.6 {meter: values outside the axis range are clipped} -body {
+    controlwidget::meter .m -width 150 -height 200
+    .m set 1
+    set top [lindex [.m.c coords arrow] 1]
+    .m set 10
+    set top2 [lindex [.m.c coords arrow] 1]
+    .m set -1
+    set bottom [lindex [.m.c coords arrow] 1]
+    .m set -10
+    list [expr {$top == $top2}] [expr {$bottom == [lindex [.m.c coords arrow] 1]}] [.m get]
+} -cleanup {
+    cleanupWidgets
+    unset top top2 bottom
+} -result {1 1 -10}
+
+test controlwidget-2.7 {meter: -variable, initial value from the variable} -setup {
+    set ::cwvar 0.25
+} -body {
+    controlwidget::meter .m -width 150 -height 200 -variable ::cwvar
+    .m get
+} -cleanup {
+    cleanupWidgets
+    unset ::cwvar
+} -result 0.25
+
+test controlwidget-2.8 {meter: -variable, changing the variable} -setup {
+    set ::cwvar 0.25
+} -body {
+    controlwidget::meter .m -width 150 -height 200 -variable ::cwvar
+    set ::cwvar -0.5
+    .m get
+} -cleanup {
+    cleanupWidgets
+    unset ::cwvar
+} -result -0.5
+
+test controlwidget-2.9 {meter: -variable, set changes the variable} -setup {
+    set ::cwvar 0.25
+} -body {
+    controlwidget::meter .m -width 150 -height 200 -variable ::cwvar
+    .m set 0.75
+    list $::cwvar [.m get]
+} -cleanup {
+    cleanupWidgets
+    unset ::cwvar
+} -result {0.75 0.75}
+
+test controlwidget-2.10 {meter: -variable without the ::} -setup {
+    set ::cwvar 0.5
+} -body {
+    controlwidget::meter .m -width 150 -height 200 -variable cwvar
+    set ::cwvar 0.1
+    .m get
+} -cleanup {
+    cleanupWidgets
+    unset ::cwvar
+} -result 0.1
+
+test controlwidget-2.11 {meter: configure -variable after creation} -setup {
+    set ::cwvar 0.5
+    set ::cwvar2 -0.5
+} -body {
+    controlwidget::meter .m -width 150 -height 200 -variable ::cwvar
+    .m configure -variable ::cwvar2
+    set r [list [.m get] [.m cget -variable]]
+    set ::cwvar 0.9
+    lappend r [.m get]
+    set ::cwvar2 0.3
+    lappend r [.m get]
+} -cleanup {
+    cleanupWidgets
+    unset ::cwvar ::cwvar2 r
+} -result {-0.5 ::cwvar2 -0.5 0.3}
+
+test controlwidget-2.12 {meter: dragging the arrow changes the variable} -setup {
+    set ::cwvar 0
+} -body {
+    controlwidget::meter .m -width 150 -height 200 -variable ::cwvar
+    pack .m
+    update
+    set y0 [lindex [.m.c coords arrow] 1]
+    dragItem .m.c arrow -20
+    list [expr {$::cwvar > 0}] [expr {[lindex [.m.c coords arrow] 1] < $y0}] \
+	[expr {abs([.m get] - $::cwvar) < 1e-9}]
+} -cleanup {
+    cleanupWidgets
+    unset ::cwvar y0
+} -result {1 1 1}
+
+test controlwidget-2.13 {meter: -readonly prevents dragging} -setup {
+    set ::cwvar 0
+} -body {
+    controlwidget::meter .m -width 150 -height 200 -variable ::cwvar -readonly 1
+    pack .m
+    update
+    set y0 [lindex [.m.c coords arrow] 1]
+    dragItem .m.c arrow -20
+    list $::cwvar [expr {[lindex [.m.c coords arrow] 1] == $y0}]
+} -cleanup {
+    cleanupWidgets
+    unset ::cwvar y0
+} -result {0 1}
+
+test controlwidget-2.30 {meter: no error on releasing the button over a read-only meter} -constraints knownBug -setup {
+    set ::cwvar 0
+} -body {
+    # ReleaseIndicator unsets a grab entry that was never set.
+    controlwidget::meter .m -width 150 -height 200 -variable ::cwvar -readonly 1
+    pack .m
+    update
+    dragItem .m.c arrow -20
+    set ::cwBgErrors
+} -cleanup {
+    cleanupWidgets
+    unset ::cwvar
+} -result {}
+
+test controlwidget-2.14 {meter: -readonly must be a boolean} -body {
+    controlwidget::meter .m -width 150 -height 200 -readonly maybe
+} -cleanup {
+    cleanupWidgets
+} -returnCodes error -match glob -result {*invalid -readonly value: invalid boolean "maybe"*}
+
+test controlwidget-2.15 {meter: -arrowcolor and -arrowthickness at creation} -constraints knownBug -body {
+    # The options are applied to the canvas before it is created.
+    controlwidget::meter .m -width 150 -height 200 -arrowcolor red -arrowthickness 3
+    list [.m.c itemcget arrow -fill] [.m.c itemcget arrow -width]
+} -cleanup {
+    cleanupWidgets
+} -result {red 3.0}
+
+test controlwidget-2.16 {meter: configure -arrowcolor and -arrowthickness} -body {
+    controlwidget::meter .m -width 150 -height 200
+    .m configure -arrowcolor red -arrowthickness 3
+    list [.m.c itemcget arrow -fill] [.m.c itemcget arrow -width]
+} -cleanup {
+    cleanupWidgets
+} -result {red 3.0}
+
+test controlwidget-2.17 {meter: cget -arrowcolor after configure} -constraints knownBug -body {
+    # The configure method does not store the new value.
+    controlwidget::meter .m -width 150 -height 200
+    .m configure -arrowcolor red -arrowthickness 3
+    list [.m cget -arrowcolor] [.m cget -arrowthickness]
+} -cleanup {
+    cleanupWidgets
+} -result {red 3}
+
+test controlwidget-2.18 {meter: default option values} -body {
+    controlwidget::meter .m -width 150 -height 200
+    list [.m cget -from] [.m cget -to] [.m cget -background] \
+	[.m cget -arrowcolor] [.m cget -arrowthickness] [.m cget -readonly] \
+	[.m cget -variable] [.m cget -log] [.m cget -axisformat]
+} -cleanup {
+    cleanupWidgets
+} -result {-1.0 1.0 white black 1 0 {} false %.2g}
+
+test controlwidget-2.19 {meter: axis labels} -body {
+    controlwidget::meter .m -width 150 -height 200 -from 0 -to 10 -majorticks 5
+    uniq [canvasTexts .m.c]
+} -cleanup {
+    cleanupWidgets
+} -result {0 5 10}
+
+test controlwidget-2.20 {meter: -axisformat} -body {
+    controlwidget::meter .m -width 150 -height 200 -from 0 -to 1 \
+	-majorticks 0.25 -axisformat %.2f
+    uniq [canvasTexts .m.c]
+} -cleanup {
+    cleanupWidgets
+} -result {0.00 0.25 0.50 0.75 1.00}
+
+test controlwidget-2.21 {meter: -axiscolor and -axisfont} -body {
+    controlwidget::meter .m -width 150 -height 200 -from 0 -to 10 \
+	-majorticks 10 -axiscolor blue -axisfont {Courier 9}
+    set res {}
+    foreach i [.m.c find all] {
+	if {[.m.c type $i] eq "text"} {
+	    lappend res [list [.m.c itemcget $i -fill] [.m.c itemcget $i -font]]
+	}
+    }
+    lsort -unique $res
+} -cleanup {
+    cleanupWidgets
+    unset res i
+} -result {{blue {Courier 9}}}
+
+test controlwidget-2.22 {meter: values map linearly onto the axis} -body {
+    controlwidget::meter .m -width 150 -height 200 -from 0 -to 10 -majorticks 5
+    set ys {}
+    foreach v {0 5 10} {
+	.m set $v
+	lappend ys [lindex [.m.c coords arrow] 1]
+    }
+    lassign $ys y0 y5 y10
+    expr {abs(($y0 - $y5) - ($y5 - $y10)) < 1e-6}
+} -cleanup {
+    cleanupWidgets
+    unset ys v y0 y5 y10
+} -result 1
+
+test controlwidget-2.23 {meter: changing -majorticks replaces the labels} -constraints knownBug -body {
+    # The tick items get the tag "ticks]", so the old ones are not deleted.
+    controlwidget::meter .m -width 150 -height 200 -from 0 -to 10 -majorticks 5
+    .m configure -majorticks 10
+    canvasTexts .m.c
+} -cleanup {
+    cleanupWidgets
+} -result {0 10}
+
+test controlwidget-2.24 {meter: logarithmic axis} -constraints knownBug -body {
+    controlwidget::meter .m -width 150 -height 200 -log 1 -from 1 -to 1000
+    canvasTexts .m.c
+} -cleanup {
+    cleanupWidgets
+} -result {1.0e00 1.0e01 1.0e02 1.0e03}
+
+test controlwidget-2.25 {meter: unknown option} -body {
+    controlwidget::meter .m -width 150 -height 200 -foo 1
+} -cleanup {
+    cleanupWidgets
+} -returnCodes error -match glob -result {*unknown option "-foo"*}
+
+test controlwidget-2.26 {meter: set wrong # args} -body {
+    controlwidget::meter .m -width 150 -height 200
+    .m set
+} -cleanup {
+    cleanupWidgets
+} -returnCodes error -result {wrong # args: should be ".m set newValue"}
+
+test controlwidget-2.27 {meter: get wrong # args} -body {
+    controlwidget::meter .m -width 150 -height 200
+    .m get 1
+} -cleanup {
+    cleanupWidgets
+} -returnCodes error -result {wrong # args: should be ".m get"}
+
+test controlwidget-2.28 {meter: -height as a screen distance} -constraints $tk9Bug -body {
+    controlwidget::meter .m -width 1i -height 2i
+    list [expr {abs([.m cget -height] - [winfo pixels . 2i]) <= 1}]
+} -cleanup {
+    cleanupWidgets
+} -result 1
+
+test controlwidget-2.29 {meter: destroying with a -variable} -constraints knownBug -setup {
+    # The variable trace is not removed.
+    set ::cwvar 0.5
+} -body {
+    controlwidget::meter .m -width 150 -height 200 -variable ::cwvar
+    destroy .m
+    set ::cwvar 0.2
+} -cleanup {
+    cleanupWidgets
+    foreach t [trace info variable ::cwvar] {trace remove variable ::cwvar {*}$t}
+    unset ::cwvar
+} -result 0.2
+
+# -------------------------------------------------------------------------
+# slider
+
+test controlwidget-3.1 {slider: default creation} -body {
+    controlwidget::slider .s
+    list [winfo class .s] [.s cget -number]
+} -cleanup {
+    cleanupWidgets
+} -result {Slider 1}
+
+test controlwidget-3.2 {slider: set and get, one slider} -body {
+    controlwidget::slider .s
+    .s set 0.5
+    .s get
+} -cleanup {
+    cleanupWidgets
+} -result 0.5
+
+test controlwidget-3.3 {slider: set and get, several sliders} -body {
+    controlwidget::slider .s -number 3
+    .s set {0.1 0.2 0.3}
+    .s get
+} -cleanup {
+    cleanupWidgets
+} -result {0.1 0.2 0.3}
+
+test controlwidget-3.4 {slider: set moves the slider handles} -body {
+    controlwidget::slider .s -number 2
+    set y0 [lindex [.s.c bbox slider0] 1]
+    set y1 [lindex [.s.c bbox slider1] 1]
+    .s set {1 -1}
+    list [expr {[lindex [.s.c bbox slider0] 1] < $y0}] \
+	[expr {[lindex [.s.c bbox slider1] 1] > $y1}]
+} -cleanup {
+    cleanupWidgets
+    unset y0 y1
+} -result {1 1}
+
+test controlwidget-3.5 {slider: -variable} -setup {
+    set ::cwvar {0 0}
+} -body {
+    controlwidget::slider .s -number 2 -variable ::cwvar
+    .s set {0.5 -0.5}
+    set r [list $::cwvar [.s get]]
+    set ::cwvar {0.25 0.75}
+    lappend r [.s get]
+} -cleanup {
+    cleanupWidgets
+    unset ::cwvar r
+} -result {{0.5 -0.5} {0.5 -0.5} {0.25 0.75}}
+
+test controlwidget-3.6 {slider: -variable, initial value} -setup {
+    set ::cwvar {0.5 -0.5}
+} -body {
+    controlwidget::slider .s -number 2 -variable ::cwvar
+    .s get
+} -cleanup {
+    cleanupWidgets
+    unset ::cwvar
+} -result {0.5 -0.5}
+
+test controlwidget-3.7 {slider: dragging a handle changes the variable} -setup {
+    set ::cwvar {0 0}
+} -body {
+    controlwidget::slider .s -number 2 -variable ::cwvar
+    pack .s
+    update
+    dragItem .s.c slider1 -20
+    list [lindex $::cwvar 0] [expr {[lindex $::cwvar 1] > 0}]
+} -cleanup {
+    cleanupWidgets
+    unset ::cwvar
+} -result {0 1}
+
+test controlwidget-3.8 {slider: configure -variable after creation} -constraints knownBug -setup {
+    set ::cwvar {0}
+    set ::cwvar2 {0.5}
+} -body {
+    # Calls the nonexistent method needleTo
+    controlwidget::slider .s -variable ::cwvar
+    .s configure -variable ::cwvar2
+    .s get
+} -cleanup {
+    cleanupWidgets
+    unset ::cwvar ::cwvar2
+} -result 0.5
+
+test controlwidget-3.9 {slider: read-only options} -body {
+    controlwidget::slider .s -number 2
+    set res {}
+    foreach opt {-number -sliderthickness -sliderwidth -troughwidth} {
+	lappend res [catch {.s configure $opt 5} msg] $msg
+    }
+    set res
+} -cleanup {
+    cleanupWidgets
+    unset res opt msg
+} -result {1 {option -number can only be set at instance creation} 1 {option -sliderthickness can only be set at instance creation} 1 {option -sliderwidth can only be set at instance creation} 1 {option -troughwidth can only be set at instance creation}}
+
+test controlwidget-3.10 {slider: -number must be an integer} -body {
+    controlwidget::slider .s -number x
+} -cleanup {
+    cleanupWidgets
+} -returnCodes error -match glob -result {*invalid -number value*}
+
+test controlwidget-3.11 {slider: -sliderwidth and -troughwidth} -body {
+    controlwidget::slider .s -sliderwidth 30 -troughwidth 6 -sliderthickness 14
+    lassign [.s.c bbox slider0] x0 y0 x1 y1
+    list [expr {abs(($x1 - $x0) - 30) <= 2}] [expr {abs(($y1 - $y0) - 14) <= 2}]
+} -cleanup {
+    cleanupWidgets
+    unset x0 y0 x1 y1
+} -result {1 1}
+
+test controlwidget-3.12 {slider: -height} -body {
+    controlwidget::slider .s -height 100
+    set h1 [.s.c cget -height]
+    controlwidget::slider .s2 -height 300
+    expr {[.s2.c cget -height] - $h1 == 200}
+} -cleanup {
+    cleanupWidgets
+    unset h1
+} -result 1
+
+test controlwidget-3.13 {slider: -background} -body {
+    controlwidget::slider .s -background yellow
+    .s.c cget -background
+} -cleanup {
+    cleanupWidgets
+} -result yellow
+
+test controlwidget-3.14 {slider: axis labels} -body {
+    controlwidget::slider .s -from 0 -to 100 -majorticks 50
+    uniq [canvasTexts .s.c]
+} -cleanup {
+    cleanupWidgets
+} -result {0 50 1e+02}
+
+# -------------------------------------------------------------------------
+# equalizerBar
+
+# Fill colors of the segments of an equalizer bar, bottom to top
+proc segmentColors {w} {
+    set res {}
+    foreach i [$w.c find all] {
+	if {[$w.c type $i] eq "rectangle"} {
+	    lappend res [$w.c itemcget $i -fill]
+	}
+    }
+    return $res
 }
 
-test tachometer-1.0 {create with default size} -body {
-    controlwidget::tachometer .t
+test controlwidget-4.1 {equalizerBar: default creation} -body {
+    controlwidget::equalizerBar .e
+    list [winfo class .e] [llength [segmentColors .e]]
 } -cleanup {
-    destroy .t
+    cleanupWidgets
+} -result {EqualizerBar 10}
+
+test controlwidget-4.2 {equalizerBar: -number and -segments} -body {
+    controlwidget::equalizerBar .e -number 3 -segments 5
+    llength [segmentColors .e]
+} -cleanup {
+    cleanupWidgets
+} -result 15
+
+test controlwidget-4.3 {equalizerBar: set colors the segments} -body {
+    controlwidget::equalizerBar .e -from 0 -to 10 -segments 5 -warninglevel 7 \
+	-background black
+    .e set 9
+    segmentColors .e
+} -cleanup {
+    cleanupWidgets
+} -result {green green green red black}
+
+test controlwidget-4.4 {equalizerBar: -safecolor and -warningcolor} -body {
+    controlwidget::equalizerBar .e -from 0 -to 10 -segments 5 -warninglevel 5 \
+	-background black -safecolor blue -warningcolor yellow
+    .e set 10
+    segmentColors .e
+} -cleanup {
+    cleanupWidgets
+} -result {blue blue yellow yellow yellow}
+
+test controlwidget-4.5 {equalizerBar: several bars} -body {
+    controlwidget::equalizerBar .e -number 2 -from 0 -to 10 -segments 2 \
+	-warninglevel 100 -background black
+    .e set {5 10}
+    segmentColors .e
+} -cleanup {
+    cleanupWidgets
+} -result {green black green green}
+
+test controlwidget-4.6 {equalizerBar: get} -constraints knownBug -body {
+    # get always returns an empty string
+    controlwidget::equalizerBar .e -number 2 -from 0 -to 10
+    .e set {5 10}
+    .e get
+} -cleanup {
+    cleanupWidgets
+} -result {5 10}
+
+test controlwidget-4.7 {equalizerBar: -variable} -setup {
+    set ::cwvar {0 0}
+} -body {
+    controlwidget::equalizerBar .e -number 2 -from 0 -to 10 -segments 2 \
+	-warninglevel 100 -background black -variable ::cwvar
+    set ::cwvar {10 5}
+    set r [segmentColors .e]
+    .e set {0 10}
+    lappend r $::cwvar
+    concat $r [segmentColors .e]
+} -cleanup {
+    cleanupWidgets
+    unset ::cwvar r
+} -result {green green green black {0 10} black black green green}
+
+test controlwidget-4.8 {equalizerBar: -variable, initial value} -setup {
+    set ::cwvar {10}
+} -body {
+    controlwidget::equalizerBar .e -from 0 -to 10 -segments 2 \
+	-warninglevel 100 -background black -variable ::cwvar
+    segmentColors .e
+} -cleanup {
+    cleanupWidgets
+    unset ::cwvar
+} -result {green green}
+
+test controlwidget-4.9 {equalizerBar: read-only options} -body {
+    controlwidget::equalizerBar .e
+    list [catch {.e configure -segments 3} msg] $msg
+} -cleanup {
+    cleanupWidgets
+    unset msg
+} -result {1 {option -segments can only be set at instance creation}}
+
+test controlwidget-4.10 {equalizerBar: -barwidth} -body {
+    controlwidget::equalizerBar .e -barwidth 20 -background black
+    set widths {}
+    foreach i [.e.c find all] {
+	if {[.e.c type $i] eq "rectangle"} {
+	    lassign [.e.c coords $i] x0 y0 x1 y1
+	    lappend widths [expr {$x1 - $x0}]
+	}
+    }
+    lsort -unique $widths
+} -cleanup {
+    cleanupWidgets
+    unset widths i x0 y0 x1 y1
+} -result 20.0
+
+# -------------------------------------------------------------------------
+# thermometer
+
+test controlwidget-5.1 {thermometer: default creation} -body {
+    controlwidget::thermometer .t
+    list [winfo class .t] [.t get]
+} -cleanup {
+    cleanupWidgets
+} -result {Thermometer 0}
+
+test controlwidget-5.2 {thermometer: set and get} -constraints knownBug -body {
+    # Ticket 7ddeff4e86
+    controlwidget::thermometer .t -from 0 -to 50
+    .t set 30
+    .t get
+} -cleanup {
+    cleanupWidgets
+} -result 30
+
+test controlwidget-5.3 {thermometer: -variable} -constraints knownBug -setup {
+    set ::cwvar 10
+} -body {
+    # Ticket 7ddeff4e86
+    controlwidget::thermometer .t -from 0 -to 50 -variable ::cwvar
+    set ::cwvar 20
+    .t get
+} -cleanup {
+    cleanupWidgets
+    unset ::cwvar
+} -result 20
+
+test controlwidget-5.4 {thermometer: -variable, initial value} -setup {
+    set ::cwvar 40
+} -body {
+    controlwidget::thermometer .t -from 0 -to 50 -variable ::cwvar
+    set top40 [lindex [.t.c coords line] 1]
+    controlwidget::thermometer .t2 -from 0 -to 50
+    list [.t get] [expr {$top40 < [lindex [.t2.c coords line] 1]}]
+} -cleanup {
+    cleanupWidgets
+    unset ::cwvar top40
+} -result {40 1}
+
+test controlwidget-5.5 {thermometer: -linecolor and -linethickness} -body {
+    controlwidget::thermometer .t -linecolor blue -linethickness 9
+    lassign [.t.c coords line] x0 y0 x1 y1
+    list [.t.c itemcget line -fill] [expr {$x1 - $x0}]
+} -cleanup {
+    cleanupWidgets
+    unset x0 y0 x1 y1
+} -result {blue 10.0}
+
+test controlwidget-5.6 {thermometer: -linethickness must be an integer} -body {
+    controlwidget::thermometer .t -linethickness x
+} -cleanup {
+    cleanupWidgets
+} -returnCodes error -match glob -result {*invalid -linethickness value*}
+
+test controlwidget-5.7 {thermometer: -width, -height and -background} -body {
+    controlwidget::thermometer .t -width 80 -height 300 -background yellow
+    list [.t.c cget -width] [.t.c cget -height] [.t.c cget -background]
+} -cleanup {
+    cleanupWidgets
+} -result {80 300 yellow}
+
+test controlwidget-5.8 {thermometer: -height as a screen distance} -constraints $tk9Bug -body {
+    # Ticket 1c877f89a4
+    controlwidget::thermometer .t -height 2i
+} -cleanup {
+    cleanupWidgets
 } -result .t
 
-test tachometer-1.1 {integer -min, -max and value, ticket b845a924db} -setup {
-    set ::tvalue1 0
-    set ::tvalue2 0
-    controlwidget::tachometer .t1 -variable ::tvalue1 -min 0 -max 10
-    controlwidget::tachometer .t2 -variable ::tvalue2 -min 0.0 -max 10.0
-} -body {
-    set ::tvalue1 1
-    set ::tvalue2 1.0
-    expr {[needle .t1] eq [needle .t2]}
+test controlwidget-5.9 {thermometer: axis labels} -body {
+    controlwidget::thermometer .t -from 0 -to 40 -majorticks 20
+    uniq [canvasTexts .t.c]
 } -cleanup {
-    destroy .t1 .t2
-    unset -nocomplain ::tvalue1 ::tvalue2
-} -result 1
+    cleanupWidgets
+} -result {0 20 40}
 
-test tachometer-1.2 {needle moves with the value} -setup {
-    set ::tvalue 0
-    controlwidget::tachometer .t -variable ::tvalue -min 0 -max 10
-} -body {
-    set ::tvalue 1
-    set c1 [needle .t]
-    set ::tvalue 2
-    expr {$c1 ne [needle .t]}
+test controlwidget-5.10 {thermometer: is read-only} -body {
+    controlwidget::thermometer .t
+    .t cget -readonly
 } -cleanup {
-    destroy .t
-    unset -nocomplain ::tvalue c1
+    cleanupWidgets
 } -result 1
-
-rename needle {}
 
 # -------------------------------------------------------------------------
+# voltmeter
+
+test controlwidget-6.1 {voltmeter: default creation} -constraints $tk9Bug -body {
+    # Ticket 1c877f89a4
+    controlwidget::voltmeter .v
+} -cleanup {
+    cleanupWidgets
+} -result .v
+
+test controlwidget-6.2 {voltmeter: creation with pixel sizes} -body {
+    controlwidget::voltmeter .v -width 200 -height 100
+    list [winfo class .v] [.v.c cget -width] [.v.c cget -height]
+} -cleanup {
+    cleanupWidgets
+} -result {Voltmeter 200 100}
+
+test controlwidget-6.3 {voltmeter: -labels and -title} -body {
+    controlwidget::voltmeter .v -width 200 -height 100 -labels {0 50 100} \
+	-title Volts
+    canvasTexts .v.c
+} -cleanup {
+    cleanupWidgets
+} -result {0 50 100 Volts}
+
+test controlwidget-6.4 {voltmeter: label and title colors and fonts} -body {
+    controlwidget::voltmeter .v -width 200 -height 100 -labels {0 1} \
+	-title T -labelcolor red -titlecolor blue \
+	-labelfont {Courier 7} -titlefont {Times 11}
+    set res {}
+    foreach i [.v.c find all] {
+	if {[.v.c type $i] eq "text"} {
+	    lappend res [.v.c itemcget $i -fill] [.v.c itemcget $i -font]
+	}
+    }
+    set res
+} -cleanup {
+    cleanupWidgets
+    unset res i
+} -result {red {Courier 7} red {Courier 7} blue {Times 11}}
+
+test controlwidget-6.5 {voltmeter: -variable moves the needle} -setup {
+    set ::cwvar 0
+} -body {
+    controlwidget::voltmeter .v -width 200 -height 100 -variable ::cwvar
+    set c0 [.v.c coords [.v cget -indexid]]
+    set ::cwvar 100
+    set c1 [.v.c coords [.v cget -indexid]]
+    set ::cwvar 50
+    set c2 [.v.c coords [.v cget -indexid]]
+    # the needle turns clockwise from the left to the right
+    list [expr {[lindex $c1 2] > [lindex $c0 2]}] \
+	[expr {abs([lindex $c2 2] - 100) < 1}] [.v get]
+} -cleanup {
+    cleanupWidgets
+    unset ::cwvar c0 c1 c2
+} -result {1 1 50}
+
+test controlwidget-6.6 {voltmeter: set with -variable} -setup {
+    set ::cwvar 0
+} -body {
+    controlwidget::voltmeter .v -width 200 -height 100 -variable ::cwvar
+    .v set 40
+    list $::cwvar [.v get]
+} -cleanup {
+    cleanupWidgets
+    unset ::cwvar
+} -result {40 40}
+
+test controlwidget-6.7 {voltmeter: get before the value is set} -constraints knownBug -setup {
+    set ::cwvar 20
+} -body {
+    controlwidget::voltmeter .v -width 200 -height 100 -variable ::cwvar
+    .v get
+} -cleanup {
+    cleanupWidgets
+    unset ::cwvar
+} -result 20
+
+test controlwidget-6.8 {voltmeter: set and get without a variable} -constraints knownBug -body {
+    controlwidget::voltmeter .v -width 200 -height 100
+    .v set 30
+    .v get
+} -cleanup {
+    cleanupWidgets
+} -result 30
+
+test controlwidget-6.9 {voltmeter: -value} -constraints knownBug -body {
+    # The documented -value option does not exist.
+    controlwidget::voltmeter .v -width 200 -height 100 -value 30
+    .v get
+} -cleanup {
+    cleanupWidgets
+} -result 30
+
+test controlwidget-6.10 {voltmeter: -min and -max} -setup {
+    set ::cwvar 0
+} -body {
+    controlwidget::voltmeter .v -width 200 -height 100 -variable ::cwvar \
+	-min -10 -max 10
+    set ::cwvar 0
+    set c [.v.c coords [.v cget -indexid]]
+    expr {abs([lindex $c 2] - 100) < 1}
+} -cleanup {
+    cleanupWidgets
+    unset ::cwvar c
+} -result 1
+
+test controlwidget-6.11 {voltmeter: colors} -setup {
+    set ::cwvar 0
+} -body {
+    controlwidget::voltmeter .v -width 200 -height 100 -variable ::cwvar \
+	-needlecolor red -background yellow -relief sunken -borderwidth 3
+    list [.v.c itemcget [.v cget -indexid] -fill] [.v.c cget -background] \
+	[.v.c cget -relief] [.v.c cget -borderwidth]
+} -cleanup {
+    cleanupWidgets
+    unset ::cwvar
+} -result {red yellow sunken 3}
+
+test controlwidget-6.14 {voltmeter: initial needle position from the variable} -constraints knownBug -setup {
+    set ::cwvar 50
+} -body {
+    # The needle is drawn at 0 until the variable is changed.
+    controlwidget::voltmeter .v -width 200 -height 100 -variable ::cwvar
+    set c1 [.v.c coords [.v cget -indexid]]
+    set ::cwvar 50
+    expr {[.v.c coords [.v cget -indexid]] eq $c1}
+} -cleanup {
+    cleanupWidgets
+    unset ::cwvar c1
+} -result 1
+
+test controlwidget-6.12 {voltmeter: dragging the needle changes the variable} -setup {
+    set ::cwvar 0
+} -body {
+    controlwidget::voltmeter .v -width 200 -height 100 -variable ::cwvar
+    pack .v
+    update
+    set ::cwvar 50
+    lassign [.v.c coords [.v cget -indexid]] x0 y0 x1 y1
+    set x [expr {int(($x0 + $x1) / 2)}]
+    set y [expr {int(($y0 + $y1) / 2)}]
+    event generate .v.c <Motion> -x $x -y $y
+    event generate .v.c <ButtonPress-1> -x $x -y $y
+    event generate .v.c <Motion> -x [expr {$x + 20}] -y $y -state 0x100
+    event generate .v.c <ButtonRelease-1> -x [expr {$x + 20}] -y $y
+    expr {$::cwvar > 50}
+} -cleanup {
+    cleanupWidgets
+    unset ::cwvar x0 y0 x1 y1 x y
+} -result 1
+
+test controlwidget-6.13 {voltmeter: destroying with a -variable} -constraints knownBug -setup {
+    set ::cwvar 0
+} -body {
+    # The variable trace is not removed.
+    controlwidget::voltmeter .v -width 200 -height 100 -variable ::cwvar
+    destroy .v
+    set ::cwvar 5
+} -cleanup {
+    cleanupWidgets
+    foreach t [trace info variable ::cwvar] {trace remove variable ::cwvar {*}$t}
+    unset ::cwvar
+} -result 5
+
+# -------------------------------------------------------------------------
+# tachometer
+
+test controlwidget-7.1 {tachometer: default creation} -body {
+    # Ticket 1c877f89a4
+    controlwidget::tachometer .t
+} -cleanup {
+    cleanupWidgets
+} -result .t
+
+test controlwidget-7.2 {tachometer: creation with pixel sizes} -body {
+    controlwidget::tachometer .t -width 200 -height 200 \
+	-labels {0 {} 20 {} 40 {} 60 {} 80 {} 100}
+    list [winfo class .t] [.t.c cget -width] [canvasTexts .t.c]
+} -cleanup {
+    cleanupWidgets
+} -result {Tachometer 200 {0 20 40 60 80 100}}
+
+test controlwidget-7.3 {tachometer: -variable moves the needle} -setup {
+    set ::cwvar 0
+} -body {
+    controlwidget::tachometer .t -width 200 -height 200 -variable ::cwvar
+    set c0 [.t.c coords [.t cget -indexid]]
+    set ::cwvar 50
+    set c1 [.t.c coords [.t cget -indexid]]
+    # at the middle value the needle points straight up
+    list [expr {$c0 ne $c1}] [expr {abs([lindex $c1 2] - 100) < 1}] \
+	[expr {[lindex $c1 3] < 100}] [.t get]
+} -cleanup {
+    cleanupWidgets
+    unset ::cwvar c0 c1
+} -result {1 1 1 50}
+
+test controlwidget-7.4 {tachometer: set with -variable} -setup {
+    set ::cwvar 0
+} -body {
+    controlwidget::tachometer .t -width 200 -height 200 -variable ::cwvar
+    .t set 40
+    list $::cwvar [.t get]
+} -cleanup {
+    cleanupWidgets
+    unset ::cwvar
+} -result {40 40}
+
+test controlwidget-7.5 {tachometer: needle angle with integer -min, -max and value} -setup {
+    set ::cwvar 1.0
+} -body {
+    # Ticket b845a924db
+    controlwidget::tachometer .t -width 200 -height 200 -min 0 -max 10 \
+	-variable ::cwvar
+    set ::cwvar 1.0
+    set c1 [.t.c coords [.t cget -indexid]]
+    set ::cwvar 1
+    expr {[.t.c coords [.t cget -indexid]] eq $c1}
+} -cleanup {
+    cleanupWidgets
+    unset ::cwvar c1
+} -result 1
+
+test controlwidget-7.6 {tachometer: set and get without a variable} -constraints knownBug -body {
+    controlwidget::tachometer .t -width 200 -height 200
+    .t set 30
+    .t get
+} -cleanup {
+    cleanupWidgets
+} -result 30
+
+test controlwidget-7.7 {tachometer: -value} -constraints knownBug -body {
+    # The documented -value option does not exist.
+    controlwidget::tachometer .t -width 200 -height 200 -value 30
+    .t get
+} -cleanup {
+    cleanupWidgets
+} -result 30
+
+test controlwidget-7.8 {tachometer: -pincolor and -dialcolor} -setup {
+    set ::cwvar 0
+} -body {
+    controlwidget::tachometer .t -width 200 -height 200 -variable ::cwvar \
+	-pincolor green -dialcolor pink
+    set ovals {}
+    foreach i [.t.c find all] {
+	if {[.t.c type $i] eq "oval"} {lappend ovals [.t.c itemcget $i -fill]}
+    }
+    list [.t.c itemcget [.t cget -indexid] -fill] $ovals
+} -cleanup {
+    cleanupWidgets
+    unset ::cwvar ovals i
+} -result {green {pink green}}
+
+test controlwidget-7.9 {tachometer: danger band} -body {
+    controlwidget::tachometer .t -width 200 -height 200 -dangerlevel 75 \
+	-dangercolor orange
+    set res {}
+    foreach i [.t.c find all] {
+	if {[.t.c type $i] eq "arc" && [.t.c itemcget $i -outline] eq "orange"} {
+	    lappend res [.t.c itemcget $i -extent]
+	}
+    }
+    set res
+} -cleanup {
+    cleanupWidgets
+    unset res i
+} -result 80.0
+
+test controlwidget-7.10 {tachometer: no danger band above -max} -body {
+    controlwidget::tachometer .t -width 200 -height 200 -dangerlevel 100 \
+	-dangercolor orange
+    set res {}
+    foreach i [.t.c find all] {
+	if {[.t.c type $i] eq "arc" && [.t.c itemcget $i -outline] eq "orange"} {
+	    lappend res $i
+	}
+    }
+    set res
+} -cleanup {
+    cleanupWidgets
+    unset res
+} -result {}
+
+test controlwidget-7.13 {tachometer: initial needle position from the variable} -constraints knownBug -setup {
+    set ::cwvar 50
+} -body {
+    # The needle is drawn at 0 until the variable is changed.
+    controlwidget::tachometer .t -width 200 -height 200 -variable ::cwvar
+    set c1 [.t.c coords [.t cget -indexid]]
+    set ::cwvar 50
+    expr {[.t.c coords [.t cget -indexid]] eq $c1}
+} -cleanup {
+    cleanupWidgets
+    unset ::cwvar c1
+} -result 1
+
+test controlwidget-7.11 {tachometer: dragging the needle changes the variable} -setup {
+    set ::cwvar 50
+} -body {
+    controlwidget::tachometer .t -width 200 -height 200 -variable ::cwvar
+    pack .t
+    update
+    lassign [.t.c coords [.t cget -indexid]] x0 y0 x1 y1
+    set x [expr {int($x0 + 0.7 * ($x1 - $x0))}]
+    set y [expr {int($y0 + 0.7 * ($y1 - $y0))}]
+    event generate .t.c <Motion> -x $x -y $y
+    event generate .t.c <ButtonPress-1> -x $x -y $y
+    event generate .t.c <Motion> -x [expr {$x + 40}] -y $y -state 0x100
+    event generate .t.c <ButtonRelease-1> -x [expr {$x + 40}] -y $y
+    expr {$::cwvar > 50}
+} -cleanup {
+    cleanupWidgets
+    unset ::cwvar x0 y0 x1 y1 x y
+} -result 1
+
+test controlwidget-7.12 {tachometer: destroying with a -variable} -constraints knownBug -setup {
+    set ::cwvar 0
+} -body {
+    # The variable trace is not removed.
+    controlwidget::tachometer .t -width 200 -height 200 -variable ::cwvar
+    destroy .t
+    set ::cwvar 5
+} -cleanup {
+    cleanupWidgets
+    foreach t [trace info variable ::cwvar] {trace remove variable ::cwvar {*}$t}
+    unset ::cwvar
+} -result 5
+
+test controlwidget-7.14 {tachometer: integer and float -min and -max give the same angle} -setup {
+    set ::cwvar 0
+    set ::cwvar2 0
+} -body {
+    # Ticket b845a924db
+    controlwidget::tachometer .t -variable ::cwvar -min 0 -max 10
+    controlwidget::tachometer .t2 -variable ::cwvar2 -min 0.0 -max 10.0
+    set ::cwvar 1
+    set ::cwvar2 1.0
+    expr {[.t.c coords [.t cget -indexid]] eq [.t2.c coords [.t2 cget -indexid]]}
+} -cleanup {
+    cleanupWidgets
+    unset ::cwvar ::cwvar2
+} -result 1
+
+test controlwidget-7.15 {tachometer: the needle moves with the default size} -setup {
+    set ::cwvar 0
+} -body {
+    # Ticket 1c877f89a4
+    controlwidget::tachometer .t -variable ::cwvar -min 0 -max 10
+    set ::cwvar 1
+    set c1 [.t.c coords [.t cget -indexid]]
+    set ::cwvar 2
+    expr {$c1 ne [.t.c coords [.t cget -indexid]]}
+} -cleanup {
+    cleanupWidgets
+    unset ::cwvar c1
+} -result 1
+
+# -------------------------------------------------------------------------
+# rdial
+
+test controlwidget-8.1 {rdial: default creation} -constraints knownBug -body {
+    # Ticket 7ae7ab1e83
+    controlwidget::rdial .d
+} -cleanup {
+    cleanupWidgets
+} -result .d
+
+test controlwidget-8.2 {rdial: creation with -width} -body {
+    controlwidget::rdial .d -width 100
+    list [winfo class .d] [.d.c cget -width] [.d.c cget -height] [.d get]
+} -cleanup {
+    cleanupWidgets
+} -result {Rdial 100 8 0.0}
+
+test controlwidget-8.3 {rdial: vertical} -body {
+    controlwidget::rdial .d -width 100 -height 20 -orient vertical
+    list [.d.c cget -width] [.d.c cget -height]
+} -cleanup {
+    cleanupWidgets
+} -result {20 100}
+
+test controlwidget-8.4 {rdial: -value} -body {
+    controlwidget::rdial .d -width 100 -value 30
+    .d get
+} -cleanup {
+    cleanupWidgets
+} -result 30.0
+
+test controlwidget-8.5 {rdial: set and get} -body {
+    controlwidget::rdial .d -width 100
+    .d set 25
+    .d get
+} -cleanup {
+    cleanupWidgets
+} -result 25
+
+test controlwidget-8.6 {rdial: set redraws the marker lines} -body {
+    controlwidget::rdial .d -width 100
+    set before [lmap i [.d.c find all] {.d.c coords $i}]
+    .d set 5
+    expr {[lmap i [.d.c find all] {.d.c coords $i}] ne $before}
+} -cleanup {
+    cleanupWidgets
+    unset before
+} -result 1
+
+test controlwidget-8.7 {rdial: -step determines the number of marker lines} -body {
+    controlwidget::rdial .d1 -width 100 -step 10
+    controlwidget::rdial .d2 -width 100 -step 20
+    expr {[llength [.d1.c find all]] > [llength [.d2.c find all]]}
+} -cleanup {
+    cleanupWidgets
+} -result 1
+
+test controlwidget-8.8 {rdial: -background and -foreground} -body {
+    controlwidget::rdial .d -width 100 -background yellow -foreground blue
+    set lines {}
+    foreach i [.d.c find all] {
+	if {[.d.c type $i] eq "line"} {lappend lines [.d.c itemcget $i -fill]}
+    }
+    list [.d.c itemcget [lindex [.d.c find all] 0] -fill] [lsort -unique $lines]
+} -cleanup {
+    cleanupWidgets
+    unset lines i
+} -result {yellow blue}
+
+test controlwidget-8.9 {rdial: configure -bg and -fg} -body {
+    controlwidget::rdial .d -width 100
+    .d configure -bg yellow -fg blue
+    list [.d cget -background] [.d cget -foreground] \
+	[.d.c itemcget [lindex [.d.c find all] 0] -fill] \
+	[.d.c itemcget [lindex [.d.c find all] end] -fill]
+} -cleanup {
+    cleanupWidgets
+} -result {yellow blue yellow blue}
+
+test controlwidget-8.10 {rdial: configure -width and -height} -body {
+    controlwidget::rdial .d -width 100
+    .d configure -width 150 -height 12
+    list [.d.c cget -width] [.d.c cget -height]
+} -cleanup {
+    cleanupWidgets
+} -result {150 12}
+
+test controlwidget-8.11 {rdial: dragging changes the value} -body {
+    controlwidget::rdial .d -width 100
+    pack .d
+    update
+    event generate .d.c <ButtonPress-1> -x 10 -y 3
+    event generate .d.c <Motion> -x 30 -y 3 -state 0x100
+    event generate .d.c <ButtonRelease-1> -x 30 -y 3 -state 0x100
+    .d get
+} -cleanup {
+    cleanupWidgets
+} -result 20.0
+
+test controlwidget-8.12 {rdial: dragging a vertical dial} -body {
+    controlwidget::rdial .d -width 100 -orient vertical
+    pack .d
+    update
+    event generate .d.c <ButtonPress-1> -x 3 -y 50
+    event generate .d.c <Motion> -x 3 -y 40 -state 0x100
+    event generate .d.c <ButtonRelease-1> -x 3 -y 40 -state 0x100
+    .d get
+} -cleanup {
+    cleanupWidgets
+} -result 10.0
+
+test controlwidget-8.13 {rdial: dragging with Shift changes slowly} -constraints knownBug -body {
+    # Shift and Control are swapped: Shift uses -fast, Control -slow.
+    controlwidget::rdial .d -width 100
+    pack .d
+    update
+    event generate .d.c <Shift-ButtonPress-1> -x 10 -y 3
+    event generate .d.c <Motion> -x 30 -y 3 -state 0x101
+    event generate .d.c <Shift-ButtonRelease-1> -x 30 -y 3
+    .d get
+} -cleanup {
+    cleanupWidgets
+} -result 2.0
+
+test controlwidget-8.14 {rdial: dragging with Control changes fast} -constraints knownBug -body {
+    controlwidget::rdial .d -width 100
+    pack .d
+    update
+    event generate .d.c <Control-ButtonPress-1> -x 10 -y 3
+    event generate .d.c <Motion> -x 30 -y 3 -state 0x104
+    event generate .d.c <Control-ButtonRelease-1> -x 30 -y 3
+    .d get
+} -cleanup {
+    cleanupWidgets
+} -result 200.0
+
+test controlwidget-8.15 {rdial: mouse wheel} -constraints x11 -body {
+    controlwidget::rdial .d -width 100
+    pack .d
+    update
+    event generate .d.c <ButtonPress-4>
+    set r [.d get]
+    event generate .d.c <ButtonPress-5>
+    event generate .d.c <ButtonPress-5>
+    lappend r [.d get]
+} -cleanup {
+    cleanupWidgets
+    unset r
+} -result {2.0 -2.0}
+
+test controlwidget-8.16 {rdial: -bindwheel} -constraints x11 -body {
+    controlwidget::rdial .d -width 100 -bindwheel 5
+    pack .d
+    update
+    event generate .d.c <ButtonPress-4>
+    .d get
+} -cleanup {
+    cleanupWidgets
+} -result 5.0
+
+test controlwidget-8.17 {rdial: -bindwheel 0 disables the wheel} -constraints x11 -body {
+    controlwidget::rdial .d -width 100 -bindwheel 0
+    pack .d
+    update
+    event generate .d.c <ButtonPress-4>
+    .d get
+} -cleanup {
+    cleanupWidgets
+} -result 0.0
+
+test controlwidget-8.18 {rdial: mouse wheel with Shift is slow} -constraints {x11 knownBug} -body {
+    controlwidget::rdial .d -width 100
+    pack .d
+    update
+    event generate .d.c <ButtonPress-4> -state 1
+    .d get
+} -cleanup {
+    cleanupWidgets
+} -result 0.2
+
+test controlwidget-8.19 {rdial: mouse wheel with -slow and -fast} -constraints x11 -body {
+    controlwidget::rdial .d -width 100 -slow 0.5 -fast 3
+    pack .d
+    update
+    event generate .d.c <ButtonPress-4> -state 1
+    set r [.d get]
+    event generate .d.c <ButtonPress-4> -state 4
+    lappend r [.d get]
+} -cleanup {
+    cleanupWidgets
+    unset r
+} -result {6.0 7.0}
+
+test controlwidget-8.20 {rdial: -callback} -constraints x11 -setup {
+    set ::cwcb {}
+} -body {
+    controlwidget::rdial .d -width 100 -callback {lappend ::cwcb}
+    pack .d
+    update
+    event generate .d.c <ButtonPress-4>
+    event generate .d.c <ButtonPress-4>
+    set ::cwcb
+} -cleanup {
+    cleanupWidgets
+    unset ::cwcb
+} -result {2.0 4.0}
+
+test controlwidget-8.21 {rdial: -variable, initial value} -setup {
+    set ::cwvar 5
+} -body {
+    controlwidget::rdial .d -width 100 -variable ::cwvar
+    .d get
+} -cleanup {
+    cleanupWidgets
+    unset ::cwvar
+} -result 5
+
+test controlwidget-8.22 {rdial: -variable, changing the variable} -setup {
+    set ::cwvar 5
+} -body {
+    controlwidget::rdial .d -width 100 -variable ::cwvar
+    set ::cwvar 7
+    .d get
+} -cleanup {
+    cleanupWidgets
+    unset ::cwvar
+} -result 7
+
+test controlwidget-8.23 {rdial: -variable, set changes the variable} -setup {
+    set ::cwvar 5
+} -body {
+    controlwidget::rdial .d -width 100 -variable ::cwvar
+    .d set 9
+    list $::cwvar [.d get]
+} -cleanup {
+    cleanupWidgets
+    unset ::cwvar
+} -result {9 9}
+
+test controlwidget-8.24 {rdial: -variable, callback on variable change} -setup {
+    set ::cwvar 5
+    set ::cwcb {}
+} -body {
+    controlwidget::rdial .d -width 100 -variable ::cwvar -callback {lappend ::cwcb}
+    set ::cwvar 7
+    set ::cwcb
+} -cleanup {
+    cleanupWidgets
+    unset ::cwvar ::cwcb
+} -result 7.0
+
+test controlwidget-8.25 {rdial: -variable that does not exist yet} -constraints knownBug -setup {
+    unset -nocomplain ::cwvar
+} -body {
+    # The value is assigned to ::options(-variable) instead.
+    controlwidget::rdial .d -width 100 -variable ::cwvar -value 3
+    list [info exists ::cwvar] [array exists ::options]
+} -cleanup {
+    cleanupWidgets
+    unset -nocomplain ::cwvar ::options
+} -result {1 0}
+
+test controlwidget-8.26 {rdial: dragging changes the variable} -constraints knownBug -setup {
+    set ::cwvar 0
+} -body {
+    controlwidget::rdial .d -width 100 -variable ::cwvar
+    pack .d
+    update
+    event generate .d.c <ButtonPress-1> -x 10 -y 3
+    event generate .d.c <Motion> -x 30 -y 3 -state 0x100
+    event generate .d.c <ButtonRelease-1> -x 30 -y 3 -state 0x100
+    list [.d get] $::cwvar
+} -cleanup {
+    cleanupWidgets
+    unset ::cwvar
+} -result {20.0 20.0}
+
+test controlwidget-8.27 {rdial: configure -variable} -setup {
+    set ::cwvar 5
+    set ::cwvar2 8
+} -body {
+    controlwidget::rdial .d -width 100 -variable ::cwvar
+    .d configure -variable ::cwvar2
+    set ::cwvar2 11
+    set r [.d get]
+    set ::cwvar 1
+    lappend r [.d get]
+} -cleanup {
+    cleanupWidgets
+    unset ::cwvar ::cwvar2 r
+} -result {11 11}
+
+# -------------------------------------------------------------------------
+# led
+
+test controlwidget-9.1 {led: default creation} -body {
+    controlwidget::led .l
+    list [winfo class .l] [.l.led cget -width] [.l.led itemcget 1 -fill]
+} -cleanup {
+    cleanupWidgets
+} -result {Led 17 black}
+
+test controlwidget-9.2 {led: on and off} -body {
+    controlwidget::led .l
+    .l on
+    set r [.l.led itemcget 1 -fill]
+    .l off
+    lappend r [.l.led itemcget 1 -fill]
+} -cleanup {
+    cleanupWidgets
+    unset r
+} -result {green black}
+
+test controlwidget-9.3 {led: -on and -off colors} -body {
+    controlwidget::led .l -on red -off gray
+    set r [.l.led itemcget 1 -fill]
+    .l on
+    lappend r [.l.led itemcget 1 -fill]
+} -cleanup {
+    cleanupWidgets
+    unset r
+} -result {gray red}
+
+test controlwidget-9.4 {led: setstate} -body {
+    controlwidget::led .l
+    set r {}
+    foreach s {1 0 yes no true false} {
+	.l setstate $s
+	lappend r [.l.led itemcget 1 -fill]
+    }
+    set r
+} -cleanup {
+    cleanupWidgets
+    unset r s
+} -result {green black green black green black}
+
+test controlwidget-9.5 {led: setstate with a bad value} -body {
+    controlwidget::led .l
+    .l setstate maybe
+} -cleanup {
+    cleanupWidgets
+} -returnCodes error -result {expected boolean value but got "maybe"}
+
+test controlwidget-9.6 {led: -size} -body {
+    controlwidget::led .l -size 30
+    list [.l.led cget -width] [.l.led cget -height] [.l.led coords 1]
+} -cleanup {
+    cleanupWidgets
+} -result {30 30 {2.0 2.0 28.0 28.0}}
+
+test controlwidget-9.7 {led: -variable} -setup {
+    set ::cwvar 0
+} -body {
+    controlwidget::led .l -variable cwvar
+    set ::cwvar 1
+    set r [.l.led itemcget 1 -fill]
+    set ::cwvar 0
+    lappend r [.l.led itemcget 1 -fill]
+} -cleanup {
+    cleanupWidgets
+    unset ::cwvar r
+} -result {green black}
+
+test controlwidget-9.8 {led: -variable, initial state} -setup {
+    set ::cwvar 1
+} -body {
+    controlwidget::led .l -variable cwvar
+    set n 100
+    while {[.l.led itemcget 1 -fill] ne "green" && [incr n -1]} {
+	after 10
+	update
+    }
+    .l.led itemcget 1 -fill
+} -cleanup {
+    cleanupWidgets
+    unset ::cwvar n
+} -result green
+
+test controlwidget-9.9 {led: on and off set the variable} -setup {
+    set ::cwvar 0
+} -body {
+    controlwidget::led .l -variable cwvar
+    .l on
+    set r [list $::cwvar [.l.led itemcget 1 -fill]]
+    .l off
+    lappend r $::cwvar [.l.led itemcget 1 -fill]
+} -cleanup {
+    cleanupWidgets
+    unset ::cwvar r
+} -result {1 green 0 black}
+
+test controlwidget-9.10 {led: non-boolean variable values are ignored} -setup {
+    set ::cwvar 1
+} -body {
+    controlwidget::led .l -variable cwvar
+    set ::cwvar 1
+    set ::cwvar xyz
+    .l.led itemcget 1 -fill
+} -cleanup {
+    cleanupWidgets
+    unset ::cwvar
+} -result green
+
+test controlwidget-9.11 {led: configure -variable} -setup {
+    set ::cwvar 0
+    set ::cwvar2 0
+} -body {
+    controlwidget::led .l -variable cwvar
+    .l configure -variable cwvar2
+    set ::cwvar 1
+    set r [.l.led itemcget 1 -fill]
+    set ::cwvar2 1
+    lappend r [.l.led itemcget 1 -fill]
+} -cleanup {
+    cleanupWidgets
+    unset ::cwvar ::cwvar2 r
+} -result {black green}
+
+test controlwidget-9.12 {led: options are delegated to the frame} -body {
+    controlwidget::led .l -relief sunken -borderwidth 2
+    list [.l cget -relief] [.l cget -borderwidth]
+} -cleanup {
+    cleanupWidgets
+} -result {sunken 2}
+
+test controlwidget-9.13 {led: destroying with a -variable} -constraints knownBug -setup {
+    set ::cwvar 0
+} -body {
+    # The variable trace is not removed.
+    controlwidget::led .l -variable cwvar
+    destroy .l
+    set ::cwvar 1
+} -cleanup {
+    cleanupWidgets
+    foreach t [trace info variable ::cwvar] {trace remove variable ::cwvar {*}$t}
+    unset ::cwvar
+} -result 1
+
+test controlwidget-9.14 {led: unknown method} -body {
+    controlwidget::led .l
+    .l blink
+} -cleanup {
+    cleanupWidgets
+} -returnCodes error -match glob -result {*unknown subcommand "blink"*}
+
+# -------------------------------------------------------------------------
+# radioMatrix
+
+proc buttonGrid {w} {
+    set res {}
+    foreach b [lsort -dictionary [winfo children $w.buttons]] {
+	array set g [grid info $b]
+	lappend res [list [$b cget -text] [$b cget -value] $g(-row) $g(-column)]
+    }
+    return $res
+}
+
+test controlwidget-10.1 {radioMatrix: rows and columns} -body {
+    controlwidget::radioMatrix .r -rows 2 -columns 3
+    list [winfo class .r] [buttonGrid .r]
+} -cleanup {
+    cleanupWidgets
+} -result {RadioMatrix {{0 0 0 0} {1 1 0 1} {2 2 0 2} {3 3 1 0} {4 4 1 1} {5 5 1 2}}}
+
+test controlwidget-10.2 {radioMatrix: vertical orientation} -body {
+    controlwidget::radioMatrix .r -rows 2 -columns 3 -orient vertical
+    buttonGrid .r
+} -cleanup {
+    cleanupWidgets
+} -result {{0 0 0 0} {1 1 1 0} {2 2 0 1} {3 3 1 1} {4 4 0 2} {5 5 1 2}}
+
+test controlwidget-10.3 {radioMatrix: -values with labels} -body {
+    controlwidget::radioMatrix .r -values {{A 1} {B 2} {C 3}} -rows 1
+    buttonGrid .r
+} -cleanup {
+    cleanupWidgets
+} -result {{A 1 0 0} {B 2 0 1} {C 3 0 2}}
+
+test controlwidget-10.4 {radioMatrix: -values, vertical with -columns} -body {
+    controlwidget::radioMatrix .r -values {a b c d e} -columns 2 -rows {} \
+	-orient vertical
+    buttonGrid .r
+} -cleanup {
+    cleanupWidgets
+} -result {{a a 0 0} {b b 1 0} {c c 2 0} {d d 0 1} {e e 1 1}}
+
+test controlwidget-10.5 {radioMatrix: get and set} -body {
+    controlwidget::radioMatrix .r -rows 2 -columns 2
+    set r [list [.r get]]
+    .r set 3
+    lappend r [.r get]
+} -cleanup {
+    cleanupWidgets
+    unset r
+} -result {{} 3}
+
+test controlwidget-10.6 {radioMatrix: set selects the button} -body {
+    controlwidget::radioMatrix .r -rows 2 -columns 2
+    .r set 2
+    set var [.r.buttons.cb2 cget -variable]
+    list [set $var] [.r.buttons.cb2 cget -value]
+} -cleanup {
+    cleanupWidgets
+    unset var
+} -result {2 2}
+
+test controlwidget-10.7 {radioMatrix: clicking a button} -body {
+    controlwidget::radioMatrix .r -values {{A 1} {B 2} {C 3}} -rows 1
+    .r.buttons.cb1 invoke
+    .r get
+} -cleanup {
+    cleanupWidgets
+} -result 2
+
+test controlwidget-10.8 {radioMatrix: -command} -setup {
+    set ::cwcmd {}
+} -body {
+    controlwidget::radioMatrix .r -values {a b c} -rows 1 \
+	-command {lappend ::cwcmd [.r get]}
+    .r.buttons.cb2 invoke
+    .r.buttons.cb0 invoke
+    set ::cwcmd
+} -cleanup {
+    cleanupWidgets
+    unset ::cwcmd
+} -result {c a}
+
+test controlwidget-10.9 {radioMatrix: -variable} -constraints knownBug -setup {
+    set ::cwvar b
+} -body {
+    controlwidget::radioMatrix .r -values {a b c} -rows 1 -variable ::cwvar
+    .r get
+} -cleanup {
+    cleanupWidgets
+    unset ::cwvar
+} -result b
+
+test controlwidget-10.10 {radioMatrix: neither -values nor -rows and -columns} -body {
+    controlwidget::radioMatrix .r
+} -cleanup {
+    cleanupWidgets
+} -returnCodes error -match glob -result {*If -values is not supplied, but -rows and -coumns must be.*}
+
+test controlwidget-10.11 {radioMatrix: -values together with -rows and -columns} -body {
+    controlwidget::radioMatrix .r -values {a b} -rows 1 -columns 2
+} -cleanup {
+    cleanupWidgets
+} -returnCodes error -match glob -result {*If both -rows and -coumns were supplied, -values cannot be*}
+
+test controlwidget-10.12 {radioMatrix: bad -orient} -body {
+    controlwidget::radioMatrix .r -rows 1 -columns 2 -orient diagonal
+} -cleanup {
+    cleanupWidgets
+} -returnCodes error -match glob -result {*Invalid -orient value: diagonal*}
+
+test controlwidget-10.13 {radioMatrix: options are delegated to the frame} -body {
+    controlwidget::radioMatrix .r -rows 1 -columns 2 -relief ridge
+    .r cget -relief
+} -cleanup {
+    cleanupWidgets
+} -result ridge
+
+# -------------------------------------------------------------------------
+# bindDown
+
+test controlwidget-11.1 {bindDown: adds a bindtag to all descendants} -body {
+    frame .f
+    frame .f.a
+    button .f.a.b
+    bindDown .f mytag
+    list [lrange [bindtags .f.a] end end] [lrange [bindtags .f.a.b] end end] \
+	[lsearch [bindtags .f] mytag]
+} -cleanup {
+    cleanupWidgets
+} -result {mytag mytag -1}
+
+test controlwidget-11.2 {bindDown: bindings of the widget apply to its parts} -constraints knownBug -setup {
+    # bindDown appends the tag twice, so the binding is invoked twice.
+    set ::cwev {}
+} -body {
+    controlwidget::led .l
+    pack .l
+    update
+    bind .l <<Test>> {lappend ::cwev %W}
+    event generate .l.led <<Test>>
+    set ::cwev
+} -cleanup {
+    cleanupWidgets
+    unset ::cwev
+} -result .l.led
+
+test controlwidget-11.3 {bindDown: returns an empty string} -body {
+    frame .f
+    frame .f.a
+    bindDown .f mytag
+} -cleanup {
+    cleanupWidgets
+} -result {}
+
+# -------------------------------------------------------------------------
+
+interp bgerror {} $cwOldBgHandler
+unset cwOldBgHandler cwBgErrors
+rename cleanupWidgets {}
+rename canvasTexts {}
+rename dragItem {}
+rename uniq {}
+rename segmentColors {}
+rename buttonGrid {}
+unset tk9Bug
+
 ::tcltest::cleanupTests
+return
