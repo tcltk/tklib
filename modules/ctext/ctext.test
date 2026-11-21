@@ -23,6 +23,12 @@ namespace import ::tcltest::*
 
 source [file join [file dirname [file normalize [info script]]] ctext.tcl]
 
+# Tests with focus, keyboard and geometry need a viewable main window
+# (test runners withdraw it).
+set oldmainstate [wm state .]
+wm deiconify .
+update
+
 # -------------------------------------------------------------------------
 # Helpers
 
@@ -1260,4 +1266,8 @@ rename countEvent {}
 rename waitFor {}
 rename collectBgerror {}
 rename markCmd {}
+if {$oldmainstate eq "withdrawn"} {
+    wm withdraw .
+}
+unset oldmainstate
 ::tcltest::cleanupTests
