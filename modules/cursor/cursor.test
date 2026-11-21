@@ -1,0 +1,401 @@
+# -*- tcl -*-
+# Tests for the cursor package
+#
+# See the file "license.terms" for information on usage and redistribution
+# of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2
+    namespace import ::tcltest::*
+} else {
+    if {![package vsatisfies [package present tcltest] 2.2]} {
+	puts "    Aborting the tests found in \"[file tail [info script]]\"."
+	puts "    Requiring tcltest 2.2, have [package present tcltest]"
+	return
+    }
+}
+
+::tcltest::testConstraint tk 1
+
+source [file join [file dirname [info script]] cursor.tcl]
+
+# -------------------------------------------------------------------------
+# Helpers
+
+# A small widget tree: frame .t with a label (empty cursor), an entry
+# (xterm cursor), a button with explicit cursor and a nested frame with
+# a text widget.
+proc mkTree {} {
+    destroy .t
+    frame .t -cursor hand2
+    label .t.l -text label
+    entry .t.e -cursor xterm
+    button .t.b -text button -cursor arrow
+    frame .t.f -cursor fleur
+    text .t.f.t -cursor xterm -width 10 -height 2
+    pack .t.l .t.e .t.b .t.f .t.f.t
+    pack .t
+}
+
+proc cursors {} {
+    set res {}
+    foreach w {.t .t.l .t.e .t.b .t.f .t.f.t} {
+	lappend res [$w cget -cursor]
+    }
+    return $res
+}
+
+proc cleanTree {} {
+    destroy .t
+    array unset ::cursor::CURSOR
+}
+
+# -------------------------------------------------------------------------
+
+test cursor-1.0 {package version} -body {
+    package present cursor
+} -result 0.3.1
+
+test cursor-1.1 {exported commands} -body {
+    lsort [namespace eval ::cursor {namespace export}]
+} -result {display propagate restore}
+
+test cursor-1.2 {list of known cursors contains the standard cursors} -body {
+    set res {}
+    foreach c {X_cursor arrow watch xterm left_ptr crosshair} {
+	lappend res [expr {$c in $::cursor::cursors}]
+    }
+    set res
+} -result {1 1 1 1 1 1}
+
+test cursor-1.3 {all listed cursors are valid on this platform} -setup {
+    label .l
+} -body {
+    set bad {}
+    foreach c $::cursor::cursors {
+	if {[catch {.l configure -cursor $c}]} {
+	    lappend bad $c
+	}
+    }
+    set bad
+} -cleanup {
+    destroy .l
+} -result {}
+
+# -------------------------------------------------------------------------
+# ::cursor::propagate
+
+test cursor-2.1 {propagate: wrong # args} -body {
+    ::cursor::propagate .
+} -returnCodes error -result {wrong # args: should be "::cursor::propagate w cursor"}
+
+test cursor-2.2 {propagate: wrong # args} -body {
+    ::cursor::propagate . watch extra
+} -returnCodes error -result {wrong # args: should be "::cursor::propagate w cursor"}
+
+test cursor-2.3 {propagate: sets cursor on widget and descendants} -setup {
+    mkTree
+} -body {
+    ::cursor::propagate .t watch
+    list [.t cget -cursor] [.t.e cget -cursor] [.t.b cget -cursor] \
+	[.t.f cget -cursor] [.t.f.t cget -cursor]
+} -cleanup {
+    cleanTree
+} -result {watch watch watch watch watch}
+
+test cursor-2.4 {propagate: subtree only, parent and siblings untouched} -setup {
+    mkTree
+} -body {
+    ::cursor::propagate .t.f watch
+    cursors
+} -cleanup {
+    cleanTree
+} -result {hand2 {} xterm arrow watch watch}
+
+test cursor-2.5 {propagate: widget with empty cursor} -constraints {
+    knownBug
+} -setup {
+    mkTree
+} -body {
+    # Documented: "Sets the cursor for the specified widget and all its
+    # descendants".  The code skips widgets whose -cursor is empty.
+    ::cursor::propagate .t watch
+    .t.l cget -cursor
+} -cleanup {
+    cleanTree
+} -result watch
+
+test cursor-2.6 {propagate: toplevel and frame with empty cursor} -constraints {
+    knownBug
+} -setup {
+    toplevel .top
+    frame .top.f
+} -body {
+    ::cursor::propagate .top watch
+    list [.top cget -cursor] [.top.f cget -cursor]
+} -cleanup {
+    destroy .top
+    array unset ::cursor::CURSOR
+} -result {watch watch}
+
+test cursor-2.7 {propagate: ttk widgets} -setup {
+    ttk::frame .t -cursor hand2
+    ttk::entry .t.e -cursor xterm
+    ttk::button .t.b -cursor arrow
+} -body {
+    ::cursor::propagate .t watch
+    list [.t cget -cursor] [.t.e cget -cursor] [.t.b cget -cursor]
+} -cleanup {
+    cleanTree
+} -result {watch watch watch}
+
+test cursor-2.8 {propagate: cursor specification with colors} -setup {
+    mkTree
+} -body {
+    ::cursor::propagate .t.f {watch red}
+    list [.t.f cget -cursor] [.t.f.t cget -cursor]
+} -cleanup {
+    cleanTree
+} -result {{watch red} {watch red}}
+
+test cursor-2.9 {propagate: bad cursor} -setup {
+    mkTree
+} -body {
+    ::cursor::propagate .t nosuchcursor
+} -cleanup {
+    cleanTree
+} -returnCodes error -result {bad cursor spec "nosuchcursor"}
+
+test cursor-2.10 {propagate: bad window} -body {
+    ::cursor::propagate .nosuchwindow watch
+} -returnCodes error -result {bad window path name ".nosuchwindow"}
+
+test cursor-2.11 {propagate twice, restore gives the cursor before the last propagate} -setup {
+    mkTree
+} -body {
+    ::cursor::propagate .t watch
+    ::cursor::propagate .t clock
+    set res [list [.t cget -cursor] [.t.e cget -cursor]]
+    ::cursor::restore .t
+    lappend res [.t cget -cursor] [.t.e cget -cursor]
+} -cleanup {
+    cleanTree
+} -result {clock clock watch watch}
+
+# -------------------------------------------------------------------------
+# ::cursor::restore
+
+test cursor-3.1 {restore: wrong # args} -body {
+    ::cursor::restore
+} -returnCodes error -result {wrong # args: should be "::cursor::restore w ?cursor?"}
+
+test cursor-3.2 {restore: wrong # args} -body {
+    ::cursor::restore . {} extra
+} -returnCodes error -result {wrong # args: should be "::cursor::restore w ?cursor?"}
+
+test cursor-3.3 {restore: restores original cursors} -setup {
+    mkTree
+} -body {
+    set before [cursors]
+    ::cursor::propagate .t watch
+    ::cursor::restore .t
+    expr {[cursors] eq $before ? "same" : [cursors]}
+} -cleanup {
+    cleanTree
+} -result same
+
+test cursor-3.4 {restore: subtree only} -setup {
+    mkTree
+} -body {
+    ::cursor::propagate .t watch
+    ::cursor::restore .t.f
+    list [.t cget -cursor] [.t.e cget -cursor] \
+	[.t.f cget -cursor] [.t.f.t cget -cursor]
+} -cleanup {
+    cleanTree
+} -result {watch watch fleur xterm}
+
+test cursor-3.5 {restore: default cursor for widgets without a preset cursor} -setup {
+    mkTree
+} -body {
+    ::cursor::propagate .t watch
+    ::cursor::restore .t top_left_arrow
+    cursors
+} -cleanup {
+    cleanTree
+} -result {hand2 top_left_arrow xterm arrow fleur xterm}
+
+test cursor-3.6 {restore: without default, unknown widgets get the empty cursor} -setup {
+    mkTree
+} -body {
+    .t.l configure -cursor watch
+    ::cursor::restore .t.l
+    .t.l cget -cursor
+} -cleanup {
+    cleanTree
+} -result {}
+
+test cursor-3.7 {restore: widgets created after propagate get the default} -setup {
+    mkTree
+} -body {
+    ::cursor::propagate .t watch
+    label .t.new -cursor pirate
+    ::cursor::restore .t gumby
+    list [.t cget -cursor] [.t.new cget -cursor]
+} -cleanup {
+    cleanTree
+} -result {hand2 gumby}
+
+test cursor-3.8 {restore: bad default cursor is ignored} -setup {
+    mkTree
+} -body {
+    ::cursor::propagate .t watch
+    ::cursor::restore .t nosuchcursor
+    cursors
+} -cleanup {
+    cleanTree
+} -result {hand2 {} xterm arrow fleur xterm}
+
+test cursor-3.9 {restore: bad window} -body {
+    ::cursor::restore .nosuchwindow
+} -returnCodes error -result {bad window path name ".nosuchwindow"}
+
+test cursor-3.10 {restore: depth first by default (children restored before parent)} -setup {
+    mkTree
+    set ::order {}
+    foreach w {.t .t.f .t.f.t} {
+	rename $w ::orig$w
+	proc $w {args} [string map [list %W $w] {
+	    if {[lindex $args 0] eq "configure"} {lappend ::order %W}
+	    uplevel 1 [linsert $args 0 ::orig%W]
+	}]
+    }
+} -body {
+    ::cursor::propagate .t watch
+    set ::order {}
+    ::cursor::restore .t
+    lsearch -all -inline -not -exact $::order {}
+} -cleanup {
+    foreach w {.t .t.f .t.f.t} {
+	rename $w {}
+	rename ::orig$w $w
+    }
+    cleanTree
+    unset ::order
+} -result {.t.f.t .t.f .t}
+
+test cursor-3.11 {restore: breadth first when depthfirst is off} -setup {
+    mkTree
+    set ::order {}
+    foreach w {.t .t.f .t.f.t} {
+	rename $w ::orig$w
+	proc $w {args} [string map [list %W $w] {
+	    if {[lindex $args 0] eq "configure"} {lappend ::order %W}
+	    uplevel 1 [linsert $args 0 ::orig%W]
+	}]
+    }
+    set ::cursor::depthfirst 0
+} -body {
+    ::cursor::propagate .t watch
+    set ::order {}
+    ::cursor::restore .t
+    list $::order [cursors]
+} -cleanup {
+    set ::cursor::depthfirst 1
+    foreach w {.t .t.f .t.f.t} {
+	rename $w {}
+	rename ::orig$w $w
+    }
+    cleanTree
+    unset ::order
+} -result {{.t .t.f .t.f.t} {hand2 {} xterm arrow fleur xterm}}
+
+# -------------------------------------------------------------------------
+# ::cursor::display
+
+test cursor-4.1 {display: wrong # args} -body {
+    ::cursor::display . extra
+} -returnCodes error -result {wrong # args: should be "::cursor::display ?root?"}
+
+test cursor-4.2 {display: default parent} -body {
+    ::cursor::display
+    update idletasks
+    list [winfo exists .__cursorDisplay] [winfo toplevel .__cursorDisplay] \
+	[wm state .__cursorDisplay]
+} -cleanup {
+    destroy .__cursorDisplay
+} -result {1 .__cursorDisplay normal}
+
+test cursor-4.3 {display: listbox contains all cursor names} -body {
+    ::cursor::display
+    expr {[.__cursorDisplay.lb get 0 end] eq $::cursor::cursors}
+} -cleanup {
+    destroy .__cursorDisplay
+} -result 1
+
+test cursor-4.4 {display: given parent} -setup {
+    frame .f
+} -body {
+    ::cursor::display .f
+    list [winfo exists .f.__cursorDisplay] [winfo class .f.__cursorDisplay]
+} -cleanup {
+    destroy .f
+} -result {1 Toplevel}
+
+test cursor-4.5 {display: called again replaces the dialog} -body {
+    ::cursor::display
+    set w1 [winfo id .__cursorDisplay]
+    ::cursor::display
+    list [winfo exists .__cursorDisplay] \
+	[expr {[winfo id .__cursorDisplay] != $w1}] \
+	[llength [winfo children .]]
+} -cleanup {
+    destroy .__cursorDisplay
+} -result {1 1 1}
+
+test cursor-4.6 {display: selecting a cursor shows it} -body {
+    ::cursor::display
+    set lb .__cursorDisplay.lb
+    wm geometry .__cursorDisplay 300x400+0+0
+    update
+    $lb see 1
+    update
+    set bbox [$lb bbox 1]
+    event generate $lb <Button-1> -x 5 -y [expr {[lindex $bbox 1] + 1}]
+    event generate $lb <ButtonRelease-1> -x 5 -y [expr {[lindex $bbox 1] + 1}]
+    list [$lb cget -cursor] [$lb get 1]
+} -cleanup {
+    destroy .__cursorDisplay
+} -result {arrow arrow}
+
+test cursor-4.7 {display: Dismiss button destroys the dialog} -body {
+    ::cursor::display
+    .__cursorDisplay.d invoke
+    winfo exists .__cursorDisplay
+} -result 0
+
+test cursor-4.8 {display: bad parent} -body {
+    ::cursor::display .nosuchwindow
+} -cleanup {
+    destroy .nosuchwindow.__cursorDisplay
+} -returnCodes error -result {bad window path name ".nosuchwindow"}
+
+# -------------------------------------------------------------------------
+
+rename mkTree {}
+rename cursors {}
+rename cleanTree {}
+
+::tcltest::cleanupTests
