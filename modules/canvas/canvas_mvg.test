@@ -1,0 +1,318 @@
+# -*- tcl -*-
+# Tests for the canvas::mvg package
+#
+# See the file "license.terms" for information on usage and redistribution
+# of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2
+    namespace import ::tcltest::*
+} else {
+    if {![package vsatisfies [package present tcltest] 2.2]} {
+	puts "    Aborting the tests found in \"[file tail [info script]]\"."
+	puts "    Requiring tcltest 2.2, have [package present tcltest]"
+	return
+    }
+}
+
+::tcltest::testConstraint tk 1
+
+lappend auto_path [file dirname [file dirname [file normalize [info script]]]]
+package require canvas::mvg
+
+# -------------------------------------------------------------------------
+
+proc mkCanvas {} {
+    canvas .c -background white
+}
+
+# The MVG output without the prelude (viewbox, background).
+proc body {} {
+    join [lrange [split [::canvas::mvg .c] \n] 4 end] \n
+}
+
+test canvas::mvg-1.0 {package version} -body {
+    # The manpage says 1.0.1
+    package present canvas::mvg
+} -result 1
+
+test canvas::mvg-1.1 {wrong # args} -body {
+    ::canvas::mvg
+} -returnCodes error -result {wrong # args: should be "::canvas::mvg canvas"}
+
+test canvas::mvg-1.2 {wrong # args} -body {
+    ::canvas::mvg .c extra
+} -returnCodes error -result {wrong # args: should be "::canvas::mvg canvas"}
+
+test canvas::mvg-1.3 {bad canvas} -body {
+    ::canvas::mvg .nosuchcanvas
+} -returnCodes error -result {invalid command name ".nosuchcanvas"}
+
+test canvas::mvg-1.4 {empty canvas} -constraints {
+    knownBug
+} -setup mkCanvas -body {
+    ::canvas::mvg .c
+} -cleanup {destroy .c} -result "viewbox 0 0 0 0\nstroke none\nfill #ffffff\nrectangle 0 0 0 0"
+
+# -------------------------------------------------------------------------
+
+test canvas::mvg-2.1 {prelude: viewbox and background} -setup {
+    mkCanvas
+    .c create rectangle 10 20 30 40 -fill red -outline blue -width 2
+    .c create rectangle 50 20 70 40 -fill red -outline blue -width 2
+} -body {
+    lrange [split [::canvas::mvg .c] \n] 0 3
+} -cleanup {destroy .c} -result {{viewbox 0 0 71 41} {stroke none} {fill #ffffff} {rectangle 0 0 71 41}}
+
+test canvas::mvg-2.2 {background color of the canvas} -setup {
+    canvas .c -background #123456
+    .c create rectangle 10 20 30 40
+} -body {
+    lindex [split [::canvas::mvg .c] \n] 2
+} -cleanup {destroy .c} -result {fill #123456}
+
+test canvas::mvg-2.3 {rectangles, unchanged attributes are not repeated} -setup {
+    mkCanvas
+    .c create rectangle 10 20 30 40 -fill red -outline blue -width 2
+    .c create rectangle 50 20 70 40 -fill red -outline blue -width 2
+} -body {
+    body
+} -cleanup {destroy .c} -result {# rectangle ... 
+stroke-width 2.0
+fill #ff0000
+stroke #0000ff
+rectangle 10.0 20.0 30.0 40.0
+# rectangle ... 
+rectangle 50.0 20.0 70.0 40.0}
+
+test canvas::mvg-2.4 {item tags in the comment} -setup {
+    mkCanvas
+    .c create rectangle 10 20 30 40 -tags {foo bar}
+} -body {
+    lindex [split [::canvas::mvg .c] \n] 4
+} -cleanup {destroy .c} -result {# rectangle ... foo bar}
+
+test canvas::mvg-2.5 {negative coordinates are translated} -setup {
+    mkCanvas
+    .c create rectangle -10 -20 30 40 -outline red
+} -body {
+    set lines [split [::canvas::mvg .c] \n]
+    list [lindex $lines 0] [lindex $lines end]
+} -cleanup {
+    destroy .c
+    unset lines
+} -result {{viewbox 0 0 42 62} {rectangle 1.0 1.0 41.0 61.0}}
+
+test canvas::mvg-2.6 {line} -setup {
+    mkCanvas
+    .c create line 10 10 50 50 90 10 -fill green -capstyle projecting
+} -body {
+    body
+} -cleanup {destroy .c} -result {# line ... 
+stroke-width 1.0
+fill none
+stroke #008000
+stroke-linecap square
+path 'M 10.0 10.0 L 50.0 50.0 90.0 10.0'}
+
+test canvas::mvg-2.7 {smooth line} -setup {
+    mkCanvas
+    .c create line 10 10 50 50 90 10 130 50 -smooth 1 -capstyle round
+} -body {
+    body
+} -cleanup {destroy .c} -result {# line ... 
+stroke-width 1.0
+fill none
+stroke #000000
+stroke-linecap round
+path 'M 10.0 10.0 Q 50.0 50.0 70.0 30.0 90.0 10.0 130.0 50.0'}
+
+test canvas::mvg-2.8 {smooth closed line} -setup {
+    mkCanvas
+    .c create line 10 10 50 50 90 10 10 10 -smooth true
+} -body {
+    lindex [split [::canvas::mvg .c] \n] end
+} -cleanup {destroy .c} -result {path 'M 50.0 10.0 Q 10.0 10.0 30.0 30.0 50.0 50.0 70.0 30.0 90.0 10.0 50.0 10.0'}
+
+test canvas::mvg-2.9 {smooth closed line with arrow is not closed} -setup {
+    mkCanvas
+    .c create line 10 10 50 50 90 10 10 10 -smooth 1 -arrow last
+} -body {
+    lindex [split [::canvas::mvg .c] \n] end
+} -cleanup {destroy .c} -result {path 'M 10.0 10.0 Q 50.0 50.0 70.0 30.0 90.0 10.0 10.0 10.0'}
+
+test canvas::mvg-2.10 {line smoothed with raw method} -setup {
+    mkCanvas
+    .c create line 10 10 50 50 90 10 130 50 -smooth raw
+} -body {
+    lindex [split [::canvas::mvg .c] \n] end
+} -cleanup {destroy .c} -result {path 'M 10.0 10.0 C 50.0 50.0 90.0 10.0 130.0 50.0'}
+
+test canvas::mvg-2.11 {polygon} -setup {
+    mkCanvas
+    .c create polygon 10 10 50 50 90 10 -fill yellow -outline ""
+} -body {
+    body
+} -cleanup {destroy .c} -result {# polygon ... 
+stroke-width 1.0
+fill #ffff00
+stroke-linejoin round
+path 'M 50.0 10.0 L 10.0 10.0 50.0 50.0 90.0 10.0 50.0 10.0 Z'}
+
+test canvas::mvg-2.12 {smooth polygon} -setup {
+    mkCanvas
+    .c create polygon 10 10 50 50 90 10 -smooth 1 -joinstyle miter \
+	-fill black -outline red
+} -body {
+    body
+} -cleanup {destroy .c} -result {# polygon ... 
+stroke-width 1.0
+fill #000000
+stroke #ff0000
+stroke-linejoin miter
+path 'M 50.0 10.0 Q 10.0 10.0 30.0 30.0 50.0 50.0 70.0 30.0 90.0 10.0 50.0 10.0'}
+
+test canvas::mvg-2.13 {oval} -setup {
+    mkCanvas
+    .c create oval 10 20 50 80 -outline red -fill blue
+} -body {
+    body
+} -cleanup {destroy .c} -result {# oval ... 
+stroke-width 1.0
+fill #0000ff
+stroke #ff0000
+ellipse 30.0 50.0 20.0 30.0 0 360}
+
+test canvas::mvg-2.14 {arc} -setup {
+    mkCanvas
+    .c create arc 10 10 110 110 -start 0 -extent 90
+} -body {
+    lindex [split [::canvas::mvg .c] \n] end
+} -cleanup {destroy .c} -result {path 'M 110.0 60.0 A 50.0 50.0 0 0 0 60.0 10.0 L 60.0 60.0 Z'}
+
+test canvas::mvg-2.15 {arc larger than 180 degrees} -setup {
+    mkCanvas
+    .c create arc 10 10 110 110 -start 0 -extent 270
+} -body {
+    regexp {A 50.0 50.0 0 1 0 } [lindex [split [::canvas::mvg .c] \n] end]
+} -cleanup {destroy .c} -result 1
+
+test canvas::mvg-2.16 {text} -setup {
+    mkCanvas
+    .c create text 50 50 -text hello -font {Helvetica -12} -fill red
+} -body {
+    set lines [lrange [split [body] \n] 1 end]
+    list [lrange $lines 0 2] [regexp {^text \d+ \d+ 'hello'$} [lindex $lines 3]]
+} -cleanup {
+    destroy .c
+    unset lines
+} -result [list [list {fill #ff0000} \
+	"font-size [expr {int(12 / [tk scaling])}]" {font Helvetica}] 1]
+
+test canvas::mvg-2.17 {text with font size in points} -setup {
+    mkCanvas
+    .c create text 50 50 -text hello -font {Courier 14}
+} -body {
+    lrange [split [body] \n] 2 3
+} -cleanup {destroy .c} -result {{font-size 14} {font Courier}}
+
+test canvas::mvg-2.18 {text with named font} -setup {
+    mkCanvas
+    font create mvgTestFont -family Times -size 17
+    .c create text 50 50 -text hello -font mvgTestFont
+} -body {
+    lrange [split [body] \n] 2 3
+} -cleanup {
+    destroy .c
+    font delete mvgTestFont
+} -result {{font-size 17} {font Times}}
+
+test canvas::mvg-2.19 {text with font family only} -setup {
+    mkCanvas
+    .c create text 50 50 -text hello -font Courier
+} -body {
+    lrange [split [body] \n] 2 3
+} -cleanup {destroy .c} -result {{font-size 12} {font Courier}}
+
+test canvas::mvg-2.20 {unsupported item type} -setup {
+    mkCanvas
+    .c create window 10 20 -tags win
+} -body {
+    body
+} -cleanup {destroy .c} -result {# window ... win
+# not yet done: window 10.0 20.0 (win)}
+
+test canvas::mvg-2.21 {image item} -setup {
+    mkCanvas
+    image create photo mvgTestImage -width 5 -height 5
+    .c create image 10 10 -image mvgTestImage -anchor nw
+} -body {
+    body
+} -cleanup {
+    destroy .c
+    image delete mvgTestImage
+} -result {# image ... 
+image over 10 10 0 0 ''}
+
+test canvas::mvg-2.22 {bitmap item} -constraints {
+    knownBug
+} -setup {
+    mkCanvas
+    .c create bitmap 10 10 -bitmap info -anchor nw
+} -body {
+    # The code handles bitmaps like images and queries -image
+    lindex [split [::canvas::mvg .c] \n] 4
+} -cleanup {destroy .c} -result {# bitmap ... }
+
+test canvas::mvg-2.23 {colors given by name are converted to hex} -setup {
+    mkCanvas
+    .c create rectangle 10 20 30 40 -fill SteelBlue -outline #abc
+} -body {
+    lrange [split [body] \n] 2 3
+} -cleanup {destroy .c} -result {{fill #4682b4} {stroke #aabbcc}}
+
+test canvas::mvg-2.24 {mixed items: attributes emitted when changed} -setup {
+    mkCanvas
+    .c create rectangle 10 20 30 40 -fill red
+    .c create oval 10 20 30 40 -fill red
+    .c create rectangle 10 20 30 40 -fill blue
+} -body {
+    body
+} -cleanup {destroy .c} -result {# rectangle ... 
+stroke-width 1.0
+fill #ff0000
+stroke #000000
+rectangle 10.0 20.0 30.0 40.0
+# oval ... 
+ellipse 20.0 30.0 10.0 10.0 0 360
+# rectangle ... 
+fill #0000ff
+rectangle 10.0 20.0 30.0 40.0}
+
+test canvas::mvg-2.25 {canvas is not modified} -setup {
+    mkCanvas
+    .c create rectangle 10 20 30 40 -fill red
+    .c create line 1 2 3 4
+} -body {
+    ::canvas::mvg .c
+    list [.c find all] [.c coords 1] [.c itemcget 1 -fill]
+} -cleanup {destroy .c} -result {{1 2} {10.0 20.0 30.0 40.0} red}
+
+# -------------------------------------------------------------------------
+
+rename mkCanvas {}
+rename body {}
+
+::tcltest::cleanupTests
