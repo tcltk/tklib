@@ -1,0 +1,3058 @@
+# -*- tcl -*-
+# plotchart_general.test --
+#
+#	Tests for the Plotchart package: the methods common to all (or
+#	most) plot types (title, subtitle, canvas, saveplot, axis texts,
+#	axis configuration, background, ticklines, legend, balloon and
+#	plain text annotations, objects, deletedata, interactive bindings),
+#	and the general commands plotconfig, plotstyle, eraseplot,
+#	plotmethod, plotpack, the coordinate transformations and the
+#	-box and -axesbox options.
+#
+# The output of Plotchart is drawn on a canvas, so the tests check the
+# canvas items (types, tags, coordinates relative to each other, colours
+# and texts), not pixels.
+#
+# The tests in this file are numbered Plotchart-101.M to Plotchart-199.M
+# (plotchart.test uses the numbers below 100).
+
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2
+    namespace import ::tcltest::*
+}
+
+::tcltest::testConstraint tk 1
+
+source [file join [file dirname [file normalize [info script]]] plotchart.tcl]
+
+# -------------------------------------------------------------------------
+# Helpers
+#
+# Plotchart keeps its state in namespace arrays keyed by the name of the
+# canvas (or of its per-plot alias, "00.c", "01.c", ...).  The canvases
+# are normally not mapped, so that the size of the plot is determined by
+# the -width and -height options only.
+
+# Collect background errors instead of showing a dialog
+set ::bgErrors {}
+proc ::testBgError {msg opts} {
+    lappend ::bgErrors $msg
+}
+set ::oldBgError [interp bgerror {}]
+interp bgerror {} ::testBgError
+
+set ::oldRootState [wm state .]
+
+proc mkCanvas {{width 400} {height 300} {c .c}} {
+    canvas $c -width $width -height $height -background white \
+	-highlightthickness 0 -borderwidth 0
+    return $c
+}
+
+proc cleanupPlot {{c .c}} {
+    if {[winfo exists $c]} {
+	::Plotchart::clearcanvas $c
+	destroy $c
+    }
+    set pat [string map {. \\.} $c]
+    foreach a [interp aliases {}] {
+	if {[regexp "^(.+_)?r?\[0-9\]\[0-9\]$pat\$" $a] ||
+	    [regexp "^\[a-z0-9\]+_$pat\$" $a]} {
+	    interp alias {} $a {}
+	}
+    }
+    foreach v {scaling config data_series legend settings packing} {
+	if {[info exists ::Plotchart::$v]} {
+	    array unset ::Plotchart::$v *$c,*
+	}
+    }
+}
+
+# Return the item ids having all given tags, in display order.
+# An element "type=T" selects only items of type T, "notype=T" excludes
+# items of type T.
+proc items {tags {c .c}} {
+    set t {}
+    set type {}
+    set notype {}
+    foreach x $tags {
+	if {[string match type=* $x]} {
+	    set type [string range $x 5 end]
+	} elseif {[string match notype=* $x]} {
+	    set notype [string range $x 7 end]
+	} else {
+	    lappend t $x
+	}
+    }
+    set ids {}
+    foreach i [$c find withtag [join $t " && "]] {
+	if {($type eq "" || [$c type $i] eq $type) &&
+	    ($notype eq "" || [$c type $i] ne $notype)} {
+	    lappend ids $i
+	}
+    }
+    return $ids
+}
+
+# Return the types of the items having all given tags, sorted and unique
+proc itemTypes {tags {c .c}} {
+    set types {}
+    foreach i [items $tags $c] {
+	lappend types [$c type $i]
+    }
+    lsort -unique $types
+}
+
+# Return the texts of the text items having all given tags
+proc itemTexts {tags {c .c}} {
+    set texts {}
+    foreach i [items $tags $c] {
+	if {[$c type $i] eq "text"} {
+	    lappend texts [$c itemcget $i -text]
+	}
+    }
+    return $texts
+}
+
+# Return the given option for all items having the given tags (unique)
+proc itemOption {tags option {c .c}} {
+    set values {}
+    foreach i [items $tags $c] {
+	lappend values [$c itemcget $i $option]
+    }
+    lsort -unique $values
+}
+
+# Round the numbers in a list to the given number of decimals
+proc R {value {digits 1}} {
+    set r {}
+    foreach v $value {
+	if {[string is double -strict $v]} {
+	    set v [format %.${digits}f $v]
+	    if {$v == 0} {set v [format %.${digits}f 0]}
+	}
+	lappend r $v
+    }
+    return $r
+}
+
+# Centre of the bounding box of the items with the given tags
+proc centre {tags {c .c}} {
+    lassign [$c bbox [join $tags " && "]] x1 y1 x2 y2
+    list [expr {($x1+$x2)/2.0}] [expr {($y1+$y2)/2.0}]
+}
+
+# Pixel coordinates of a world point in the given plot
+proc pix {p x y} {
+    ::Plotchart::coordsToPixel [$p canvas] $x $y
+}
+
+proc approx {a b {eps 1.0}} {
+    expr {abs($a-$b) <= $eps}
+}
+
+proc restoreRoot {} {
+    if {$::oldRootState eq "withdrawn"} {
+	wm withdraw .
+    }
+}
+
+::tcltest::testConstraint normalplot \
+    [llength [info commands ::Plotchart::createNormalPlot]]
+::tcltest::testConstraint img [expr {![catch {package require Img}]}]
+
+# One creation command for each type of plot, using the names of the
+# commands as they are implemented.
+# Private directory for the files written by saveplot
+set tmpDir [makeDirectory plotchart_general_tmp]
+
+set allPlots {
+    xyplot          {::Plotchart::createXYPlot .c {0 10 2} {0 10 2}}
+    stripchart      {::Plotchart::createStripchart .c {0 10 2} {0 10 2}}
+    txplot          {::Plotchart::createTXPlot .c {2006-01-01 2006-01-11 2} {0 10 2}}
+    xlogyplot       {::Plotchart::createXLogYPlot .c {0 10 2} {1 1000}}
+    logxyplot       {::Plotchart::createLogXYPlot .c {1 1000} {0 10 2}}
+    logxlogyplot    {::Plotchart::createLogXLogYPlot .c {1 1000} {1 1000}}
+    polarplot       {::Plotchart::createPolarplot .c {10 2}}
+    windrose        {::Plotchart::createWindRose .c {10 2} 8}
+    isometric       {::Plotchart::createIsometricPlot .c {0 10} {0 10} 2}
+    histogram       {::Plotchart::createHistogram .c {0 10 2} {0 10 2}}
+    3dplot          {::Plotchart::create3DPlot .c {0 10 2} {0 10 2} {0 10 2}}
+    3dribbonplot    {::Plotchart::create3DRibbonPlot .c {0 10 2} {0 10 2}}
+    piechart        {::Plotchart::createPiechart .c}
+    spiralpie       {::Plotchart::createSpiralPie .c}
+    radialchart     {::Plotchart::createRadialchart .c {A B C} 10}
+    barchart        {::Plotchart::createBarchart .c {A B C} {0 10 2} 2}
+    hbarchart       {::Plotchart::createHorizontalBarchart .c {0 10 2} {A B C} 2}
+    3dbarchart      {::Plotchart::create3DBarchart .c {0 10 2} 3}
+    3dribbonchart   {::Plotchart::create3DRibbonChart .c {A B} {0 10 2} {0 10 2}}
+    boxplot         {::Plotchart::createBoxplot .c {0 10 2} {A B}}
+    timechart       {::Plotchart::createTimechart .c "1 january 2004" "31 december 2004" 4}
+    ganttchart      {::Plotchart::createGanttchart .c "1 january 2004" "31 december 2004" 4}
+    table           {::Plotchart::createTableChart .c {A B C}}
+    ternary         {::Plotchart::createTernaryDiagram .c}
+    normalplot      {::Plotchart::createNormalPlot .c {-3 3 1}}
+    statustimeline  {::Plotchart::createStatusTimeline .c {0 10 2} {A B}}
+    dendrogram      {::Plotchart::createDendrogram .c}
+    targetdiagram   {::Plotchart::createTargetDiagram .c {0.5 1.0}}
+    performance     {::Plotchart::createPerformanceProfile .c 10}
+    taylordiagram   {::Plotchart::createTaylorDiagram .c {1.0 0.2}}
+    heatmap         {::Plotchart::createHeatmap .c {r1 r2} {c1 c2}}
+    circleplot      {::Plotchart::createCirclePlot .c {a b c}}
+}
+
+# Plot types for which a documented general method is missing
+# (the documentation lists title, subtitle, canvas and saveplot as
+# "general subcommands for all types of charts")
+set missingMethods {
+    subtitle {heatmap dendrogram}
+    canvas   {normalplot heatmap circleplot dendrogram}
+    saveplot {table normalplot heatmap circleplot dendrogram}
+}
+
+proc constraintsFor {type method} {
+    set c {}
+    if {$type eq "normalplot"} {
+	lappend c normalplot
+    }
+    if {[dict exists $::missingMethods $method] &&
+	    [lsearch [dict get $::missingMethods $method] $type] >= 0} {
+	lappend c knownBug
+    }
+    return $c
+}
+
+# -------------------------------------------------------------------------
+# title
+
+set n 0
+foreach {type cmd} $allPlots {
+    incr n
+    test Plotchart-101.$n "title method for $type" \
+	-constraints [constraintsFor $type title] -setup {
+	mkCanvas
+    } -body [string map [list @CMD@ $cmd] {
+	set p [@CMD@]
+	$p title "Chart title"
+	list [itemTypes title] [itemTexts title]
+    }] -cleanup {
+	cleanupPlot
+    } -result {text {{Chart title}}}
+}
+
+test Plotchart-101.100 {title: default position is centre, anchor n} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p title "Centre"
+    set i [items title]
+    list [.c itemcget $i -anchor] [.c coords $i] [items title_n]
+} -cleanup {
+    cleanupPlot
+} -match glob -result {n {200.0 *} [0-9]*}
+
+test Plotchart-101.101 {title: positions left and right} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p title "Left" left
+    $p title "Right" right
+    set l [items title_nw]
+    set r [items title_ne]
+    list [.c itemcget $l -text] [.c itemcget $l -anchor] \
+	[expr {[lindex [.c coords $l] 0] < 10}] \
+	[.c itemcget $r -text] [.c itemcget $r -anchor] \
+	[expr {[lindex [.c coords $r] 0] > 390}]
+} -cleanup {
+    cleanupPlot
+} -result {Left nw 1 Right ne 1}
+
+test Plotchart-101.102 {title: multiple titles with different positions} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p title "Centre"
+    $p title "Left" left
+    $p title "Right" right
+    lsort [itemTexts title]
+} -cleanup {
+    cleanupPlot
+} -result {Centre Left Right}
+
+test Plotchart-101.103 {title: a new title replaces the one at the same position} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p title "First"
+    $p title "Second"
+    itemTexts title
+} -cleanup {
+    cleanupPlot
+} -result {Second}
+
+test Plotchart-101.104 {title: background rectangle in the outer colour} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p title "Title"
+    set bg [items titlebackground]
+    lassign [.c bbox [items title]] x1 y1 x2 y2
+    lassign [.c coords $bg] bx1 by1 bx2 by2
+    list [.c type $bg] [.c itemcget $bg -fill] [expr {$by2 >= $y2 - 2}] \
+	[R [list $bx1 $bx2] 0] \
+	[expr {[lsearch [.c find all] $bg] < [lsearch [.c find all] [items title]]}]
+} -cleanup {
+    cleanupPlot
+} -result {rectangle white 1 {0 400} 1}
+
+test Plotchart-101.105 {title: colour and font from plotconfig} -setup {
+    mkCanvas
+    ::Plotchart::plotconfig xyplot title textcolor red
+    ::Plotchart::plotconfig xyplot title font {Helvetica 16}
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p title "Title"
+    set i [items title]
+    list [.c itemcget $i -fill] [.c itemcget $i -font]
+} -cleanup {
+    cleanupPlot
+    ::Plotchart::plotconfig xyplot title textcolor default
+    ::Plotchart::plotconfig xyplot title font default
+} -result {red {Helvetica 16}}
+
+test Plotchart-101.106 {title: wrong # args} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p title
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {wrong # args: should be "DrawTitle w title ?position?"}
+
+test Plotchart-101.107 {title: too many args} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p title a left b
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {wrong # args: should be "DrawTitle w title ?position?"}
+
+test Plotchart-101.108 {unknown method} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p nosuchmethod 1 2
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {No such method - nosuchmethod}
+
+test Plotchart-101.109 {title: title and plot items share the plot tag} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p title "Title"
+    expr {[$p canvas] in [.c gettags [items title]]}
+} -cleanup {
+    cleanupPlot
+} -result 1
+
+# -------------------------------------------------------------------------
+# subtitle
+
+set n 0
+foreach {type cmd} $allPlots {
+    incr n
+    test Plotchart-102.$n "subtitle method for $type" \
+	-constraints [constraintsFor $type subtitle] -setup {
+	mkCanvas
+    } -body [string map [list @CMD@ $cmd] {
+	set p [@CMD@]
+	$p title "Chart title"
+	$p subtitle "Chart subtitle"
+	list [itemTypes subtitle] [itemTexts subtitle]
+    }] -cleanup {
+	cleanupPlot
+    } -result {text {{Chart subtitle}}}
+}
+
+test Plotchart-102.100 {subtitle: drawn below the title} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p title "Title"
+    $p subtitle "Subtitle"
+    lassign [.c bbox [items title]] tx1 ty1 tx2 ty2
+    lassign [.c bbox [items subtitle]] sx1 sy1 sx2 sy2
+    list [expr {$sy1 >= $ty2 - 1}] [.c itemcget [items subtitle] -anchor] \
+	[R [lindex [.c coords [items subtitle]] 0] 0] \
+	[itemTypes subtitlebackground]
+} -cleanup {
+    cleanupPlot
+} -result {1 n 200 rectangle}
+
+test Plotchart-102.101 {subtitle: without a title} -constraints {
+    knownBug
+} -setup {
+    mkCanvas
+} -body {
+    # Fails with: can't read "0": no such variable
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p subtitle "Subtitle"
+    itemTexts subtitle
+} -cleanup {
+    cleanupPlot
+} -result {Subtitle}
+
+test Plotchart-102.102 {subtitle: replaces the previous subtitle} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p title "Title"
+    $p subtitle "First"
+    $p subtitle "Second"
+    itemTexts subtitle
+} -cleanup {
+    cleanupPlot
+} -result {Second}
+
+test Plotchart-102.103 {subtitle: wrong # args} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p subtitle
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {wrong # args: should be "DrawSubtitle w title"}
+
+# -------------------------------------------------------------------------
+# canvas
+
+set n 0
+foreach {type cmd} $allPlots {
+    incr n
+    test Plotchart-103.$n "canvas method for $type" \
+	-constraints [constraintsFor $type canvas] -setup {
+	mkCanvas
+    } -body [string map [list @CMD@ $cmd] {
+	set p [@CMD@]
+	set w [$p canvas]
+	$w cget -width
+    }] -cleanup {
+	cleanupPlot
+    } -result 400
+}
+
+test Plotchart-103.100 {canvas: alias for each plot in the canvas} -setup {
+    mkCanvas
+} -body {
+    set p1 [::Plotchart::createXYPlot .c {0 10 2} {0 10 2} -box {0 0 200 300}]
+    set p2 [::Plotchart::createXYPlot .c {0 10 2} {0 10 2} -box {200 0 200 300}]
+    set w1 [$p1 canvas]
+    set w2 [$p2 canvas]
+    list [expr {$w1 ne $w2}] [interp alias {} $w1] [interp alias {} $w2]
+} -cleanup {
+    cleanupPlot
+} -result {1 .c .c}
+
+test Plotchart-103.101 {canvas: usable for coordinate transformations} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    set w [$p canvas]
+    # The corners of the plot area are at the ends of the axes
+    lassign [.c coords [lindex [items {xaxis}] 0]] ax1 ay1 ax2 ay2
+    list [R [::Plotchart::coordsToPixel $w 0 0] 0] [R [list $ax1 $ay1] 0] \
+	[R [::Plotchart::coordsToPixel $w 10 0] 0] [R [list $ax2 $ay2] 0] \
+	[R [::Plotchart::pixelToCoords $w {*}[::Plotchart::coordsToPixel $w 3 7]]]
+} -cleanup {
+    cleanupPlot
+} -match glob -result {{* *} {* *} {* *} {* *} {3.0 7.0}}
+
+test Plotchart-103.102 {canvas: timecharts are drawn in the canvas itself} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createTimechart .c "1 january 2004" "31 december 2004" 4]
+    $p canvas
+} -cleanup {
+    cleanupPlot
+} -result {.c}
+
+# -------------------------------------------------------------------------
+# saveplot
+
+set n 0
+foreach {type cmd} $allPlots {
+    incr n
+    test Plotchart-104.$n "saveplot method for $type" \
+	-constraints [constraintsFor $type saveplot] -setup {
+	mkCanvas
+	set file [file join $tmpDir save.ps]
+    } -body [string map [list @CMD@ $cmd] {
+	set p [@CMD@]
+	$p title "Saved"
+	$p saveplot $file
+	set f [open $file]
+	set data [read $f 20]
+	close $f
+	string range $data 0 3
+    }] -cleanup {
+	cleanupPlot
+	file delete $file
+    } -result {%!PS}
+}
+
+test Plotchart-104.100 {saveplot: -plotregion window and bbox} -setup {
+    mkCanvas
+    set file1 [file join $tmpDir save1.ps]
+    set file2 [file join $tmpDir save2.ps]
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p plot s 1 1
+    $p plot s 9 9
+    $p saveplot $file1 -plotregion window
+    $p saveplot $file2 -plotregion bbox
+    list [file size $file1] [file size $file2]
+} -cleanup {
+    cleanupPlot
+    file delete $file1 $file2
+} -match glob -result {[1-9]* [1-9]*}
+
+test Plotchart-104.101 {saveplot: unknown option} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p saveplot [file join $tmpDir never.ps] -colour red
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {Unknown option: -colour - must be: -format or -plotregion}
+
+test Plotchart-104.102 {saveplot: bad -plotregion value} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p saveplot [file join $tmpDir never.ps] -plotregion all
+} -cleanup {
+    cleanupPlot
+    file delete [file join $tmpDir never.ps]
+} -returnCodes error -result {Unknown value 'all' for -plotregion option}
+
+test Plotchart-104.103 {saveplot: -plotregion bbox requires PostScript} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p saveplot [file join $tmpDir never.png] -format png -plotregion bbox
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {'-plotregion bbox' can only be used together with '-format ps'}
+
+test Plotchart-104.104 {saveplot: wrong # args} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p saveplot
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {wrong # args: should be "SavePlot w filename ?arg ...?"}
+
+test Plotchart-104.105 {saveplot: -format via the Img package} -constraints {
+    img
+} -setup {
+    wm deiconify .
+    mkCanvas 200 150
+    pack .c
+    update
+    set file [file join $tmpDir save.png]
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p plot s 1 1
+    $p plot s 9 9
+    $p saveplot $file -format png
+    set img [image create photo -file $file]
+    set r [list [image width $img] [image height $img]]
+    image delete $img
+    set r
+} -cleanup {
+    cleanupPlot
+    file delete $file
+    restoreRoot
+} -result {200 150}
+
+# -------------------------------------------------------------------------
+# xtext, ytext, vtext, xsubtext, ysubtext, vsubtext
+
+test Plotchart-105.1 {xtext: centred below the x-axis} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p xtext "X axis"
+    set i [items xtext]
+    lassign [.c coords $i] x y
+    lassign [pix $p 0 0] x0 y0
+    lassign [pix $p 10 0] x1 y1
+    list [.c itemcget $i -text] [.c itemcget $i -anchor] \
+	[approx $x [expr {($x0+$x1)/2.0}]] [expr {$y > $y0}] \
+	[expr {[lindex [.c bbox $i] 1] > [lindex [.c bbox xaxis] 1]}]
+} -cleanup {
+    cleanupPlot
+} -result {{X axis} n 1 1 1}
+
+test Plotchart-105.2 {xtext: replaces the previous text} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p xtext "First"
+    $p xtext "Second"
+    itemTexts xtext
+} -cleanup {
+    cleanupPlot
+} -result {Second}
+
+test Plotchart-105.3 {ytext: at the top of the y-axis} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p ytext "Y axis"
+    set i [items ytext]
+    lassign [.c coords $i] x y
+    lassign [pix $p 0 10] x0 y0
+    list [.c itemcget $i -text] [.c itemcget $i -anchor] \
+	[approx $x $x0] [expr {$y < $y0}]
+} -cleanup {
+    cleanupPlot
+} -result {{Y axis} se 1 1}
+
+test Plotchart-105.4 {ytext: for a right axis} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    set r [::Plotchart::createRightAxis $p {0 100 20}]
+    $r ytext "Right"
+    set i [lindex [items ytext] end]
+    lassign [.c coords $i] x y
+    lassign [pix $p 10 10] x0 y0
+    list [.c itemcget $i -text] [.c itemcget $i -anchor] [approx $x $x0]
+} -cleanup {
+    cleanupPlot
+} -result {Right sw 1}
+
+test Plotchart-105.5 {vtext: vertical text left of the y-axis} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p vtext "Vertical"
+    set i [items vtext]
+    lassign [.c coords $i] x y
+    lassign [pix $p 0 0] x0 y0
+    lassign [pix $p 0 10] x1 y1
+    list [.c itemcget $i -text] [.c itemcget $i -angle] [.c itemcget $i -anchor] \
+	[expr {$x < [lindex [.c bbox yaxis] 0]}] [approx $y [expr {($y0+$y1)/2.0}]]
+} -cleanup {
+    cleanupPlot
+} -result {Vertical 90.0 s 1 1}
+
+test Plotchart-105.6 {vtext: for a right axis} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    set r [::Plotchart::createRightAxis $p {0 100 20}]
+    $r vtext "Right vertical"
+    set i [items rvtext]
+    lassign [.c coords $i] x y
+    list [.c itemcget $i -text] [.c itemcget $i -angle] [.c itemcget $i -anchor] \
+	[expr {$x > [lindex [.c bbox raxis] 2]}]
+} -cleanup {
+    cleanupPlot
+} -result {{Right vertical} 90.0 n 1}
+
+test Plotchart-105.7 {xsubtext: below the x text, with usesubtext} -setup {
+    ::Plotchart::plotconfig xyplot bottomaxis usesubtext 1
+    ::Plotchart::plotconfig xyplot bottomaxis subtextcolor blue
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p xtext "Main"
+    $p xsubtext "Sub"
+    set m [items xtext]
+    set s [items xsubtext]
+    list [.c itemcget $s -text] [.c itemcget $s -fill] \
+	[expr {[lindex [.c coords $s] 1] > [lindex [.c coords $m] 1]}]
+} -cleanup {
+    cleanupPlot
+    ::Plotchart::plotconfig xyplot bottomaxis usesubtext default
+    ::Plotchart::plotconfig xyplot bottomaxis subtextcolor default
+} -result {Sub blue 1}
+
+test Plotchart-105.8 {xsubtext: usesubtext enlarges the bottom margin} -setup {
+    mkCanvas
+} -body {
+    set p1 [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    set y1 [lindex [pix $p1 0 0] 1]
+    cleanupPlot
+    ::Plotchart::plotconfig xyplot bottomaxis usesubtext 1
+    mkCanvas
+    set p2 [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    set y2 [lindex [pix $p2 0 0] 1]
+    expr {$y2 < $y1}
+} -cleanup {
+    cleanupPlot
+    ::Plotchart::plotconfig xyplot bottomaxis usesubtext default
+} -result 1
+
+test Plotchart-105.9 {ysubtext: below the y text, with usesubtext} -setup {
+    ::Plotchart::plotconfig xyplot leftaxis usesubtext 1
+    ::Plotchart::plotconfig xyplot leftaxis subtextcolor green
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p ytext "Main"
+    $p ysubtext "Sub"
+    set m [items ytext]
+    set s [items ysubtext]
+    list [.c itemcget $s -text] [.c itemcget $s -fill] [.c itemcget $s -anchor] \
+	[expr {[lindex [.c coords $s] 1] > [lindex [.c coords $m] 1]}] \
+	[expr {[lindex [.c coords $s] 1] < [lindex [pix $p 0 10] 1]}]
+} -cleanup {
+    cleanupPlot
+    ::Plotchart::plotconfig xyplot leftaxis usesubtext default
+    ::Plotchart::plotconfig xyplot leftaxis subtextcolor default
+} -result {Sub green se 1 1}
+
+test Plotchart-105.10 {ysubtext: for a right axis} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    set r [::Plotchart::createRightAxis $p {0 100 20}]
+    $r ysubtext "Right sub"
+    set s [items ysubtext]
+    list [.c itemcget $s -text] [.c itemcget $s -anchor] \
+	[approx [lindex [.c coords $s] 0] [lindex [pix $p 10 0] 0]]
+} -cleanup {
+    cleanupPlot
+} -result {{Right sub} sw 1}
+
+test Plotchart-105.11 {vsubtext: right of the vertical text, with usevsubtext} -setup {
+    ::Plotchart::plotconfig xyplot leftaxis usevsubtext 1
+    ::Plotchart::plotconfig xyplot leftaxis vsubtextcolor red
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p vtext "Main"
+    $p vsubtext "Sub"
+    set m [items vtext]
+    set s [items vsubtext]
+    list [.c itemcget $s -text] [.c itemcget $s -fill] [.c itemcget $s -angle] \
+	[expr {[lindex [.c coords $s] 0] > [lindex [.c coords $m] 0]}] \
+	[expr {[lindex [.c coords $s] 0] < [lindex [pix $p 0 0] 0]}]
+} -cleanup {
+    cleanupPlot
+    ::Plotchart::plotconfig xyplot leftaxis usevsubtext default
+    ::Plotchart::plotconfig xyplot leftaxis vsubtextcolor default
+} -result {Sub red 90.0 1 1}
+
+test Plotchart-105.12 {vsubtext: for a right axis} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    set r [::Plotchart::createRightAxis $p {0 100 20}]
+    $r vsubtext "Right sub"
+    set s [items rvsubtext]
+    list [.c itemcget $s -text] [.c itemcget $s -angle] \
+	[expr {[lindex [.c coords $s] 0] > [lindex [.c bbox raxis] 2]}]
+} -cleanup {
+    cleanupPlot
+} -result {{Right sub} 90.0 1}
+
+test Plotchart-105.13 {axis texts: colour and font of the axis} -setup {
+    ::Plotchart::plotconfig xyplot bottomaxis textcolor red
+    ::Plotchart::plotconfig xyplot leftaxis textcolor blue
+    ::Plotchart::plotconfig xyplot leftaxis font {Courier 12}
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p xtext "X"
+    $p ytext "Y"
+    $p vtext "V"
+    list [itemOption xtext -fill] [itemOption ytext -fill] \
+	[itemOption ytext -font] [itemOption vtext -fill] [itemOption vtext -font]
+} -cleanup {
+    cleanupPlot
+    ::Plotchart::plotconfig xyplot bottomaxis textcolor default
+    ::Plotchart::plotconfig xyplot leftaxis textcolor default
+    ::Plotchart::plotconfig xyplot leftaxis font default
+} -result {red blue {{Courier 12}} blue {{Courier 12}}}
+
+test Plotchart-105.14 {ytext: wrong # args} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p ytext
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {wrong # args: should be "DrawYtext w text"}
+
+test Plotchart-105.15 {vtext: wrong # args} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p vtext a b
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {wrong # args: should be "DrawVtext w text"}
+
+test Plotchart-105.16 {axis texts for other plot types} -setup {
+    mkCanvas
+} -body {
+    set r {}
+    foreach cmd {
+	{::Plotchart::createHistogram .c {0 10 2} {0 10 2}}
+	{::Plotchart::createBarchart .c {A B} {0 10 2} 1}
+	{::Plotchart::createHorizontalBarchart .c {0 10 2} {A B} 1}
+	{::Plotchart::createBoxplot .c {0 10 2} {A B}}
+	{::Plotchart::createXLogYPlot .c {0 10 2} {1 100}}
+    } {
+	set p [{*}$cmd]
+	$p xtext "X"
+	$p ytext "Y"
+	$p vtext "V"
+	lappend r [llength [items xtext]] [llength [items ytext]] [llength [items vtext]]
+	cleanupPlot
+	mkCanvas
+    }
+    set r
+} -cleanup {
+    cleanupPlot
+} -result {1 1 1 1 1 1 1 1 1 1 1 1 1 1 1}
+
+# -------------------------------------------------------------------------
+# xconfig and yconfig
+
+test Plotchart-106.1 {xconfig -format: format of the labels} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p xconfig -format %.2f
+    itemTexts xaxis
+} -cleanup {
+    cleanupPlot
+} -result {0.00 2.00 4.00 6.00 8.00 10.00}
+
+test Plotchart-106.2 {yconfig -format: format of the labels} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p yconfig -format %4.1f
+    itemTexts yaxis
+} -cleanup {
+    cleanupPlot
+} -result {{ 0.0} { 2.0} { 4.0} { 6.0} { 8.0} 10.0}
+
+test Plotchart-106.3 {xconfig -ticklength: length of the tickmarks} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    set lengths {}
+    foreach len {3 10} {
+	$p xconfig -ticklength $len
+	set tick [lindex [items xaxis] 1]
+	lassign [.c coords $tick] x1 y1 x2 y2
+	lappend lengths [expr {round(abs($y2-$y1))}] [.c type $tick]
+    }
+    set lengths
+} -cleanup {
+    cleanupPlot
+} -result {3 line 10 line}
+
+test Plotchart-106.4 {yconfig -ticklength: negative value points inward} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p yconfig -ticklength -5
+    set x0 [lindex [pix $p 0 0] 0]
+    set ticks {}
+    foreach i [lrange [items {yaxis}] 1 end] {
+	if {[.c type $i] eq "line"} {
+	    lassign [.c coords $i] x1 y1 x2 y2
+	    lappend ticks [expr {round(max($x1,$x2) - $x0)}]
+	}
+    }
+    lsort -unique $ticks
+} -cleanup {
+    cleanupPlot
+} -result {5}
+
+test Plotchart-106.5 {xconfig -ticklines: accepted} -setup {
+    mkCanvas
+} -body {
+    # The documentation notes that only -format has an effect
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p xconfig -ticklines 1
+    $p yconfig -ticklines 0
+    itemTexts xaxis
+} -cleanup {
+    cleanupPlot
+} -result {0 2 4 6 8 10}
+
+test Plotchart-106.6 {xconfig -scale: new scale for the axis} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p xconfig -scale {0 100 25}
+    list [itemTexts xaxis] [R [pix $p 100 0] 0] [R [::Plotchart::pixelToCoords [$p canvas] {*}[pix $p 50 5]]]
+} -cleanup {
+    cleanupPlot
+} -match glob -result {{0 25 50 75 100} {* *} {50.0 5.0}}
+
+test Plotchart-106.7 {yconfig -scale: clears the data} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p plot s 1 1
+    $p plot s 2 2
+    set before [llength [items data]]
+    $p yconfig -scale {0 20 5}
+    list $before [llength [items data]] [itemTexts yaxis]
+} -cleanup {
+    cleanupPlot
+} -result {1 0 {0 5 10 15 20}}
+
+test Plotchart-106.8 {xconfig: several options at once} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p xconfig -scale {0 1 0.5} -format %.1f
+    itemTexts xaxis
+} -cleanup {
+    cleanupPlot
+} -result {0.0 0.5 1.0}
+
+test Plotchart-106.9 {xconfig: unknown option} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p xconfig -colour red
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {Unknown or invalid option: -colour (value: red)}
+
+test Plotchart-106.10 {xconfig: invalid value for -ticklines} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p xconfig -ticklines yes
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {Unknown or invalid value: yes for option -ticklines - 0 1}
+
+test Plotchart-106.11 {xconfig -format for an x-log-y plot} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXLogYPlot .c {0 10 2} {1 100}]
+    $p xconfig -format %.1f
+    itemTexts xaxis
+} -cleanup {
+    cleanupPlot
+} -result {0.0 2.0 4.0 6.0 8.0 10.0}
+
+test Plotchart-106.12 {yconfig -format for an x-log-y plot} -constraints {
+    knownBug
+} -setup {
+    mkCanvas
+} -body {
+    # Ticket 4c28633e3a: wrong # args for DrawLogYaxis
+    set p [::Plotchart::createXLogYPlot .c {0 10 2} {1 100}]
+    $p yconfig -format %.1f
+    lindex [itemTexts yaxis] 0
+} -cleanup {
+    cleanupPlot
+} -result {1.0}
+
+test Plotchart-106.13 {yconfig -format for a log-x-log-y plot} -constraints {
+    knownBug
+} -setup {
+    mkCanvas
+} -body {
+    # Ticket 4c28633e3a: wrong # args for DrawLogYaxis
+    set p [::Plotchart::createLogXLogYPlot .c {1 100} {1 100}]
+    $p yconfig -format %.1f
+    lindex [itemTexts yaxis] 0
+} -cleanup {
+    cleanupPlot
+} -result {1.0}
+
+test Plotchart-106.14 {xconfig/yconfig -format for log-x-y and log-x-log-y plots} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createLogXYPlot .c {1 100} {0 10 5}]
+    $p xconfig -format %.1f
+    $p yconfig -format %.2f
+    set r [list [lindex [itemTexts xaxis] 0] [itemTexts yaxis]]
+    cleanupPlot
+    mkCanvas
+    set p [::Plotchart::createLogXLogYPlot .c {1 100} {1 100}]
+    $p xconfig -format %.1f
+    lappend r [lindex [itemTexts xaxis] 0]
+} -cleanup {
+    cleanupPlot
+} -result {1.0 {0.00 5.00 10.00} 1.0}
+
+test Plotchart-106.15 {xconfig/yconfig for histograms and stripcharts} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createHistogram .c {0 10 5} {0 10 5}]
+    $p xconfig -format %.1f
+    $p yconfig -format %.1f
+    set r [list [itemTexts xaxis] [itemTexts yaxis]]
+    cleanupPlot
+    mkCanvas
+    set p [::Plotchart::createStripchart .c {0 10 5} {0 10 5}]
+    $p xconfig -format %.1f
+    $p yconfig -format %.1f
+    lappend r [itemTexts xaxis] [itemTexts yaxis]
+} -cleanup {
+    cleanupPlot
+} -result {{0.0 5.0 10.0} {0.0 5.0 10.0} {0.0 5.0 10.0} {0.0 5.0 10.0}}
+
+# -------------------------------------------------------------------------
+# background
+
+test Plotchart-107.1 {background axes: colour of the area outside the plot} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p background axes lightblue
+    list [itemOption mask -fill] [itemOption mask -outline] [llength [items mask]]
+} -cleanup {
+    cleanupPlot
+} -result {lightblue lightblue 4}
+
+test Plotchart-107.2 {background plot: colour of the inner part} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p background plot yellow
+    list [.c cget -background] [itemOption mask -fill]
+} -cleanup {
+    cleanupPlot
+} -result {yellow white}
+
+test Plotchart-107.3 {background gradient: rectangles in the plot area} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p background gradient green left-right
+    set rects [items background]
+    lassign [.c bbox background] x1 y1 x2 y2
+    lassign [pix $p 0 0] px1 py2
+    lassign [pix $p 10 10] px2 py1
+    list [itemTypes background] [llength $rects] \
+	[approx $x1 $px1 2] [approx $x2 $px2 2] [approx $y1 $py1 2] [approx $y2 $py2 2] \
+	[expr {[lindex [.c find all] 0] eq [lindex $rects 0]}]
+} -cleanup {
+    cleanupPlot
+} -result {rectangle 50 1 1 1 1 1}
+
+proc gradientEnds {} {
+    # Colours of the rectangles at the top, bottom, left and right
+    set top {}
+    set bottom {}
+    set left {}
+    set right {}
+    foreach i [items background] {
+	lassign [.c coords $i] x1 y1 x2 y2
+	set ymid [expr {($y1+$y2)/2.0}]
+	set xmid [expr {($x1+$x2)/2.0}]
+	set col [.c itemcget $i -fill]
+	if {$top eq "" || $ymid < [lindex $top 0]} {set top [list $ymid $col]}
+	if {$bottom eq "" || $ymid > [lindex $bottom 0]} {set bottom [list $ymid $col]}
+	if {$left eq "" || $xmid < [lindex $left 0]} {set left [list $xmid $col]}
+	if {$right eq "" || $xmid > [lindex $right 0]} {set right [list $xmid $col]}
+    }
+    list [lindex $top 1] [lindex $bottom 1] [lindex $left 1] [lindex $right 1]
+}
+proc brightness {colour} {
+    lassign [winfo rgb . $colour] r g b
+    expr {$r + $g + $b}
+}
+proc gradientRange {} {
+    set min {}
+    set max {}
+    foreach i [items background] {
+	set b [brightness [.c itemcget $i -fill]]
+	if {$min eq "" || $b < $min} {set min $b}
+	if {$max eq "" || $b > $max} {set max $b}
+    }
+    list $min $max
+}
+
+test Plotchart-107.4 {background gradient top-down: whiter towards the bottom} -constraints {
+    knownBug
+} -setup {
+    mkCanvas
+} -body {
+    # No rectangles are drawn for vertical gradients
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p background gradient #008000 top-down
+    lassign [gradientEnds] top bottom
+    list [expr {[llength [items background]] > 0}] \
+	[expr {[brightness $bottom] > [brightness $top]}]
+} -cleanup {
+    cleanupPlot
+} -result {1 1}
+
+test Plotchart-107.5 {background gradient bottom-up: whiter towards the top} -constraints {
+    knownBug
+} -setup {
+    mkCanvas
+} -body {
+    # No rectangles are drawn for vertical gradients
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p background gradient #008000 bottom-up
+    lassign [gradientEnds] top bottom
+    list [expr {[llength [items background]] > 0}] \
+	[expr {[brightness $top] > [brightness $bottom]}]
+} -cleanup {
+    cleanupPlot
+} -result {1 1}
+
+test Plotchart-107.6 {background gradient left-right: whiter towards the right} -constraints {
+    knownBug
+} -setup {
+    mkCanvas
+} -body {
+    # The colour gets whiter towards the left instead
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p background gradient #008000 left-right
+    lassign [gradientEnds] top bottom left right
+    expr {[brightness $right] > [brightness $left]}
+} -cleanup {
+    cleanupPlot
+} -result 1
+
+test Plotchart-107.7 {background gradient right-left: whiter towards the left} -constraints {
+    knownBug
+} -setup {
+    mkCanvas
+} -body {
+    # The colour gets whiter towards the right instead
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p background gradient #008000 right-left
+    lassign [gradientEnds] top bottom left right
+    expr {[brightness $left] > [brightness $right]}
+} -cleanup {
+    cleanupPlot
+} -result 1
+
+test Plotchart-107.8 {background gradient: left-right and right-left are opposite} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p background gradient #008000 left-right
+    lassign [gradientEnds] top bottom l1 r1
+    .c delete background
+    $p background gradient #008000 right-left
+    lassign [gradientEnds] top bottom l2 r2
+    list [expr {$l1 eq $r2}] [expr {$r1 eq $l2}] [expr {$l1 ne $r1}]
+} -cleanup {
+    cleanupPlot
+} -result {1 1 1}
+
+test Plotchart-107.9 {background gradient bright: from the colour to white} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p background gradient #008000 left-right bright
+    lassign [gradientRange] min max
+    list [expr {$min >= [brightness #008000]}] [expr {$max > [brightness #008000]}] \
+	[expr {$max <= [brightness white]}]
+} -cleanup {
+    cleanupPlot
+} -result {1 1 1}
+
+test Plotchart-107.10 {background gradient dark: from the colour to black} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p background gradient #00c000 left-right dark
+    lassign [gradientRange] min max
+    list [expr {$max <= [brightness #00c000]}] [expr {$min < [brightness #00c000]}]
+} -cleanup {
+    cleanupPlot
+} -result {1 1}
+
+test Plotchart-107.11 {background gradient: bright is the default} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p background gradient #008000 left-right
+    set c1 [gradientEnds]
+    .c delete background
+    $p background gradient #008000 left-right bright
+    expr {$c1 eq [gradientEnds]}
+} -cleanup {
+    cleanupPlot
+} -result 1
+
+test Plotchart-107.12 {background image: tiles the plot area} -setup {
+    mkCanvas
+    image create photo plotchartTestImage -width 40 -height 30
+    plotchartTestImage put red -to 0 0 40 30
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p background image plotchartTestImage
+    lassign [.c bbox background] x1 y1 x2 y2
+    lassign [pix $p 0 0] px1 py2
+    lassign [pix $p 10 10] px2 py1
+    list [itemTypes background] [itemOption background -image] \
+	[expr {$x1 <= $px1 + 1 && $x2 >= $px2 - 1 && $y1 <= $py1 + 1 && $y2 >= $py2 - 1}] \
+	[expr {[lindex [.c find all] 0] eq [lindex [items background] 0]}]
+} -cleanup {
+    cleanupPlot
+    image delete plotchartTestImage
+} -result {image plotchartTestImage 1 1}
+
+test Plotchart-107.13 {background: wrong # args} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p background axes
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {wrong # args: should be "BackgroundColour w part colour ?dir? ?brighten?"}
+
+test Plotchart-107.14 {background: bad colour} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p background plot nosuchcolour
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {unknown color name "nosuchcolour"}
+
+# -------------------------------------------------------------------------
+# xticklines and yticklines
+
+test Plotchart-108.1 {xticklines: vertical lines at the ticks} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p xticklines
+    set xs {}
+    set ok 1
+    lassign [pix $p 0 0] x0 y0
+    lassign [pix $p 10 10] x1 y1
+    foreach i [items xtickline] {
+	lassign [.c coords $i] xa ya xb yb
+	lappend xs [R [lindex [::Plotchart::pixelToCoords [$p canvas] $xa $ya] 0] 0]
+	if {$xa != $xb || ![approx $ya $y1] || ![approx $yb $y0]} {set ok 0}
+    }
+    list $xs $ok [itemTypes xtickline] [itemOption xtickline -fill] [itemOption xtickline -dash]
+} -cleanup {
+    cleanupPlot
+} -result {{0 2 4 6 8 10} 1 line black {{}}}
+
+test Plotchart-108.2 {yticklines: horizontal lines at the ticks} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 5} {0 10 5}]
+    $p yticklines red
+    set ys {}
+    foreach i [items ytickline] {
+	lassign [.c coords $i] xa ya xb yb
+	lappend ys [expr {$ya == $yb}]
+    }
+    list $ys [itemOption ytickline -fill]
+} -cleanup {
+    cleanupPlot
+} -result {{1 1 1} red}
+
+test Plotchart-108.3 {xticklines: dash patterns} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 5} {0 10 5}]
+    set r {}
+    foreach dash {lines dots1 dots2 unknown} {
+	$p xticklines grey $dash
+	lappend r [itemOption xtickline -dash]
+    }
+    foreach dash {dots3 dots4 dots5} {
+	$p yticklines grey $dash
+	lappend r [expr {[itemOption ytickline -dash] ne "{}"}]
+    }
+    set r
+} -cleanup {
+    cleanupPlot
+} -result {{{}} {{1 4}} {{1 8}} {{}} 1 1 1}
+
+test Plotchart-108.4 {xticklines/yticklines: empty colour removes the lines} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 5} {0 10 5}]
+    $p xticklines blue
+    $p yticklines blue
+    set r [list [llength [items xtickline]] [llength [items ytickline]]]
+    $p xticklines ""
+    $p yticklines ""
+    lappend r [llength [items xtickline]] [llength [items ytickline]]
+} -cleanup {
+    cleanupPlot
+} -result {3 3 0 0}
+
+test Plotchart-108.5 {ticklines: the axes stay on top} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 5} {0 10 5}]
+    $p xticklines blue
+    set all [.c find all]
+    expr {[lsearch $all [lindex [items xtickline] 0]] < [lsearch $all [lindex [items xaxis] 0]]}
+} -cleanup {
+    cleanupPlot
+} -result 1
+
+test Plotchart-108.6 {xticklines: for a time-x plot} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createTXPlot .c {2006-01-01 2006-01-11 5} {0 10 5}]
+    $p xticklines
+    $p yticklines
+    list [llength [items xtickline]] [llength [items ytickline]]
+} -cleanup {
+    cleanupPlot
+} -result {3 3}
+
+test Plotchart-108.7 {xticklines: too many args} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 5} {0 10 5}]
+    $p xticklines red lines extra
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {wrong # args: should be "DrawXTicklines w ?colour? ?dash?"}
+
+# -------------------------------------------------------------------------
+# legend, removefromlegend and legendconfig
+
+test Plotchart-109.1 {legend: entries with line, text and frame} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p dataconfig s1 -colour red
+    $p dataconfig s2 -colour blue
+    $p legend s1 "Series 1"
+    $p legend s2 "Series 2"
+    set lines {}
+    foreach i [items legend] {
+	if {[.c type $i] eq "line"} {lappend lines [.c itemcget $i -fill]}
+    }
+    set bg [items legendbg]
+    list [itemTexts legend] $lines [.c type $bg] [.c itemcget $bg -fill] \
+	[.c itemcget $bg -outline] [itemTexts legend_s1] [itemTexts legend_s2] \
+	[expr {[llength [items legendobj]] == [llength [items legend]] + 1}]
+} -cleanup {
+    cleanupPlot
+} -result {{{Series 1} {Series 2}} {red blue} rectangle white black {{Series 1}} {{Series 2}} 1}
+
+test Plotchart-109.2 {legend: default position top-right inside the plot} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p legend s1 "Series 1"
+    lassign [.c bbox legendbg] x1 y1 x2 y2
+    lassign [pix $p 0 10] px1 py1
+    lassign [pix $p 10 0] px2 py2
+    list [approx $x2 [expr {$px2-10}] 2] [approx $y1 [expr {$py1+10}] 2] \
+	[expr {$x1 > $px1}] [expr {$y2 < $py2}]
+} -cleanup {
+    cleanupPlot
+} -result {1 1 1 1}
+
+test Plotchart-109.3 {legend: symbols for type symbol and both} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p dataconfig s1 -type symbol -symbol circle -colour green
+    $p dataconfig s2 -type both -symbol up -colour blue
+    $p legend s1 "Symbols"
+    $p legend s2 "Both"
+    list [lsort [itemTypes legend_s1]] [lsort [itemTypes legend]] \
+	[itemOption {legend_s1 notype=text} -outline]
+} -cleanup {
+    cleanupPlot
+} -result {{oval text} {line oval polygon text} green}
+
+test Plotchart-109.4 {legend: the same series is added only once} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p legend s1 "First"
+    $p legend s1 "Again"
+    itemTexts legend
+} -cleanup {
+    cleanupPlot
+} -result {First}
+
+test Plotchart-109.5 {legend: spacing between the entries} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p legend s1 "A"
+    $p legend s2 "B" 30
+    lassign [items {legend_s1 type=text}] t1
+    lassign [items {legend_s2 type=text}] t2
+    set d1 [expr {[lindex [.c coords $t2] 1] - [lindex [.c coords $t1] 1]}]
+    $p legend s3 "C"
+    lassign [items {legend_s3 type=text}] t3
+    lassign [items {legend_s2 type=text}] t2
+    set d2 [expr {[lindex [.c coords $t3] 1] - [lindex [.c coords $t2] 1]}]
+    list [R $d1 0] [R $d2 0]
+} -cleanup {
+    cleanupPlot
+} -result {30 30}
+
+test Plotchart-109.6 {removefromlegend: removes the entry and redraws} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p legend s1 "A"
+    $p legend s2 "B"
+    $p legend s3 "C"
+    $p removefromlegend s2
+    list [itemTexts legend] [llength [items legendbg]]
+} -cleanup {
+    cleanupPlot
+} -result {{A C} 1}
+
+test Plotchart-109.7 {removefromlegend: last entry removes the frame} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p legend s1 "A"
+    $p removefromlegend s1
+    list [llength [items legend]] [llength [items legendbg]]
+} -cleanup {
+    cleanupPlot
+} -result {0 0}
+
+test Plotchart-109.8 {legendconfig -background and -border} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p legendconfig -background yellow -border red
+    $p legend s1 "A"
+    set r [list [itemOption legendbg -fill] [itemOption legendbg -outline]]
+    $p legendconfig -background "" -border ""
+    $p legend s2 "B"
+    lappend r [itemOption legendbg -fill] [itemOption legendbg -outline]
+} -cleanup {
+    cleanupPlot
+} -result {yellow red {{}} {{}}}
+
+test Plotchart-109.9 {legendconfig -position: the four corners} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    lassign [pix $p 0 10] px1 py1
+    lassign [pix $p 10 0] px2 py2
+    set r {}
+    foreach pos {top-left top-right bottom-left bottom-right} {
+	$p legendconfig -position $pos
+	$p legend s1 "Entry"
+	lassign [.c bbox legendbg] x1 y1 x2 y2
+	set xm [expr {($x1+$x2)/2.0 < ($px1+$px2)/2.0 ? "left" : "right"}]
+	set ym [expr {($y1+$y2)/2.0 < ($py1+$py2)/2.0 ? "top" : "bottom"}]
+	lappend r $ym-$xm
+    }
+    set r
+} -cleanup {
+    cleanupPlot
+} -result {top-left top-right bottom-left bottom-right}
+
+test Plotchart-109.10 {legendconfig -position: invalid value} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p legendconfig -position centre
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {Unknown or invalid position: centre}
+
+test Plotchart-109.11 {legendconfig -font} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p legendconfig -font {Courier 14}
+    $p legend s1 "A"
+    itemOption {legend type=text} -font
+} -cleanup {
+    cleanupPlot
+} -result {{Courier 14}}
+
+test Plotchart-109.12 {legendconfig -legendtype rectangle and line} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p dataconfig s1 -colour red
+    $p legendconfig -legendtype rectangle
+    $p legend s1 "A"
+    set r [list [lsort [itemTypes legend]] [itemOption {legend type=rectangle} -fill]]
+    cleanupPlot
+    mkCanvas
+    set p [::Plotchart::createBarchart .c {A B} {0 10 2} 1]
+    $p legendconfig -legendtype line
+    $p legend s1 "A"
+    lappend r [lsort [itemTypes legend]]
+} -cleanup {
+    cleanupPlot
+} -result {{rectangle text} red {line text}}
+
+test Plotchart-109.13 {legendconfig -spacing} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p legendconfig -spacing 25
+    $p legend s1 "A"
+    $p legend s2 "B"
+    set y1 [lindex [.c coords [items {legend_s1 type=text}]] 1]
+    set y2 [lindex [.c coords [items {legend_s2 type=text}]] 1]
+    R [expr {$y2 - $y1}] 0
+} -cleanup {
+    cleanupPlot
+} -result {25}
+
+test Plotchart-109.14 {legendconfig -order} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p legend s1 "A"
+    $p legend s2 "B"
+    $p legend s3 "C"
+    set r [list [itemTexts legend]]
+    $p legendconfig -order reverse
+    $p legend s1 "A"
+    set y {}
+    foreach t [items {legend type=text}] {
+	lappend y [list [lindex [.c coords $t] 1] [.c itemcget $t -text]]
+    }
+    set order {}
+    foreach e [lsort -real -index 0 $y] {lappend order [lindex $e 1]}
+    lappend r $order
+    $p legendconfig -order normal
+    $p legend s1 "A"
+    set y {}
+    foreach t [items {legend type=text}] {
+	lappend y [list [lindex [.c coords $t] 1] [.c itemcget $t -text]]
+    }
+    set order {}
+    foreach e [lsort -real -index 0 $y] {lappend order [lindex $e 1]}
+    lappend r $order
+} -cleanup {
+    cleanupPlot
+} -result {{A B C} {C B A} {A B C}}
+
+test Plotchart-109.15 {legendconfig -order: invalid value} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p legendconfig -order sorted
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {Unknown or invalid order: sorted}
+
+test Plotchart-109.16 {legendconfig: unknown option} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p legendconfig -colour red
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {Unknown or invalid option: -colour (value: red)}
+
+test Plotchart-109.17 {legendconfig -canvas: legend in another canvas} -setup {
+    mkCanvas
+    mkCanvas 200 200 .c2
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p legendconfig -canvas .c2
+    $p legend s1 "Elsewhere"
+    list [llength [items legend]] [itemTexts legend .c2] [itemTypes legendbg .c2]
+} -cleanup {
+    cleanupPlot
+    destroy .c2
+} -result {0 Elsewhere rectangle}
+
+test Plotchart-109.18 {legend: entries for a right axis} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    set r [::Plotchart::createRightAxis $p {0 100 20}]
+    $p dataconfig s1 -colour red
+    $r dataconfig s1 -colour blue
+    $p legend s1 "Left"
+    $r legend s1 "Right"
+    set lines {}
+    foreach i [items legend] {
+	if {[.c type $i] eq "line"} {lappend lines [.c itemcget $i -fill]}
+    }
+    list [itemTexts legend] $lines
+} -cleanup {
+    cleanupPlot
+} -result {{Left Right} {red blue}}
+
+test Plotchart-109.19 {legend: line width of the series} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p dataconfig s1 -width 3
+    $p legend s1 "A"
+    itemOption {legend type=line} -width
+} -cleanup {
+    cleanupPlot
+} -result {3.0}
+
+test Plotchart-109.20 {legend: moving with the mouse} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p legend s1 "A"
+    set before [.c bbox legendbg]
+    set w [$p canvas]
+    ::Plotchart::LegendAnchor $w 100 100
+    ::Plotchart::LegendMove $w 90 120
+    ::Plotchart::LegendRelease $w
+    ::Plotchart::LegendMove $w 0 0
+    set after [.c bbox legendbg]
+    list [expr {[lindex $after 0] - [lindex $before 0]}] \
+	[expr {[lindex $after 1] - [lindex $before 1]}]
+} -cleanup {
+    cleanupPlot
+} -result {-10 20}
+
+test Plotchart-109.21 {legend: wrong # args} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p legend s1
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {wrong # args: should be "DrawLegend w series text ?spacing?"}
+
+test Plotchart-109.22 {removefromlegend: wrong # args} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p removefromlegend
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {wrong # args: should be "RemoveFromLegend w series"}
+
+test Plotchart-109.23 {legend: legend config defaults from plotconfig} -setup {
+    ::Plotchart::plotconfig xyplot legend background lightgrey
+    ::Plotchart::plotconfig xyplot legend border blue
+    ::Plotchart::plotconfig xyplot legend position bottom-left
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p legend s1 "A"
+    lassign [.c bbox legendbg] x1 y1 x2 y2
+    lassign [pix $p 0 0] px py
+    list [itemOption legendbg -fill] [itemOption legendbg -outline] \
+	[approx $x1 [expr {$px+10}] 2] [approx $y2 [expr {$py-10}] 2]
+} -cleanup {
+    cleanupPlot
+    ::Plotchart::plotconfig xyplot legend background default
+    ::Plotchart::plotconfig xyplot legend border default
+    ::Plotchart::plotconfig xyplot legend position default
+} -result {lightgrey blue 1 1}
+
+# -------------------------------------------------------------------------
+# balloon and balloonconfig
+
+test Plotchart-110.1 {balloon: text and frame with the arrow at the point} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p balloon 5 5 "Hello" north
+    set t [items BalloonText]
+    set f [items BalloonFrame]
+    lassign [pix $p 5 5] px py
+    # One of the vertices of the frame is the tip of the arrow
+    set tip 0
+    foreach {x y} [.c coords $f] {
+	if {[approx $x $px 0.01] && [approx $y $py 0.01]} {set tip 1}
+    }
+    list [.c type $t] [.c itemcget $t -text] [.c type $f] $tip \
+	[.c itemcget $f -fill] [.c itemcget $f -outline] [.c itemcget $t -fill] \
+	[expr {[lsearch [.c find all] $f] < [lsearch [.c find all] $t]}]
+} -cleanup {
+    cleanupPlot
+} -result {text Hello polygon 1 white black black 1}
+
+test Plotchart-110.2 {balloon: direction of the arrow} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    lassign [pix $p 5 5] px py
+    set r {}
+    foreach dir {north north-east east south-east south south-west west north-west} {
+	.c delete BalloonText BalloonFrame
+	$p balloon 5 5 "Text" $dir
+	lassign [centre BalloonText] x y
+	set h [expr {$x < $px - 1 ? "w" : ($x > $px + 1 ? "e" : "")}]
+	set v [expr {$y < $py - 1 ? "n" : ($y > $py + 1 ? "s" : "")}]
+	lappend r $v$h
+    }
+    set r
+} -cleanup {
+    cleanupPlot
+} -result {s sw w nw n ne e se}
+
+test Plotchart-110.3 {balloon: unknown direction means south-east} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p balloon 5 5 "Text" south-east
+    set c1 [.c coords [items BalloonFrame]]
+    .c delete BalloonText BalloonFrame
+    $p balloon 5 5 "Text" nowhere
+    expr {$c1 eq [.c coords [items BalloonFrame]]}
+} -cleanup {
+    cleanupPlot
+} -result 1
+
+test Plotchart-110.4 {balloonconfig: font, justify, colours, rim width} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p balloonconfig -font {Courier 12} -justify right -textcolour red \
+	-background yellow -outline blue -rimwidth 3
+    $p balloon 5 5 "Line 1\nLonger line 2" north
+    set t [items BalloonText]
+    set f [items BalloonFrame]
+    list [.c itemcget $t -font] [.c itemcget $t -justify] [.c itemcget $t -fill] \
+	[.c itemcget $f -fill] [.c itemcget $f -outline] [.c itemcget $f -width]
+} -cleanup {
+    cleanupPlot
+} -result {{Courier 12} right red yellow blue 3.0}
+
+test Plotchart-110.5 {balloonconfig: -textcolor is a synonym} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p balloonconfig -textcolor green
+    $p balloon 5 5 "Text" north
+    itemOption BalloonText -fill
+} -cleanup {
+    cleanupPlot
+} -result {green}
+
+test Plotchart-110.6 {balloonconfig -margin: space around the text} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    set r {}
+    foreach margin {2 12} {
+	.c delete BalloonText BalloonFrame
+	$p balloonconfig -margin $margin
+	$p balloon 5 5 "Text" north
+	lassign [.c bbox [items BalloonText]] tx1 ty1 tx2 ty2
+	lassign [.c bbox [items BalloonFrame]] fx1 fy1 fx2 fy2
+	lappend r [expr {$tx1 - $fx1}]
+    }
+    expr {[lindex $r 1] - [lindex $r 0]}
+} -cleanup {
+    cleanupPlot
+} -result 10
+
+test Plotchart-110.7 {balloonconfig -arrowsize: length of the arrow} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    lassign [pix $p 5 5] px py
+    set r {}
+    foreach size {5 15} {
+	.c delete BalloonText BalloonFrame
+	$p balloonconfig -arrowsize $size
+	$p balloon 5 5 "Text" north
+	lassign [.c bbox [items BalloonText]] tx1 ty1 tx2 ty2
+	lappend r [expr {$ty1 - $py}]
+    }
+    expr {round([lindex $r 1] - [lindex $r 0])}
+} -cleanup {
+    cleanupPlot
+} -result 30
+
+test Plotchart-110.8 {balloonconfig: settings are used for the next balloon only} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p balloon 2 2 "First" north
+    $p balloonconfig -background pink
+    $p balloon 8 8 "Second" north
+    lmap f [items BalloonFrame] {.c itemcget $f -fill}
+} -cleanup {
+    cleanupPlot
+} -result {white pink}
+
+test Plotchart-110.9 {balloon: other plot types} -setup {
+    mkCanvas
+} -body {
+    set r {}
+    foreach cmd {
+	{::Plotchart::createBarchart .c {A B C} {0 10 2} 1}
+	{::Plotchart::createHorizontalBarchart .c {0 10 2} {A B C} 1}
+	{::Plotchart::createPiechart .c}
+	{::Plotchart::createPolarplot .c {10 2}}
+	{::Plotchart::createHistogram .c {0 10 2} {0 10 2}}
+	{::Plotchart::create3DBarchart .c {0 10 2} 3}
+	{::Plotchart::createRadialchart .c {A B C} 10}
+	{::Plotchart::createGanttchart .c "1 january 2004" "31 december 2004" 4}
+    } {
+	set p [{*}$cmd]
+	$p balloon 1 1 "Text" north
+	lappend r [llength [items BalloonText]] [llength [items BalloonFrame]]
+	cleanupPlot
+	mkCanvas
+    }
+    set r
+} -cleanup {
+    cleanupPlot
+} -result {1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1}
+
+test Plotchart-110.13 {balloon: timechart} -constraints {
+    knownBug
+} -setup {
+    mkCanvas
+} -body {
+    # The balloon settings are not initialised for timecharts
+    set p [::Plotchart::createTimechart .c "1 january 2004" "31 december 2004" 4]
+    $p balloon [clock scan "1 july 2004"] 2 "Text" north
+    list [llength [items BalloonText]] [llength [items BalloonFrame]]
+} -cleanup {
+    cleanupPlot
+} -result {1 1}
+
+test Plotchart-110.10 {balloon: time-x plot takes a date/time} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createTXPlot .c {2006-01-01 2006-01-11 2} {0 10 2}]
+    $p balloon 2006-01-06 5 "Middle" north
+    set f [items BalloonFrame]
+    lassign [pix $p [clock scan 2006-01-06] 5] px py
+    set tip 0
+    foreach {x y} [.c coords $f] {
+	if {[approx $x $px 0.01] && [approx $y $py 0.01]} {set tip 1}
+    }
+    set tip
+} -cleanup {
+    cleanupPlot
+} -result 1
+
+test Plotchart-110.11 {balloon: wrong # args} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p balloon 1 1 "Text"
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {wrong # args: should be "DrawBalloon w x y text dir"}
+
+test Plotchart-110.12 {balloon: radial charts have no balloonconfig} -constraints {
+    knownBug
+} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createRadialchart .c {A B C} 10]
+    $p balloonconfig -background yellow
+    $p balloon 1 1 "Text" north
+    itemOption BalloonFrame -fill
+} -cleanup {
+    cleanupPlot
+} -result {yellow}
+
+# -------------------------------------------------------------------------
+# plaintext and plaintextconfig
+
+test Plotchart-111.1 {plaintext: text at the given position} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p plaintext 3 7 "Plain" north
+    set t [items PlainText]
+    list [.c type $t] [.c itemcget $t -text] [R [.c coords $t] 2] [R [pix $p 3 7] 2] \
+	[.c itemcget $t -anchor]
+} -cleanup {
+    cleanupPlot
+} -match glob -result {text Plain {* *} {* *} n}
+
+test Plotchart-111.2 {plaintext: coordinates} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p plaintext 3 7 "Plain" north
+    expr {[R [.c coords [items PlainText]] 2] eq [R [pix $p 3 7] 2]}
+} -cleanup {
+    cleanupPlot
+} -result 1
+
+test Plotchart-111.3 {plaintext: anchors for the documented directions} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    set r {}
+    foreach dir {north east south west north-west} {
+	.c delete PlainText
+	$p plaintext 5 5 "Text" $dir
+	lappend r [itemOption PlainText -anchor]
+    }
+    set r
+} -cleanup {
+    cleanupPlot
+} -result {n e s w nw}
+
+test Plotchart-111.4 {plaintext: anchor north-east} -constraints {
+    knownBug
+} -setup {
+    mkCanvas
+} -body {
+    # Fails with: bad anchor "ew"
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p plaintext 5 5 "Text" north-east
+    itemOption PlainText -anchor
+} -cleanup {
+    cleanupPlot
+} -result {ne}
+
+test Plotchart-111.5 {plaintext: anchor south-east} -constraints {
+    knownBug
+} -setup {
+    mkCanvas
+} -body {
+    # Fails with: bad anchor "ew"
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p plaintext 5 5 "Text" south-east
+    itemOption PlainText -anchor
+} -cleanup {
+    cleanupPlot
+} -result {se}
+
+test Plotchart-111.6 {plaintext: anchor south-west} -constraints {
+    knownBug
+} -setup {
+    mkCanvas
+} -body {
+    # The anchor is nw instead
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p plaintext 5 5 "Text" south-west
+    itemOption PlainText -anchor
+} -cleanup {
+    cleanupPlot
+} -result {sw}
+
+test Plotchart-111.7 {plaintext: default and unknown anchor is centre} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p plaintext 5 5 "Default"
+    $p plaintext 5 5 "Unknown" nowhere
+    itemOption PlainText -anchor
+} -cleanup {
+    cleanupPlot
+} -result {center}
+
+test Plotchart-111.8 {plaintextconfig: font, justify and colour} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p plaintextconfig -font {Courier 12} -justify right -textcolour blue
+    $p plaintext 5 5 "Line\nLonger line" north
+    set t [items PlainText]
+    list [.c itemcget $t -font] [.c itemcget $t -justify] [.c itemcget $t -fill]
+} -cleanup {
+    cleanupPlot
+} -result {{Courier 12} right blue}
+
+test Plotchart-111.9 {plaintextconfig: -textcolor is a synonym, used for the next text} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p plaintext 2 2 "First" north
+    $p plaintextconfig -textcolor red
+    $p plaintext 8 8 "Second" north
+    lmap t [items PlainText] {.c itemcget $t -fill}
+} -cleanup {
+    cleanupPlot
+} -result {black red}
+
+test Plotchart-111.13 {plaintext: timechart} -constraints {
+    knownBug
+} -setup {
+    mkCanvas
+} -body {
+    # The plain text settings are not initialised for timecharts
+    set p [::Plotchart::createTimechart .c "1 january 2004" "31 december 2004" 4]
+    $p plaintext [clock scan "1 july 2004"] 2 "Text"
+    itemTexts PlainText
+} -cleanup {
+    cleanupPlot
+} -result {Text}
+
+test Plotchart-111.10 {plaintext: time-x plot takes a date/time} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createTXPlot .c {2006-01-01 2006-01-11 2} {0 10 2}]
+    $p plaintext 2006-01-06 5 "Middle" north
+    expr {[R [.c coords [items PlainText]] 2] eq [R [pix $p [clock scan 2006-01-06] 5] 2]}
+} -cleanup {
+    cleanupPlot
+} -result 1
+
+test Plotchart-111.11 {plaintext: wrong # args} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p plaintext 1 1
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {wrong # args: should be "DrawPlainText w x y text ?anchor?"}
+
+test Plotchart-111.12 {plaintext: in a barchart bar N is at x = N} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createBarchart .c {A B C} {0 10 2} 1]
+    $p plot s {2 4 6} red
+    $p plaintext 2 4 "Top of B" south
+    # The text is above the middle of the second bar
+    set bar [lindex [items data_s] 1]
+    lassign [.c coords $bar] x1 y1 x2 y2
+    lassign [.c coords [items PlainText]] tx ty
+    list [approx $tx [expr {($x1+$x2)/2.0}]] [approx $ty [expr {min($y1,$y2)}]]
+} -cleanup {
+    cleanupPlot
+} -result {1 1}
+
+# -------------------------------------------------------------------------
+# object
+
+test Plotchart-112.1 {object: standard canvas item in world coordinates} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    set id [$p object line s1 1 1 9 9 -width 2]
+    list [.c type $id] [expr {[R [.c coords $id] 2] eq [R [concat [pix $p 1 1] [pix $p 9 9]] 2]}] \
+	[.c itemcget $id -width] [.c gettags $id]
+} -cleanup {
+    cleanupPlot
+} -result {line 1 2.0 object}
+
+test Plotchart-112.2 {object: coordinates as a single list} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    set id [$p object rectangle s1 {2 2 4 6} -fill red]
+    lassign [pix $p 2 2] x1 y1
+    lassign [pix $p 4 6] x2 y2
+    list [.c type $id] \
+	[expr {[R [.c coords $id] 2] eq [R [list $x1 [expr {min($y1,$y2)}] $x2 [expr {max($y1,$y2)}]] 2]}] \
+	[.c itemcget $id -fill]
+} -cleanup {
+    cleanupPlot
+} -result {rectangle 1 red}
+
+test Plotchart-112.3 {object: drawing options of the series} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p dataconfig s1 -colour red -width 3
+    set l [$p object line s1 1 1 9 9]
+    set r [$p object rectangle s1 1 1 3 3 -fill yellow]
+    set t [$p object text s1 5 5 -text Hello]
+    list [.c itemcget $l -fill] [.c itemcget $l -width] \
+	[.c itemcget $r -outline] [.c itemcget $r -fill] [.c itemcget $r -width] \
+	[.c itemcget $t -fill] [.c itemcget $t -text]
+} -cleanup {
+    cleanupPlot
+} -result {red 3.0 red yellow 3.0 red Hello}
+
+test Plotchart-112.10 {object: fill colour of the series} -constraints {
+    knownBug
+} -setup {
+    mkCanvas
+} -body {
+    # Fails with: unknown option "-fillcolour"
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p dataconfig s1 -colour red -fillcolour yellow
+    set r [$p object rectangle s1 1 1 3 3]
+    list [.c itemcget $r -outline] [.c itemcget $r -fill]
+} -cleanup {
+    cleanupPlot
+} -result {red yellow}
+
+test Plotchart-112.4 {object: circle, dot and cross} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    set c [$p object circle s1 5 5 -diameter 20 -colour blue -fillcolour yellow]
+    set d [$p object dot s1 2 2 -diameter 6 -colour green]
+    set x [$p object cross s1 8 8 -diameter 10 -colour red]
+    lassign [.c coords $c] x1 y1 x2 y2
+    lassign [pix $p 5 5] cx cy
+    lassign [.c coords $d] dx1 dy1 dx2 dy2
+    list [.c type $c] [R [expr {$x2-$x1}] 0] [approx [expr {($x1+$x2)/2.0}] $cx 0.01] \
+	[.c itemcget $c -outline] [.c itemcget $c -fill] \
+	[.c type $d] [R [expr {abs($dx2-$dx1)}] 0] [.c itemcget $d -fill] \
+	[lsort -unique [lmap i [.c find withtag $x] {.c type $i}]] [llength [.c find withtag $x]] \
+	[itemOption $x -fill] [string match canvCross_* $x] \
+	[lsort [string map [list $x canvCross_] [.c gettags [lindex [.c find withtag $x] 0]]]] \
+	[lsort [string map [list $x canvCross_] [.c gettags [lindex [.c find withtag $x] 1]]]]
+} -cleanup {
+    cleanupPlot
+} -result [list oval 20 1 blue yellow oval 6 green line 2 red 1 {canvCross_ object} {canvCross_ object}]
+
+test Plotchart-112.5 {object: unknown item type} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p object triangle s1 1 1
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {no such canvas object: triangle}
+
+test Plotchart-112.6 {object: no coordinates} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p object line s1 -fill red
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {no coordinates given for line object}
+
+test Plotchart-112.7 {object: barcharts and piecharts} -setup {
+    mkCanvas
+} -body {
+    set r {}
+    foreach cmd {
+	{::Plotchart::createBarchart .c {A B C} {0 10 2} 1}
+	{::Plotchart::createHorizontalBarchart .c {0 10 2} {A B C} 1}
+	{::Plotchart::createPiechart .c}
+    } {
+	set p [{*}$cmd]
+	set id [$p object oval s1 0.5 0.5 1 1]
+	lappend r [.c type $id]
+	cleanupPlot
+	mkCanvas
+    }
+    set r
+} -cleanup {
+    cleanupPlot
+} -result {oval oval oval}
+
+test Plotchart-112.8 {object: horizontal barchart with transposed coordinates} -setup {
+    ::Plotchart::plotconfig horizbars object transposecoordinates 1
+    mkCanvas
+} -body {
+    set p [::Plotchart::createHorizontalBarchart .c {0 10 2} {A B C} 1]
+    set id [$p object line s1 2 4 2 8]
+    expr {[R [.c coords $id] 2] eq [R [concat [pix $p 4 2] [pix $p 8 2]] 2]}
+} -cleanup {
+    cleanupPlot
+    ::Plotchart::plotconfig horizbars object transposecoordinates default
+} -result 1
+
+test Plotchart-112.9 {object: legend entry via dataconfig -type rectangle} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p dataconfig obj -type rectangle -colour orange
+    $p object oval obj 1 1 3 3
+    $p legend obj "Object"
+    list [lsort [itemTypes legend]] [itemOption {legend type=rectangle} -fill]
+} -cleanup {
+    cleanupPlot
+} -result {{rectangle text} orange}
+
+# -------------------------------------------------------------------------
+# deletedata
+
+test Plotchart-113.1 {deletedata: removes the data, keeps axes and legend} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p dataconfig s1 -colour red -type both
+    $p plot s1 1 1
+    $p plot s1 2 3
+    $p legend s1 "Series 1"
+    set before [llength [items data]]
+    $p deletedata
+    list [expr {$before > 0}] [llength [items data]] [expr {[llength [items xaxis]] > 0}] \
+	[itemTexts legend]
+} -cleanup {
+    cleanupPlot
+} -result {1 0 1 {{Series 1}}}
+
+test Plotchart-113.2 {deletedata: series options kept, new line not connected} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p dataconfig s1 -colour red
+    $p plot s1 1 1
+    $p plot s1 2 3
+    $p deletedata
+    $p plot s1 5 5
+    set n1 [llength [items data]]
+    $p plot s1 6 6
+    list $n1 [llength [items data]] [itemOption data -fill]
+} -cleanup {
+    cleanupPlot
+} -result {0 1 red}
+
+# -------------------------------------------------------------------------
+# bindplot and bindlast
+
+test Plotchart-114.1 {bindplot: command called with world coordinates} -setup {
+    wm deiconify .
+    mkCanvas
+    pack .c
+    update
+    set ::bindResult {}
+    proc bindCmd {x y args} {
+	lappend ::bindResult [R [list $x $y] 1] $args
+    }
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p bindplot <ButtonPress-1> {bindCmd A B}
+    lassign [pix $p 4 6] px py
+    event generate .c <Motion> -x [expr {round($px)}] -y [expr {round($py)}]
+    event generate .c <ButtonPress-1> -x [expr {round($px)}] -y [expr {round($py)}]
+    event generate .c <ButtonRelease-1> -x [expr {round($px)}] -y [expr {round($py)}]
+    update
+    lassign $::bindResult xy args
+    list [expr {abs([lindex $xy 0]-4) < 0.2 && abs([lindex $xy 1]-6) < 0.2}] $args
+} -cleanup {
+    cleanupPlot
+    rename bindCmd {}
+    unset ::bindResult
+    restoreRoot
+} -result {1 {A B}}
+
+test Plotchart-114.2 {bindlast: command near the last point} -setup {
+    wm deiconify .
+    mkCanvas
+    pack .c
+    update
+    set ::bindResult {}
+    proc bindCmd {x y args} {
+	lappend ::bindResult [R [list $x $y] 1] $args
+    }
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p plot s1 2 3
+    $p bindlast s1 <ButtonPress-1> {bindCmd first}
+    $p plot s1 7 8
+    $p bindlast s1 <ButtonPress-1> {bindCmd second}
+    foreach {x y} {2 3 7 8} {
+	lassign [pix $p $x $y] px py
+	event generate .c <Motion> -x [expr {round($px)+2}] -y [expr {round($py)-2}]
+	event generate .c <ButtonPress-1> -x [expr {round($px)+2}] -y [expr {round($py)-2}]
+	event generate .c <ButtonRelease-1> -x [expr {round($px)+2}] -y [expr {round($py)-2}]
+	update
+    }
+    set ::bindResult
+} -cleanup {
+    cleanupPlot
+    rename bindCmd {}
+    unset ::bindResult
+    restoreRoot
+} -result {{2.0 3.0} first {7.0 8.0} second}
+
+test Plotchart-114.3 {bindplot: wrong # args} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p bindplot <ButtonPress-1>
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {wrong # args: should be "BindPlot w event cmd"}
+
+test Plotchart-114.4 {bindlast: wrong # args} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p bindlast s1 <ButtonPress-1>
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {wrong # args: should be "BindLast w series event cmd"}
+
+# -------------------------------------------------------------------------
+# plotconfig
+
+test Plotchart-115.1 {plotconfig: list of chart types} -body {
+    lsort [::Plotchart::plotconfig]
+} -result [lsort {
+    xyplot xlogyplot logxyplot logxlogyplot piechart spiralpie polarplot
+    histogram horizbars vertbars ganttchart timechart stripchart isometric
+    3dplot 3dbars radialchart txplot 3dribbon boxplot windrose
+    targetdiagram performance table ternary distnormal taylordiagram
+    heatmap circleplot dendrogram}]
+
+test Plotchart-115.2 {plotconfig: the documented configuration types} -body {
+    # Each creation command mentions its configuration type
+    set types [::Plotchart::plotconfig]
+    set missing {}
+    foreach t {xyplot stripchart txplot xlogyplot logxyplot logxlogyplot
+	       polarplot isometric histogram piechart spiralpie radialchart
+	       vertbars horizbars 3dbars 3dribbon boxplot timechart
+	       ganttchart ternary} {
+	if {$t ni $types} {lappend missing $t}
+    }
+    set missing
+} -result {}
+
+test Plotchart-115.3 {plotconfig: list of components} -body {
+    ::Plotchart::plotconfig xyplot
+} -result {title subtitle margin text legend leftaxis rightaxis bottomaxis background mask}
+
+test Plotchart-115.4 {plotconfig: list of properties} -body {
+    list [::Plotchart::plotconfig xyplot margin] [::Plotchart::plotconfig xyplot background] \
+	[::Plotchart::plotconfig xyplot legend] [::Plotchart::plotconfig xyplot mask] \
+	[::Plotchart::plotconfig xyplot title] [::Plotchart::plotconfig piechart slice] \
+	[::Plotchart::plotconfig vertbars bar]
+} -result {{left right top bottom} {outercolor innercolor} {background border position} draw {textcolor font anchor background} {outlinewidth outline startangle direction} {barwidth innermargin outline}}
+
+test Plotchart-115.5 {plotconfig: documented axis properties} -body {
+    set props [::Plotchart::plotconfig xyplot leftaxis]
+    set missing {}
+    foreach p {color thickness ticklength font format textcolor labeloffset
+	       minorticks shownumbers showaxle} {
+	if {$p ni $props} {lappend missing $p}
+    }
+    list $missing [::Plotchart::plotconfig polarplot axis color] \
+	[::Plotchart::plotconfig xyplot leftaxis ticklength]
+} -result {{} gray 3}
+
+test Plotchart-115.6 {plotconfig: query, set, default and none} -body {
+    set r [list [::Plotchart::plotconfig xyplot leftaxis color]]
+    ::Plotchart::plotconfig xyplot leftaxis color red
+    lappend r [::Plotchart::plotconfig xyplot leftaxis color]
+    ::Plotchart::plotconfig xyplot leftaxis color none
+    lappend r [::Plotchart::plotconfig xyplot leftaxis color]
+    ::Plotchart::plotconfig xyplot leftaxis color default
+    lappend r [::Plotchart::plotconfig xyplot leftaxis color]
+} -cleanup {
+    ::Plotchart::plotconfig xyplot leftaxis color default
+} -result {black red {} black}
+
+test Plotchart-115.7 {plotconfig: several property-value pairs at once} -body {
+    ::Plotchart::plotconfig xyplot margin left 50 right 20
+    list [::Plotchart::plotconfig xyplot margin left] [::Plotchart::plotconfig xyplot margin right]
+} -cleanup {
+    ::Plotchart::plotconfig xyplot margin left default right default
+} -result {50 20}
+
+test Plotchart-115.8 {plotconfig: only new plots are affected} -setup {
+    mkCanvas
+} -body {
+    set p1 [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    ::Plotchart::plotconfig xyplot leftaxis textcolor red
+    set p2 [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    ::Plotchart::plotconfig xyplot leftaxis textcolor default
+    list [itemOption [list yaxis [$p1 canvas] type=text] -fill] \
+	[itemOption [list yaxis [$p2 canvas] type=text] -fill]
+} -cleanup {
+    cleanupPlot
+    ::Plotchart::plotconfig xyplot leftaxis textcolor default
+} -result {black red}
+
+test Plotchart-115.9 {plotconfig: margins determine the plot area} -setup {
+    ::Plotchart::plotconfig xyplot margin left 150 top 50 right 60 bottom 70
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    list [R [pix $p 0 10] 0] [R [pix $p 10 0] 0]
+} -cleanup {
+    cleanupPlot
+    ::Plotchart::plotconfig xyplot margin left default top default right default bottom default
+} -result {{150 50} {340 230}}
+
+test Plotchart-115.10 {plotconfig: axis colour, thickness and number format} -setup {
+    ::Plotchart::plotconfig xyplot bottomaxis color blue
+    ::Plotchart::plotconfig xyplot bottomaxis thickness 3
+    ::Plotchart::plotconfig xyplot bottomaxis format %.1f
+    ::Plotchart::plotconfig xyplot bottomaxis textcolor green
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 5} {0 10 5}]
+    set axle [lindex [items {xaxis type=line}] 0]
+    list [itemOption {xaxis type=line} -fill] [.c itemcget $axle -width] [itemTexts xaxis] \
+	[itemOption {xaxis type=text} -fill]
+} -cleanup {
+    cleanupPlot
+    foreach prop {color thickness format textcolor} {
+	::Plotchart::plotconfig xyplot bottomaxis $prop default
+    }
+} -result {blue 3.0 {0.0 5.0 10.0} green}
+
+test Plotchart-115.11 {plotconfig: shownumbers, showaxle and minorticks} -setup {
+    ::Plotchart::plotconfig xyplot leftaxis shownumbers 0
+    ::Plotchart::plotconfig xyplot bottomaxis minorticks 4
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 5} {0 10 5}]
+    set r [list [itemTexts yaxis] [llength [items {xaxis type=line}]]]
+    cleanupPlot
+    ::Plotchart::plotconfig xyplot leftaxis shownumbers default
+    ::Plotchart::plotconfig xyplot bottomaxis minorticks default
+    ::Plotchart::plotconfig xyplot bottomaxis showaxle 0
+    mkCanvas
+    set p [::Plotchart::createXYPlot .c {0 10 5} {0 10 5}]
+    lappend r [llength [items {xaxis type=line}]]
+} -cleanup {
+    cleanupPlot
+    ::Plotchart::plotconfig xyplot leftaxis shownumbers default
+    ::Plotchart::plotconfig xyplot bottomaxis minorticks default
+    ::Plotchart::plotconfig xyplot bottomaxis showaxle default
+} -result {{} 12 3}
+
+test Plotchart-115.12 {plotconfig: mask draw 0} -setup {
+    ::Plotchart::plotconfig xyplot mask draw 0
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 5} {0 10 5}]
+    llength [items mask]
+} -cleanup {
+    cleanupPlot
+    ::Plotchart::plotconfig xyplot mask draw default
+} -result 0
+
+test Plotchart-115.13 {plotconfig: background outercolor} -setup {
+    ::Plotchart::plotconfig xyplot background outercolor lightgrey
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 5} {0 10 5}]
+    $p title "Title"
+    list [itemOption mask -fill] [itemOption titlebackground -fill]
+} -cleanup {
+    cleanupPlot
+    ::Plotchart::plotconfig xyplot background outercolor default
+} -result {lightgrey lightgrey}
+
+test Plotchart-115.14 {plotconfig: title background differs from outercolor} -setup {
+    ::Plotchart::plotconfig xyplot title background yellow
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 5} {0 10 5}]
+    $p title "Title"
+    list [itemOption mask -fill] [itemOption titlebackground -fill]
+} -cleanup {
+    cleanupPlot
+    ::Plotchart::plotconfig xyplot title background default
+} -result {white yellow}
+
+test Plotchart-115.15 {plotconfig: text component for plaintext} -constraints {
+    knownBug
+} -setup {
+    ::Plotchart::plotconfig xyplot text textcolor red
+    ::Plotchart::plotconfig xyplot text font {Courier 12}
+    mkCanvas
+} -body {
+    # The text component is not used by plaintext
+    set p [::Plotchart::createXYPlot .c {0 10 5} {0 10 5}]
+    $p plaintext 5 5 "Text"
+    list [itemOption PlainText -fill] [itemOption PlainText -font]
+} -cleanup {
+    cleanupPlot
+    ::Plotchart::plotconfig xyplot text textcolor default
+    ::Plotchart::plotconfig xyplot text font default
+} -result {red {{Courier 12}}}
+
+test Plotchart-115.16 {plotconfig: unknown chart type} -body {
+    ::Plotchart::plotconfig nosuchchart
+} -returnCodes error -result {Unknown chart type - nosuchchart}
+
+test Plotchart-115.17 {plotconfig: unknown component} -body {
+    ::Plotchart::plotconfig xyplot nosuchcomponent
+} -returnCodes error -result {Unknown component 'nosuchcomponent' for this chart type - xyplot}
+
+test Plotchart-115.18 {plotconfig: unknown property} -body {
+    ::Plotchart::plotconfig xyplot leftaxis nosuchproperty
+} -returnCodes error -result {Unknown property 'nosuchproperty' for this component 'leftaxis' (chart: xyplot)}
+
+test Plotchart-115.19 {plotconfig: empty arguments} -body {
+    list [expr {[::Plotchart::plotconfig {}] eq [::Plotchart::plotconfig]}] \
+	[::Plotchart::plotconfig xyplot {}] \
+	[::Plotchart::plotconfig xyplot margin {}]
+} -result {1 {title subtitle margin text legend leftaxis rightaxis bottomaxis background mask} {left right top bottom}}
+
+# -------------------------------------------------------------------------
+# plotstyle
+
+test Plotchart-116.1 {plotstyle: current style and names} -body {
+    list [::Plotchart::plotstyle current] [::Plotchart::plotstyle names]
+} -result {default default}
+
+test Plotchart-116.2 {plotstyle: configure and load a new style} -setup {
+    mkCanvas
+} -body {
+    ::Plotchart::plotstyle configure testStyle xyplot leftaxis color red \
+	xyplot background outercolor yellow
+    set r [list [::Plotchart::plotstyle names] [::Plotchart::plotstyle current] \
+	       [::Plotchart::plotconfig xyplot leftaxis color]]
+    ::Plotchart::plotstyle load testStyle
+    lappend r [::Plotchart::plotstyle current] [::Plotchart::plotconfig xyplot leftaxis color]
+    set p [::Plotchart::createXYPlot .c {0 10 5} {0 10 5}]
+    lappend r [itemOption {yaxis type=line} -fill] [itemOption mask -fill]
+} -cleanup {
+    cleanupPlot
+    ::Plotchart::plotstyle load default
+    array unset ::Plotchart::style testStyle,*
+    set ::Plotchart::config(styles) \
+	[lsearch -all -inline -not $::Plotchart::config(styles) testStyle]
+} -result {{default testStyle} default black testStyle red red yellow}
+
+test Plotchart-116.3 {plotstyle: configure the current style changes the config} -body {
+    ::Plotchart::plotstyle configure default xyplot leftaxis color blue
+    ::Plotchart::plotconfig xyplot leftaxis color
+} -cleanup {
+    ::Plotchart::plotstyle configure default xyplot leftaxis color black
+} -result {blue}
+
+test Plotchart-116.4 {plotstyle: load the default style again} -body {
+    ::Plotchart::plotstyle configure testStyle2 xyplot leftaxis color green
+    ::Plotchart::plotstyle load testStyle2
+    set r [::Plotchart::plotconfig xyplot leftaxis color]
+    ::Plotchart::plotstyle load default
+    lappend r [::Plotchart::plotconfig xyplot leftaxis color] [::Plotchart::plotstyle current]
+} -cleanup {
+    ::Plotchart::plotstyle load default
+    array unset ::Plotchart::style testStyle2,*
+    set ::Plotchart::config(styles) \
+	[lsearch -all -inline -not $::Plotchart::config(styles) testStyle2]
+} -result {green black default}
+
+test Plotchart-116.5 {plotstyle: load unknown style} -body {
+    ::Plotchart::plotstyle load nosuchstyle
+} -returnCodes error -result {no such plotting style 'nosuchstyle'}
+
+# -------------------------------------------------------------------------
+# eraseplot
+
+test Plotchart-117.1 {eraseplot: removes the plot command and its items} -setup {
+    mkCanvas
+} -body {
+    set p1 [::Plotchart::createXYPlot .c {0 10 2} {0 10 2} -box {0 0 200 300}]
+    set p2 [::Plotchart::createXYPlot .c {0 10 2} {0 10 2} -box {200 0 200 300}]
+    $p1 title "One"
+    set w1 [$p1 canvas]
+    set w2 [$p2 canvas]
+    ::Plotchart::eraseplot $p1
+    list [llength [info commands $p1]] [llength [items $w1]] \
+	[expr {[llength [items $w2]] > 0}] [llength [info commands $p2]] \
+	[llength [array names ::Plotchart::scaling $w1,*]]
+} -cleanup {
+    cleanupPlot
+} -result {0 0 1 1 0}
+
+test Plotchart-117.2 {eraseplot: the data are removed too} -constraints {
+    knownBug
+} -setup {
+    mkCanvas
+} -body {
+    # The data items do not have the tag of the plot
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p plot s1 1 1
+    $p plot s1 2 2
+    $p legend s1 "Series"
+    ::Plotchart::eraseplot $p
+    llength [.c find all]
+} -cleanup {
+    cleanupPlot
+} -result 0
+
+test Plotchart-117.3 {eraseplot: wrong # args} -body {
+    ::Plotchart::eraseplot
+} -returnCodes error -result {wrong # args: should be "::Plotchart::eraseplot p"}
+
+# -------------------------------------------------------------------------
+# plotmethod
+
+test Plotchart-118.1 {plotmethod: new method for a chart type} -setup {
+    mkCanvas
+    proc doodle {p w x y} {
+	$p plaintext $x $y "DOODLE"
+	return [list $p $w]
+    }
+} -body {
+    ::Plotchart::plotmethod xyplot doodle doodle
+    set p [::Plotchart::createXYPlot .c {0 100 10} {0 20 5}]
+    set r [$p doodle 40 10]
+    list [expr {[lindex $r 0] eq $p}] [expr {[lindex $r 1] eq [$p canvas]}] \
+	[itemTexts PlainText] \
+	[expr {[R [.c coords [items PlainText]] 2] eq [R [pix $p 40 10] 2]}]
+} -cleanup {
+    cleanupPlot
+    unset -nocomplain ::Plotchart::methodProc(xyplot,doodle)
+    rename doodle {}
+} -result {1 1 DOODLE 1}
+
+test Plotchart-118.2 {plotmethod: only for the given chart type} -setup {
+    mkCanvas
+    proc doodle {p w} {}
+} -body {
+    ::Plotchart::plotmethod xyplot doodle doodle
+    set p [::Plotchart::createHistogram .c {0 100 10} {0 20 5}]
+    $p doodle
+} -cleanup {
+    cleanupPlot
+    unset -nocomplain ::Plotchart::methodProc(xyplot,doodle)
+    rename doodle {}
+} -returnCodes error -result {No such method - doodle}
+
+test Plotchart-118.3 {plotmethod: namespace-relative procedure} -setup {
+    mkCanvas
+    namespace eval ::plotchartTest {
+	proc myMethod {p w} {return ok}
+    }
+} -body {
+    namespace eval ::plotchartTest {
+	::Plotchart::plotmethod xyplot mymethod myMethod
+    }
+    set p [::Plotchart::createXYPlot .c {0 100 10} {0 20 5}]
+    $p mymethod
+} -cleanup {
+    cleanupPlot
+    unset -nocomplain ::Plotchart::methodProc(xyplot,mymethod)
+    namespace delete ::plotchartTest
+} -result ok
+
+test Plotchart-118.4 {plotmethod: unknown procedure} -body {
+    ::Plotchart::plotmethod xyplot doodle nosuchproc
+} -returnCodes error -result {No such command or procedure: nosuchproc}
+
+# -------------------------------------------------------------------------
+# plotpack
+
+test Plotchart-119.1 {plotpack top: plots copied above each other} -setup {
+    mkCanvas 300 200
+    mkCanvas 300 200 .c2
+    mkCanvas 400 500 .c3
+} -body {
+    set p1 [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p1 title "First"
+    set p2 [::Plotchart::createBarchart .c2 {A B} {0 10 2} 1]
+    $p2 title "Second"
+    ::Plotchart::plotpack .c3 top $p1 $p2
+    set t1 [lindex [.c3 find withtag {title && 00.c}] 0]
+    set t2 [lindex [.c3 find withtag {title && 00.c2}] 0]
+    list [expr {[llength [.c3 find all]] == [llength [.c find all]] + [llength [.c2 find all]]}] \
+	[.c3 itemcget $t1 -text] [.c3 itemcget $t2 -text] \
+	[R [expr {[lindex [.c3 coords $t2] 1] - [lindex [.c3 coords $t1] 1]}] 0] \
+	[R [expr {[lindex [.c3 coords $t2] 0] - [lindex [.c3 coords $t1] 0]}] 0]
+} -cleanup {
+    cleanupPlot
+    cleanupPlot .c2
+    cleanupPlot .c3
+} -result {1 First Second 200 0}
+
+test Plotchart-119.2 {plotpack left: plots side by side} -setup {
+    mkCanvas 300 200
+    mkCanvas 200 200 .c2
+    mkCanvas 600 300 .c3
+} -body {
+    set p1 [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p1 title "First"
+    set p2 [::Plotchart::createXYPlot .c2 {0 10 2} {0 10 2}]
+    $p2 title "Second"
+    ::Plotchart::plotpack .c3 left $p1
+    ::Plotchart::plotpack .c3 left $p2
+    set t1 [lindex [.c3 find withtag {title && 00.c}] 0]
+    set t2 [lindex [.c3 find withtag {title && 00.c2}] 0]
+    list [R [expr {[lindex [.c3 coords $t2] 0] - [lindex [.c3 coords $t1] 0]}] 0] \
+	[R [expr {[lindex [.c3 coords $t2] 1] - [lindex [.c3 coords $t1] 1]}] 0]
+} -cleanup {
+    cleanupPlot
+    cleanupPlot .c2
+    cleanupPlot .c3
+} -result {250 0}
+
+test Plotchart-119.3 {plotpack bottom: plot at the bottom} -setup {
+    mkCanvas 300 200
+    mkCanvas 300 500 .c3
+} -body {
+    set p1 [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p1 title "First"
+    ::Plotchart::plotpack .c3 bottom $p1
+    set t1 [lindex [.c3 find withtag {title && 00.c}] 0]
+    R [expr {[lindex [.c3 coords $t1] 1] - [lindex [.c coords [items title]] 1]}] 0
+} -cleanup {
+    cleanupPlot
+    cleanupPlot .c3
+} -result {300}
+
+test Plotchart-119.4 {plotpack right: plot at the right} -constraints {
+    knownBug
+} -setup {
+    mkCanvas 300 200
+    mkCanvas 500 300 .c3
+} -body {
+    # Fails with: can't read "cheight": no such variable
+    set p1 [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p1 title "First"
+    ::Plotchart::plotpack .c3 right $p1
+    set t1 [lindex [.c3 find withtag {title && 00.c}] 0]
+    R [expr {[lindex [.c3 coords $t1] 0] - [lindex [.c coords [items title]] 0]}] 0
+} -cleanup {
+    cleanupPlot
+    cleanupPlot .c3
+} -result {200}
+
+# -------------------------------------------------------------------------
+# Coordinate transformations
+
+test Plotchart-120.1 {viewPort and worldCoordinates: reversed x-axis} -body {
+    set ::Plotchart::scaling(plotchartTestW,coordSystem) 0
+    ::Plotchart::viewPort plotchartTestW 10 20 110 220
+    ::Plotchart::worldCoordinates plotchartTestW 100 0 0 50
+    list [R [::Plotchart::coordsToPixel plotchartTestW 100 0]] \
+	[R [::Plotchart::coordsToPixel plotchartTestW 0 50]] \
+	[R [::Plotchart::coordsToPixel plotchartTestW 25 25]] \
+	[R [::Plotchart::pixelToCoords plotchartTestW 85 120]]
+} -cleanup {
+    array unset ::Plotchart::scaling plotchartTestW,*
+} -result {{10.0 220.0} {110.0 20.0} {85.0 120.0} {25.0 25.0}}
+
+test Plotchart-120.2 {worldCoordinates: extremes must differ} -body {
+    ::Plotchart::worldCoordinates plotchartTestW 0 0 0 10
+} -cleanup {
+    array unset ::Plotchart::scaling plotchartTestW,*
+} -returnCodes error -result {Minimum and maximum must differ for world coordinates}
+
+test Plotchart-120.3 {worldCoordinates: wrong # args} -body {
+    ::Plotchart::worldCoordinates plotchartTestW 0 0 10
+} -returnCodes error -result {wrong # args: should be "::Plotchart::worldCoordinates w xmin ymin xmax ymax"}
+
+test Plotchart-120.4 {viewPort: wrong # args} -body {
+    ::Plotchart::viewPort plotchartTestW 0 0 10
+} -returnCodes error -result {wrong # args: should be "::Plotchart::viewPort w pxmin pymin pxmax pymax"}
+
+test Plotchart-120.5 {polarCoordinates: maximum radius} -body {
+    set ::Plotchart::scaling(plotchartTestW,coordSystem) 0
+    ::Plotchart::viewPort plotchartTestW 0 0 200 200
+    ::Plotchart::polarCoordinates plotchartTestW 10
+    list [R [::Plotchart::coordsToPixel plotchartTestW 0 0]] \
+	[R [::Plotchart::coordsToPixel plotchartTestW 10 10]] \
+	[R [::Plotchart::coordsToPixel plotchartTestW -10 -10]]
+} -cleanup {
+    array unset ::Plotchart::scaling plotchartTestW,*
+} -result {{100.0 100.0} {200.0 0.0} {0.0 200.0}}
+
+test Plotchart-120.6 {polarCoordinates: radius must be positive} -body {
+    ::Plotchart::polarCoordinates plotchartTestW 0
+} -returnCodes error -result {Maximum radius must be positive}
+
+test Plotchart-120.7 {polarToPixel: radius and angle in a polar plot} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createPolarplot .c {10 2}]
+    set w [$p canvas]
+    lassign [::Plotchart::polarToPixel $w 0 0] cx cy
+    lassign [::Plotchart::polarToPixel $w 10 0] x0 y0
+    lassign [::Plotchart::polarToPixel $w 10 90] x90 y90
+    lassign [::Plotchart::polarToPixel $w 5 180] x180 y180
+    list [approx $y0 $cy 0.01] [expr {$x0 > $cx}] [approx $x90 $cx 0.01] [expr {$y90 < $cy}] \
+	[approx [expr {$cx - $x180}] [expr {($x0 - $cx)/2.0}] 0.01] \
+	[expr {[R [::Plotchart::polarToPixel $w 3 30] 3] eq [R [::Plotchart::coordsToPixel $w 3 30] 3]}]
+} -cleanup {
+    cleanupPlot
+} -result {1 1 1 1 1 1}
+
+test Plotchart-120.8 {pixelToCoords: polar plot} -constraints {
+    knownBug
+} -setup {
+    mkCanvas 400 400
+} -body {
+    # Fails with: can't read "xycrd": no such variable
+    set p [::Plotchart::createPolarplot .c {10 2}]
+    set w [$p canvas]
+    R [::Plotchart::pixelToCoords $w {*}[::Plotchart::coordsToPixel $w 5 90]]
+} -cleanup {
+    cleanupPlot
+} -result {5.0 90.0}
+
+test Plotchart-120.9 {pixelToCoords: logarithmic axes} -setup {
+    mkCanvas
+} -body {
+    set r {}
+    foreach cmd {
+	{::Plotchart::createLogXYPlot .c {1 1000} {0 10 2}}
+	{::Plotchart::createXLogYPlot .c {0 10 2} {1 1000}}
+	{::Plotchart::createLogXLogYPlot .c {1 1000} {1 1000}}
+    } {
+	set p [{*}$cmd]
+	set w [$p canvas]
+	lappend r [R [::Plotchart::pixelToCoords $w {*}[::Plotchart::coordsToPixel $w 10 10]]]
+	cleanupPlot
+	mkCanvas
+    }
+    set r
+} -cleanup {
+    cleanupPlot
+} -result {{10.0 10.0} {10.0 10.0} {10.0 10.0}}
+
+test Plotchart-120.10 {coordsToPixel: logarithmic x-axis} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createLogXYPlot .c {1 1000} {0 10 2}]
+    set w [$p canvas]
+    lassign [::Plotchart::coordsToPixel $w 1 0] x1
+    lassign [::Plotchart::coordsToPixel $w 10 0] x10
+    lassign [::Plotchart::coordsToPixel $w 100 0] x100
+    lassign [::Plotchart::coordsToPixel $w 1000 0] x1000
+    list [approx [expr {$x10-$x1}] [expr {$x100-$x10}] 0.01] \
+	[approx [expr {$x1000-$x100}] [expr {$x100-$x10}] 0.01]
+} -cleanup {
+    cleanupPlot
+} -result {1 1}
+
+test Plotchart-120.11 {world3DCoordinates and coords3DToPixel} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::create3DPlot .c {0 10 5} {0 10 5} {0 10 5}]
+    set w [$p canvas]
+    lassign [::Plotchart::coords3DToPixel $w 10 0 0] xa ya
+    lassign [::Plotchart::coords3DToPixel $w 10 10 0] xb yb
+    lassign [::Plotchart::coords3DToPixel $w 10 0 10] xc yc
+    lassign [::Plotchart::coords3DToPixel $w 0 0 0] xd yd
+    # y goes to the right, z goes up, x goes into the screen
+    list [expr {$xb > $xa}] [approx $yb $ya 0.01] [expr {$yc < $ya}] [approx $xc $xa 0.01] \
+	[expr {$xd < $xa}] [expr {$yd > $ya}]
+} -cleanup {
+    cleanupPlot
+} -result {1 1 1 1 1 1}
+
+test Plotchart-120.12 {world3DCoordinates: extremes must differ} -body {
+    ::Plotchart::world3DCoordinates plotchartTestW 0 0 0 1 1 0
+} -cleanup {
+    array unset ::Plotchart::scaling plotchartTestW,*
+} -returnCodes error -result {Minimum and maximum must differ for world coordinates}
+
+test Plotchart-120.13 {pixelToIndex: segment of a piechart} -setup {
+    mkCanvas 400 400
+} -body {
+    set p [::Plotchart::createPiechart .c]
+    $p plot {A 1 B 1 C 2}
+    set w [$p canvas]
+    lassign [.c bbox segment_0] x1 y1 x2 y2
+    set r {}
+    foreach seg {0 1 2} {
+	lassign [centre segment_$seg] x y
+	# Move from the bounding box centre a bit towards the arc
+	lappend r [::Plotchart::pixelToIndex $w $x $y]
+    }
+    lappend r [::Plotchart::pixelToIndex $w 0 0]
+} -cleanup {
+    cleanupPlot
+} -result {0 1 2 -1}
+
+test Plotchart-120.14 {determineScale: nice numbers} -body {
+    list [::Plotchart::determineScale 0.1 9.8] [::Plotchart::determineScale 0.1 9.8 1] \
+	[::Plotchart::determineScale -3 17]
+} -result {{0.0 10.0 2.0} {10.0 0.0 -2.0} {-10.0 20.0 10.0}}
+
+test Plotchart-120.15 {determineScale: wrong # args} -body {
+    ::Plotchart::determineScale 1
+} -returnCodes error -result {wrong # args: should be "::Plotchart::determineScale xmin xmax ?inverted?"}
+
+test Plotchart-120.16 {determineScaleFromList: missing values and inverted} -body {
+    list [::Plotchart::determineScaleFromList {1 {} 3.5 9.8 {} 2}] \
+	[::Plotchart::determineScaleFromList {1 {} 3.5 9.8 {} 2} 1]
+} -result {{0.0 10.0 2.0} {10.0 0.0 -2.0}}
+
+test Plotchart-120.17 {determineScaleFromList: wrong # args} -body {
+    ::Plotchart::determineScaleFromList
+} -returnCodes error -result {wrong # args: should be "::Plotchart::determineScaleFromList values ?inverted?"}
+
+# -------------------------------------------------------------------------
+# rescale (zooming in)
+
+test Plotchart-121.1 {rescale: new axes, data scaled and moved} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p plot s1 2 2
+    $p plot s1 4 6
+    $p rescale {0 5 1} {0 10 2}
+    set line [items data_s1]
+    list [itemTexts xaxis] [itemTexts yaxis] \
+	[expr {[R [.c coords $line] 0] eq [R [concat [pix $p 2 2] [pix $p 4 6]] 0]}]
+} -cleanup {
+    cleanupPlot
+} -result {{0 1 2 3 4 5} {0 2 4 6 8 10} 1}
+
+test Plotchart-121.2 {rescale: step size can not be zero} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    $p rescale {0 5 0} {0 10 2}
+} -cleanup {
+    cleanupPlot
+} -returnCodes error -result {Step size can not be zero}
+
+# -------------------------------------------------------------------------
+# -box and -axesbox
+
+test Plotchart-122.1 {-box: plot in a part of the canvas} -setup {
+    mkCanvas 600 300
+} -body {
+    set p1 [::Plotchart::createXYPlot .c {0 10 2} {0 10 2} -box {0 0 300 300}]
+    set p2 [::Plotchart::createXYPlot .c {0 10 2} {0 10 2} -box {300 0 300 300}]
+    lassign [pix $p1 0 0] x1a y1a
+    lassign [pix $p1 10 10] x1b y1b
+    lassign [pix $p2 0 0] x2a y2a
+    lassign [pix $p2 10 10] x2b y2b
+    list [R [expr {$x2a - $x1a}] 0] [R [expr {$x2b - $x1b}] 0] [R [expr {$y2a - $y1a}] 0] \
+	[expr {$x1b < 300}] [expr {$x2b < 600}]
+} -cleanup {
+    cleanupPlot
+} -result {300 300 0 1 1}
+
+test Plotchart-122.2 {-box: titles per plot} -setup {
+    mkCanvas 600 300
+} -body {
+    set p1 [::Plotchart::createXYPlot .c {0 10 2} {0 10 2} -box {0 0 300 300}]
+    set p2 [::Plotchart::createXYPlot .c {0 10 2} {0 10 2} -box {300 0 300 300}]
+    $p1 title "Left plot"
+    $p2 title "Right plot"
+    list [itemTexts [list title [$p1 canvas]]] [R [lindex [.c coords [items [list title [$p1 canvas]]]] 0] 0] \
+	[itemTexts [list title [$p2 canvas]]] [R [lindex [.c coords [items [list title [$p2 canvas]]]] 0] 0]
+} -cleanup {
+    cleanupPlot
+} -result {{{Left plot}} 150 {{Right plot}} 450}
+
+test Plotchart-122.3 {-axesbox: axes aligned with another plot} -setup {
+    mkCanvas 600 400
+} -body {
+    set p1 [::Plotchart::createXYPlot .c {0 10 2} {0 10 2} -box {0 0 300 400}]
+    set p2 [::Plotchart::createXYPlot .c {0 10 1} {-5 5 2.5} -axesbox [list $p1 ne 0 0 200 200]]
+    lassign [pix $p1 10 10] nex ney
+    lassign [pix $p2 0 5] x2a y2a
+    lassign [pix $p2 10 -5] x2b y2b
+    list [R [list $x2a $y2a] 0] [R [list $nex $ney] 0] [R [list [expr {$x2b-$x2a}] [expr {$y2b-$y2a}]] 0]
+} -cleanup {
+    cleanupPlot
+} -match glob -result {{* *} {* *} {200 200}}
+
+test Plotchart-122.4 {-axesbox: anchored at the north-east corner} -setup {
+    mkCanvas 600 400
+} -body {
+    set p1 [::Plotchart::createXYPlot .c {0 10 2} {0 10 2} -box {0 0 300 400}]
+    set p2 [::Plotchart::createXYPlot .c {0 10 1} {-5 5 2.5} -axesbox [list $p1 ne 0 0 200 200]]
+    expr {[R [pix $p2 0 5] 0] eq [R [pix $p1 10 10] 0]}
+} -cleanup {
+    cleanupPlot
+} -result 1
+
+test Plotchart-122.5 {-axesbox: offset and other anchors} -setup {
+    mkCanvas 600 600
+} -body {
+    set p1 [::Plotchart::createXYPlot .c {0 10 2} {0 10 2} -box {0 0 300 300}]
+    set r {}
+    foreach {anchor xref yref} {nw 0 10  sw 0 0  se 10 0} {
+	set p2 [::Plotchart::createXYPlot .c {0 10 1} {0 10 1} -axesbox [list $p1 $anchor 20 10 100 100]]
+	lassign [pix $p1 $xref $yref] ax ay
+	lassign [pix $p2 0 10] bx by
+	lappend r [R [list [expr {$bx - $ax}] [expr {$by - $ay}]] 0]
+    }
+    set r
+} -cleanup {
+    cleanupPlot
+} -result {{20 -10} {20 -10} {20 -10}}
+
+# -------------------------------------------------------------------------
+# Missing values
+
+test Plotchart-123.1 {missing values: gap in the line of an XY plot} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0.0 100.0 10.0} {0.0 100.0 20.0}]
+    foreach {x y} {0.0 32.0 10.0 {} 25.0 60.0 78.0 11.0} {
+	$p plot series1 $x $y
+    }
+    set lines [items data_series1]
+    list [llength $lines] [R [.c coords [lindex $lines 0]] 1] \
+	[R [concat [pix $p 25 60] [pix $p 78 11]] 1]
+} -cleanup {
+    cleanupPlot
+} -match glob -result {1 * *}
+
+test Plotchart-123.2 {missing values: line resumes after the gap} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createXYPlot .c {0.0 100.0 10.0} {0.0 100.0 20.0}]
+    foreach {x y} {0.0 32.0 10.0 {} 25.0 60.0 78.0 11.0} {
+	$p plot series1 $x $y
+    }
+    set line [items data_series1]
+    expr {[R [.c coords $line] 1] eq [R [concat [pix $p 25 60] [pix $p 78 11]] 1]}
+} -cleanup {
+    cleanupPlot
+} -result 1
+
+test Plotchart-123.3 {missing values: zero in a barchart} -setup {
+    mkCanvas
+} -body {
+    set p [::Plotchart::createBarchart .c {A B C} {0 10 2} 1]
+    $p plot s1 {4 {} 6} red
+    set h {}
+    foreach bar [items data_s1] {
+	lassign [.c coords $bar] x1 y1 x2 y2
+	lappend h [R [expr {abs($y2-$y1)}] 0]
+    }
+    list [llength $h] [lindex $h 1]
+} -cleanup {
+    cleanupPlot
+} -result {3 0}
+
+# -------------------------------------------------------------------------
+# Several plots in one canvas
+
+test Plotchart-124.1 {several plots: independent items and names} -setup {
+    mkCanvas 600 300
+} -body {
+    set p1 [::Plotchart::createXYPlot .c {0 10 2} {0 10 2} -box {0 0 300 300}]
+    set p2 [::Plotchart::createBarchart .c {A B} {0 10 2} 1 -box {300 0 300 300}]
+    list [expr {$p1 ne $p2}] [expr {[$p1 canvas] ne [$p2 canvas]}] \
+	[llength [items [list xaxis [$p1 canvas]]]] [expr {[llength [items [list xaxis [$p2 canvas]]]] > 0}]
+} -cleanup {
+    cleanupPlot
+} -match glob -result {1 1 [1-9]* 1}
+
+test Plotchart-124.2 {clearcanvas: start afresh} -setup {
+    mkCanvas
+} -body {
+    set p1 [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    ::Plotchart::clearcanvas .c
+    set p2 [::Plotchart::createXYPlot .c {0 10 2} {0 10 2}]
+    list [expr {$p1 eq $p2}] [llength [items {xaxis type=text}]]
+} -cleanup {
+    cleanupPlot
+} -result {1 6}
+
+# -------------------------------------------------------------------------
+interp bgerror {} $::oldBgError
+restoreRoot
+test Plotchart-199.1 {no background errors} -body {
+    set ::bgErrors
+} -result {}
+file delete -force $tmpDir
+::tcltest::cleanupTests
