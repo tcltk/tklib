@@ -1,0 +1,256 @@
+# -*- tcl -*-
+# Tests for the canvas::tag package
+#
+# See the file "license.terms" for information on usage and redistribution
+# of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2
+    namespace import ::tcltest::*
+} else {
+    if {![package vsatisfies [package present tcltest] 2.2]} {
+	puts "    Aborting the tests found in \"[file tail [info script]]\"."
+	puts "    Requiring tcltest 2.2, have [package present tcltest]"
+	return
+    }
+}
+
+::tcltest::testConstraint tk 1
+
+lappend auto_path [file dirname [file dirname [file normalize [info script]]]]
+package require canvas::tag
+
+# -------------------------------------------------------------------------
+
+proc mkCanvas {} {
+    canvas .c
+    .c create rectangle 0 0 10 10 -tags {a b}
+    .c create line 0 0 10 10 -tags {b c}
+    .c create oval 0 0 10 10
+}
+
+proc tags {} {
+    set res {}
+    foreach item [.c find all] {
+	lappend res [.c gettags $item]
+    }
+    return $res
+}
+
+test canvas::tag-1.0 {package version} -body {
+    package present canvas::tag
+} -result 0.1
+
+test canvas::tag-1.1 {ensemble subcommands} -body {
+    ::canvas::tag foo .c 1
+} -returnCodes error -result {unknown or ambiguous subcommand "foo": must be append, insert, match, prepend, or remove}
+
+test canvas::tag-1.2 {no subcommand} -body {
+    ::canvas::tag
+} -returnCodes error -result {wrong # args: should be "::canvas::tag subcommand ?arg ...?"}
+
+# -------------------------------------------------------------------------
+
+test canvas::tag-2.1 {append: wrong # args} -body {
+    ::canvas::tag append .c
+} -returnCodes error -result {wrong # args: should be "::canvas::tag append c tagOrId ?arg ...?"}
+
+test canvas::tag-2.2 {append: one tag} -setup mkCanvas -body {
+    list [::canvas::tag append .c 1 x] [tags]
+} -cleanup {destroy .c} -result {{} {{a b x} {b c} {}}}
+
+test canvas::tag-2.3 {append: several tags, several items} -setup mkCanvas -body {
+    ::canvas::tag append .c b x y
+    tags
+} -cleanup {destroy .c} -result {{a b x y} {b c x y} {}}
+
+test canvas::tag-2.4 {append: all items} -setup mkCanvas -body {
+    ::canvas::tag append .c all x
+    tags
+} -cleanup {destroy .c} -result {{a b x} {b c x} x}
+
+test canvas::tag-2.5 {append: no tags} -setup mkCanvas -body {
+    ::canvas::tag append .c all
+    tags
+} -cleanup {destroy .c} -result {{a b} {b c} {}}
+
+test canvas::tag-2.6 {append: no matching items} -setup mkCanvas -body {
+    list [::canvas::tag append .c nosuchtag x] [tags]
+} -cleanup {destroy .c} -result {{} {{a b} {b c} {}}}
+
+test canvas::tag-2.7 {append: tag expression} -setup mkCanvas -body {
+    ::canvas::tag append .c {a||c} x
+    tags
+} -cleanup {destroy .c} -result {{a b x} {b c x} {}}
+
+test canvas::tag-2.8 {append: bad canvas} -body {
+    ::canvas::tag append .nosuchcanvas all x
+} -returnCodes error -result {invalid command name ".nosuchcanvas"}
+
+test canvas::tag-2.9 {append: new tag usable with find} -setup mkCanvas -body {
+    ::canvas::tag append .c 3 x
+    .c find withtag x
+} -cleanup {destroy .c} -result 3
+
+# -------------------------------------------------------------------------
+
+test canvas::tag-3.1 {prepend: wrong # args} -body {
+    ::canvas::tag prepend .c
+} -returnCodes error -result {wrong # args: should be "::canvas::tag prepend c tagOrId ?arg ...?"}
+
+test canvas::tag-3.2 {prepend: one tag} -setup mkCanvas -body {
+    list [::canvas::tag prepend .c 1 x] [tags]
+} -cleanup {destroy .c} -result {{} {{x a b} {b c} {}}}
+
+test canvas::tag-3.3 {prepend: several tags keep their order} -setup mkCanvas -body {
+    ::canvas::tag prepend .c b x y
+    tags
+} -cleanup {destroy .c} -result {{x y a b} {x y b c} {}}
+
+test canvas::tag-3.4 {prepend: item without tags} -setup mkCanvas -body {
+    ::canvas::tag prepend .c 3 x
+    tags
+} -cleanup {destroy .c} -result {{a b} {b c} x}
+
+# -------------------------------------------------------------------------
+# The manpage documents this command as "append canvas tagOrId index tag...",
+# the code implements it as "insert".
+
+test canvas::tag-4.1 {insert: wrong # args} -body {
+    ::canvas::tag insert .c 1
+} -returnCodes error -result {wrong # args: should be "::canvas::tag insert c tagOrId index ?arg ...?"}
+
+test canvas::tag-4.2 {insert: at 0} -setup mkCanvas -body {
+    list [::canvas::tag insert .c 1 0 x] [tags]
+} -cleanup {destroy .c} -result {{} {{x a b} {b c} {}}}
+
+test canvas::tag-4.3 {insert: in the middle} -setup mkCanvas -body {
+    ::canvas::tag insert .c b 1 x y
+    tags
+} -cleanup {destroy .c} -result {{a x y b} {b x y c} {}}
+
+test canvas::tag-4.4 {insert: at end} -setup mkCanvas -body {
+    ::canvas::tag insert .c all end x
+    tags
+} -cleanup {destroy .c} -result {{a b x} {b c x} x}
+
+test canvas::tag-4.5 {insert: end-relative index} -setup mkCanvas -body {
+    ::canvas::tag insert .c 1 end-1 x
+    tags
+} -cleanup {destroy .c} -result {{a x b} {b c} {}}
+
+test canvas::tag-4.6 {insert: index beyond the end} -setup mkCanvas -body {
+    ::canvas::tag insert .c 1 10 x
+    tags
+} -cleanup {destroy .c} -result {{a b x} {b c} {}}
+
+test canvas::tag-4.7 {insert: bad index} -setup mkCanvas -body {
+    ::canvas::tag insert .c 1 foo x
+} -cleanup {destroy .c} -returnCodes error -result {bad index "foo": must be integer?[+-]integer? or end?[+-]integer?}
+
+test canvas::tag-4.8 {insert: bad index, no items: no error} -setup mkCanvas -body {
+    ::canvas::tag insert .c nosuchtag foo x
+} -cleanup {destroy .c} -result {}
+
+# -------------------------------------------------------------------------
+
+test canvas::tag-5.1 {remove: wrong # args} -body {
+    ::canvas::tag remove .c
+} -returnCodes error -result {wrong # args: should be "::canvas::tag remove c tagOrId ?arg ...?"}
+
+test canvas::tag-5.2 {remove: one tag} -setup mkCanvas -body {
+    list [::canvas::tag remove .c all b] [tags]
+} -cleanup {destroy .c} -result {{} {a c {}}}
+
+test canvas::tag-5.3 {remove: several tags} -setup mkCanvas -body {
+    ::canvas::tag remove .c all a c
+    tags
+} -cleanup {destroy .c} -result {b b {}}
+
+test canvas::tag-5.4 {remove: only from matching items} -setup mkCanvas -body {
+    ::canvas::tag remove .c 2 b
+    tags
+} -cleanup {destroy .c} -result {{a b} c {}}
+
+test canvas::tag-5.5 {remove: missing tag is ignored} -setup mkCanvas -body {
+    ::canvas::tag remove .c all nosuchtag
+    tags
+} -cleanup {destroy .c} -result {{a b} {b c} {}}
+
+test canvas::tag-5.6 {remove: the tag used to select the items} -setup mkCanvas -body {
+    ::canvas::tag remove .c b b
+    list [tags] [.c find withtag b]
+} -cleanup {destroy .c} -result {{a c {}} {}}
+
+test canvas::tag-5.7 {remove: no glob matching} -setup mkCanvas -body {
+    ::canvas::tag remove .c all *
+    tags
+} -cleanup {destroy .c} -result {{a b} {b c} {}}
+
+test canvas::tag-5.8 {remove: all occurrences of duplicated tag} -setup {
+    mkCanvas
+    .c itemconfigure 1 -tags {a b a b a}
+} -body {
+    ::canvas::tag remove .c 1 a
+    .c gettags 1
+} -cleanup {destroy .c} -result {b b}
+
+# -------------------------------------------------------------------------
+
+test canvas::tag-6.1 {match: wrong # args} -body {
+    ::canvas::tag match .c 1
+} -returnCodes error -result {wrong # args: should be "::canvas::tag match c tagOrId pattern"}
+
+test canvas::tag-6.2 {match: wrong # args} -body {
+    ::canvas::tag match .c 1 a b
+} -returnCodes error -result {wrong # args: should be "::canvas::tag match c tagOrId pattern"}
+
+test canvas::tag-6.3 {match: exact} -setup mkCanvas -body {
+    ::canvas::tag match .c 1 a
+} -cleanup {destroy .c} -result a
+
+test canvas::tag-6.4 {match: glob, unique sorted result over items} -setup mkCanvas -body {
+    ::canvas::tag match .c all *
+} -cleanup {destroy .c} -result {a b c}
+
+test canvas::tag-6.5 {match: no match} -setup mkCanvas -body {
+    ::canvas::tag match .c all z*
+} -cleanup {destroy .c} -result {}
+
+test canvas::tag-6.6 {match: no items} -setup mkCanvas -body {
+    ::canvas::tag match .c nosuchtag *
+} -cleanup {destroy .c} -result {}
+
+test canvas::tag-6.7 {match: prefix pattern} -setup {
+    mkCanvas
+    .c itemconfigure 3 -tags {pre1 pre2 other}
+} -body {
+    ::canvas::tag match .c all pre*
+} -cleanup {destroy .c} -result {pre1 pre2}
+
+test canvas::tag-6.8 {match: character class pattern} -setup mkCanvas -body {
+    ::canvas::tag match .c b {[bc]}
+} -cleanup {destroy .c} -result {b c}
+
+test canvas::tag-6.9 {match: does not report the "current" tag of other items} -setup mkCanvas -body {
+    ::canvas::tag match .c 3 *
+} -cleanup {destroy .c} -result {}
+
+# -------------------------------------------------------------------------
+
+rename mkCanvas {}
+rename tags {}
+
+::tcltest::cleanupTests
