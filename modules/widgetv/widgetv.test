@@ -27,6 +27,12 @@ ttk::entry .before
 lappend auto_path [file dirname [file dirname [file normalize [info script]]]]
 package require widget::validator
 
+# Tests with focus, keyboard and geometry need a viewable main window
+# (test runners withdraw it).
+set oldmainstate [wm state .]
+wm deiconify .
+update
+
 # -------------------------------------------------------------------------
 # Helpers
 
@@ -600,4 +606,8 @@ destroy .before
 rename nonEmpty {}
 rename isInvalid {}
 rename forget {}
+if {$oldmainstate eq "withdrawn"} {
+    wm withdraw .
+}
+unset oldmainstate
 ::tcltest::cleanupTests
