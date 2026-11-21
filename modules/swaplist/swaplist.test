@@ -1,8 +1,10 @@
 # -*- tcl -*-
 # Tests for the swaplist package
 #
-# Sourcing this file into Tcl runs the tests and generates output for errors.
-# No output means no errors were found.
+# Copyright (c) 2026 Serhiy Storchaka
+#
+# See the file "license.terms" for information on usage and redistribution
+# of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 
 if {![package vsatisfies [package provide Tcl] 8.5-]} {
     puts "    Aborting the tests found in \"[file tail [info script]]\"."
@@ -16,77 +18,818 @@ if {[catch { package require Tk 8.5- } msg]} {
     return
 }
 
-package require tcltest 2.1
+package require tcltest 2.2
 namespace import ::tcltest::*
 
-source [file join [file dirname [info script]] swaplist.tcl]
+
+source [file join [file dirname [file normalize [info script]]] swaplist.tcl]
 
 # -------------------------------------------------------------------------
+# Helpers
 
-# Collect background errors instead of showing the error dialog
-proc bgerrorHandler {msg opts} {
-    lappend ::bgerrors $msg
+# Run script at the global level as soon as the modal dialog w is shown
+# (inside its tkwait).  If the dialog does not appear, close it.
+proc whenShown {w script {n 200}} {
+    if {[winfo exists $w.oc.ok] && [grab current $w] eq $w} {
+        uplevel #0 $script
+    } elseif {$n > 0} {
+        after 10 [list whenShown $w $script [incr n -1]]
+    } else {
+        set ::swaplist::whichButton 0
+    }
 }
-set oldBgerror [interp bgerror {}]
-interp bgerror {} bgerrorHandler
 
-proc doubleClick {lb index} {
-    lassign [$lb bbox $index] x y
-    incr x 2
-    incr y 2
-    foreach _ {1 2} {
-        event generate $lb <ButtonPress-1>   -x $x -y $y
-        event generate $lb <ButtonRelease-1> -x $x -y $y
+# Run the dialog, executing script when it is shown.
+proc runDialog {script args} {
+    after 0 [list whenShown .sl $script]
+    uplevel 1 [linsert $args 0 ::swaplist::swaplist .sl]
+}
+
+proc lcontents {w} {
+    list [$w.list1.list get 0 end] [$w.list2.list get 0 end]
+}
+
+# Simulate a double click on item idx of listbox lb.
+proc dblclick {lb idx} {
+    $lb see $idx
+    update
+    foreach {x y} [$lb bbox $idx] break
+    incr x 2; incr y 2
+    set t 100000
+    foreach e {ButtonPress-1 ButtonRelease-1 ButtonPress-1 ButtonRelease-1} {
+        event generate $lb <$e> -x $x -y $y -time [incr t 10]
     }
     update
 }
 
-test swaplist-1.1 {double click moves items in an embedded swaplist} -setup {
-    toplevel .t
-    ::swaplist::swaplist .t.swl ::sels {a b c} {d e} -embed
-    pack .t.swl
-    update
-} -body {
-    set ::bgerrors {}
-    doubleClick .t.swl.list1.list 0
-    set res [list [.t.swl.list1.list get 0 end] [.t.swl.list2.list get 0 end]]
-    doubleClick .t.swl.list2.list end
-    lappend res [.t.swl.list1.list get 0 end] [.t.swl.list2.list get 0 end] $::bgerrors
-} -cleanup {
-    destroy .t
-    unset -nocomplain ::sels
-} -result {{b c} {d e a} {a b c} {d e} {}}
-
-test swaplist-1.2 {double click moves items in an embedded swaplist in a frame} -setup {
-    toplevel .t
-    frame .t.f
-    ::swaplist::swaplist .t.f.swl ::sels {a b c} {d e} -embed
-    pack .t.f .t.f.swl
-    update
-} -body {
-    set ::bgerrors {}
-    doubleClick .t.f.swl.list2.list 0
-    list [.t.f.swl.list1.list get 0 end] [.t.f.swl.list2.list get 0 end] $::bgerrors
-} -cleanup {
-    destroy .t
-    unset -nocomplain ::sels
-} -result {{d a b c} e {}}
-
-test swaplist-1.3 {double click when the path of the swaplist contains .list1.} -setup {
-    toplevel .t
-    frame .t.list1
-    ::swaplist::swaplist .t.list1.swl ::sels {a b c} {d e} -embed
-    pack .t.list1 .t.list1.swl
-    update
-} -body {
-    set ::bgerrors {}
-    doubleClick .t.list1.swl.list2.list 0
-    list [.t.list1.swl.list1.list get 0 end] [.t.list1.swl.list2.list get 0 end] $::bgerrors
-} -cleanup {
-    destroy .t
-    unset -nocomplain ::sels
-} -result {{d a b c} e {}}
+proc collectBgerror {msg opts} {
+    lappend ::bgerrors $msg
+}
 
 # -------------------------------------------------------------------------
-interp bgerror {} $oldBgerror
+# Argument checking
+
+test swaplist-1.1 {swaplist: wrong # args} -body {
+    ::swaplist::swaplist .sl v {a b}
+} -returnCodes error -result {wrong # args: should be "::swaplist::swaplist w var list1 list2 ?arg ...?"}
+
+test swaplist-1.2 {swaplist: unknown option} -body {
+    ::swaplist::swaplist .sl v {a b} {} -foo bar
+} -returnCodes error -result {unknown option -foo}
+
+test swaplist-1.3 {swaplist: option without value} -body {
+    ::swaplist::swaplist .sl v {a b} {} -title
+} -returnCodes error -result {-title requires an argument}
+
+test swaplist-1.4 {swaplist: -reorder requires a boolean} -body {
+    ::swaplist::swaplist .sl v {a b} {} -reorder maybe
+} -returnCodes error -result {-reorder requires argument of type boolean}
+
+test swaplist-1.5 {swaplist: -embed with bad option creates nothing} -body {
+    list [catch {::swaplist::swaplist .sl v {a b} {} -embed -foo} msg] $msg \
+        [winfo exists .sl]
+} -cleanup {
+    unset -nocomplain msg
+} -result {1 {unknown option -foo} 0}
+
+test swaplist-1.6 {swaplist: -embed with existing window name} -setup {
+    frame .sl
+} -body {
+    ::swaplist::swaplist .sl v {a b} {} -embed
+} -cleanup {
+    destroy .sl
+} -returnCodes error -result {window name "sl" already exists in parent}
+
+test swaplist-1.7 {swaplist: -empty -llabel} -body {
+    ::swaplist::swaplist .sl v {a b} {} -embed -llabel {}
+    .sl.heading1 cget -text
+} -cleanup {
+    destroy .sl
+    unset -nocomplain v
+} -result {}
+
+# -------------------------------------------------------------------------
+# Embedded swaplist
+
+test swaplist-2.1 {embed: returns the path name} -body {
+    ::swaplist::swaplist .sl v {a b c} {b} -embed
+} -cleanup {
+    destroy .sl
+    unset -nocomplain v
+} -result .sl
+
+test swaplist-2.2 {embed: creates a frame} -body {
+    ::swaplist::swaplist .sl v {a b c} {b} -embed
+    list [winfo class .sl] [winfo toplevel .sl]
+} -cleanup {
+    destroy .sl
+    unset -nocomplain v
+} -result {Frame .}
+
+test swaplist-2.3 {embed: initial contents of the lists} -body {
+    ::swaplist::swaplist .sl v {a b c d e} {d b} -embed
+    lcontents .sl
+} -cleanup {
+    destroy .sl
+    unset -nocomplain v
+} -result {{a c e} {d b}}
+
+test swaplist-2.4 {embed: variable is the listvariable of the right list} -body {
+    ::swaplist::swaplist .sl v {a b c d e} {d b} -embed
+    list $v [.sl.list2.list cget -listvariable]
+} -cleanup {
+    destroy .sl
+    unset -nocomplain v
+} -result {{d b} v}
+
+test swaplist-2.5 {embed: variable overrides old value} -setup {
+    set v {x y z}
+} -body {
+    ::swaplist::swaplist .sl v {a b c} {c} -embed
+    set v
+} -cleanup {
+    destroy .sl
+    unset -nocomplain v
+} -result c
+
+test swaplist-2.6 {embed: changing the variable changes the right list} -body {
+    ::swaplist::swaplist .sl v {a b c} {c} -embed
+    set v {a b}
+    .sl.list2.list get 0 end
+} -cleanup {
+    destroy .sl
+    unset -nocomplain v
+} -result {a b}
+
+test swaplist-2.7 {embed: selected items not in the complete list} -body {
+    ::swaplist::swaplist .sl v {a b c} {x c y} -embed
+    lcontents .sl
+} -cleanup {
+    destroy .sl
+    unset -nocomplain v
+} -result {{a b} {x c y}}
+
+test swaplist-2.8 {embed: empty lists} -body {
+    ::swaplist::swaplist .sl v {} {} -embed
+    list [lcontents .sl] $v
+} -cleanup {
+    destroy .sl
+    unset -nocomplain v
+} -result {{{} {}} {}}
+
+test swaplist-2.9 {embed: items with spaces and special characters} -body {
+    ::swaplist::swaplist .sl v {{a b} {[c]} {$d} \{} {{$d}} -embed
+    list [lcontents .sl] $v
+} -cleanup {
+    destroy .sl
+    unset -nocomplain v
+} -result {{{{a b} {[c]} \{} {{$d}}} {{$d}}}
+
+test swaplist-2.10 {embed: -title and -geometry are ignored} -setup {
+    set title [wm title .]
+    update
+    set geom [wm geometry .]
+} -body {
+    ::swaplist::swaplist .sl v {a b} {} -embed -title Foo -geometry 10x10+1+1
+    update idletasks
+    list [winfo class .sl] [expr {[wm title .] eq $title}] \
+        [expr {[wm geometry .] eq $geom}]
+} -cleanup {
+    destroy .sl
+    unset -nocomplain v title geom
+} -result {Frame 1 1}
+
+test swaplist-2.11 {embed: default labels and button texts} -body {
+    ::swaplist::swaplist .sl v {a b} {} -embed
+    list [.sl.heading1 cget -text] [.sl.heading2 cget -text] \
+        [.sl.lr.left cget -text] [.sl.lr.right cget -text] \
+        [.sl.ud.up cget -text] [.sl.ud.down cget -text]
+} -cleanup {
+    destroy .sl
+    unset -nocomplain v
+} -result {Available: Selected: << >> {Move Up} {Move Down}}
+
+test swaplist-2.12 {embed: custom labels and button texts} -body {
+    ::swaplist::swaplist .sl v {a b} {} -embed -llabel Left -rlabel Right \
+        -lbuttontext <- -rbuttontext -> -ubuttontext Up -dbuttontext Down
+    list [.sl.heading1 cget -text] [.sl.heading2 cget -text] \
+        [.sl.lr.left cget -text] [.sl.lr.right cget -text] \
+        [.sl.ud.up cget -text] [.sl.ud.down cget -text]
+} -cleanup {
+    destroy .sl
+    unset -nocomplain v
+} -result {Left Right <- -> Up Down}
+
+test swaplist-2.13 {embed: long button texts widen the buttons} -body {
+    ::swaplist::swaplist .sl v {a b} {} -embed -lbuttontext "Remove item" \
+        -ubuttontext "Move the item up"
+    list [.sl.lr.left cget -width] [.sl.lr.right cget -width] \
+        [.sl.ud.up cget -width] [.sl.ud.down cget -width]
+} -cleanup {
+    destroy .sl
+    unset -nocomplain v
+} -result {11 11 16 16}
+
+test swaplist-2.14 {embed: -reorder 1 shows up/down buttons} -body {
+    ::swaplist::swaplist .sl v {a b} {} -embed -reorder 1
+    winfo manager .sl.ud
+} -cleanup {
+    destroy .sl
+    unset -nocomplain v
+} -result grid
+
+test swaplist-2.15 {embed: -reorder 0 hides up/down buttons} -body {
+    ::swaplist::swaplist .sl v {a b} {} -embed -reorder 0
+    winfo manager .sl.ud
+} -cleanup {
+    destroy .sl
+    unset -nocomplain v
+} -result {}
+
+test swaplist-2.16 {embed: -reorder accepts any boolean} -body {
+    set res {}
+    foreach b {yes no true false on off} {
+        ::swaplist::swaplist .sl v {a b} {} -embed -reorder $b
+        lappend res [winfo manager .sl.ud]
+        destroy .sl
+    }
+    set res
+} -cleanup {
+    destroy .sl
+    unset -nocomplain v res b
+} -result {grid {} grid {} grid {}}
+
+test swaplist-2.17 {embed: listboxes allow extended selection} -body {
+    ::swaplist::swaplist .sl v {a b} {} -embed
+    list [.sl.list1.list cget -selectmode] [.sl.list2.list cget -selectmode]
+} -cleanup {
+    destroy .sl
+    unset -nocomplain v
+} -result {extended extended}
+
+test swaplist-2.18 {embed: variable in a namespace} -setup {
+    namespace eval ::swaplisttest {variable v}
+} -body {
+    ::swaplist::swaplist .sl ::swaplisttest::v {a b c} {a} -embed
+    .sl.list1.list selection set 0
+    .sl.lr.right invoke
+    set ::swaplisttest::v
+} -cleanup {
+    destroy .sl
+    namespace delete ::swaplisttest
+} -result {a b}
+
+test swaplist-2.19 {embed: last option wins} -body {
+    ::swaplist::swaplist .sl v {a b} {} -embed -llabel A -llabel B
+    .sl.heading1 cget -text
+} -cleanup {
+    destroy .sl
+    unset -nocomplain v
+} -result B
+
+# -------------------------------------------------------------------------
+# Moving items
+
+test swaplist-3.1 {move right: appends selected items} -setup {
+    ::swaplist::swaplist .sl v {a b c d e} {d} -embed
+} -body {
+    .sl.list1.list selection set 0
+    .sl.list1.list selection set 2
+    .sl.lr.right invoke
+    list [lcontents .sl] $v [.sl.list2.list curselection] \
+        [.sl.list1.list curselection]
+} -cleanup {
+    destroy .sl
+    unset -nocomplain v
+} -result {{{b e} {d a c}} {d a c} {1 2} {}}
+
+test swaplist-3.2 {move right: nothing selected} -setup {
+    ::swaplist::swaplist .sl v {a b c} {b} -embed
+} -body {
+    .sl.lr.right invoke
+    list [lcontents .sl] $v
+} -cleanup {
+    destroy .sl
+    unset -nocomplain v
+} -result {{{a c} b} b}
+
+test swaplist-3.3 {move right: all items} -setup {
+    ::swaplist::swaplist .sl v {a b c} {} -embed
+} -body {
+    .sl.list1.list selection set 0 end
+    .sl.lr.right invoke
+    list [lcontents .sl] $v
+} -cleanup {
+    destroy .sl
+    unset -nocomplain v
+} -result {{{} {a b c}} {a b c}}
+
+test swaplist-3.4 {move right with -reorder 0: keeps original order} -setup {
+    ::swaplist::swaplist .sl v {a b c d e} {d} -embed -reorder 0
+} -body {
+    .sl.list1.list selection set 0
+    .sl.list1.list selection set 3
+    .sl.lr.right invoke
+    list [lcontents .sl] $v [.sl.list1.list curselection]
+} -cleanup {
+    destroy .sl
+    unset -nocomplain v
+} -result {{{b c} {a d e}} {a d e} 0}
+
+test swaplist-3.5 {move right with -reorder 0: last items} -setup {
+    ::swaplist::swaplist .sl v {a b c d} {} -embed -reorder 0
+} -body {
+    .sl.list1.list selection set 2 3
+    .sl.lr.right invoke
+    list [lcontents .sl] [.sl.list1.list curselection]
+} -cleanup {
+    destroy .sl
+    unset -nocomplain v
+} -result {{{a b} {c d}} 1}
+
+test swaplist-3.6 {move right with -reorder 0: all items} -setup {
+    ::swaplist::swaplist .sl v {a b c} {b} -embed -reorder 0
+} -body {
+    .sl.list1.list selection set 0 end
+    .sl.lr.right invoke
+    list [lcontents .sl] [.sl.list2.list curselection]
+} -cleanup {
+    destroy .sl
+    unset -nocomplain v
+} -result {{{} {a b c}} {0 2}}
+
+test swaplist-3.7 {move right with -reorder 0: nothing selected} -setup {
+    ::swaplist::swaplist .sl v {a b c} {b} -embed -reorder 0
+} -body {
+    .sl.lr.right invoke
+    lcontents .sl
+} -cleanup {
+    destroy .sl
+    unset -nocomplain v
+} -result {{a c} b}
+
+test swaplist-3.8 {move left: items return to original position} -setup {
+    ::swaplist::swaplist .sl v {a b c d e} {e c a} -embed
+} -body {
+    .sl.list2.list selection set 0 1
+    .sl.lr.left invoke
+    list [lcontents .sl] $v [.sl.list2.list curselection]
+} -cleanup {
+    destroy .sl
+    unset -nocomplain v
+} -result {{{b c d e} a} a 0}
+
+test swaplist-3.9 {move left: nothing selected} -setup {
+    ::swaplist::swaplist .sl v {a b c} {b} -embed
+} -body {
+    .sl.lr.left invoke
+    list [lcontents .sl] $v
+} -cleanup {
+    destroy .sl
+    unset -nocomplain v
+} -result {{{a c} b} b}
+
+test swaplist-3.10 {move left: all items} -setup {
+    ::swaplist::swaplist .sl v {a b c} {c a b} -embed
+} -body {
+    .sl.list2.list selection set 0 end
+    .sl.lr.left invoke
+    list [lcontents .sl] $v
+} -cleanup {
+    destroy .sl
+    unset -nocomplain v
+} -result {{{a b c} {}} {}}
+
+test swaplist-3.11 {move left: item not in the complete list goes first} -setup {
+    ::swaplist::swaplist .sl v {a b c} {x} -embed
+} -body {
+    .sl.list2.list selection set 0
+    .sl.lr.left invoke
+    list [lcontents .sl] $v
+} -cleanup {
+    destroy .sl
+    unset -nocomplain v
+} -result {{{x a b c} {}} {}}
+
+test swaplist-3.12 {move left: selection moves to the next item} -setup {
+    ::swaplist::swaplist .sl v {a b c d e} {a b c d} -embed
+} -body {
+    .sl.list2.list selection set 1
+    .sl.lr.left invoke
+    list [lcontents .sl] [.sl.list2.list curselection]
+} -cleanup {
+    destroy .sl
+    unset -nocomplain v
+} -result {{{b e} {a c d}} 1}
+
+test swaplist-3.13 {move right then left restores lists} -setup {
+    ::swaplist::swaplist .sl v {a b c d e} {} -embed
+} -body {
+    .sl.list1.list selection set 1 3
+    .sl.lr.right invoke
+    .sl.lr.left invoke
+    list [lcontents .sl] $v
+} -cleanup {
+    destroy .sl
+    unset -nocomplain v
+} -result {{{a b c d e} {}} {}}
+
+# -------------------------------------------------------------------------
+# Reordering
+
+test swaplist-4.1 {move up} -setup {
+    ::swaplist::swaplist .sl v {} {a b c d e} -embed
+} -body {
+    .sl.list2.list selection set 2
+    .sl.list2.list selection set 4
+    .sl.ud.up invoke
+    list $v [.sl.list2.list curselection]
+} -cleanup {
+    destroy .sl
+    unset -nocomplain v
+} -result {{a c b e d} {1 3}}
+
+test swaplist-4.2 {move up: first item stays first} -setup {
+    ::swaplist::swaplist .sl v {} {a b c d} -embed
+} -body {
+    .sl.list2.list selection set 0 1
+    .sl.ud.up invoke
+    list $v [.sl.list2.list curselection]
+} -cleanup {
+    destroy .sl
+    unset -nocomplain v
+} -result {{a b c d} {0 1}}
+
+test swaplist-4.3 {move up: block of items} -setup {
+    ::swaplist::swaplist .sl v {} {a b c d} -embed
+} -body {
+    .sl.list2.list selection set 2 3
+    .sl.ud.up invoke
+    .sl.ud.up invoke
+    list $v [.sl.list2.list curselection]
+} -cleanup {
+    destroy .sl
+    unset -nocomplain v
+} -result {{c d a b} {0 1}}
+
+test swaplist-4.4 {move down} -setup {
+    ::swaplist::swaplist .sl v {} {a b c d e} -embed
+} -body {
+    .sl.list2.list selection set 0
+    .sl.list2.list selection set 2
+    .sl.ud.down invoke
+    list $v [.sl.list2.list curselection]
+} -cleanup {
+    destroy .sl
+    unset -nocomplain v
+} -result {{b a d c e} {1 3}}
+
+test swaplist-4.5 {move down: last item stays last} -setup {
+    ::swaplist::swaplist .sl v {} {a b c d} -embed
+} -body {
+    .sl.list2.list selection set 3
+    .sl.ud.down invoke
+    list $v [.sl.list2.list curselection]
+} -cleanup {
+    destroy .sl
+    unset -nocomplain v
+} -result {{a b c d} 3}
+
+test swaplist-4.6 {move up/down: nothing selected} -setup {
+    ::swaplist::swaplist .sl v {} {a b c} -embed
+} -body {
+    .sl.ud.up invoke
+    .sl.ud.down invoke
+    set v
+} -cleanup {
+    destroy .sl
+    unset -nocomplain v
+} -result {a b c}
+
+test swaplist-4.7 {move up/down does not touch the left list} -setup {
+    ::swaplist::swaplist .sl v {a b c d} {c d} -embed
+} -body {
+    .sl.list1.list selection set 1
+    .sl.list2.list selection set 1
+    .sl.ud.up invoke
+    lcontents .sl
+} -cleanup {
+    destroy .sl
+    unset -nocomplain v
+} -result {{a b} {d c}}
+
+# -------------------------------------------------------------------------
+# Double click
+
+test swaplist-5.1 {double click in embedded swaplist: left list} -setup {
+    set bgerrors {}
+    set oldbgerror [interp bgerror {}]
+    interp bgerror {} collectBgerror
+    toplevel .top
+    ::swaplist::swaplist .top.sl v {a b c} {} -embed
+    pack .top.sl
+    update
+} -body {
+    dblclick .top.sl.list1.list 1
+    list [lcontents .top.sl] $bgerrors
+} -cleanup {
+    destroy .top
+    interp bgerror {} $oldbgerror
+    unset -nocomplain v bgerrors oldbgerror
+} -result {{{a c} b} {}}
+
+test swaplist-5.2 {double click in embedded swaplist: right list} -setup {
+    set bgerrors {}
+    set oldbgerror [interp bgerror {}]
+    interp bgerror {} collectBgerror
+    toplevel .top
+    ::swaplist::swaplist .top.sl v {a b c} {a b c} -embed
+    pack .top.sl
+    update
+} -body {
+    dblclick .top.sl.list2.list 1
+    list [lcontents .top.sl] $bgerrors
+} -cleanup {
+    destroy .top
+    interp bgerror {} $oldbgerror
+    unset -nocomplain v bgerrors oldbgerror
+} -result {{b {a c}} {}}
+
+test swaplist-5.3 {double click in the dialog: left list} -setup {
+    set bgerrors {}
+    set oldbgerror [interp bgerror {}]
+    interp bgerror {} collectBgerror
+} -body {
+    set res [runDialog {
+        dblclick .sl.list1.list 1
+        set lists [lcontents .sl]
+        .sl.oc.ok invoke
+    } v {a b c} {}]
+    list $res $lists $v $bgerrors
+} -cleanup {
+    interp bgerror {} $oldbgerror
+    unset -nocomplain v res lists bgerrors oldbgerror
+} -result {1 {{a c} b} b {}}
+
+test swaplist-5.4 {double click in the dialog: right list} -setup {
+    set bgerrors {}
+    set oldbgerror [interp bgerror {}]
+    interp bgerror {} collectBgerror
+} -body {
+    set res [runDialog {
+        dblclick .sl.list2.list 0
+        set lists [lcontents .sl]
+        .sl.oc.ok invoke
+    } v {a b c} {c a}]
+    list $res $lists $v $bgerrors
+} -cleanup {
+    interp bgerror {} $oldbgerror
+    unset -nocomplain v res lists bgerrors oldbgerror
+} -result {1 {{b c} a} a {}}
+
+test swaplist-5.5 {double click in embedded swaplist in a frame} -setup {
+    set bgerrors {}
+    set oldbgerror [interp bgerror {}]
+    interp bgerror {} collectBgerror
+    toplevel .top
+    frame .top.f
+    ::swaplist::swaplist .top.f.sl v {a b c} {d e} -embed
+    pack .top.f .top.f.sl
+    update
+} -body {
+    dblclick .top.f.sl.list2.list 0
+    list [lcontents .top.f.sl] $bgerrors
+} -cleanup {
+    destroy .top
+    interp bgerror {} $oldbgerror
+    unset -nocomplain v bgerrors oldbgerror
+} -result {{{d a b c} e} {}}
+
+test swaplist-5.6 {double click when the path of the swaplist contains .list1.} -setup {
+    set bgerrors {}
+    set oldbgerror [interp bgerror {}]
+    interp bgerror {} collectBgerror
+    toplevel .top
+    frame .top.list1
+    ::swaplist::swaplist .top.list1.sl v {a b c} {d e} -embed
+    pack .top.list1 .top.list1.sl
+    update
+} -body {
+    dblclick .top.list1.sl.list2.list 0
+    list [lcontents .top.list1.sl] $bgerrors
+} -cleanup {
+    destroy .top
+    interp bgerror {} $oldbgerror
+    unset -nocomplain v bgerrors oldbgerror
+} -result {{{d a b c} e} {}}
+
+# -------------------------------------------------------------------------
+# Dialog
+
+test swaplist-6.1 {dialog: OK returns 1 and sets the variable} -body {
+    set res [runDialog {.sl.oc.ok invoke} v {a b c d} {d b}]
+    list $res $v [winfo exists .sl]
+} -cleanup {
+    unset -nocomplain v res
+} -result {1 {d b} 0}
+
+test swaplist-6.2 {dialog: Cancel returns 0} -body {
+    runDialog {.sl.oc.cancel invoke} v {a b c d} {d b}
+} -cleanup {
+    unset -nocomplain v
+} -result 0
+
+test swaplist-6.3 {dialog: variable is set after Cancel} -setup {
+    set v old
+} -body {
+    list [runDialog {.sl.oc.cancel invoke} v {a b c d} {d b}] $v
+} -cleanup {
+    unset -nocomplain v
+} -result {0 {d b}}
+
+test swaplist-6.4 {dialog: OK after moving items} -body {
+    set res [runDialog {
+        .sl.list1.list selection set 0
+        .sl.lr.right invoke
+        .sl.list2.list selection clear 0 end
+        .sl.list2.list selection set 0
+        .sl.ud.down invoke
+        .sl.oc.ok invoke
+    } v {a b c d} {d}]
+    list $res $v
+} -cleanup {
+    unset -nocomplain v res
+} -result {1 {a d}}
+
+test swaplist-6.5 {dialog: Return key is OK} -body {
+    set res [runDialog {
+        focus -force .sl
+        event generate .sl <Key-Return>
+    } v {a b c} {b}]
+    list $res $v
+} -cleanup {
+    unset -nocomplain v res
+} -result {1 b}
+
+test swaplist-6.6 {dialog: Escape key is Cancel} -body {
+    runDialog {
+        focus -force .sl
+        event generate .sl <Key-Escape>
+    } v {a b c} {b}
+} -cleanup {
+    unset -nocomplain v
+} -result 0
+
+test swaplist-6.7 {dialog: closing the window is Cancel} -body {
+    runDialog {
+        uplevel #0 [wm protocol .sl WM_DELETE_WINDOW]
+    } v {a b c} {b}
+} -cleanup {
+    unset -nocomplain v
+} -result 0
+
+test swaplist-6.8 {dialog: destroying the window is Cancel} -constraints {
+    knownBug
+} -body {
+    # The <Destroy> binding ends the dialog, but then the dialog
+    # fails with 'bad window path name ".sl"'.
+    list [runDialog {destroy .sl} v {a b c} {b}] [winfo exists .sl]
+} -cleanup {
+    unset -nocomplain v
+} -result {0 0}
+
+test swaplist-6.9 {dialog: default title} -body {
+    runDialog {
+        set title [wm title .sl]
+        .sl.oc.ok invoke
+    } v {a b c} {b}
+    set title
+} -cleanup {
+    unset -nocomplain v title
+} -result Configuration
+
+test swaplist-6.10 {dialog: -title} -body {
+    runDialog {
+        set title [wm title .sl]
+        .sl.oc.ok invoke
+    } v {a b c} {b} -title "Choose items"
+    set title
+} -cleanup {
+    unset -nocomplain v title
+} -result {Choose items}
+
+test swaplist-6.11 {dialog: -geometry} -body {
+    runDialog {
+        update
+        set geom [wm geometry .sl]
+        .sl.oc.ok invoke
+    } v {a b c} {b} -geometry 400x300+20+30
+    set geom
+} -cleanup {
+    unset -nocomplain v geom
+} -result 400x300+20+30
+
+test swaplist-6.12 {dialog: centered on the screen when child of .} -body {
+    runDialog {
+        update
+        set geom [list [winfo rootx .sl] [winfo rooty .sl] \
+                      [winfo width .sl] [winfo height .sl]]
+        .sl.oc.ok invoke
+    } v {a b c} {b}
+    foreach {x y w h} $geom break
+    list [expr {abs($x + $w/2 - [winfo screenwidth .]/2) <= 2}] \
+         [expr {abs($y + $h/2 - [winfo screenheight .]/2) <= 2}]
+} -cleanup {
+    unset -nocomplain v geom x y w h
+} -result {1 1}
+
+test swaplist-6.13 {dialog: class, transient and labels} -body {
+    runDialog {
+        set res [list [winfo class .sl] [winfo toplevel .sl] [wm transient .sl] \
+                     [.sl.heading1 cget -text] [.sl.heading2 cget -text] \
+                     [.sl.lr.left cget -text] [.sl.lr.right cget -text] \
+                     [winfo manager .sl.ud]]
+        .sl.oc.ok invoke
+    } v {a b c} {b} -llabel L -rlabel R -lbuttontext < -rbuttontext > \
+        -reorder 0
+    set res
+} -cleanup {
+    unset -nocomplain v res
+} -result {Swaplist .sl . L R < > {}}
+
+test swaplist-6.14 {dialog: initial contents} -body {
+    runDialog {
+        set res [lcontents .sl]
+        .sl.oc.ok invoke
+    } v {a b c d e} {e a}
+    set res
+} -cleanup {
+    unset -nocomplain v res
+} -result {{b c d} {e a}}
+
+test swaplist-6.15 {dialog: grabs input while shown} -body {
+    runDialog {
+        set res [grab current .sl]
+        .sl.oc.ok invoke
+    } v {a b c} {b}
+    list $res [grab current .]
+} -cleanup {
+    unset -nocomplain v res
+} -result {.sl {}}
+
+test swaplist-6.16 {dialog: variable in the caller's scope} -setup {
+    proc testSwaplist {} {
+        set res [runDialog {.sl.oc.ok invoke} sel {a b c} {c a}]
+        list $res $sel
+    }
+} -body {
+    list [testSwaplist] [info exists ::sel]
+} -cleanup {
+    rename testSwaplist {}
+} -result {{1 {c a}} 0}
+
+test swaplist-6.17 {dialog: replaces an existing window} -setup {
+    toplevel .sl
+} -body {
+    set res [runDialog {.sl.oc.ok invoke} v {a b} {a}]
+    list $res $v [winfo exists .sl]
+} -cleanup {
+    destroy .sl
+    unset -nocomplain v res
+} -result {1 a 0}
+
+test swaplist-6.18 {dialog: child of another toplevel} -setup {
+    toplevel .top
+    wm geometry .top 400x400+100+100
+    update
+} -body {
+    after 0 [list whenShown .top.sl {
+        set res [list [winfo toplevel .top.sl] [wm transient .top.sl]]
+        .top.sl.oc.ok invoke
+    }]
+    list [::swaplist::swaplist .top.sl v {a b} {b}] $v $res
+} -cleanup {
+    destroy .top
+    unset -nocomplain v res
+} -result {1 b {.top.sl .top}}
+
+test swaplist-6.19 {dialog: restores previous grab} -setup {
+    toplevel .top
+    update
+    grab .top
+} -body {
+    runDialog {.sl.oc.ok invoke} v {a b} {b}
+    grab current .
+} -cleanup {
+    grab release .top
+    destroy .top
+    unset -nocomplain v
+} -result .top
+
+# -------------------------------------------------------------------------
+rename whenShown {}
+rename runDialog {}
+rename lcontents {}
+rename dblclick {}
+rename collectBgerror {}
 ::tcltest::cleanupTests
