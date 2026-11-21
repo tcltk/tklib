@@ -1,0 +1,769 @@
+# -*- tcl -*-
+# Tests for the datefield package
+#
+# Copyright (c) 2026 Serhiy Storchaka
+#
+# See the file "license.terms" for information on usage and redistribution
+# of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+package require tcltest 2.2
+namespace import ::tcltest::*
+
+source [file join [file dirname [file normalize [info script]]] datefield.tcl]
+
+# -------------------------------------------------------------------------
+# Helpers
+
+# Create the datefield .df with the given initial value, set the
+# insertion cursor and give it focus.
+proc mkdf {value pos args} {
+    set ::d $value
+    eval [list ::datefield::datefield .df -textvariable ::d] $args
+    pack .df
+    update
+    focus -force .df
+    update
+    .df icursor $pos
+    return .df
+}
+
+# Send key presses (given as keysyms) to the datefield.
+proc keys {args} {
+    foreach k $args {
+        event generate .df <KeyPress> -keysym $k
+    }
+    update
+    list [.df get] [.df index insert]
+}
+
+proc isValid {date format} {
+    expr {![catch {clock format [clock scan $date -format $format] \
+                       -format $format} d2] && $d2 eq $date}
+}
+
+# Bell is called on invalid input; count the calls.
+rename ::bell ::datefieldTestBell
+proc ::bell {args} {incr ::bells}
+
+# -------------------------------------------------------------------------
+# Creation
+
+test datefield-1.1 {datefield: wrong # args} -body {
+    ::datefield::datefield
+} -returnCodes error -result {wrong # args: should be "::datefield::datefield w ?arg ...?"}
+
+test datefield-1.2 {datefield: returns the path name} -body {
+    ::datefield::datefield .df
+} -cleanup {
+    destroy .df
+} -result .df
+
+test datefield-1.3 {datefield: is an entry widget} -body {
+    ::datefield::datefield .df
+    expr {[winfo class .df] in {Entry TEntry}}
+} -cleanup {
+    destroy .df
+} -result 1
+
+test datefield-1.4 {datefield: default width and justification} -body {
+    ::datefield::datefield .df
+    list [.df cget -width] [.df cget -justify]
+} -cleanup {
+    destroy .df
+} -result {10 center}
+
+test datefield-1.5 {datefield: entry options are accepted} -body {
+    ::datefield::datefield .df -width 12 -justify left -exportselection 0
+    list [.df cget -width] [.df cget -justify] [.df cget -exportselection]
+} -cleanup {
+    destroy .df
+} -result {12 left 0}
+
+test datefield-1.6 {datefield: bad entry option} -body {
+    ::datefield::datefield .df -nosuchoption 1
+} -cleanup {
+    destroy .df
+} -returnCodes error -result {unknown option "-nosuchoption"}
+
+test datefield-1.7 {datefield: initial value is today, English format} -body {
+    set before [clock format [clock seconds] -format %m/%d/%Y]
+    ::datefield::datefield .df
+    set after [clock format [clock seconds] -format %m/%d/%Y]
+    expr {[.df get] in [list $before $after]}
+} -cleanup {
+    destroy .df
+    unset -nocomplain before after
+} -result 1
+
+test datefield-1.8 {datefield: initial cursor position} -body {
+    ::datefield::datefield .df
+    .df index insert
+} -cleanup {
+    destroy .df
+} -result 0
+
+test datefield-1.9 {datefield: valid initial textvariable is kept} -body {
+    set d 12/24/1999
+    ::datefield::datefield .df -textvariable d
+    list [.df get] $d
+} -cleanup {
+    destroy .df
+    unset -nocomplain d
+} -result {12/24/1999 12/24/1999}
+
+test datefield-1.10 {datefield: invalid initial textvariable is replaced} -body {
+    set d foo
+    set before [clock format [clock seconds] -format %m/%d/%Y]
+    ::datefield::datefield .df -textvariable d
+    set after [clock format [clock seconds] -format %m/%d/%Y]
+    list [expr {$d in [list $before $after]}] [expr {[.df get] eq $d}]
+} -cleanup {
+    destroy .df
+    unset -nocomplain d before after
+} -result {1 1}
+
+test datefield-1.11 {datefield: textvariable in wrong format is replaced} -body {
+    set d 1999-12-24
+    ::datefield::datefield .df -textvariable d
+    isValid $d %m/%d/%Y
+} -cleanup {
+    destroy .df
+    unset -nocomplain d
+} -result 1
+
+test datefield-1.12 {datefield: entry commands work} -body {
+    set d 12/24/1999
+    ::datefield::datefield .df -textvariable d
+    .df configure -width 15
+    list [.df get] [.df cget -width] [.df index end]
+} -cleanup {
+    destroy .df
+    unset -nocomplain d
+} -result {12/24/1999 15 10}
+
+test datefield-1.13 {datefield: mouse drag and multiple clicks are disabled} -body {
+    ::datefield::datefield .df
+    list [bind .df <Button1-Motion>] [bind .df <Double-Button>] \
+        [bind .df <Triple-Button>] [bind .df <2>]
+} -cleanup {
+    destroy .df
+} -result {break break break break}
+
+# -------------------------------------------------------------------------
+# -format option
+
+test datefield-2.1 {-format English} -body {
+    set before [clock format [clock seconds] -format %m/%d/%Y]
+    ::datefield::datefield .df -format %m/%d/%Y
+    set after [clock format [clock seconds] -format %m/%d/%Y]
+    expr {[.df get] in [list $before $after]}
+} -cleanup {
+    destroy .df
+    unset -nocomplain before after
+} -result 1
+
+test datefield-2.2 {-format German} -body {
+    set before [clock format [clock seconds] -format %d.%m.%Y]
+    ::datefield::datefield .df -format %d.%m.%Y
+    set after [clock format [clock seconds] -format %d.%m.%Y]
+    expr {[.df get] in [list $before $after]}
+} -cleanup {
+    destroy .df
+    unset -nocomplain before after
+} -result 1
+
+test datefield-2.3 {-format ISO} -body {
+    set before [clock format [clock seconds] -format %Y-%m-%d]
+    ::datefield::datefield .df -format %Y-%m-%d
+    set after [clock format [clock seconds] -format %Y-%m-%d]
+    expr {[.df get] in [list $before $after]}
+} -cleanup {
+    destroy .df
+    unset -nocomplain before after
+} -result 1
+
+test datefield-2.4 {-format: bad value} -body {
+    ::datefield::datefield .df -format %Y/%m/%d
+} -returnCodes error -result {ERROR: Unknown value for option -format on datefield .df -format %Y/%m/%d}
+
+test datefield-2.5 {-format: missing value} -body {
+    ::datefield::datefield .df -format
+} -returnCodes error -result {ERROR: Unknown value for option -format on datefield .df -format}
+
+test datefield-2.6 {-format: bad value creates no widget} -body {
+    catch {::datefield::datefield .df -format foo}
+    winfo exists .df
+} -result 0
+
+test datefield-2.7 {-format: together with other options} -body {
+    set d 1999-12-24
+    ::datefield::datefield .df -width 12 -format %Y-%m-%d -textvariable d
+    list [.df get] [.df cget -width]
+} -cleanup {
+    destroy .df
+    unset -nocomplain d
+} -result {1999-12-24 12}
+
+test datefield-2.8 {-format: initial value in the given format} -body {
+    set d 24.12.1999
+    ::datefield::datefield .df -textvariable d -format %d.%m.%Y
+    .df get
+} -cleanup {
+    destroy .df
+    unset -nocomplain d
+} -result 24.12.1999
+
+# -------------------------------------------------------------------------
+# Typing digits, English format
+
+test datefield-3.1 {English: first digit of month 0 or 1} -setup {
+    mkdf 01/15/2024 0
+} -body {
+    keys 1
+} -cleanup {
+    destroy .df
+} -result {11/15/2024 1}
+
+test datefield-3.2 {English: first digit of month 2-9} -setup {
+    mkdf 01/15/2024 0
+} -body {
+    keys 5
+} -cleanup {
+    destroy .df
+} -result {05/15/2024 3}
+
+test datefield-3.3 {English: two digits of month} -setup {
+    mkdf 01/15/2024 0
+} -body {
+    keys 1 2
+} -cleanup {
+    destroy .df
+} -result {12/15/2024 3}
+
+test datefield-3.4 {English: month greater than 12} -setup {
+    mkdf 01/15/2024 0
+} -body {
+    keys 1 3
+} -cleanup {
+    destroy .df
+} -result {03/15/2024 3}
+
+test datefield-3.5 {English: month 00 is refused} -setup {
+    set bells 0
+    mkdf 01/15/2024 0
+} -body {
+    lappend res {*}[keys 0] {*}[keys 0] $bells
+} -cleanup {
+    destroy .df
+    unset -nocomplain res
+} -result {01/15/2024 1 01/15/2024 1 1}
+
+test datefield-3.6 {English: first digit of month gives 1x > 12} -setup {
+    mkdf 03/15/2024 0
+} -body {
+    keys 1
+} -cleanup {
+    destroy .df
+} -result {10/15/2024 1}
+
+test datefield-3.7 {English: day is adjusted to the month} -setup {
+    mkdf 01/31/2024 0
+} -body {
+    list [keys 4] [keys Left Left 0 2]
+} -cleanup {
+    destroy .df
+} -result {{04/30/2024 3} {02/29/2024 3}}
+
+test datefield-3.8 {English: first digit of day 0-2} -setup {
+    mkdf 01/15/2024 3
+} -body {
+    keys 2
+} -cleanup {
+    destroy .df
+} -result {01/25/2024 4}
+
+test datefield-3.9 {English: first digit of day 4-9} -setup {
+    mkdf 01/15/2024 3
+} -body {
+    keys 7
+} -cleanup {
+    destroy .df
+} -result {01/07/2024 6}
+
+test datefield-3.10 {English: first digit of day 3} -setup {
+    mkdf 01/10/2024 3
+} -body {
+    list [keys 3] [keys 1]
+} -cleanup {
+    destroy .df
+} -result {{01/30/2024 4} {01/31/2024 6}}
+
+test datefield-3.11 {English: first digit of day 3 in February} -setup {
+    mkdf 02/15/2024 3
+} -body {
+    keys 3
+} -cleanup {
+    destroy .df
+} -result {02/03/2024 6}
+
+test datefield-3.12 {English: first digit of day 3 clamps to month end} -setup {
+    mkdf 04/05/2024 3
+} -body {
+    keys 3
+} -cleanup {
+    destroy .df
+} -result {04/30/2024 4}
+
+test datefield-3.13 {English: day past month end is refused} -setup {
+    set bells 0
+    mkdf 04/05/2024 3
+} -body {
+    list [keys 3] [keys 1] $bells
+} -cleanup {
+    destroy .df
+} -result {{04/30/2024 4} {04/30/2024 4} 1}
+
+test datefield-3.14 {English: day 00 is refused} -setup {
+    set bells 0
+    mkdf 04/05/2024 3
+} -body {
+    list [keys 0] [keys 0] $bells
+} -cleanup {
+    destroy .df
+} -result {{04/05/2024 4} {04/05/2024 4} 1}
+
+test datefield-3.15 {English: first digit of day 0 with 0 gives 01} -setup {
+    mkdf 04/10/2024 3
+} -body {
+    keys 0
+} -cleanup {
+    destroy .df
+} -result {04/01/2024 4}
+
+test datefield-3.16 {English: first digit of year must be 1 or 2} -setup {
+    set bells 0
+    mkdf 04/10/2024 6
+} -body {
+    list [keys 3] $bells
+} -cleanup {
+    destroy .df
+} -result {{04/10/2024 6} 1}
+
+test datefield-3.17 {English: first digit of year changes century} -setup {
+    mkdf 04/10/2024 6
+} -body {
+    list [keys 1] [keys Left 2] [keys Left 2]
+} -cleanup {
+    destroy .df
+} -result {{04/10/1999 7} {04/10/2000 7} {04/10/2000 7}}
+
+test datefield-3.18 {English: remaining digits of year} -setup {
+    mkdf 04/10/2024 7
+} -body {
+    keys 9 8 7
+} -cleanup {
+    destroy .df
+} -result {04/10/2987 10}
+
+test datefield-3.19 {English: no input after the end} -setup {
+    set bells 0
+    mkdf 04/10/2024 10
+} -body {
+    list [keys 5] $bells
+} -cleanup {
+    destroy .df
+} -result {{04/10/2024 10} 1}
+
+test datefield-3.20 {English: complete date} -setup {
+    mkdf 04/10/2024 0
+} -body {
+    keys 0 7 0 4 1 9 7 6
+} -cleanup {
+    destroy .df
+} -result {07/04/1976 10}
+
+test datefield-3.21 {English: changing year keeps the date valid} -constraints {
+    knownBug
+} -setup {
+    # The year is validated with clock scan, which accepts 02/29/2023
+    # in Tcl 8.6.
+    mkdf 02/29/2024 9
+} -body {
+    keys 3
+    isValid [.df get] %m/%d/%Y
+} -cleanup {
+    destroy .df
+} -result 1
+
+# -------------------------------------------------------------------------
+# Typing digits, German format
+
+test datefield-4.1 {German: day then month then year} -setup {
+    mkdf 15.01.2024 0 -format %d.%m.%Y
+} -body {
+    keys 0 4 0 7 1 9 7 6
+} -cleanup {
+    destroy .df
+} -result {04.07.1976 10}
+
+test datefield-4.2 {German: first digit of day} -setup {
+    mkdf 15.01.2024 0 -format %d.%m.%Y
+} -body {
+    list [keys 2] [keys Left 7]
+} -cleanup {
+    destroy .df
+} -result {{25.01.2024 1} {07.01.2024 3}}
+
+test datefield-4.3 {German: first digit of day 3 in February} -setup {
+    mkdf 15.02.2024 0 -format %d.%m.%Y
+} -body {
+    keys 3
+} -cleanup {
+    destroy .df
+} -result {03.02.2024 3}
+
+test datefield-4.4 {German: day past month end is refused} -setup {
+    set bells 0
+    mkdf 15.04.2024 0 -format %d.%m.%Y
+} -body {
+    list [keys 3] [keys 1] $bells
+} -cleanup {
+    destroy .df
+} -result {{30.04.2024 1} {30.04.2024 1} 1}
+
+test datefield-4.5 {German: month} -setup {
+    mkdf 15.01.2024 3 -format %d.%m.%Y
+} -body {
+    list [keys 1] [keys 3] [keys Left Left 9]
+} -cleanup {
+    destroy .df
+} -result {{15.11.2024 4} {15.03.2024 6} {15.09.2024 6}}
+
+test datefield-4.6 {German: month 00 is refused} -setup {
+    set bells 0
+    mkdf 15.01.2024 3 -format %d.%m.%Y
+} -body {
+    list [keys 0] [keys 0] $bells
+} -cleanup {
+    destroy .df
+} -result {{15.01.2024 4} {15.01.2024 4} 1}
+
+test datefield-4.7 {German: day is adjusted to the month} -setup {
+    mkdf 31.01.2024 3 -format %d.%m.%Y
+} -body {
+    keys 0 2
+} -cleanup {
+    destroy .df
+} -result {29.02.2024 6}
+
+test datefield-4.8 {German: year} -setup {
+    set bells 0
+    mkdf 31.01.2024 6 -format %d.%m.%Y
+} -body {
+    list [keys 5] [keys 1] [keys 8 0 0] $bells
+} -cleanup {
+    destroy .df
+} -result {{31.01.2024 6} {31.01.1999 7} {31.01.1800 10} 1}
+
+test datefield-4.9 {German: day 00 is refused} -setup {
+    set bells 0
+    mkdf 15.04.2024 0 -format %d.%m.%Y
+} -body {
+    list [keys 0] [keys 0] $bells
+} -cleanup {
+    destroy .df
+} -result {{05.04.2024 1} {05.04.2024 1} 1}
+
+# -------------------------------------------------------------------------
+# Typing digits, ISO format
+
+test datefield-5.1 {ISO: year then month then day} -setup {
+    mkdf 2024-01-15 0 -format %Y-%m-%d
+} -body {
+    keys 1 9 7 6 0 7 0 4
+} -cleanup {
+    destroy .df
+} -result {1976-07-04 10}
+
+test datefield-5.2 {ISO: first digit of year} -setup {
+    set bells 0
+    mkdf 2024-01-15 0 -format %Y-%m-%d
+} -body {
+    list [keys 3] [keys 2] [keys Left 1] $bells
+} -cleanup {
+    destroy .df
+} -result {{2024-01-15 0} {2024-01-15 1} {1999-01-15 1} 1}
+
+test datefield-5.3 {ISO: last digit of year skips separator} -setup {
+    mkdf 2024-01-15 3 -format %Y-%m-%d
+} -body {
+    keys 5
+} -cleanup {
+    destroy .df
+} -result {2025-01-15 5}
+
+test datefield-5.4 {ISO: month} -setup {
+    mkdf 2024-01-15 5 -format %Y-%m-%d
+} -body {
+    list [keys 1] [keys 3] [keys Left Left 9]
+} -cleanup {
+    destroy .df
+} -result {{2024-11-15 6} {2024-03-15 8} {2024-09-15 8}}
+
+test datefield-5.5 {ISO: month 00 is refused} -setup {
+    set bells 0
+    mkdf 2024-01-15 5 -format %Y-%m-%d
+} -body {
+    list [keys 0] [keys 0] $bells
+} -cleanup {
+    destroy .df
+} -result {{2024-01-15 6} {2024-01-15 6} 1}
+
+test datefield-5.6 {ISO: day is adjusted to the month} -setup {
+    mkdf 2023-01-31 5 -format %Y-%m-%d
+} -body {
+    keys 0 2
+} -cleanup {
+    destroy .df
+} -result {2023-02-28 8}
+
+test datefield-5.7 {ISO: day} -setup {
+    set bells 0
+    mkdf 2024-04-15 8 -format %Y-%m-%d
+} -body {
+    list [keys 3] [keys 1] [keys Left 0 0] [keys Left 7] $bells
+} -cleanup {
+    destroy .df
+} -result {{2024-04-30 9} {2024-04-30 9} {2024-04-01 9} {2024-04-07 10} 2}
+
+# -------------------------------------------------------------------------
+# Other keys
+
+test datefield-6.1 {non-digit characters are refused} -setup {
+    set bells 0
+    mkdf 04/10/2024 3
+} -body {
+    list [keys a slash space period] $bells
+} -cleanup {
+    destroy .df
+} -result {{04/10/2024 3} 4}
+
+test datefield-6.2 {Up and Down change the day} -setup {
+    mkdf 02/28/2024 4
+} -body {
+    list [keys Up] [keys Up] [keys Down Down Down]
+} -cleanup {
+    destroy .df
+} -result {{02/29/2024 4} {03/01/2024 4} {02/27/2024 4}}
+
+test datefield-6.3 {plus and minus change the day} -constraints {
+    knownBug
+} -setup {
+    # With Tk 9 %K is "+" and "-" instead of "plus" and "minus", and
+    # the keys are refused as non-digits.
+    mkdf 12/31/2024 0
+} -body {
+    list [keys plus] [keys minus minus]
+} -cleanup {
+    destroy .df
+} -result {{01/01/2025 0} {12/30/2024 0}}
+
+test datefield-6.4 {Prior and Next change the month} -setup {
+    mkdf 01/31/2024 7
+} -body {
+    list [keys Prior] [keys Next] [keys Next]
+} -cleanup {
+    destroy .df
+} -result {{02/29/2024 7} {01/29/2024 7} {12/29/2023 7}}
+
+test datefield-6.5 {Up and Down in ISO format} -setup {
+    mkdf 2024-12-31 0 -format %Y-%m-%d
+} -body {
+    list [keys Up] [keys Down]
+} -cleanup {
+    destroy .df
+} -result {{2025-01-01 0} {2024-12-31 0}}
+
+test datefield-6.6 {Prior and Next in German format} -setup {
+    mkdf 31.03.2024 0 -format %d.%m.%Y
+} -body {
+    list [keys Next] [keys Prior]
+} -cleanup {
+    destroy .df
+} -result {{29.02.2024 0} {29.03.2024 0}}
+
+test datefield-6.7 {Left and Right skip separators} -setup {
+    mkdf 04/10/2024 0
+} -body {
+    set res {}
+    foreach k {Right Right Right Right Right Right Right Right Right} {
+        lappend res [lindex [keys $k] 1]
+    }
+    foreach k {Left Left Left Left Left Left Left Left Left} {
+        lappend res [lindex [keys $k] 1]
+    }
+    set res
+} -cleanup {
+    destroy .df
+    unset -nocomplain res k
+} -result {1 3 4 6 7 8 9 0 1 0 9 8 7 6 4 3 1 0}
+
+test datefield-6.8 {Left and Right skip separators in ISO format} -setup {
+    mkdf 2024-04-10 0 -format %Y-%m-%d
+} -body {
+    set res {}
+    foreach k {Right Right Right Right Right Right Right Right Right} {
+        lappend res [lindex [keys $k] 1]
+    }
+    foreach k {Left Left Left} {
+        lappend res [lindex [keys $k] 1]
+    }
+    set res
+} -cleanup {
+    destroy .df
+    unset -nocomplain res k
+} -result {1 2 3 5 6 8 9 0 1 0 9 8}
+
+test datefield-6.9 {BackSpace and Delete do not delete} -setup {
+    mkdf 04/10/2024 4
+} -body {
+    list [keys BackSpace] [keys Delete]
+} -cleanup {
+    destroy .df
+} -result {{04/10/2024 3} {04/10/2024 1}}
+
+test datefield-6.10 {End moves to the last digit} -setup {
+    mkdf 04/10/2024 0
+} -body {
+    keys End
+} -cleanup {
+    destroy .df
+} -result {04/10/2024 9}
+
+test datefield-6.11 {Tab moves between fields} -setup {
+    mkdf 04/10/2024 1
+} -body {
+    list [keys Tab] [keys Tab]
+} -cleanup {
+    destroy .df
+} -result {{04/10/2024 3} {04/10/2024 8}}
+
+test datefield-6.12 {Tab in the last field moves focus} -setup {
+    mkdf 04/10/2024 8
+    entry .e
+    pack .e
+    update
+} -body {
+    keys Tab
+    focus
+} -cleanup {
+    destroy .df .e
+} -result .e
+
+test datefield-6.13 {Shift-Tab moves between fields} -constraints {
+    knownBug
+} -setup {
+    # On X11 Shift-Tab is reported as ISO_Left_Tab, which is not handled,
+    # so Shift-Tab moves the focus to the previous widget.
+    mkdf 04/10/2024 8
+} -body {
+    set res {}
+    foreach i {1 2} {
+        event generate .df <KeyPress> -keysym Tab -state 1
+        update
+        lappend res [.df index insert]
+    }
+    set res
+} -cleanup {
+    destroy .df
+    unset -nocomplain res i
+} -result {3 0}
+
+test datefield-6.14 {Tab in ISO format} -setup {
+    mkdf 2024-04-10 0 -format %Y-%m-%d
+} -body {
+    list [keys Tab] [keys Tab]
+} -cleanup {
+    destroy .df
+} -result {{2024-04-10 5} {2024-04-10 8}}
+
+test datefield-6.14.1 {Shift-Tab in ISO format} -constraints {
+    knownBug
+} -setup {
+    # ISO_Left_Tab is not handled, see datefield-6.13.
+    mkdf 2024-04-10 8 -format %Y-%m-%d
+} -body {
+    set res {}
+    foreach i {1 2} {
+        event generate .df <KeyPress> -keysym Tab -state 1
+        update
+        lappend res [.df index insert]
+    }
+    set res
+} -cleanup {
+    destroy .df
+    unset -nocomplain res i
+} -result {5 2}
+
+test datefield-6.15 {Tab in German format} -setup {
+    mkdf 10.04.2024 0 -format %d.%m.%Y
+} -body {
+    list [keys Tab] [keys Tab]
+} -cleanup {
+    destroy .df
+} -result {{10.04.2024 3} {10.04.2024 8}}
+
+test datefield-6.16 {key presses clear the selection} -setup {
+    mkdf 04/10/2024 0
+} -body {
+    .df selection range 0 end
+    keys Right
+    .df selection present
+} -cleanup {
+    destroy .df
+} -result 0
+
+test datefield-6.17 {mouse wheel changes the day} -setup {
+    mkdf 04/30/2024 3
+} -body {
+    set res {}
+    foreach delta {120 -120 -240} {
+        event generate .df <MouseWheel> -delta $delta
+        update
+        lappend res [.df get] [.df index insert]
+    }
+    set res
+} -cleanup {
+    destroy .df
+    unset -nocomplain res delta
+} -result {05/01/2024 3 04/30/2024 3 04/28/2024 3}
+
+test datefield-6.18 {textvariable follows the typed value} -setup {
+    mkdf 04/10/2024 0
+} -body {
+    keys 1 2 2 5
+    set d
+} -cleanup {
+    destroy .df
+} -result 12/25/2024
+
+# -------------------------------------------------------------------------
+rename ::bell {}
+rename ::datefieldTestBell ::bell
+rename mkdf {}
+rename keys {}
+rename isValid {}
+unset -nocomplain d bells
+::tcltest::cleanupTests
