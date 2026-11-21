@@ -1,6 +1,7 @@
 [comment {-*- tcl -*- doctools manpage}]
 [vset VERSION 3.2]
 [manpage_begin widget n [vset VERSION]]
+[keywords arrowbutton]
 [keywords bundle]
 [keywords calendar]
 [keywords dateentry]
@@ -10,6 +11,7 @@
 [keywords panelframe]
 [keywords ruler]
 [keywords screenruler]
+[keywords scrolledtext]
 [keywords scrolledwindow]
 [keywords snit]
 [keywords statusbar]
@@ -40,6 +42,20 @@ commands:
 
 [list_begin definitions]
 
+[call [cmd widget::arrowbutton] [arg pathname] [opt options]]
+
+A [cmd ttk::button] showing an arrow (package
+[package widget::arrowbutton]).  It takes all options of
+[cmd ttk::button] except [option -image], and the option:
+
+[list_begin options]
+[opt_def -orientation [arg direction]]
+The direction of the arrow: one of [const up], [const down],
+[const left], [const right], [const upleft], [const upright],
+[const downleft], [const downright], or [const star] for arrows in all
+directions.  No arrow is shown until it is set.
+[list_end]
+
 [call [cmd widget::calendar] [arg pathname] [opt options]]
 options:
 
@@ -60,6 +76,29 @@ options:
 
 [call [cmd widget::screenruler] [arg pathname] [opt options]]
 options:
+
+[call [cmd widget::scrolledtext] [arg pathname] [opt options]]
+
+A [cmd text] widget with scrollbars, in a [cmd widget::scrolledwindow]
+(package [package widget::scrolledtext]).  It takes the options and
+subcommands of [cmd text], except for the following options, which
+are those of the scrolled window:
+
+[list_begin options]
+[opt_def -scrollbar [arg which]]
+Which scrollbars there are: [const both] (default), [const vertical],
+[const horizontal] or [const none].
+[opt_def -auto [arg which]]
+Which of the scrollbars are shown only when needed: [const both]
+(default), [const vertical], [const horizontal] or [const none].
+[opt_def -sides [arg sides]]
+The sides on which the scrollbars are placed: one of [const se]
+(default), [const sw], [const ne] or [const nw], or the same with the
+letters swapped.
+[opt_def -borderwidth [arg width]]
+[opt_def -relief [arg relief]]
+The border around the text and its scrollbars.
+[list_end]
 
 [call [cmd widget::scrolledwindow] [arg pathname] [opt options]]
 options:
