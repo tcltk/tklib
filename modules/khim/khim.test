@@ -47,6 +47,11 @@ proc kmc {args} {
 }
 
 # Generate key press/release pairs for the given keysyms.
+# The tklib test harness withdraws "."; the key events need the widgets
+# mapped.
+set khimMainState [wm state .]
+wm deiconify .
+
 proc keys {w args} {
     foreach k $args {
 	event generate $w <KeyPress-$k>
@@ -1494,5 +1499,7 @@ rename removeCMapTraces {}
 rename cfgMap {}
 unset khimTestDefaultConfig khimTestErrors khimDir khimMessages
 
+wm state . $khimMainState
+unset khimMainState
 ::tcltest::cleanupTests
 return
