@@ -768,7 +768,7 @@ proc ctext::deleteHighlightClass {win classToDelete} {
 	}
     }
     unset classesAr($classToDelete)
-    $win tag delete $classToDelete
+    $win._t tag delete $classToDelete
 }
 
 #Remove the tags of the highlight classes (but not the user's own tags)
@@ -846,8 +846,12 @@ proc ctext::findPreviousSpace {win index} {
 }
 
 proc ctext::clearHighlightClasses {win} {
-    foreach class [ctext::getHighlightClasses $win] {
-	$win tag delete $class
+    # The widget command no longer exists when called from the <Destroy>
+    # handler; the tags are destroyed with the widget then.
+    if {[llength [info commands $win._t]]} {
+	foreach class [ctext::getHighlightClasses $win] {
+	    $win._t tag delete $class
+	}
     }
 
     #no need to catch, because array unset doesn't complain
