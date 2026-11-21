@@ -927,15 +927,15 @@ tested on Windows (Vista), Linux and OSX (10\&.4)\&.
 .SH REFERENCES
 See also
 .IP [1]
-\fImenu\fR [http://www\&.tcl\&.tk/man/tcl8\&.6/TkCmd/menu\&.htm]
+\fImenu\fR [http://www\&.tcl-lang\&.org/man/tcl8\&.6/TkCmd/menu\&.htm]
 .IP [2]
-\fIA command that creates menubar objects\fR [http://wiki\&.tcl\&.tk/25231]
+\fIA command that creates menubar objects\fR [http://wiki\&.tcl-lang\&.org/25231]
 .PP
 .SH "BUGS, IDEAS, FEEDBACK"
 This document, and the package it describes, will undoubtedly contain
 bugs and other problems\&.
 Please report such in the category \fImenubar\fR of the
-\fITklib Trackers\fR [http://core\&.tcl\&.tk/tklib/reportlist]\&.
+\fITklib Trackers\fR [http://core\&.tcl-lang\&.org/tklib/reportlist]\&.
 Please also report any ideas for enhancements you may have for either
 package and/or documentation\&.
 .SH COPYRIGHT

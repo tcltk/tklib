@@ -282,7 +282,7 @@ bitmap-editor \- Editor for XBM images
 The application described by this document, \fBbitmap-editor\fR, is
 a simple editor for XBM based bitmap images\&.
 Written by Keith Vetter the original code can be found at
-\fIhttp://wiki\&.tcl\&.tk/6298\fR\&.
+\fIhttp://wiki\&.tcl-lang\&.org/6298\fR\&.
 .SS "COMMAND LINE"
 .TP
 \fBbitmap-editor\fR ?\fIxbmfile\fR?
@@ -309,7 +309,7 @@ application and/or documentation\&.
 This document, and the package it describes, will undoubtedly contain
 bugs and other problems\&.
 Please report such in the category \fIbitmap-editor\fR of the
-\fITklib Trackers\fR [http://core\&.tcl\&.tk/tklib/reportlist]\&.
+\fITklib Trackers\fR [http://core\&.tcl-lang\&.org/tklib/reportlist]\&.
 Please also report any ideas for enhancements you may have for either
 package and/or documentation\&.
 .SH KEYWORDS

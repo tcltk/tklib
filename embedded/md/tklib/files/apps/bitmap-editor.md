@@ -43,7 +43,8 @@ bitmap\-editor \- Editor for XBM images
 
 The application described by this document, __bitmap\-editor__, is a simple
 editor for XBM based bitmap images\. Written by Keith Vetter the original code
-can be found at [http://wiki\.tcl\.tk/6298](http://wiki\.tcl\.tk/6298)\.
+can be found at
+[http://wiki\.tcl\-lang\.org/6298](http://wiki\.tcl\-lang\.org/6298)\.
 
 ## <a name='subsection1'></a>COMMAND LINE
 
@@ -70,8 +71,9 @@ and/or documentation\.
 
 This document, and the package it describes, will undoubtedly contain bugs and
 other problems\. Please report such in the category *bitmap\-editor* of the
-[Tklib Trackers](http://core\.tcl\.tk/tklib/reportlist)\. Please also report
-any ideas for enhancements you may have for either package and/or documentation\.
+[Tklib Trackers](http://core\.tcl\-lang\.org/tklib/reportlist)\. Please also
+report any ideas for enhancements you may have for either package and/or
+documentation\.
 
 # <a name='keywords'></a>KEYWORDS
 

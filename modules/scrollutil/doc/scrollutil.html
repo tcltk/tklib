@@ -14,7 +14,7 @@
   <div>
     <h1>Scrollutil Programmer's Guide</h1>
 
-    <h2>For Scrollutil Version 2.10</h2>
+    <h2>For Scrollutil Version 2.11</h2>
 
     <h3>by</h3>
 
@@ -337,8 +337,8 @@
     </address>
   </blockquote>
 
-  <p>The distribution file is <code>scrollutil2.10.tar.gz</code> for UNIX and
-  <code>scrollutil2_10.zip</code> for Windows.&nbsp; These files contain the
+  <p>The distribution file is <code>scrollutil2.11.tar.gz</code> for UNIX and
+  <code>scrollutil2_11.zip</code> for Windows.&nbsp; These files contain the
   same information, except for the additional carriage return character
   preceding the linefeed at the end of each line in the text files for
   Windows.</p>
@@ -347,7 +347,8 @@
 
   <blockquote>
     <address>
-      <a href="https://core.tcl.tk/tklib">https://core.tcl.tk/tklib</a>
+      <a href=
+      "https://core.tcl-lang.org/tklib">https://core.tcl-lang.org/tklib</a>
     </address>
   </blockquote>
 
@@ -360,27 +361,27 @@
 
   <p>To install Scrollutil <i>on UNIX</i>, <code>cd</code> to the desired
   directory and unpack the distribution file
-  <code>scrollutil2.10.tar.gz</code>:</p>
+  <code>scrollutil2.11.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c scrollutil2.10.tar.gz | tar -xf - </pre>
+gunzip -c scrollutil2.11.tar.gz | tar -xf - </pre>
   </blockquote>
 
   <p>On most UNIX systems this can be replaced with</p>
 
   <blockquote>
     <pre>
-tar -zxf scrollutil2.10.tar.gz </pre>
+tar -zxf scrollutil2.11.tar.gz </pre>
   </blockquote>
 
-  <p>Both commands will create a directory named <code>scrollutil2.10</code>,
+  <p>Both commands will create a directory named <code>scrollutil2.11</code>,
   with the subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>scrollutil2_10.zip</code> into the directory
-  <code>scrollutil2.10</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>scrollutil2_11.zip</code> into the directory
+  <code>scrollutil2.11</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>Notice that in tklib the Scrollutil <code>demos</code> directory is
@@ -2681,7 +2682,6 @@ proc restoreSel nb {
 . . .
 
 wm deiconify .
-tkwait visibility $pm
 after 400 [list configScrollareas $pm]
 
 proc configScrollareas pm {
@@ -2715,12 +2715,11 @@ proc configScrollareas pm {
   respectively.&nbsp; By temporarily configuring the scrollarea widgets
   with&nbsp; <code>-xscrollbarmode none -yscrollbarmode static</code>,&nbsp; we
   make place for up to 80 characters of up to 30 text lines, plus the vertical
-  scrollbar.&nbsp; We wait for the pagesman widget to appear on the screen, and
-  400 milliseconds later we invoke the <code>configScrollareas</code>
-  proceedure, which freezes the application window's geometry and resets the
-  above-mentioned scrollarea options to their default value
-  <code>dynamic</code>.&nbsp; Due to the frozen geometry, the horizontal
-  scrollbars, when shown, won't make the window higher.</p>
+  scrollbar.&nbsp; 400 milliseconds after mapping the main window we invoke the
+  <code>configScrollareas</code> proceedure, which freezes the application
+  window's geometry and resets the above-mentioned scrollarea options to their
+  default value <code>dynamic</code>.&nbsp; Due to the frozen geometry, the
+  horizontal scrollbars, when shown, won't make the window higher.</p>
 
   <div>
     <p><a href="#contents">Contents</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href=

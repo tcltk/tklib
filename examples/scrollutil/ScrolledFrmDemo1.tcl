@@ -108,12 +108,21 @@ set b [ttk::button $f.b -text "Close" -command exit]
 
 pack $b  -side bottom -pady {0 9p}
 pack $sf -side top -expand yes -fill both -padx 9p -pady 9p
-pack $f  -expand yes -fill both
+
+update idletasks
+pack $f -expand yes -fill both
 
 #
 # Set the scrolledframe's width, height, and yscrollincrement
 #
-after 50 [list configSf $sf $cf $row $topPadY]
+set vsb [$sf component vertsb]
+set width [expr {[winfo reqwidth $cf] + [winfo reqwidth $vsb] + 2}]
+set rowHeight [expr {[winfo reqheight $cf] / $row}]
+set height [expr {10*$rowHeight + [winfo pixels . $topPadY] + 2}]
+$sf configure -width $width -height $height
+set canvas [$sf component canvas]
+$canvas configure -yscrollincrement $rowHeight
+after 50 [list $sf configure -hscrollmode dynamic]
 
 #------------------------------------------------------------------------------
 
@@ -135,17 +144,4 @@ proc setCapital {w country} {
     $w configure -foreground ""
     global capitalArr
     $w set $capitalArr($country)
-}
-
-#------------------------------------------------------------------------------
-
-proc configSf {sf cf row topPadY} {
-    set vsb [$sf component vertsb]
-    set width [expr {[winfo reqwidth $cf] + [winfo reqwidth $vsb] + 2}]
-    set rowHeight [expr {[winfo reqheight $cf] / $row}]
-    set height [expr {10*$rowHeight + [winfo pixels . $topPadY] + 2}]
-    $sf configure -width $width -height $height
-    set canvas [$sf component canvas]
-    $canvas configure -yscrollincrement $rowHeight
-    after 100 [list $sf configure -hscrollmode dynamic]
 }

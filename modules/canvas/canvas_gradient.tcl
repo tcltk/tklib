@@ -2,10 +2,10 @@
 # ### ### ### ######### ######### #########
 
 # Copyright (c) 2013 Jarek Lewandowski (MaxJarek)
-# Origin http://wiki.tcl.tk/6100
-# Origin http://wiki.tcl.tk/37242
-# Origin http://wiki.tcl.tk/9079
-# OLL licensed (http://wiki.tcl.tk/10892)
+# Origin http://wiki.tcl-lang.org/6100
+# Origin http://wiki.tcl-lang.org/37242
+# Origin http://wiki.tcl-lang.org/9079
+# OLL licensed (http://wiki.tcl-lang.org/10892)
 
 # ### ### ### ######### ######### #########
 ## Requisites

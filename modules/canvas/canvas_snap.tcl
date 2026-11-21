@@ -2,7 +2,7 @@
 # ### ### ### ######### ######### #########
 
 # Copyright (c) 2004 George Petasis
-# Origin http://wiki.tcl.tk/1404 [24-10-2004]
+# Origin http://wiki.tcl-lang.org/1404 [24-10-2004]
 # BSD licensed.
 
 # ### ### ### ######### ######### #########

@@ -18,7 +18,7 @@
 # @@ Meta Begin
 # Package map::track::file 0.1
 # Meta author      {Andreas Kupries}
-# Meta location    https://core.tcl.tk/tklib
+# Meta location    https://core.tcl-lang.org/tklib
 # Meta platform    tcl
 # Meta summary	   Reading/writing tklib geo/track files
 # Meta description Reading/writing tklib geo/track files

@@ -6,6 +6,7 @@
 # - Create    point - B1 (canvas global)
 # - Remove    point - B2 (linked to -tag, current item)
 # - Drag/Move point - B3 (linked to -tag, current item)
+#
 # - Auto-highlight points, to show ability of drag/move.
 
 # Configurable:
@@ -21,6 +22,48 @@
 #
 # - Callback used to report enter/leave editing activity on the points
 #   Default: Do nothing.
+
+# - Event Triggers
+#
+#	-add-remove-points	Button for both adding and removal.
+#
+# - Editing mode
+#
+#	-mode
+#
+#	Default:	click+drag
+#	Legal:		s.a
+#		+	click
+#		+	draw
+#
+#	click+drag	is the original mode, click to place or remove points
+#			dragging of points is allowed
+#
+#	click		like click+drag, except dragging is disabled.
+#
+#	draw		Like click, except that holding the mouse button
+#			and moving the mouse keeps adding/removing points
+#			at the location of the mouse.
+#
+#		ATTENTION
+#
+#			This mode is stronger twined with the backing
+#			storage, especially for removal.
+#
+#			First, during adding it queries the backing
+#			storage for admission to add the point. This
+#			gives the storage the ability to prevent
+#			nonsensical to-near placement of points.
+#
+#			And during the removal the backing store is
+#			queried for the points under the mouse
+#			location, to be removed.
+#
+#		This uses the additional data-cmd methods
+#
+#			add-query, add-end, remove-query, and remove-end
+#
+#		The *-end methods signal the end of a mouse motion
 
 # # ## ### ##### ######## ############# #####################
 ## Requisites
@@ -56,7 +99,7 @@ snit::type ::canvas::edit::points {
     # DC move done  (canvas group          ) :: boolean
 
     # Options to tweak the default marker style without having to go for full-custom callback
-    # Blue filled circle of radius 3, with a black border. See `DefaultCreate`.
+    # Blue filled circle of radius 3. See `DefaultCreate`.
     option -color       -default SkyBlue2
     option -hilit-color -default red
     option -radius      -default 3
@@ -65,6 +108,23 @@ snit::type ::canvas::edit::points {
     # Event options ...
     option -add-remove-point -default {} -readonly 1 ; # Event to add/remove a point
     option -drag-point       -default  3 -readonly 1 ; # Event to drag a point
+
+    option -mode -default click+drag -configuremethod O-mode
+    # modes: click, click+drag, draw
+
+    method O-mode {o v} {
+	if {$options($o) eq $v} return
+	set legal {click click+drag draw}
+	if {$v ni $legal} {
+	    return -code error \
+		"bad option $v, expected one of [linsert [join $legal {, }] end-1 or"
+	}
+	set parts $mybound
+	$self Bindings Remove $parts
+	set  options($o) $v
+	$self Bindings Add $parts
+	return
+    }
 
     constructor {c args} {
 	set options(-data-cmd)      [mymethod DefaultData]
@@ -86,7 +146,7 @@ snit::type ::canvas::edit::points {
 
     destructor {
 	if {![winfo exists $mycanvas]} return
-	$self Bindings Remove {}
+	$self Bindings Remove {*}$mybound
 	return
     }
 
@@ -94,11 +154,13 @@ snit::type ::canvas::edit::points {
     ## API.
 
     method disable {args} {
+	if {![llength $args]} { lappend args drag edit }
 	$self Bindings Remove $args
 	return
     }
 
     method enable {args} {
+	if {![llength $args]} { lappend args drag edit }
 	$self Bindings Add $args
 	return
     }
@@ -151,63 +213,97 @@ snit::type ::canvas::edit::points {
     ## Manage the canvas bindings (point creation and removal, dragging).
 
     method {Bindings Add} {parts} {
-	if {![llength $parts]} { lappend parts drag edit }
 	foreach part $parts {
 	    switch -exact -- $part {
-		drag {
-		    canvas::drag on $mycanvas $options(-tag) \
-			[mymethod Drag] \
-			-event $options(-drag-point)
-		}
-		edit {
-		    if {$myactive} return
-		    set myactive 1
+		drag { $self DragAdd }
+		edit { $self EditAdd }
+	    }
+	}
+	set mybound $parts
+	return
+    }
 
-		    # NOTES:
-		    # 1. Is there a way to make 'Add' not canvas global ?
-		    # 2. If not, is there a way to ensure that 'Add' is not triggered when a
-		    #    'Remove' is done, even if the events for the 2 actions basically overlap
-		    #    (B1=Add, Shift-B1=Remove, for example) ?
-		    #
-		    # We know that Remove, as item binding, is run before the global Add.
+    method {Bindings Remove} {parts} {
+	set keep {}
+	foreach area $mybound {
+	    if {$area ni $parts} { lappend keep $area ; continue }
+	    switch -exact -- $area {
+		drag { $self DragRemove }
+		edit { $self EditRemove }
+	    }
+	}
+	set mybound $keep
+	return
+    }
 
-		    if {$options(-add-remove-point) ne {}} {
-			set event <$options(-add-remove-point)>
-			$mycanvas bind $options(-tag) $event [mymethod Remove $mycanvas %x %y 1]
-			bind $mycanvas                $event [mymethod Add    $mycanvas %x %y 1]
-		    } else {
-			$mycanvas bind $options(-tag) <2> [mymethod Remove $mycanvas %x %y 0]
-			bind $mycanvas                <1> [mymethod Add    $mycanvas %x %y 0]
-		    }
+    method DragAdd {} {
+	if {$options(-mode) ne "click+drag"} return
+	canvas::drag on $mycanvas $options(-tag) [mymethod Drag] -event $options(-drag-point)
+	return
+    }
+
+    method DragRemove {} {
+	if {$options(-mode) ne "click+drag"} return
+	canvas::drag off $mycanvas $options(-tag)
+	return
+    }
+
+    method EditAdd {} {
+	if {$myactive} return
+	set myactive 1
+	switch -exact -- $options(-mode) {
+	    click -
+	    click+drag {
+		# NOTES:
+		# 1. Is there a way to make 'Add' not canvas global ?
+		# 2. If not, is there a way to ensure that 'Add' is not triggered when a
+		#    'Remove' is done, even if the events for the 2 actions basically overlap
+		#    (B1=Add, Shift-B1=Remove, for example) ?
+		#
+		# We know that Remove, as item binding, is run before the global Add.
+
+		if {$options(-add-remove-point) ne {}} {
+		    set event <$options(-add-remove-point)>
+		    $mycanvas bind $options(-tag) $event [mymethod Remove $mycanvas %x %y 1]
+		    bind $mycanvas                $event [mymethod Add    $mycanvas %x %y 1]
+		} else {
+		    $mycanvas bind $options(-tag) <2> [mymethod Remove $mycanvas %x %y 0]
+		    bind $mycanvas                <1> [mymethod Add    $mycanvas %x %y 0]
 		}
+	    }
+	    draw {
+		# In drawing mode a button press adds a point, and then more points as the
+		# mouse moves with the held button. The -data-cmd may rejects some of these.
+		# Similarly for point removes, at prsssed location, and then all locations
+		# reported as the mouse moves.
+		#
+		# ATTENTION -- Works only if -add-remove-point is not set!
+		if {$options(-add-remove-point) ne {}} {
+		    return -code error "drawing mode not supported for -add-remove-point"
+		}
+		bind $mycanvas <1>               [mymethod Add       $mycanvas %x %y 0]
+		bind $mycanvas <B1-Motion>       [mymethod Add       $mycanvas %x %y 0]
+		bind $mycanvas <ButtonRelease-1> [mymethod AddStop]
+		bind $mycanvas <2>               [mymethod RemoveLoc $mycanvas %x %y 0]
+		bind $mycanvas <B2-Motion>       [mymethod RemoveLoc $mycanvas %x %y 0]
+		bind $mycanvas <ButtonRelease-2> [mymethod RemoveStop]
 	    }
 	}
 	return
     }
 
-    method {Bindings Remove} {parts} {
-	if {![llength $parts]} { lappend parts drag edit }
-	foreach part $parts {
-	    switch -exact -- $part {
-		drag {
-		    canvas::drag off $mycanvas $options(-tag)
-		}
-		edit {
-		    if {!$myactive} return
-		    set myactive 0
+    method EditRemove {} {
+	if {!$myactive} return
+	set myactive 0
 
-		    if {$options(-add-remove-point) ne {}} {
-			set event <$options(-add-remove-point)>
-			$mycanvas bind $options(-tag) $event {}
-			bind $mycanvas                $event {}
-		    } else {
-			$mycanvas bind $options(-tag) <2> {}
-			bind $mycanvas                <1> {}
-		    }
-		}
-	    }
+	if {$options(-add-remove-point) ne {}} {
+	    set event <$options(-add-remove-point)>
+	    $mycanvas bind $options(-tag) $event {}
+	    bind $mycanvas                $event {}
+	} else {
+	    $mycanvas bind $options(-tag) <2> {}
+	    bind $mycanvas                <1> {}
 	}
-	return
     }
 
     # # ## ### ##### ######## ############# #####################
@@ -232,6 +328,12 @@ snit::type ::canvas::edit::points {
     method AddCore {c x y} {
 	# x, y are absolute canvas coordinates
 
+	if {$options(-mode) eq "draw"} {
+	    # in drawing mode check first if the location admits drawing.
+	    set ok [Note add-query $x $y]
+	    if {!$ok} return
+	}
+	
 	set grouptag [NewId]
 
 	set items [{*}$options(-create-cmd) $c $x $y]
@@ -240,12 +342,24 @@ snit::type ::canvas::edit::points {
 
 	Tag $c $items $grouptag
 	set myloc($grouptag) [list $x $y]
-	#puts "Add|$x $y|$items"
+	#puts "Add|$x $y|\t|$grouptag|\t|$items"
 	Note add $grouptag $x $y
 	return $grouptag
     }
 
-    ###### Destroy an existing point
+    method AddStop {} { Note add-end }
+
+    ###### Destroy points at a location, if any -- drawing mode
+    method RemoveLoc {c x y skip} {
+	$self CheckCanvas $c
+	set tags [Note remove-query $x $y]
+	if {![llength $tags]} return
+	foreach tag $tags { $self RemoveByTag $tag }
+	set myskip $skip
+	return
+    }
+
+    ###### Destroy an existing point -- click modes, can trigger only if over a point
     method Remove {c x y skip} {
 	$self CheckCanvas $c
 	#puts "Remove|$x $y|[$c find withtag current]"
@@ -261,6 +375,8 @@ snit::type ::canvas::edit::points {
 	Note remove $grouptag
 	return
     }
+
+    method RemoveStop {} { Note remove-end }
 
     ###### Move existing point programmatically, absolute or relative
     method MoveTo {grouptag x y} {
@@ -399,6 +515,7 @@ snit::type ::canvas::edit::points {
 			       # id to point location, for the
 			       # calculation of absolute coordinates
 			       # during dragging.
+    variable mybound {}      ; # set of active bindings
 
     method Active {on c x y} {
 	# puts "$on $c\t($x $y)"
@@ -422,18 +539,23 @@ snit::type ::canvas::edit::points {
 	set e [expr {$x + $r}]
 	set s [expr {$y + $r}]
 	lappend items [$c create $options(-kind) $w $n $e $s \
-			   -width      1           \
-			   -outline    black       \
-			   -activefill $options(-hilit-color) \
-			   -fill       $options(-color)]
+			   -width         1           \
+			   -activeoutline $options(-hilit-color) \
+			   -outline       $options(-color)       \
+			   -activefill    $options(-hilit-color) \
+			   -fill          $options(-color)]
 	return $items
     }
 
-    method {DefaultData add}        {c group x y}       {}
-    method {DefaultData remove}     {c group}           {}
-    method {DefaultData move start} {c group}           {}
-    method {DefaultData move delta} {c group x y dx dy} {}
-    method {DefaultData move done}  {c group}           { return yes } ;# accept always
+    method {DefaultData add}          {c group x y}       {}
+    method {DefaultData add-query}    {c x y}             { return yes } ;# accept always - draw mode
+    method {DefaultData add-end}      {c}                 {}
+    method {DefaultData remove}       {c group}           {}
+    method {DefaultData remove-query} {c group}           {} ;# nothing to remove ever - draw mode
+    method {DefaultData remove-end}   {c}                 {}
+    method {DefaultData move start}   {c group}           {}
+    method {DefaultData move delta}   {c group x y dx dy} {}
+    method {DefaultData move done}    {c group}           { return yes } ;# accept always
 
     method CheckCanvas {c} {
 	if {$c eq $mycanvas} return
@@ -446,7 +568,7 @@ snit::type ::canvas::edit::points {
 # # ## ### ##### ######## ############# #####################
 ## Ready
 
-package provide canvas::edit::points 0.3
+package provide canvas::edit::points 0.4
 return
 
 # # ## ### ##### ######## ############# #####################

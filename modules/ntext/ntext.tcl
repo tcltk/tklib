@@ -117,7 +117,7 @@ package require Tk  8.5-
 # On macOS/Aqua:
 # - the Control key is modifier "Control"
 # - the Alt     key is modifier "Option"
-# For discussion of Modifier Keys, see http://wiki.tcl.tk/28331
+# For discussion of Modifier Keys, see http://wiki.tcl-lang.org/28331
 # ------------------------------------------------------------------------------
 
 
@@ -861,7 +861,7 @@ bind Ntext <<Redo>> {
 
 # Which platforms use the Meta modifier?
 # Not macOS/Aqua, PC/Windows or PC/Linux with standard keyboard.
-# If you know, please give details at http://wiki.tcl.tk/28331
+# If you know, please give details at http://wiki.tcl-lang.org/28331
 bind Ntext <Meta-b> {
     if {!$tk_strictMotif} {
 	ntext::AdjustInsert %W left

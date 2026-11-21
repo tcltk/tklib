@@ -6,7 +6,7 @@
 #   package require wsb
 #   ttk::spinbox <pathName> -style Wide.TSpinbox ...
 #
-# Copyright (c) 2025  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
+# Copyright (c) 2025-2026  Csaba Nemethi (E-mail: csaba.nemethi@t-online.de)
 #==============================================================================
 
 namespace eval wsb {
@@ -21,7 +21,7 @@ namespace eval wsb {
     #
     # Public variables:
     #
-    variable version    1.1
+    variable version    1.2
     variable library    [file dirname [file normalize [info script]]]
 
     proc getScalingPct {} {
@@ -140,9 +140,47 @@ proc wsb::createElements theme {
     #
     # Create the Wide.TSpinbox layout
     #
-    if {$theme eq "classic"} {
-	ttk::style layout Wide.TSpinbox {
-	    Entry.highlight -sticky nswe -children {
+    switch $theme {
+	vista - winnative - sun-valley-light - sun-valley-dark {
+	    #
+	    # Element order: uparrow, gap, downarrow.
+	    # Like a NumberBox with SpinButtonPlacementMode set to Inline.
+	    #
+	    ttk::style layout Wide.TSpinbox {
+		Entry.field -sticky nswe -children {
+		    WideSpinbox.downarrow -side right -sticky e
+		    WideSpinbox.gap -side right -sticky e
+		    WideSpinbox.uparrow -side right -sticky e
+		    Entry.padding -sticky nswe -children {
+			Entry.textarea -sticky nsew
+		    }
+		}
+	    }
+	}
+	classic {
+	    #
+	    # Element order: downarrow, gap, uparrow.
+	    # Like a GtkSpinButton, but uses chevrons rather than "-" and "+".
+	    #
+	    ttk::style layout Wide.TSpinbox {
+		Entry.highlight -sticky nswe -children {
+		    Entry.field -sticky nswe -children {
+			WideSpinbox.uparrow -side right -sticky e
+			WideSpinbox.gap -side right -sticky e
+			WideSpinbox.downarrow -side right -sticky e
+			Entry.padding -sticky nswe -children {
+			    Entry.textarea -sticky nsew
+			}
+		    }
+		}
+	    }
+	}
+	default {
+	    #
+	    # Element order: downarrow, gap, uparrow.
+	    # Like a GtkSpinButton, but uses chevrons rather than "-" and "+".
+	    #
+	    ttk::style layout Wide.TSpinbox {
 		Entry.field -sticky nswe -children {
 		    WideSpinbox.uparrow -side right -sticky e
 		    WideSpinbox.gap -side right -sticky e
@@ -150,17 +188,6 @@ proc wsb::createElements theme {
 		    Entry.padding -sticky nswe -children {
 			Entry.textarea -sticky nsew
 		    }
-		}
-	    }
-	}
-    } else {
-	ttk::style layout Wide.TSpinbox {
-	    Entry.field -sticky nswe -children {
-		WideSpinbox.uparrow -side right -sticky e
-		WideSpinbox.gap -side right -sticky e
-		WideSpinbox.downarrow -side right -sticky e
-		Entry.padding -sticky nswe -children {
-		    Entry.textarea -sticky nsew
 		}
 	    }
 	}

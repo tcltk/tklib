@@ -116,12 +116,17 @@ set b [ttk::button $f.b -text "Close" -command exit]
 
 pack $b  -side bottom -pady {0 9p}
 pack $sa -side top -expand yes -fill both -padx 9p -pady 9p
-pack $f  -expand yes -fill both
+
+update idletasks
+pack $f -expand yes -fill both
 
 #
 # Set the ScrollableFrame's width, height, and yscrollincrement
 #
-after 50 [list configSf $sf $cf $row $topPadY]
+set width [winfo reqwidth $cf]
+set rowHeight [expr {[winfo reqheight $cf] / $row}]
+set height [expr {10*$rowHeight + [winfo pixels . $topPadY]}]
+$sf configure -width $width -height $height -yscrollincrement $rowHeight
 
 #------------------------------------------------------------------------------
 
@@ -143,13 +148,4 @@ proc setCapital {w country} {
     $w configure -foreground ""
     global capitalArr
     $w set $capitalArr($country)
-}
-
-#------------------------------------------------------------------------------
-
-proc configSf {sf cf row topPadY} {
-    set width [winfo reqwidth $cf]
-    set rowHeight [expr {[winfo reqheight $cf] / $row}]
-    set height [expr {10*$rowHeight + [winfo pixels . $topPadY]}]
-    $sf configure -width $width -height $height -yscrollincrement $rowHeight
 }

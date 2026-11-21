@@ -79,7 +79,7 @@ snit::type ::canvas::track::lines {
 
     variable mycanvas {} ; # The canvas we are working with/on.
     variable mycoords {} ; # List of fixed points for the rubberbands.
-    variable myitems  {} ; # Liust of the canvas items representing the rubberbands.
+    variable myitems  {} ; # List of the canvas items representing the rubberbands.
 
     ##
     # # ## ### ##### ######## ############# #####################
