@@ -1,0 +1,1251 @@
+# -*- tcl -*-
+# Tests for the menubar package
+
+if {![package vsatisfies [package provide Tcl] 8.6-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.6, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.6- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.6, $msg"
+    return
+}
+
+package require tcltest 2.2
+namespace import ::tcltest::*
+
+lappend auto_path [file dirname [file dirname [file normalize [info script]]]]
+package require menubar
+
+# -------------------------------------------------------------------------
+# Helpers
+
+# Collect background errors (from bindings) instead of showing a dialog.
+set mbBgErrors {}
+set mbOldBgHandler [interp bgerror {}]
+interp bgerror {} [list apply {{msg opts} {lappend ::mbBgErrors $msg}}]
+
+# Each menubar instance creates the named font "sfont" and never deletes
+# it, so a second instance cannot be created (see menubar-1.4).  Delete
+# the font before creating a new instance.
+proc newMenubar {args} {
+    catch {font delete sfont}
+    menubar new {*}$args
+}
+
+proc cleanupMenubar {} {
+    foreach w [winfo children .] {
+	destroy $w
+    }
+    if {[info exists ::mb] && [info object isa object $::mb]} {
+	$::mb destroy
+    }
+    catch {font delete sfont}
+    unset -nocomplain ::mb ::cb ::m
+    set ::mbBgErrors {}
+    update
+}
+
+proc CB {args} {
+    lappend ::cb $args
+}
+
+# Types and labels of the entries of a menu
+proc entries {m} {
+    set res {}
+    if {[$m index end] eq "none"} {return {}}
+    for {set i 0} {$i <= [$m index end]} {incr i} {
+	set type [$m type $i]
+	if {$type in {tearoff separator}} {
+	    lappend res $type
+	} else {
+	    lappend res [list $type [$m entrycget $i -label]]
+	}
+    }
+    return $res
+}
+
+# Entries of a menubar menu; the tear-off entry (only in Tk 8) is omitted.
+proc bar {m} {
+    lsearch -all -inline -not -exact [entries $m] tearoff
+}
+
+# Since Tk 9 menus have no tear-off entry by default; menus shown again
+# with menu.show are inserted one position too far.
+set tk9Bug [expr {[package vsatisfies [package provide Tk] 9-] ? "knownBug" : ""}]
+
+# The menu of the cascade entry with the given label in menu $m
+proc submenu {m label} {
+    $m entrycget $label -menu
+}
+
+set sampleDef {
+    File M:file {
+	Open            C   open
+	# a comment line
+	Exit            C   exit
+    }
+    Edit M:edit+ {
+	Cut             C   cut
+	--              S   s1
+	Options         S   s2
+	Coffee          X   coffee+
+	Donut           X@  donut
+	Red             R   color
+	Green           R   color+
+	Blue            R   color
+    }
+    Recent M:recent {
+	Files           G   grp
+    }
+    Help M:help {
+	About           C   about
+    }
+}
+
+# Create a menubar with the sample definition installed in .t
+proc sampleMenubar {{script {}}} {
+    set ::mb [newMenubar]
+    $::mb define $::sampleDef
+    toplevel .t
+    $::mb install .t $script
+    set ::m [.t cget -menu]
+}
+
+# -------------------------------------------------------------------------
+
+test menubar-1.1 {package version} -body {
+    package present menubar
+} -result 0.5.1
+
+test menubar-1.2 {menubar new returns an object} -body {
+    set mb [newMenubar]
+    info object class $mb
+} -cleanup {
+    cleanupMenubar
+} -result ::menubar
+
+test menubar-1.3 {menubar new with options} -body {
+    set mb [newMenubar -background tan -relief groove -borderwidth 4 \
+		-foreground black]
+    $mb define {File M:file { Open C open }}
+    toplevel .t
+    $mb install .t {}
+    set m [.t cget -menu]
+    list [$m cget -background] [$m cget -relief] [$m cget -borderwidth] \
+	[$m cget -foreground]
+} -cleanup {
+    cleanupMenubar
+} -result {tan groove 4 black}
+
+test menubar-1.4 {menubar new: several instances} -constraints knownBug -body {
+    # The constructor creates the named font "sfont" unconditionally.
+    set mb [newMenubar]
+    set mb2 [menubar new]
+    $mb2 destroy
+    info object isa object $mb
+} -cleanup {
+    unset -nocomplain mb2
+    cleanupMenubar
+    destroy .temp
+} -result 1
+
+# -------------------------------------------------------------------------
+# define
+
+test menubar-2.1 {define: wrong # args} -body {
+    set mb [newMenubar]
+    $mb define
+} -cleanup {
+    cleanupMenubar
+} -returnCodes error -match glob -result {wrong # args: should be "* define definition"}
+
+test menubar-2.2 {define: returns an empty string} -body {
+    set mb [newMenubar]
+    $mb define $sampleDef
+} -cleanup {
+    cleanupMenubar
+} -result {}
+
+test menubar-2.3 {define: unknown entry type} -body {
+    set mb [newMenubar]
+    $mb define {A Q x}
+} -cleanup {
+    cleanupMenubar
+} -returnCodes error -result {bug: 'A' - unknown item type (Q)}
+
+test menubar-2.4 {define: duplicate tag} -body {
+    set mb [newMenubar]
+    $mb define {A M:a { B C b B2 C b }}
+} -cleanup {
+    cleanupMenubar
+} -returnCodes error -result {bug: tag 'b' already used.}
+
+test menubar-2.5 {define: menu without a tag} -body {
+    set mb [newMenubar]
+    $mb define {A M { B C b }}
+} -cleanup {
+    cleanupMenubar
+} -returnCodes error -result {bug: menu (A M) has no tag name.}
+
+test menubar-2.6 {define: tag that is not a simple string} -body {
+    set mb [newMenubar]
+    $mb define {A M:a { B C {b$c} }}
+} -cleanup {
+    cleanupMenubar
+} -returnCodes error -result {bug: tag 'b$c' not a simple string.}
+
+test menubar-2.7 {define: a second definition is ignored} -body {
+    set mb [newMenubar]
+    $mb define {File M:file { Open C open }}
+    $mb define {Other M:other { X C x }}
+    toplevel .t
+    $mb install .t {}
+    bar [.t cget -menu]
+} -cleanup {
+    cleanupMenubar
+} -result {{cascade File}}
+
+test menubar-2.8 {define: empty definition} -constraints knownBug -body {
+    set mb [newMenubar]
+    $mb define {}
+    toplevel .t
+    $mb install .t {}
+    bar [.t cget -menu]
+} -cleanup {
+    cleanupMenubar
+} -result {}
+
+# -------------------------------------------------------------------------
+# install
+
+test menubar-3.1 {install: wrong # args} -body {
+    set mb [newMenubar]
+    $mb install .
+} -cleanup {
+    cleanupMenubar
+} -returnCodes error -match glob -result {wrong # args: should be "* install win config"}
+
+test menubar-3.2 {install: before define} -body {
+    set mb [newMenubar]
+    toplevel .t
+    $mb install .t {}
+} -cleanup {
+    cleanupMenubar
+} -returnCodes error -match glob -result {error: install - '*' not defined.}
+
+test menubar-3.3 {install: menubar entries} -body {
+    sampleMenubar
+    list [winfo class $m] [bar $m]
+} -cleanup {
+    cleanupMenubar
+} -result {Menu {{cascade File} {cascade Edit} {cascade Recent} {cascade Help}}}
+
+test menubar-3.4 {install: menu entries of all types} -body {
+    sampleMenubar
+    list [entries [submenu $m File]] [entries [submenu $m Edit]] \
+	[entries [submenu $m Recent]] [entries [submenu $m Help]]
+} -cleanup {
+    cleanupMenubar
+} -result {{{command Open} {command Exit}} {tearoff {command Cut} separator {command {-- Options --}} {checkbutton Coffee} {checkbutton Donut} {radiobutton Red} {radiobutton Green} {radiobutton Blue}} separator {{command About}}}
+
+test menubar-3.5 {install: tear-off menus} -body {
+    sampleMenubar
+    list [[submenu $m File] cget -tearoff] [[submenu $m Edit] cget -tearoff]
+} -cleanup {
+    cleanupMenubar
+} -result {0 1}
+
+test menubar-3.6 {install: the Help menu} -body {
+    sampleMenubar
+    submenu $m Help
+} -cleanup {
+    cleanupMenubar
+} -result .t.m0.help
+
+test menubar-3.7 {install: initial values of checkbuttons} -body {
+    sampleMenubar
+    set e [submenu $m Edit]
+    list [set [$e entrycget Coffee -variable]] [set [$e entrycget Donut -variable]]
+} -cleanup {
+    cleanupMenubar
+    unset e
+} -result {1 0}
+
+test menubar-3.8 {install: initial value of a radiobutton group} -constraints knownBug -body {
+    # The radiobutton entries get an empty -variable until the group is
+    # configured, so all groups share one variable.
+    sampleMenubar
+    set e [submenu $m Edit]
+    list [set [$e entrycget Red -variable]] \
+	[expr {[$e entrycget Red -variable] eq [$e entrycget Blue -variable]}]
+} -cleanup {
+    cleanupMenubar
+    unset e
+} -result {Green 1}
+
+test menubar-3.17 {install: initial value of a configured radiobutton group} -body {
+    sampleMenubar {$::mb menu.configure -command {color {CB radio}}}
+    set e [submenu $m Edit]
+    list [set [$e entrycget Red -variable]] \
+	[expr {[$e entrycget Red -variable] eq [$e entrycget Blue -variable]}]
+} -cleanup {
+    cleanupMenubar
+    unset e
+} -result {Green 1}
+
+test menubar-3.18 {install: radiobutton groups are independent} -constraints knownBug -body {
+    set mb [newMenubar]
+    $mb define {
+	Edit M:edit {
+	    Red R color+
+	    Blue R color
+	    Small R size
+	    Large R size+
+	}
+    }
+    toplevel .t
+    $mb install .t {}
+    set e [submenu [.t cget -menu] Edit]
+    $e invoke Blue
+    list [set [$e entrycget Blue -variable]] [set [$e entrycget Large -variable]]
+} -cleanup {
+    cleanupMenubar
+    unset e
+} -result {Blue Large}
+
+test menubar-3.9 {install: the script is evaluated} -body {
+    sampleMenubar {set ::installed 1}
+    set ::installed
+} -cleanup {
+    cleanupMenubar
+    unset ::installed
+} -result 1
+
+test menubar-3.10 {install: in a second toplevel} -body {
+    sampleMenubar
+    toplevel .t2
+    $mb install .t2 {}
+    list [bar [.t2 cget -menu]] [entries [submenu [.t2 cget -menu] Edit]]
+} -cleanup {
+    cleanupMenubar
+} -result {{{cascade File} {cascade Edit} {cascade Recent} {cascade Help}} {tearoff {command Cut} separator {command {-- Options --}} {checkbutton Coffee} {checkbutton Donut} {radiobutton Red} {radiobutton Green} {radiobutton Blue}}}
+
+test menubar-3.11 {install: global and local scope of checkbuttons} -body {
+    sampleMenubar
+    toplevel .t2
+    $mb install .t2 {}
+    set e1 [submenu $m Edit]
+    set e2 [submenu [.t2 cget -menu] Edit]
+    list [expr {[$e1 entrycget Coffee -variable] eq [$e2 entrycget Coffee -variable]}] \
+	[expr {[$e1 entrycget Donut -variable] eq [$e2 entrycget Donut -variable]}]
+} -cleanup {
+    cleanupMenubar
+    unset e1 e2
+} -result {1 0}
+
+test menubar-3.12 {install: local scope checkbutton state is per window} -body {
+    sampleMenubar
+    toplevel .t2
+    $mb install .t2 {}
+    set e1 [submenu $m Edit]
+    set e2 [submenu [.t2 cget -menu] Edit]
+    $e1 invoke Donut
+    $e1 invoke Coffee
+    list [set [$e1 entrycget Donut -variable]] [set [$e2 entrycget Donut -variable]] \
+	[set [$e1 entrycget Coffee -variable]] [set [$e2 entrycget Coffee -variable]]
+} -cleanup {
+    cleanupMenubar
+    unset e1 e2
+} -result {1 0 0 0}
+
+test menubar-3.13 {install: a second install in the same window is ignored} -body {
+    sampleMenubar
+    $mb install .t {set ::installed 1}
+    list [info exists ::installed] [.t cget -menu]
+} -cleanup {
+    cleanupMenubar
+    unset -nocomplain ::installed
+} -result {0 .t.m0}
+
+test menubar-3.14 {install: path of a child of a toplevel} -body {
+    set mb [newMenubar]
+    $mb define {File M:file { Open C open }}
+    toplevel .t
+    frame .t.f
+    $mb install .t.f {}
+    .t cget -menu
+} -cleanup {
+    cleanupMenubar
+} -result .t.m0
+
+test menubar-3.15 {install: menu after a radiobutton group} -constraints knownBug -body {
+    # The cascade is inserted at the index of the tree node, which does not
+    # account for the entries of radiobutton groups.
+    set mb [newMenubar]
+    $mb define {
+	Edit M:edit+ {
+	    Red R color
+	    Green R color
+	    Blue R color
+	    Sub M:sub {
+		Deep C deep
+	    }
+	}
+    }
+    toplevel .t
+    $mb install .t {}
+    entries [submenu [.t cget -menu] Edit]
+} -cleanup {
+    cleanupMenubar
+} -result {tearoff {radiobutton Red} {radiobutton Green} {radiobutton Blue} {cascade Sub}}
+
+test menubar-3.16 {install: cascading menus} -body {
+    set mb [newMenubar]
+    $mb define {
+	Edit M:edit {
+	    Cut C cut
+	    Sub M:sub+ {
+		Deep C deep
+	    }
+	}
+    }
+    toplevel .t
+    $mb install .t {}
+    set e [submenu [.t cget -menu] Edit]
+    list [entries $e] [entries [submenu $e Sub]]
+} -cleanup {
+    cleanupMenubar
+    unset e
+} -result {{{command Cut} {cascade Sub}} {tearoff {command Deep}}}
+
+# -------------------------------------------------------------------------
+# Callbacks
+
+test menubar-4.1 {callback: command entry} -body {
+    sampleMenubar {
+	$::mb menu.configure -command {
+	    open {CB open}
+	}
+    }
+    [submenu $m File] invoke Open
+    set ::cb
+} -cleanup {
+    cleanupMenubar
+} -result {{open .t}}
+
+test menubar-4.2 {callback: checkbutton entry} -body {
+    sampleMenubar {
+	$::mb menu.configure -command {
+	    coffee {CB check}
+	    donut {CB check}
+	}
+    }
+    set e [submenu $m Edit]
+    $e invoke Coffee
+    $e invoke Donut
+    set ::cb
+} -cleanup {
+    cleanupMenubar
+    unset e
+} -result {{check .t coffee 0} {check .t donut 1}}
+
+test menubar-4.3 {callback: radiobutton entry} -body {
+    sampleMenubar {
+	$::mb menu.configure -command {
+	    color {CB radio}
+	}
+    }
+    set e [submenu $m Edit]
+    $e invoke Blue
+    $e invoke Red
+    set ::cb
+} -cleanup {
+    cleanupMenubar
+    unset e
+} -result {{radio .t color Blue} {radio .t color Red}}
+
+test menubar-4.4 {callback: in the namespace of install} -setup {
+    namespace eval ::mbtest {
+	proc CB {args} {lappend ::cb ns $args}
+    }
+} -body {
+    set mb [newMenubar]
+    $mb define {File M:file { Open C open }}
+    toplevel .t
+    namespace eval ::mbtest {
+	$::mb install .t {$::mb tag.configure .t open -command CB}
+    }
+    [submenu [.t cget -menu] File] invoke Open
+    set ::cb
+} -cleanup {
+    cleanupMenubar
+    namespace delete ::mbtest
+} -result {ns .t}
+
+test menubar-4.5 {callback: fully qualified command} -setup {
+    namespace eval ::mbtest {
+	proc CB {args} {lappend ::cb ns $args}
+    }
+} -body {
+    set mb [newMenubar]
+    $mb define {File M:file { Open C open }}
+    toplevel .t
+    namespace eval ::mbtest {
+	$::mb install .t {$::mb tag.configure .t open -command ::CB}
+    }
+    [submenu [.t cget -menu] File] invoke Open
+    set ::cb
+} -cleanup {
+    cleanupMenubar
+    namespace delete ::mbtest
+} -result {.t}
+
+test menubar-4.6 {callback: menu.namespace} -setup {
+    namespace eval ::mbtest {
+	proc CB {args} {lappend ::cb ns $args}
+    }
+} -body {
+    sampleMenubar {
+	$::mb menu.namespace edit ::mbtest
+	$::mb menu.configure -command {
+	    open {CB open}
+	    cut {CB cut}
+	}
+    }
+    [submenu $m File] invoke Open
+    [submenu $m Edit] invoke Cut
+    set ::cb
+} -cleanup {
+    cleanupMenubar
+    namespace delete ::mbtest
+} -result {{open .t} ns {cut .t}}
+
+test menubar-4.7 {callback: the toplevel of the invoking menu} -body {
+    sampleMenubar {
+	$::mb menu.configure -command {
+	    open {CB open}
+	}
+    }
+    toplevel .t2
+    $mb install .t2 {}
+    [submenu [.t2 cget -menu] File] invoke Open
+    [submenu $m File] invoke Open
+    set ::cb
+} -cleanup {
+    cleanupMenubar
+} -result {{open .t2} {open .t}}
+
+test menubar-4.8 {callback: key binding from -bind} -body {
+    sampleMenubar {
+	$::mb menu.configure -command {
+	    open {CB open}
+	} -bind {
+	    open {0 Ctrl+O Control-Key-o}
+	}
+    }
+    update
+    focus -force .t
+    event generate .t <Control-Key-o>
+    list $::cb [[submenu $m File] entrycget Open -accelerator] \
+	[[submenu $m File] entrycget Open -underline]
+} -cleanup {
+    cleanupMenubar
+} -result {{{open .t}} Ctrl+O 0}
+
+test menubar-4.9 {callback: disabled entries do not call back} -body {
+    sampleMenubar {
+	$::mb menu.configure -command {
+	    open {CB open}
+	}
+    }
+    $mb tag.configure .t open -state disabled
+    [submenu $m File] invoke Open
+    info exists ::cb
+} -cleanup {
+    cleanupMenubar
+} -result 0
+
+# -------------------------------------------------------------------------
+# menu.configure
+
+test menubar-5.1 {menu.configure: too few arguments} -body {
+    sampleMenubar
+    $mb menu.configure -command
+} -cleanup {
+    cleanupMenubar
+} -returnCodes error -result {error: menu.configure - to few arguments.}
+
+test menubar-5.2 {menu.configure: several options and tags} -body {
+    sampleMenubar
+    $mb menu.configure -background {
+	# comment
+	open red
+	exit blue
+    } -foreground {
+	open white
+    }
+    set f [submenu $m File]
+    list [$f entrycget Open -background] [$f entrycget Exit -background] \
+	[$f entrycget Open -foreground]
+} -cleanup {
+    cleanupMenubar
+    unset f
+} -result {red blue white}
+
+test menubar-5.3 {menu.configure: returns an empty string} -body {
+    sampleMenubar
+    $mb menu.configure -background {open red}
+} -cleanup {
+    cleanupMenubar
+} -result {}
+
+test menubar-5.4 {menu.configure: unknown tag} -body {
+    sampleMenubar
+    $mb menu.configure -background {nosuch red}
+} -cleanup {
+    cleanupMenubar
+} -returnCodes error -result {error: tag.configure - tag 'nosuch' not found}
+
+# -------------------------------------------------------------------------
+# tag.configure and tag.cget
+
+test menubar-6.1 {tag.configure: wrong # args} -body {
+    sampleMenubar
+    $mb tag.configure .t
+} -cleanup {
+    cleanupMenubar
+} -returnCodes error -match glob -result {wrong # args: should be "* tag.configure wtop node ?arg ...?"}
+
+test menubar-6.2 {tag.configure: before install} -body {
+    set mb [newMenubar]
+    $mb define {File M:file { Open C open }}
+    $mb tag.configure . open -state disabled
+} -cleanup {
+    cleanupMenubar
+} -returnCodes error -match glob -result {error: tag.configure - '*' not installed.}
+
+test menubar-6.3 {tag.configure: unknown tag} -body {
+    sampleMenubar
+    $mb tag.configure .t nosuch -state disabled
+} -cleanup {
+    cleanupMenubar
+} -returnCodes error -result {error: tag.configure - tag 'nosuch' not found}
+
+test menubar-6.4 {tag.configure: standard options} -body {
+    sampleMenubar
+    $mb tag.configure .t open -state disabled -foreground red \
+	-background blue -activebackground yellow -activeforeground green \
+	-font {Courier 10} -columnbreak 1 -hidemargin 1
+    set f [submenu $m File]
+    lmap o {-state -foreground -background -activebackground -activeforeground
+	    -font -columnbreak -hidemargin} {$f entrycget Open $o}
+} -cleanup {
+    cleanupMenubar
+    unset f
+} -result {disabled red blue yellow green {Courier 10} 1 1}
+
+test menubar-6.5 {tag.configure: returns an empty string} -body {
+    sampleMenubar
+    $mb tag.configure .t open -state disabled
+} -cleanup {
+    cleanupMenubar
+} -result {}
+
+test menubar-6.6 {tag.configure: applies to all installed windows} -body {
+    sampleMenubar
+    toplevel .t2
+    $mb install .t2 {}
+    $mb tag.configure .t open -foreground red
+    [submenu [.t2 cget -menu] File] entrycget Open -foreground
+} -cleanup {
+    cleanupMenubar
+} -result red
+
+test menubar-6.7 {tag.configure: -bind} -body {
+    sampleMenubar
+    $mb tag.configure .t exit -command {CB exit} -bind {1 Ctrl+Q Control-Key-q}
+    set f [submenu $m File]
+    update
+    focus -force .t
+    event generate .t <Control-Key-q>
+    list [$f entrycget Exit -underline] [$f entrycget Exit -accelerator] \
+	[expr {[bind .t <Control-Key-q>] eq [list $f invoke Exit]}] $::cb
+} -cleanup {
+    cleanupMenubar
+    unset f
+} -result {1 Ctrl+Q 1 {{exit .t}}}
+
+test menubar-6.8 {tag.configure: -bind with an empty underline} -body {
+    sampleMenubar
+    $mb tag.configure .t exit -bind {{} Ctrl+Q}
+    expr {[[submenu $m File] entrycget Exit -underline] in {-1 {}}}
+} -cleanup {
+    cleanupMenubar
+} -result 1
+
+test menubar-6.9 {tag.configure: -bind with a bad underline} -body {
+    sampleMenubar
+    $mb tag.configure .t exit -bind {x Ctrl+Q}
+} -cleanup {
+    cleanupMenubar
+} -returnCodes error -result {tag.configure: underline value for tag (exit) not positive integer.}
+
+test menubar-6.10 {tag.configure: -command} -body {
+    sampleMenubar
+    $mb tag.configure .t exit -command {CB bye}
+    [submenu $m File] invoke Exit
+    set ::cb
+} -cleanup {
+    cleanupMenubar
+} -result {{bye .t}}
+
+test menubar-6.11 {tag.configure: -label} -constraints knownBug -body {
+    # The entry is looked up by the new label.
+    sampleMenubar
+    $mb tag.configure .t exit -label Quit
+    entries [submenu $m File]
+} -cleanup {
+    cleanupMenubar
+} -result {{command Open} {command Quit}}
+
+test menubar-6.12 {tag.configure: menu entry options} -body {
+    sampleMenubar
+    $mb tag.configure .t edit -foreground red -state disabled
+    list [$m entrycget Edit -foreground] [$m entrycget Edit -state]
+} -cleanup {
+    cleanupMenubar
+} -result {red disabled}
+
+test menubar-6.13 {tag.configure: checkbutton options} -body {
+    sampleMenubar
+    $mb tag.configure .t coffee -selectcolor red -indicatoron 0
+    set e [submenu $m Edit]
+    list [$e entrycget Coffee -selectcolor] [$e entrycget Coffee -indicatoron]
+} -cleanup {
+    cleanupMenubar
+    unset e
+} -result {red 0}
+
+test menubar-6.14 {tag.configure: -image and -compound} -setup {
+    image create photo mbTestImage -width 8 -height 8
+} -body {
+    sampleMenubar
+    $mb tag.configure .t open -image mbTestImage -compound left
+    set f [submenu $m File]
+    list [$f entrycget Open -image] [$f entrycget Open -compound]
+} -cleanup {
+    cleanupMenubar
+    image delete mbTestImage
+    unset f
+} -result {mbTestImage left}
+
+test menubar-7.1 {tag.cget: wrong # args} -body {
+    sampleMenubar
+    $mb tag.cget .t
+} -cleanup {
+    cleanupMenubar
+} -returnCodes error -match glob -result {wrong # args: should be "* tag.cget wtop tag ?opt?"}
+
+test menubar-7.2 {tag.cget: entry options} -body {
+    sampleMenubar
+    $mb tag.configure .t open -foreground red -bind {0 Ctrl+O}
+    list [$mb tag.cget .t open -foreground] [$mb tag.cget .t open -accelerator] \
+	[$mb tag.cget .t open -label] [$mb tag.cget .t edit -label] \
+	[$mb tag.cget .t coffee -label]
+} -cleanup {
+    cleanupMenubar
+} -result {red Ctrl+O Open Edit Coffee}
+
+test menubar-7.3 {tag.cget: radiobutton group -state is the selected label} -body {
+    sampleMenubar {$::mb menu.configure -command {color {CB radio}}}
+    set r [list [$mb tag.cget .t color -state]]
+    [submenu $m Edit] invoke Blue
+    lappend r [$mb tag.cget .t color -state]
+} -cleanup {
+    cleanupMenubar
+    unset r
+} -result {Green Blue}
+
+test menubar-7.4 {tag.cget: separator} -body {
+    sampleMenubar
+    $mb tag.cget .t s1 -label
+} -cleanup {
+    cleanupMenubar
+} -result separator
+
+test menubar-7.5 {tag.cget: unknown tag} -body {
+    sampleMenubar
+    $mb tag.cget .t nosuch -label
+} -cleanup {
+    cleanupMenubar
+} -returnCodes error -result {error: tag.cget - tag 'nosuch' not found}
+
+test menubar-7.6 {tag.cget: before install} -body {
+    set mb [newMenubar]
+    $mb define {File M:file { Open C open }}
+    $mb tag.cget . open -label
+} -cleanup {
+    cleanupMenubar
+} -returnCodes error -match glob -result {error: tag.cget - '*' not installed.}
+
+# -------------------------------------------------------------------------
+# tag.add
+
+test menubar-8.1 {tag.add: user defined tags per window} -body {
+    sampleMenubar {$::mb tag.add out .t.text}
+    toplevel .t2
+    $mb install .t2 {$::mb tag.add out .t2.text}
+    list [$mb tag.cget .t out] [$mb tag.cget .t2 out]
+} -cleanup {
+    cleanupMenubar
+} -result {.t.text .t2.text}
+
+test menubar-8.2 {tag.add: outside install} -body {
+    sampleMenubar
+    $mb tag.add out x
+} -cleanup {
+    cleanupMenubar
+} -returnCodes error -result {error: tag - command used outside install}
+
+test menubar-8.3 {tag.add: undefined user tag} -body {
+    sampleMenubar
+    $mb tag.cget .t out
+} -cleanup {
+    cleanupMenubar
+} -returnCodes error -result {error: tag(out) - not defined for toplevel(.t)}
+
+test menubar-8.4 {tag.add: user tag of a destroyed window} -body {
+    sampleMenubar
+    toplevel .t2
+    $mb install .t2 {$::mb tag.add out .t2.text}
+    destroy .t2
+    $mb tag.cget .t2 out
+} -cleanup {
+    cleanupMenubar
+} -returnCodes error -result {error: tag(out) - not defined for toplevel(.t2)}
+
+test menubar-8.5 {tag.add: wrong # args} -body {
+    sampleMenubar
+    $mb tag.add out
+} -cleanup {
+    cleanupMenubar
+} -returnCodes error -match glob -result {wrong # args: should be "* tag.add tag value"}
+
+# -------------------------------------------------------------------------
+# menu.namespace, menu.hide, menu.show
+
+test menubar-9.1 {menu.namespace: outside install} -body {
+    sampleMenubar
+    $mb menu.namespace file ::foo
+} -cleanup {
+    cleanupMenubar
+} -returnCodes error -result {error: menu.namespace - command used outside install}
+
+test menubar-9.2 {menu.hide: hides a menu} -body {
+    sampleMenubar
+    $mb menu.hide edit
+    bar $m
+} -cleanup {
+    cleanupMenubar
+} -result {{cascade File} {cascade Recent} {cascade Help}}
+
+test menubar-9.3 {menu.show: shows a hidden menu again} -constraints $tk9Bug -body {
+    sampleMenubar
+    $mb menu.hide edit
+    $mb menu.show edit
+    list [bar $m] [lindex [entries [submenu $m Edit]] 1]
+} -cleanup {
+    cleanupMenubar
+} -result {{{cascade File} {cascade Edit} {cascade Recent} {cascade Help}} {command Cut}}
+
+test menubar-9.4 {menu.hide: in the install script} -body {
+    sampleMenubar {$::mb menu.hide recent}
+    bar $m
+} -cleanup {
+    cleanupMenubar
+} -result {{cascade File} {cascade Edit} {cascade Help}}
+
+test menubar-9.5 {menu.show: a menu that is not hidden} -body {
+    sampleMenubar
+    $mb menu.show edit
+    bar $m
+} -cleanup {
+    cleanupMenubar
+} -result {{cascade File} {cascade Edit} {cascade Recent} {cascade Help}}
+
+test menubar-9.6 {menu.hide: unknown tag} -body {
+    sampleMenubar
+    $mb menu.hide nosuch
+} -cleanup {
+    cleanupMenubar
+} -returnCodes error -result {error: menu.hide - tag 'nosuch' doesn't exist.}
+
+test menubar-9.7 {menu.hide: not a menu} -body {
+    sampleMenubar
+    $mb menu.hide open
+} -cleanup {
+    cleanupMenubar
+} -returnCodes error -result {error: menu.hide - tag 'open' not a menu.}
+
+test menubar-9.8 {menu.show: unknown tag} -body {
+    sampleMenubar
+    $mb menu.show nosuch
+} -cleanup {
+    cleanupMenubar
+} -returnCodes error -result {error: menu.show - tag 'nosuch' doesn't exist.}
+
+test menubar-9.9 {menu.show: not a menu} -body {
+    sampleMenubar
+    $mb menu.show open
+} -cleanup {
+    cleanupMenubar
+} -returnCodes error -result {error: menu.show - tag 'open' not a menu.}
+
+test menubar-9.10 {menu.hide: applies to all installed windows} -body {
+    sampleMenubar
+    toplevel .t2
+    $mb install .t2 {}
+    $mb menu.hide edit
+    bar [.t2 cget -menu]
+} -cleanup {
+    cleanupMenubar
+} -result {{cascade File} {cascade Recent} {cascade Help}}
+
+# -------------------------------------------------------------------------
+# group.xxx
+
+test menubar-10.1 {group.add: adds entries to the group} -body {
+    sampleMenubar
+    list [$mb group.add grp file1 {CB file} Ctrl+1 Control-Key-1] \
+	[$mb group.add grp file2 {CB file} {} Control-Key-2] \
+	[entries [submenu $m Recent]] [$mb group.entries grp]
+} -cleanup {
+    cleanupMenubar
+} -result {0 0 {separator {command file1} {command file2}} {file1 file2}}
+
+test menubar-10.2 {group.add: without a bind sequence} -constraints knownBug -body {
+    sampleMenubar
+    list [$mb group.add grp file1 {CB file}] [$mb group.add grp file2] \
+	[entries [submenu $m Recent]]
+} -cleanup {
+    cleanupMenubar
+} -result {0 0 {separator {command file1} {command file2}}}
+
+test menubar-10.3 {group.add: accelerator and state} -body {
+    sampleMenubar
+    $mb group.add grp file1 {CB file} Ctrl+1 Control-Key-1
+    $mb group.add grp file2 {} {} Control-Key-2
+    $mb group.add grp file3 {CB file} {} Control-Key-3 disabled
+    set r [submenu $m Recent]
+    list [$r entrycget file1 -accelerator] [$r entrycget file1 -state] \
+	[$r entrycget file2 -state] [$r entrycget file3 -state]
+} -cleanup {
+    cleanupMenubar
+    unset r
+} -result {Ctrl+1 normal disabled disabled}
+
+test menubar-10.4 {group.add: callback} -body {
+    sampleMenubar {$::mb menu.namespace grp ::}
+    $mb group.add grp file1 {CB file} {} Control-Key-1
+    [submenu $m Recent] invoke file1
+    set ::cb
+} -cleanup {
+    cleanupMenubar
+} -result {{file .t}}
+
+test menubar-10.5 {group.add: callback without menu.namespace} -constraints knownBug -body {
+    # The callback namespace is only known for menus.
+    sampleMenubar
+    $mb group.add grp file1 {CB file} {} Control-Key-1
+    [submenu $m Recent] invoke file1
+    set ::cb
+} -cleanup {
+    cleanupMenubar
+} -result {{file .t}}
+
+test menubar-10.6 {group.add: key binding} -body {
+    sampleMenubar {$::mb menu.namespace grp ::}
+    $mb group.add grp file1 {CB file} {} Control-Key-1
+    update
+    focus -force .t
+    event generate .t <Control-Key-1>
+    list $::cb $::mbBgErrors
+} -cleanup {
+    cleanupMenubar
+} -result {{{file .t}} {}}
+
+test menubar-10.7 {group.add: duplicate name and not a group} -body {
+    sampleMenubar
+    list [$mb group.add grp file1 {CB file} {} Control-Key-1] \
+	[$mb group.add grp file1 {CB file} {} Control-Key-1] \
+	[$mb group.add cut x {CB x} {} Control-Key-x] \
+	[entries [submenu $m Recent]]
+} -cleanup {
+    cleanupMenubar
+} -result {0 1 1 {separator {command file1}}}
+
+test menubar-10.8 {group.delete} -body {
+    sampleMenubar
+    $mb group.add grp file1 {CB file} {} Control-Key-1
+    $mb group.add grp file2 {CB file} {} Control-Key-2
+    list [$mb group.delete grp file1] [$mb group.delete grp nosuch] \
+	[$mb group.delete cut file2] [entries [submenu $m Recent]] \
+	[$mb group.entries grp] [bind .t <Control-Key-1>]
+} -cleanup {
+    cleanupMenubar
+} -result {0 1 1 {separator {command file2}} file2 {}}
+
+test menubar-10.9 {group.move} -body {
+    sampleMenubar
+    foreach f {file1 file2 file3} {
+	$mb group.add grp $f {CB file} {} Control-Key-[string index $f end]
+    }
+    set r [submenu $m Recent]
+    set res {}
+    lappend res [$mb group.move up grp file2] [entries $r] [$mb group.entries grp]
+    lappend res [$mb group.move down grp file2] [entries $r]
+    lappend res [$mb group.move down grp file3] [entries $r]
+    lappend res [$mb group.move up grp file2] [$mb group.move up grp file2] [entries $r]
+} -cleanup {
+    cleanupMenubar
+    unset res r f
+} -result {0 {separator {command file2} {command file1} {command file3}} {file2 file1 file3} 0 {separator {command file1} {command file2} {command file3}} 0 {separator {command file1} {command file2} {command file3}} 0 0 {separator {command file2} {command file1} {command file3}}}
+
+test menubar-10.10 {group.move: bad direction, unknown entry, not a group} -body {
+    sampleMenubar
+    $mb group.add grp file1 {CB file} {} Control-Key-1
+    list [$mb group.move sideways grp file1] [$mb group.move up grp nosuch] \
+	[$mb group.move up cut file1]
+} -cleanup {
+    cleanupMenubar
+} -result {1 1 1}
+
+test menubar-10.11 {group.configure} -body {
+    sampleMenubar
+    $mb group.add grp file1 {CB file} {} Control-Key-1
+    set r [list [$mb group.configure grp file1 -foreground red -state disabled]]
+    set rm [submenu $m Recent]
+    lappend r [$rm entrycget file1 -foreground] [$rm entrycget file1 -state] \
+	[$mb group.configure grp nosuch -foreground red] \
+	[$mb group.configure cut file1 -foreground red]
+} -cleanup {
+    cleanupMenubar
+    unset r rm
+} -result {0 red disabled 1 1}
+
+test menubar-10.12 {group.configure: -command and -bind} -body {
+    sampleMenubar {$::mb menu.namespace grp ::}
+    $mb group.add grp file1 {} {} Control-Key-1
+    $mb group.configure grp file1 -command {CB new} -state normal \
+	-bind {0 Ctrl+9 Control-Key-9}
+    set rm [submenu $m Recent]
+    $rm invoke file1
+    list $::cb [$rm entrycget file1 -accelerator]
+} -cleanup {
+    cleanupMenubar
+    unset rm
+} -result {{{new .t}} Ctrl+9}
+
+test menubar-10.13 {group.configure: -label} -constraints knownBug -body {
+    sampleMenubar
+    $mb group.add grp file1 {CB file} {} Control-Key-1
+    $mb group.configure grp file1 -label F1
+    entries [submenu $m Recent]
+} -cleanup {
+    cleanupMenubar
+} -result {separator {command F1}}
+
+test menubar-10.14 {group.serialize} -body {
+    sampleMenubar
+    $mb group.add grp file1 {CB file} Ctrl+1 Control-Key-1
+    $mb group.add grp file2 {CB file} {} Control-Key-2
+    set s [$mb group.serialize grp]
+    list [llength $s] [lindex $s 0] [dict get [lindex $s 1] +type] \
+	[llength [lindex $s 2]] [lindex $s 2 0] [lindex $s 2 3] \
+	[dict get [lindex $s 2 1] -accelerator] [lindex $s 2 2]
+} -cleanup {
+    cleanupMenubar
+    unset s
+} -result {3 grp commandgroup 6 file1 file2 Ctrl+1 {}}
+
+test menubar-10.15 {group.serialize: not a group} -body {
+    sampleMenubar
+    $mb group.serialize cut
+} -cleanup {
+    cleanupMenubar
+} -result 1
+
+test menubar-10.16 {group.deserialize: restores the entries} -body {
+    sampleMenubar {$::mb menu.namespace grp ::}
+    $mb group.add grp file1 {CB file} Ctrl+1 Control-Key-1
+    $mb group.add grp file2 {CB file} {} Control-Key-2
+    set s [$mb group.serialize grp]
+    $mb group.delete grp file1
+    $mb group.add grp file3 {CB file} {} Control-Key-3
+    set r [list [$mb group.deserialize grp $s] [$mb group.entries grp] \
+	       [entries [submenu $m Recent]]]
+    [submenu $m Recent] invoke file1
+    lappend r $::cb
+} -cleanup {
+    cleanupMenubar
+    unset s r
+} -result {0 {file1 file2} {separator {command file1} {command file2}} {{file .t}}}
+
+test menubar-10.17 {group.deserialize: into a fresh menubar} -body {
+    sampleMenubar
+    $mb group.add grp file1 {CB file} Ctrl+1 Control-Key-1
+    set s [$mb group.serialize grp]
+    cleanupMenubar
+    sampleMenubar
+    $mb group.deserialize grp $s
+    list [$mb group.entries grp] [entries [submenu $m Recent]] \
+	[[submenu $m Recent] entrycget file1 -accelerator]
+} -cleanup {
+    cleanupMenubar
+    unset s
+} -result {file1 {separator {command file1}} Ctrl+1}
+
+test menubar-10.18 {group.deserialize: not a group} -body {
+    sampleMenubar
+    $mb group.deserialize cut {}
+} -cleanup {
+    cleanupMenubar
+} -result 1
+
+test menubar-10.19 {group.add: entries in all installed windows} -body {
+    sampleMenubar
+    toplevel .t2
+    $mb install .t2 {}
+    $mb group.add grp file1 {CB file} {} Control-Key-1
+    entries [submenu [.t2 cget -menu] Recent]
+} -cleanup {
+    cleanupMenubar
+} -result {separator {command file1}}
+
+test menubar-10.20 {group.add: group in a hidden menu} -body {
+    sampleMenubar
+    $mb menu.hide recent
+    $mb group.add grp file1 {CB file} {} Control-Key-1
+    $mb menu.show recent
+    entries [submenu $m Recent]
+} -cleanup {
+    cleanupMenubar
+} -result {separator {command file1}}
+
+# -------------------------------------------------------------------------
+# notebook.xxx
+
+set notebookDef {
+    View M:view {
+	Wrap    X=  wrap
+	Small   R=  size+
+	Large   R=  size
+    }
+}
+
+proc notebookMenubar {} {
+    set ::mb [newMenubar]
+    $::mb define $::notebookDef
+    toplevel .t
+    ttk::notebook .t.nb
+    frame .t.nb.tab1
+    frame .t.nb.tab2
+    .t.nb add .t.nb.tab1
+    .t.nb add .t.nb.tab2
+    $::mb install .t {
+	$::mb menu.configure -command {wrap CB size CB}
+	$::mb notebook.addTabStore .t.nb.tab1
+	$::mb notebook.addTabStore .t.nb.tab2
+    }
+    set ::m [.t cget -menu]
+}
+
+test menubar-11.1 {notebook: tab scope buttons} -body {
+    notebookMenubar
+    set v [submenu $m View]
+    set [$v entrycget Wrap -variable]
+} -cleanup {
+    cleanupMenubar
+    unset v
+} -result 0
+
+test menubar-11.2 {notebook: values are saved and restored per tab} -body {
+    notebookMenubar
+    set v [submenu $m View]
+    set wrap [$v entrycget Wrap -variable]
+    # change the value for tab 1
+    $v invoke Wrap
+    $mb notebook.setTabValue .t.nb.tab1 wrap
+    # tab 2 still has the initial value
+    $mb notebook.restoreTabValues .t.nb.tab2
+    set r [list [set $wrap]]
+    $mb notebook.restoreTabValues .t.nb.tab1
+    lappend r [set $wrap]
+    $mb notebook.restoreTabValues .t.nb.tab2
+    lappend r [set $wrap]
+} -cleanup {
+    cleanupMenubar
+    unset v wrap r
+} -result {0 1 0}
+
+test menubar-11.5 {notebook: tab scope radiobuttons} -constraints knownBug -body {
+    # The radiobutton entries of a tab scope group get no variable.
+    notebookMenubar
+    set v [submenu $m View]
+    $v invoke Large
+    list [expr {[$v entrycget Small -variable] ne {}}] [set [$v entrycget Small -variable]]
+} -cleanup {
+    cleanupMenubar
+    unset v
+} -result {1 Large}
+
+test menubar-11.3 {notebook: deleting a tab store keeps the others} -constraints knownBug -body {
+    # deleteTabStore removes the stores of all tabs of the window.
+    notebookMenubar
+    set v [submenu $m View]
+    set wrap [$v entrycget Wrap -variable]
+    $v invoke Wrap
+    $mb notebook.setTabValue .t.nb.tab1 wrap
+    $mb notebook.deleteTabStore .t.nb.tab2
+    set $wrap 0
+    $mb notebook.restoreTabValues .t.nb.tab1
+    set $wrap
+} -cleanup {
+    cleanupMenubar
+    unset v wrap
+} -result 1
+
+test menubar-11.4 {notebook: setTabValue for a tab without a store does nothing} -body {
+    notebookMenubar
+    $mb notebook.setTabValue .t.nb wrap
+} -cleanup {
+    cleanupMenubar
+} -result {}
+
+# -------------------------------------------------------------------------
+
+test menubar-12.1 {destroying the toplevel forgets the window} -body {
+    sampleMenubar {$::mb tag.add out x}
+    destroy .t
+    list [catch {$mb tag.cget .t out} msg] $msg
+} -cleanup {
+    cleanupMenubar
+    unset msg
+} -result {1 {error: tag.cget - '*' not installed.}} -match glob
+
+# -------------------------------------------------------------------------
+
+interp bgerror {} $mbOldBgHandler
+unset mbOldBgHandler mbBgErrors sampleDef notebookDef
+foreach p {newMenubar cleanupMenubar CB entries submenu sampleMenubar
+	   notebookMenubar} {
+    rename $p {}
+}
+rename bar {}
+unset p tk9Bug
+
+::tcltest::cleanupTests
+return
