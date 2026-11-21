@@ -1,0 +1,894 @@
+# -*- tcl -*-
+# tvmixins.test --
+#
+#	Tests for the dgw::tvmixins package: dgw::mixin and the
+#	ttk::treeview adaptors tvband, tvedit, tvfilebrowser, tvksearch,
+#	tvsortable, tvtooltip and tvtree.
+#
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2
+    namespace import ::tcltest::*
+} else {
+    if {![package vsatisfies [package present tcltest] 2.2]} {
+	puts "    Aborting the tests found in \"[file tail [info script]]\"."
+	puts "    Requiring tcltest 2.2, have [package present tcltest]"
+	return
+    }
+}
+
+::tcltest::testConstraint tk 1
+
+lappend auto_path [file dirname [file dirname [file normalize [info script]]]]
+package require dgw::tvmixins
+
+# -------------------------------------------------------------------------
+# Helpers
+
+# The tklib test harness withdraws "."; key bindings need the focus.
+# Virtual events are generated only to mapped widgets in some setups
+# (Tk 9.1 in a child interpreter, as used by the tklib test harness),
+# so the widgets of tests that rely on them are mapped.
+set mainState [wm state .]
+wm deiconify .
+wm geometry . +0+0
+update
+
+# Errors in bindings must not open the Tk error dialog and block.
+set savedBgerror [interp bgerror {}]
+interp bgerror {} [list apply {{msg opts} {lappend ::bgErrors $msg}}]
+
+# tvedit adds to the "all" binding of <KeyPress-Return>.
+set savedAllReturn [bind all <KeyPress-Return>]
+
+# tvfilebrowser changes the current directory.
+set savedPwd [pwd]
+
+proc show {w} {
+    pack $w
+    update
+    focus -force $w
+    update
+}
+
+# Values of the first column, in display order.
+proc col0 {w} {
+    lmap i [$w children {}] {lindex [$w item $i -values] 0}
+}
+
+# Band tag of each top level row.
+proc bands {w} {
+    lmap i [$w children {}] {lsearch -inline -glob [$w item $i -tags] band*}
+}
+
+# tvedit needs lower case column names, see tvmixins-7.10.
+proc mklower {w args} {
+    ttk::treeview $w -columns {a b c} -show headings {*}$args
+    foreach col {a b c} {$w heading $col -text [string toupper $col]}
+    return $w
+}
+
+proc mktable {w args} {
+    ttk::treeview $w -columns {A B C} -show headings {*}$args
+    foreach col {A B C} {$w heading $col -text $col}
+    return $w
+}
+
+proc fill {w rows} {
+    foreach r $rows {$w insert {} end -values $r}
+}
+
+# Wait (bounded) until a variable is set.
+proc waitVar {var {ms 3000}} {
+    set end [expr {[clock milliseconds] + $ms}]
+    while {![info exists $var] && [clock milliseconds] < $end} {
+	update
+	after 10
+    }
+    info exists $var
+}
+
+# -------------------------------------------------------------------------
+# dgw::mixin
+
+test tvmixins-1.1 {package version} -body {
+    package present dgw::tvmixins
+} -result 0.3
+
+test tvmixins-1.2 {exported commands} -body {
+    lsort [namespace eval ::dgw {namespace export}]
+} -match glob -result {mixin tvband tvedit tvfilebrowser tvksearch tvsortable tvtooltip tvtree*}
+
+test tvmixins-1.3 {mixin: wrong # args} -body {
+    dgw::mixin .tv
+} -returnCodes error -result {wrong # args: should be "dgw::mixin pathName mixinWidget ?arg ...?"}
+
+test tvmixins-1.4 {mixin: example from the manual} -setup {
+    set tv [mktable .tv]
+} -body {
+    list [dgw::mixin $tv dgw::tvsortable] [dgw::mixin $tv dgw::tvband] \
+	[$tv configure -bandcolors [list white ivory]] [$tv cget -bandcolors] \
+	[winfo class $tv]
+} -cleanup {
+    destroy .tv
+    unset -nocomplain tv
+} -result {.tv .tv {} {white ivory} Treeview}
+
+test tvmixins-1.5 {mixin: unknown adaptor} -setup {
+    mktable .tv
+} -body {
+    dgw::mixin .tv dgw::nosuch
+} -cleanup {
+    destroy .tv
+} -returnCodes error -result {invalid command name "dgw::nosuch"}
+
+test tvmixins-1.6 {mixin: chained creation} -body {
+    dgw::tvsortable [dgw::tvband [mktable .tv]] -sorttypes {A real}
+    list [.tv cget -sorttypes] [.tv cget -bandcolors] [.tv cget -show]
+} -cleanup {
+    destroy .tv
+} -result {{A real} {{#FFFFFF} #DDEEFF} headings}
+
+# -------------------------------------------------------------------------
+# tvband
+
+test tvmixins-2.1 {tvband: default colors} -body {
+    dgw::tvband [mktable .tv]
+    list [.tv cget -bandcolors] [.tv tag configure band0 -background] \
+	[.tv tag configure band1 -background]
+} -cleanup {
+    destroy .tv
+} -result {{{#FFFFFF} #DDEEFF} #FFFFFF #DDEEFF}
+
+test tvmixins-2.2 {tvband: existing rows are banded} -body {
+    fill [mktable .tv] {{1} {2} {3} {4}}
+    dgw::tvband .tv
+    bands .tv
+} -cleanup {
+    destroy .tv
+} -result {band1 band0 band1 band0}
+
+test tvmixins-2.3 {tvband: inserted rows are banded} -body {
+    dgw::tvband [mktable .tv]
+    fill .tv {{1} {2} {3} {4} {5}}
+    bands .tv
+} -cleanup {
+    destroy .tv
+} -result {band1 band0 band1 band0 band1}
+
+test tvmixins-2.4 {tvband: -bandcolors} -body {
+    dgw::tvband [mktable .tv] -bandcolors {white ivory}
+    set res [list [.tv tag configure band0 -background] [.tv tag configure band1 -background]]
+    .tv configure -bandcolors {red blue}
+    lappend res [.tv tag configure band0 -background] [.tv tag configure band1 -background]
+} -cleanup {
+    destroy .tv
+    unset -nocomplain res
+} -result {white ivory red blue}
+
+test tvmixins-2.5 {tvband: rows inserted at the top keep the alternation} -body {
+    dgw::tvband [mktable .tv]
+    fill .tv {{1} {2} {3}}
+    .tv insert {} 0 -values {0}
+    bands .tv
+} -cleanup {
+    destroy .tv
+} -result {band0 band1 band0 band1}
+
+test tvmixins-2.6 {tvband: rows inserted in the middle keep the alternation} -constraints {
+    knownBug
+} -body {
+    # The new row gets the band of its index, the rows after it are
+    # not rebanded.
+    dgw::tvband [mktable .tv]
+    fill .tv {{1} {2} {3}}
+    .tv insert {} 1 -values {x}
+    set b [bands .tv]
+    expr {[lindex $b 0] ne [lindex $b 1] && [lindex $b 1] ne [lindex $b 2] && [lindex $b 2] ne [lindex $b 3]}
+} -cleanup {
+    destroy .tv
+    unset -nocomplain b
+} -result 1
+
+test tvmixins-2.7 {tvband: deleted rows keep the alternation} -constraints {
+    knownBug
+} -body {
+    # Deleting rows does not reband the remaining ones.
+    dgw::tvband [mktable .tv]
+    fill .tv {{1} {2} {3} {4}}
+    .tv delete [lindex [.tv children {}] 1]
+    set b [bands .tv]
+    expr {[lindex $b 0] ne [lindex $b 1] && [lindex $b 1] ne [lindex $b 2]}
+} -cleanup {
+    destroy .tv
+    unset -nocomplain b
+} -result 1
+
+test tvmixins-2.8 {tvband: rebanded after sorting} -body {
+    dgw::tvsortable [dgw::tvband [mktable .tv]]
+    show .tv
+    fill .tv {{3} {1} {4} {2}}
+    .tv sortBy A 0
+    list [col0 .tv] [bands .tv]
+} -cleanup {
+    destroy .tv
+} -result {{1 2 3 4} {band1 band0 band1 band0}}
+
+test tvmixins-2.9 {tvband: band method} -body {
+    dgw::tvband [mktable .tv]
+    fill .tv {{1} {2} {3}}
+    foreach i [.tv children {}] {.tv item $i -tags {}}
+    .tv band
+    bands .tv
+} -cleanup {
+    destroy .tv
+    unset -nocomplain i
+} -result {band1 band0 band1}
+
+# -------------------------------------------------------------------------
+# tvsortable
+
+test tvmixins-3.1 {tvsortable: headings get sort commands} -body {
+    dgw::tvsortable [mktable .tv]
+    list [.tv heading A -image] [string match *sortBy* [.tv heading B -command]]
+} -cleanup {
+    destroy .tv
+} -result {arrowBlank 1}
+
+test tvmixins-3.2 {tvsortable: sortBy with -sorttypes} -body {
+    dgw::tvsortable [mktable .tv] -sorttypes {A integer B dictionary}
+    fill .tv {{10 b} {9 a10} {100 a9}}
+    .tv sortBy A 0
+    set res [list [col0 .tv]]
+    .tv sortBy A 1
+    lappend res [col0 .tv]
+    .tv sortBy B 0
+    lappend res [col0 .tv]
+} -cleanup {
+    destroy .tv
+    unset -nocomplain res
+} -result {{9 10 100} {100 10 9} {100 9 10}}
+
+test tvmixins-3.3 {tvsortable: automatic numeric sort} -body {
+    dgw::tvsortable [mktable .tv]
+    fill .tv {{10} {9.5} {-1}}
+    .tv sortBy A 0
+    col0 .tv
+} -cleanup {
+    destroy .tv
+} -result {-1 9.5 10}
+
+test tvmixins-3.4 {tvsortable: automatic dictionary sort} -body {
+    dgw::tvsortable [mktable .tv]
+    fill .tv {{x10} {x9} {X1}}
+    .tv sortBy A 0
+    col0 .tv
+} -cleanup {
+    destroy .tv
+} -result {X1 x9 x10}
+
+test tvmixins-3.5 {tvsortable: automatic sort with heading text other than the column id} -constraints {
+    knownBug
+} -body {
+    # The type check compares heading texts with the column id.
+    dgw::tvsortable [mktable .tv]
+    .tv heading A -text Number
+    fill .tv {{10} {9} {100}}
+    .tv sortBy A 0
+    col0 .tv
+} -cleanup {
+    destroy .tv
+} -result {9 10 100}
+
+test tvmixins-3.6 {tvsortable: clicking a heading sorts and toggles} -body {
+    dgw::tvsortable [mktable .tv] -sorttypes {A integer}
+    fill .tv {{2} {3} {1}}
+    uplevel #0 [.tv heading A -command]
+    set res [list [col0 .tv]]
+    uplevel #0 [.tv heading A -command]
+    lappend res [col0 .tv]
+} -cleanup {
+    destroy .tv
+    unset -nocomplain res
+} -result {{1 2 3} {3 2 1}}
+
+test tvmixins-3.7 {tvsortable: arrow images on the headings} -body {
+    dgw::tvsortable [mktable .tv] -sorttypes {A integer}
+    fill .tv {{2 b x} {1 a y}}
+    .tv sortBy B 1
+    list [.tv heading A -image] [.tv heading B -image] [.tv heading C -image]
+} -cleanup {
+    destroy .tv
+} -result {arrowBlank arrow(1) arrowBlank}
+
+test tvmixins-3.8 {tvsortable: <<SortEnd>> event} -body {
+    dgw::tvsortable [mktable .tv]
+    show .tv
+    fill .tv {{2 b x} {1 a y}}
+    bind .tv <<SortEnd>> {set ::sorted [list %W %d]}
+    .tv sortBy C 0
+    set ::sorted
+} -cleanup {
+    destroy .tv
+    unset -nocomplain ::sorted
+} -result {.tv C}
+
+test tvmixins-3.9 {tvsortable: reSort repeats the last sort} -body {
+    dgw::tvsortable [mktable .tv] -sorttypes {A integer}
+    list [.tv reSort] [fill .tv {{2} {3} {1}}] [.tv sortBy A 1] \
+	[.tv insert {} end -values {5}] [.tv reSort] [col0 .tv]
+} -cleanup {
+    destroy .tv
+} -match glob -result {{} {} {} * {} {5 3 2 1}}
+
+test tvmixins-3.10 {tvsortable: directory sort type} -setup {
+    set d [makeDirectory tvmixinsdir]
+    makeDirectory sub $d
+    makeFile {} afile $d
+    makeFile {} zfile $d
+    cd $d
+} -body {
+    dgw::tvsortable [mktable .tv] -sorttypes {A directory}
+    fill .tv {{zfile} {sub} {..} {afile}}
+    .tv sortBy A 0
+    set res [list [col0 .tv]]
+    .tv sortBy A 1
+    lappend res [col0 .tv]
+} -cleanup {
+    destroy .tv
+    cd $savedPwd
+    removeDirectory tvmixinsdir
+    unset -nocomplain d res
+} -result {{.. sub afile zfile} {.. sub zfile afile}}
+
+test tvmixins-3.11 {tvsortable: empty table} -body {
+    dgw::tvsortable [mktable .tv] -sorttypes {A integer}
+    list [.tv sortBy A 0] [.tv children {}]
+} -cleanup {
+    destroy .tv
+} -result {{} {}}
+
+test tvmixins-3.12 {tvsortable: automatic sort with empty cells} -constraints {
+    knownBug
+} -body {
+    # The type check takes the value of the first row; an empty value
+    # counts as a number and lsort -real fails on it.
+    dgw::tvsortable [mktable .tv]
+    fill .tv {{1 {}} {2 b} {3 a}}
+    .tv sortBy B 0
+    col0 .tv
+} -cleanup {
+    destroy .tv
+} -result {1 3 2}
+
+# -------------------------------------------------------------------------
+# tvksearch
+
+test tvmixins-4.1 {tvksearch: Home and End} -setup {
+    dgw::tvksearch [mktable .tv]
+    fill .tv {{alpha} {beta} {gamma}}
+    show .tv
+} -body {
+    event generate .tv <Key-End>
+    set res [list [.tv item [.tv selection] -values] [.tv focus]]
+    event generate .tv <Key-Home>
+    lappend res [.tv item [.tv selection] -values] \
+	[expr {[.tv focus] eq [lindex [.tv children {}] 0]}]
+} -cleanup {
+    destroy .tv
+    unset -nocomplain res
+} -match glob -result {gamma I* alpha 1}
+
+test tvmixins-4.2 {tvksearch: typing selects the matching row} -setup {
+    dgw::tvksearch [mktable .tv]
+    fill .tv {{alpha} {beta} {gamma} {gold}}
+    show .tv
+} -body {
+    event generate .tv <Key-g>
+    set res [.tv item [.tv selection] -values]
+    event generate .tv <Key-o>
+    lappend res [.tv item [.tv selection] -values]
+} -cleanup {
+    destroy .tv
+    unset -nocomplain res
+} -result {gamma gold}
+
+test tvmixins-4.3 {tvksearch: no match keeps the selection} -setup {
+    dgw::tvksearch [mktable .tv]
+    fill .tv {{alpha} {beta}}
+    show .tv
+} -body {
+    event generate .tv <Key-b>
+    event generate .tv <Key-z>
+    .tv item [.tv selection] -values
+} -cleanup {
+    destroy .tv
+} -result beta
+
+# -------------------------------------------------------------------------
+# tvtree
+
+test tvmixins-5.1 {tvtree: default -icon} -body {
+    dgw::tvtree [ttk::treeview .tree]
+    .tree cget -icon
+} -cleanup {
+    destroy .tree
+} -result book
+
+test tvmixins-5.2 {tvtree: images of inserted items} -body {
+    dgw::tvtree [ttk::treeview .tree -show tree] -icon folder
+    show .tree
+    set id [.tree insert {} end -text " first item" -open 1]
+    set child [.tree insert $id 0 -text " child"]
+    set closed [.tree insert {} end -text " closed" -open 0]
+    .tree insert $closed end -text " grandchild"
+    update
+    list [.tree item $child -image] [.tree item $id -image] [.tree item $closed -image]
+} -cleanup {
+    destroy .tree
+    unset -nocomplain id child closed
+} -result {file16 folderopen16 folderclose16}
+
+test tvmixins-5.3 {tvtree: <<InsertItem>> event} -body {
+    dgw::tvtree [ttk::treeview .tree]
+    show .tree
+    bind .tree <<InsertItem>> {+lappend ::inserted %d}
+    set id [.tree insert {} end -text a]
+    set c [.tree insert $id end -text b]
+    update
+    expr {$::inserted eq [list $id $c]}
+} -cleanup {
+    destroy .tree
+    unset -nocomplain id c ::inserted
+} -result 1
+
+test tvmixins-5.4 {tvtree: images change on open and close} -body {
+    dgw::tvtree [ttk::treeview .tree -show tree] -icon book
+    show .tree
+    set id [.tree insert {} end -text a -open 0]
+    .tree insert $id end -text b
+    update
+    .tree focus $id
+    event generate .tree <<TreeviewOpen>>
+    set res [.tree item $id -image]
+    event generate .tree <<TreeviewClose>>
+    lappend res [.tree item $id -image]
+} -cleanup {
+    destroy .tree
+    unset -nocomplain id res
+} -result {bookopen16 bookclose16}
+
+test tvmixins-5.5 {tvtree: icon images exist} -body {
+    dgw::tvtree [ttk::treeview .tree]
+    lmap img {bookopen16 bookclose16 folderopen16 folderclose16 file16} {image type $img}
+} -cleanup {
+    destroy .tree
+} -result {photo photo photo photo photo}
+
+# -------------------------------------------------------------------------
+# tvtooltip
+
+test tvmixins-6.1 {tvtooltip: <<RowEnter>> and <<RowLeave>>} -setup {
+    dgw::tvtooltip [mktable .tv]
+    fill .tv {{a} {b}}
+    show .tv
+    set ::trace {}
+} -body {
+    bind .tv <<RowEnter>> {lappend ::trace [list enter %d]; set ::entered 1}
+    bind .tv <<RowLeave>> {lappend ::trace [list leave %d]}
+    lassign [.tv bbox [lindex [.tv children {}] 0]] x y w h
+    event generate .tv <Motion> -x [expr {$x + 5}] -y [expr {$y + $h / 2}]
+    waitVar ::entered
+    unset ::entered
+    lassign [.tv bbox [lindex [.tv children {}] 1]] x y w h
+    event generate .tv <Motion> -x [expr {$x + 5}] -y [expr {$y + $h / 2}]
+    waitVar ::entered
+    expr {$::trace eq [list [list enter [lindex [.tv children {}] 0]] \
+			  [list leave [lindex [.tv children {}] 0]] \
+			  [list enter [lindex [.tv children {}] 1]]]}
+} -cleanup {
+    destroy .tv
+    unset -nocomplain ::trace ::entered x y w h
+} -result 1
+
+test tvmixins-6.2 {tvtooltip: leaving the row before the delay} -setup {
+    dgw::tvtooltip [mktable .tv]
+    fill .tv {{a}}
+    show .tv
+    set ::trace {}
+} -body {
+    bind .tv <<RowEnter>> {lappend ::trace [list enter %d]}
+    bind .tv <<RowLeave>> {lappend ::trace leave}
+    lassign [.tv bbox [lindex [.tv children {}] 0]] x y w h
+    event generate .tv <Motion> -x [expr {$x + 5}] -y [expr {$y + $h / 2}]
+    # move to the empty area below the rows
+    event generate .tv <Motion> -x [expr {$x + 5}] -y [expr {[winfo height .tv] - 3}]
+    after 500 {set ::waited 1}
+    vwait ::waited
+    set ::trace
+} -cleanup {
+    destroy .tv
+    unset -nocomplain ::trace ::waited x y w h
+} -result leave
+
+# -------------------------------------------------------------------------
+# tvedit
+
+test tvmixins-7.1 {tvedit: default options} -body {
+    dgw::tvedit [mktable .tv]
+    list [.tv cget -edittypes] [.tv cget -editdefault] [.tv cget -editendcmd]
+} -cleanup {
+    destroy .tv
+    bind all <KeyPress-Return> $savedAllReturn
+} -result {{} entry {}}
+
+test tvmixins-7.2 {tvedit: F2 opens editors of the column types} -setup {
+    dgw::tvedit [ttk::treeview .tv -columns {txt bool int list} -show headings] \
+	-edittypes {bool bool int {int 0 100} list {list A B C}}
+    set r [.tv insert {} end -values {x true 5 B}]
+    .tv focus $r
+    show .tv
+} -body {
+    event generate .tv <KeyPress-F2> -x 10 -y 30
+    update
+    list [winfo class .tv.txt] [winfo class .tv.bool] [winfo class .tv.int] \
+	[winfo class .tv.list] [.tv.txt get] [.tv.int get] [.tv.list get]
+} -cleanup {
+    destroy .tv
+    bind all <KeyPress-Return> $savedAllReturn
+    unset -nocomplain r
+} -result {TEntry TCheckbutton Spinbox TCombobox x 5 B}
+
+test tvmixins-7.3 {tvedit: Return stores the edited values} -setup {
+    set ::trace {}
+    proc done {args} {lappend ::trace $args}
+    dgw::tvedit [mklower .tv] -editendcmd done
+    set r [.tv insert {} end -values {x y z}]
+    .tv focus $r
+    show .tv
+} -body {
+    event generate .tv <KeyPress-F2> -x 10 -y 30
+    update
+    .tv.a delete 0 end
+    .tv.a insert 0 new
+    event generate .tv.a <KeyPress-Return>
+    update
+    list [.tv item $r -values] [winfo exists .tv.a] \
+	[expr {[list .tv a $r x new] in $::trace}]
+} -cleanup {
+    destroy .tv
+    bind all <KeyPress-Return> $savedAllReturn
+    rename done {}
+    unset -nocomplain r ::trace
+} -result {{new y z} 0 1}
+
+test tvmixins-7.4 {tvedit: <<TreeviewEditEnd>> event} -setup {
+    set ::trace {}
+    dgw::tvedit [mklower .tv]
+    set r [.tv insert {} end -values {x y z}]
+    .tv focus $r
+    show .tv
+} -body {
+    bind .tv <<TreeviewEditEnd>> {lappend ::trace %d}
+    event generate .tv <KeyPress-F2> -x 10 -y 30
+    update
+    .tv.b delete 0 end
+    .tv.b insert 0 changed
+    event generate .tv.b <KeyPress-Return>
+    update
+    expr {[list $r b] in $::trace}
+} -cleanup {
+    destroy .tv
+    bind all <KeyPress-Return> $savedAllReturn
+    unset -nocomplain r ::trace
+} -result 1
+
+test tvmixins-7.5 {tvedit: Escape cancels the edit} -setup {
+    dgw::tvedit [mklower .tv]
+    set r [.tv insert {} end -values {x y z}]
+    .tv focus $r
+    show .tv
+} -body {
+    event generate .tv <KeyPress-F2> -x 10 -y 30
+    update
+    .tv.a delete 0 end
+    .tv.a insert 0 new
+    event generate .tv.a <KeyPress-Escape>
+    update
+    list [.tv item $r -values] [winfo exists .tv.a]
+} -cleanup {
+    destroy .tv
+    bind all <KeyPress-Return> $savedAllReturn
+    unset -nocomplain r
+} -result {{x y z} 0}
+
+test tvmixins-7.6 {tvedit: -editdefault "" edits only typed columns} -setup {
+    dgw::tvedit [mklower .tv] -edittypes {b {list p q}} -editdefault ""
+    set r [.tv insert {} end -values {x p z}]
+    .tv focus $r
+    show .tv
+} -body {
+    event generate .tv <KeyPress-F2> -x 10 -y 30
+    update
+    list [winfo exists .tv.a] [winfo exists .tv.b] [winfo exists .tv.c] [.tv.b cget -values]
+} -cleanup {
+    destroy .tv
+    bind all <KeyPress-Return> $savedAllReturn
+    unset -nocomplain r
+} -result {0 1 0 {p q}}
+
+test tvmixins-7.7 {tvedit: int editor range} -setup {
+    dgw::tvedit [mklower .tv] -edittypes {a {int 10 20}}
+    set r [.tv insert {} end -values {15 y z}]
+    .tv focus $r
+    show .tv
+} -body {
+    event generate .tv <KeyPress-F2> -x 10 -y 30
+    update
+    list [.tv.a cget -from] [.tv.a cget -to] [.tv.a cget -increment]
+} -cleanup {
+    destroy .tv
+    bind all <KeyPress-Return> $savedAllReturn
+    unset -nocomplain r
+} -result {10.0 20.0 1.0}
+
+test tvmixins-7.8 {tvedit: no editor for a hidden tree column} -constraints {
+    knownBug
+} -setup {
+    dgw::tvedit [mklower .tv]
+    set r [.tv insert {} end -values {x y z}]
+    .tv focus $r
+    show .tv
+} -body {
+    # An editor for #0 is created and its value reported even with
+    # -show headings.
+    event generate .tv <KeyPress-F2> -x 10 -y 30
+    update
+    winfo exists .tv.#0
+} -cleanup {
+    destroy .tv
+    bind all <KeyPress-Return> $savedAllReturn
+    unset -nocomplain r
+} -result 0
+
+test tvmixins-7.9 {tvedit: hierarchical items are not edited} -setup {
+    dgw::tvedit [mklower .tv -show {tree headings}]
+    set r [.tv insert {} end -text parent -values {x y z}]
+    .tv insert $r end -text child -values {1 2 3}
+    .tv focus $r
+    show .tv
+} -body {
+    event generate .tv <KeyPress-F2> -x 10 -y 30
+    update
+    winfo exists .tv.a
+} -cleanup {
+    destroy .tv
+    bind all <KeyPress-Return> $savedAllReturn
+    unset -nocomplain r
+} -result 0
+
+test tvmixins-7.10 {tvedit: upper case column names} -constraints {
+    knownBug
+} -setup {
+    dgw::tvedit [mktable .tv]
+    set r [.tv insert {} end -values {x y z}]
+    .tv focus $r
+    show .tv
+} -body {
+    # The editors are named after the columns, which fails for names
+    # starting with an upper case letter.
+    event generate .tv <KeyPress-F2> -x 10 -y 30
+    update
+    list [winfo exists .tv.A] [winfo exists .tv.B] [winfo exists .tv.C]
+} -cleanup {
+    destroy .tv
+    bind all <KeyPress-Return> $savedAllReturn
+    unset -nocomplain r ::bgErrors
+} -result {1 1 1}
+
+# -------------------------------------------------------------------------
+# tvfilebrowser
+
+proc mkdirtree {} {
+    set d [makeDirectory tvmixinsfb]
+    makeDirectory sub $d
+    makeFile {} b.txt $d
+    makeFile {} a.tcl $d
+    makeFile {} sub/inner.txt $d
+    return [file normalize $d]
+}
+
+test tvmixins-8.1 {tvfilebrowser: lists the directory} -setup {
+    set d [mkdirtree]
+} -body {
+    dgw::tvfilebrowser [ttk::treeview .fb] -directory $d
+    list [col0 .fb] [.fb cget -columns] [expr {[.fb cget -directory] eq $d}] \
+	[.fb item [lindex [.fb children {}] 0] -image] \
+	[.fb item [lindex [.fb children {}] 2] -image]
+} -cleanup {
+    destroy .fb
+    cd $savedPwd
+    removeDirectory tvmixinsfb
+    unset -nocomplain d
+} -result {{.. sub a.tcl b.txt} {Name Size Modified} 1 clsdFolderImg fileImg}
+
+test tvmixins-8.2 {tvfilebrowser: file sizes and times} -setup {
+    set d [mkdirtree]
+} -body {
+    dgw::tvfilebrowser [ttk::treeview .fb] -directory $d
+    set v [.fb item [lindex [.fb children {}] 2] -values]
+    list [lindex $v 1] [regexp {^\d{4}-\d\d-\d\d \d\d:\d\d$} [lindex $v 2]]
+} -cleanup {
+    destroy .fb
+    cd $savedPwd
+    removeDirectory tvmixinsfb
+    unset -nocomplain d v
+} -result {0.00Mb 1}
+
+test tvmixins-8.3 {tvfilebrowser: -filepattern} -setup {
+    set d [mkdirtree]
+} -body {
+    dgw::tvfilebrowser [ttk::treeview .fb] -directory $d -filepattern {\.txt$}
+    col0 .fb
+} -cleanup {
+    destroy .fb
+    cd $savedPwd
+    removeDirectory tvmixinsfb
+    unset -nocomplain d
+} -result {.. sub b.txt}
+
+test tvmixins-8.4 {tvfilebrowser: browseDir} -setup {
+    set d [mkdirtree]
+} -body {
+    dgw::tvfilebrowser [ttk::treeview .fb] -directory $d
+    .fb browseDir sub
+    list [col0 .fb] [expr {[.fb cget -directory] eq [file join $d sub]}]
+} -cleanup {
+    destroy .fb
+    cd $savedPwd
+    removeDirectory tvmixinsfb
+    unset -nocomplain d
+} -result {{.. inner.txt} 1}
+
+test tvmixins-8.5 {tvfilebrowser: -fileimage} -setup {
+    set d [mkdirtree]
+} -body {
+    dgw::tvfilebrowser [ttk::treeview .fb] -directory $d -fileimage movie
+    .fb item [lindex [.fb children {}] 2] -image
+} -cleanup {
+    destroy .fb
+    cd $savedPwd
+    removeDirectory tvmixinsfb
+    unset -nocomplain d
+} -result movie
+
+test tvmixins-8.6 {tvfilebrowser: Return on a directory enters it} -setup {
+    set d [mkdirtree]
+} -body {
+    dgw::tvfilebrowser [ttk::treeview .fb] -directory $d
+    show .fb
+    .fb selection set [lindex [.fb children {}] 1]
+    event generate .fb <Return>
+    update
+    col0 .fb
+} -cleanup {
+    destroy .fb
+    cd $savedPwd
+    removeDirectory tvmixinsfb
+    unset -nocomplain d
+} -result {.. inner.txt}
+
+test tvmixins-8.7 {tvfilebrowser: BackSpace goes to the parent directory} -setup {
+    set d [mkdirtree]
+} -body {
+    dgw::tvfilebrowser [ttk::treeview .fb] -directory [file join $d sub]
+    show .fb
+    event generate .fb <Key-BackSpace>
+    update
+    list [col0 .fb] [expr {[.fb cget -directory] eq $d}]
+} -cleanup {
+    destroy .fb
+    cd $savedPwd
+    removeDirectory tvmixinsfb
+    unset -nocomplain d
+} -result {{.. sub a.tcl b.txt} 1}
+
+test tvmixins-8.8 {tvfilebrowser: -browsecmd gets the widget and row} -constraints {
+    knownBug
+} -setup {
+    set d [mkdirtree]
+    set ::trace {}
+    proc browse {args} {lappend ::trace $args}
+} -body {
+    # The command is called with the file name only.
+    dgw::tvfilebrowser [ttk::treeview .fb] -directory $d -browsecmd browse
+    show .fb
+    set row [lindex [.fb children {}] 2]
+    .fb selection set $row
+    event generate .fb <Return>
+    update
+    expr {$::trace eq [list [list .fb $row]]}
+} -cleanup {
+    destroy .fb
+    cd $savedPwd
+    removeDirectory tvmixinsfb
+    rename browse {}
+    unset -nocomplain d row ::trace
+} -result 1
+
+test tvmixins-8.9 {tvfilebrowser: -browsecmd is called for files} -setup {
+    set d [mkdirtree]
+    set ::trace {}
+    proc browse {args} {lappend ::trace $args}
+} -body {
+    dgw::tvfilebrowser [ttk::treeview .fb] -directory $d -browsecmd browse
+    show .fb
+    .fb selection set [lindex [.fb children {}] 2]
+    event generate .fb <Return>
+    update
+    llength $::trace
+} -cleanup {
+    destroy .fb
+    cd $savedPwd
+    removeDirectory tvmixinsfb
+    rename browse {}
+    unset -nocomplain d ::trace
+} -result 1
+
+test tvmixins-8.10 {tvfilebrowser: does not change the current directory} -constraints {
+    knownBug
+} -setup {
+    set d [mkdirtree]
+    set here [pwd]
+} -body {
+    # browseDir changes the current directory of the process.
+    dgw::tvfilebrowser [ttk::treeview .fb] -directory $d
+    expr {[pwd] eq $here}
+} -cleanup {
+    destroy .fb
+    cd $savedPwd
+    removeDirectory tvmixinsfb
+    unset -nocomplain d here
+} -result 1
+
+test tvmixins-8.11 {tvfilebrowser: with other adaptors as in the manual} -setup {
+    set d [mkdirtree]
+} -body {
+    dgw::tvfilebrowser [dgw::tvsortable [dgw::tvksearch [dgw::tvband \
+	 [ttk::treeview .fb]]] -sorttypes [list Name directory Size real Modified dictionary]] \
+	-directory $d
+    # Directories stay above the files in both directions.
+    .fb sortBy Name 1
+    col0 .fb
+} -cleanup {
+    destroy .fb
+    cd $savedPwd
+    removeDirectory tvmixinsfb
+    unset -nocomplain d
+} -result {.. sub b.txt a.tcl}
+
+# -------------------------------------------------------------------------
+
+cd $savedPwd
+bind all <KeyPress-Return> $savedAllReturn
+interp bgerror {} $savedBgerror
+unset -nocomplain savedBgerror savedAllReturn savedPwd ::bgErrors
+foreach p {show col0 bands mklower mktable fill waitVar mkdirtree} {
+    rename $p {}
+}
+unset p
+wm state . $mainState
+unset mainState
+
+::tcltest::cleanupTests
