@@ -1,0 +1,405 @@
+# -*- tcl -*-
+# Tests for the canvas::edit::circle package
+#
+# See the file "license.terms" for information on usage and redistribution
+# of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2
+    namespace import ::tcltest::*
+} else {
+    if {![package vsatisfies [package present tcltest] 2.2]} {
+	puts "    Aborting the tests found in \"[file tail [info script]]\"."
+	puts "    Requiring tcltest 2.2, have [package present tcltest]"
+	return
+    }
+}
+
+::tcltest::testConstraint tk 1
+
+lappend auto_path [file dirname [file dirname [file normalize [info script]]]]
+package require canvas::edit::circle
+
+# -------------------------------------------------------------------------
+
+proc mkCanvas {} {
+    canvas .c -width 300 -height 200 -highlightthickness 0 -borderwidth 0
+    pack .c
+    update
+    event generate .c <Enter> -x 290 -y 190
+    event generate .c <Motion> -x 290 -y 190
+    set ::log {}
+}
+
+# Editors cannot be destroyed cleanly while their canvas exists (see
+# canvas::edit::points), so destroy the canvas first.
+proc cleanup {args} {
+    destroy .c
+    foreach e $args {
+	catch {$e destroy}
+    }
+    unset -nocomplain ::log
+    namespace eval ::canvas::drag {
+	unset -nocomplain active clientdata lastx lasty
+    }
+}
+
+proc click {button x y {state 0}} {
+    event generate .c <Motion> -x $x -y $y -state $state
+    event generate .c <ButtonPress-$button> -x $x -y $y -state $state
+    event generate .c <ButtonRelease-$button> -x $x -y $y \
+	-state [expr {$state | (1 << ($button + 7))}]
+    event generate .c <Motion> -x 290 -y 190
+    update
+}
+
+proc drag {button state x0 y0 args} {
+    set bmask [expr {1 << ($button + 7)}]
+    event generate .c <Motion> -x $x0 -y $y0 -state $state
+    event generate .c <ButtonPress-$button> -x $x0 -y $y0 -state $state
+    set x $x0
+    set y $y0
+    foreach {x y} $args {
+	event generate .c <Motion> -x $x -y $y -state [expr {$state | $bmask}]
+    }
+    event generate .c <ButtonRelease-$button> -x $x -y $y \
+	-state [expr {$state | $bmask}]
+    event generate .c <Motion> -x 290 -y 190
+    update
+}
+
+# Centers of the point markers (default markers) with the given tag.
+proc points {tag} {
+    lsort -dictionary [lmap item [.c find withtag $tag] {
+	lassign [.c coords $item] x0 y0 x1 y1
+	list [expr {($x0 + $x1) / 2}] [expr {($y0 + $y1) / 2}]
+    }]
+}
+
+proc logcb {args} {
+    lappend ::log $args
+    return
+}
+
+# The circle item, or empty.
+proc circle {{tag CIRCLE}} {
+    set item [.c find withtag $tag/Circle]
+    if {$item eq ""} {return ""}
+    .c coords $item
+}
+
+# Create a circle interactively: center (100,100), edge (130,100).
+proc mkCircle {args} {
+    mkCanvas
+    ::canvas::edit circle E .c {*}$args
+    E enable
+    click 1 100 100
+    click 1 130 100
+}
+
+test canvas::edit::circle-1.0 {package version} -body {
+    package present canvas::edit::circle
+} -result 0.1
+
+# -------------------------------------------------------------------------
+
+test canvas::edit::circle-2.1 {create: wrong # args} -body {
+    ::canvas::edit circle E
+} -returnCodes error -match glob -result {Error in constructor: wrong # args: should be "*"}
+
+test canvas::edit::circle-2.2 {create: result is the qualified name} -setup mkCanvas -body {
+    ::canvas::edit circle E .c
+} -cleanup {cleanup E} -result ::E
+
+test canvas::edit::circle-2.3 {create: unknown option} -setup mkCanvas -body {
+    ::canvas::edit circle E .c -foo 1
+} -cleanup {cleanup E} -returnCodes error -result {Error in constructor: unknown option "-foo"}
+
+test canvas::edit::circle-2.4 {create: active by default} -constraints {
+    knownBug
+} -setup mkCanvas -body {
+    ::canvas::edit circle E .c
+    E active
+} -cleanup {cleanup E} -result 1
+
+test canvas::edit::circle-2.5 {default options} -setup mkCanvas -body {
+    ::canvas::edit circle E .c
+    lmap o {-tag -color -hilit-color -radius -kind -active-cmd -data-cmd
+	-add-remove-point -drag-point -circle-config} {E cget $o}
+} -cleanup {cleanup E} -result {CIRCLE SkyBlue2 red 3 oval {} {} {} 3 {}}
+
+test canvas::edit::circle-2.6 {cget -create-cmd} -constraints {
+    knownBug
+} -setup mkCanvas -body {
+    # -cgetmethod UnChain, but the method is named Unchain.
+    ::canvas::edit circle E .c
+    llength [E cget -create-cmd]
+} -cleanup {cleanup E} -result 1
+
+test canvas::edit::circle-2.7 {readonly options} -setup mkCanvas -body {
+    ::canvas::edit circle E .c
+    lmap o {-tag -add-remove-point -drag-point} {
+	list [catch {E configure $o x} m] $m
+    }
+} -cleanup {
+    cleanup E
+    unset -nocomplain m
+} -result {{1 {option -tag can only be set at instance creation}} {1 {option -add-remove-point can only be set at instance creation}} {1 {option -drag-point can only be set at instance creation}}}
+
+test canvas::edit::circle-2.8 {destroy after canvas destruction} -setup mkCanvas -body {
+    ::canvas::edit circle E .c
+    destroy .c
+    list [E destroy] [info commands ::E]
+} -cleanup {cleanup E} -result {{} {}}
+
+# -------------------------------------------------------------------------
+
+test canvas::edit::circle-3.1 {enable, disable, active} -setup mkCanvas -body {
+    ::canvas::edit circle E .c
+    set r [list [E enable] [E active]]
+    lappend r [E disable] [E active]
+} -cleanup {
+    cleanup E
+    unset r
+} -result {{} 1 {} 0}
+
+test canvas::edit::circle-3.2 {disabled editor ignores clicks} -setup mkCanvas -body {
+    ::canvas::edit circle E .c
+    E enable
+    E disable
+    click 1 100 100
+    click 1 130 100
+    list [points CIRCLE] [circle]
+} -cleanup {cleanup E} -result {{} {}}
+
+# -------------------------------------------------------------------------
+# Interactive creation
+
+test canvas::edit::circle-4.1 {first click: center point, no circle yet} -setup mkCanvas -body {
+    ::canvas::edit circle E .c -data-cmd logcb
+    E enable
+    click 1 100 100
+    list [points CIRCLE] [circle] $::log
+} -cleanup {cleanup E} -result {{{100.0 100.0}} {} {}}
+
+test canvas::edit::circle-4.2 {second click completes the circle} -setup {
+    mkCircle
+} -body {
+    list [points CIRCLE] [circle]
+} -cleanup {cleanup E} -result {{{100.0 100.0} {130.0 100.0}} {70.0 70.0 130.0 130.0}}
+
+test canvas::edit::circle-4.3 {circle reported to -data-cmd} -constraints {
+    knownBug
+} -setup {
+    mkCircle -data-cmd logcb
+} -body {
+    # Documented: list of min x, min y, max x, max y.
+    # The code reports center and radius.
+    set ::log
+} -cleanup {cleanup E} -result {{::E {70.0 70.0 130.0 130.0}}}
+
+test canvas::edit::circle-4.4 {-data-cmd called once on completion} -setup {
+    mkCircle -data-cmd logcb
+} -body {
+    list [llength $::log] [lindex $::log 0 0]
+} -cleanup {cleanup E} -result {1 ::E}
+
+test canvas::edit::circle-4.5 {more points are denied} -setup {
+    mkCircle -data-cmd logcb
+} -body {
+    set ::log {}
+    click 1 200 150
+    click 1 250 50
+    list [points CIRCLE] [circle] $::log
+} -cleanup {cleanup E} -result {{{100.0 100.0} {130.0 100.0}} {70.0 70.0 130.0 130.0} {}}
+
+test canvas::edit::circle-4.6 {circle item appearance} -setup {
+    mkCircle
+} -body {
+    set item [.c find withtag CIRCLE/Circle]
+    list [.c type $item] [.c itemcget $item -fill] [.c itemcget $item -outline] \
+	[.c itemcget $item -activeoutline] [.c itemcget $item -width] \
+	[expr {[lindex [.c find all] 0] == $item}]
+} -cleanup {
+    cleanup E
+    unset item
+} -result {oval {} SkyBlue2 red 2.0 1}
+
+test canvas::edit::circle-4.7 {circle is below the points, not tagged as point} -setup {
+    mkCircle
+} -body {
+    expr {[lsearch [.c find all] [.c find withtag CIRCLE/Circle]] <
+	  [lsearch [.c find all] [lindex [.c find withtag CIRCLE] 0]] &&
+	  [.c find withtag CIRCLE/Circle] ni [.c find withtag CIRCLE]}
+} -cleanup {cleanup E} -result 1
+
+test canvas::edit::circle-4.8 {-color, -hilit-color, -circle-config} -setup {
+    mkCircle -color green -hilit-color yellow \
+	-circle-config {-width 5 -dash . -outline black}
+} -body {
+    set item [.c find withtag CIRCLE/Circle]
+    list [.c itemcget $item -outline] [.c itemcget $item -activeoutline] \
+	[.c itemcget $item -width] [.c itemcget $item -dash] \
+	[.c itemcget [lindex [.c find withtag CIRCLE] end] -fill]
+} -cleanup {
+    cleanup E
+    unset item
+} -result {green yellow 5.0 . green}
+
+test canvas::edit::circle-4.9 {-radius and -kind for the points} -setup {
+    mkCircle -radius 5 -kind rectangle
+} -body {
+    set item [lindex [.c find withtag CIRCLE] 0]
+    list [.c type $item] [.c coords $item]
+} -cleanup {
+    cleanup E
+    unset item
+} -result {rectangle {95.0 95.0 105.0 105.0}}
+
+test canvas::edit::circle-4.10 {-create-cmd} -setup {
+    proc mk {c x y} {
+	lappend ::log [list mk $x $y]
+	list [$c create rectangle $x $y $x $y]
+    }
+    mkCircle -create-cmd mk
+} -body {
+    list $::log [lmap i [.c find withtag CIRCLE] {.c type $i}]
+} -cleanup {
+    cleanup E
+    rename mk {}
+} -result {{{mk 100.0 100.0} {mk 130.0 100.0}} {rectangle rectangle}}
+
+test canvas::edit::circle-4.11 {-tag} -setup {
+    mkCanvas
+} -body {
+    ::canvas::edit circle E .c -tag MYC
+    E enable
+    click 1 100 100
+    click 1 100 120
+    list [points MYC] [circle MYC] [.c find withtag CIRCLE]
+} -cleanup {cleanup E} -result {{{100.0 100.0} {100.0 120.0}} {80.0 80.0 120.0 120.0} {}}
+
+# -------------------------------------------------------------------------
+# Removal and dragging
+
+test canvas::edit::circle-5.1 {removing a point removes the whole circle} -setup {
+    mkCircle -data-cmd logcb
+} -body {
+    set ::log {}
+    click 2 130 100
+    list [points CIRCLE] [circle] $::log
+} -cleanup {cleanup E} -result {{} {} {{::E {}}}}
+
+test canvas::edit::circle-5.2 {removing the center removes the whole circle} -setup {
+    mkCircle
+} -body {
+    click 2 100 100
+    list [points CIRCLE] [circle]
+} -cleanup {cleanup E} -result {{} {}}
+
+test canvas::edit::circle-5.3 {new circle after removal} -setup {
+    mkCircle
+} -body {
+    click 2 100 100
+    click 1 200 100
+    click 1 200 110
+    list [points CIRCLE] [circle]
+} -cleanup {cleanup E} -result {{{200.0 100.0} {200.0 110.0}} {190.0 90.0 210.0 110.0}}
+
+test canvas::edit::circle-5.4 {removing the first point of a partial circle} -setup mkCanvas -body {
+    ::canvas::edit circle E .c -data-cmd logcb
+    E enable
+    click 1 100 100
+    click 2 100 100
+    click 1 50 50
+    click 1 50 60
+    list [points CIRCLE] [circle] [llength $::log]
+} -cleanup {cleanup E} -result {{{50.0 50.0} {50.0 60.0}} {40.0 40.0 60.0 60.0} 1}
+
+test canvas::edit::circle-5.5 {dragging the edge resizes the circle} -setup {
+    mkCircle -data-cmd logcb
+} -body {
+    set ::log {}
+    drag 3 0 130 100 140 100 150 100
+    list [points CIRCLE] [circle] [llength $::log]
+} -cleanup {cleanup E} -result {{{100.0 100.0} {150.0 100.0}} {50.0 50.0 150.0 150.0} 1}
+
+test canvas::edit::circle-5.6 {dragging the center} -setup {
+    mkCircle
+} -body {
+    drag 3 0 100 100 110 100
+    list [points CIRCLE] [circle]
+} -cleanup {cleanup E} -result {{{110.0 100.0} {130.0 100.0}} {90.0 80.0 130.0 120.0}}
+
+test canvas::edit::circle-5.7 {-active-cmd} -setup {
+    mkCircle -active-cmd logcb
+} -body {
+    set ::log {}
+    event generate .c <Motion> -x 100 -y 100
+    event generate .c <Motion> -x 290 -y 190
+    event generate .c <Motion> -x 130 -y 100
+    event generate .c <Motion> -x 290 -y 190
+    event generate .c <Motion> -x 100 -y 70
+    event generate .c <Motion> -x 290 -y 190
+    update
+    set ::log
+} -cleanup {cleanup E} -result {{::E center} {::E {}} {::E edge} {::E {}} {::E circle} {::E {}}}
+
+# -------------------------------------------------------------------------
+# set, clear
+
+test canvas::edit::circle-6.1 {clear: removes the circle} -setup {
+    mkCircle -data-cmd logcb
+} -body {
+    set ::log {}
+    list [E clear] [points CIRCLE] [circle] $::log
+} -cleanup {cleanup E} -result {{} {} {} {{::E {}}}}
+
+test canvas::edit::circle-6.2 {clear: new circle afterwards} -setup {
+    mkCircle
+} -body {
+    E clear
+    click 1 50 50
+    click 1 60 50
+    circle
+} -cleanup {cleanup E} -result {40.0 40.0 60.0 60.0}
+
+test canvas::edit::circle-6.3 {clear: empty editor} -setup mkCanvas -body {
+    ::canvas::edit circle E .c -data-cmd logcb
+    list [E clear] $::log
+} -cleanup {cleanup E} -result {{} {{::E {}}}}
+
+test canvas::edit::circle-6.4 {set: from border coordinates} -constraints {
+    knownBug
+} -setup mkCanvas -body {
+    # Documented as "set minx miny maxx maxy"; the code takes
+    # "set center radius".
+    ::canvas::edit circle E .c
+    E set 40 40 60 60
+    circle
+} -cleanup {cleanup E} -result {40.0 40.0 60.0 60.0}
+
+# -------------------------------------------------------------------------
+
+rename mkCanvas {}
+rename cleanup {}
+rename click {}
+rename drag {}
+rename points {}
+rename logcb {}
+rename circle {}
+rename mkCircle {}
+
+::tcltest::cleanupTests
