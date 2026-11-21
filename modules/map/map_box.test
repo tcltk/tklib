@@ -1,0 +1,349 @@
+# -*- tcl -*-
+# Tests for the map::box::file package
+#
+# See the file "license.terms" for information on usage and redistribution
+# of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2
+    namespace import ::tcltest::*
+} else {
+    if {![package vsatisfies [package present tcltest] 2.2]} {
+	puts "    Aborting the tests found in \"[file tail [info script]]\"."
+	puts "    Requiring tcltest 2.2, have [package present tcltest]"
+	return
+    }
+}
+
+::tcltest::testConstraint tk 1
+
+lappend auto_path [file dirname [file dirname [file normalize [info script]]]]
+package require map::box::file
+package require map::box::store::fs
+package require map::box::store::memory
+
+# -------------------------------------------------------------------------
+
+# The map manpages do not document any commands yet (empty API sections).
+# These tests cover the behaviour described in the comments of the code.
+
+# Scratch directory for data files.
+set dataDir [makeDirectory mapTestData]
+
+proc writeFile {name content} {
+    set path [file join $::dataDir $name]
+    set c [open $path w]
+    puts -nonewline $c $content
+    close $c
+    return $path
+}
+
+proc readFile {path} {
+    set c [open $path r]
+    set d [read $c]
+    close $c
+    return $d
+}
+
+proc cleanData {} {
+    foreach f [glob -nocomplain -directory $::dataDir *] {
+	file delete -force $f
+    }
+}
+
+test map::box-1.0 {package versions} -body {
+    list [package present map::box::file] [package present map::box::store::fs] \
+	[package present map::box::store::memory]
+} -result {0.1 0.1 0.1}
+
+test map::box-1.1 {ensembles} -body {
+    list [namespace ensemble exists ::map::box] \
+	[lsort [namespace eval ::map::box::file {namespace export}]] \
+	[lsort [namespace eval ::map::box::store {namespace export}]]
+} -result {1 {read write} {fs memory}}
+
+# -------------------------------------------------------------------------
+# map::box::file
+
+test map::box-2.1 {file read: wrong # args} -body {
+    map box file read
+} -returnCodes error -result {wrong # args: should be "map box file read path"}
+
+test map::box-2.2 {file write: wrong # args} -body {
+    map box file write x
+} -returnCodes error -result {wrong # args: should be "map box file write path gdata"}
+
+test map::box-2.3 {file read: basic} -setup {
+    set p [writeFile a.box "tklib/geo/box\nMy Box\n10\n20\n30\n40\n"]
+} -body {
+    map box file read $p
+} -cleanup {
+    cleanData
+    unset p
+} -result {names {{My Box}} geo {10 20 30 40}}
+
+test map::box-2.4 {file read: no name, the file name is used} -setup {
+    set p [writeFile mybox.box "tklib/geo/box\n10\n20\n30\n40\n"]
+} -body {
+    map box file read $p
+} -cleanup {
+    cleanData
+    unset p
+} -result {names mybox geo {10 20 30 40}}
+
+test map::box-2.5 {file read: several names, comments, blank lines, whitespace} -setup {
+    set p [writeFile a.box "# comment\n// another\n\n  tklib/geo/box  \nfirst\n  second  \n10.5\n\n-20\n#x\n30\n 40 \n"]
+} -body {
+    map box file read $p
+} -cleanup {
+    cleanData
+    unset p
+} -result {names {first second} geo {10.5 -20 30 40}}
+
+test map::box-2.6 {file read: bad magic} -setup {
+    set p [writeFile a.box "tklib/geo/area\n10\n20\n30\n40\n"]
+} -body {
+    map box file read $p
+} -cleanup {
+    cleanData
+    unset p
+} -result {}
+
+test map::box-2.7 {file read: wrong number of coordinates} -setup {
+    set p1 [writeFile a.box "tklib/geo/box\n10\n20\n30\n"]
+    set p2 [writeFile b.box "tklib/geo/box\n10\n20\n30\n40\n50\n"]
+} -body {
+    list [map box file read $p1] [map box file read $p2]
+} -cleanup {
+    cleanData
+    unset p1 p2
+} -result {{} {}}
+
+test map::box-2.8 {file read: invalid coordinates} -setup {
+    set p [writeFile a.box "tklib/geo/box\n100\n20\n130\n40\n"]
+} -body {
+    map box file read $p
+} -cleanup {
+    cleanData
+    unset p
+} -result {}
+
+test map::box-2.9 {file read: missing or empty file} -setup {
+    set p [writeFile empty.box ""]
+} -body {
+    list [map box file read [file join $::dataDir nosuchfile.box]] \
+	[map box file read $p]
+} -cleanup {
+    cleanData
+    unset p
+} -result {{} {}}
+
+test map::box-2.10 {file write: format} -body {
+    set p [file join $::dataDir w.box]
+    list [map box file write $p {names {b a b} geo {10 20 30 40}}] [readFile $p]
+} -cleanup {
+    cleanData
+    unset p
+} -result [list {} "tklib/geo/box\na\nb\n10\n20\n30\n40\n"]
+
+test map::box-2.11 {file write and read round trip} -body {
+    set p [file join $::dataDir rt.box]
+    map box file write $p {names {{Some name} Other} geo {-10.25 20.5 30 40.75}}
+    map box file read $p
+} -cleanup {
+    cleanData
+    unset p
+} -result {names {Other {Some name}} geo {-10.25 20.5 30 40.75}}
+
+test map::box-2.12 {file write: missing key} -body {
+    map box file write [file join $::dataDir x.box] {geo {10 20 30 40}}
+} -cleanup {
+    cleanData
+} -returnCodes error -result {key "names" not known in dictionary}
+
+# -------------------------------------------------------------------------
+# map::box::store::fs
+
+proc mkStore {} {
+    writeFile a.box "tklib/geo/box\nA\n10\n20\n30\n40\n"
+    writeFile b.box "tklib/geo/box\nB\n-10\n-20\n-5\n-15\n"
+    writeFile bad.box "tklib/geo/box\n1\n2\n"
+    writeFile c.txt "tklib/geo/box\nC\n10\n20\n30\n40\n"
+    file mkdir [file join $::dataDir dir.box]
+}
+
+test map::box-3.1 {store fs: wrong # args} -body {
+    map box store fs S
+} -returnCodes error -match glob -result {Error in constructor: wrong # args: should be "*"}
+
+test map::box-3.2 {store fs: ids are the paths of valid files} -setup mkStore -body {
+    map box store fs S $::dataDir
+    lmap id [S ids] {file tail $id}
+} -cleanup {
+    S destroy
+    cleanData
+} -result {a.box b.box}
+
+test map::box-3.3 {store fs: get} -setup mkStore -body {
+    map box store fs S $::dataDir
+    S get [file join $::dataDir a.box]
+} -cleanup {
+    S destroy
+    cleanData
+} -result {names A geo {10 20 30 40}}
+
+test map::box-3.4 {store fs: get unknown id} -setup mkStore -body {
+    map box store fs S $::dataDir
+    S get nosuchid
+} -cleanup {
+    S destroy
+    cleanData
+} -returnCodes error -result {key "nosuchid" not known in dictionary}
+
+test map::box-3.5 {store fs: -pattern} -constraints {
+    knownBug
+} -setup mkStore -body {
+    # -pattern is readonly, but the constructor accepts no options.
+    map box store fs S $::dataDir -pattern *.txt
+    list [lmap id [S ids] {file tail $id}] [S cget -pattern]
+} -cleanup {
+    catch {S destroy}
+    cleanData
+} -result {c.txt *.txt}
+
+test map::box-3.6 {store fs: default -pattern, readonly} -setup mkStore -body {
+    map box store fs S $::dataDir
+    list [S cget -pattern] [catch {S configure -pattern *} m] $m
+} -cleanup {
+    S destroy
+    cleanData
+    unset -nocomplain m
+} -result {*.box 1 {option -pattern can only be set at instance creation}}
+
+test map::box-3.7 {store fs: visible boxes have a corner in the view} -setup mkStore -body {
+    map box store fs S $::dataDir
+    list [lmap id [S visible {0 0 50 50}] {file tail $id}] \
+	[lmap id [S visible {-50 -50 50 50}] {file tail $id}] \
+	[lmap id [S visible {25 35 35 45}] {file tail $id}] \
+	[S visible {60 60 70 70}]
+} -cleanup {
+    S destroy
+    cleanData
+} -result {a.box {a.box b.box} a.box {}}
+
+test map::box-3.8 {store fs: empty or missing directory} -body {
+    map box store fs S $::dataDir
+    map box store fs S2 [file join $::dataDir nosuchdir]
+    list [S ids] [S visible {-90 -180 90 180}] [S2 ids]
+} -cleanup {
+    S destroy
+    S2 destroy
+} -result {{} {} {}}
+
+# -------------------------------------------------------------------------
+# map::box::store::memory
+
+test map::box-4.1 {store memory: wrong # args} -body {
+    map box store memory M
+} -returnCodes error -match glob -result {Error in constructor: wrong # args: should be "*"}
+
+test map::box-4.2 {store memory: ids and visible delegated} -setup {
+    mkStore
+    map box store fs S $::dataDir
+} -body {
+    map box store memory M S
+    list [expr {[M ids] eq [S ids]}] \
+	[expr {[M visible {0 0 50 50}] eq [S visible {0 0 50 50}]}]
+} -cleanup {
+    M destroy
+    S destroy
+    cleanData
+} -result {1 1}
+
+test map::box-4.3 {store memory: get adds derived attributes} -setup {
+    mkStore
+    map box store fs S $::dataDir
+} -body {
+    map box store memory M S
+    set attr [M get [file join $::dataDir a.box]]
+    set g {10 20 30 40}
+    list [lsort [dict keys $attr]] [dict get $attr names] [dict get $attr geo] \
+	[expr {[dict get $attr center] eq [map slippy geo box center $g]}] \
+	[expr {[dict get $attr diameter] == [map slippy geo box diameter $g]}] \
+	[expr {[dict get $attr perimeter] == [map slippy geo box perimeter $g]}]
+} -cleanup {
+    M destroy
+    S destroy
+    cleanData
+    unset attr g
+} -result {{center diameter geo names perimeter} A {10 20 30 40} 1 1 1}
+
+test map::box-4.4 {store memory: get is memoized} -setup {
+    mkStore
+    map box store fs S $::dataDir
+    proc ::countingStore {args} {
+	if {[lindex $args 0] eq "get"} {incr ::gets}
+	S {*}$args
+    }
+    set ::gets 0
+} -body {
+    map box store memory M ::countingStore
+    set id [file join $::dataDir a.box]
+    M get $id
+    M get $id
+    set ::gets
+} -cleanup {
+    M destroy
+    S destroy
+    cleanData
+    rename ::countingStore {}
+    unset ::gets id
+} -result 1
+
+test map::box-4.5 {store memory: pixels} -setup {
+    mkStore
+    map box store fs S $::dataDir
+} -body {
+    map box store memory M S
+    set id [file join $::dataDir a.box]
+    list [expr {[M pixels $id 3] eq [map slippy geo box 2point 3 {10 20 30 40}]}] \
+	[expr {[M pixels $id 5] eq [map slippy geo box 2point 5 {10 20 30 40}]}] \
+	[expr {[M pixels $id 3] ne [M pixels $id 5]}]
+} -cleanup {
+    M destroy
+    S destroy
+    cleanData
+    unset id
+} -result {1 1 1}
+
+test map::box-4.6 {store memory: unknown id} -setup {
+    mkStore
+    map box store fs S $::dataDir
+} -body {
+    map box store memory M S
+    M get nosuchid
+} -cleanup {
+    M destroy
+    S destroy
+    cleanData
+} -returnCodes error -result {key "nosuchid" not known in dictionary}
+
+# -------------------------------------------------------------------------
+
+removeDirectory mapTestData
+unset dataDir
+foreach p {writeFile readFile cleanData mkStore} {rename $p {}}
+
+::tcltest::cleanupTests
