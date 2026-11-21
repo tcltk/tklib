@@ -10,7 +10,7 @@
 # RCS: @(#) $Id: swaplist.tcl,v 1.6 2008/02/06 07:15:16 afaupell Exp $
 
 package require Tk
-package provide swaplist 0.2
+package provide swaplist 0.2.1
 
 namespace eval swaplist {
     namespace export swaplist
@@ -169,8 +169,8 @@ proc ::swaplist::createSwaplist {w var list1 list2 args} {
 
     bind $w <Key-Up> [list ::swaplist::UpDown %W %K]
     bind $w <Key-Down> [list ::swaplist::UpDown %W %K]
-    bind $w.list1.list <Double-Button-1> [list ::swaplist::Double %W]
-    bind $w.list2.list <Double-Button-1> [list ::swaplist::Double %W]
+    bind $w.list1.list <Double-Button-1> [list $w.lr.right invoke]
+    bind $w.list2.list <Double-Button-1> [list $w.lr.left invoke]
     #bind $w.list1.list <<ListboxSelect>> [list ::swaplist::SetButtonState %W]
     #bind $w.list2.list <<ListboxSelect>> [list ::swaplist::SetButtonState %W]
 
@@ -343,16 +343,6 @@ proc ::swaplist::UpDown {w key} {
         tk::ListboxUpDown $w.list1.list [string map {Up -1 Down 1} $key]
     } else {
         return
-    }
-}
-
-# binding for double click, just invoke the left or right button
-proc ::swaplist::Double {w} {
-    set top [winfo toplevel $w]
-    if {[string match *.list1.* $w]} {
-        $top.lr.right invoke
-    } elseif {[string match *.list2.* $w]} {
-        $top.lr.left invoke
     }
 }
 
