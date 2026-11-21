@@ -1,0 +1,643 @@
+# -*- tcl -*-
+# Tests for the canvas::edit::points package
+#
+# See the file "license.terms" for information on usage and redistribution
+# of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2
+    namespace import ::tcltest::*
+} else {
+    if {![package vsatisfies [package present tcltest] 2.2]} {
+	puts "    Aborting the tests found in \"[file tail [info script]]\"."
+	puts "    Requiring tcltest 2.2, have [package present tcltest]"
+	return
+    }
+}
+
+::tcltest::testConstraint tk 1
+
+lappend auto_path [file dirname [file dirname [file normalize [info script]]]]
+package require canvas::edit::points
+
+# -------------------------------------------------------------------------
+
+proc mkCanvas {} {
+    canvas .c -width 300 -height 200 -highlightthickness 0 -borderwidth 0
+    pack .c
+    update
+    event generate .c <Enter> -x 290 -y 190
+    event generate .c <Motion> -x 290 -y 190
+    set ::log {}
+}
+
+# Editors cannot be destroyed while their canvas exists (see
+# canvas::edit::points-2.6), so destroy the canvas first.
+proc cleanup {args} {
+    destroy .c
+    foreach e $args {
+	catch {$e destroy}
+    }
+    unset -nocomplain ::log ::veto
+    namespace eval ::canvas::drag {
+	unset -nocomplain active clientdata lastx lasty
+    }
+}
+
+proc click {button x y {state 0}} {
+    event generate .c <Motion> -x $x -y $y -state $state
+    event generate .c <ButtonPress-$button> -x $x -y $y -state $state
+    event generate .c <ButtonRelease-$button> -x $x -y $y \
+	-state [expr {$state | (1 << ($button + 7))}]
+    event generate .c <Motion> -x 290 -y 190
+    update
+}
+
+proc drag {button state x0 y0 args} {
+    set bmask [expr {1 << ($button + 7)}]
+    event generate .c <Motion> -x $x0 -y $y0 -state $state
+    event generate .c <ButtonPress-$button> -x $x0 -y $y0 -state $state
+    set x $x0
+    set y $y0
+    foreach {x y} $args {
+	event generate .c <Motion> -x $x -y $y -state [expr {$state | $bmask}]
+    }
+    event generate .c <ButtonRelease-$button> -x $x -y $y \
+	-state [expr {$state | $bmask}]
+    event generate .c <Motion> -x 290 -y 190
+    update
+}
+
+# Centers of all point markers (default circle markers).
+proc points {{tag POINT}} {
+    lmap item [.c find withtag $tag] {
+	lassign [.c coords $item] x0 y0 x1 y1
+	list [expr {($x0 + $x1) / 2}] [expr {($y0 + $y1) / 2}]
+    }
+}
+
+# Data callback logging its calls; the id is replaced by an index.
+proc data {args} {
+    set args [lmap a $args {
+	if {[string match P*/*/* $a]} {regsub {^P(\d+)/.*$} $a {P\1}} else {set a}
+    }]
+    lappend ::log $args
+    if {[lrange $args 0 1] eq {move done}} {
+	return [expr {![info exists ::veto] || !$::veto}]
+    }
+    return
+}
+
+test canvas::edit::points-1.0 {package version} -body {
+    package present canvas::edit::points
+} -result 0.4
+
+# -------------------------------------------------------------------------
+# Construction and destruction
+
+test canvas::edit::points-2.1 {create: wrong # args} -body {
+    ::canvas::edit points E
+} -returnCodes error -match glob -result {Error in constructor: wrong # args: should be "*"}
+
+test canvas::edit::points-2.2 {create: result is the qualified name} -setup mkCanvas -body {
+    ::canvas::edit points E .c
+} -cleanup {cleanup E} -result ::E
+
+test canvas::edit::points-2.3 {create: unknown option} -setup mkCanvas -body {
+    ::canvas::edit points E .c -foo 1
+} -cleanup {cleanup E} -returnCodes error -result {Error in constructor: unknown option "-foo"}
+
+test canvas::edit::points-2.4 {create: editing is active by default} -constraints {
+    knownBug
+} -setup mkCanvas -body {
+    ::canvas::edit points E .c
+    E active
+} -cleanup {cleanup E} -result 1
+
+test canvas::edit::points-2.5 {create: default options} -setup mkCanvas -body {
+    ::canvas::edit points E .c
+    list [E cget -tag] [E cget -color] [E cget -hilit-color] [E cget -radius] \
+	[E cget -kind] [E cget -active-cmd] [E cget -add-remove-point] \
+	[E cget -drag-point]
+} -cleanup {cleanup E} -result {POINT SkyBlue2 red 3 oval {} {} 3}
+
+test canvas::edit::points-2.6 {destroy: result, command removed} -constraints {
+    knownBug
+} -setup mkCanvas -body {
+    ::canvas::edit points E .c
+    list [E destroy] [info commands ::E]
+} -cleanup {cleanup E} -result {{} {}}
+
+test canvas::edit::points-2.7 {destroy: after enable} -constraints {
+    knownBug
+} -setup mkCanvas -body {
+    ::canvas::edit points E .c
+    E enable
+    list [E destroy] [info commands ::E]
+} -cleanup {cleanup E} -result {{} {}}
+
+test canvas::edit::points-2.8 {destroy: keeps point markers and canvas} -constraints {
+    knownBug
+} -setup mkCanvas -body {
+    ::canvas::edit points E .c
+    E add 10 20
+    E destroy
+    list [winfo exists .c] [points]
+} -cleanup {cleanup E} -result {1 {{10.0 20.0}}}
+
+test canvas::edit::points-2.9 {destroy: after the canvas was destroyed} -setup mkCanvas -body {
+    ::canvas::edit points E .c
+    destroy .c
+    list [E destroy] [info commands ::E]
+} -cleanup {cleanup E} -result {{} {}}
+
+test canvas::edit::points-2.10 {readonly options} -setup mkCanvas -body {
+    ::canvas::edit points E .c
+    set r {}
+    foreach o {-tag -data-cmd -add-remove-point -drag-point} {
+	lappend r [catch {E configure $o x} m] $m
+    }
+    set r
+} -cleanup {
+    cleanup E
+    unset -nocomplain r o m
+} -constraints knownBug -result {1 {option -tag can only be set at instance creation} 1 {option -data-cmd can only be set at instance creation} 1 {option -add-remove-point can only be set at instance creation} 1 {option -drag-point can only be set at instance creation}}
+
+test canvas::edit::points-2.11 {readonly options (all but -data-cmd)} -setup mkCanvas -body {
+    ::canvas::edit points E .c
+    set r {}
+    foreach o {-tag -add-remove-point -drag-point} {
+	lappend r [catch {E configure $o x} m] $m
+    }
+    set r
+} -cleanup {
+    cleanup E
+    unset -nocomplain r o m
+} -result {1 {option -tag can only be set at instance creation} 1 {option -add-remove-point can only be set at instance creation} 1 {option -drag-point can only be set at instance creation}}
+
+# -------------------------------------------------------------------------
+# enable, disable, active
+
+test canvas::edit::points-3.1 {enable: result, active} -setup mkCanvas -body {
+    ::canvas::edit points E .c
+    list [E enable] [E active]
+} -cleanup {cleanup E} -result {{} 1}
+
+test canvas::edit::points-3.2 {enable: twice is ignored} -setup mkCanvas -body {
+    ::canvas::edit points E .c
+    E enable
+    E enable
+    E active
+} -cleanup {cleanup E} -result 1
+
+test canvas::edit::points-3.3 {disable: result, active} -setup mkCanvas -body {
+    ::canvas::edit points E .c
+    E enable
+    list [E disable] [E active]
+} -cleanup {cleanup E} -result {{} 0}
+
+test canvas::edit::points-3.4 {disable: twice is ignored} -setup mkCanvas -body {
+    ::canvas::edit points E .c
+    E enable
+    E disable
+    E disable
+    E active
+} -cleanup {cleanup E} -result 0
+
+test canvas::edit::points-3.5 {disable: removes all bindings} -setup mkCanvas -body {
+    ::canvas::edit points E .c
+    E enable
+    E disable
+    list [bind .c] [lsort [.c bind POINT]]
+} -cleanup {cleanup E} -result {{} {<Enter> <Leave>}}
+
+test canvas::edit::points-3.6 {disabled editor ignores mouse} -setup mkCanvas -body {
+    ::canvas::edit points E .c -data-cmd data
+    E enable
+    E add 50 50
+    E disable
+    set ::log {}
+    click 1 100 100
+    click 2 50 50
+    drag 3 0 50 50 60 60
+    list [points] $::log
+} -cleanup {cleanup E} -result {{{50.0 50.0}} {}}
+
+test canvas::edit::points-3.7 {enable again after disable} -setup mkCanvas -body {
+    ::canvas::edit points E .c
+    E enable
+    E disable
+    E enable
+    click 1 100 100
+    list [E active] [points]
+} -cleanup {cleanup E} -result {1 {{100.0 100.0}}}
+
+test canvas::edit::points-3.8 {enable/disable partial, then disable all} -constraints {
+    knownBug
+} -setup mkCanvas -body {
+    ::canvas::edit points E .c
+    E enable drag
+    E enable edit
+    E disable
+    list [bind .c] [lsort [.c bind POINT]]
+} -cleanup {cleanup E} -result {{} {<Enter> <Leave>}}
+
+test canvas::edit::points-3.9 {wrong # args} -setup mkCanvas -body {
+    ::canvas::edit points E .c
+    E active 1
+} -cleanup {cleanup E} -returnCodes error -result {wrong # args: should be "E active"}
+
+# -------------------------------------------------------------------------
+# add, clear
+
+test canvas::edit::points-4.1 {add: wrong # args} -setup mkCanvas -body {
+    ::canvas::edit points E .c
+    E add 1
+} -cleanup {cleanup E} -returnCodes error -result {wrong # args: should be "E add x y"}
+
+test canvas::edit::points-4.2 {add: default marker} -setup mkCanvas -body {
+    ::canvas::edit points E .c
+    E add 10 20
+    set item [.c find withtag POINT]
+    list [.c type $item] [.c coords $item] [.c itemcget $item -fill] \
+	[.c itemcget $item -outline] [.c itemcget $item -activefill]
+} -cleanup {
+    cleanup E
+    unset item
+} -result {oval {7.0 17.0 13.0 23.0} SkyBlue2 SkyBlue2 red}
+
+test canvas::edit::points-4.3 {add: works while disabled} -setup mkCanvas -body {
+    ::canvas::edit points E .c
+    E add 10 20
+    E add 30 40
+    points
+} -cleanup {cleanup E} -result {{10.0 20.0} {30.0 40.0}}
+
+test canvas::edit::points-4.4 {add: data callback} -setup mkCanvas -body {
+    ::canvas::edit points E .c -data-cmd data
+    E add 10 20
+    E add 30 40
+    set ::log
+} -cleanup {cleanup E} -result {{add ::E P1 10 20} {add ::E P2 30 40}}
+
+test canvas::edit::points-4.5 {add: marker items carry the editor tag} -setup mkCanvas -body {
+    ::canvas::edit points E .c
+    E add 10 20
+    lindex [.c gettags [.c find withtag POINT]] end
+} -cleanup {cleanup E} -result POINT
+
+test canvas::edit::points-4.6 {add: -color, -hilit-color, -radius, -kind} -setup mkCanvas -body {
+    ::canvas::edit points E .c -color green -hilit-color yellow -radius 5 \
+	-kind rectangle
+    E add 10 20
+    set item [.c find withtag POINT]
+    list [.c type $item] [.c coords $item] [.c itemcget $item -fill] \
+	[.c itemcget $item -activefill]
+} -cleanup {
+    cleanup E
+    unset item
+} -result {rectangle {5.0 15.0 15.0 25.0} green yellow}
+
+test canvas::edit::points-4.7 {appearance options apply to new points} -setup mkCanvas -body {
+    ::canvas::edit points E .c
+    E add 10 20
+    E configure -color green -radius 1
+    E add 30 40
+    lmap item [.c find withtag POINT] {
+	list [.c coords $item] [.c itemcget $item -fill]
+    }
+} -cleanup {cleanup E} -result {{{7.0 17.0 13.0 23.0} SkyBlue2} {{29.0 39.0 31.0 41.0} green}}
+
+test canvas::edit::points-4.8 {add: -create-cmd} -setup {
+    mkCanvas
+    proc mk {c x y} {
+	lappend ::log [list mk $c $x $y]
+	list [$c create line $x $y [expr {$x+5}] $y] \
+	    [$c create text $x $y -text P]
+    }
+} -body {
+    ::canvas::edit points E .c -create-cmd mk -data-cmd data
+    E add 10 20
+    list $::log [lmap i [.c find withtag POINT] {.c type $i}] \
+	[llength [lsort -unique [lmap i [.c find withtag POINT] {.c gettags $i}]]]
+} -cleanup {
+    cleanup E
+    rename mk {}
+} -result {{{mk .c 10 20} {add ::E P1 10 20}} {line text} 1}
+
+test canvas::edit::points-4.9 {add: -create-cmd veto} -setup {
+    mkCanvas
+    proc mk {c x y} {
+	if {$x < 50} {return {}}
+	list [$c create oval $x $y $x $y]
+    }
+} -body {
+    ::canvas::edit points E .c -create-cmd mk -data-cmd data
+    E add 10 20
+    E add 60 20
+    list $::log [llength [.c find withtag POINT]]
+} -cleanup {
+    cleanup E
+    rename mk {}
+} -result {{{add ::E P2 60 20}} 1}
+
+test canvas::edit::points-4.10 {-create-cmd default can be queried and chained} -setup {
+    mkCanvas
+} -body {
+    ::canvas::edit points E .c
+    set ::orig [E cget -create-cmd]
+    proc mk {c x y} {
+	lappend ::log mk
+	{*}$::orig $c $x $y
+    }
+    E configure -create-cmd mk
+    E add 10 20
+    list $::log [points]
+} -cleanup {
+    cleanup E
+    rename mk {}
+    unset ::orig
+} -result {mk {{10.0 20.0}}}
+
+test canvas::edit::points-4.11 {clear: removes all points} -setup mkCanvas -body {
+    ::canvas::edit points E .c -data-cmd data
+    E add 10 20
+    E add 30 40
+    set ::log {}
+    list [E clear] [points] [lsort $::log]
+} -cleanup {cleanup E} -result {{} {} {{remove ::E P1} {remove ::E P2}}}
+
+test canvas::edit::points-4.12 {clear: empty editor} -setup mkCanvas -body {
+    ::canvas::edit points E .c -data-cmd data
+    list [E clear] $::log
+} -cleanup {cleanup E} -result {{} {}}
+
+test canvas::edit::points-4.13 {clear: only points of this editor} -setup {
+    mkCanvas
+    .c create rectangle 0 0 5 5 -tags other
+} -body {
+    ::canvas::edit points E1 .c -tag A
+    ::canvas::edit points E2 .c -tag B
+    E1 add 10 20
+    E2 add 30 40
+    E1 clear
+    list [points A] [points B] [.c find withtag other]
+} -cleanup {cleanup E1 E2} -result {{} {{30.0 40.0}} 1}
+
+test canvas::edit::points-4.14 {clear: multi-item markers reported once} -setup {
+    mkCanvas
+    proc mk {c x y} {
+	list [$c create oval $x $y $x $y] [$c create oval $x $y $x $y]
+    }
+} -body {
+    ::canvas::edit points E .c -create-cmd mk -data-cmd data
+    E add 10 20
+    set ::log {}
+    E clear
+    list $::log [.c find all]
+} -cleanup {
+    cleanup E
+    rename mk {}
+} -result {{{remove ::E P1}} {}}
+
+# -------------------------------------------------------------------------
+# Interaction: add with button 1, remove with button 2
+
+test canvas::edit::points-5.1 {click 1 adds a point} -setup mkCanvas -body {
+    ::canvas::edit points E .c -data-cmd data
+    E enable
+    click 1 100 50
+    click 1 150 60
+    list [points] $::log
+} -cleanup {cleanup E} -result {{{100.0 50.0} {150.0 60.0}} {{add ::E P1 100.0 50.0} {add ::E P2 150.0 60.0}}}
+
+test canvas::edit::points-5.2 {click 1 uses canvas coordinates} -setup {
+    mkCanvas
+    .c configure -scrollregion {0 0 1000 1000} -xscrollincrement 1 -yscrollincrement 1
+    .c xview scroll 100 units
+    .c yview scroll 50 units
+    update
+} -body {
+    ::canvas::edit points E .c
+    E enable
+    click 1 10 20
+    points
+} -cleanup {cleanup E} -result {{110.0 70.0}}
+
+test canvas::edit::points-5.3 {click 2 on a point removes it} -setup mkCanvas -body {
+    ::canvas::edit points E .c -data-cmd data
+    E enable
+    E add 100 50
+    E add 150 60
+    set ::log {}
+    click 2 150 60
+    list [points] $::log
+} -cleanup {cleanup E} -result {{{100.0 50.0}} {{remove ::E P2}}}
+
+test canvas::edit::points-5.4 {click 2 elsewhere does nothing} -setup mkCanvas -body {
+    ::canvas::edit points E .c -data-cmd data
+    E enable
+    E add 100 50
+    set ::log {}
+    click 2 200 150
+    list [points] $::log
+} -cleanup {cleanup E} -result {{{100.0 50.0}} {}}
+
+test canvas::edit::points-5.5 {click 3 does not add} -setup mkCanvas -body {
+    ::canvas::edit points E .c
+    E enable
+    click 3 100 50
+    points
+} -cleanup {cleanup E} -result {}
+
+test canvas::edit::points-5.6 {-add-remove-point: same event for both} -setup mkCanvas -body {
+    ::canvas::edit points E .c -data-cmd data -add-remove-point Control-ButtonPress-1
+    E enable
+    click 1 100 50
+    set r [list [points]]
+    click 1 100 50 4
+    lappend r [points]
+    click 1 100 50 4
+    lappend r [points] $::log
+} -cleanup {
+    cleanup E
+    unset r
+} -result {{} {{100.0 50.0}} {} {{add ::E P1 100.0 50.0} {remove ::E P1}}}
+
+test canvas::edit::points-5.7 {-add-remove-point: bindings removed by disable} -setup mkCanvas -body {
+    ::canvas::edit points E .c -add-remove-point Shift-1
+    E enable
+    set r [list [bind .c]]
+    E disable
+    lappend r [bind .c]
+} -cleanup {
+    cleanup E
+    unset r
+} -result {<Shift-Button-1> {}}
+
+test canvas::edit::points-5.8 {-active-cmd: enter and leave a point} -setup mkCanvas -body {
+    ::canvas::edit points E .c -active-cmd {data active}
+    E add 100 50
+    event generate .c <Motion> -x 100 -y 50
+    event generate .c <Motion> -x 290 -y 190
+    update
+    set ::log
+} -cleanup {cleanup E} -result {{active ::E P1} {active ::E {}}}
+
+test canvas::edit::points-5.9 {-active-cmd: set after creation} -setup mkCanvas -body {
+    ::canvas::edit points E .c
+    E add 100 50
+    E configure -active-cmd {data active}
+    event generate .c <Motion> -x 100 -y 50
+    event generate .c <Motion> -x 290 -y 190
+    update
+    set ::log
+} -cleanup {cleanup E} -result {{active ::E P1} {active ::E {}}}
+
+test canvas::edit::points-5.10 {two editors with different tags} -setup mkCanvas -body {
+    ::canvas::edit points E1 .c -tag A -data-cmd {data E1} -add-remove-point Control-1
+    ::canvas::edit points E2 .c -tag B -data-cmd {data E2}
+    E1 enable
+    E2 enable
+    E1 add 100 50
+    E2 add 150 50
+    set ::log {}
+    click 2 100 50
+    click 2 150 50
+    list [points A] [points B] $::log
+} -cleanup {cleanup E1 E2} -result {{{100.0 50.0}} {} {{E2 remove ::E2 P1}}}
+
+# -------------------------------------------------------------------------
+# Interaction: drag with button 3
+
+test canvas::edit::points-6.1 {drag moves the point, data callbacks} -setup mkCanvas -body {
+    ::canvas::edit points E .c -data-cmd data
+    E enable
+    E add 100 50
+    set ::log {}
+    drag 3 0 100 50 110 55 130 70
+    list [points] $::log
+} -cleanup {cleanup E} -result {{{130.0 70.0}} {{move start ::E P1} {move delta ::E P1 110 55 10 5} {move delta ::E P1 130 70 30 20} {move done ::E P1}}}
+
+test canvas::edit::points-6.2 {drag vetoed by move done is rolled back} -setup mkCanvas -body {
+    ::canvas::edit points E .c -data-cmd data
+    E enable
+    E add 100 50
+    set ::veto 1
+    drag 3 0 100 50 130 70
+    points
+} -cleanup {cleanup E} -result {{100.0 50.0}}
+
+test canvas::edit::points-6.3 {deltas after a committed drag are relative to new place} -setup mkCanvas -body {
+    ::canvas::edit points E .c -data-cmd data
+    E enable
+    E add 100 50
+    drag 3 0 100 50 130 70
+    set ::log {}
+    drag 3 0 130 70 140 90
+    list [points] [lindex $::log 1]
+} -cleanup {cleanup E} -result {{{140.0 90.0}} {move delta ::E P1 140 90 10 20}}
+
+test canvas::edit::points-6.4 {deltas after a vetoed drag are relative to old place} -setup mkCanvas -body {
+    ::canvas::edit points E .c -data-cmd data
+    E enable
+    E add 100 50
+    set ::veto 1
+    drag 3 0 100 50 130 70
+    set ::veto 0
+    set ::log {}
+    drag 3 0 100 50 110 60
+    list [points] [lindex $::log 1]
+} -cleanup {cleanup E} -result {{{110.0 60.0}} {move delta ::E P1 110 60 10 10}}
+
+test canvas::edit::points-6.5 {drag of a multi-item marker moves all items} -setup {
+    mkCanvas
+    proc mk {c x y} {
+	list [$c create oval [expr {$x-3}] [expr {$y-3}] [expr {$x+3}] [expr {$y+3}] -fill red] \
+	    [$c create line $x $y [expr {$x+20}] $y]
+    }
+} -body {
+    ::canvas::edit points E .c -create-cmd mk
+    E enable
+    E add 100 50
+    drag 3 0 100 50 110 60
+    lmap i [.c find withtag POINT] {.c coords $i}
+} -cleanup {
+    cleanup E
+    rename mk {}
+} -result {{107.0 57.0 113.0 63.0} {110.0 60.0 130.0 60.0}}
+
+test canvas::edit::points-6.6 {-drag-point with modifier} -setup mkCanvas -body {
+    ::canvas::edit points E .c -drag-point Control-3
+    E enable
+    E add 100 50
+    drag 3 0 100 50 110 60
+    set r [points]
+    drag 3 4 100 50 120 70
+    list $r [points]
+} -cleanup {
+    cleanup E
+    unset r
+} -result {{{100.0 50.0}} {{120.0 70.0}}}
+
+test canvas::edit::points-6.7 {-drag-point as documented event spec} -constraints {
+    knownBug
+} -setup mkCanvas -body {
+    # The documented default is "ButtonPress-3", but canvas::drag only
+    # accepts "?modifier-?button".
+    ::canvas::edit points E .c -drag-point ButtonPress-3
+    E enable
+    E add 100 50
+    drag 3 0 100 50 110 60
+    points
+} -cleanup {cleanup E} -result {{110.0 60.0}}
+
+test canvas::edit::points-6.8 {drag empty space does nothing} -setup mkCanvas -body {
+    ::canvas::edit points E .c -data-cmd data
+    E enable
+    E add 100 50
+    set ::log {}
+    drag 3 0 200 150 210 160
+    list [points] $::log
+} -cleanup {cleanup E} -result {{{100.0 50.0}} {}}
+
+# -------------------------------------------------------------------------
+
+test canvas::edit::points-7.1 {-mode: bad value} -constraints {
+    knownBug
+} -setup mkCanvas -body {
+    ::canvas::edit points E .c
+    E configure -mode foo
+} -cleanup {cleanup E} -returnCodes error -match glob -result {bad option foo, expected one of *}
+
+test canvas::edit::points-7.2 {-mode click: no dragging} -setup mkCanvas -body {
+    ::canvas::edit points E .c -mode click
+    E enable
+    E add 100 50
+    drag 3 0 100 50 110 60
+    click 1 200 100
+    list [E cget -mode] [points]
+} -cleanup {cleanup E} -result {click {{100.0 50.0} {200.0 100.0}}}
+
+# -------------------------------------------------------------------------
+
+rename mkCanvas {}
+rename cleanup {}
+rename click {}
+rename drag {}
+rename points {}
+rename data {}
+
+::tcltest::cleanupTests
