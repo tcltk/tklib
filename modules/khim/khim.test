@@ -1,0 +1,1498 @@
+# -*- tcl -*-
+# Tests for the khim package (Kevin's Hacky Input Method)
+#
+# The tests drive the KHIM bindtag with generated key events and drive the
+# modal dialogs (character map, options dialog) from scripts scheduled
+# with [after] that wait for the dialog to appear.
+
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+package require tcltest 2.2
+namespace import ::tcltest::*
+
+testConstraint x11 [expr {[tk windowingsystem] eq "x11"}]
+
+lappend auto_path [file dirname [file dirname [file normalize [info script]]]]
+package require khim
+
+# -------------------------------------------------------------------------
+# Helpers
+
+# The configuration at the start of the tests; restored after tests that
+# change it.
+set khimTestDefaultConfig [khim::getConfig]
+
+proc restoreConfig {} {
+    uplevel #0 $::khimTestDefaultConfig
+}
+
+# The map of the current configuration, as a canonical list.
+proc cfgMap {} {
+    list {*}[lindex [khim::getConfig] 4]
+}
+
+# Localised text of a KHIM message (the tests may run in any locale).
+proc kmc {args} {
+    namespace eval ::khim [list ::msgcat::mc {*}$args]
+}
+
+# Generate key press/release pairs for the given keysyms.
+proc keys {w args} {
+    foreach k $args {
+	event generate $w <KeyPress-$k>
+	# The key press may have destroyed the window (e.g. Return in a
+	# dialog).
+	if {[winfo exists $w]} {
+	    event generate $w <KeyRelease-$k>
+	}
+    }
+}
+
+# Create an editable widget using the KHIM bindtag, give it the focus.
+proc khimWidget {class w args} {
+    $class $w {*}$args
+    pack $w
+    set tags [bindtags $w]
+    set i [lsearch -exact $tags [winfo class $w]]
+    bindtags $w [linsert $tags $i KHIM]
+    update
+    focus -force $w
+    update
+    return $w
+}
+
+# Schedule a script to run as soon as window $w exists and is mapped
+# (used to drive modal dialogs).  Errors in the script are recorded in
+# ::khimTestErrors; if the window does not appear in time, or the
+# script fails, the window is destroyed so that the modal wait ends.
+set khimTestErrors {}
+proc onWindow {w script {n 500}} {
+    after 10 [list onWindowPoll $w $script $n]
+}
+proc onWindowPoll {w script n} {
+    if {[winfo exists $w] && [winfo ismapped $w]} {
+	update idletasks
+	if {[catch {uplevel #0 $script} msg]} {
+	    lappend ::khimTestErrors $msg
+	    catch {destroy [winfo toplevel $w]}
+	}
+	return
+    }
+    if {$n <= 0} {
+	lappend ::khimTestErrors "timeout waiting for $w"
+	catch {destroy [winfo toplevel $w]}
+	return
+    }
+    after 10 [list onWindowPoll $w $script [incr n -1]]
+}
+
+proc cleanupAll {} {
+    foreach id [after info] {
+	after cancel $id
+    }
+    foreach w [winfo children .] {
+	destroy $w
+    }
+    set ::khimTestErrors {}
+    removeCMapTraces
+    restoreConfig
+    focus -force .
+    update
+}
+
+# Click a character cell of the character map canvas $c.
+proc clickCell {c row col} {
+    foreach {x0 y0 x1 y1} [$c bbox text&&row$row&&col$col] break
+    set x [expr {($x0 + $x1) / 2}]
+    set y [expr {($y0 + $y1) / 2}]
+    event generate $c <ButtonPress-1> -x $x -y $y
+    event generate $c <ButtonRelease-1> -x $x -y $y
+}
+
+# The character map dialog adds variable traces each time it is posted
+# and never removes them (see khim-5.28); with several stale traces
+# changing the code page loops forever.  Remove them so that the tests
+# are independent of each other.
+proc removeCMapTraces {} {
+    foreach v {CMapCodePage CMapInputCodePage} {
+	foreach m [array names ::khim::$v] {
+	    foreach t [trace info variable ::khim::${v}($m)] {
+		trace remove variable ::khim::${v}($m) {*}$t
+	    }
+	}
+    }
+}
+
+# Open the character map by striking the Compose key twice in $w, run
+# $script (with variables m = map dialog, c = canvas) when it is shown.
+proc withCharMap {w script} {
+    set t [winfo toplevel $w]
+    if {$t eq "."} {set t ""}
+    set m $t.khimcmap
+    removeCMapTraces
+    onWindow $m.c [list apply [list {m c} $script] $m $m.c]
+    focus -force $w
+    update
+    keys $w Pause Pause
+}
+
+# -------------------------------------------------------------------------
+
+test khim-1.1 {package version} -body {
+    package present khim
+} -result 1.0.3
+
+test khim-1.2 {exported commands} -body {
+    lsort [namespace eval ::khim {namespace export}]
+} -result {getConfig getOptions setConfig showHelp}
+
+test khim-1.3 {KHIM bindtag has bindings after loading} -body {
+    expr {[llength [bind KHIM]] > 0}
+} -result 1
+
+test khim-1.4 {default Compose key is Pause} -body {
+    lindex [khim::getConfig] 3
+} -result Pause
+
+test khim-1.5 {KHIM is enabled by default} -body {
+    lindex [khim::getConfig] 2
+} -result 1
+
+# -------------------------------------------------------------------------
+# getConfig / setConfig
+
+test khim-2.1 {getConfig: wrong # args} -body {
+    khim::getConfig x
+} -returnCodes error -result {wrong # args: should be "khim::getConfig"}
+
+test khim-2.2 {getConfig: result is a setConfig command, version 1.0} -body {
+    lrange [khim::getConfig] 0 1
+} -result {khim::setConfig 1.0}
+
+test khim-2.3 {getConfig: format of the saved script} -setup {
+    khim::setConfig 1.0 0 F12 [list ba \u00e9 ab x]
+} -body {
+    khim::getConfig
+} -cleanup {
+    restoreConfig
+} -result "khim::setConfig 1.0 0 F12 \{\n    ab x\n    ba \\u00e9\n\}"
+
+test khim-2.4 {getConfig: sequences are sorted in dictionary order} -setup {
+    khim::setConfig 1.0 1 Pause [list b2 x a10 y a9 z B1 w]
+} -body {
+    set res {}
+    foreach {k v} [cfgMap] {lappend res $k}
+    set res
+} -cleanup {
+    restoreConfig
+    unset -nocomplain res k v
+} -result {a9 a10 B1 b2}
+
+test khim-2.5 {getConfig: non-ASCII and special characters are escaped} -setup {
+    khim::setConfig 1.0 1 Pause [list \
+	a1 \u0142 a2 \{ a3 \} a4 \[ a5 \] a6 \\ a7 \$ a8 "\t" a9 \u20ac]
+} -body {
+    set cfg [khim::getConfig]
+    list [regexp {[^\x20-\x7e\n]} $cfg] [list {*}[lindex $cfg 4]]
+} -cleanup {
+    restoreConfig
+    unset -nocomplain cfg
+} -result [list 0 [list a1 \u0142 a2 \{ a3 \} a4 \[ a5 \] a6 \\ \
+		       a7 \$ a8 "\t" a9 \u20ac]]
+
+test khim-2.6 {getConfig: special characters in sequences are quoted} -setup {
+    set keys [list "\{\}" "\[\]" "\$\\" "\" "]
+    khim::setConfig 1.0 1 Pause [list [lindex $keys 0] a \
+	[lindex $keys 1] b [lindex $keys 2] c [lindex $keys 3] d]
+} -body {
+    set cfg [khim::getConfig]
+    restoreConfig
+    eval $cfg
+    array set m [cfgMap]
+    list $m([lindex $keys 0]) $m([lindex $keys 1]) $m([lindex $keys 2]) \
+	$m([lindex $keys 3]) [array size m]
+} -cleanup {
+    restoreConfig
+    unset -nocomplain m keys cfg
+} -result {a b c d 4}
+
+test khim-2.7 {getConfig: the script restores the configuration} -setup {
+    khim::setConfig 1.0 0 F11 [list xy \u00e9 "a " \u0142 <> \u2260]
+    set saved [khim::getConfig]
+    khim::setConfig 1.0 1 Pause {}
+} -body {
+    eval $saved
+    khim::getConfig
+} -cleanup {
+    restoreConfig
+    unset -nocomplain saved
+} -result "khim::setConfig 1.0 0 F11 \{\n    <> \\u2260\n    {a } \\u0142\n    xy \\u00e9\n\}"
+
+test khim-2.8 {getConfig: save to and restore from a file} -setup {
+    set f [makeFile {} khimrc]
+    khim::setConfig 1.0 1 F12 [list qq \u0444 ij \u0133]
+    set saved [khim::getConfig]
+} -body {
+    set chan [open $f w]
+    puts $chan [khim::getConfig]
+    close $chan
+    restoreConfig
+    source $f
+    expr {[khim::getConfig] eq $saved}
+} -cleanup {
+    removeFile khimrc
+    restoreConfig
+    unset -nocomplain f chan saved
+} -result 1
+
+test khim-2.9 {getConfig: empty map} -setup {
+    khim::setConfig 1.0 1 Pause {}
+} -body {
+    khim::getConfig
+} -cleanup {
+    restoreConfig
+} -result "khim::setConfig 1.0 1 Pause \{\n\}"
+
+test khim-3.1 {setConfig: wrong # args} -body {
+    khim::setConfig 1.0 1 Pause
+} -returnCodes error -result {wrong # args: should be "khim::setConfig v u c m ?arg ...?"}
+
+test khim-3.2 {setConfig: no args} -body {
+    khim::setConfig
+} -returnCodes error -result {wrong # args: should be "khim::setConfig v u c m ?arg ...?"}
+
+test khim-3.3 {setConfig: unknown version} -body {
+    khim::setConfig 2.0 1 Pause {}
+} -cleanup {
+    restoreConfig
+} -returnCodes error -result {Unknown KHIM version 2.0}
+
+test khim-3.4 {setConfig: unknown version does not change the configuration} -body {
+    catch {khim::setConfig 1.1 0 F12 {ab c}}
+    expr {[khim::getConfig] eq $::khimTestDefaultConfig}
+} -cleanup {
+    restoreConfig
+} -result 1
+
+test khim-3.5 {setConfig: returns an empty string} -body {
+    khim::setConfig 1.0 1 Pause {}
+} -cleanup {
+    restoreConfig
+} -result {}
+
+test khim-3.6 {setConfig: disabled KHIM has no bindings} -body {
+    khim::setConfig 1.0 0 Pause {ab c}
+    bind KHIM
+} -cleanup {
+    restoreConfig
+} -result {}
+
+test khim-3.7 {setConfig: enabled KHIM binds the Compose key} -body {
+    khim::setConfig 1.0 1 F12 {}
+    lsort [bind KHIM]
+} -cleanup {
+    restoreConfig
+} -result {<Key-F12> <Key-F12><Key-F12>}
+
+test khim-3.8 {setConfig: bindings for a sequence} -body {
+    khim::setConfig 1.0 1 F12 {ab c}
+    lsort [bind KHIM]
+} -cleanup {
+    restoreConfig
+} -result {<Key-F12> <Key-F12><Key-F12> <Key-F12>a <Key-F12>a<Key> <Key-F12>ab}
+
+test khim-3.9 {setConfig: old bindings are removed} -body {
+    khim::setConfig 1.0 1 F12 {ab c}
+    khim::setConfig 1.0 1 F11 {xy z}
+    lsort [bind KHIM]
+} -cleanup {
+    restoreConfig
+} -result {<Key-F11> <Key-F11><Key-F11> <Key-F11>x <Key-F11>x<Key> <Key-F11>xy}
+
+test khim-3.10 {setConfig: KHIM can be enabled again} -body {
+    khim::setConfig 1.0 0 F12 {ab c}
+    khim::setConfig 1.0 1 F12 {ab c}
+    llength [bind KHIM]
+} -cleanup {
+    restoreConfig
+} -result 5
+
+test khim-3.11 {setConfig: the configuration is reported by getConfig} -body {
+    khim::setConfig 1.0 0 Scroll_Lock [list ab \u00e9]
+    lrange [khim::getConfig] 0 3
+} -cleanup {
+    restoreConfig
+} -result {khim::setConfig 1.0 0 Scroll_Lock}
+
+# -------------------------------------------------------------------------
+# Composing characters with the KHIM bindtag
+
+test khim-4.1 {compose: Compose key followed by a sequence} -setup {
+    khimWidget entry .e
+} -body {
+    keys .e Pause apostrophe e
+    .e get
+} -cleanup {
+    cleanupAll
+} -result \u00e9
+
+test khim-4.2 {compose: several sequences in an entry} -setup {
+    khimWidget entry .e
+} -body {
+    keys .e a Pause quotedbl o b Pause s s Pause e u Pause minus greater
+    .e get
+} -cleanup {
+    cleanupAll
+} -result a\u00f6b\u00df\u20ac\u2192
+
+test khim-4.3 {compose: sequences with uppercase letters} -setup {
+    khimWidget entry .e
+} -body {
+    keys .e Pause A E Pause O E Pause asciitilde N Pause grave A
+    .e get
+} -cleanup {
+    cleanupAll
+} -result \u00c6\u0152\u00d1\u00c0
+
+test khim-4.4 {compose: sequences with "<"} -setup {
+    khimWidget entry .e
+} -body {
+    keys .e Pause less less Pause less minus Pause greater greater
+    .e get
+} -cleanup {
+    cleanupAll
+} -result \u00ab\u2190\u00bb
+
+test khim-4.5 {compose: sequence with a space} -setup {
+    khim::setConfig 1.0 1 Pause [list " s" \u00a7 "s " \u00b6]
+    khimWidget entry .e
+} -body {
+    keys .e Pause space s Pause s space
+    .e get
+} -cleanup {
+    cleanupAll
+} -result \u00a7\u00b6
+
+test khim-4.6 {compose: unknown second character inserts both characters} -setup {
+    khimWidget entry .e
+} -body {
+    keys .e Pause apostrophe x
+    .e get
+} -cleanup {
+    cleanupAll
+} -result 'x
+
+test khim-4.7 {compose: unknown first character is inserted as usual} -setup {
+    khimWidget entry .e
+} -body {
+    keys .e Pause z w
+    .e get
+} -cleanup {
+    cleanupAll
+} -result zw
+
+test khim-4.8 {compose: the Compose key itself inserts nothing} -setup {
+    khimWidget entry .e
+} -body {
+    keys .e a Pause
+    .e get
+} -cleanup {
+    cleanupAll
+} -result a
+
+test khim-4.9 {compose: characters are inserted at the insertion cursor} -setup {
+    khimWidget entry .e
+    .e insert end abcd
+    .e icursor 2
+} -body {
+    keys .e Pause 1 2
+    list [.e get] [.e index insert]
+} -cleanup {
+    cleanupAll
+} -result [list ab\u00bdcd 3]
+
+test khim-4.10 {compose: text widget} -setup {
+    khimWidget text .t -width 20 -height 3
+} -body {
+    keys .t x Pause comma c Return Pause slash o
+    .t get 1.0 end-1c
+} -cleanup {
+    cleanupAll
+} -result x\u00e7\n\u00f8
+
+test khim-4.11 {compose: ttk::entry} -setup {
+    khimWidget ttk::entry .e
+} -body {
+    keys .e Pause asciicircum o Pause asterisk a
+    .e get
+} -cleanup {
+    cleanupAll
+} -result \u00f4\u00e5
+
+test khim-4.12 {compose: entry is scrolled to show the inserted character} -setup {
+    khimWidget entry .e -width 5
+    .e insert end [string repeat x 50]
+    .e icursor end
+    .e xview 0
+    update
+} -body {
+    keys .e Pause m u
+    update
+    list [string index [.e get] end] [expr {[lindex [.e xview] 1] == 1.0}]
+} -cleanup {
+    cleanupAll
+} -result [list \u00b5 1]
+
+test khim-4.13 {compose: text widget is scrolled to show the insert mark} -setup {
+    khimWidget text .t -width 20 -height 2
+    for {set i 0} {$i < 30} {incr i} {.t insert end line$i\n}
+    .t mark set insert end
+    .t yview moveto 0
+    update
+} -body {
+    keys .t Pause d e
+    update
+    list [.t get end-2c] [expr {[lindex [.t yview] 1] == 1.0}]
+} -cleanup {
+    cleanupAll
+    unset -nocomplain i
+} -result [list \u00b0 1]
+
+test khim-4.14 {compose: custom Compose key} -setup {
+    khim::setConfig 1.0 1 F12 [list ab \u0444]
+    khimWidget entry .e
+} -body {
+    keys .e Pause a b F12 a b
+    .e get
+} -cleanup {
+    cleanupAll
+} -result ab\u0444
+
+test khim-4.15 {compose: disabled KHIM does not intercept keys} -setup {
+    khim::setConfig 1.0 0 Pause [list ab \u0444]
+    khimWidget entry .e
+} -body {
+    keys .e Pause a b
+    .e get
+} -cleanup {
+    cleanupAll
+} -result ab
+
+test khim-4.16 {compose: widget without the KHIM bindtag is unaffected} -setup {
+    entry .e
+    pack .e
+    update
+    focus -force .e
+    update
+} -body {
+    keys .e Pause apostrophe e
+    .e get
+} -cleanup {
+    cleanupAll
+} -result 'e
+
+test khim-4.17 {compose: changed sequence takes effect immediately} -setup {
+    khimWidget entry .e
+    array set m [lindex $::khimTestDefaultConfig 4]
+    set m('e) \u0119
+    khim::setConfig 1.0 1 Pause [array get m]
+} -body {
+    keys .e Pause apostrophe e
+    .e get
+} -cleanup {
+    cleanupAll
+    unset -nocomplain m
+} -result \u0119
+
+test khim-4.18 {compose: all default sequences} -setup {
+    khimWidget entry .e
+    set keysyms {
+	! exclam \" quotedbl ' apostrophe * asterisk , comma - minus
+	/ slash : colon ( parenleft ) parenright < less > greater
+	? question ^ asciicircum ` grave | bar ~ asciitilde
+    }
+} -body {
+    set bad {}
+    foreach {seq char} [lindex $::khimTestDefaultConfig 4] {
+	.e delete 0 end
+	set ks {}
+	foreach ch [split $seq {}] {
+	    if {[dict exists $keysyms $ch]} {
+		lappend ks [dict get $keysyms $ch]
+	    } else {
+		lappend ks $ch
+	    }
+	}
+	keys .e Pause {*}$ks
+	if {[.e get] ne $char} {
+	    lappend bad $seq [.e get]
+	}
+    }
+    set bad
+} -cleanup {
+    cleanupAll
+    unset -nocomplain keysyms bad seq char ks ch
+} -result {}
+
+# -------------------------------------------------------------------------
+# Character map (Compose key struck twice)
+
+test khim-5.1 {character map: posted by striking Compose twice} -setup {
+    khimWidget entry .e
+} -body {
+    set res {}
+    withCharMap .e {
+	lappend ::res [wm title $m] [winfo exists $c] [winfo class $c]
+	khim::CMapCancel $m
+    }
+    lappend res [winfo exists .khimcmap] [.e get] $::khimTestErrors
+} -cleanup {
+    cleanupAll
+    unset -nocomplain res
+} -result [list [kmc "Insert Character"] 1 Canvas 0 {} {}]
+
+test khim-5.2 {character map: typed character is selected, OK inserts it} -setup {
+    khimWidget entry .e
+} -body {
+    withCharMap .e {
+	focus -force $c
+	keys $c A
+	$m.f.b1 invoke
+    }
+    list [.e get] $::khimTestErrors
+} -cleanup {
+    cleanupAll
+} -result {A {}}
+
+test khim-5.3 {character map: Return inserts the selected character} -setup {
+    khimWidget entry .e
+    .e insert end xy
+    .e icursor 1
+} -body {
+    withCharMap .e {
+	focus -force $c
+	keys $c b Return
+    }
+    list [.e get] $::khimTestErrors
+} -cleanup {
+    cleanupAll
+} -result {xby {}}
+
+test khim-5.4 {character map: space inserts the selected character} -setup {
+    khimWidget entry .e
+} -body {
+    withCharMap .e {
+	focus -force $c
+	keys $c Z space
+    }
+    list [.e get] $::khimTestErrors
+} -cleanup {
+    cleanupAll
+} -result {Z {}}
+
+test khim-5.5 {character map: Cancel inserts nothing} -setup {
+    khimWidget entry .e
+} -body {
+    withCharMap .e {
+	focus -force $c
+	keys $c A
+	$m.f.b2 invoke
+    }
+    list [.e get] [winfo exists .khimcmap] $::khimTestErrors
+} -cleanup {
+    cleanupAll
+} -result {{} 0 {}}
+
+test khim-5.6 {character map: Escape inserts nothing} -setup {
+    khimWidget entry .e
+} -body {
+    withCharMap .e {
+	focus -force $c
+	keys $c A Escape
+    }
+    list [.e get] [winfo exists .khimcmap] $::khimTestErrors
+} -cleanup {
+    cleanupAll
+} -result {{} 0 {}}
+
+test khim-5.7 {character map: cursor keys move the selection} -setup {
+    khimWidget entry .e
+} -body {
+    set res {}
+    foreach k {Right Left Down Up} {
+	withCharMap .e [string map [list %K $k] {
+	    focus -force $c
+	    keys $c M %K Return
+	}]
+	lappend res [.e get]
+	.e delete 0 end
+    }
+    lappend res $::khimTestErrors
+} -cleanup {
+    cleanupAll
+    unset -nocomplain res k
+} -result [list N L \] = {}]
+
+test khim-5.8 {character map: Home and End move within the row} -setup {
+    khimWidget entry .e
+} -body {
+    set res {}
+    foreach k {Home End} {
+	withCharMap .e [string map [list %K $k] {
+	    focus -force $c
+	    keys $c M %K Return
+	}]
+	lappend res [.e get]
+	.e delete 0 end
+    }
+    lappend res $::khimTestErrors
+} -cleanup {
+    cleanupAll
+    unset -nocomplain res k
+} -result {@ O {}}
+
+test khim-5.9 {character map: Prior and Next move by a code page} -setup {
+    khimWidget entry .e
+} -body {
+    set res {}
+    withCharMap .e {
+	focus -force $c
+	keys $c A Next
+	lappend ::res [$m.spin get]
+	keys $c Next Prior Return
+    }
+    lappend res [.e get] $::khimTestErrors
+} -cleanup {
+    cleanupAll
+    unset -nocomplain res
+} -result [list 1 \u0141 {}]
+
+test khim-5.10 {character map: Control-Home and Control-End} -setup {
+    khimWidget entry .e
+} -body {
+    set res {}
+    withCharMap .e {
+	focus -force $c
+	keys $c A
+	event generate $c <Control-End>
+	lappend ::res [$m.spin get]
+	event generate $c <Control-Home>
+	lappend ::res [$m.spin get]
+	keys $c Right Return
+    }
+    lappend res [.e get] $::khimTestErrors
+} -cleanup {
+    cleanupAll
+    unset -nocomplain res
+} -result [list 255 0 \x01 {}]
+
+test khim-5.11 {character map: Shift-Home and Shift-End move within the page} -setup {
+    khimWidget entry .e
+} -body {
+    set res {}
+    withCharMap .e {
+	focus -force $c
+	keys $c A Next
+	event generate $c <Shift-End>
+	keys $c Return
+    }
+    lappend res [.e get]
+    .e delete 0 end
+    withCharMap .e {
+	focus -force $c
+	keys $c A Next
+	event generate $c <Shift-Home>
+	keys $c Right Return
+    }
+    lappend res [.e get] $::khimTestErrors
+} -cleanup {
+    cleanupAll
+    unset -nocomplain res
+} -result [list \u01ff \u0101 {}]
+
+test khim-5.12 {character map: selection does not move below U+0000} -setup {
+    khimWidget entry .e
+} -body {
+    withCharMap .e {
+	focus -force $c
+	event generate $c <Control-Home>
+	keys $c Up Prior Left Right Right Return
+    }
+    list [.e get] $::khimTestErrors
+} -cleanup {
+    cleanupAll
+} -result [list \x02 {}]
+
+test khim-5.13 {character map: selection does not move above U+FFFF} -setup {
+    khimWidget entry .e
+    set res {}
+} -body {
+    withCharMap .e {
+	focus -force $c
+	event generate $c <Control-End>
+	keys $c Down Next Right
+	lappend ::res [$m.spin get]
+	khim::CMapCopy $m
+	lappend ::res [scan [clipboard get] %c]
+	$m.f.b2 invoke
+    }
+    lappend res $::khimTestErrors
+} -cleanup {
+    cleanupAll
+    unset -nocomplain res
+} -result [list 255 65535 {}]
+
+test khim-5.14 {character map: clicking a cell selects it} -setup {
+    khimWidget entry .e
+} -body {
+    withCharMap .e {
+	focus -force $c
+	keys $c A
+	clickCell $c 6 3
+	keys $c Return
+    }
+    list [.e get] $::khimTestErrors
+} -cleanup {
+    cleanupAll
+} -result {c {}}
+
+test khim-5.15 {character map: double click inserts and dismisses} -setup {
+    khimWidget entry .e
+} -body {
+    withCharMap .e {
+	focus -force $c
+	keys $c A
+	clickCell $c 7 10
+	foreach {x0 y0 x1 y1} [$c bbox text&&row7&&col10] break
+	# Second click at the same time makes a double click
+	event generate $c <ButtonPress-1> \
+	    -x [expr {($x0+$x1)/2}] -y [expr {($y0+$y1)/2}]
+	# The dialog is gone now; release the button anyway.
+	event generate . <ButtonRelease-1>
+    }
+    list [.e get] [winfo exists .khimcmap] $::khimTestErrors
+} -cleanup {
+    cleanupAll
+} -result {z 0 {}}
+
+test khim-5.16 {character map: mouse wheel moves by a row} -setup {
+    khimWidget entry .e
+} -body {
+    set res {}
+    foreach d {-120 120} {
+	withCharMap .e [string map [list %D $d] {
+	    focus -force $c
+	    keys $c M
+	    event generate $c <MouseWheel> -delta %D
+	    keys $c Return
+	}]
+	lappend res [.e get]
+	.e delete 0 end
+    }
+    lappend res $::khimTestErrors
+} -cleanup {
+    cleanupAll
+    unset -nocomplain res d
+} -result [list \] = {}]
+
+test khim-5.17 {character map: shifted mouse wheel moves by a character} -setup {
+    khimWidget entry .e
+} -body {
+    set res {}
+    foreach d {-120 120} {
+	withCharMap .e [string map [list %D $d] {
+	    focus -force $c
+	    keys $c M
+	    event generate $c <Shift-MouseWheel> -delta %D
+	    keys $c Return
+	}]
+	lappend res [.e get]
+	.e delete 0 end
+    }
+    lappend res $::khimTestErrors
+} -cleanup {
+    cleanupAll
+    unset -nocomplain res d
+} -result {N L {}}
+
+test khim-5.18 {character map: X11 wheel buttons} -constraints x11 -setup {
+    khimWidget entry .e
+} -body {
+    set res {}
+    foreach b {4 5} {
+	withCharMap .e [string map [list %B $b] {
+	    focus -force $c
+	    keys $c M
+	    event generate $c <ButtonPress-%B>
+	    event generate $c <ButtonRelease-%B>
+	    keys $c Return
+	}]
+	lappend res [.e get]
+	.e delete 0 end
+    }
+    lappend res $::khimTestErrors
+} -cleanup {
+    cleanupAll
+    unset -nocomplain res b
+} -result [list = \] {}]
+
+test khim-5.19 {character map: code page spinbox} -setup {
+    khimWidget entry .e
+} -body {
+    withCharMap .e {
+	focus -force $c
+	keys $c A
+	$m.spin delete 0 end
+	$m.spin insert 0 4
+	update
+	keys $c Return
+    }
+    list [.e get] $::khimTestErrors
+} -cleanup {
+    cleanupAll
+} -result [list \u0441 {}]
+
+test khim-5.20 {character map: hexadecimal code page in the spinbox} -setup {
+    khimWidget entry .e
+} -body {
+    withCharMap .e {
+	focus -force $c
+	keys $c A
+	$m.spin delete 0 end
+	$m.spin insert 0 0x20
+	update
+	keys $c Return
+    }
+    list [.e get] $::khimTestErrors
+} -cleanup {
+    cleanupAll
+} -result [list \u2041 {}]
+
+test khim-5.21 {character map: invalid code page marks the spinbox} -setup {
+    khimWidget entry .e
+    set res {}
+} -body {
+    withCharMap .e {
+	set bg [$m.spin cget -background]
+	foreach v {xyz -1 256 0x100} {
+	    $m.spin delete 0 end
+	    $m.spin insert 0 $v
+	    lappend ::res [$m.spin cget -background]
+	}
+	$m.spin delete 0 end
+	$m.spin insert 0 3
+	lappend ::res [expr {[$m.spin cget -background] eq $bg}]
+	$m.f.b2 invoke
+    }
+    lappend res $::khimTestErrors
+} -cleanup {
+    cleanupAll
+    unset -nocomplain res
+} -result [list #ff6666 #ff6666 #ff6666 #ff6666 1 {}]
+
+test khim-5.22 {character map: Help button shows help} -setup {
+    khimWidget entry .e
+    set res {}
+} -body {
+    withCharMap .e {
+	onWindow $m.help.ok {
+	    lappend ::res [wm title .khimcmap.help]
+	    .khimcmap.help.ok invoke
+	}
+	$m.f.b3 invoke
+	lappend ::res [winfo exists $m.help] [winfo exists $m]
+	$m.f.b2 invoke
+    }
+    lappend res $::khimTestErrors
+} -cleanup {
+    cleanupAll
+    unset -nocomplain res
+} -result [list [kmc "KHIM Help"] 0 1 {}]
+
+test khim-5.23 {character map: Copy puts the selected character on the clipboard} -setup {
+    khimWidget entry .e
+    set res {}
+} -body {
+    withCharMap .e {
+	focus -force $c
+	keys $c Q
+	event generate $c <<Copy>>
+	lappend ::res [clipboard get]
+	$m.f.b2 invoke
+    }
+    lappend res [.e get] $::khimTestErrors
+} -cleanup {
+    cleanupAll
+    unset -nocomplain res
+} -result {Q {} {}}
+
+test khim-5.24 {character map: posted in a non-root toplevel} -setup {
+    toplevel .top
+    khimWidget entry .top.e
+    set res {}
+} -body {
+    withCharMap .top.e {
+	lappend ::res $m
+	focus -force $c
+	keys $c x Return
+    }
+    lappend res [.top.e get] $::khimTestErrors
+} -cleanup {
+    cleanupAll
+    unset -nocomplain res
+} -result {.top.khimcmap x {}}
+
+test khim-5.25 {character map: text widget} -setup {
+    khimWidget text .t -width 20 -height 3
+} -body {
+    keys .t a
+    withCharMap .t {
+	focus -force $c
+	event generate $c <Control-Home>
+	keys $c Next Next Next Next Right Return
+    }
+    list [.t get 1.0 end-1c] $::khimTestErrors
+} -cleanup {
+    cleanupAll
+} -result [list a\u0401 {}]
+
+test khim-5.26 {character map: with a custom Compose key} -setup {
+    khim::setConfig 1.0 1 F12 {}
+    khimWidget entry .e
+    set res {}
+} -body {
+    onWindow .khimcmap.c {
+	lappend ::res ok
+	khim::CMapCancel .khimcmap
+    }
+    keys .e F12 F12
+    lappend res $::khimTestErrors
+} -cleanup {
+    cleanupAll
+    unset -nocomplain res
+} -result {ok {}}
+
+test khim-5.27 {character map: disabled KHIM does not post it} -setup {
+    khim::setConfig 1.0 0 Pause {}
+    khimWidget entry .e
+} -body {
+    keys .e Pause Pause
+    update
+    winfo exists .khimcmap
+} -cleanup {
+    cleanupAll
+} -result 0
+
+test khim-5.28 {character map: no variable traces are left after closing} -constraints {
+    knownBug
+} -setup {
+    khimWidget entry .e
+} -body {
+    # The traces on the code page variables added when the dialog is
+    # posted are never removed; after a few dialogs, changing the code
+    # page loops forever.
+    withCharMap .e {khim::CMapCancel $m}
+    list [trace info variable ::khim::CMapCodePage(.khimcmap)] \
+	[trace info variable ::khim::CMapInputCodePage(.khimcmap)] \
+	$::khimTestErrors
+} -cleanup {
+    cleanupAll
+} -result {{} {} {}}
+
+# -------------------------------------------------------------------------
+# showHelp
+
+test khim-6.1 {showHelp: wrong # args} -body {
+    khim::showHelp
+} -returnCodes error -result {wrong # args: should be "khim::showHelp w"}
+
+test khim-6.2 {showHelp: wrong # args} -body {
+    khim::showHelp .h .x
+} -returnCodes error -result {wrong # args: should be "khim::showHelp w"}
+
+test khim-6.3 {showHelp: creates a toplevel dialog} -body {
+    khim::showHelp .h
+    update
+    list [winfo exists .h] [winfo toplevel .h] [wm title .h] [winfo ismapped .h]
+} -cleanup {
+    cleanupAll
+} -result [list 1 .h [kmc "KHIM Help"] 1]
+
+test khim-6.4 {showHelp: returns an empty string} -body {
+    khim::showHelp .h
+} -cleanup {
+    cleanupAll
+} -result {}
+
+test khim-6.5 {showHelp: displays the help text read-only} -body {
+    khim::showHelp .h
+    set t [.h.t get 1.0 end-1c]
+    list [expr {[string length $t] > 100}] [.h.t cget -state] \
+	[string match *KHIM* $t] [regexp -line {^[ \t]} $t]
+} -cleanup {
+    cleanupAll
+    unset -nocomplain t
+} -result {1 disabled 1 0}
+
+test khim-6.6 {showHelp: OK button dismisses the dialog} -body {
+    khim::showHelp .h
+    update
+    .h.ok invoke
+    winfo exists .h
+} -cleanup {
+    cleanupAll
+} -result 0
+
+test khim-6.7 {showHelp: an existing window with that name is replaced} -body {
+    khim::showHelp .h
+    .h.t configure -state normal
+    .h.t insert 1.0 MARKER
+    khim::showHelp .h
+    string match MARKER* [.h.t get 1.0 end]
+} -cleanup {
+    cleanupAll
+} -result 0
+
+test khim-6.8 {showHelp: dialog with a non-root parent} -setup {
+    toplevel .top
+} -body {
+    khim::showHelp .top.h
+    update
+    list [winfo exists .top.h] [wm transient .top.h]
+} -cleanup {
+    cleanupAll
+} -result {1 .top}
+
+test khim-6.9 {showHelp: bad window path} -body {
+    khim::showHelp .nosuch.h
+} -returnCodes error -result {bad window path name ".nosuch"}
+
+# -------------------------------------------------------------------------
+# getOptions
+
+# Run getOptions .khim and execute $script with the dialog shown.
+proc withOptions {script} {
+    onWindow .khim.lf1.lb $script
+    khim::getOptions .khim
+}
+
+test khim-7.1 {getOptions: wrong # args} -body {
+    khim::getOptions
+} -returnCodes error -result {wrong # args: should be "khim::getOptions w"}
+
+test khim-7.2 {getOptions: dialog contents} -setup {
+    set res {}
+} -body {
+    set r [withOptions {
+	lappend ::res [wm title .khim] \
+	    [.khim.lf1.lb size] [.khim.lf1.lb get 0] \
+	    [.khim.v cget -text] [.khim.b1 cget -text]
+	destroy .khim
+    }]
+    lappend res $r [winfo exists .khim] $::khimTestErrors
+} -cleanup {
+    cleanupAll
+    unset -nocomplain res r
+} -result [list [kmc "KHIM Controls"] \
+	       [expr {[llength [lindex $khimTestDefaultConfig 4]] / 2}] \
+	       "!! \u2192 \u00a1" [kmc "Use KHIM"] Pause {} 0 {}]
+
+test khim-7.3 {getOptions: listbox shows the sequences sorted} -setup {
+    khim::setConfig 1.0 1 Pause [list zz \u017e ab x a1 y]
+    set res {}
+} -body {
+    withOptions {
+	lappend ::res {*}[.khim.lf1.lb get 0 end]
+	destroy .khim
+    }
+    lappend res $::khimTestErrors
+} -cleanup {
+    cleanupAll
+    unset -nocomplain res
+} -result [list "a1 \u2192 y" "ab \u2192 x" "zz \u2192 \u017e" {}]
+
+test khim-7.4 {getOptions: selecting a sequence shows it} -setup {
+    khim::setConfig 1.0 1 Pause [list zz \u017e ab x]
+    set res {}
+} -body {
+    withOptions {
+	.khim.lf1.lb selection set 1
+	event generate .khim.lf1.lb <<ListboxSelect>>
+	lappend ::res [.khim.lf1.f1.e1 get] [.khim.lf1.f2.e1 get]
+	destroy .khim
+    }
+    lappend res $::khimTestErrors
+} -cleanup {
+    cleanupAll
+    unset -nocomplain res
+} -result [list zz \u017e {}]
+
+# Set the sequence and character entries of the options dialog.
+proc setSequence {seq char} {
+    .khim.lf1.f1.e1 delete 0 end
+    .khim.lf1.f1.e1 insert 0 $seq
+    .khim.lf1.f2.e1 delete 0 end
+    .khim.lf1.f2.e1 insert 0 $char
+}
+
+test khim-7.5 {getOptions: Change adds a sequence, OK applies it} -setup {
+    khim::setConfig 1.0 1 Pause [list ab x]
+    set res {}
+} -body {
+    withOptions {
+	setSequence zz \u017e
+	.khim.lf1.f3.b1 invoke
+	set lb .khim.lf1.lb
+	lappend ::res [$lb get 0 end] [$lb get [$lb curselection]]
+	.khim.bf.ok invoke
+    }
+    lappend res [winfo exists .khim] [cfgMap] \
+	$::khimTestErrors
+} -cleanup {
+    cleanupAll
+    unset -nocomplain res
+} -result [list [list "ab \u2192 x" "zz \u2192 \u017e"] "zz \u2192 \u017e" \
+	       0 [list ab x zz \u017e] {}]
+
+test khim-7.6 {getOptions: Change replaces a sequence} -setup {
+    khim::setConfig 1.0 1 Pause [list ab x cd y]
+    set res {}
+} -body {
+    withOptions {
+	setSequence ab w
+	.khim.lf1.f3.b1 invoke
+	lappend ::res [.khim.lf1.lb get 0 end]
+	.khim.bf.ok invoke
+    }
+    lappend res [cfgMap] $::khimTestErrors
+} -cleanup {
+    cleanupAll
+    unset -nocomplain res
+} -result [list [list "ab \u2192 w" "cd \u2192 y"] {ab w cd y} {}]
+
+test khim-7.7 {getOptions: Delete removes a sequence} -setup {
+    khim::setConfig 1.0 1 Pause [list ab x cd y]
+    set res {}
+} -body {
+    withOptions {
+	.khim.lf1.lb selection set 0
+	event generate .khim.lf1.lb <<ListboxSelect>>
+	.khim.lf1.f3.b2 invoke
+	lappend ::res [.khim.lf1.lb get 0 end]
+	.khim.bf.ok invoke
+    }
+    lappend res [cfgMap] $::khimTestErrors
+} -cleanup {
+    cleanupAll
+    unset -nocomplain res
+} -result [list [list "cd \u2192 y"] {cd y} {}]
+
+test khim-7.8 {getOptions: Change with an empty character deletes} -setup {
+    khim::setConfig 1.0 1 Pause [list ab x cd y]
+    set res {}
+} -body {
+    withOptions {
+	setSequence cd {}
+	.khim.lf1.f3.b1 invoke
+	lappend ::res [.khim.lf1.lb get 0 end]
+	.khim.bf.ok invoke
+    }
+    lappend res [cfgMap] $::khimTestErrors
+} -cleanup {
+    cleanupAll
+    unset -nocomplain res
+} -result [list [list "ab \u2192 x"] {ab x} {}]
+
+test khim-7.9 {getOptions: Cancel discards the changes} -setup {
+    khim::setConfig 1.0 1 Pause [list ab x]
+    set before [khim::getConfig]
+} -body {
+    withOptions {
+	setSequence zz \u017e
+	.khim.lf1.f3.b1 invoke
+	.khim.v invoke
+	.khim.bf.cancel invoke
+    }
+    list [winfo exists .khim] [expr {[khim::getConfig] eq $before}] \
+	$::khimTestErrors
+} -cleanup {
+    cleanupAll
+    unset -nocomplain before
+} -result {0 1 {}}
+
+test khim-7.10 {getOptions: Apply applies without closing the dialog} -setup {
+    khim::setConfig 1.0 1 Pause [list ab x]
+    set res {}
+} -body {
+    withOptions {
+	setSequence zz \u017e
+	.khim.lf1.f3.b1 invoke
+	.khim.bf.apply invoke
+	lappend ::res [winfo exists .khim] [cfgMap]
+	setSequence qq q
+	.khim.lf1.f3.b1 invoke
+	.khim.bf.cancel invoke
+    }
+    lappend res [cfgMap] $::khimTestErrors
+} -cleanup {
+    cleanupAll
+    unset -nocomplain res
+} -result [list 1 [list ab x zz \u017e] [list ab x zz \u017e] {}]
+
+test khim-7.11 {getOptions: Use KHIM checkbutton disables KHIM} -setup {
+    khim::setConfig 1.0 1 Pause [list ab x]
+    set res {}
+} -body {
+    withOptions {
+	lappend ::res [set [.khim.v cget -variable]]
+	.khim.v invoke
+	.khim.bf.ok invoke
+    }
+    lappend res [lindex [khim::getConfig] 2] [bind KHIM] $::khimTestErrors
+} -cleanup {
+    cleanupAll
+    unset -nocomplain res
+} -result {1 0 {} {}}
+
+test khim-7.12 {getOptions: Use KHIM checkbutton enables KHIM} -setup {
+    khim::setConfig 1.0 0 Pause [list ab x]
+} -body {
+    withOptions {
+	.khim.v invoke
+	.khim.bf.ok invoke
+    }
+    list [lindex [khim::getConfig] 2] [llength [bind KHIM]] $::khimTestErrors
+} -cleanup {
+    cleanupAll
+} -result {1 5 {}}
+
+test khim-7.13 {getOptions: changing the Compose key} -setup {
+    khim::setConfig 1.0 1 Pause [list ab x]
+    set res {}
+} -body {
+    withOptions {
+	onWindow .khim.composeKey.l {
+	    lappend ::res [wm title .khim.composeKey]
+	    focus -force .khim.composeKey.l
+	    keys .khim.composeKey.l F12
+	}
+	.khim.b1 invoke
+	update
+	lappend ::res [.khim.b1 cget -text] [winfo exists .khim.composeKey]
+	.khim.bf.ok invoke
+    }
+    lappend res [lindex [khim::getConfig] 3] $::khimTestErrors
+} -cleanup {
+    cleanupAll
+    unset -nocomplain res
+} -result [list [kmc "Compose Key"] F12 0 F12 {}]
+
+test khim-7.14 {getOptions: closing the Compose key dialog keeps the key} -setup {
+    khim::setConfig 1.0 1 Pause [list ab x]
+    set res {}
+} -body {
+    withOptions {
+	onWindow .khim.composeKey.l {destroy .khim.composeKey}
+	.khim.b1 invoke
+	lappend ::res [.khim.b1 cget -text]
+	.khim.bf.ok invoke
+    }
+    lappend res [lindex [khim::getConfig] 3] $::khimTestErrors
+} -cleanup {
+    cleanupAll
+    unset -nocomplain res
+} -result {Pause Pause {}}
+
+test khim-7.15 {getOptions: new Compose key works in a widget} -setup {
+    khim::setConfig 1.0 1 Pause [list ab \u0444]
+    khimWidget entry .e
+} -body {
+    withOptions {
+	onWindow .khim.composeKey.l {
+	    focus -force .khim.composeKey.l
+	    keys .khim.composeKey.l F11
+	}
+	.khim.b1 invoke
+	.khim.bf.ok invoke
+    }
+    focus -force .e
+    update
+    keys .e Pause a b F11 a b
+    list [.e get] $::khimTestErrors
+} -cleanup {
+    cleanupAll
+} -result [list ab\u0444 {}]
+
+test khim-7.16 {getOptions: sequence must be two characters long} -setup {
+    khim::setConfig 1.0 1 Pause [list ab x]
+    set res {}
+} -body {
+    withOptions {
+	foreach seq {a abc {}} {
+	    onWindow .khim.__tk__messagebox {
+		lappend ::res [.khim.__tk__messagebox.msg cget -text]
+		.khim.__tk__messagebox.ok invoke
+	    }
+	    setSequence $seq y
+	    .khim.lf1.f3.b1 invoke
+	}
+	lappend ::res [.khim.lf1.lb size]
+	.khim.bf.ok invoke
+    }
+    lappend res [cfgMap] $::khimTestErrors
+} -cleanup {
+    cleanupAll
+    unset -nocomplain res
+} -result [list {*}[lrepeat 3 [kmc "Composed sequence must be two characters long"]] \
+	       1 {ab x} {}]
+
+test khim-7.17 {getOptions: Help button shows help} -setup {
+    set res {}
+} -body {
+    withOptions {
+	.khim.bf.help invoke
+	update
+	lappend ::res [winfo exists .khim.help] [wm title .khim.help]
+	.khim.bf.cancel invoke
+    }
+    lappend res [winfo exists .khim] $::khimTestErrors
+} -cleanup {
+    cleanupAll
+    unset -nocomplain res
+} -result [list 1 [kmc "KHIM Help"] 0 {}]
+
+test khim-7.18 {getOptions: Unicode button selects a character} -setup {
+    khim::setConfig 1.0 1 Pause [list ab x]
+    set res {}
+} -body {
+    withOptions {
+	onWindow .khim.khimcmap.c {
+	    focus -force .khim.khimcmap.c
+	    keys .khim.khimcmap.c Q Return
+	}
+	setSequence qq {}
+	.khim.lf1.f2.b1 invoke
+	lappend ::res [.khim.lf1.f2.e1 get]
+	.khim.lf1.f3.b1 invoke
+	.khim.bf.ok invoke
+    }
+    lappend res [cfgMap] $::khimTestErrors
+} -cleanup {
+    cleanupAll
+    unset -nocomplain res
+} -result {Q {ab x qq Q} {}}
+
+test khim-7.19 {getOptions: dialog for a non-root parent} -setup {
+    toplevel .top
+    set res {}
+} -body {
+    onWindow .top.khim.lf1.lb {
+	lappend ::res [wm transient .top.khim]
+	destroy .top.khim
+    }
+    khim::getOptions .top.khim
+    lappend res $::khimTestErrors
+} -cleanup {
+    cleanupAll
+    unset -nocomplain res
+} -result {.top {}}
+
+# -------------------------------------------------------------------------
+# Localisation
+
+set khimDir [file dirname [file normalize [info script]]]
+set khimMessages {
+    Apply Cancel Change Character {Compose Key} {Compose key:}
+    {Composed sequence must be two characters long} Delete Help...
+    HELPTEXT {Input key sequence} {Insert Character} {Key sequences}
+    {KHIM Controls} {KHIM Help} OK {Select code page:}
+    {SELECT COMPOSE KEY} Unicode... {Use KHIM}
+}
+
+# Return the documented messages missing from the catalog of a locale.
+proc missingMessages {locale} {
+    set i [interp create]
+    try {
+	$i eval {package require msgcat}
+	$i eval [list ::msgcat::mclocale $locale]
+	$i eval [list namespace eval ::khim \
+		     [list ::msgcat::mcload $::khimDir]]
+	set missing {}
+	foreach msg $::khimMessages {
+	    if {![$i eval [list namespace eval ::khim \
+			       [list ::msgcat::mcexists -exactlocale $msg]]]} {
+		lappend missing $msg
+	    }
+	}
+	return $missing
+    } finally {
+	interp delete $i
+    }
+}
+
+set i [interp create]
+testConstraint mcexists [package vsatisfies [$i eval {package require msgcat}] 1.6-]
+interp delete $i
+unset i
+
+# The cs, da and de catalogs lack the "KHIM Help" message.
+foreach {n locale c} {1 en {} 2 cs knownBug 3 da knownBug 4 de knownBug
+		      5 es {} 6 pl {} 7 uk {}} {
+    test khim-8.$n "localisation: $locale catalog has all documented messages" \
+	-constraints [list mcexists {*}$c] -body {
+	    missingMessages $locale
+	} -result {}
+}
+unset n locale c
+
+test khim-8.8 {localisation: help texts fall back to the root locale} -constraints mcexists -setup {
+    set i [interp create]
+} -body {
+    $i eval {package require msgcat; ::msgcat::mclocale xx}
+    $i eval [list namespace eval ::khim [list ::msgcat::mcload $khimDir]]
+    $i eval {
+	namespace eval ::khim {
+	    list [::msgcat::mcexists HELPTEXT] \
+		[::msgcat::mcexists {SELECT COMPOSE KEY}]
+	}
+    }
+} -cleanup {
+    interp delete $i
+    unset i
+} -result {1 1}
+
+test khim-8.9 {localisation: help texts are available in the current locale} -body {
+    list [expr {[kmc HELPTEXT] ne "HELPTEXT"}] \
+	[expr {[kmc {SELECT COMPOSE KEY}] ne "SELECT COMPOSE KEY"}]
+} -result {1 1}
+
+# -------------------------------------------------------------------------
+
+rename keys {}
+rename khimWidget {}
+rename onWindow {}
+rename onWindowPoll {}
+rename cleanupAll {}
+rename clickCell {}
+rename withCharMap {}
+rename withOptions {}
+rename setSequence {}
+rename missingMessages {}
+rename restoreConfig {}
+rename kmc {}
+rename removeCMapTraces {}
+rename cfgMap {}
+unset khimTestDefaultConfig khimTestErrors khimDir khimMessages
+
+::tcltest::cleanupTests
+return
