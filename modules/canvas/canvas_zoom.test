@@ -102,12 +102,7 @@ test canvas::zoom-2.5 {default options} -setup mkZoom -body {
     list [.z cget -orient] [.z cget -levels] [.z cget -command]
 } -cleanup cleanZoom -result {vertical {0 10} {}}
 
-test canvas::zoom-2.10 {create with options not changing the display} -constraints {
-    knownBug
-} -body {
-    # The user interface is only built if no options are given or an
-    # option changing the display (-orient, -levels, -variable) is given
-    # with a non-default value.
+test canvas::zoom-2.10 {create with options not changing the display} -body {
     canvas::zoom .z -command logcb
     canvas::zoom .z2 -orient vertical
     update

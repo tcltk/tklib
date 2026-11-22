@@ -33,10 +33,8 @@ snit::widget ::canvas::zoom {
         set options(-variable) [myvar myzoomlevel] ;# Default value
 	$self configurelist $args
 
-	# Force redraw if it could not be triggered by options.
-        if {![llength $args]} {
-            $reconfigure request
-        }
+	# Force redraw, the options may not have triggered it.
+	$reconfigure request
 	return
     }
 
