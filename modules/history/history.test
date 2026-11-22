@@ -310,12 +310,9 @@ test history-4.6 {add: text with spaces and special characters} -setup {
     cleanEntry
 } -result [list {$x [y]} "\{" {a b}]
 
-test history-4.7 {add: glob characters do not remove other entries} -constraints {
-    knownBug
-} -setup {
+test history-4.7 {add: glob characters do not remove other entries} -setup {
     mkEntry
 } -body {
-    # Duplicates are searched with glob matching.
     ::history::add .e abc
     ::history::add .e a*
     ::history::get .e
@@ -351,12 +348,9 @@ test history-4.10 {add: entry without history} -setup {
     cleanEntry
 } -returnCodes error -match glob -result *
 
-test history-4.11 {add: history is limited to the length} -constraints {
-    knownBug
-} -setup {
+test history-4.11 {add: history is limited to the length} -setup {
     mkEntry 3
 } -body {
-    # The code keeps one more entry than the length.
     foreach s {1 2 3 4 5 6} {::history::add .e $s}
     ::history::get .e
 } -cleanup {
@@ -559,13 +553,7 @@ test history-7.2 {Down at the bottom of the history alerts} -setup {
     cleanEntry
 } -result {typed 1}
 
-# Since version 0.2 (ticket [5e324065bf]) the current position starts at 0
-# instead of -1: Up skips the newest entry, a single entry can never be
-# recalled, and Down never restores the typed text.
-
-test history-7.3 {Up goes back through the history, newest first} -constraints {
-    knownBug
-} -setup {
+test history-7.3 {Up goes back through the history, newest first} -setup {
     mkEntry
     recordAlerts
 } -body {
@@ -575,9 +563,7 @@ test history-7.3 {Up goes back through the history, newest first} -constraints {
     cleanEntry
 } -result {three two one 0}
 
-test history-7.4 {Up at the top of the history alerts} -constraints {
-    knownBug
-} -setup {
+test history-7.4 {Up at the top of the history alerts} -setup {
     mkEntry
     recordAlerts
 } -body {
@@ -587,9 +573,7 @@ test history-7.4 {Up at the top of the history alerts} -constraints {
     cleanEntry
 } -result {three two one one 1}
 
-test history-7.5 {single entry history can be recalled} -constraints {
-    knownBug
-} -setup {
+test history-7.5 {single entry history can be recalled} -setup {
     mkEntry
     recordAlerts
 } -body {
@@ -599,9 +583,7 @@ test history-7.5 {single entry history can be recalled} -constraints {
     cleanEntry
 } -result {one 0}
 
-test history-7.6 {Down goes forward and restores the typed text} -constraints {
-    knownBug
-} -setup {
+test history-7.6 {Down goes forward and restores the typed text} -setup {
     mkEntry
     recordAlerts
 } -body {
@@ -612,9 +594,7 @@ test history-7.6 {Down goes forward and restores the typed text} -constraints {
     cleanEntry
 } -result {three two three typed typed 1}
 
-test history-7.7 {add resets the position to the bottom} -constraints {
-    knownBug
-} -setup {
+test history-7.7 {add resets the position to the bottom} -setup {
     mkEntry
     recordAlerts
 } -body {
@@ -650,6 +630,42 @@ test history-7.9 {other keys still work with History bindtag} -setup {
 } -cleanup {
     cleanEntry
 } -result a
+
+# If the entry still shows the newest entry (it was not cleared after
+# ::history::add), Up and Down skip it (ticket [5e324065bf]).
+
+test history-7.10 {Up skips the newest entry shown in the entry} -setup {
+    mkEntry
+    recordAlerts
+} -body {
+    foreach s {one two three} {::history::add .e $s}
+    .e insert end three
+    list [key Up] [key Up] [key Up] $::alerts
+} -cleanup {
+    cleanEntry
+} -result {two one one 1}
+
+test history-7.11 {Down skips the newest entry shown in the entry} -setup {
+    mkEntry
+    recordAlerts
+} -body {
+    foreach s {one two three} {::history::add .e $s}
+    .e insert end three
+    list [key Up] [key Up] [key Down] [key Down] [key Down] $::alerts
+} -cleanup {
+    cleanEntry
+} -result {two one two three three 1}
+
+test history-7.12 {single entry shown in the entry} -setup {
+    mkEntry
+    recordAlerts
+} -body {
+    ::history::add .e one
+    .e insert end one
+    list [key Up] [key Down] $::alerts
+} -cleanup {
+    cleanEntry
+} -result {one one 2}
 
 # -------------------------------------------------------------------------
 
