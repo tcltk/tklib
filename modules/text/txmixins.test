@@ -33,13 +33,6 @@ if {[lsearch [namespace children] ::tcltest] == -1} {
 lappend auto_path [file dirname [file dirname [file normalize [info script]]]]
 package require dgw::txmixins
 
-# The txautorep binding <KeyRelease-)> is rejected by Tk 8.6 (see
-# txmixins-2.1); run the other txautorep tests only where it works.
-testConstraint txautorep [expr {![catch {
-    dgw::txautorep [text .probe]
-}]}]
-destroy .probe
-
 # -------------------------------------------------------------------------
 # Helpers
 
@@ -204,24 +197,20 @@ test txmixins-1.10 {txlipsum: wrong # args} -body {
 # -------------------------------------------------------------------------
 # txautorep
 
-test txmixins-2.1 {txautorep: creation} -constraints knownBug -body {
-    # Tk 8.6 rejects the binding <KeyRelease-)>: 'bad event type or
-    # keysym ")"'.
+test txmixins-2.1 {txautorep: creation} -body {
     dgw::txautorep [text .t]
 } -cleanup {
     destroy .t
 } -result .t
 
-test txmixins-2.2 {txautorep: default -automap} -constraints txautorep -body {
+test txmixins-2.2 {txautorep: default -automap} -body {
     dgw::txautorep [text .t]
     .t cget -automap
 } -cleanup {
     destroy .t
 } -result {(DG) {Detlef Groth\nUniversity of Potsdam}}
 
-test txmixins-2.3 {txautorep: abbreviation replaced after the closing parenthesis} -constraints {
-    txautorep
-} -body {
+test txmixins-2.3 {txautorep: abbreviation replaced after the closing parenthesis} -body {
     dgw::txautorep [text .t] -automap [list (TM) ™ (C) © D) {D Groth}]
     show .t
     set res {}
@@ -237,7 +226,7 @@ test txmixins-2.3 {txautorep: abbreviation replaced after the closing parenthesi
     unset -nocomplain res abbrev
 } -result [list "x ™" "x ©" "x D Groth"]
 
-test txmixins-2.4 {txautorep: other text is not changed} -constraints txautorep -body {
+test txmixins-2.4 {txautorep: other text is not changed} -body {
     dgw::txautorep [text .t] -automap [list (TM) ™]
     show .t
     .t insert end "f(x"
@@ -247,7 +236,7 @@ test txmixins-2.4 {txautorep: other text is not changed} -constraints txautorep 
     destroy .t
 } -result {f(x)}
 
-test txmixins-2.5 {txautorep: other text widget options} -constraints txautorep -body {
+test txmixins-2.5 {txautorep: other text widget options} -body {
     dgw::txautorep [text .t] -width 33
     .t cget -width
 } -cleanup {

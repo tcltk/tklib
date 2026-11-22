@@ -192,7 +192,7 @@ proc ::dgw::txlipsum {n} {
     constructor {args} {
         installhull $win
         $self configurelist $args ;#(
-        bind $win <KeyRelease-)> [mymethod autochange]
+        bind $win <KeyRelease-parenright> [mymethod autochange]
     }
      method autochange {} {
         set w $win
