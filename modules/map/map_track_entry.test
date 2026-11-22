@@ -1,0 +1,246 @@
+# -*- tcl -*-
+# Tests for the map::track::entry package
+#
+# See the file "license.terms" for information on usage and redistribution
+# of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+
+if {![package vsatisfies [package provide Tcl] 8.5-]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tcl 8.5, have [package present Tcl]"
+    return
+}
+
+if {[catch { package require Tk 8.5- } msg]} {
+    puts "    Aborting the tests found in \"[file tail [info script]]\"."
+    puts "    Requiring Tk 8.5, $msg"
+    return
+}
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest 2.2
+    namespace import ::tcltest::*
+} else {
+    if {![package vsatisfies [package present tcltest] 2.2]} {
+	puts "    Aborting the tests found in \"[file tail [info script]]\"."
+	puts "    Requiring tcltest 2.2, have [package present tcltest]"
+	return
+    }
+}
+
+::tcltest::testConstraint tk 1
+
+lappend auto_path [file dirname [file dirname [file normalize [info script]]]]
+package require map::display
+package require map::track::entry
+
+
+# -------------------------------------------------------------------------
+
+# The tests need a mapped main window (sak withdraws it).
+set mainState [wm state .]
+wm deiconify .
+
+# Collect background errors instead of showing the error dialog: callbacks
+# of a destroyed map display may still run (they are not cancelled).
+set oldBgHandler [interp bgerror {}]
+interp bgerror {} [list apply {{msg opts} {lappend ::bgErrors $msg}}]
+
+# A tile provider producing its tiles locally, without network access.
+proc localtiles {method args} {
+    switch -exact -- $method {
+	levels     { return 6 }
+	tilewidth  -
+	tileheight { return 256 }
+	get {
+	    lassign $args tile donecmd
+	    set image [image create photo -width 256 -height 256]
+	    after idle [list {*}$donecmd set $tile $image]
+	}
+    }
+}
+
+proc mkmap {} {
+    set ::changes {}
+    map display .m -provider ::localtiles \
+	-initial-geo {48.137 11.575} -initial-zoom 5
+    pack .m
+    update
+}
+
+proc changed {geos} {
+    lappend ::changes [llength $geos]
+}
+
+# Window coordinates of a geo location in the map canvas.
+proc win {geo} {
+    set c [.m canvas]
+    lassign [map slippy geo 2point [lindex [.m view] 0] $geo] x y
+    list [expr {round($x - [$c canvasx 0])}] [expr {round($y - [$c canvasy 0])}]
+}
+
+proc click {button x y} {
+    set c [.m canvas]
+    event generate $c <Motion> -x $x -y $y
+    event generate $c <ButtonPress-$button> -x $x -y $y
+    event generate $c <ButtonRelease-$button> -x $x -y $y \
+	-state [expr {1 << ($button + 7)}]
+    update
+}
+
+proc drag {button x0 y0 x y} {
+    set c [.m canvas]
+    set bmask [expr {1 << ($button + 7)}]
+    event generate $c <Motion> -x $x0 -y $y0
+    event generate $c <ButtonPress-$button> -x $x0 -y $y0
+    event generate $c <Motion> -x $x -y $y -state $bmask
+    event generate $c <ButtonRelease-$button> -x $x -y $y -state $bmask
+    update
+}
+
+# Round geo locations for comparison: the points of the test track are
+# whole degrees, and a pixel is a fraction of a degree at the zoom used.
+proc rounded {geos} {
+    lmap g $geos {lmap v $g {format %.0f $v}}
+}
+
+# Wait until the map has followed the view changes made by "set", which
+# fits the map to the track.
+proc settle {} {
+    for {set i 0} {$i < 10} {incr i} {
+	after 50
+	update
+    }
+}
+
+proc cleanup {} {
+    catch {T destroy}
+    destroy .m
+    unset -nocomplain ::changes
+}
+
+set track {{46.0 9.0} {48.0 12.0} {50.0 15.0}}
+
+test map::track::entry-1.1 {set right after creation, track} -setup {
+    mkmap
+} -body {
+    map track entry T .m
+    T set $track
+    T track
+} -cleanup {
+    cleanup
+} -result {{46.0 9.0} {48.0 12.0} {50.0 15.0}}
+
+test map::track::entry-1.2 {set is not reported, clear is} -setup {
+    mkmap
+} -body {
+    map track entry T .m -on-track-change changed
+    T set $track
+    T clear
+    list [T track] $::changes
+} -cleanup {
+    cleanup
+} -result {{} 0}
+
+test map::track::entry-2.1 {clicking extends the track} -setup {
+    mkmap
+} -body {
+    map track entry T .m -on-track-change changed
+    T set $track
+    settle
+    lassign [win {52.0 18.0}] x y
+    click 1 $x $y
+    list [llength [T track]] [rounded [lindex [T track] end]] $::changes
+} -cleanup {
+    cleanup
+    unset -nocomplain x y
+} -result {4 {52 18} 4}
+
+test map::track::entry-2.2 {clicking on an empty track adds the first point} -setup {
+    mkmap
+} -body {
+    map track entry T .m -on-track-change changed
+    lassign [win {48.0 12.0}] x y
+    click 1 $x $y
+    list [rounded [T track]] $::changes
+} -cleanup {
+    cleanup
+    unset -nocomplain x y
+} -result {{{48 12}} 1}
+
+test map::track::entry-2.3 {clicking on a point removes it} -setup {
+    mkmap
+} -body {
+    map track entry T .m -on-track-change changed
+    T set $track
+    settle
+    lassign [win {48.0 12.0}] x y
+    click 1 $x $y
+    list [rounded [T track]] $::changes
+} -cleanup {
+    cleanup
+    unset -nocomplain x y
+} -result {{{46 9} {50 15}} 2}
+
+test map::track::entry-2.4 {dragging a point moves it} -setup {
+    mkmap
+} -body {
+    map track entry T .m -on-track-change changed
+    T set $track
+    settle
+    lassign [win {48.0 12.0}] x0 y0
+    lassign [win {49.0 11.0}] x y
+    drag 2 $x0 $y0 $x $y
+    set g [rounded [T track]]
+    list [lindex $g 0] [lindex $g 2] [llength $g] $::changes
+} -cleanup {
+    cleanup
+    unset -nocomplain x0 y0 x y g
+} -result {{46 9} {50 15} 3 3}
+
+test map::track::entry-2.5 {the moved point gets the new location} -setup {
+    mkmap
+} -body {
+    map track entry T .m
+    T set $track
+    settle
+    lassign [win {48.0 12.0}] x0 y0
+    lassign [win {49.0 11.0}] x y
+    drag 2 $x0 $y0 $x $y
+    rounded [lindex [T track] 1]
+} -cleanup {
+    cleanup
+    unset -nocomplain x0 y0 x y
+} -result {49 11}
+
+test map::track::entry-3.1 {destroy restores -on-view-change} -setup {
+    mkmap
+    .m configure -on-view-change changed
+} -body {
+    map track entry T .m
+    set during [.m cget -on-view-change]
+    T destroy
+    list [expr {$during ne "changed"}] [.m cget -on-view-change]
+} -cleanup {
+    cleanup
+    unset -nocomplain during
+} -result {1 changed}
+
+# -------------------------------------------------------------------------
+
+rename localtiles {}
+rename mkmap {}
+rename changed {}
+rename win {}
+rename click {}
+rename drag {}
+rename rounded {}
+rename settle {}
+rename cleanup {}
+unset -nocomplain track
+interp bgerror {} $oldBgHandler
+unset -nocomplain oldBgHandler bgErrors
+wm state . $mainState
+unset mainState
+
+::tcltest::cleanupTests
+return

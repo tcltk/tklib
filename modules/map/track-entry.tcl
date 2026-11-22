@@ -115,6 +115,10 @@ snit::type ::map::track::entry {
 	set myviewchain [$mymap cget -on-view-change]
 	$mymap configure -on-view-change [mymethod ViewChanged]
 
+	# Start with the current view of the map; changes are reported later.
+	lassign [$mymap view] myzoom viewbox
+	set mycanvasdim [map slippy point box dimensions $viewbox]
+
 	# editor started disabled, activate
 	$self enable
 	return
@@ -122,7 +126,6 @@ snit::type ::map::track::entry {
 
     destructor {
 	debug.tklib/map/track/entry {}
-	return
 
 	if {![winfo exists $mycanvas]} return
 	$self disable
@@ -245,13 +248,36 @@ snit::type ::map::track::entry {
 	return
     }
 
-    method PointsChanged {_ points} {
+    method PointsChanged {_ op args} {
 	debug.tklib/map/track/entry {}
 
-	# Compute geo locations from pixel positions, if not suppressed (See set)
+	# Apply the change reported by the poly line editor to the geo
+	# locations, if not suppressed (See set)
 	if {$myignore} return
 
-	set mygeos [map slippy point 2geo-list $myzoom $points]
+	switch -exact -- $op {
+	    clear {
+		set mygeos {}
+	    }
+	    append {
+		lappend mygeos [map slippy point 2geo $myzoom $args]
+	    }
+	    prepend {
+		set mygeos [linsert $mygeos 0 [map slippy point 2geo $myzoom $args]]
+	    }
+	    insert {
+		lassign $args index x y
+		set mygeos [linsert $mygeos $index [map slippy point 2geo $myzoom [list $x $y]]]
+	    }
+	    remove {
+		lassign $args index
+		set mygeos [lreplace $mygeos $index $index]
+	    }
+	    move {
+		lassign $args index x y
+		lset mygeos $index [map slippy point 2geo $myzoom [list $x $y]]
+	    }
+	}
 
 	# Report changes further, if requested
 	if {![llength $options(-on-track-change)]} return
