@@ -574,11 +574,7 @@ test datefield-6.2 {Up and Down change the day} -setup {
     destroy .df
 } -result {{02/29/2024 4} {03/01/2024 4} {02/27/2024 4}}
 
-test datefield-6.3 {plus and minus change the day} -constraints {
-    knownBug
-} -setup {
-    # With Tk 9 %K is "+" and "-" instead of "plus" and "minus", and
-    # the keys are refused as non-digits.
+test datefield-6.3 {plus and minus change the day} -setup {
     mkdf 12/31/2024 0
 } -body {
     list [keys plus] [keys minus minus]

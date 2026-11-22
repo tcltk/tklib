@@ -132,9 +132,11 @@ namespace eval ::datefield {
 	switch -exact -- $sym {
 	    "Down"	{return -code [Spin $w -1 "day"		continue]}
 	    "End"	{$w icursor 9;		return -code	break}
-	    "minus"	{return -code [Spin $w -1 "day"		break]}
+	    "minus"	-
+	    "-"		{return -code [Spin $w -1 "day"		break]}
 	    "Next"	{return -code [Spin $w -1 "month"	continue]}
-	    "plus"	{return -code [Spin $w 1 "day"		break]}
+	    "plus"	-
+	    "+"		{return -code [Spin $w 1 "day"		break]}
 	    "Prior"	{return -code [Spin $w 1 "month"	continue]}
 	    "Up"	{return -code [Spin $w 1 "day"		continue]}
 	    "BackSpace"	-
