@@ -167,20 +167,18 @@ test map::point-2.11 {file read: only the magic line} -setup {
     unset p
 } -result {}
 
-test map::point-2.12 {file write and read round trip} -constraints {
-    knownBug
-} -body {
-    # The code refers to an undefined variable "data" instead of "gdata".
+test map::point-2.12 {file write and read round trip} -body {
     set p [file join $::dataDir rt.points]
     map point file write $p {
 	{names {B A} geo {10 20} kind city}
 	{names C geo {-30.5 40.25} kind point}
     }
-    map point file read $p
+    # The order of the points in the file is not specified.
+    lsort [map point file read $p]
 } -cleanup {
     cleanData
     unset p
-} -result {{names {A B} geo {10 20} kind city} {names C geo {-30.5 40.25} kind point}}
+} -result {{names C geo {-30.5 40.25} kind point} {names {A B} geo {10 20} kind city}}
 
 # -------------------------------------------------------------------------
 # map::point::store::fs

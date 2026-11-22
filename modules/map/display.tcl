@@ -173,10 +173,10 @@ snit::widget ::map::display {
 	debug.tklib/map/display {}
 
 	if {$new <  0}       return
-	if {$new >= $levels} return
+	if {$new >= [$myprovider levels]} return
 
 	set myzoom $new
-	$self ZoomSet _
+	$self ZoomSet _ _
 	return
     }
 

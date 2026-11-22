@@ -155,7 +155,7 @@ proc ::map::point::file::write {path gdata} {
 
     puts $c tklib/geo/point
 
-    foreach point [lsort -dict -unique $data] {
+    foreach point [lsort -dict -unique $gdata] {
 	dict with point {}
 	# names, kind, geo
 
