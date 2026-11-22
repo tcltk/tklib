@@ -403,7 +403,7 @@ package:
 
 [example {
     package require shtmlview::shtmlview
-    package require mkdoc::mkdoc
+    package require mkdoc
 
     ::shtmlview::converter .tcl {Tcl+mkdoc files}   ::shtmlview::mkdoc
     ::shtmlview::converter .tm  {Tcl+mkdoc modules} ::shtmlview::mkdoc
@@ -411,7 +411,7 @@ package:
     proc ::shtmlview::mkdoc {url} {
 	close [file tempfile htmltemp .html]
 
-	mkdoc::mkdoc $url $htmltemp -html
+	mkdoc::mkdoc $url $htmltemp
 
 	if {[catch {
 	    open $htmltemp r

@@ -8,7 +8,11 @@
 ## Requirements - Viewer widget, and easy mkdoc conversion
 
 package require shtmlview::shtmlview
-package require mkdoc::mkdoc
+# Tcllib provides the mkdoc::mkdoc command in the package mkdoc; the
+# standalone mkdoc application provides the package mkdoc::mkdoc.
+if {[catch {package require mkdoc}]} {
+    package require mkdoc::mkdoc
+}
 
 # #############################################################
 ## Register the new converter
@@ -23,7 +27,8 @@ proc ::shtmlview::mkdoc {url} {
 
     close [file tempfile htmltemp .html]
 
-    mkdoc::mkdoc $url $htmltemp -html
+    # The output format is taken from the extension of the output file.
+    mkdoc::mkdoc $url $htmltemp
 
     if {[catch {
 	open $htmltemp r

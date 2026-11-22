@@ -201,9 +201,7 @@ test shtmlview-1.7 {destroying the widget} -setup {
     list [winfo exists .h] [info commands .h]
 } -result {0 {}}
 
-# Bug: the check whether shtmlview.tcl runs as an application reads ::argv
-# when ::argv0 exists, and fails if ::argv does not exist.
-test shtmlview-1.8 {loading the package when only argv0 exists} -constraints knownBug -setup {
+test shtmlview-1.8 {loading the package when only argv0 exists} -setup {
     interp create child
     child eval [list set auto_path $auto_path]
     child eval {set argv0 app.tcl; catch {unset argv}}
@@ -1413,9 +1411,7 @@ test shtmlview-11.1 {shtmlview::doctools renders doctools files} -constraints do
     destroyView
 } -result {0.1 1 0}
 
-# Bug: shtmlview::mkdoc requires the package mkdoc::mkdoc, but Tcllib
-# provides the mkdoc command in the package "mkdoc".
-test shtmlview-11.1.1 {shtmlview::mkdoc can be loaded with Tcllib's mkdoc} -constraints {mkdocPkg knownBug} -body {
+test shtmlview-11.1.1 {shtmlview::mkdoc can be loaded with Tcllib's mkdoc} -constraints mkdocPkg -body {
     package require shtmlview::mkdoc
 } -result 0.1
 

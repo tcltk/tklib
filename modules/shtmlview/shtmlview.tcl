@@ -98,7 +98,7 @@
 #* 252.227-7013 and FAR 52.227-19.
 
 
-if {[info exists argv0] && [lindex $argv 0] eq [info script]} {
+if {[info exists argv0] && [info exists argv] && [lindex $argv 0] eq [info script]} {
     lappend auto_path [file join [file dirname [info script]] .. libs]
 }
 

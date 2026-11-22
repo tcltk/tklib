@@ -7,7 +7,7 @@
 
 [moddesc   {Basic HTML and Markdown viewer widget}]
 [titledesc {shtmlview extension adding support for mkdoc markup}]
-[require mkdoc::mkdoc]
+[require mkdoc]
 [require shtmlview::shtmlview]
 
 [description]
