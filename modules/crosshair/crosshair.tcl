@@ -227,7 +227,7 @@ proc ::crosshair::bbox_add { w bbox } {
 
 proc ::crosshair::bbox_remove { token } {
     variable config
-    if {![regexp {^bbox([^/]+)/(\d+)$} -> w index]} {
+    if {![regexp {^bbox([^/]+)/(\d+)$} $token -> w index]} {
 	return -code error "Expected a bbox token, got \"$token\""
     }
     if { ![info exists config($w)] } {
@@ -236,7 +236,6 @@ proc ::crosshair::bbox_remove { token } {
     array set opts $config($w)
 
     # Replace chosen box with nothing -- cannot shrink in the middle, ids contain list index
-    incr index -1
     set newboxes [lreplace $opts(bbox) $index $index {}]
 
     # Remove empty boxes from the end of the list.

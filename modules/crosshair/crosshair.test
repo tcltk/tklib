@@ -694,10 +694,7 @@ test crosshair-6.2 {bbox_remove: not a token} -body {
 test crosshair-6.3 {bbox_remove: removing the only box removes the confinement} -setup {
     mkcanvas
     crosshair::crosshair .c
-} -constraints knownBug -body {
-    # bbox_remove matches its regexp against "->" instead of the
-    # token, so it rejects every token.  It also decrements the index
-    # taken from the token, which is already 0-based.
+} -body {
     set t [crosshair::bbox_add .c {100 50 200 150}]
     set res [list [crosshair::bbox_remove $t]]
     move .c 50 60
@@ -710,7 +707,7 @@ test crosshair-6.3 {bbox_remove: removing the only box removes the confinement} 
 test crosshair-6.4 {bbox_remove: other boxes remain active} -setup {
     mkcanvas
     crosshair::crosshair .c
-} -constraints knownBug -body {
+} -body {
     set t1 [crosshair::bbox_add .c {10 10 100 100}]
     set t2 [crosshair::bbox_add .c {150 50 250 150}]
     crosshair::bbox_remove $t1
@@ -726,7 +723,7 @@ test crosshair-6.4 {bbox_remove: other boxes remain active} -setup {
 test crosshair-6.5 {bbox_remove: removing the last added box} -setup {
     mkcanvas
     crosshair::crosshair .c
-} -constraints knownBug -body {
+} -body {
     set t1 [crosshair::bbox_add .c {10 10 100 100}]
     set t2 [crosshair::bbox_add .c {150 50 250 150}]
     crosshair::bbox_remove $t2
@@ -742,7 +739,7 @@ test crosshair-6.5 {bbox_remove: removing the last added box} -setup {
 test crosshair-6.6 {bbox_remove: crosshairs removed from the canvas} -setup {
     mkcanvas
     crosshair::crosshair .c
-} -constraints knownBug -body {
+} -body {
     set t [crosshair::bbox_add .c {100 50 200 150}]
     crosshair::off .c
     crosshair::bbox_remove $t
