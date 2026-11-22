@@ -78,11 +78,13 @@ oo::class create ::menubar {
 		variable notebookVals
 
 		# create font used by labelseperator
-		menu .temp
-		set font_def [font actual [.temp cget -font]]
-		set font_def [dict replace ${font_def} -weight bold -slant italic]
-		font create sfont {*}${font_def}
-		destroy .temp
+		if { "sfont" ni [font names] } {
+			menu .temp
+			set font_def [font actual [.temp cget -font]]
+			set font_def [dict replace ${font_def} -weight bold -slant italic]
+			font create sfont {*}${font_def}
+			destroy .temp
+		}
 
 		set next_id 0
 
@@ -835,10 +837,10 @@ oo::class create ::menubar {
 			my InstallSubTree ${wtop} ${parent_path} ${node}
 		}
 		"radiobutton" {
-			set varname [${mtree} key.get [${mtree} parent ${node}] +variable]
+			set varname [dict get ${installs} ${wtop} +btnvars [${mtree} parent ${node}]]
 			set name [${mtree} key.get ${node} -label]
 			${parent_path} add radiobutton -label ${name} -variable ${varname}
-			my RenderTag ${wtop} ${node}
+			my RenderTag ${wtop} ${node} ${varname}
 		}
 		"commandgroup" {
 			${parent_path} add separator

@@ -27,11 +27,7 @@ set mbBgErrors {}
 set mbOldBgHandler [interp bgerror {}]
 interp bgerror {} [list apply {{msg opts} {lappend ::mbBgErrors $msg}}]
 
-# Each menubar instance creates the named font "sfont" and never deletes
-# it, so a second instance cannot be created (see menubar-1.4).  Delete
-# the font before creating a new instance.
 proc newMenubar {args} {
-    catch {font delete sfont}
     menubar new {*}$args
 }
 
@@ -42,7 +38,6 @@ proc cleanupMenubar {} {
     if {[info exists ::mb] && [info object isa object $::mb]} {
 	$::mb destroy
     }
-    catch {font delete sfont}
     unset -nocomplain ::mb ::cb ::m
     set ::mbBgErrors {}
     update
@@ -140,8 +135,7 @@ test menubar-1.3 {menubar new with options} -body {
     cleanupMenubar
 } -result {tan groove 4 black}
 
-test menubar-1.4 {menubar new: several instances} -constraints knownBug -body {
-    # The constructor creates the named font "sfont" unconditionally.
+test menubar-1.4 {menubar new: several instances} -body {
     set mb [newMenubar]
     set mb2 [menubar new]
     $mb2 destroy
@@ -274,9 +268,7 @@ test menubar-3.7 {install: initial values of checkbuttons} -body {
     unset e
 } -result {1 0}
 
-test menubar-3.8 {install: initial value of a radiobutton group} -constraints knownBug -body {
-    # The radiobutton entries get an empty -variable until the group is
-    # configured, so all groups share one variable.
+test menubar-3.8 {install: initial value of a radiobutton group} -body {
     sampleMenubar
     set e [submenu $m Edit]
     list [set [$e entrycget Red -variable]] \
@@ -296,7 +288,7 @@ test menubar-3.17 {install: initial value of a configured radiobutton group} -bo
     unset e
 } -result {Green 1}
 
-test menubar-3.18 {install: radiobutton groups are independent} -constraints knownBug -body {
+test menubar-3.18 {install: radiobutton groups are independent} -body {
     set mb [newMenubar]
     $mb define {
 	Edit M:edit {
@@ -1191,8 +1183,7 @@ test menubar-11.2 {notebook: values are saved and restored per tab} -body {
     unset v wrap r
 } -result {0 1 0}
 
-test menubar-11.5 {notebook: tab scope radiobuttons} -constraints knownBug -body {
-    # The radiobutton entries of a tab scope group get no variable.
+test menubar-11.5 {notebook: tab scope radiobuttons} -body {
     notebookMenubar
     set v [submenu $m View]
     $v invoke Large
