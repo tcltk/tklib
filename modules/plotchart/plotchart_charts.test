@@ -645,12 +645,9 @@ test Plotchart-304.5 {polarplot: invalid radius data} -setup {
     cleanupPlot
 } -result {1 {Step size can not be zero or negative} 1 {Maximum radius can not be zero or negative}}
 
-test Plotchart-304.6 {polarplot: documented name createPolarPlot} -constraints {
-    knownBug
-} -setup {
+test Plotchart-304.6 {polarplot: documented name createPolarPlot} -setup {
     mkCanvas 400 400
 } -body {
-    # The command is called createPolarplot
     set p [::Plotchart::createPolarPlot .c {3.0 1.0}]
     string match polarplot_* $p
 } -cleanup {
@@ -748,12 +745,9 @@ test Plotchart-305.5 {windrose: default 16 sectors} -setup {
     cleanupPlot
 } -match glob -output * -result {16 11.25}
 
-test Plotchart-305.6 {windrose: documented name createWindrose} -constraints {
-    knownBug
-} -setup {
+test Plotchart-305.6 {windrose: documented name createWindrose} -setup {
     mkCanvas 400 400
 } -body {
-    # The command is called createWindRose
     set p [::Plotchart::createWindrose .c {30 10} 4]
     string match windrose_* $p
 } -cleanup {
@@ -1238,12 +1232,9 @@ test Plotchart-310.1 {boxplot: horizontal (default), labels on the y-axis} -setu
     cleanupPlot
 } -result {1 {A B C} {0 2 4 6 8 10} {2.5 7.5} 2.0}
 
-test Plotchart-310.2 {boxplot: vertical, labels on the x-axis} -constraints {
-    knownBug
-} -setup {
+test Plotchart-310.2 {boxplot: vertical, labels on the x-axis} -setup {
     mkCanvas
 } -body {
-    # Fails with: wrong # args: should be "DrawXlabels w xlabels noseries arguments"
     set p [::Plotchart::createBoxplot .c {A B C} {0 10 2} vertical]
     $p plot s C {1 2 3 4 5 6 7 8 9}
     set rect [items {data_s type=rectangle}]

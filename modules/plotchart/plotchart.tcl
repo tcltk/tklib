@@ -26,7 +26,7 @@ namespace eval ::Plotchart {
                     coords3DToPixel polarToPixel \
                     pixelToCoords pixelToIndex \
                     determineScale determineScaleFromList \
-                    createXYPlot createPolarplot createPiechart \
+                    createXYPlot createPolarplot createPolarPlot createPiechart \
                     createBarchart createHorizontalBarchart \
                     createTimechart createStripchart \
                     createIsometricPlot create3DPlot \
@@ -35,10 +35,10 @@ namespace eval ::Plotchart {
                     createTXPlot createRightAxis \
                     create3DRibbonChart create3DRibbonPlot \
                     createXLogYPlot createLogXYPlot createLogXLogYPlot \
-                    createWindrose createTargetDiagram createPerformanceProfile \
+                    createWindrose createWindRose createTargetDiagram createPerformanceProfile \
                     createTableChart createTitleBar createTaylorDiagram \
                     createSpiralPie createTernaryDiagram createStatusTimeline \
-                    createCirclePlot createHeatmap createDendrogram \
+                    createCirclePlot createCircleplot createHeatmap createDendrogram \
                     plotstyle plotconfig plotpack plotmethod clearcanvas eraseplot
 
    #
@@ -1806,6 +1806,11 @@ proc ::Plotchart::createPolarplot { c radius_data args } {
    return $newchart
 }
 
+# createPolarPlot --
+#    Alias of createPolarplot (the name used in the documentation)
+#
+interp alias {} ::Plotchart::createPolarPlot {} ::Plotchart::createPolarplot
+
 # createBarchart --
 #    Create a command for drawing a barchart with vertical bars
 # Arguments:
@@ -2052,7 +2057,7 @@ proc ::Plotchart::createBoxplot { c xdata ydata {orientation horizontal} args} {
       DrawYlabels      $w $ydata 1
    } else {
       DrawYaxis        $w $ymin  $ymax  $ydelt
-      DrawXlabels      $w $xdata 1
+      DrawXlabels      $w $xdata 1 {}
    }
    DrawMask         $w
    DefaultLegend    $w
@@ -2816,6 +2821,11 @@ proc ::Plotchart::createWindRose { c radius_data {sectors 16} args} {
     return $newchart
 }
 
+# createWindrose --
+#    Alias of createWindRose (the name used in the documentation)
+#
+interp alias {} ::Plotchart::createWindrose {} ::Plotchart::createWindRose
+
 # createTargetDiagram --
 #    Create a command for drawing a target diagram
 # Arguments:
@@ -3027,9 +3037,9 @@ proc ::Plotchart::createTaylorDiagram { c radius_data args} {
     #
     CopyScalingData $w $c
 
-    .c lower limits
-    .c raise limit_labels
-    .c lower reference
+    $w lower limits
+    $w raise limit_labels
+    $w lower reference
 
     return $newchart
 }
@@ -3343,6 +3353,11 @@ proc ::Plotchart::createCirclePlot { c labels args } {
 
    return $newchart
 }
+
+# createCircleplot --
+#    Alias of createCirclePlot (the name used in the documentation)
+#
+interp alias {} ::Plotchart::createCircleplot {} ::Plotchart::createCirclePlot
 
 # createHeatmap --
 #    Create a command for drawing a heatmap

@@ -3052,6 +3052,22 @@ test Plotchart-124.2 {clearcanvas: start afresh} -setup {
 } -result {1 6}
 
 # -------------------------------------------------------------------------
+# Exported commands
+
+test Plotchart-125.1 {namespace import: documented and implemented names} -setup {
+    namespace eval ::plotchartImport {namespace import ::Plotchart::*}
+} -body {
+    lmap c {
+	createPolarPlot createPolarplot createWindrose createWindRose
+	createCircleplot createCirclePlot
+    } {
+	llength [info commands ::plotchartImport::$c]
+    }
+} -cleanup {
+    namespace delete ::plotchartImport
+} -result {1 1 1 1 1 1}
+
+# -------------------------------------------------------------------------
 interp bgerror {} $::oldBgError
 restoreRoot
 test Plotchart-199.1 {no background errors} -body {

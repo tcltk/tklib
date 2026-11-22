@@ -277,8 +277,8 @@ proc ::Plotchart::DrawCircleOutline { w labels } {
         foreach {x y}   [PolarToPixelPriv $w 1.0  $angle] {break}
         foreach {xt yt} [PolarToPixelPriv $w 1.05 $angle] {break}
 
-        set dotId  [.c create oval [expr {$x - 3}] [expr {$y - 3}] [expr {$x + 3}] [expr {$y + 3}] -fill black -tag circle]
-        set textId [.c create text $xt $yt -text [lindex $labels $n] -anchor $anchor -angle $textAngle -tag circle]
+        set dotId  [$w create oval [expr {$x - 3}] [expr {$y - 3}] [expr {$x + 3}] [expr {$y + 3}] -fill black -tag circle]
+        set textId [$w create text $xt $yt -text [lindex $labels $n] -anchor $anchor -angle $textAngle -tag circle]
 
         lappend data_series($w,dotIds)  $dotId
         lappend data_series($w,textIds) $textId
@@ -580,7 +580,7 @@ proc ::Plotchart::DrawHeatmapCells { w selection args } {
 proc ::Plotchart::HeatmapColour { startcolour endcolour startvalue endvalue value } {
 
     set value  [expr {min( $endvalue, max( $startvalue, $value))}]
-    set factor [expr {$value / double($endvalue - $startvalue)}]
+    set factor [expr {($value - $startvalue) / double($endvalue - $startvalue)}]
 
     set colour [list]
     foreach b $startcolour e $endcolour {

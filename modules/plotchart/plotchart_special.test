@@ -623,12 +623,9 @@ test Plotchart-405.5 {createTaylorDiagram: step size zero} -setup {
     cleanupPlot
 } -returnCodes error -result {Step size can not be zero}
 
-test Plotchart-405.6 {createTaylorDiagram: canvas not called .c} -constraints {
-    knownBug
-} -setup {
+test Plotchart-405.6 {createTaylorDiagram: canvas not called .c} -setup {
     mkCanvas 400 400 .c2
 } -body {
-    # Fails with: invalid command name ".c"
     set p [::Plotchart::createTaylorDiagram .c2 {1.0 0.25}]
     llength [items limits .c2]
 } -cleanup {
@@ -689,12 +686,9 @@ test Plotchart-406.4 {heatmap scale values: values outside are clipped} -setup {
     cleanupPlot
 } -result [list #ffffffff0000 #7fff7fff7fff #00000000ffff]
 
-test Plotchart-406.5 {heatmap scale values: minimum not zero} -constraints {
-    knownBug
-} -setup {
+test Plotchart-406.5 {heatmap scale values: minimum not zero} -setup {
     mkCanvas 400 300
 } -body {
-    # The colour is computed from value/(max-min) instead of (value-min)/(max-min)
     set p [::Plotchart::createHeatmap .c {r1} {c1 c2 c3}]
     $p scale values 10 20
     $p plot row r1 {10 15 20}
@@ -794,24 +788,18 @@ test Plotchart-407.5 {circle plot modify: unknown label} -setup {
     cleanupPlot
 } -returnCodes error -result {Unknown label -- x}
 
-test Plotchart-407.6 {circle plot: documented name createCircleplot} -constraints {
-    knownBug
-} -setup {
+test Plotchart-407.6 {circle plot: documented name createCircleplot} -setup {
     mkCanvas 400 400
 } -body {
-    # The command is called createCirclePlot
     set p [::Plotchart::createCircleplot .c {a b c}]
     string match circle_* $p
 } -cleanup {
     cleanupPlot
 } -result 1
 
-test Plotchart-407.7 {circle plot: canvas not called .c} -constraints {
-    knownBug
-} -setup {
+test Plotchart-407.7 {circle plot: canvas not called .c} -setup {
     mkCanvas 400 400 .c2
 } -body {
-    # Fails with: invalid command name ".c"
     set p [::Plotchart::createCirclePlot .c2 {a b c}]
     llength [items circle .c2]
 } -cleanup {
