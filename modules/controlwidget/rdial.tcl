@@ -184,7 +184,7 @@ snit::widget controlwidget::rdial {
             if { [info exists ::$options(-variable)] } {
                 set options(-value) [set ::$options(-variable)]
             } else {
-                set ::options(-variable) [expr {$options(-value)*$options(-scale)}]
+                set ::$options(-variable) [expr {$options(-value)*$options(-scale)}]
             }
 
             trace add variable ::$options(-variable) write [mymethod variableChanged]
@@ -347,6 +347,12 @@ snit::widget controlwidget::rdial {
     method rdupdate {w diff} {
         # calculate "new" calue
         set options(-value) [expr {$options(-value)+$diff*$options(-scale)}]
+
+        # set variable if defined (this updates the dial too)...
+        if {$options(-variable) ne ""} {
+            set ::$options(-variable) $options(-value)
+            return
+        }
 
         # call callback if defined...
         if {$options(-callback) ne ""} {

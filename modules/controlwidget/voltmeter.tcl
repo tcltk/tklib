@@ -63,6 +63,7 @@ snit::widget controlwidget::voltmeter {
     option -indexid               -default         {}
 
     option -variable              -default         {}         -configuremethod VariableName
+    option -value                 -default        0.0        -configuremethod SetValue
     option -min                   -default        0.0
     option -max                   -default      100.0
     option -labelcolor            -default        black
@@ -163,8 +164,10 @@ snit::widget controlwidget::voltmeter {
         bind $win.c <ButtonRelease>  [list $self needleRelease %W]
         bind $win.c <Motion>         [list $self needleMotion %W %x %y]
 
-        set value 0
-        $self drawline $win $value
+        if {$options(-variable) ne "" && [info exists ::$options(-variable)]} {
+            set options(-value) [set ::$options(-variable)]
+        }
+        $self drawline $win $options(-value)
     }
 
     method destructor {} {
@@ -181,7 +184,7 @@ snit::widget controlwidget::voltmeter {
             set ::$options(-variable) $newValue   ;#! This updates the dial too
         } else {
             set options(-value) $newValue
-            $self draw $win.c $options(-value)
+            $self drawline $win $options(-value)
         }
     }
     method get {} {
@@ -191,6 +194,18 @@ snit::widget controlwidget::voltmeter {
     #
     # private methods --
     #
+
+    method SetValue {option value} {
+
+        # Could be still constructing in which case
+        # $win.c does not exist:
+
+        if {![winfo exists $win.c]} {
+            set options(-value) $value
+            return
+        }
+        $self set $value
+    }
 
     method VariableName {option name} {
 

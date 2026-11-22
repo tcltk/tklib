@@ -811,7 +811,7 @@ test controlwidget-6.6 {voltmeter: set with -variable} -setup {
     unset ::cwvar
 } -result {40 40}
 
-test controlwidget-6.7 {voltmeter: get before the value is set} -constraints knownBug -setup {
+test controlwidget-6.7 {voltmeter: get before the value is set} -setup {
     set ::cwvar 20
 } -body {
     controlwidget::voltmeter .v -width 200 -height 100 -variable ::cwvar
@@ -821,7 +821,7 @@ test controlwidget-6.7 {voltmeter: get before the value is set} -constraints kno
     unset ::cwvar
 } -result 20
 
-test controlwidget-6.8 {voltmeter: set and get without a variable} -constraints knownBug -body {
+test controlwidget-6.8 {voltmeter: set and get without a variable} -body {
     controlwidget::voltmeter .v -width 200 -height 100
     .v set 30
     .v get
@@ -829,13 +829,22 @@ test controlwidget-6.8 {voltmeter: set and get without a variable} -constraints 
     cleanupWidgets
 } -result 30
 
-test controlwidget-6.9 {voltmeter: -value} -constraints knownBug -body {
-    # The documented -value option does not exist.
+test controlwidget-6.9 {voltmeter: -value} -body {
     controlwidget::voltmeter .v -width 200 -height 100 -value 30
     .v get
 } -cleanup {
     cleanupWidgets
 } -result 30
+
+test controlwidget-6.16 {voltmeter: configure -value moves the needle} -body {
+    controlwidget::voltmeter .v -width 200 -height 100
+    .v configure -value 50
+    set c [.v.c coords [.v cget -indexid]]
+    list [.v get] [.v cget -value] [expr {abs([lindex $c 2] - 100) < 1}]
+} -cleanup {
+    cleanupWidgets
+    unset c
+} -result {50 50 1}
 
 test controlwidget-6.10 {voltmeter: -min and -max} -setup {
     set ::cwvar 0
@@ -862,10 +871,9 @@ test controlwidget-6.11 {voltmeter: colors} -setup {
     unset ::cwvar
 } -result {red yellow sunken 3}
 
-test controlwidget-6.14 {voltmeter: initial needle position from the variable} -constraints knownBug -setup {
+test controlwidget-6.14 {voltmeter: initial needle position from the variable} -setup {
     set ::cwvar 50
 } -body {
-    # The needle is drawn at 0 until the variable is changed.
     controlwidget::voltmeter .v -width 200 -height 100 -variable ::cwvar
     set c1 [.v.c coords [.v cget -indexid]]
     set ::cwvar 50
@@ -967,7 +975,7 @@ test controlwidget-7.5 {tachometer: needle angle with integer -min, -max and val
     unset ::cwvar c1
 } -result 1
 
-test controlwidget-7.6 {tachometer: set and get without a variable} -constraints knownBug -body {
+test controlwidget-7.6 {tachometer: set and get without a variable} -body {
     controlwidget::tachometer .t -width 200 -height 200
     .t set 30
     .t get
@@ -975,13 +983,34 @@ test controlwidget-7.6 {tachometer: set and get without a variable} -constraints
     cleanupWidgets
 } -result 30
 
-test controlwidget-7.7 {tachometer: -value} -constraints knownBug -body {
-    # The documented -value option does not exist.
+test controlwidget-7.7 {tachometer: -value} -body {
     controlwidget::tachometer .t -width 200 -height 200 -value 30
     .t get
 } -cleanup {
     cleanupWidgets
 } -result 30
+
+test controlwidget-7.16 {tachometer: get before the value is set} -setup {
+    set ::cwvar 20
+} -body {
+    controlwidget::tachometer .t -width 200 -height 200 -variable ::cwvar
+    .t get
+} -cleanup {
+    cleanupWidgets
+    unset ::cwvar
+} -result 20
+
+test controlwidget-7.17 {tachometer: configure -value moves the needle} -body {
+    controlwidget::tachometer .t -width 200 -height 200
+    .t configure -value 50
+    set c [.t.c coords [.t cget -indexid]]
+    # at the middle value the needle points straight up
+    list [.t get] [.t cget -value] [expr {abs([lindex $c 2] - 100) < 1}] \
+	[expr {[lindex $c 3] < 100}]
+} -cleanup {
+    cleanupWidgets
+    unset c
+} -result {50 50 1 1}
 
 test controlwidget-7.8 {tachometer: -pincolor and -dialcolor} -setup {
     set ::cwvar 0
@@ -1028,10 +1057,9 @@ test controlwidget-7.10 {tachometer: no danger band above -max} -body {
     unset res
 } -result {}
 
-test controlwidget-7.13 {tachometer: initial needle position from the variable} -constraints knownBug -setup {
+test controlwidget-7.13 {tachometer: initial needle position from the variable} -setup {
     set ::cwvar 50
 } -body {
-    # The needle is drawn at 0 until the variable is changed.
     controlwidget::tachometer .t -width 200 -height 200 -variable ::cwvar
     set c1 [.t.c coords [.t cget -indexid]]
     set ::cwvar 50
@@ -1324,10 +1352,9 @@ test controlwidget-8.24 {rdial: -variable, callback on variable change} -setup {
     unset ::cwvar ::cwcb
 } -result 7.0
 
-test controlwidget-8.25 {rdial: -variable that does not exist yet} -constraints knownBug -setup {
+test controlwidget-8.25 {rdial: -variable that does not exist yet} -setup {
     unset -nocomplain ::cwvar
 } -body {
-    # The value is assigned to ::options(-variable) instead.
     controlwidget::rdial .d -width 100 -variable ::cwvar -value 3
     list [info exists ::cwvar] [array exists ::options]
 } -cleanup {
@@ -1335,7 +1362,7 @@ test controlwidget-8.25 {rdial: -variable that does not exist yet} -constraints 
     unset -nocomplain ::cwvar ::options
 } -result {1 0}
 
-test controlwidget-8.26 {rdial: dragging changes the variable} -constraints knownBug -setup {
+test controlwidget-8.26 {rdial: dragging changes the variable} -setup {
     set ::cwvar 0
 } -body {
     controlwidget::rdial .d -width 100 -variable ::cwvar
@@ -1349,6 +1376,20 @@ test controlwidget-8.26 {rdial: dragging changes the variable} -constraints know
     cleanupWidgets
     unset ::cwvar
 } -result {20.0 20.0}
+
+test controlwidget-8.29 {rdial: mouse wheel changes the variable} -constraints x11 -setup {
+    set ::cwvar 0
+    set ::cwcb {}
+} -body {
+    controlwidget::rdial .d -width 100 -variable ::cwvar -callback {lappend ::cwcb}
+    pack .d
+    update
+    event generate .d.c <ButtonPress-4>
+    list [.d get] $::cwvar $::cwcb
+} -cleanup {
+    cleanupWidgets
+    unset ::cwvar ::cwcb
+} -result {2.0 2.0 2.0}
 
 test controlwidget-8.27 {rdial: configure -variable} -setup {
     set ::cwvar 5
@@ -1600,7 +1641,7 @@ test controlwidget-10.8 {radioMatrix: -command} -setup {
     unset ::cwcmd
 } -result {c a}
 
-test controlwidget-10.9 {radioMatrix: -variable} -constraints knownBug -setup {
+test controlwidget-10.9 {radioMatrix: -variable} -setup {
     set ::cwvar b
 } -body {
     controlwidget::radioMatrix .r -values {a b c} -rows 1 -variable ::cwvar

@@ -121,7 +121,7 @@ snit::widget  ::controlwidget::radioMatrix {
 
         set labelvar [$win.label cget -textvariable]
         if {$labelvar ne ""} {
-            $self Set [set ::$labelvar]
+            $self set [set ::$labelvar]
         }
         bindDown $win $win
     }

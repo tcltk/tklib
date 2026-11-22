@@ -64,6 +64,7 @@ snit::widget controlwidget::tachometer {
     option -resolution     -default 1
     option -showvalue      -default 1
     option -variable       -default {}      -configuremethod VariableName
+    option -value          -default 0.0     -configuremethod SetValue
 
     option -min            -default 0.0
     option -max            -default 100.0
@@ -195,8 +196,10 @@ snit::widget controlwidget::tachometer {
         rivet $win.c 10 [expr {$height-10}]
         rivet $win.c [expr {$width-10}] [expr {$height-10}]
 
-        set value 0
-        $self drawline $win $value
+        if {$options(-variable) ne "" && [info exists ::$options(-variable)]} {
+            set options(-value) [set ::$options(-variable)]
+        }
+        $self drawline $win $options(-value)
     }
 
     method destructor { widget } {
@@ -213,7 +216,7 @@ snit::widget controlwidget::tachometer {
             set ::$options(-variable) $newValue   ;#! This updates the dial too
         } else {
             set options(-value) $newValue
-            $self draw $win.c $options(-value)
+            $self drawline $win $options(-value)
         }
     }
 
@@ -224,6 +227,18 @@ snit::widget controlwidget::tachometer {
     #
     # private methods --
     #
+
+    method SetValue {option value} {
+
+        # Could be still constructing in which case
+        # $win.c does not exist:
+
+        if {![winfo exists $win.c]} {
+            set options(-value) $value
+            return
+        }
+        $self set $value
+    }
 
     method VariableName {option name} {
 
