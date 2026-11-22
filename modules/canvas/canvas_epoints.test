@@ -138,24 +138,18 @@ test canvas::edit::points-2.5 {create: default options} -setup mkCanvas -body {
 	[E cget -drag-point]
 } -cleanup {cleanup E} -result {POINT SkyBlue2 red 3 oval {} {} 3}
 
-test canvas::edit::points-2.6 {destroy: result, command removed} -constraints {
-    knownBug
-} -setup mkCanvas -body {
+test canvas::edit::points-2.6 {destroy: result, command removed} -setup mkCanvas -body {
     ::canvas::edit points E .c
     list [E destroy] [info commands ::E]
 } -cleanup {cleanup E} -result {{} {}}
 
-test canvas::edit::points-2.7 {destroy: after enable} -constraints {
-    knownBug
-} -setup mkCanvas -body {
+test canvas::edit::points-2.7 {destroy: after enable} -setup mkCanvas -body {
     ::canvas::edit points E .c
     E enable
     list [E destroy] [info commands ::E]
 } -cleanup {cleanup E} -result {{} {}}
 
-test canvas::edit::points-2.8 {destroy: keeps point markers and canvas} -constraints {
-    knownBug
-} -setup mkCanvas -body {
+test canvas::edit::points-2.8 {destroy: keeps point markers and canvas} -setup mkCanvas -body {
     ::canvas::edit points E .c
     E add 10 20
     E destroy
@@ -249,9 +243,7 @@ test canvas::edit::points-3.7 {enable again after disable} -setup mkCanvas -body
     list [E active] [points]
 } -cleanup {cleanup E} -result {1 {{100.0 100.0}}}
 
-test canvas::edit::points-3.8 {enable/disable partial, then disable all} -constraints {
-    knownBug
-} -setup mkCanvas -body {
+test canvas::edit::points-3.8 {enable/disable partial, then disable all} -setup mkCanvas -body {
     ::canvas::edit points E .c
     E enable drag
     E enable edit

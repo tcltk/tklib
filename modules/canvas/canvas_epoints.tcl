@@ -146,7 +146,7 @@ snit::type ::canvas::edit::points {
 
     destructor {
 	if {![winfo exists $mycanvas]} return
-	$self Bindings Remove {*}$mybound
+	$self Bindings Remove $mybound
 	return
     }
 
@@ -214,12 +214,14 @@ snit::type ::canvas::edit::points {
 
     method {Bindings Add} {parts} {
 	foreach part $parts {
+	    if {$part in $mybound} continue
 	    switch -exact -- $part {
 		drag { $self DragAdd }
 		edit { $self EditAdd }
+		default continue
 	    }
+	    lappend mybound $part
 	}
-	set mybound $parts
 	return
     }
 
