@@ -10,7 +10,6 @@
 package require Tcl 8.4-       ; # No {*}-expansion :(
 package require Tk
 package require snit           ; #
-package require uevent::onidle ; # Some defered actions.
 
 # ### ### ### ######### ######### #########
 ##
@@ -27,14 +26,17 @@ snit::widget ::canvas::zoom {
     option -command  -default {}       -configuremethod O-command
 
     constructor {args} {
-	install reconfigure using uevent::onidle ${selfns}::reconfigure \
-	    [mymethod Reconfigure]
-
         set options(-variable) [myvar myzoomlevel] ;# Default value
 	$self configurelist $args
 
 	# Force redraw, the options may not have triggered it.
-	$reconfigure request
+	$self Request
+	return
+    }
+
+    destructor {
+	# Cancel a pending redraw, it would run after the widget is gone.
+	after cancel $myrequest
 	return
     }
 
@@ -45,7 +47,7 @@ snit::widget ::canvas::zoom {
     method O-orient {o v} {
 	if {$options($o) eq $v} return
 	set  options($o) $v
-	$reconfigure request
+	$self Request
 	return
     }
 
@@ -57,7 +59,7 @@ snit::widget ::canvas::zoom {
         }
 	if {$options($o) == $v} return
 	set  options($o) $v
-	$reconfigure request
+	$self Request
 	return
     }
 
@@ -69,7 +71,7 @@ snit::widget ::canvas::zoom {
 
         if {$options($o) == $v} return
         set options($o) $v
-        $reconfigure request
+        $self Request
 	return
     }
 
@@ -81,7 +83,21 @@ snit::widget ::canvas::zoom {
 
     # ### ### ### ######### ######### #########
 
-    component reconfigure
+    # Request a redraw when idle; several requests are merged into one.
+    method Request {} {
+	if {$myrequest ne {}} return
+	set myrequest [after idle [mymethod RunRequest]]
+	return
+    }
+
+    method RunRequest {} {
+	set myrequest {}
+	$self Reconfigure
+	return
+    }
+
+    variable myrequest {} ; # Id of the pending redraw, if any
+
     method Reconfigure {} {
 	# (Re)generate the user interface.
 

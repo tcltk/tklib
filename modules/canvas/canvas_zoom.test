@@ -360,11 +360,7 @@ test canvas::zoom-7.1 {buttons have the plus and minus images} -setup mkZoom -bo
     list [.z.z.plus cget -image] [.z.z.minus cget -image]
 } -cleanup cleanZoom -result {::canvas::zoom::plus ::canvas::zoom::minus}
 
-test canvas::zoom-7.2 {destroy right after creation} -constraints {
-    knownBug
-} -body {
-    # The pending idle redraw is not cancelled on destruction and fails
-    # in the background.
+test canvas::zoom-7.2 {destroy right after creation} -body {
     canvas::zoom .z
     destroy .z
     update
