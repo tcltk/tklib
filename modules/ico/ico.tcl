@@ -436,6 +436,7 @@ proc ::ico::EXEtoICO {exeFile {icoDir {}}} {
     foreach group $RES($file,group,names) {
         set dir  {}
         set data {}
+        set fix  {}
         foreach icon $RES($file,group,$group,members) {
             seek $fh $RES($file,icon,$icon,offset) start
 	    set ico $RES($file,icon,$icon,data)
@@ -671,6 +672,7 @@ proc ::ico::getXORFromColors {bpp colors} {
 		binary scan $a$b$c$d$e$f$g$h bbbbbbbb h g f e d c b a
 		append xor [binary format b8 $a$b$c$d$e$f$g$h]
 	    }
+	    append xor [string repeat \0 [expr {(4 - [string length $xor] % 4) % 4}]]
 	}
     } elseif {$bpp == 4} {
 	foreach line $colors {
@@ -680,6 +682,7 @@ proc ::ico::getXORFromColors {bpp colors} {
 		binary scan $a$b b4b4 b a
 		append xor [binary format b8 $a$b]
 	    }
+	    append xor [string repeat \0 [expr {(4 - [string length $xor] % 4) % 4}]]
 	}
     } elseif {$bpp == 8} {
 	foreach line $colors {
@@ -687,6 +690,7 @@ proc ::ico::getXORFromColors {bpp colors} {
 		if {$x == ""} {set x 0}
 		append xor [binary format c $x]
 	    }
+	    append xor [string repeat \0 [expr {(4 - [string length $xor] % 4) % 4}]]
 	}
     } elseif {$bpp == 24} {
 	foreach line $colors {
@@ -699,6 +703,7 @@ proc ::ico::getXORFromColors {bpp colors} {
 		    }
 		}
 	    }
+	    append xor [string repeat \0 [expr {(4 - [string length $xor] % 4) % 4}]]
 	}
     } elseif {$bpp == 32} {
 	foreach line $colors {
@@ -712,6 +717,7 @@ proc ::ico::getXORFromColors {bpp colors} {
 		    }
 		}
 	    }
+	    append xor [string repeat \0 [expr {(4 - [string length $xor] % 4) % 4}]]
 	}
     }
     return $xor
@@ -769,10 +775,21 @@ proc ::ico::getPaletteFromColors {colors} {
 # calculate byte size of an icon.
 # often passed $w twice because $h is double $w in the binary data
 proc ::ico::calcSize {w h bpp {offset 0}} {
-    set s [expr {int(($w*$h) * ($bpp/8.0)) +
+    set s [expr {(($w*$bpp + 31) / 32) * 4 * $h +
 		 ((($w*$h) + ($h*(($w==24) ? 8 : ($w%32))))/8) + $offset}]
     if {$bpp <= 8} { set s [expr {$s + (1 << ($bpp + 2))}] }
     return $s
+}
+
+# remove the padding of the rows of bitmap data to a multiple of 32 bits
+proc ::ico::unpadRows {data w h bpp} {
+    set bits {}
+    set row [expr {(($w * $bpp + 31) / 32) * 4}]
+    for {set i 0} {$i < $row * $h} {incr i $row} {
+	binary scan [string range $data $i [expr {$i + $row - 1}]] B* tmp
+	append bits [string range $tmp 0 [expr {$w * $bpp - 1}]]
+    }
+    return [binary format B* $bits]
 }
 
 # read a Device Independent Bitmap from the current offset, return:
@@ -794,7 +811,7 @@ proc ::ico::readDIB {fh} {
 	return -code error "unsupported color depth: $bpp"
     }
 
-    set xor  [read $fh [expr {int(($w * $h) * ($bpp / 8.0))}]]
+    set xor  [unpadRows [read $fh [expr {(($w * $bpp + 31) / 32) * 4 * $h}]] $w $h $bpp]
     set and1 [read $fh [expr {(($w * $h) + ($h * (($w == 24) ? 8 : ($w % 32)))) / 8}]]
 
     set and {}
@@ -834,8 +851,8 @@ proc ::ico::readDIBFromData {data loc} {
     }
 
     # Use -1 to account for string range inclusiveness
-    set end  [expr {$cnt + int(($w * $h) * ($bpp / 8.0)) - 1}]
-    set xor  [string range $data $cnt $end]
+    set end  [expr {$cnt + (($w * $bpp + 31) / 32) * 4 * $h - 1}]
+    set xor  [unpadRows [string range $data $cnt $end] $w $h $bpp]
     set and1 [string range $data [expr {$end + 1}] \
 		  [expr {$end + ((($w * $h) + ($h * (($w == 24) ? 8 : ($w % 32)))) / 8) - 1}]]
 
@@ -966,7 +983,7 @@ proc ::ico::getIconMembersICODATA {data} {
 # as tuples {name width height bpp}. Called by [iconMembers]
 proc ::ico::getIconMembersBMP {file {name 0}} {
     if {$name ne "0"} { return -code error "no icon \"$name\"" }
-    set fh [open $file]
+    set fh [open $file rb]
     if {[read $fh 2] != "BM"} { close $fh; return -code error "not a BMP file" }
     seek $fh 14 start
     binary scan [read $fh 16] x4iix2s w h bpp
@@ -1036,7 +1053,7 @@ proc ::ico::getRawIconDataICODATA {data name} {
 #	{width height depth palette xor_mask and_mask}
 proc ::ico::getRawIconDataBMP {file {name 1}} {
     if {$name ne "1"} {return -code error "No icon \"$name\""}
-    set fh [open $file]
+    set fh [open $file rb]
     if {[read $fh 2] != "BM"} { close $fh; return -code error "not a BMP file" }
     seek $fh 14 start
     binary scan [read $fh 16] x4iix2s w h bpp
@@ -1054,7 +1071,7 @@ proc ::ico::getRawIconDataBMP {file {name 1}} {
         return -code error "unsupported color depth: $bpp"
     }
 
-    set xor  [read $fh [expr {int(($w * $h) * ($bpp / 8.0))}]]
+    set xor  [unpadRows [read $fh [expr {(($w * $bpp + 31) / 32) * 4 * $h}]] $w $h $bpp]
     set and [string repeat 0 [expr {$w * $h}]]
     close $fh
 

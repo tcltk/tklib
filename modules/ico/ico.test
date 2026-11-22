@@ -690,9 +690,8 @@ test ico-4.2 {getIconByName: 1 bpp, 32x32} -setup {
     unset f pixels
 } -result 1
 
-test ico-4.3 {getIconByName: 1 bpp, 16x16} -constraints knownBug -setup {
-    # Rows of the XOR mask are 32 bit aligned; the padding of 16 pixel
-    # wide 1 bpp rows is not taken into account.
+test ico-4.3 {getIconByName: 1 bpp, 16x16} -setup {
+    # Rows of the XOR mask are 32 bit aligned.
     set pixels [pattern 16 16 2]
     set f [writeBin a.ico [icoData [list [dib 1 {#000000 #FFFF00} $pixels]]]]
 } -body {
@@ -902,8 +901,7 @@ test ico-4.22 {getIconByName: BMP file, unknown name} -setup {
     unset f
 } -returnCodes error -result {No icon "0"}
 
-test ico-4.23 {getIconByName: BMP file with CR LF bytes in pixel data} -constraints knownBug -setup {
-    # BMP files are opened in text mode, so binary data is translated.
+test ico-4.23 {getIconByName: BMP file with CR LF bytes in pixel data} -setup {
     set pixels [lrepeat 4 [lrepeat 4 #000A0D]]
     set f [writeBin crlf.bmp [bmpData $pixels]]
 } -body {
@@ -912,6 +910,36 @@ test ico-4.23 {getIconByName: BMP file with CR LF bytes in pixel data} -constrai
     file delete $f
     unset f pixels
 } -result [canon [lrepeat 4 [lrepeat 4 #000A0D]]]
+
+test ico-4.24 {getIconByName: XOR mask rows of various widths} -setup {
+    # Rows of the XOR mask are padded to a multiple of 32 bits.
+    set f [file join $icoDir a.ico]
+} -body {
+    set res {}
+    foreach {bpp w} {1 12 1 48 4 4 4 5 8 6 24 5 24 6} {
+	set pixels [pattern $w $w [expr {min(16, 1 << $bpp)}]]
+	if {$bpp > 8} {
+	    set pixels [toColors $pixels $pal16]
+	}
+	writeBin a.ico [icoData [list [dib $bpp $pal16 $pixels]]]
+	lappend res [expr {[canon [::ico::getIconByName $f 0 -format colors]] eq
+			   [canon [expectColors $pixels $pal16]]}]
+    }
+    set res
+} -cleanup {
+    file delete $f
+    unset -nocomplain f res bpp w pixels
+} -result {1 1 1 1 1 1 1}
+
+test ico-4.25 {getIconByName: BMP file with padded rows} -setup {
+    set pixels [toColors [pattern 5 5 4] [lindex $bmp4 0]]
+    set f [writeBin a.bmp [bmpData $pixels]]
+} -body {
+    expr {[canon [::ico::getIconByName $f 1 -format colors]] eq [canon $pixels]}
+} -cleanup {
+    file delete $f
+    unset f pixels
+} -result 1
 
 # -------------------------------------------------------------------------
 # getIcon
@@ -1234,8 +1262,8 @@ test ico-6.10 {writeIcon: transparent pixels, 8x8} -constraints knownBug -setup 
     unset f colors
 } -result {1 1}
 
-test ico-6.11 {writeIcon: 16x16 1 bpp is written in standard format} -constraints knownBug -setup {
-    # XOR mask rows are not padded to 32 bits.
+test ico-6.11 {writeIcon: 16x16 1 bpp is written in standard format} -setup {
+    # XOR mask rows are padded to 32 bits.
     set f [tmpFile new.ico]
     set colors [expectColors [pattern 16 16 2] {#000000 #FFFFFF}]
 } -body {
@@ -1246,6 +1274,27 @@ test ico-6.11 {writeIcon: 16x16 1 bpp is written in standard format} -constraint
     file delete $f
     unset f colors
 } -result 1
+
+test ico-6.34 {writeIcon: XOR mask rows of various widths} -setup {
+    # Rows of the XOR mask are padded to a multiple of 32 bits.
+    set f [tmpFile new.ico]
+} -body {
+    set res {}
+    foreach {bpp w} {1 12 1 48 4 4 4 5 8 6 24 5 24 6} {
+	set colors [expectColors [pattern $w $w [expr {min(8, 1 << $bpp)}]] \
+			$pal16]
+	::ico::writeIcon $f 0 $bpp $colors
+	lappend res [expr {[canon [::ico::getIconByName $f 0 -format colors]]
+			   eq [canon $colors]}]
+	::ico::clearCache
+	file delete $f
+    }
+    set res
+} -cleanup {
+    ::ico::clearCache
+    file delete $f
+    unset -nocomplain f res bpp w colors
+} -result {1 1 1 1 1 1 1}
 
 test ico-6.12 {writeIcon: appends an image if the name does not exist} -setup {
     set f [tmpFile new.ico]
@@ -1530,9 +1579,7 @@ test ico-7.3 {copyIcon: ICO to ICO, replacing an image} -setup {
     unset f1 f2
 } -result {{{0 32 32 8}} 1}
 
-test ico-7.4 {copyIcon: ICO to BMP} -constraints knownBug -setup {
-    # BMP files are read in text mode (see ico-4.23), so pixel bytes
-    # above 0x7F or CR LF pairs are corrupted.
+test ico-7.4 {copyIcon: ICO to BMP} -setup {
     set f1 [writeBin a.ico [multiIco]]
     set f2 [writeBin b.bmp [bmpData $img4]]
 } -body {
@@ -1903,10 +1950,7 @@ test ico-9.5 {EXEtoICO: not an executable} -setup {
     unset f
 } -returnCodes error -result {file is not a valid executable}
 
-test ico-9.6 {EXEtoICO: image data of all icon files} -constraints knownBug -setup {
-    # The list of size fields to fix up is not reset between icon groups,
-    # so the files after the first one get garbage written into their
-    # image data.
+test ico-9.6 {EXEtoICO: image data of all icon files} -setup {
     set f [writeBin app.exe [samplePE]]
 } -body {
     ::ico::EXEtoICO $f
@@ -1920,6 +1964,21 @@ test ico-9.6 {EXEtoICO: image data of all icon files} -constraints knownBug -set
     file delete $f {*}[glob -nocomplain -directory $icoDir app.exe-*.ico]
     unset f
 } -result {1 1}
+
+test ico-9.7 {EXEtoICO: 16x16 1 bpp icon} -setup {
+    # Rows of the XOR mask are padded to a multiple of 32 bits.
+    set pixels [pattern 16 16 2]
+    set f [writeBin app.exe [peData {{1 {11}}} [list \
+	[list 11 [dib 1 {#000000 #FFFF00} $pixels [diagMask 16 16]]]]]]
+} -body {
+    ::ico::EXEtoICO $f
+    expr {[canon [decodeIco [file join $icoDir app.exe-1.ico] 0]] eq
+	  [canon [expectColors $pixels {#000000 #FFFF00} [diagMask 16 16]]]}
+} -cleanup {
+    ::ico::clearCache
+    file delete $f {*}[glob -nocomplain -directory $icoDir app.exe-*.ico]
+    unset f pixels
+} -result 1
 
 # -------------------------------------------------------------------------
 # clearCache
