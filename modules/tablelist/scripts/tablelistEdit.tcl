@@ -483,6 +483,7 @@ proc tablelist::addIncrDateTimeWidget {widgetType args} {
 		     [itcl::code $this _popup]
 	    }
 	}
+
 	timeentry {
 	    set editWin($name-creationCmd) "createIncrTimeentry %W"
 
@@ -1292,7 +1293,6 @@ proc tablelist::createTtkEntry {w args} {
     # 2 and -padding 1.  For those themes that don't honor the
     # -borderwidth 2 setting, set the padding to another value.
     #
-    set win [getTablelistPath $w]
     variable currentTheme
     switch -- $currentTheme {
 	aqua {
@@ -1340,11 +1340,9 @@ proc tablelist::createTtkSpinbox {w args} {
     createTileAliases
 
     #
-    # The style of the tile spinbox widget should have -borderwidth
-    # 2 and -padding 1.  For those themes that don't honor the
-    # -borderwidth 2 setting, set the padding to another value.
+    # The style of the tile spinbox widget should have -padding
+    # 1.  For a few themes set the padding to another value.
     #
-    set win [getTablelistPath $w]
     variable currentTheme
     switch -- $currentTheme {
 	aqua {
@@ -1376,8 +1374,7 @@ proc tablelist::createTtkSpinbox {w args} {
 	    set padding 1
 	}
     }
-    styleConfig Tablelist.TSpinbox -borderwidth 2 -highlightthickness 0 \
-				   -padding $padding
+    styleConfig Tablelist.TSpinbox -highlightthickness 0 -padding $padding
 
     ttk::spinbox $w -style Tablelist.TSpinbox
 
@@ -1398,13 +1395,7 @@ proc tablelist::createTtkCombobox {w args} {
     }
     createTileAliases
 
-    set win [getTablelistPath $w]
-    variable currentTheme
-    if {$currentTheme eq "aqua"} {
-	styleConfig Tablelist.TCombobox -borderwidth 2 -padding 0
-    } else {
-	styleConfig Tablelist.TCombobox -borderwidth 2 -padding 1
-    }
+    styleConfig Tablelist.TCombobox -padding 1
 
     ttk::combobox $w -style Tablelist.TCombobox
 
@@ -2444,7 +2435,7 @@ proc tablelist::adjustEditWindow {win pixels} {
 			-$amount : ($pixels - $reqWidth) / 2}]
     } else {
 	if {$editWin($name-usePadX)} {
-	    set amount $data(charWidth)
+	    set amount $data(margin)
 	}
 
 	set width [expr {$pixels + 2*$amount}]

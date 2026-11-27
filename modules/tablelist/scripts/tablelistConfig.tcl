@@ -325,7 +325,7 @@ proc tablelist::extendConfigSpecs {} {
 		set inactiveSelBg [expr {
 		    $selectBg eq "systemSelectedContentBackgroundColor" ?
 		    "systemUnemphasizedSelectedContentBackgroundColor" :
-		    "systemWindowBackgroundColor2"}]
+		    "systemButtonActiveDarkShadow"}]
 		set inactiveSelFg [expr {
 		    $selectFg eq "systemAlternateSelectedControlTextColor" ?
 		    "systemSelectedControlTextColor" :
@@ -487,6 +487,7 @@ proc tablelist::doConfig {win opt val} {
 		    #
 		    $data(lb) configure $opt $val
 		    set data(charWidth) [font measure $val -displayof $win 0]
+		    set data(margin) [expr {$data(charWidth) - 1}]
 		    makeColFontAndTagLists $win
 		    if {$data(editRow) >= 0} {
 			setEditWinFont $win
@@ -2080,18 +2081,16 @@ proc tablelist::doColConfig {col win opt val} {
 
 	-stretchwindow {
 	    #
-	    # Save the boolean value specified by val in data($col$opt)
-	    # and configure the header and body cells of this column
+	    # Save the boolean value specified by val in data($col$opt),
+	    # adjust the columns, and redisplay the column at idle time
 	    #
-	    set val [expr {$val ? 1 : 0}]
-	    set data($col$opt) $val
-	    set hdr_itemCount $data(hdr_itemCount)
-	    for {set row 0} {$row < $hdr_itemCount} {incr row} {
-		doCellConfig h$row $col $win $opt dummy
-	    }
-	    set itemCount $data(itemCount)
-	    for {set row 0} {$row < $itemCount} {incr row} {
-		doCellConfig $row $col $win $opt dummy
+	    set oldVal $data($col$opt)
+	    set newVal [expr {$val ? 1 : 0}]
+	    if {$newVal != $oldVal} {
+		set data($col$opt) $newVal
+		adjustColumns $win $col 1
+		redisplayColWhenIdle $win $col
+		updateViewWhenIdle $win
 	    }
 	}
 
@@ -2178,13 +2177,13 @@ proc tablelist::doColConfig {col win opt val} {
 	    set idx [expr {3*$col}]
 	    if {$val != [lindex $data(-columns) $idx]} {
 		setupColumns $win [lreplace $data(-columns) $idx $idx $val] 0
+		adjustColumns $win $col 1
 		set callerProc [lindex [info level -1] 0]
 		if {[string match "tablelist::label*" $callerProc]} {
 		    redisplayCol $win $col 0 last
 		} else {
 		    redisplayColWhenIdle $win $col
 		}
-		adjustColumns $win $col 1
 		updateViewWhenIdle $win
 	    }
 	}
@@ -2373,7 +2372,7 @@ proc tablelist::doRowConfig {row win opt val} {
 		    getAuxData $win $key $col auxType auxWidth
 		    getIndentData $win $key $col indentWidth
 		    set cellFont [getCellFont $win $key $col]
-		    set elemWidth [getElemWidth $win $text $auxWidth \
+		    set elemWidth [getElemWidth $win $text $auxType $auxWidth \
 				   $indentWidth $cellFont]
 		    if {$val} {				;# eliding the row
 			if {$elemWidth == $data($col-elemWidth) &&
@@ -2507,15 +2506,17 @@ proc tablelist::doRowConfig {row win opt val} {
 		    if {$data($col-wrap)} {
 			set snipSide ""
 		    }
-		    adjustMlElem $win list auxWidth indentWidth $cellFont \
-				 $workPixels $snipSide $data(-snipstring)
+		    adjustMlElem $win list $auxType auxWidth indentWidth \
+				 $cellFont $workPixels $snipSide \
+				 $data(-snipstring)
 		    set msgScript [list ::tablelist::displayText $win $key \
 				   $col [join $list "\n"] $cellFont \
 				   $maxTextWidth $alignment]
 		    set msgScript [string map {"%" "%%"} $msgScript]
 		} else {
-		    adjustElem $win text auxWidth indentWidth $cellFont \
-			       $workPixels $snipSide $data(-snipstring)
+		    adjustElem $win text $auxType auxWidth indentWidth \
+			       $cellFont $workPixels $snipSide \
+			       $data(-snipstring)
 		}
 
 		if {$inBody &&
@@ -2548,8 +2549,8 @@ proc tablelist::doRowConfig {row win opt val} {
 		    set text $textSav
 		    set auxWidth $auxWidthSav
 		    set indentWidth $indentWidthSav
-		    set newElemWidth [getElemWidth $win $text $auxWidth \
-				      $indentWidth $cellFont]
+		    set newElemWidth [getElemWidth $win $text $auxType \
+				      $auxWidth $indentWidth $cellFont]
 		    if {$newElemWidth > $data($col-elemWidth)} {
 			set data($col-elemWidth) $newElemWidth
 			set data($col-widestCount) 1
@@ -2558,8 +2559,9 @@ proc tablelist::doRowConfig {row win opt val} {
 			    set colWidthsChanged 1
 			}
 		    } else {
-			set oldElemWidth [getElemWidth $win $text $auxWidth \
-					  $indentWidth $oldCellFonts($col)]
+			set oldElemWidth [getElemWidth $win $text $auxType \
+					  $auxWidth $indentWidth \
+					  $oldCellFonts($col)]
 			if {$oldElemWidth < $data($col-elemWidth) &&
 			    $newElemWidth == $data($col-elemWidth)} {
 			    incr data($col-widestCount)
@@ -2688,7 +2690,7 @@ proc tablelist::doRowConfig {row win opt val} {
 		    getAuxData $win $key $col auxType auxWidth
 		    getIndentData $win $key $col indentWidth
 		    set cellFont [getCellFont $win $key $col]
-		    set elemWidth [getElemWidth $win $text $auxWidth \
+		    set elemWidth [getElemWidth $win $text $auxType $auxWidth \
 				   $indentWidth $cellFont]
 		    if {$val} {				;# hiding the row
 			if {$elemWidth == $data($col-elemWidth) &&
@@ -2861,15 +2863,17 @@ proc tablelist::doRowConfig {row win opt val} {
 		    if {$data($col-wrap)} {
 			set snipSide ""
 		    }
-		    adjustMlElem $win list auxWidth indentWidth $cellFont \
-				 $workPixels $snipSide $data(-snipstring)
+		    adjustMlElem $win list $auxType auxWidth indentWidth \
+				 $cellFont $workPixels $snipSide \
+				 $data(-snipstring)
 		    set msgScript [list ::tablelist::displayText $win $key \
 				   $col [join $list "\n"] $cellFont \
 				   $maxTextWidth $alignment]
 		    set msgScript [string map {"%" "%%"} $msgScript]
 		} else {
-		    adjustElem $win text auxWidth indentWidth $cellFont \
-			       $workPixels $snipSide $data(-snipstring)
+		    adjustElem $win text $auxType auxWidth indentWidth \
+			       $cellFont $workPixels $snipSide \
+			       $data(-snipstring)
 		}
 
 		if {!$inBody ||
@@ -2897,8 +2901,8 @@ proc tablelist::doRowConfig {row win opt val} {
 		    set text $textSav
 		    set auxWidth $auxWidthSav
 		    set indentWidth $indentWidthSav
-		    set newElemWidth [getElemWidth $win $text $auxWidth \
-				      $indentWidth $cellFont]
+		    set newElemWidth [getElemWidth $win $text $auxType \
+				      $auxWidth $indentWidth $cellFont]
 		    if {$newElemWidth > $data($col-elemWidth)} {
 			set data($col-elemWidth) $newElemWidth
 			set data($col-widestCount) 1
@@ -2915,8 +2919,8 @@ proc tablelist::doRowConfig {row win opt val} {
 			if {[string match "*\t*" $oldText]} {
 			    set oldText [mapTabs $oldText]
 			}
-			set oldElemWidth [getElemWidth $win $oldText $auxWidth \
-					  $indentWidth $cellFont]
+			set oldElemWidth [getElemWidth $win $oldText $auxType \
+					  $auxWidth $indentWidth $cellFont]
 			if {$oldElemWidth < $data($col-elemWidth) &&
 			    $newElemWidth == $data($col-elemWidth)} {
 			    incr data($col-widestCount)
@@ -3178,14 +3182,14 @@ proc tablelist::doCellConfig {row col win opt val {skipParts 0}} {
 		if {$data($col-wrap)} {
 		    set snipSide ""
 		}
-		adjustMlElem $win list auxWidth indentWidth $cellFont \
+		adjustMlElem $win list $auxType auxWidth indentWidth $cellFont \
 			     $workPixels $snipSide $data(-snipstring)
 		set msgScript [list ::tablelist::displayText $win $key \
 			       $col [join $list "\n"] $cellFont \
 			       $maxTextWidth $alignment]
 		set msgScript [string map {"%" "%%"} $msgScript]
 	    } else {
-		adjustElem $win text auxWidth indentWidth $cellFont \
+		adjustElem $win text $auxType auxWidth indentWidth $cellFont \
 			   $workPixels $snipSide $data(-snipstring)
 	    }
 
@@ -3221,7 +3225,7 @@ proc tablelist::doCellConfig {row col win opt val {skipParts 0}} {
 		set text $textSav
 		set auxWidth $auxWidthSav
 		set indentWidth $indentWidthSav
-		set newElemWidth [getElemWidth $win $text $auxWidth \
+		set newElemWidth [getElemWidth $win $text $auxType $auxWidth \
 				  $indentWidth $cellFont]
 		if {$newElemWidth > $data($col-elemWidth)} {
 		    set data($col-elemWidth) $newElemWidth
@@ -3231,8 +3235,8 @@ proc tablelist::doCellConfig {row col win opt val {skipParts 0}} {
 			adjustColumns $win {} 1
 		    }
 		} else {
-		    set oldElemWidth [getElemWidth $win $text $auxWidth \
-				      $indentWidth $oldCellFont]
+		    set oldElemWidth [getElemWidth $win $text $auxType \
+				      $auxWidth $indentWidth $oldCellFont]
 		    if {$oldElemWidth < $data($col-elemWidth) &&
 			$newElemWidth == $data($col-elemWidth)} {
 			incr data($col-widestCount)
@@ -3348,14 +3352,14 @@ proc tablelist::doCellConfig {row col win opt val {skipParts 0}} {
 		if {$data($col-wrap)} {
 		    set snipSide ""
 		}
-		adjustMlElem $win list auxWidth indentWidth $cellFont \
+		adjustMlElem $win list $auxType auxWidth indentWidth $cellFont \
 			     $workPixels $snipSide $data(-snipstring)
 		set msgScript [list ::tablelist::displayText $win $key \
 			       $col [join $list "\n"] $cellFont \
 			       $maxTextWidth $alignment]
 		set msgScript [string map {"%" "%%"} $msgScript]
 	    } else {
-		adjustElem $win text auxWidth indentWidth $cellFont \
+		adjustElem $win text $auxType auxWidth indentWidth $cellFont \
 			   $workPixels $snipSide $data(-snipstring)
 	    }
 
@@ -3388,7 +3392,7 @@ proc tablelist::doCellConfig {row col win opt val {skipParts 0}} {
 		set text $textSav
 		set auxWidth $auxWidthSav
 		set indentWidth $indentWidthSav
-		set newElemWidth [getElemWidth $win $text $auxWidth \
+		set newElemWidth [getElemWidth $win $text $auxType $auxWidth \
 				  $indentWidth $cellFont]
 		if {$newElemWidth > $data($col-elemWidth)} {
 		    set data($col-elemWidth) $newElemWidth
@@ -3398,8 +3402,8 @@ proc tablelist::doCellConfig {row col win opt val {skipParts 0}} {
 			adjustColumns $win {} 1
 		    }
 		} else {
-		    set oldElemWidth [getElemWidth $win $oldText $oldAuxWidth \
-				      $indentWidth $cellFont]
+		    set oldElemWidth [getElemWidth $win $oldText $oldAuxType \
+				      $oldAuxWidth $indentWidth $cellFont]
 		    if {$oldElemWidth < $data($col-elemWidth) &&
 			$newElemWidth == $data($col-elemWidth)} {
 			incr data($col-widestCount)
@@ -3517,14 +3521,14 @@ proc tablelist::doCellConfig {row col win opt val {skipParts 0}} {
 		if {$data($col-wrap)} {
 		    set snipSide ""
 		}
-		adjustMlElem $win list auxWidth indentWidth $cellFont \
+		adjustMlElem $win list $auxType auxWidth indentWidth $cellFont \
 			     $workPixels $snipSide $data(-snipstring)
 		set msgScript [list ::tablelist::displayText $win $key \
 			       $col [join $list "\n"] $cellFont \
 			       $maxTextWidth $alignment]
 		set msgScript [string map {"%" "%%"} $msgScript]
 	    } else {
-		adjustElem $win text auxWidth indentWidth $cellFont \
+		adjustElem $win text $auxType auxWidth indentWidth $cellFont \
 			   $workPixels $snipSide $data(-snipstring)
 	    }
 
@@ -3553,7 +3557,7 @@ proc tablelist::doCellConfig {row col win opt val {skipParts 0}} {
 		set text $textSav
 		set auxWidth $auxWidthSav
 		set indentWidth $indentWidthSav
-		set newElemWidth [getElemWidth $win $text $auxWidth \
+		set newElemWidth [getElemWidth $win $text $auxType $auxWidth \
 				  $indentWidth $cellFont]
 		if {$newElemWidth > $data($col-elemWidth)} {
 		    set data($col-elemWidth) $newElemWidth
@@ -3563,8 +3567,8 @@ proc tablelist::doCellConfig {row col win opt val {skipParts 0}} {
 			adjustColumns $win {} 1
 		    }
 		} else {
-		    set oldElemWidth [getElemWidth $win $oldText $auxWidth \
-				      $oldIndentWidth $cellFont]
+		    set oldElemWidth [getElemWidth $win $oldText $auxType \
+				      $auxWidth $oldIndentWidth $cellFont]
 		    if {$oldElemWidth < $data($col-elemWidth) &&
 			$newElemWidth == $data($col-elemWidth)} {
 			incr data($col-widestCount)
@@ -3606,14 +3610,11 @@ proc tablelist::doCellConfig {row col win opt val {skipParts 0}} {
 	    set item [lindex $data(${p}itemList) $row]
 	    set key [lindex $item end]
 	    set name $key,$col$opt
-	    set callerProc [lindex [info level -1] 0]
-	    if {$callerProc ne "tablelist::doColConfig"} {
-		if {$val eq ""} {
-		    array unset data $name
-		} else {
-		    set val [expr {$val ? 1 : 0}]
-		    set data($name) $val
-		}
+	    if {$val eq ""} {
+		array unset data $name
+	    } else {
+		set val [expr {$val ? 1 : 0}]
+		set data($name) $val
 	    }
 
 	    if {$inBody && $row == $data(editRow) && $col == $data(editCol)} {
@@ -3621,15 +3622,6 @@ proc tablelist::doCellConfig {row col win opt val {skipParts 0}} {
 	    }
 
 	    set pixels [lindex $data(colList) [expr {2*$col}]]
-	    set text [lindex $item $col]
-	    if {[lindex $data(fmtCmdFlagList) $col]} {
-		set text [formatElem $win $key $row $col $text]
-	    }
-	    if {[string match "*\t*" $text]} {
-		set text [mapTabs $text]
-	    }
-	    set multiline [string match "*\n*" $text]
-	    set cellFont [getCellFont $win $key $col]
 	    if {$pixels == 0} {			;# convention: dynamic width
 		if {$data($col-maxPixels) > 0} {
 		    if {$data($col-reqPixels) > $data($col-maxPixels)} {
@@ -3638,62 +3630,8 @@ proc tablelist::doCellConfig {row col win opt val {skipParts 0}} {
 		}
 	    }
 	    set aux [getAuxData $win $key $col auxType auxWidth $pixels]
-	    if {$auxType < 2} {			;# no window
-		return ""
-	    }
-
-	    if {$inBody} {
-		displayItems $win
-	    }
-
-	    set indent [getIndentData $win $key $col indentWidth]
-	    set maxTextWidth $pixels
-	    if {$pixels != 0} {
-		incr pixels $data($col-delta)
-		set maxTextWidth \
-		    [getMaxTextWidth $pixels $auxWidth $indentWidth]
-
-		if {$data($col-wrap) && !$multiline} {
-		    if {[font measure $cellFont -displayof $win $text] >
-			$maxTextWidth} {
-			set multiline 1
-		    }
-		}
-	    }
-
-	    #
-	    # Adjust the cell text and the window width
-	    #
-	    set alignment [lindex $data(colList) [expr {2*$col + 1}]]
-	    set snipSide $snipSides($alignment,$data($col-changesnipside))
-	    if {$multiline} {
-		set list [split $text "\n"]
-		if {$data($col-wrap)} {
-		    set snipSide ""
-		}
-		adjustMlElem $win list auxWidth indentWidth $cellFont \
-			     $pixels $snipSide $data(-snipstring)
-		set msgScript [list ::tablelist::displayText $win $key $row \
-			       [join $list "\n"] $cellFont \
-			       $maxTextWidth $alignment]
-		set msgScript [string map {"%" "%%"} $msgScript]
-	    } else {
-		adjustElem $win text auxWidth indentWidth $cellFont \
-			   $pixels $snipSide $data(-snipstring)
-	    }
-
-	    #
-	    # Update the text widget's content between the two tabs
-	    #
-	    findTabs $win $w [expr {$row + $diff}] $col $col tabIdx1 tabIdx2
-	    if {$multiline} {
-		updateMlCell $w $tabIdx1+1$pu $tabIdx2 $msgScript $aux \
-			     $auxType $auxWidth $indent $indentWidth \
-			     $alignment [getOpt $win $key $col -valign]
-	    } else {
-		updateCell $w $tabIdx1+1$pu $tabIdx2 $text $aux \
-			   $auxType $auxWidth $indent $indentWidth \
-			   $alignment [getOpt $win $key $col -valign]
+	    if {$auxType >= 2} {				;# window
+		doCellConfig $row $col $win -window $data($key,$col-window)
 	    }
 	}
 
@@ -3764,14 +3702,14 @@ proc tablelist::doCellConfig {row col win opt val {skipParts 0}} {
 		if {$data($col-wrap)} {
 		    set snipSide ""
 		}
-		adjustMlElem $win list auxWidth indentWidth $cellFont \
+		adjustMlElem $win list $auxType auxWidth indentWidth $cellFont \
 			     $workPixels $snipSide $data(-snipstring)
 		set msgScript [list ::tablelist::displayText $win $key \
 			       $col [join $list "\n"] $cellFont \
 			       $maxTextWidth $alignment]
 		set msgScript [string map {"%" "%%"} $msgScript]
 	    } else {
-		adjustElem $win text auxWidth indentWidth $cellFont \
+		adjustElem $win text $auxType auxWidth indentWidth $cellFont \
 			   $workPixels $snipSide $data(-snipstring)
 	    }
 
@@ -3817,7 +3755,7 @@ proc tablelist::doCellConfig {row col win opt val {skipParts 0}} {
 		set text $textSav
 		set auxWidth $auxWidthSav
 		set indentWidth $indentWidthSav
-		set newElemWidth [getElemWidth $win $text $auxWidth \
+		set newElemWidth [getElemWidth $win $text $auxType $auxWidth \
 				  $indentWidth $cellFont]
 		if {$newElemWidth > $data($col-elemWidth)} {
 		    set data($col-elemWidth) $newElemWidth
@@ -3833,8 +3771,8 @@ proc tablelist::doCellConfig {row col win opt val {skipParts 0}} {
 		    if {[string match "*\t*" $oldText]} {
 			set oldText [mapTabs $oldText]
 		    }
-		    set oldElemWidth [getElemWidth $win $oldText $auxWidth \
-				      $indentWidth $cellFont]
+		    set oldElemWidth [getElemWidth $win $oldText $auxType \
+				      $auxWidth $indentWidth $cellFont]
 		    if {$oldElemWidth < $data($col-elemWidth) &&
 			$newElemWidth == $data($col-elemWidth)} {
 			incr data($col-widestCount)
@@ -3890,7 +3828,8 @@ proc tablelist::doCellConfig {row col win opt val {skipParts 0}} {
 	    set callerProc [lindex [info level -1] 0]
 	    if {$hasWindow && $val eq $data($name) &&
 		![string match "do*Editing" $callerProc] &&
-		$callerProc ne "tablelist::reconfigWindows"} {
+		$callerProc ne "tablelist::reconfigWindows" &&
+		$callerProc ne "tablelist::doCellConfig"} {
 		return ""
 	    }
 
@@ -4014,14 +3953,14 @@ proc tablelist::doCellConfig {row col win opt val {skipParts 0}} {
 		if {$data($col-wrap)} {
 		    set snipSide ""
 		}
-		adjustMlElem $win list auxWidth indentWidth $cellFont \
+		adjustMlElem $win list $auxType auxWidth indentWidth $cellFont \
 			     $workPixels $snipSide $data(-snipstring)
 		set msgScript [list ::tablelist::displayText $win $key \
 			       $col [join $list "\n"] $cellFont \
 			       $maxTextWidth $alignment]
 		set msgScript [string map {"%" "%%"} $msgScript]
 	    } else {
-		adjustElem $win text auxWidth indentWidth $cellFont \
+		adjustElem $win text $auxType auxWidth indentWidth $cellFont \
 			   $workPixels $snipSide $data(-snipstring)
 	    }
 
@@ -4054,7 +3993,7 @@ proc tablelist::doCellConfig {row col win opt val {skipParts 0}} {
 		set text $textSav
 		set auxWidth $auxWidthSav
 		set indentWidth $indentWidthSav
-		set newElemWidth [getElemWidth $win $text $auxWidth \
+		set newElemWidth [getElemWidth $win $text $auxType $auxWidth \
 				  $indentWidth $cellFont]
 		if {$newElemWidth > $data($col-elemWidth)} {
 		    set data($col-elemWidth) $newElemWidth
@@ -4064,14 +4003,16 @@ proc tablelist::doCellConfig {row col win opt val {skipParts 0}} {
 			adjustColumns $win {} 1
 		    }
 		} else {
-		    set oldElemWidth [getElemWidth $win $oldText $oldAuxWidth \
-				      $oldIndentWidth $cellFont]
+		    set oldElemWidth [getElemWidth $win $oldText $oldAuxType \
+				      $oldAuxWidth $oldIndentWidth $cellFont]
 		    if {$oldElemWidth < $data($col-elemWidth) &&
 			$newElemWidth == $data($col-elemWidth)} {
 			incr data($col-widestCount)
-		    } elseif {$oldElemWidth == $data($col-elemWidth) &&
-			      $newElemWidth < $oldElemWidth &&
-			      [incr data($col-widestCount) -1] == 0} {
+		    } elseif {($oldElemWidth == $data($col-elemWidth) &&
+			       $newElemWidth < $oldElemWidth &&
+			       [incr data($col-widestCount) -1] == 0) ||
+			      ($callerProc eq "tablelist::doCellConfig" &&
+			       $auxType == 3)} {	;# dynamic-width window
 			adjustColumns $win $col 1
 		    }
 		}

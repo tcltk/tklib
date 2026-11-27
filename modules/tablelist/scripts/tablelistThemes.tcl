@@ -367,7 +367,7 @@ proc tablelist::aquaTheme {} {
     set inactiveSelBg [expr {
 	$selectBg eq "systemSelectedContentBackgroundColor" ?
 	"systemUnemphasizedSelectedContentBackgroundColor" :
-	"systemWindowBackgroundColor2"}]
+	"systemButtonActiveDarkShadow"}]
     set inactiveSelFg [expr {
 	$selectFg eq "systemAlternateSelectedControlTextColor" ?
 	"systemSelectedControlTextColor" :

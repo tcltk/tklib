@@ -830,7 +830,8 @@ proc tablelist::tablelist args {
 	    hasListVar		 0
 	    isDisabled		 0
 	    ownsFocus		 0
-	    charWidth		 1
+	    charWidth		 8
+	    margin		 7
 	    hdrWidth		 0
 	    activeRow		 0
 	    activeCol		 0
@@ -4609,10 +4610,12 @@ proc tablelist::header_iselemsnippedSubCmd {win argList} {
 
     if {[string match "*\n*" $text]} {
 	set list [split $text "\n"]
-	adjustMlElem $win list auxWidth indentWidth $cellFont $pixels "r" ""
+	adjustMlElem $win list $auxType auxWidth indentWidth $cellFont \
+		     $pixels "r" ""
 	set text [join $list "\n"]
     } else {
-	adjustElem $win text auxWidth indentWidth $cellFont $pixels "r" ""
+	adjustElem $win text $auxType auxWidth indentWidth $cellFont \
+		   $pixels "r" ""
     }
 
     return [expr {$text ne $fullText}]
@@ -5075,10 +5078,12 @@ proc tablelist::iselemsnippedSubCmd {win argList} {
 
     if {[string match "*\n*" $text]} {
 	set list [split $text "\n"]
-	adjustMlElem $win list auxWidth indentWidth $cellFont $pixels "r" ""
+	adjustMlElem $win list $auxType auxWidth indentWidth $cellFont \
+		     $pixels "r" ""
 	set text [join $list "\n"]
     } else {
-	adjustElem $win text auxWidth indentWidth $cellFont $pixels "r" ""
+	adjustElem $win text $auxType auxWidth indentWidth $cellFont \
+		   $pixels "r" ""
     }
 
     return [expr {$text ne $fullText}]
@@ -7092,11 +7097,13 @@ proc tablelist::colWidth {win col opt} {
     upvar ::tablelist::ns${win}::data data
     set pixels [lindex $data(colList) [expr {2*$col}]]
     if {$pixels == 0} {				;# convention: dynamic width
+	if {![info exists data($col-reqPixels)]} {
+	    computeColWidth $win $col
+	}
+
 	set pixels $data($col-reqPixels)
-	if {$data($col-maxPixels) > 0} {
-	    if {$pixels > $data($col-maxPixels)} {
-		set pixels $data($col-maxPixels)
-	    }
+	if {$data($col-maxPixels) > 0 && $pixels > $data($col-maxPixels)} {
+	    set pixels $data($col-maxPixels)
 	}
     }
 
@@ -7383,8 +7390,8 @@ proc tablelist::deleteRows {win first last updateListVar} {
 		getAuxData $win $key $col auxType auxWidth
 		getIndentData $win $key $col indentWidth
 		set cellFont [getCellFont $win $key $col]
-		set elemWidth \
-		    [getElemWidth $win $text $auxWidth $indentWidth $cellFont]
+		set elemWidth [getElemWidth $win $text $auxType $auxWidth \
+			       $indentWidth $cellFont]
 		if {$elemWidth == $data($col-elemWidth) &&
 		    [incr data($col-widestCount) -1] == 0} {
 		    set colWidthsChanged 1
@@ -7688,7 +7695,8 @@ proc tablelist::hdr_deleteRows {win first last} {
 
 		getAuxData $win $key $col auxType auxWidth
 		set cellFont [getCellFont $win $key $col]
-		set elemWidth [getElemWidth $win $text $auxWidth 0 $cellFont]
+		set elemWidth [getElemWidth $win $text $auxType $auxWidth 0 \
+			       $cellFont]
 		if {$elemWidth == $data($col-elemWidth) &&
 		    [incr data($col-widestCount) -1] == 0} {
 		    set colWidthsChanged 1

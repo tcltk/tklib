@@ -53,13 +53,10 @@ if {[$tbl cget -selectborderwidth] == 0} {
     $tbl configure -spacing 1
 }
 $tbl columnconfigure 0 -name fileName
-$tbl columnconfigure 1 -formatcommand emptyStr -sortmode integer \
-    -stretchwindow yes
+$tbl columnconfigure 1 -sortmode integer -stretchwindow yes
 $tbl columnconfigure 2 -name fileSize -sortmode integer
 $tbl columnconfigure 4 -name seen
 scrollbar $vsb -orient vertical -command [list $tbl yview]
-
-proc emptyStr val { return "" }
 
 #
 # Create a bold font
@@ -104,8 +101,9 @@ proc createFrame {tbl row col w} {
     # Create the frame and replace the binding tag "Frame"
     # with "TablelistBody" in the list of its binding tags
     #
+    set width  [expr {[tk windowingsystem] eq "aqua" ? 100 : "75p"}]
     set height [expr {[font metrics $::tblFont -linespace] * 9 / 10}]
-    frame $w -width 72p -height $height -background ivory -borderwidth 1 \
+    frame $w -width $width -height $height -background ivory -borderwidth 1 \
 	     -relief solid
     bindtags $w [lreplace [bindtags $w] 1 1 TablelistBody]
 

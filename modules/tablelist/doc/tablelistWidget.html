@@ -14,7 +14,7 @@
   <div>
     <h1>The <code><b>tablelist::tablelist</b></code> Command</h1>
 
-    <h2>For Tablelist Version 7.12</h2>
+    <h2>For Tablelist Version 7.13</h2>
 
     <h3>by</h3>
 
@@ -1930,7 +1930,7 @@ proc acceptDropCmd {tbl targetRow sourceRow} {
         on Mac OS X and <code>#878787</code> on macOS 11+, while for earlier
         operating system versions the default is <code>#777777</code>.</p>
 
-        <p><b>REMARK:</b>&nbsp; If the arrow color is as empty string then the
+        <p><b>REMARK:</b>&nbsp; If the arrow color is an empty string then the
         sort arrow will inherit the background color of the header label in
         which it is placed.&nbsp; In this case, the <code><b><a href=
         "#arrowstyle">-arrowstyle</a></b></code> option should be set to one of
@@ -3926,9 +3926,11 @@ proc expandCmd {tbl row} {
 
       <blockquote>
         <p>Specifies a boolean value that determines whether a click with the
-        left mouse button anywhere into the tablelist's body, including the
-        separators and the embedded images (more precisely, any descendants of
-        the tablelist widget having the binding tag <code><b><a href=
+        left mouse button (optionally with the <code>Shift</code>,
+        <code>Control</code>, <code>Alt</code>, or <code>Command</code> key
+        down) anywhere into the tablelist's body, including the separators and
+        the embedded images (more precisely, any descendants of the tablelist
+        widget having the binding tag <code><b><a href=
         "#body_bindings">TablelistBody</a></b></code>) should set the focus to
         the body of the tablelist widget if the latter's <code><b><a href=
         "#state">state</a></b></code> is <code><b>normal</b></code>.&nbsp; The
@@ -4115,7 +4117,7 @@ option add *Tablelist.showEditCursor 0
         tablelist window.&nbsp; The default value is <code>1</code>.</p>
 
         <p><b>REMARK:</b>&nbsp; If showing the horizontal separator per default
-        under the above-mentioned circumstancies is not what you prefer, you
+        under the above-mentioned circumstances is not what you prefer, you
         can override the default for all tablelist instances by inserting the
         line</p>
 
@@ -4560,7 +4562,7 @@ option add *Tablelist.showHorizSeparator 0
 
         <p><b>REMARK:</b>&nbsp; You can set this option to true and at the same
         time provide additional space above and below each row with the aid of
-        the <code><b><a href="#spacing">-spacing</a></b></code> configuratiom
+        the <code><b><a href="#spacing">-spacing</a></b></code> configuration
         option.&nbsp; As a result, the space below each row will be the same as
         above the row (and not one pixel higher).</p>
       </blockquote>
@@ -6725,23 +6727,15 @@ bind $tbl <a href="#label_bindings">&lt;&lt;TablelistColumnMoved&gt;&gt;</a> { c
 
         <dd>Specifies whether the widths of the windows embedded into the
         column's body and header cells shall be adapted dynamically to the
-        column's width if the latter is non-zero (i.e., static).&nbsp; The
-        default value is <code>0</code>.&nbsp; If the value of this option is
-        true and the column was specified with a non-zero width or was resized
-        interactively, then the widths of its embedded windows (if any) will be
-        adjusted automatically so the windows fill the whole horizontal space
-        belonging to the column (except the left and right margins).&nbsp;
-        Please note that in this case the texts of the column's cells will
-        remain hidden.&nbsp; On the other hand, if the column is of dynamic
-        width then this option will be ignored and both its texts and its
-        embedded windows (if any) will be displayed as usual.&nbsp; The easiest
-        way to avoid this discrepancy is to set the column's texts to empty
-        strings or make sure that its elements are always displayed as empty
-        strings, by using the <code><b><a href=
-        "#col_formatcommand">-formatcommand</a></b></code> column configuration
-        option.&nbsp; The value of this option can be overridden for individual
-        cells by using the <a href="#cell_stretchwindow">cell configuration
-        option</a> of the same name.</dd>
+        column's width.&nbsp; The default value is <code>0</code>.&nbsp; If the
+        value of this option is true then the widths of its embedded windows
+        will be adjusted automatically so the windows fill the whole horizontal
+        space belonging to the column (including the left and right
+        margins).&nbsp; Please note that in this case the texts of the column's
+        cells will remain hidden.&nbsp; The value of this option can be
+        overridden for individual cells by using the <a href=
+        "#cell_stretchwindow">cell configuration option</a> of the same
+        name.</dd>
 
         <dt class="tm" id="col_stripebackground"><code><b>-stripebackground</b>
         <i>color</i></code></dt>
@@ -7215,25 +7209,15 @@ proc updateWindow {tbl row col w args} {
         <i>boolean</i></code></dt>
 
         <dd>Specifies whether the width of the window embedded into the cell
-        shall be adapted dynamically to the width of the cell's column if the
-        latter is non-zero (i.e., static).&nbsp; The default value is
-        <code>0</code>.&nbsp; If the value of this option is true and the
-        column was specified with a non-zero width or was resized
-        interactively, then the width of the embedded window (if any) will be
+        (if any) shall be adapted dynamically to the width of the cell's
+        column.&nbsp; The default value is <code>0</code>.&nbsp; If the value
+        of this option is true then the width of the embedded window will be
         adjusted automatically so the window fills the whole horizontal space
-        belonging to that column (except the left and right margins).&nbsp;
+        belonging to that column (including the left and right margins).&nbsp;
         Please note that in this case the cell's text will remain hidden.&nbsp;
-        On the other hand, if the column is of dynamic width then this option
-        will be ignored and both the cell's text and its embedded window (if
-        any) will be displayed as usual.&nbsp; The easiest way to avoid this
-        discrepancy is to set the cell's text to an empty string or make sure
-        that the column's elements are always displayed as empty strings, by
-        using the <code><b><a href=
-        "#col_formatcommand">-formatcommand</a></b></code> column configuration
-        option.&nbsp; This option overrides <a href="#col_stretchwindow">the
-        one of the same name</a> for the column containing the given cell if
-        the specified value is not an empty string (which is explicitly
-        allowed).</dd>
+        This option overrides <a href="#col_stretchwindow">the one of the same
+        name</a> for the column containing the given cell if the specified
+        value is not an empty string (which is explicitly allowed).</dd>
 
         <dt class="tm" id="cell_text"><code><b>-text</b>
         <i>text</i></code></dt>
@@ -7734,7 +7718,7 @@ proc updateWindow {tbl row col w args} {
 
     <dd class="tm">
       <b>TkDND EXAMPLE:</b>&nbsp; For an introduction to TkDND see the online
-      <a href="https://wiki.tcl-lang.org/36708">TkDND Tutorial</a> by Georgios
+      <a href="https://wiki.tcl.tk/36708">TkDND Tutorial</a> by Georgios
       Petasis.&nbsp; For the following example it is strongly recommended to
       use TkDND version 2.7 or later, which can be downloaded from the location
 
@@ -7789,7 +7773,7 @@ proc onTblDrop {tbl action data} {
     <dd>
       <b>BWidget EXAMPLE:</b>&nbsp; For an introduction to drag & drop with
       BWidget see the online tutorial <a href=
-      "https://wiki.tcl-lang.org/16126">BWidget example: Drag and Drop Demo</a> by
+      "https://wiki.tcl.tk/16126">BWidget example: Drag and Drop Demo</a> by
       Kevin Walzer.&nbsp; The <code><b>DropSite::*</b></code> commands used in
       the following example are described in the "DropSite" reference page
       included in the BWidget distribution.&nbsp; When using this drag & drop
@@ -9381,7 +9365,7 @@ eval [list <i>pathName</i> <a href=
 
         <dd>Returns the path name of the label widget contained in the
         north-east corner frame (see the <code><b><a href=
-        "#cornerpath">cornerpath</a></b></code> subcommand.&nbsp; When using
+        "#cornerpath">cornerpath</a></b></code> subcommand).&nbsp; When using
         Tablelist_tile, the return value will be a ttk::label widget of the
         same style as the header labels.&nbsp; The global visual options set
         for the header labels are automatically applied to this (ttk::)label
@@ -9425,9 +9409,9 @@ eval [list <i>pathName</i> <a href=
         option is positive (see Remark 2 below).&nbsp; The width of this corner
         frame is automatically kept in sync with the total width of the
         non-hidden title columns.&nbsp; When using Tablelist_tile, the
-        south-west corner frame will be a ttk::frame widget.labels.&nbsp;
-        Whenever the total width of the non-hidden title columns (and thus the
-        requested width of the south-west corner frame) changes, the
+        south-west corner frame will be a ttk::frame widget.&nbsp; Whenever the
+        total width of the non-hidden title columns (and thus the requested
+        width of the south-west corner frame) changes, the
         <code><b>&lt;&lt;TablelistTitleColsWidthChanged&gt;&gt;</b></code>
         virtual event is generated, with its <code><b>-data</b></code> option
         set to the total width of the non-hidden title columns for Tk versions
@@ -9677,7 +9661,7 @@ pack $sa -expand yes -fill both -padx 10 -pady 10
         <dd class="tm">This subcommand is only available in the presence of the
         <code><b>dict</b></code> command, which is the case when using Tcl
         version 8.5 or later, or one of the alternative, <a href=
-        "https://wiki.tcl-lang.org/10609">Tcl-only <code><b>dict</b></code>
+        "https://wiki.tcl.tk/10609">Tcl-only <code><b>dict</b></code>
         implementations</a>.</dd>
 
         <dt class="tm" id="dumptofile"><code><i>pathName</i> <b>dumptofile</b>
@@ -10748,7 +10732,7 @@ upvar #0 [.tbl <span class="red">itemlistvar</span>] itemList
         <dd>This subcommand is only available in the presence of the
         <code><b>dict</b></code> command, which is the case when using Tcl
         version 8.5 or later, or one of the alternative, <a href=
-        "https://wiki.tcl-lang.org/10609">Tcl-only <code><b>dict</b></code>
+        "https://wiki.tcl.tk/10609">Tcl-only <code><b>dict</b></code>
         implementations</a>.</dd>
 
         <dt class="tm" id="labelpath"><code><i>pathName</i> <b>labelpath</b>

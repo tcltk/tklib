@@ -14,7 +14,7 @@
   <div>
     <h1>Tablelist Programmer's Guide</h1>
 
-    <h2>For Tablelist Version 7.12</h2>
+    <h2>For Tablelist Version 7.13</h2>
 
     <h3>by</h3>
 
@@ -182,8 +182,8 @@
   <h3 id="ov_get">How to Get It?</h3>
 
   <p>Tablelist is available for free download from the same URL as Wcb.&nbsp;
-  The distribution file is <code>tablelist7.12.tar.gz</code> for UNIX and
-  <code>tablelist7_12.zip</code> for Windows.&nbsp; These files contain the
+  The distribution file is <code>tablelist7.13.tar.gz</code> for UNIX and
+  <code>tablelist7_13.zip</code> for Windows.&nbsp; These files contain the
   same information, except for the additional carriage return character
   preceding the linefeed at the end of each line in the text files for
   Windows.</p>
@@ -206,11 +206,11 @@
 
   <p>To install Tablelist <i>on UNIX</i>, <code>cd</code> to the desired
   directory and unpack the distribution file
-  <code>tablelist7.12.tar.gz</code>:</p>
+  <code>tablelist7.13.tar.gz</code>:</p>
 
   <blockquote>
     <pre>
-gunzip -c tablelist7.12.tar.gz | tar -xf -
+gunzip -c tablelist7.13.tar.gz | tar -xf -
 </pre>
   </blockquote>
 
@@ -218,17 +218,17 @@ gunzip -c tablelist7.12.tar.gz | tar -xf -
 
   <blockquote>
     <pre>
-tar -zxf tablelist7.12.tar.gz
+tar -zxf tablelist7.13.tar.gz
 </pre>
   </blockquote>
 
-  <p>Both commands will create a directory named <code>tablelist7.12</code>,
+  <p>Both commands will create a directory named <code>tablelist7.13</code>,
   with the subdirectories <code>demos</code>, <code>doc</code>, and
   <code>scripts</code>.</p>
 
   <p><i>On Windows</i>, use WinZip or some other program capable of unpacking
-  the distribution file <code>tablelist7_12.zip</code> into the directory
-  <code>tablelist7.12</code>, with the subdirectories <code>demos</code>,
+  the distribution file <code>tablelist7_13.zip</code> into the directory
+  <code>tablelist7.13</code>, with the subdirectories <code>demos</code>,
   <code>doc</code>, and <code>scripts</code>.</p>
 
   <p>The file <code>tablelistEdit.tcl</code> in the <code>scripts</code>
@@ -2913,7 +2913,7 @@ $tbl embedcheckbuttons 1 ckbtnCmd
   <code>active</code> state:</p>
 
   <blockquote>
-    <img src="embeddedWindows.png" alt="Embedded Windows" width="411" height=
+    <img src="embeddedWindows.png" alt="Embedded Windows" width="403" height=
     "338">
   </blockquote>
 
@@ -2967,13 +2967,10 @@ if {[$tbl cget -selectborderwidth] == 0} {
     $tbl configure -spacing 1
 }
 $tbl columnconfigure 0 -name fileName
-$tbl columnconfigure 1 -formatcommand emptyStr -sortmode integer \
-    -stretchwindow yes
+$tbl columnconfigure 1 -sortmode integer -stretchwindow yes
 $tbl columnconfigure 2 -name fileSize -sortmode integer
 $tbl columnconfigure 4 -name seen
 scrollbar $vsb -orient vertical -command [list $tbl yview]
-
-proc emptyStr val { return "" }
 
 <span class="cmt">#
 # Create a bold font
@@ -3015,7 +3012,7 @@ if {$tk_version &gt;= 8.5} {
   <p>We insert the size of each file not only into the column with the
   title&nbsp; <code>"File Size"</code>,&nbsp; but also into the column&nbsp;
   <code>"Bar Chart"</code>.&nbsp; Since we configured this column with&nbsp;
-  <code>-formatcommand emptyStr</code>,&nbsp; the text will remain hidden in
+  <code>-stretchwindow yes</code>,&nbsp; the text will remain hidden in
   it.&nbsp; It will, however, be needed when sorting the items by that
   column.</p>
 
@@ -3046,8 +3043,9 @@ proc createFrame {tbl row col w} {
     # Create the frame and replace the binding tag "Frame"
     # with "TablelistBody" in the list of its binding tags
     #</span>
+    set width  [expr {[tk windowingsystem] eq "aqua" ? 100 : "75p"}]
     set height [expr {[font metrics $::tblFont -linespace] * 9 / 10}]
-    frame $w -width 72p -height $height -background ivory -borderwidth 1 \
+    frame $w -width $width -height $height -background ivory -borderwidth 1 \
              -relief solid
     bindtags $w [lreplace [bindtags $w] 1 1 TablelistBody]
 
@@ -3455,8 +3453,8 @@ proc editStartCmd {tbl row col text} {
   the details.&nbsp; Here is a screenshot of the resulting window:</p>
 
   <blockquote>
-    <img src="embeddedWindows_tile.png" alt="Embedded Windows" width="411"
-    height="339">
+    <img src="embeddedWindows_tile.png" alt="Embedded Windows" width="403"
+    height="340">
   </blockquote>
 
   <p>Finally, notice that the following tile-based demo-scripts provide

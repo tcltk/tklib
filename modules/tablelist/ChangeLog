@@ -1,3 +1,29 @@
+2026-11-27 Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 7.13.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes; corrected a few typos.
+	* doc/*.html:
+
+	* scripts/*.tcl: If the value of the "-setfocus" option is true then
+	  now also <Shift|Control|Alt|Command-Button-1> will set the focus to
+	  the body of the tablelist widget if the latter's state is "normal"; a
+	  window embedded into a tablelist cell whose "-stretchwindow" option
+	  was set to true now fills the whole horizontal space belonging to the
+	  cell, including the left and right margins; the commands
+	  corresponding to the values of the "-(x|y)scrollcommand" options are
+	  now only invoked if the tablelist widget is mapped.
+
+	* scripts/tclIndex: Newly generated.
+
+	* scripts/utils/pkgIndex.tcl: Fixed a bug related to the wsb package.
+
+	* doc/dirViewer.png:            Updated screenshots.
+	* doc/embeddedWindows.png:
+	* doc/embeddedWindows_tile.png:
+
 2026-10-01 Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Tablelist 7.12.

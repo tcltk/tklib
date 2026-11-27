@@ -1,5 +1,31 @@
-What is new in Tablelist 7.12?
+What is new in Tablelist 7.13?
 ------------------------------
+
+1. If the value of the "-setfocus" option is true (the default) then
+   now not only the <Button-1> event, but also <Shift-Button-1>,
+   <Control-Button-1>, <Alt-Button-1>, and <Command-Button-1> will set
+   the focus to the body of the tablelist widget if the latter's state
+   is "normal" (thanks to Alexandru Dadalau for his proposal).
+
+2. A window embedded into a tablelist cell whose "-stretchwindow"
+   option (at cell or column level) was set to true now fills the whole
+   horizontal space belonging to the cell, including the left and right
+   margins (thanks to Nicolas Robert for his proposal). In addition, it
+   is no longer needed to use the "-format" column configuration option
+   to make sure that the cell's text will remain hidden.
+
+3. The commands corresponding to the values of the "-xscrollcommand" and
+   "-yscrollcommand" options are now only invoked if the tablelist
+   widget is mapped (the listbox widget has always behaved this way).
+
+4. Fixed a bug in the file "scripts/utils/pkgIndex.tcl", related to the
+   wsb package (thanks to Harald Oehlmann for his bug report and fix).
+
+5. Corrected a few typos in the documentation (thanks to Gregor Ebbing
+   for reporting them).
+
+What was new in Tablelist 7.12?
+-------------------------------
 
 1. Made the default sort arrows and expand/collapse controls of the
    "aqua" theme, as well as its embedded ttk::checkbutton widgets

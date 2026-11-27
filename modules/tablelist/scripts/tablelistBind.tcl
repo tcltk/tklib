@@ -921,10 +921,7 @@ proc tablelist::defineTablelistBody {} {
 	    set tablelist::priv(justClicked) 1
 	    after 300 [list set tablelist::priv(justClicked) 0]
 	    set tablelist::priv(clickedInEditWin) 0
-	    if {[$tablelist::W cget -setfocus] &&
-		[$tablelist::W cget -state] eq "normal"} {
-		focus [$tablelist::W bodypath]
-	    }
+	    tablelist::condSetFocus $tablelist::W
 	    if {[tablelist::wasExpCollCtrlClicked %W %x %y <Button-1>]} {
 		set tablelist::priv(clickedExpCollCtrl) 1
 		tablelist::doFinishEditing $tablelist::W
@@ -1015,6 +1012,7 @@ proc tablelist::defineTablelistBody {} {
 	    continue		;# on a vertical separator, outside the body
 	}
 
+	tablelist::condSetFocus $tablelist::W
 	tablelist::beginExtend $tablelist::W \
 	    [$tablelist::W containing       $tablelist::y] \
 	    [$tablelist::W containingcolumn $tablelist::x]
@@ -1027,6 +1025,7 @@ proc tablelist::defineTablelistBody {} {
 	    continue		;# on a vertical separator, outside the body
 	}
 
+	tablelist::condSetFocus $tablelist::W
 	tablelist::beginToggle $tablelist::W \
 	    [$tablelist::W containing       $tablelist::y] \
 	    [$tablelist::W containingcolumn $tablelist::x]
@@ -1040,6 +1039,7 @@ proc tablelist::defineTablelistBody {} {
 	    continue		;# on a vertical separator, outside the body
 	}
 
+	tablelist::condSetFocus $tablelist::W
 	if {[tablelist::wasExpCollCtrlClicked %%W %%x %%y <%s-Button-1>]} {
 	    set tablelist::priv(clickedExpCollCtrl) 1
 	}
@@ -1705,6 +1705,18 @@ proc tablelist::makeEditCursor {} {
 	}
     } else {
 	set editCursor pencil
+    }
+}
+
+#------------------------------------------------------------------------------
+# tablelist::condSetFocus
+#
+# This procedure conditionally sets the focus to the body text child of the
+# tablelist widget win.
+#------------------------------------------------------------------------------
+proc tablelist::condSetFocus win {
+    if {[::$win cget -setfocus] && [::$win cget -state] eq "normal"} {
+	focus [::$win bodypath]
     }
 }
 
