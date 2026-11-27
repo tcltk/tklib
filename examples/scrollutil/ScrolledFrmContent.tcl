@@ -20,6 +20,7 @@ set l [ttk::label $cf.l$row -text \
 grid $l -row $row -column 0 -columnspan 3 -sticky w -padx 9p -pady {9p 0}
 incr row
 set sa [scrollutil::scrollarea $cf.sa$row]
+$sa configure -yscrollbarmode static	;# temporarily, for winfo reqwidth $cf
 set txt [text $sa.txt -font TkFixedFont -width 73]
 scrollutil::addMouseWheelSupport $txt
 $sa setwidget $txt
@@ -33,6 +34,7 @@ set l [ttk::label $cf.l$row -text "Tablelist releases:"]
 grid $l -row $row -column 0 -sticky w -padx {9p 0} -pady {9p 0}
 incr row
 set sa [scrollutil::scrollarea $cf.sa$row]
+$sa configure -yscrollbarmode static	;# temporarily, for winfo reqwidth $cf
 set lb [listbox $sa.lb -width 0]
 $sa setwidget $lb
 grid $sa -row $row -rowspan 6 -column 0 -sticky w -padx {9p 0} -pady {3p 0}
@@ -271,6 +273,8 @@ pack $tf -side top -expand yes -fill both
 #
 set vsb [$sf component vertsb]
 set width  [expr {[winfo reqwidth $cf] + [winfo reqwidth $vsb] + 2}]
+$cf.sa1 configure -yscrollbarmode dynamic		;# restore the default
+$cf.sa3 configure -yscrollbarmode dynamic		;# restore the default
 set height [expr {[winfo reqheight $cf.l0] + [winfo pixels . 3p] +
 		  [winfo reqheight $cf.sa1] + 2*[winfo pixels . 9p] + 2}]
 $sf configure -width $width -height $height

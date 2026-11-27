@@ -129,17 +129,15 @@ set b [ttk::button $f.b -text "Close" -command exit]
 
 pack $b  -side bottom -pady {0 9p}
 pack $nb -side top -expand yes -fill both -padx 9p -pady 9p
-pack $f  -expand yes -fill both
+
+update idletasks
+pack $f -expand yes -fill both
 
 #
 # Set the scrollednotebook's -height and -width options to the
 # maximum requested height and width of all panes, respectively
 #
-after 50 [list resizeNb $nb]
-
-proc resizeNb nb {
-    $nb adjustsize
-    foreach sa [$nb tabs] {
-	$sa configure -yscrollbarmode dynamic			;# the default
-    }
+$nb adjustsize
+foreach sa [$nb tabs] {
+    $sa configure -yscrollbarmode dynamic		;# restore the default
 }

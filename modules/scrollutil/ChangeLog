@@ -1,3 +1,30 @@
+2026-11-27  Csaba Nemethi <csaba.nemethi@t-online.de>
+
+	* *.tcl:         Bumped the version number to 2.12.
+	* COPYRIGHT.txt:
+	* README.txt:
+
+	* CHANGES.txt: Updated to reflect the changes; corrected a few typos.
+	* doc/*.html:
+
+	* scripts/*.tcl: The commands corresponding to the values of the
+	  "-(x|y)scrollcommand" options of the scrollableframe and scrollsync
+	  widgets are now only invoked if the widget is mapped; eliminated a
+	  potential failure caused by destroying and immediately recreating a
+	  scrollableframe, scrollednotebook, or pagesman widget under the same
+	  name; made the scanning on Android (with AndroWish) via one-finger
+	  gestures in scrollableframe widgets more robust; fixed a bug in the
+	  file "scripts/utils/pkgIndex.tcl", related to the wsb package.
+
+	* scripts/utils/pkgIndex.tcl: Fixed a bug related to the wsb package.
+
+	* doc/ScrollableFrmDemo2.png: Updated screenshot.
+
+	* ../../examples/scrollutil/*.tcl: Improved the start behavior of the
+	  demo applications "BwScrollableFrmDemo2.tcl", "ScrolledFrmDemo2.tcl",
+	  "SuScrollableFrmDemo2.tcl", "ScrolledNotebookDemo.tcl", and
+	  "TtkNotebookDemo.tcl".
+
 2026-10-01  Csaba Nemethi <csaba.nemethi@t-online.de>
 
 	* Released Scrollutil 2.11.

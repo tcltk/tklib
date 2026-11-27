@@ -144,10 +144,7 @@ proc scrollutil::snb::createBindings {} {
     bind Scrollednotebook <Map> {
 	after 100 [list scrollutil::snb::onScrollednotebookMap %W]
     }
-    bind Scrollednotebook <Destroy> {
-	namespace delete scrollutil::ns%W
-	catch {rename %W ""}
-    }
+    bind Scrollednotebook <Destroy> { scrollutil::snb::onDestroy %W }
     bind Scrollednotebook <<ThemeChanged>> {
 	scrollutil::snb::onThemeChanged %W
     }
@@ -1218,6 +1215,27 @@ proc scrollutil::snb::onScrollednotebookMap win {
 }
 
 #------------------------------------------------------------------------------
+# scrollutil::snb::onDestroy
+#------------------------------------------------------------------------------
+proc scrollutil::snb::onDestroy win {
+    #
+    # Cancel the pending "after 100 activateTab" and "after 100 showHideArrows"
+    # callbacks: if a widget with the same path is created before they
+    # fire, they would act on and fail with the new widget's data
+    #
+    upvar ::scrollutil::ns${win}::data data
+    if {[info exists data(activateId)]} {
+	after cancel $data(activateId)
+    }
+    if {[info exists data(arrowsId)]} {
+	after cancel $data(arrowsId)
+    }
+    
+    namespace delete ::scrollutil::ns$win
+    catch {rename ::$win ""}
+}
+
+#------------------------------------------------------------------------------
 # scrollutil::snb::onThemeChanged
 #------------------------------------------------------------------------------
 proc scrollutil::snb::onThemeChanged w {
@@ -1831,10 +1849,6 @@ proc scrollutil::snb::showHideArrowsDelayed win {
 # Shows or hides the left and right arrows of the scrollednotebook widget win.
 #------------------------------------------------------------------------------
 proc scrollutil::snb::showHideArrows win {
-    if {[destroyed $win]} {
-	return ""
-    }
-
     upvar ::scrollutil::ns${win}::data data
     unset data(arrowsId)
 
@@ -1903,12 +1917,9 @@ proc scrollutil::snb::showHideArrows win {
 # Activates the tab data(tabIdx) of the scrollednotebook widget win.
 #------------------------------------------------------------------------------
 proc scrollutil::snb::activateTab win {
-    if {[destroyed $win]} {
-	return ""
-    }
-
     upvar ::scrollutil::ns${win}::data data
     unset data(activateId)
+
     set tabIdx $data(tabIdx)
     set nb $data(nb)
 

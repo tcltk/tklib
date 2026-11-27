@@ -1,5 +1,34 @@
-What is new in Scrollutil 2.11?
+What is new in Scrollutil 2.12?
 -------------------------------
+
+1. The commands corresponding to the values of the "-xscrollcommand" and
+   "-yscrollcommand" options of the scrollableframe and scrollsync
+   widgets are now only invoked if the widget is mapped (the listbox
+   widget has always behaved this way).
+
+2. Eliminated a potential failure caused by destroying and immediately
+   recreating a scrollableframe, scrollednotebook, or pagesman widget
+   under the same name (thanks to Nicolas Bats for his bug report and
+   fix).
+
+3. Made the scanning on Android (with AndroWish) via one-finger gestures
+   in scrollableframe widgets more robust (thanks to Harald Oehlmann for
+   his bug report and fix).
+
+4. Fixed a bug in the file "scripts/utils/pkgIndex.tcl", related to the
+   wsb package (again, thanks to Harald Oehlmann for his bug report and
+   fix).
+
+5. Improved the start behavior of the demo applications
+   "BwScrollableFrmDemo2.tcl", "ScrolledFrmDemo2.tcl",
+   "SuScrollableFrmDemo2.tcl", "ScrolledNotebookDemo.tcl", and
+   "TtkNotebookDemo.tcl".
+
+6. Corrected a few typos in the documentation (thanks to Gregor Ebbing
+   for reporting them).
+
+What was new in Scrollutil 2.11?"
+--------------------------------
 
 1. Various improvements related to the implementation of the scrollarea
    and scrollableframe widgets.

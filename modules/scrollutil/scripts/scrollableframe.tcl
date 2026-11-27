@@ -1239,14 +1239,6 @@ proc scrollutil::sf::applyOffset {win axis offset force} {
 # scrollutil::sf::doApplyOffset
 #------------------------------------------------------------------------------
 proc scrollutil::sf::doApplyOffset {win axis} {
-    #
-    # This is an "after 50" callback; check whether the window exists
-    #
-    if {![array exists ::scrollutil::ns${win}::data] ||
-	[winfo class $win] ne "Scrollableframe"} {
-	return ""
-    }
-
     upvar ::scrollutil::ns${win}::data data
     unset data(${axis}AfterId)
 
@@ -1257,7 +1249,7 @@ proc scrollutil::sf::doApplyOffset {win axis} {
     set offset $data(${axis}NewOffset)
     set data(${axis}Offset) $offset
     place configure $data(cf) -$axis -$offset
-    if {$data(-${axis}scrollcommand) ne ""} {
+    if {$data(-${axis}scrollcommand) ne "" && [winfo ismapped $win]} {
 	eval $data(-${axis}scrollcommand) [${axis}viewSubCmd $win {}]
     }
 }
@@ -1293,6 +1285,18 @@ proc scrollutil::sf::onDestroy win {
     variable sfList
     set idx [lsearch -exact $sfList $win]
     set sfList [lreplace $sfList $idx $idx]
+
+    #
+    # Cancel the pending "after 50 doApplyOffset" callbacks: if
+    # a widget with the same path is created before they fire,
+    # they would act on and fail with the new widget's data
+    #
+    upvar ::scrollutil::ns${win}::data data
+    foreach axis {x y} {
+	if {[info exists data(${axis}AfterId)]} {
+	    after cancel $data(${axis}AfterId)
+	}
+    }
 
     namespace delete ::scrollutil::ns$win
     catch {rename ::$win ""}
@@ -1386,13 +1390,12 @@ proc scrollutil::sf::onNoManagedChild cf {
 # scrollutil::sf::onButton2
 #------------------------------------------------------------------------------
 proc scrollutil::sf::onButton2 {w rootX rootY} {
-    variable btn2Win [winfo containing -displayof $w $rootX $rootY]
-
-    if {[hasBtn2Bindings $w]} {
+    if {![winfo exists $w] || [hasBtn2Bindings $w]} {
 	return ""
     }
 
     variable sfList
+    variable btn2Win [winfo containing -displayof $w $rootX $rootY]
     foreach win $sfList {
 	if {[mayScan $win $btn2Win]} {
 	    set x [expr {$rootX - [winfo x $win]}]
@@ -1413,7 +1416,7 @@ proc scrollutil::sf::onButton2 {w rootX rootY} {
 # scrollutil::sf::onB2Motion
 #------------------------------------------------------------------------------
 proc scrollutil::sf::onB2Motion {w rootX rootY} {
-    if {[hasBtn2Bindings $w]} {
+    if {![winfo exists $w] || [hasBtn2Bindings $w]} {
 	return ""
     }
 
@@ -1434,7 +1437,7 @@ proc scrollutil::sf::onB2Motion {w rootX rootY} {
 # scrollutil::sf::onButtonRelease2
 #------------------------------------------------------------------------------
 proc scrollutil::sf::onButtonRelease2 w {
-    if {[hasBtn2Bindings $w]} {
+    if {![winfo exists $w] || [hasBtn2Bindings $w]} {
 	return ""
     }
 

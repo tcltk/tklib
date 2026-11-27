@@ -132,10 +132,7 @@ proc scrollutil::pm::createBindings {} {
     }
     bind Pagesman <FocusIn> { scrollutil::pm::onFocusIn %W %d }
     bind Pagesman <Map>	    { scrollutil::pm::resizeWidgetDelayed %W 100 }
-    bind Pagesman <Destroy> {
-	namespace delete scrollutil::ns%W
-	catch {rename %W ""}
-    }
+    bind Pagesman <Destroy> { scrollutil::pm::onDestroy %W }
 }
 
 #
@@ -787,10 +784,6 @@ proc scrollutil::pm::resizeWidgetDelayed {win ms {force 0}} {
 # scrollutil::pm::resizeWidget
 #------------------------------------------------------------------------------
 proc scrollutil::pm::resizeWidget {win {force 0}} {
-    if {![winfo exists $win] || [winfo class $win] ne "Pagesman"} {
-	return ""
-    }
-
     upvar ::scrollutil::ns${win}::data data
     catch {unset data(afterId)}
 
@@ -862,4 +855,22 @@ proc scrollutil::pm::resizeWidget {win {force 0}} {
     }
 
     return ""
+}
+
+#------------------------------------------------------------------------------
+# scrollutil::pm::onDestroy
+#------------------------------------------------------------------------------
+proc scrollutil::pm::onDestroy win {
+    #
+    # Cancel the pending "after $ms resizeWidget" callbacks: if
+    # a widget with the same path is created before they fire,
+    # they would act on and fail with the new widget's data
+    #
+    upvar ::scrollutil::ns${win}::data data
+    if {[info exists data(afterId)]} {
+	after cancel $data(afterId)
+    }
+
+    namespace delete ::scrollutil::ns$win
+    catch {rename ::$win ""}
 }

@@ -516,7 +516,9 @@ proc scrollutil::ss::scrollCmd {win widget axis first last} {
 	foreach {firstOld lastOld} $data(${axis}View) {}
 	if {$first != $firstOld || $last != $lastOld} {
 	    set data(${axis}View) [list $first $last]
-	    eval $data(-${axis}scrollcommand) $first $last
+	    if {[winfo ismapped $win]} {
+		eval $data(-${axis}scrollcommand) $first $last
+	    }
 	}
     }
 
@@ -559,7 +561,8 @@ proc scrollutil::ss::updateMasterWidgets win {
     upvar ::scrollutil::ns${win}::data data
     foreach axis {x y} {
 	set masterWidget [sortScrollableList $win $axis]
-	if {$masterWidget ne "" && $data(-${axis}scrollcommand) ne ""} {
+	if {$masterWidget ne "" && $data(-${axis}scrollcommand) ne "" &&
+	    [winfo ismapped $win]} {
 	    eval $data(-${axis}scrollcommand) [::$masterWidget ${axis}view]
 	}
     }

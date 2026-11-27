@@ -108,16 +108,14 @@ set b [ttk::button $f.b -text "Close" -command exit]
 
 pack $b  -side bottom -pady {0 9p}
 pack $nb -side top -expand yes -fill both -padx 9p -pady 9p
-pack $f  -expand yes -fill both
+
+update idletasks
+pack $f -expand yes -fill both
 
 #
 # Set the ttk::notebook's width.  Take into account that in the aqua theme
 # the panes are drawn with a hard-coded internal padding of {9 5 9 9}.
 #
-after 50 [list configNb $nb $sa]
-
-proc configNb {nb sa} {
-    set width [expr {[winfo reqwidth $sa] + [winfo reqwidth $sa.vsb]}]
-    incr width [expr {$::currentTheme eq "aqua" ? 0 : 2*[winfo pixels . 9p]}]
-    $nb configure -width $width
-}
+set width [expr {[winfo reqwidth $sa] + [winfo reqwidth $sa.vsb]}]
+incr width [expr {$::currentTheme eq "aqua" ? 0 : 2*[winfo pixels . 9p]}]
+$nb configure -width $width
